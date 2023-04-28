@@ -1,13 +1,15 @@
-import abc
+from __future__ import annotations
+
 import asyncio
 import timeit
 from asyncio import AbstractEventLoop, get_event_loop_policy
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any, Awaitable, Callable, Iterator
 
 import pytest
 from pytest_docker.plugin import Services
-from redis.asyncio import Redis
+from redis import Redis
+from redis.asyncio import Redis as AsyncRedis
 from redis.exceptions import ConnectionError as RedisConnectionError
 
 from litestar.channels.memory import MemoryChannelsBackend
@@ -34,7 +36,7 @@ def event_loop() -> Iterator[AbstractEventLoop]:
 
 
 async def wait_until_responsive(
-    check: "abc.Callable[..., abc.Awaitable]",
+    check: Callable[..., Awaitable],
     timeout: float,
     pause: float,
     **kwargs: Any,
@@ -65,7 +67,7 @@ async def redis_responsive(host: str) -> bool:
     Returns:
         Boolean indicating if we can connect to the redis server.
     """
-    client: Redis = Redis(host=host, port=6397)
+    client: AsyncRedis = AsyncRedis(host=host, port=6397)
     try:
         return await client.ping()
     except (ConnectionError, RedisConnectionError):
@@ -75,7 +77,7 @@ async def redis_responsive(host: str) -> bool:
 
 
 @pytest.fixture(scope="session", autouse=True)
-async def _containers(docker_ip: str, docker_services: "Services") -> None:  # pylint: disable=unused-argument
+async def _containers(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
     """Starts containers for required services, fixture waits until they are
     responsive before returning.
 
@@ -87,17 +89,18 @@ async def _containers(docker_ip: str, docker_services: "Services") -> None:  # p
 
 
 @pytest.fixture()
-def redis_client(docker_ip: str, docker_services: Services) -> Redis:
-    return Redis(host=docker_ip, port=6397)
+def redis_client(docker_ip: str, docker_services: Services) -> AsyncRedis:
+    Redis(host=docker_ip, port=6397).flushall()
+    return AsyncRedis(host=docker_ip, port=6397)
 
 
 @pytest.fixture()
-def redis_stream_backend(redis_client: Redis) -> RedisChannelsStreamBackend:
+def redis_stream_backend(redis_client: AsyncRedis) -> RedisChannelsStreamBackend:
     return RedisChannelsStreamBackend(history=10, redis=redis_client, cap_streams_approximate=False)
 
 
 @pytest.fixture()
-def redis_pub_sub_backend(redis_client: Redis) -> RedisChannelsPubSubBackend:
+def redis_pub_sub_backend(redis_client: AsyncRedis) -> RedisChannelsPubSubBackend:
     return RedisChannelsPubSubBackend(history=10, redis=redis_client)
 
 

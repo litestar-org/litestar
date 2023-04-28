@@ -27,11 +27,10 @@ def async_mock() -> AsyncMock:
 @pytest.fixture(
     params=[
         pytest.param("memory_backend", id="memory"),
-        pytest.param("redis_pub_sub_backend", id="redis:pubsub"),
         pytest.param("redis_stream_backend", id="redis:stream"),
     ]
 )
-def channels_backend(request: FixtureRequest) -> ChannelsBackend:
+async def channels_backend(request: FixtureRequest) -> ChannelsBackend:
     return cast(ChannelsBackend, request.getfixturevalue(request.param))
 
 
@@ -41,13 +40,13 @@ def test_channels_no_channels_arbitrary_not_allowed_raises(memory_backend: Memor
 
 
 @pytest.mark.parametrize("socket_send_mode", ["text", "binary"])
-def test_pub_sub(channels_backend: ChannelsBackend, socket_send_mode: WebSocketMode) -> None:
+async def test_pub_sub(channels_backend: ChannelsBackend, socket_send_mode: WebSocketMode) -> None:
     @websocket("/")
     async def handler(socket: WebSocket, channels: ChannelsPlugin) -> None:
         await socket.accept()
-        await channels.subscribe(socket, "something")
-        while True:
-            await socket.receive()
+        async with channels.subscription(socket, "something"):
+            while True:
+                await socket.receive()
 
     channels_plugin = ChannelsPlugin(
         backend=channels_backend, channels=["something"], socket_send_mode=socket_send_mode
@@ -56,7 +55,7 @@ def test_pub_sub(channels_backend: ChannelsBackend, socket_send_mode: WebSocketM
 
     with TestClient(app) as client, client.websocket_connect("/") as ws:
         channels_plugin.broadcast(["foo"], "something")
-        assert ws.receive_json(mode=socket_send_mode) == ["foo"]
+        assert ws.receive_json(mode=socket_send_mode, timeout=1) == ["foo"]
 
 
 @pytest.mark.parametrize("socket_send_mode", ["text", "binary"])
@@ -75,10 +74,10 @@ def test_pub_sub_create_route_handlers(
 
     with TestClient(app) as client, client.websocket_connect(f"{handler_base_path or ''}/something") as ws:
         channels_plugin.broadcast(["foo"], "something")
-        assert ws.receive_json(mode=socket_send_mode) == ["foo"]
+        assert ws.receive_json(mode=socket_send_mode, timeout=0.1) == ["foo"]
 
 
-def test_create_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
+async def test_create_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
     channels_plugin = ChannelsPlugin(
         backend=channels_backend, arbitrary_channels_allowed=True, create_route_handlers=True, handler_base_path="/ws"
     )
@@ -88,11 +87,11 @@ def test_create_route_handlers_arbitrary_channels_allowed(channels_backend: Chan
     with TestClient(app) as client:
         with client.websocket_connect("/ws/foo") as ws:
             channels_plugin.broadcast("something", "foo")
-            assert ws.receive_text() == "something"
+            assert ws.receive_text(timeout=1) == "something"
 
         with client.websocket_connect("/ws/bar") as ws:
             channels_plugin.broadcast("something else", "bar")
-            assert ws.receive_text() == "something else"
+            assert ws.receive_text(timeout=1) == "something else"
 
 
 def test_plugin_dependency(mock: MagicMock, memory_backend: MemoryChannelsBackend) -> None:

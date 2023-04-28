@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from asyncio import CancelledError, Queue, Task, create_task
-from contextlib import suppress
+from contextlib import asynccontextmanager, suppress
 from functools import partial
 from os.path import join as join_path
-from typing import TYPE_CHECKING, Awaitable, Callable, Iterable
+from typing import TYPE_CHECKING, AsyncGenerator, Awaitable, Callable, Iterable
 
 import anyio
 import msgspec.json
@@ -85,15 +85,15 @@ class ChannelsPlugin(InitPluginProtocol):
 
         return app_config
 
-    def broadcast(self, data: LitestarEncodableType, channels: str | list[str]) -> None:
+    def broadcast(self, data: LitestarEncodableType, channels: str | Iterable[str]) -> None:
         if isinstance(channels, str):
             channels = [channels]
         if self._pub_queue is None:
             raise RuntimeError()
         data = self.encode_data(data)
-        self._pub_queue.put_nowait((data, channels))
+        self._pub_queue.put_nowait((data, list(channels)))
 
-    async def subscribe(self, socket: WebSocket, channels: str | list[str]) -> None:
+    async def subscribe(self, socket: WebSocket, channels: str | Iterable[str]) -> None:
         if isinstance(channels, str):
             channels = [channels]
 
@@ -116,6 +116,14 @@ class ChannelsPlugin(InitPluginProtocol):
         if channels_to_subscribe:
             await self._backend.subscribe(channels_to_subscribe)
 
+    @asynccontextmanager
+    async def subscription(self, socket: WebSocket, channels: str | list[str]) -> AsyncGenerator[None, None]:
+        await self.subscribe(socket, channels)
+        try:
+            yield
+        finally:
+            await self.unsubscribe(socket, channels)
+
     async def send_history(
         self, socket: WebSocket, channels: Iterable[str], limit: int | None, chronological: bool = True
     ) -> None:
@@ -136,7 +144,10 @@ class ChannelsPlugin(InitPluginProtocol):
             for entry in history:
                 task_group.start_soon(self.handle_socket_send, socket, entry)
 
-    async def unsubscribe(self, socket: WebSocket, channels: str | list[str]) -> None:
+    async def unsubscribe(self, socket: WebSocket, channels: str | Iterable[str] | None = None) -> None:
+        if channels is None:
+            channels = self._channels.keys()
+
         if isinstance(channels, str):
             channels = [channels]
 
@@ -159,20 +170,19 @@ class ChannelsPlugin(InitPluginProtocol):
 
     async def _ws_handler_func(self, channel_name: str, socket: WebSocket) -> None:
         await socket.accept()
-        await self.subscribe(socket, [channel_name])
-        if self._handler_should_send_history:
-            await self.send_channel_history(
-                channel=channel_name,
-                socket=socket,
-                limit=self._history_limit,
-                chronological=self._send_history_chronological,
-            )
-        while True:
-            try:
-                await socket.receive()
-            except WebSocketDisconnect:
-                await self.unsubscribe(socket, [channel_name])
-                break
+        async with self.subscription(socket, [channel_name]):
+            if self._handler_should_send_history:
+                await self.send_channel_history(
+                    channel=channel_name,
+                    socket=socket,
+                    limit=self._history_limit,
+                    chronological=self._send_history_chronological,
+                )
+            while True:
+                try:
+                    await socket.receive()
+                except WebSocketDisconnect:
+                    break
 
     def _create_ws_handler_func(self, channel_name: str) -> Callable[[WebSocket], Awaitable[None]]:
         async def ws_handler_func(socket: WebSocket) -> None:
@@ -181,7 +191,10 @@ class ChannelsPlugin(InitPluginProtocol):
         return ws_handler_func
 
     async def handle_socket_send(self, socket: WebSocket, data: bytes) -> None:
-        await socket.send_data(data, mode=self._socket_send_mode)
+        try:
+            await socket.send_data(data, mode=self._socket_send_mode)
+        except WebSocketDisconnect:
+            await self.unsubscribe(socket)
 
     async def _pub_worker(self) -> None:
         while self._pub_queue:

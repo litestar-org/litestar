@@ -74,7 +74,6 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
             raise ImproperlyConfiguredException("history must be greater than 0")
 
         self._subscribed_channels: set[str] = set()
-        self._has_subscribed_channels = asyncio.Event()
         self._cap_streams_approximate = cap_streams_approximate
 
     async def on_startup(self) -> None:
@@ -85,13 +84,9 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
 
     async def subscribe(self, channels: Iterable[str]) -> None:
         self._subscribed_channels.update(channels)
-        if not self._has_subscribed_channels.is_set():
-            self._has_subscribed_channels.set()
 
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         self._subscribed_channels = self._subscribed_channels - set(channels)
-        if not self._subscribed_channels:
-            self._has_subscribed_channels = asyncio.Event()
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
         for channel in channels:
@@ -105,8 +100,10 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         stream_ids: dict[str, bytes] = {}
         while True:
-            await self._has_subscribed_channels.wait()
             stream_keys = [self._make_key(c) for c in self._subscribed_channels]
+            if not stream_keys:
+                await asyncio.sleep(0)
+                continue
             data: list[tuple[bytes, list[tuple[bytes, dict[bytes, bytes]]]]] = await self._redis.xread(
                 {key: stream_ids.get(key, 0) for key in stream_keys}, block=1
             )
