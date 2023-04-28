@@ -79,7 +79,7 @@ def test_fields_alias_generator() -> None:
     class Foo:
         bar: str
 
-    config = DTOConfig(fields_alias_generator=lambda x: x.upper())
+    config = DTOConfig(rename_strategy=lambda x: x.upper())
     dto = DataclassDTO[Annotated[Foo, config]]
 
     @post(dto=dto, signature_namespace={"Foo": Foo})

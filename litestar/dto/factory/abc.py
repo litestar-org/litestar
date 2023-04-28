@@ -225,7 +225,7 @@ def _parse_model(
 
         if rename := config.rename_fields.get(field_definition.name):
             field_definition = field_definition.copy_with(serialization_name=rename)  # noqa: PLW2901
-        elif field_alias_generator := config.fields_alias_generator:
+        elif field_alias_generator := config.rename_strategy:
             alias = field_alias_generator(field_definition.name)
             field_definition = field_definition.copy_with(serialization_name=alias)  # noqa: PLW2901
 
