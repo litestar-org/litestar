@@ -3,13 +3,13 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from litestar.dto.factory.backends import MsgspecDTOBackend, PydanticDTOBackend
-from litestar.dto.factory.backends.abc import BackendContext
 from litestar.dto.interface import ConnectionContext, DTOInterface
 from litestar.enums import RequestEncodingType
 from litestar.types.builtin_types import NoneType
 from litestar.utils.signature import ParsedType
 
+from ._backends import MsgspecDTOBackend, PydanticDTOBackend
+from ._backends.abc import BackendContext
 from .config import DTOConfig
 from .exc import InvalidAnnotation
 from .field import Mark
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
 
-    from .backends import AbstractDTOBackend
+    from ._backends import AbstractDTOBackend
 
 __all__ = ["AbstractDTOFactory"]
 

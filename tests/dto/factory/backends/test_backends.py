@@ -8,8 +8,8 @@ import pytest
 from msgspec import Struct, to_builtins
 from pydantic import BaseModel
 
-from litestar.dto.factory.backends import MsgspecDTOBackend, PydanticDTOBackend
-from litestar.dto.factory.backends.abc import BackendContext
+from litestar.dto.factory._backends import MsgspecDTOBackend, PydanticDTOBackend
+from litestar.dto.factory._backends.abc import BackendContext
 from litestar.dto.factory.types import FieldDefinition, NestedFieldDefinition
 from litestar.dto.interface import ConnectionContext
 from litestar.enums import MediaType
@@ -22,7 +22,7 @@ from litestar.utils.signature import ParsedType
 if TYPE_CHECKING:
     from typing import Any
 
-    from litestar.dto.factory.backends import AbstractDTOBackend
+    from litestar.dto.factory._backends import AbstractDTOBackend
     from litestar.dto.factory.types import FieldDefinitionsType
 
 

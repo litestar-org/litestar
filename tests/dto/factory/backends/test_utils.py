@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from msgspec import Struct
 
-from litestar.dto.factory.backends.msgspec.utils import _build_struct_from_model
+from litestar.dto.factory._backends.msgspec.utils import _build_struct_from_model
 
 if TYPE_CHECKING:
     from typing import Union

@@ -6,7 +6,7 @@ from uuid import uuid4
 
 from pydantic import BaseModel, parse_obj_as
 
-from litestar.dto.factory.backends.abc import AbstractDTOBackend, BackendContext
+from litestar.dto.factory._backends.abc import AbstractDTOBackend, BackendContext
 from litestar.serialization import decode_media_type
 
 from .utils import _build_data_from_pydantic_model, _create_model_for_field_definitions

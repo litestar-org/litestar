@@ -6,7 +6,7 @@ from uuid import uuid4
 
 from msgspec import Struct, from_builtins
 
-from litestar.dto.factory.backends.abc import AbstractDTOBackend, BackendContext
+from litestar.dto.factory._backends.abc import AbstractDTOBackend, BackendContext
 from litestar.serialization import decode_media_type
 
 from .utils import _build_data_from_struct, _build_struct_from_model, _create_struct_for_field_definitions

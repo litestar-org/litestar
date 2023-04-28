@@ -8,7 +8,7 @@ from unittest.mock import patch
 import pytest
 from typing_extensions import Annotated
 
-from litestar.dto.factory.backends import PydanticDTOBackend
+from litestar.dto.factory._backends import PydanticDTOBackend
 from litestar.dto.factory.config import DTOConfig
 from litestar.dto.factory.exc import InvalidAnnotation
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
     from pytest import MonkeyPatch
 
-    from litestar.dto.factory.backends.abc import AbstractDTOBackend
+    from litestar.dto.factory._backends.abc import AbstractDTOBackend
     from litestar.testing import RequestFactory
 
 T = TypeVar("T", bound=Model)
@@ -179,6 +179,6 @@ def test_create_openapi_schema(monkeypatch: MonkeyPatch) -> None:
     dto_type = DataclassDTO[Model]
     dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Model)))
 
-    with patch("litestar.dto.factory.backends.abc.AbstractDTOBackend.create_openapi_schema") as mock:
+    with patch("litestar.dto.factory._backends.abc.AbstractDTOBackend.create_openapi_schema") as mock:
         dto_type.create_openapi_schema("data", "handler", True, {})
         mock.assert_called_once_with(True, {})
