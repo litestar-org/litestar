@@ -10,6 +10,8 @@ from litestar.channels import ChannelsBackend
 from litestar.channels.redis import RedisChannelsPubSubBackend
 from litestar.utils.compat import async_next
 
+pytestmark = [pytest.mark.usefixtures("redis_service")]
+
 
 @pytest.fixture(
     params=[

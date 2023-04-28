@@ -1,16 +1,11 @@
 """Unit tests for the SQLAlchemy Repository implementation."""
 from __future__ import annotations
 
-import asyncio
 import sys
-import timeit
-from asyncio import AbstractEventLoop, get_event_loop_policy
 from datetime import datetime
-from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Iterator
+from typing import Any, AsyncGenerator
 from uuid import UUID, uuid4
 
-import asyncmy
 import pytest
 from sqlalchemy import NullPool, insert
 from sqlalchemy.engine import URL
@@ -25,93 +20,10 @@ from litestar.contrib.repository.exceptions import RepositoryError
 from litestar.contrib.sqlalchemy import base
 from tests.contrib.sqlalchemy.models import Author, AuthorRepository, BookRepository
 
-if TYPE_CHECKING:
-    from pytest_docker.plugin import Services
-
-
-pytestmark = pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform")
-
-
-here = Path(__file__).parent
-
-
-@pytest.mark.sqlalchemy_asyncmy
-@pytest.fixture(scope="session")
-def event_loop() -> Iterator[AbstractEventLoop]:
-    """Need the event loop scoped to the session so that we can use it to check
-    containers are ready in session scoped containers fixture."""
-    policy = get_event_loop_policy()
-    loop = policy.new_event_loop()
-    yield loop
-    loop.close()
-
-
-@pytest.mark.sqlalchemy_asyncmy
-@pytest.fixture(scope="session")
-def docker_compose_file() -> Path:
-    """
-    Returns:
-        Path to the docker-compose file for end-to-end test environment.
-    """
-    return here / "docker-compose.yml"
-
-
-async def wait_until_responsive(check: Callable[..., Awaitable], timeout: float, pause: float, **kwargs: Any) -> None:
-    """Wait until a service is responsive.
-
-    Args:
-        check: Coroutine, return truthy value when waiting should stop.
-        timeout: Maximum seconds to wait.
-        pause: Seconds to wait between calls to `check`.
-        **kwargs: Given as kwargs to `check`.
-    """
-    ref = timeit.default_timer()
-    now = ref
-    while (now - ref) < timeout:
-        if await check(**kwargs):
-            return
-        await asyncio.sleep(pause)
-        now = timeit.default_timer()
-
-    raise ConnectionError("Timeout reached while waiting on service!")
-
-
-async def db_responsive(host: str) -> bool:
-    """
-    Args:
-        host: docker IP address.
-
-    Returns:
-        Boolean indicating if we can connect to the database.
-    """
-
-    try:
-        conn = await asyncmy.connect(
-            host=host,
-            port=3360,
-            user="app",
-            database="db",
-            password="super-secret",
-        )
-        async with conn.cursor() as cursor:
-            await cursor.execute("select 1 as is_available")
-            resp = await cursor.fetchone()
-        return bool(resp[0] == 1)
-    except asyncmy.errors.OperationalError:
-        return False
-
-
-@pytest.mark.sqlalchemy_asyncmy
-@pytest.fixture(scope="session", autouse=True)
-async def _containers(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
-    """Starts containers for required services, fixture waits until they are
-    responsive before returning.
-
-    Args:
-        docker_ip:
-        docker_services:
-    """
-    await wait_until_responsive(timeout=30.0, pause=0.1, check=db_responsive, host=docker_ip)
+pytestmark = [
+    pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
+    pytest.mark.usefixtures("mysql_service"),
+]
 
 
 @pytest.mark.sqlalchemy_asyncmy
@@ -212,9 +124,7 @@ async def _seed_db(engine: AsyncEngine, raw_authors: list[dict[str, Any]], raw_b
 
 
 @pytest.mark.sqlalchemy_asyncmy
-@pytest.fixture(
-    name="session",
-)
+@pytest.fixture(name="session")
 async def fx_session(
     engine: AsyncEngine, raw_authors: list[dict[str, Any]], raw_books: list[dict[str, Any]]
 ) -> AsyncGenerator[AsyncSession, None]:

@@ -13,6 +13,8 @@ from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.testing import TestClient, create_test_client
 from litestar.types.asgi_types import WebSocketMode
 
+pytestmark = [pytest.mark.usefixtures("redis_service")]
+
 
 @pytest.fixture
 def mock() -> MagicMock:
