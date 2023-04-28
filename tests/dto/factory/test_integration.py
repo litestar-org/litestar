@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+import pytest
 from typing_extensions import Annotated
 
 from litestar import post
 from litestar.datastructures import UploadFile
 from litestar.dto.factory import DTOConfig, dto_field
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
+from litestar.dto.factory.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
 from litestar.params import Body
 from litestar.testing import create_test_client
@@ -74,19 +76,38 @@ def test_renamed_field() -> None:
         assert response.json() == {"baz": "hello"}
 
 
-def test_fields_alias_generator() -> None:
+@pytest.mark.parametrize(
+    "rename_strategy, tested_fields, data",
+    [
+        ("upper", ["BAR"], {"BAR": "hello"}),
+        ("lower", ["spam"], {"spam": "bye"}),
+        (lambda x: x[::-1], ["rab", "MAPS"], {"rab": "hello", "MAPS": "bye"}),
+    ],
+)
+def test_fields_alias_generator(
+    rename_strategy: RenameStrategy,
+    tested_fields: list[str],
+    data: dict[str, str],
+) -> None:
     @dataclass
     class Foo:
-        bar: str
+        bar: str = "hello"
+        SPAM: str = "bye"
 
-    config = DTOConfig(rename_strategy=lambda x: x.upper())
+    config = DTOConfig(rename_strategy=rename_strategy)
     dto = DataclassDTO[Annotated[Foo, config]]
 
     @post(dto=dto, signature_namespace={"Foo": Foo})
     def handler(data: Foo) -> Foo:
         assert data.bar == "hello"
+        assert data.SPAM == "bye"
         return data
 
-    with create_test_client(route_handlers=[handler], debug=True) as client:
-        response = client.post("/", json={"BAR": "hello"})
-        assert response.json() == {"BAR": "hello"}
+    with create_test_client(
+        route_handlers=[
+            handler,
+        ],
+        debug=True,
+    ) as client:
+        response_callback = client.post("/", json=data)
+        assert all([response_callback.json()[f] == data[f] for f in tested_fields])

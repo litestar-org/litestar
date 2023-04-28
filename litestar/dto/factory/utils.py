@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import typing
 from inspect import getmodule
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, TypeVar, cast
 
 from msgspec import Struct
 from typing_extensions import get_type_hints
@@ -13,6 +13,8 @@ from .config import DTOConfig
 
 if TYPE_CHECKING:
     from typing import Any
+
+    from .types import RenameStrategy
 
 __all__ = (
     "get_model_type_hints",
@@ -57,11 +59,29 @@ def parse_configs_from_annotation(parsed_type: ParsedType) -> tuple[DTOConfig, .
 class RenameStrategies:
     """Useful renaming strategies than be used with :class:`DTOConfig`"""
 
+    def __init__(self, renaming_strategy: RenameStrategy) -> None:
+        self.renaming_strategy = renaming_strategy
+
+    def __call__(self, field_name: str) -> str:
+        if not isinstance(self.renaming_strategy, str):
+            return self.renaming_strategy(field_name)
+
+        return cast(str, self.__getattribute__(self.renaming_strategy)(field_name))
+
     @staticmethod
     def upper(field_name: str) -> str:
         return field_name.upper()
 
     @staticmethod
-    def camelize(field_name: str) -> str:
+    def lower(field_name: str) -> str:
+        return field_name.lower()
+
+    @staticmethod
+    def camel(field_name: str) -> str:
+        # TODO
+        return field_name
+
+    @staticmethod
+    def pascal(field_name: str) -> str:
         # TODO
         return field_name
