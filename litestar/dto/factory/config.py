@@ -2,10 +2,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import AbstractSet
+
+    from .types import RenameStrategy
 
 
 __all__ = ("DTOConfig",)
@@ -19,7 +21,7 @@ class DTOConfig:
     """Explicitly exclude fields from the generated DTO."""
     rename_fields: dict[str, str] = field(default_factory=dict)
     """Mapping of field names, to new name."""
-    rename_strategy: Callable[[str], str] | None = None
+    rename_strategy: RenameStrategy | None = None
     """A callback for generating aliases of field names. Fields defined in ``rename_fields`` are ignored."""
     max_nested_depth: int = 1
     """The maximum depth of nested items allowed for data transfer."""

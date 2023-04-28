@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 __all__ = (
     "get_model_type_hints",
     "parse_configs_from_annotation",
+    "RenameStrategies",
 )
 
 T = TypeVar("T")
@@ -51,3 +52,16 @@ def parse_configs_from_annotation(parsed_type: ParsedType) -> tuple[DTOConfig, .
         The type and config object extracted from the annotation.
     """
     return tuple(item for item in parsed_type.metadata if isinstance(item, DTOConfig))
+
+
+class RenameStrategies:
+    """Useful renaming strategies than be used with :class:`DTOConfig`"""
+
+    @staticmethod
+    def upper(field_name: str) -> str:
+        return field_name.upper()
+
+    @staticmethod
+    def camelize(field_name: str) -> str:
+        # TODO
+        return field_name

@@ -70,3 +70,6 @@ class NestedFieldDefinition:
 
 FieldDefinitionsType: TypeAlias = "Mapping[str, FieldDefinition | NestedFieldDefinition]"
 """Generic representation of names and types."""
+
+RenameStrategy: TypeAlias = "Callable[[str], str]"
+"""A callback for converting DTO field names."""
