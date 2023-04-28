@@ -225,8 +225,8 @@ def _parse_model(
 
         if rename := config.rename_fields.get(field_definition.name):
             field_definition = field_definition.copy_with(serialization_name=rename)  # noqa: PLW2901
-        elif rename_strategy := config.rename_strategy:
-            alias = RenameStrategies(rename_strategy)(field_definition.name)
+        elif config.rename_strategy:
+            alias = RenameStrategies(config.rename_strategy)(field_definition.name)
             field_definition = field_definition.copy_with(serialization_name=alias)  # noqa: PLW2901
 
         if dto_factory_type.detect_nested_field(field_definition):
