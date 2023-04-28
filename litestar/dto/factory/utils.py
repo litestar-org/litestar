@@ -66,7 +66,7 @@ class RenameStrategies:
         if not isinstance(self.renaming_strategy, str):
             return self.renaming_strategy(field_name)
 
-        return cast(str, self.__getattribute__(self.renaming_strategy)(field_name))
+        return cast(str, getattr(self, self.renaming_strategy)(field_name))
 
     @staticmethod
     def upper(field_name: str) -> str:
