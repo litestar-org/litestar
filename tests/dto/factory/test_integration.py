@@ -76,31 +76,33 @@ def test_renamed_field() -> None:
         assert response.json() == {"baz": "hello"}
 
 
+@dataclass
+class Foo:
+    bar: str = "hello"
+    SPAM: str = "bye"
+
+
 @pytest.mark.parametrize(
-    "rename_strategy, tested_fields, data",
+    "rename_strategy, instance, tested_fields, data",
     [
-        ("upper", ["BAR"], {"BAR": "hello"}),
-        ("lower", ["spam"], {"spam": "bye"}),
-        (lambda x: x[::-1], ["rab", "MAPS"], {"rab": "hello", "MAPS": "bye"}),
+        ("upper", Foo(bar="hi"), ["BAR"], {"BAR": "hi"}),
+        ("lower", Foo(SPAM="goodbye"), ["spam"], {"spam": "goodbye"}),
+        (lambda x: x[::-1], Foo(bar="h", SPAM="bye!"), ["rab", "MAPS"], {"rab": "h", "MAPS": "bye!"}),
     ],
 )
 def test_fields_alias_generator(
     rename_strategy: RenameStrategy,
+    instance: Foo,
     tested_fields: list[str],
     data: dict[str, str],
 ) -> None:
-    @dataclass
-    class Foo:
-        bar: str = "hello"
-        SPAM: str = "bye"
-
     config = DTOConfig(rename_strategy=rename_strategy)
     dto = DataclassDTO[Annotated[Foo, config]]
 
     @post(dto=dto, signature_namespace={"Foo": Foo})
     def handler(data: Foo) -> Foo:
-        assert data.bar == "hello"
-        assert data.SPAM == "bye"
+        assert data.bar == instance.bar
+        assert data.SPAM == instance.SPAM
         return data
 
     with create_test_client(
