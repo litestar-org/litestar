@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Callable, Literal, Union
+from typing import TYPE_CHECKING, Callable, Literal
 
 from litestar.types.empty import Empty
 from litestar.utils.dataclass import simple_asdict
@@ -71,5 +71,5 @@ class NestedFieldDefinition:
 FieldDefinitionsType: TypeAlias = "Mapping[str, FieldDefinition | NestedFieldDefinition]"
 """Generic representation of names and types."""
 
-RenameStrategy: TypeAlias = Union[Literal["lower", "upper", "camel", "pascal"], Callable[[str], str]]
-"""A callback for converting DTO field names."""
+RenameStrategy: TypeAlias = 'Literal["lower", "upper", "camel", "pascal"] | Callable[[str], str]'
+"""A pre-defined strategy or a custom callback for converting DTO field names."""
