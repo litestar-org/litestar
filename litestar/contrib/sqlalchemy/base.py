@@ -29,6 +29,7 @@ __all__ = (
     "AuditColumns",
     "Base",
     "CommonTableAttributes",
+    "create_registry",
     "ModelProtocol",
     "touch_updated_timestamp",
     "UUIDPrimaryKey",
@@ -127,14 +128,19 @@ class CommonTableAttributes:
         return {field.name: getattr(self, field.name) for field in self.__table__.columns if field.name not in exclude}
 
 
-meta = MetaData(naming_convention=convention)
-orm_registry = registry(
-    metadata=meta,
-    type_annotation_map={UUID: GUID, EmailStr: String, AnyUrl: String, AnyHttpUrl: String, dict: JSON},
-)
+def create_registry() -> registry:
+    """Create a new SQLAlchemy registry."""
+    meta = MetaData(naming_convention=convention)
+    return registry(
+        metadata=meta,
+        type_annotation_map={UUID: GUID, EmailStr: String, AnyUrl: String, AnyHttpUrl: String, dict: JSON},
+    )
 
 
-class Base(CommonTableAttributes, UUIDPrimaryKey, DeclarativeBase):
+orm_registry = create_registry()
+
+
+class Base(UUIDPrimaryKey, CommonTableAttributes, DeclarativeBase):
     """Base for all SQLAlchemy declarative models."""
 
     registry = orm_registry
