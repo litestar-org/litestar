@@ -41,7 +41,7 @@ The ``return_dto`` parameter
     :language: python
 
 In this example, ``UserDTO`` performs decoding of client data into the ``User`` type, and ``UserReturnDTO`` is
-responsible for marshalling the ``User`` instance into a type that Litestar can encode into bytes.
+responsible for converting the ``User`` instance into a type that Litestar can encode into bytes.
 
 Overriding implicit ``return_dto``
 ----------------------------------
@@ -54,7 +54,7 @@ setting the ``return_dto`` to ``None``.
     :caption: Disable implicit ``return_dto`` behavior
     :language: python
 
-In this example, we use ``UserDTO`` to decode request data, and marshal it into the ``User`` type, but we want to manage
+In this example, we use ``UserDTO`` to decode request data, and convert it into the ``User`` type, but we want to manage
 encoding the response data ourselves, and so we explicitly declare the ``return_dto`` as ``None``.
 
 Defining DTOs on layers
@@ -67,8 +67,8 @@ defined in the ownership chain, closest to the handler in question.
     :caption: Controller defined DTOs
     :language: python
 
-In this example, the ``User`` instance received by any handler that declares a ``data`` kwarg, is marshalled by the
-``UserDTO`` type, and all handler return values are marshalled into an encodable type by ``UserReturnDTO`` (except for
+In this example, the ``User`` instance received by any handler that declares a ``data`` kwarg, is converted by the
+``UserDTO`` type, and all handler return values are converted into an encodable type by ``UserReturnDTO`` (except for
 the ``delete()`` route, which has the ``return_dto`` disabled).
 
 DTOs can similarly be defined on :class:`Routers <litestar.router.Router>` and
