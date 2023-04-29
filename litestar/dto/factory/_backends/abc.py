@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
 
-from .utils import build_annotation_for_backend
+from .utils import build_annotation_for_backend, generate_reverse_name_map
 
 if TYPE_CHECKING:
     from typing import Any, Final
@@ -41,9 +41,7 @@ class BackendContext:
         self.parsed_type: Final[ParsedType] = parsed_type
         self.field_definitions: Final[FieldDefinitionsType] = field_definitions
         self.model_type: Final[type[Any]] = model_type
-        self.reverse_name_map = {
-            f.serialization_name: f.name for f in field_definitions.values() if f.serialization_name
-        }
+        self.reverse_name_map = generate_reverse_name_map(field_definitions)
 
 
 class AbstractDTOBackend(ABC, Generic[BackendT]):

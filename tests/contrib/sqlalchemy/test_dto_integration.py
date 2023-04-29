@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from uuid import UUID, uuid4
+from dataclasses import dataclass
+from typing import Any, Callable
 
 import pytest
 from sqlalchemy import ForeignKey, String
@@ -11,11 +12,12 @@ from litestar import get, post
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig
 from litestar.dto.factory.types import RenameStrategy
+from litestar.dto.factory.utils import RenameStrategies
 from litestar.testing import create_test_client
 
 
 class Base(DeclarativeBase):
-    id: Mapped[UUID] = mapped_column(default=uuid4, primary_key=True)
+    id: Mapped[str] = mapped_column(primary_key=True)
 
     # noinspection PyMethodParameters
     @declared_attr.directive
@@ -25,7 +27,7 @@ class Base(DeclarativeBase):
 
 
 class Author(Base):
-    name: Mapped[str] = mapped_column(String(length=100), default="Arthur")
+    name: Mapped[str] = mapped_column(default="Arthur")
     date_of_birth: Mapped[str] = mapped_column(nullable=True)
 
 
@@ -38,25 +40,68 @@ class Book(Base):
     spam_bar: Mapped[str] = mapped_column(default="Goodbye")
 
 
+@dataclass
+class BookAuthorTestData:
+    book_id: str = "000"
+    book_title: str = "TDD Python"
+    book_author_id: str = "123"
+    book_author_name: str = "Harry Percival"
+    book_author_date_of_birth: str = "01/01/1900"
+    book_bar: str = "Hi"
+    book_SPAM: str = "Bye"
+    book_spam_bar: str = "GoodBye"
+
+
+@pytest.fixture
+def book_json_data() -> Callable[[RenameStrategy, BookAuthorTestData], tuple[dict[str, Any], Book]]:
+    def _generate(rename_strategy: RenameStrategy, test_data: BookAuthorTestData) -> tuple[dict[str, Any], Book]:
+        data: dict[str, Any] = {}
+        data[RenameStrategies(rename_strategy)("id")] = test_data.book_id
+        data[RenameStrategies(rename_strategy)("title")] = test_data.book_title
+        data[RenameStrategies(rename_strategy)("author_id")] = test_data.book_author_id
+        data[RenameStrategies(rename_strategy)("bar")] = test_data.book_bar
+        data[RenameStrategies(rename_strategy)("SPAM")] = test_data.book_SPAM
+        data[RenameStrategies(rename_strategy)("spam_bar")] = test_data.book_spam_bar
+        data[RenameStrategies(rename_strategy)("author")] = {
+            RenameStrategies(rename_strategy)("id"): test_data.book_author_id,
+            RenameStrategies(rename_strategy)("name"): test_data.book_author_name,
+            RenameStrategies(rename_strategy)("date_of_birth"): test_data.book_author_date_of_birth,
+        }
+        book = Book(
+            id=test_data.book_id,
+            title=test_data.book_title,
+            author_id=test_data.book_author_id,
+            bar=test_data.book_bar,
+            SPAM=test_data.book_SPAM,
+            spam_bar=test_data.book_spam_bar,
+            author=Author(
+                id=test_data.book_author_id,
+                name=test_data.book_author_name,
+                date_of_birth=test_data.book_author_date_of_birth,
+            ),
+        )
+        return (data, book)
+
+    return _generate
+
+
 @pytest.mark.parametrize(
-    "rename_strategy, instance, tested_fields, data",
+    "rename_strategy",
     [
-        ("camel", Book(spam_bar="star", author=Author(id="123")), ["spamBar"], {"spamBar": "star"}),
+        ("camel"),
     ],
 )
 def test_fields_alias_generator_sqlalchemy(
     rename_strategy: RenameStrategy,
-    instance: Book,
-    tested_fields: list[str],
-    data: dict[str, str],
+    book_json_data: Callable[[RenameStrategy, BookAuthorTestData], tuple[dict[str, Any], Book]],
 ) -> None:
+    test_data = BookAuthorTestData()
+    json_data, instance = book_json_data(rename_strategy, test_data)
     config = DTOConfig(rename_strategy=rename_strategy)
     dto = SQLAlchemyDTO[Annotated[Book, config]]
 
     @post(dto=dto, signature_namespace={"Book": Book})
     def post_handler(data: Book) -> Book:
-        assert data.bar == instance.bar
-        assert data.SPAM == instance.SPAM
         return data
 
     @get(dto=dto, signature_namespace={"Book": Book})
@@ -68,7 +113,7 @@ def test_fields_alias_generator_sqlalchemy(
         debug=True,
     ) as client:
         response_callback = client.get("/")
-        assert all([response_callback.json()[f] == data[f] for f in tested_fields])
+        assert response_callback.json() == json_data
 
-        response_callback = client.post("/", json=data)
-        assert all([response_callback.json()[f] == data[f] for f in tested_fields])
+        response_callback = client.post("/", json=json_data)
+        assert response_callback.json() == json_data

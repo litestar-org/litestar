@@ -144,7 +144,7 @@ def _build_struct_from_model(model: Any, struct_type: type[StructT], reverse_nam
         model_name = reverse_name_map.get(key, key)
         model_val = getattr(model, model_name)
         if parsed_type.is_subclass_of(Struct):
-            data[key] = _build_struct_from_model(model_val, parsed_type.annotation, {})
+            data[key] = _build_struct_from_model(model_val, parsed_type.annotation, reverse_name_map)
         elif parsed_type.is_union:
             data[key] = _handle_union_type(parsed_type, model_val)
         elif parsed_type.is_collection:
