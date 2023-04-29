@@ -9,9 +9,11 @@ import pytest
 from typing_extensions import Annotated
 
 from litestar.dto.factory._backends import PydanticDTOBackend
+from litestar.dto.factory.abc import _parse_model
 from litestar.dto.factory.config import DTOConfig
 from litestar.dto.factory.exc import InvalidAnnotation
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
+from litestar.dto.factory.types import NestedFieldDefinition
 from litestar.dto.interface import ConnectionContext, HandlerContext
 from litestar.enums import RequestEncodingType
 from litestar.utils.signature import ParsedType
@@ -19,7 +21,8 @@ from litestar.utils.signature import ParsedType
 from . import Model
 
 if TYPE_CHECKING:
-    from typing import Any
+    from types import ModuleType
+    from typing import Any, Callable
 
     from pytest import MonkeyPatch
 
@@ -182,3 +185,48 @@ def test_create_openapi_schema(monkeypatch: MonkeyPatch) -> None:
     with patch("litestar.dto.factory._backends.abc.AbstractDTOBackend.create_openapi_schema") as mock:
         dto_type.create_openapi_schema("data", "handler", True, {})
         mock.assert_called_once_with(True, {})
+
+
+def test_parse_model_nested_exclude(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from dataclasses import dataclass
+from typing import List
+
+from litestar.dto.factory.stdlib.dataclass import DataclassDTO
+
+@dataclass
+class NestedNestedModel:
+    e: int
+    f: int
+
+@dataclass
+class NestedModel:
+    c: int
+    d: List[NestedNestedModel]
+
+@dataclass
+class Model:
+    a: int
+    b: NestedModel
+
+dto_type = DataclassDTO[Model]
+    """
+    )
+    parsed = _parse_model(
+        dto_factory_type=module.dto_type,
+        model_type=module.Model,
+        dto_for="data",
+        exclude={"a", "b.c", "b.d.e"},
+        rename_fields={},
+        rename_strategy=None,
+        max_nested_depth=2,
+    )
+    assert "a" not in parsed
+    assert "b" in parsed
+    assert isinstance(parsed["b"], NestedFieldDefinition)
+    assert "c" not in parsed["b"].nested_field_definitions
+    assert "d" in parsed["b"].nested_field_definitions
+    assert isinstance(parsed["b"].nested_field_definitions["d"], NestedFieldDefinition)
+    assert "e" not in parsed["b"].nested_field_definitions["d"].nested_field_definitions
+    assert "f" in parsed["b"].nested_field_definitions["d"].nested_field_definitions

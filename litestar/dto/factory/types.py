@@ -17,7 +17,12 @@ if TYPE_CHECKING:
 
     from .field import DTOField
 
-__all__ = ("FieldDefinition", "FieldDefinitionsType", "NestedFieldDefinition")
+__all__ = (
+    "FieldDefinition",
+    "FieldDefinitionsType",
+    "NestedFieldDefinition",
+    "RenameStrategy",
+)
 
 
 @dataclass(frozen=True)
