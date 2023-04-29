@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any, Callable, List
 
 import pytest
 from sqlalchemy import ForeignKey, String
@@ -40,7 +40,7 @@ class Book(Base):
     title: Mapped[str] = mapped_column(String(length=250), default="Hi")
     author_id: Mapped[str] = mapped_column(ForeignKey("author.id"), default="123")
     first_author: Mapped[Author] = relationship(lazy="joined", innerjoin=True)
-    reviews: Mapped[list[BookReview]] = relationship(lazy="joined", innerjoin=True)
+    reviews: Mapped[List[BookReview]] = relationship(lazy="joined", innerjoin=True)
     bar: Mapped[str] = mapped_column(default="Hello")
     SPAM: Mapped[str] = mapped_column(default="Bye")
     spam_bar: Mapped[str] = mapped_column(default="Goodbye")
