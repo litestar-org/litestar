@@ -148,7 +148,7 @@ def _build_struct_from_model(model: Any, struct_type: type[StructT], reverse_nam
         elif parsed_type.is_union:
             data[key] = _handle_union_type(parsed_type, model_val)
         elif parsed_type.is_collection:
-            data[key] = _handle_collection_type(parsed_type, model_val)
+            data[key] = _handle_collection_type(parsed_type, model_val, reverse_name_map)
         else:
             data[key] = model_val
     return struct_type(**data)
@@ -178,16 +178,19 @@ def _handle_union_type(parsed_type: ParsedType, model_val: Any) -> Any:
     return model_val
 
 
-def _handle_collection_type(parsed_type: ParsedType, model_val: Any) -> Any:
+def _handle_collection_type(parsed_type: ParsedType, model_val: Any, reverse_name_map: dict[str, str]) -> Any:
     """Handle collection type.
 
     Args:
         parsed_type: Parsed type.
         model_val: Model value.
+        reverse_name_map: reverse name map for field definitions.
 
     Returns:
         Model value.
     """
     if parsed_type.inner_types and (inner_type := parsed_type.inner_types[0]).is_subclass_of(Struct):
-        return parsed_type.origin(_build_struct_from_model(m, inner_type.annotation, {}) for m in model_val)
+        return parsed_type.origin(
+            _build_struct_from_model(m, inner_type.annotation, reverse_name_map) for m in model_val
+        )
     return model_val

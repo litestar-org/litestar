@@ -31,10 +31,16 @@ class Author(Base):
     date_of_birth: Mapped[str] = mapped_column(nullable=True)
 
 
+class BookReview(Base):
+    review: Mapped[str]
+    book_id: Mapped[str] = mapped_column(ForeignKey("book.id"), default="000")
+
+
 class Book(Base):
     title: Mapped[str] = mapped_column(String(length=250), default="Hi")
     author_id: Mapped[str] = mapped_column(ForeignKey("author.id"), default="123")
     first_author: Mapped[Author] = relationship(lazy="joined", innerjoin=True)
+    reviews: Mapped[list[BookReview]] = relationship(lazy="joined", innerjoin=True)
     bar: Mapped[str] = mapped_column(default="Hello")
     SPAM: Mapped[str] = mapped_column(default="Bye")
     spam_bar: Mapped[str] = mapped_column(default="Goodbye")
@@ -50,6 +56,8 @@ class BookAuthorTestData:
     book_bar: str = "Hi"
     book_SPAM: str = "Bye"
     book_spam_bar: str = "GoodBye"
+    book_review_id: str = "23432"
+    book_review: str = "Excellent!"
 
 
 @pytest.fixture
@@ -67,6 +75,13 @@ def book_json_data() -> Callable[[RenameStrategy, BookAuthorTestData], tuple[dic
             RenameStrategies(rename_strategy)("name"): test_data.book_author_name,
             RenameStrategies(rename_strategy)("date_of_birth"): test_data.book_author_date_of_birth,
         }
+        data[RenameStrategies(rename_strategy)("reviews")] = [
+            {
+                RenameStrategies(rename_strategy)("book_id"): test_data.book_id,
+                RenameStrategies(rename_strategy)("id"): test_data.book_review_id,
+                RenameStrategies(rename_strategy)("review"): test_data.book_review,
+            }
+        ]
         book = Book(
             id=test_data.book_id,
             title=test_data.book_title,
@@ -79,6 +94,9 @@ def book_json_data() -> Callable[[RenameStrategy, BookAuthorTestData], tuple[dic
                 name=test_data.book_author_name,
                 date_of_birth=test_data.book_author_date_of_birth,
             ),
+            reviews=[
+                BookReview(id=test_data.book_review_id, review=test_data.book_review, book_id=test_data.book_id),
+            ],
         )
         return (data, book)
 
