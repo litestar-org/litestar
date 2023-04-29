@@ -18,7 +18,11 @@ class DTOConfig:
     """Control the generated DTO."""
 
     exclude: AbstractSet[str] = field(default_factory=set)
-    """Explicitly exclude fields from the generated DTO."""
+    """Explicitly exclude fields from the generated DTO.
+
+    The field names are dot-separated paths to nested fields, e.g. ``"address.street"`` will exclude the ``"street"``
+    field from a nested ``"address"`` model.
+    """
     rename_fields: dict[str, str] = field(default_factory=dict)
     """Mapping of field names, to new name."""
     rename_strategy: RenameStrategy | None = None
