@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 
 import pytest
 from typing_extensions import Annotated
-
+from typing import Optional
 from litestar import post
 from litestar.datastructures import UploadFile
 from litestar.dto.factory import DTOConfig, dto_field
@@ -86,7 +86,7 @@ class Foo:
     bar: str = "hello"
     SPAM: str = "bye"
     spam_bar: str = "welcome"
-    spam_model: Spam | None = None
+    spam_model: Optional[Spam] = None
 
 
 @pytest.mark.parametrize(
