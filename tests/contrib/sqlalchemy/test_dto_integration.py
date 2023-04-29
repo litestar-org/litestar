@@ -34,7 +34,7 @@ class Author(Base):
 class Book(Base):
     title: Mapped[str] = mapped_column(String(length=250), default="Hi")
     author_id: Mapped[str] = mapped_column(ForeignKey("author.id"), default="123")
-    author: Mapped[Author] = relationship(lazy="joined", innerjoin=True)
+    first_author: Mapped[Author] = relationship(lazy="joined", innerjoin=True)
     bar: Mapped[str] = mapped_column(default="Hello")
     SPAM: Mapped[str] = mapped_column(default="Bye")
     spam_bar: Mapped[str] = mapped_column(default="Goodbye")
@@ -62,7 +62,7 @@ def book_json_data() -> Callable[[RenameStrategy, BookAuthorTestData], tuple[dic
         data[RenameStrategies(rename_strategy)("bar")] = test_data.book_bar
         data[RenameStrategies(rename_strategy)("SPAM")] = test_data.book_SPAM
         data[RenameStrategies(rename_strategy)("spam_bar")] = test_data.book_spam_bar
-        data[RenameStrategies(rename_strategy)("author")] = {
+        data[RenameStrategies(rename_strategy)("first_author")] = {
             RenameStrategies(rename_strategy)("id"): test_data.book_author_id,
             RenameStrategies(rename_strategy)("name"): test_data.book_author_name,
             RenameStrategies(rename_strategy)("date_of_birth"): test_data.book_author_date_of_birth,
@@ -74,7 +74,7 @@ def book_json_data() -> Callable[[RenameStrategy, BookAuthorTestData], tuple[dic
             bar=test_data.book_bar,
             SPAM=test_data.book_SPAM,
             spam_bar=test_data.book_spam_bar,
-            author=Author(
+            first_author=Author(
                 id=test_data.book_author_id,
                 name=test_data.book_author_name,
                 date_of_birth=test_data.book_author_date_of_birth,

@@ -47,4 +47,6 @@ def _generate_reverse_name_map(field_definition: FieldDefinition | NestedFieldDe
             {field_definition.serialization_name: field_definition.name} if field_definition.serialization_name else {}
         )
 
-    return generate_reverse_name_map(field_definition.nested_field_definitions)
+    return generate_reverse_name_map(
+        {field_definition.name: field_definition.field_definition, **field_definition.nested_field_definitions}
+    )
