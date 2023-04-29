@@ -55,14 +55,19 @@ fields are never serialized into return data.
 Excluding fields
 ----------------
 
-Fields can be explicitly excluded using :class:`DTOConfig <litestar.dto.factory.DTOConfig>`. The following example
-creates an explicit DTO for outbound data which excludes the ``id`` field from the serialized response.
+Fields can be explicitly excluded using :class:`DTOConfig <litestar.dto.factory.DTOConfig>`.
+
+The following example demonstrates excluding attributes from the serialized response, including excluding fields from
+nested models.
 
 .. literalinclude:: /examples/data_transfer_objects/factory/excluding_fields.py
     :caption: Excluding fields
     :language: python
-    :emphasize-lines: 4,7,20,21,23
+    :emphasize-lines: 6,10,31,32,35
     :linenos:
+
+Examining the output of the above POST request, we can see that the user's ID, the ID of the user's address field and
+the user's street address are excluded from the serialized response.
 
 Renaming fields
 ---------------

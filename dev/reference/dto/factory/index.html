@@ -1116,6 +1116,8 @@ document.write(`
 <dt class="sig sig-object py" id="litestar.dto.factory.DTOConfig.exclude">
 <span class="sig-name descname"><span class="pre">exclude</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AbstractSet</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.dto.factory.DTOConfig.exclude" title="Permalink to this definition">#</a></dt>
 <dd><p>Explicitly exclude fields from the generated DTO.</p>
+<p>The field names are dot-separated paths to nested fields, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;address.street&quot;</span></code> will exclude the <code class="docutils literal notranslate"><span class="pre">&quot;street&quot;</span></code>
+field from a nested <code class="docutils literal notranslate"><span class="pre">&quot;address&quot;</span></code> model.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1131,7 +1133,7 @@ document.write(`
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.dto.factory.DTOConfig.rename_strategy">
-<span class="sig-name descname"><span class="pre">rename_strategy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">RenameStrategy</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.dto.factory.DTOConfig.rename_strategy" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">rename_strategy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#litestar.dto.factory.types.RenameStrategy" title="litestar.dto.factory.types.RenameStrategy"><span class="pre">RenameStrategy</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.dto.factory.DTOConfig.rename_strategy" title="Permalink to this definition">#</a></dt>
 <dd><p>Rename all fields using a pre-defined strategy or a custom strategy.</p>
 <p>The pre-defined strategies are: <cite>upper</cite>, <cite>lower</cite>, <cite>camel</cite>, <cite>pascal</cite>.</p>
 <p>A custom strategy is any callable that accepts a string as an argument and
