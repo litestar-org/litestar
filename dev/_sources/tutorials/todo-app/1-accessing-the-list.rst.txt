@@ -22,7 +22,7 @@ following output:
     Suddenly, JSON
 
 
-Because the ``get_todo_list`` function has been annotated  with
+Because the ``get_list`` function has been annotated  with
 ``List[Dict[str, Union[str, bool]]]``, Litestar infers that you want the data returned
 from it to be serialized as JSON:
 
@@ -60,7 +60,7 @@ knows how to turn these dataclasses into JSON and will do so for you automatical
 Filtering the list using query parameters
 -----------------------------------------
 
-Currently ``get_todo_list`` will always return all items on the list, but what if you
+Currently ``get_list`` will always return all items on the list, but what if you
 are interested in only those items with a specific status, for example all items that
 are not yet marked as *done*?
 

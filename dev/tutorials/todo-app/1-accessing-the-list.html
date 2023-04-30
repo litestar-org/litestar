@@ -1198,7 +1198,7 @@ following output:</p>
 <p><span class="caption-text">Suddenly, JSON</span><a class="headerlink" href="#id4" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<p>Because the <code class="docutils literal notranslate"><span class="pre">get_todo_list</span></code> function has been annotated  with
+<p>Because the <code class="docutils literal notranslate"><span class="pre">get_list</span></code> function has been annotated  with
 <code class="docutils literal notranslate"><span class="pre">List[Dict[str,</span> <span class="pre">Union[str,</span> <span class="pre">bool]]]</span></code>, Litestar infers that you want the data returned
 from it to be serialized as JSON:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">13</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_list</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]]:</span>
@@ -1295,7 +1295,7 @@ knows how to turn these dataclasses into JSON and will do so for you automatical
 </section>
 <section id="filtering-the-list-using-query-parameters">
 <h2>Filtering the list using query parameters<a class="headerlink" href="#filtering-the-list-using-query-parameters" title="Permalink to this heading">#</a></h2>
-<p>Currently <code class="docutils literal notranslate"><span class="pre">get_todo_list</span></code> will always return all items on the list, but what if you
+<p>Currently <code class="docutils literal notranslate"><span class="pre">get_list</span></code> will always return all items on the list, but what if you
 are interested in only those items with a specific status, for example all items that
 are not yet marked as <em>done</em>?</p>
 <p>For this you can employ query parameters; To define a query parameter, all that’s needed
