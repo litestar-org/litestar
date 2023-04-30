@@ -5,14 +5,14 @@ from typing import TYPE_CHECKING, NewType, TypeVar
 
 from msgspec import Struct, defstruct, field
 
-from litestar.dto.factory.types import NestedFieldDefinition
+from litestar.dto.factory._backends.types import FieldDefinitionsType, NestedFieldDefinition
 from litestar.dto.factory.utils import get_model_type_hints
 from litestar.types import Empty
 
 if TYPE_CHECKING:
     from typing import Any, Collection
 
-    from litestar.dto.factory.types import FieldDefinition, FieldDefinitionsType
+    from litestar.dto.factory.types import FieldDefinition
     from litestar.utils.signature import ParsedType
 
 

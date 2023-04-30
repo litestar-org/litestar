@@ -6,13 +6,13 @@ from typing import TYPE_CHECKING, TypeVar
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
 
-from litestar.dto.factory.types import NestedFieldDefinition
+from litestar.dto.factory._backends.types import FieldDefinitionsType, NestedFieldDefinition
 from litestar.types import Empty
 
 if TYPE_CHECKING:
     from typing import Any, Collection
 
-    from litestar.dto.factory.types import FieldDefinition, FieldDefinitionsType
+    from litestar.dto.factory.types import FieldDefinition
 
 __all__ = ("_create_model_for_field_definitions", "_build_data_from_pydantic_model")
 

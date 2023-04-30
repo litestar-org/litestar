@@ -27,7 +27,7 @@ class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):
     __slots__ = ()
 
     def create_data_container_type(self, context: BackendContext) -> type[BaseModel]:
-        return _create_model_for_field_definitions(str(uuid4()), context.field_definitions)
+        return _create_model_for_field_definitions(str(uuid4()), self.parsed_field_definitions)
 
     def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> BaseModel | Collection[BaseModel]:
         return decode_media_type(  # type:ignore[no-any-return]
@@ -36,11 +36,11 @@ class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):
 
     def populate_data_from_builtins(self, data: Any) -> T | Collection[T]:
         parsed_data = cast("BaseModel | Collection[BaseModel]", parse_obj_as(self.annotation, data))
-        return _build_data_from_pydantic_model(self.context.model_type, parsed_data, self.context.field_definitions)
+        return _build_data_from_pydantic_model(self.context.model_type, parsed_data, self.parsed_field_definitions)
 
     def populate_data_from_raw(self, raw: bytes, connection_context: ConnectionContext) -> T | Collection[T]:
         parsed_data = self.parse_raw(raw, connection_context)
-        return _build_data_from_pydantic_model(self.context.model_type, parsed_data, self.context.field_definitions)
+        return _build_data_from_pydantic_model(self.context.model_type, parsed_data, self.parsed_field_definitions)
 
     def encode_data(self, data: Any, connection_context: ConnectionContext) -> LitestarEncodableType:
         if isinstance(data, CollectionsCollection):
