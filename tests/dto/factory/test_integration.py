@@ -1,10 +1,12 @@
+# ruff: noqa: UP007
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Optional
 
 import pytest
 from typing_extensions import Annotated
-from typing import Optional
+
 from litestar import post
 from litestar.datastructures import UploadFile
 from litestar.dto.factory import DTOConfig, dto_field
@@ -115,11 +117,6 @@ def test_fields_alias_generator(
         assert data.SPAM == instance.SPAM
         return data
 
-    with create_test_client(
-        route_handlers=[
-            handler,
-        ],
-        debug=True,
-    ) as client:
+    with create_test_client(route_handlers=[handler], debug=True) as client:
         response_callback = client.post("/", json=data)
         assert all([response_callback.json()[f] == data[f] for f in tested_fields])
