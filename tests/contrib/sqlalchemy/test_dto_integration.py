@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
-from typing import Any, Callable, List
+from typing import Any, Callable, Dict, List, Tuple
 
 import pytest
 from sqlalchemy import ForeignKey, String
@@ -11,8 +9,8 @@ from typing_extensions import Annotated
 from litestar import get, post
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig
+from litestar.dto.factory._backends.utils import RenameStrategies
 from litestar.dto.factory.types import RenameStrategy
-from litestar.dto.factory.utils import RenameStrategies
 from litestar.testing import create_test_client
 
 
@@ -61,27 +59,28 @@ class BookAuthorTestData:
 
 
 @pytest.fixture
-def book_json_data() -> Callable[[RenameStrategy, BookAuthorTestData], tuple[dict[str, Any], Book]]:
-    def _generate(rename_strategy: RenameStrategy, test_data: BookAuthorTestData) -> tuple[dict[str, Any], Book]:
-        data: dict[str, Any] = {}
-        data[RenameStrategies(rename_strategy)("id")] = test_data.book_id
-        data[RenameStrategies(rename_strategy)("title")] = test_data.book_title
-        data[RenameStrategies(rename_strategy)("author_id")] = test_data.book_author_id
-        data[RenameStrategies(rename_strategy)("bar")] = test_data.book_bar
-        data[RenameStrategies(rename_strategy)("SPAM")] = test_data.book_SPAM
-        data[RenameStrategies(rename_strategy)("spam_bar")] = test_data.book_spam_bar
-        data[RenameStrategies(rename_strategy)("first_author")] = {
-            RenameStrategies(rename_strategy)("id"): test_data.book_author_id,
-            RenameStrategies(rename_strategy)("name"): test_data.book_author_name,
-            RenameStrategies(rename_strategy)("date_of_birth"): test_data.book_author_date_of_birth,
+def book_json_data() -> Callable[[RenameStrategy, BookAuthorTestData], Tuple[Dict[str, Any], Book]]:
+    def _generate(rename_strategy: RenameStrategy, test_data: BookAuthorTestData) -> Tuple[Dict[str, Any], Book]:
+        data: Dict[str, Any] = {
+            RenameStrategies(rename_strategy)("id"): test_data.book_id,
+            RenameStrategies(rename_strategy)("title"): test_data.book_title,
+            RenameStrategies(rename_strategy)("author_id"): test_data.book_author_id,
+            RenameStrategies(rename_strategy)("bar"): test_data.book_bar,
+            RenameStrategies(rename_strategy)("SPAM"): test_data.book_SPAM,
+            RenameStrategies(rename_strategy)("spam_bar"): test_data.book_spam_bar,
+            RenameStrategies(rename_strategy)("first_author"): {
+                RenameStrategies(rename_strategy)("id"): test_data.book_author_id,
+                RenameStrategies(rename_strategy)("name"): test_data.book_author_name,
+                RenameStrategies(rename_strategy)("date_of_birth"): test_data.book_author_date_of_birth,
+            },
+            RenameStrategies(rename_strategy)("reviews"): [
+                {
+                    RenameStrategies(rename_strategy)("book_id"): test_data.book_id,
+                    RenameStrategies(rename_strategy)("id"): test_data.book_review_id,
+                    RenameStrategies(rename_strategy)("review"): test_data.book_review,
+                }
+            ],
         }
-        data[RenameStrategies(rename_strategy)("reviews")] = [
-            {
-                RenameStrategies(rename_strategy)("book_id"): test_data.book_id,
-                RenameStrategies(rename_strategy)("id"): test_data.book_review_id,
-                RenameStrategies(rename_strategy)("review"): test_data.book_review,
-            }
-        ]
         book = Book(
             id=test_data.book_id,
             title=test_data.book_title,
@@ -98,7 +97,7 @@ def book_json_data() -> Callable[[RenameStrategy, BookAuthorTestData], tuple[dic
                 BookReview(id=test_data.book_review_id, review=test_data.book_review, book_id=test_data.book_id),
             ],
         )
-        return (data, book)
+        return data, book
 
     return _generate
 
@@ -111,7 +110,7 @@ def book_json_data() -> Callable[[RenameStrategy, BookAuthorTestData], tuple[dic
 )
 def test_fields_alias_generator_sqlalchemy(
     rename_strategy: RenameStrategy,
-    book_json_data: Callable[[RenameStrategy, BookAuthorTestData], tuple[dict[str, Any], Book]],
+    book_json_data: Callable[[RenameStrategy, BookAuthorTestData], Tuple[Dict[str, Any], Book]],
 ) -> None:
     test_data = BookAuthorTestData()
     json_data, instance = book_json_data(rename_strategy, test_data)
