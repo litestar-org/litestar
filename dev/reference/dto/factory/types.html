@@ -1125,26 +1125,6 @@ document.write(`
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.dto.factory.types.FieldDefinition.dto_field">
-<span class="sig-name descname"><span class="pre">dto_field</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="index.html#litestar.dto.factory.DTOField" title="litestar.dto.factory.DTOField"><span class="pre">DTOField</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.dto.factory.types.FieldDefinition.dto_field" title="Permalink to this definition">#</a></dt>
-<dd><p>DTO field configuration.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.dto.factory.types.FieldDefinition.copy_with">
-<span class="sig-name descname"><span class="pre">copy_with</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.dto.factory.types.FieldDefinition" title="litestar.dto.factory.types.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></span><a class="headerlink" href="#litestar.dto.factory.types.FieldDefinition.copy_with" title="Permalink to this definition">#</a></dt>
-<dd><p>Copy the field definition with the given keyword arguments.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Keyword arguments to update the field definition with.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Updated field definition.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.dto.factory.types.FieldDefinition.name">
 <span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.dto.factory.types.FieldDefinition.name" title="Permalink to this definition">#</a></dt>
 <dd><p>The name of the parameter.</p>
@@ -1164,38 +1144,14 @@ document.write(`
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.dto.factory.types.FieldDefinition.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default:</span> <span class="pre">Any</span> <span class="pre">|</span> <span class="pre">Empty</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsed_type:</span> <span class="pre">ParsedType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_factory:</span> <span class="pre">Callable[[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Any]</span> <span class="pre">|</span> <span class="pre">EmptyType</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'litestar.types.empty.Empty'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dto_field:</span> <span class="pre">DTOField</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialization_name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.dto.factory.types.FieldDefinition.__init__" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default:</span> <span class="pre">Any</span> <span class="pre">|</span> <span class="pre">Empty</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsed_type:</span> <span class="pre">ParsedType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_factory:</span> <span class="pre">Callable[[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Any]</span> <span class="pre">|</span> <span class="pre">EmptyType</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'litestar.types.empty.Empty'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dto_field:</span> <span class="pre">DTOField</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.dto.factory.types.FieldDefinition.__init__" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.dto.factory.types.FieldDefinition.dto_field">
+<span class="sig-name descname"><span class="pre">dto_field</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="index.html#litestar.dto.factory.DTOField" title="litestar.dto.factory.DTOField"><span class="pre">DTOField</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.dto.factory.types.FieldDefinition.dto_field" title="Permalink to this definition">#</a></dt>
+<dd><p>DTO field configuration.</p>
 </dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="litestar.dto.factory.types.FieldDefinitionsType">
-<span class="sig-prename descclassname"><span class="pre">litestar.dto.factory.types.</span></span><span class="sig-name descname"><span class="pre">FieldDefinitionsType</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">TypeAlias</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Mapping[str,</span> <span class="pre">FieldDefinition</span> <span class="pre">|</span> <span class="pre">NestedFieldDefinition]'</span></em><a class="headerlink" href="#litestar.dto.factory.types.FieldDefinitionsType" title="Permalink to this definition">#</a></dt>
-<dd><p>Generic representation of names and types.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.dto.factory.types.NestedFieldDefinition">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.dto.factory.types.</span></span><span class="sig-name descname"><span class="pre">NestedFieldDefinition</span></span><a class="headerlink" href="#litestar.dto.factory.types.NestedFieldDefinition" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>For representing nested model.</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="litestar.dto.factory.types.NestedFieldDefinition.name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.dto.factory.types.NestedFieldDefinition.name" title="Permalink to this definition">#</a></dt>
-<dd><p>Name of the field.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="litestar.dto.factory.types.NestedFieldDefinition.serialization_name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">serialization_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.dto.factory.types.NestedFieldDefinition.serialization_name" title="Permalink to this definition">#</a></dt>
-<dd><p>Serialization name of the field.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.dto.factory.types.NestedFieldDefinition.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_definition:</span> <span class="pre">FieldDefinition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nested_type:</span> <span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nested_field_definitions:</span> <span class="pre">FieldDefinitionsType</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.dto.factory.types.NestedFieldDefinition.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -1256,19 +1212,11 @@ document.write(`
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.types.FieldDefinition"><code class="docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.types.FieldDefinition.default_factory"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.default_factory</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.types.FieldDefinition.dto_field"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.dto_field</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.types.FieldDefinition.copy_with"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.copy_with()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.types.FieldDefinition.name"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.name</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.types.FieldDefinition.default"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.default</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.types.FieldDefinition.parsed_type"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.parsed_type</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.types.FieldDefinition.__init__"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.__init__()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.types.FieldDefinitionsType"><code class="docutils literal notranslate"><span class="pre">FieldDefinitionsType</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.types.NestedFieldDefinition"><code class="docutils literal notranslate"><span class="pre">NestedFieldDefinition</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.types.NestedFieldDefinition.name"><code class="docutils literal notranslate"><span class="pre">NestedFieldDefinition.name</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.types.NestedFieldDefinition.serialization_name"><code class="docutils literal notranslate"><span class="pre">NestedFieldDefinition.serialization_name</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.types.NestedFieldDefinition.__init__"><code class="docutils literal notranslate"><span class="pre">NestedFieldDefinition.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.types.FieldDefinition.dto_field"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.dto_field</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.types.RenameStrategy"><code class="docutils literal notranslate"><span class="pre">RenameStrategy</span></code></a></li>
