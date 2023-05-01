@@ -30,6 +30,7 @@ def async_mock() -> AsyncMock:
     params=[
         pytest.param("memory_backend", id="memory"),
         pytest.param("redis_stream_backend", id="redis:stream"),
+        pytest.param("redis_pub_sub_backend", id="redis:pubsub"),
     ]
 )
 async def channels_backend(request: FixtureRequest) -> ChannelsBackend:

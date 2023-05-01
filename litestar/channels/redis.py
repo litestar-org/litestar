@@ -46,19 +46,15 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
         for channel in channels:
             await self._redis.publish(channel, data)
 
-    async def _wait_for_subscribed_channels(self) -> None:
-        while True:
-            if self._pub_sub.channels:
-                break
-            await asyncio.sleep(0)
-
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         if not self._pub_sub:
             raise RuntimeError()
 
         while True:
-            await self._wait_for_subscribed_channels()
-            message = await self._pub_sub.get_message(ignore_subscribe_messages=True)
+            if not self._pub_sub.subscribed:
+                await asyncio.sleep(0.0001)
+                continue
+            message = await self._pub_sub.get_message(ignore_subscribe_messages=True, timeout=None)  # type: ignore[arg-type]
             if message is None:
                 continue
             channel = message["channel"].decode()
