@@ -96,7 +96,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         self.context = context
         self.parsed_field_definitions = self.parse_model(context.model_type, context.config.exclude)
         self.reverse_name_map = generate_reverse_name_map(self.parsed_field_definitions)
-        self.data_container_type = self.create_data_container_type(context)
+        self.data_container_type = self.create_data_container_type(self.parsed_field_definitions)
         self.annotation = build_annotation_for_backend(context.parsed_type.annotation, self.data_container_type)
 
     def parse_model(
@@ -155,10 +155,13 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
 
                 nested_exclude = {split[1] for s in exclude if (split := s.split(".", 1))[0] == field_definition.name}
                 nested_type = get_model_type(transfer_field_definition.annotation)
+                nested_field_definitions = self.parse_model(nested_type, nested_exclude, nested_depth + 1)
+                transfer_model = self.create_data_container_type(nested_field_definitions)
                 nested = NestedFieldDefinition(
                     field_definition=transfer_field_definition,
                     nested_type=nested_type,
-                    nested_field_definitions=self.parse_model(nested_type, nested_exclude, nested_depth + 1),
+                    nested_field_definitions=nested_field_definitions,
+                    transfer_model=transfer_model,
                 )
                 defined_fields[transfer_field_definition.name] = nested
             else:
@@ -166,11 +169,11 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         return defined_fields
 
     @abstractmethod
-    def create_data_container_type(self, context: BackendContext) -> type[BackendT]:
+    def create_data_container_type(self, field_definitions: FieldDefinitionsType) -> type[BackendT]:
         """Create a data container type to represent the context type.
 
         Args:
-            context: Context of the type to create a data container for.
+            field_definitions: field definitions for the container type.
 
         Returns:
             A ``BackendT`` class.
@@ -193,7 +196,6 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         """Populate model instance from builtin types.
 
         Args:
-            model_type: Type of model to populate.
             data: Builtin type.
 
         Returns:
