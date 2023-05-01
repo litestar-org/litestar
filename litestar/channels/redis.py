@@ -76,6 +76,9 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
         self._prune_streams_script = self._redis.register_script(
             importlib.resources.read_text("litestar.channels", "_redis_prune_streams.lua")
         )
+        self._flush_all_streams_script = self._redis.register_script(
+            importlib.resources.read_text("litestar.channels", "_redis_flushall.lua")
+        )
 
     async def on_startup(self) -> None:
         pass
@@ -129,4 +132,8 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
     async def prune_streams(self, cutoff: timedelta) -> int:
         timestamp = str(int((datetime.now(tz=timezone.utc) - cutoff).timestamp() * 1000))
         deleted_streams = await self._prune_streams_script(keys=[], args=[f"{self._key_prefix}*", timestamp])
+        return cast("int", deleted_streams)
+
+    async def flush_all(self) -> int:
+        deleted_streams = await self._flush_all_streams_script(keys=[], args=[f"{self._key_prefix}*"])
         return cast("int", deleted_streams)

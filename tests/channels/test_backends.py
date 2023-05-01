@@ -100,7 +100,7 @@ async def test_memory_backend_discards_history_entries(channels_backend: Channel
     assert len(await channels_backend.get_history("bar")) == 10
 
 
-async def test_redis_stream_backend_flush(redis_stream_backend: RedisChannelsStreamBackend) -> None:
+async def test_redis_stream_backend_prune_streams(redis_stream_backend: RedisChannelsStreamBackend) -> None:
     await redis_stream_backend.publish(b"something", ["foo"])
     await asyncio.sleep(2 / 1000)
     await redis_stream_backend.publish(b"something", ["bar"])
@@ -112,7 +112,7 @@ async def test_redis_stream_backend_flush(redis_stream_backend: RedisChannelsStr
     assert await redis_stream_backend._redis.xrange(redis_stream_backend._make_key("bar"))
 
 
-async def test_redis_stream_backend_flush_no_hits(redis_stream_backend: RedisChannelsStreamBackend) -> None:
+async def test_redis_stream_backend_prune_streams_no_hits(redis_stream_backend: RedisChannelsStreamBackend) -> None:
     await redis_stream_backend.publish(b"something", ["foo"])
     await asyncio.sleep(1 / 1000)
     await redis_stream_backend.publish(b"something else", ["foo"])
@@ -121,3 +121,11 @@ async def test_redis_stream_backend_flush_no_hits(redis_stream_backend: RedisCha
 
     assert deleted_streams_count == 0
     assert await redis_stream_backend._redis.xrange(redis_stream_backend._make_key("foo"))
+
+
+async def test_redis_streams_backend_flush_all(redis_stream_backend: RedisChannelsStreamBackend) -> None:
+    await redis_stream_backend.publish(b"something", ["foo", "bar", "baz"])
+
+    result = await redis_stream_backend.flush_all()
+
+    assert result == 3
