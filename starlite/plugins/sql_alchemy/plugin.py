@@ -77,9 +77,9 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         if self._config is not None:
             app.dependencies[self._config.dependency_key] = Provide(self._config.create_db_session_dependency)
             app.before_send.append(self._config.before_send_handler)  # type: ignore[arg-type]
+            app.on_startup.append(self._config.update_app_state)
             app.on_shutdown.append(self._config.on_shutdown)
             self._config.config_sql_alchemy_logging(app.logging_config)
-            self._config.update_app_state(state=app.state)
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> "TypeGuard[DeclarativeMeta]":
