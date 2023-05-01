@@ -21,7 +21,7 @@ def redis_stream_backend(redis_client: AsyncRedis) -> RedisChannelsStreamBackend
 
 @pytest.fixture()
 def redis_pub_sub_backend(redis_client: AsyncRedis) -> RedisChannelsPubSubBackend:
-    return RedisChannelsPubSubBackend(history=10, redis=redis_client)
+    return RedisChannelsPubSubBackend(redis=redis_client)
 
 
 @pytest.fixture()

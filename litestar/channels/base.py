@@ -6,10 +6,6 @@ from typing import AsyncGenerator, Iterable
 
 class ChannelsBackend(ABC):
     @abstractmethod
-    def __init__(self, history: int = -1) -> None:
-        ...
-
-    @abstractmethod
     async def on_startup(self) -> None:
         ...
 

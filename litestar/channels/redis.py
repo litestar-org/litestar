@@ -19,18 +19,18 @@ if TYPE_CHECKING:
 
 
 class RedisChannelsBackend(ChannelsBackend, ABC):
-    def __init__(self, history: int = 0, *, redis: Redis) -> None:
-        self._history = history
+    def __init__(self, *, stream_sleep_no_subscriptions: int, redis: Redis) -> None:
         self._redis = redis
         self._key_prefix = "LITESTAR_CHANNELS"
+        self._stream_sleep_no_subscriptions = stream_sleep_no_subscriptions / 1000
 
     def _make_key(self, channel: str) -> str:
         return f"{self._key_prefix}_{channel.upper()}"
 
 
 class RedisChannelsPubSubBackend(RedisChannelsBackend):
-    def __init__(self, history: int = 0, *, redis: Redis) -> None:
-        super().__init__(history, redis=redis)
+    def __init__(self, *, redis: Redis, stream_sleep_no_subscriptions: int = 1) -> None:
+        super().__init__(redis=redis, stream_sleep_no_subscriptions=stream_sleep_no_subscriptions)
         self._pub_sub: PubSub = self._redis.pubsub()
 
     async def on_startup(self) -> None:
@@ -61,7 +61,7 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
 
         while True:
             if not self._pub_sub.subscribed:
-                await asyncio.sleep(0.0001)  # no subscriptions found. Sleep for 1 ms
+                await asyncio.sleep(self._stream_sleep_no_subscriptions)  # no subscriptions found so we sleep a bit
                 continue
             message = await self._pub_sub.get_message(ignore_subscribe_messages=True, timeout=None)  # type: ignore[arg-type]
             if message is None:
@@ -75,11 +75,19 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
 
 
 class RedisChannelsStreamBackend(RedisChannelsBackend):
-    def __init__(self, history: int = 0, *, redis: Redis, cap_streams_approximate: bool = True) -> None:
-        super().__init__(history, redis=redis)
+    def __init__(
+        self,
+        history: int = 0,
+        *,
+        redis: Redis,
+        cap_streams_approximate: bool = True,
+        stream_sleep_no_subscriptions: int = 1,
+    ) -> None:
+        super().__init__(redis=redis, stream_sleep_no_subscriptions=stream_sleep_no_subscriptions)
         if history < 1:
             raise ImproperlyConfiguredException("history must be greater than 0")
 
+        self._history_limit = history
         self._subscribed_channels: set[str] = set()
         self._cap_streams_approximate = cap_streams_approximate
         self._prune_streams_script = self._redis.register_script(
@@ -108,7 +116,7 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
             await self._redis.xadd(
                 name=self._make_key(channel),
                 fields={"data": data, "channel": channel},
-                maxlen=self._history,
+                maxlen=self._history_limit,
                 approximate=self._cap_streams_approximate,
             )
             return
@@ -120,7 +128,7 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
                         self._redis.xadd,
                         name=self._make_key(channel),
                         fields={"data": data, "channel": channel},
-                        maxlen=self._history,
+                        maxlen=self._history_limit,
                         approximate=self._cap_streams_approximate,
                     )
                 )
@@ -130,7 +138,7 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
         while True:
             stream_keys = [self._make_key(c) for c in self._subscribed_channels]
             if not stream_keys:
-                await asyncio.sleep(0.0001)  # no subscriptions found. Sleep for 1 ms
+                await asyncio.sleep(self._stream_sleep_no_subscriptions)  # no subscriptions found so we sleep a bit
                 continue
             data: list[tuple[bytes, list[tuple[bytes, dict[bytes, bytes]]]]] = await self._redis.xread(
                 {key: stream_ids.get(key, 0) for key in stream_keys}, block=1
