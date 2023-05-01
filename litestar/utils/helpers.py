@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
-__all__ = ("Ref", "get_enum_string_value", "get_name", "unwrap_partial")
+__all__ = ("Ref", "get_enum_string_value", "get_fqdn", "get_name", "unwrap_partial")
 
 
 T = TypeVar("T")
@@ -25,6 +25,12 @@ def get_name(value: Any) -> str:
     if hasattr(value, "__name__"):
         return cast("str", value.__name__)
     return type(value).__name__
+
+
+def get_fqdn(value: type[Any]) -> str:
+    """Construct an FQDN for a type."""
+    module = getattr(value, "__module__", "<no module>")
+    return f"{module}.{value.__qualname__}"
 
 
 def get_enum_string_value(value: Enum | str) -> str:

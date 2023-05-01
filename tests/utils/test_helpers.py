@@ -1,6 +1,7 @@
 from functools import partial
 
-from litestar.utils.helpers import unwrap_partial
+from litestar import Litestar
+from litestar.utils.helpers import get_fqdn, unwrap_partial
 
 
 def test_unwrap_partial() -> None:
@@ -11,3 +12,7 @@ def test_unwrap_partial() -> None:
 
     assert wrapped() == 3
     assert unwrap_partial(wrapped) is func
+
+
+def test_get_fqdn() -> None:
+    assert get_fqdn(Litestar) == "litestar.app.Litestar"

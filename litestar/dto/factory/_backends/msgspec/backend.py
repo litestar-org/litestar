@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Collection as CollectionsCollection
 from typing import TYPE_CHECKING, NewType, TypeVar, cast
-from uuid import uuid4
 
 from msgspec import Struct, from_builtins
 
@@ -28,8 +27,8 @@ T = TypeVar("T")
 class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
     __slots__ = ()
 
-    def create_data_container_type(self, field_definitions: FieldDefinitionsType) -> type[Struct]:
-        return _create_struct_for_field_definitions(str(uuid4()), field_definitions)
+    def create_data_container_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
+        return _create_struct_for_field_definitions(unique_name, field_definitions)
 
     def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> Struct | Collection[Struct]:
         return decode_media_type(  # type:ignore[no-any-return]

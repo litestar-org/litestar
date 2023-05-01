@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Collection as CollectionsCollection
 from typing import TYPE_CHECKING, TypeVar, cast
-from uuid import uuid4
 
 from pydantic import BaseModel, parse_obj_as
 
@@ -27,8 +26,8 @@ T = TypeVar("T")
 class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):
     __slots__ = ()
 
-    def create_data_container_type(self, field_definitions: FieldDefinitionsType) -> type[BaseModel]:
-        return _create_model_for_field_definitions(str(uuid4()), field_definitions)
+    def create_data_container_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[BaseModel]:
+        return _create_model_for_field_definitions(unique_name, field_definitions)
 
     def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> BaseModel | Collection[BaseModel]:
         return decode_media_type(  # type:ignore[no-any-return]
