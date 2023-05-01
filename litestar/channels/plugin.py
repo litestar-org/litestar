@@ -179,10 +179,7 @@ class ChannelsPlugin(InitPluginProtocol):
                     chronological=self._send_history_chronological,
                 )
             while True:
-                try:
-                    await socket.receive()
-                except WebSocketDisconnect:
-                    break
+                await socket.receive()
 
     def _create_ws_handler_func(self, channel_name: str) -> Callable[[WebSocket], Awaitable[None]]:
         async def ws_handler_func(socket: WebSocket) -> None:
