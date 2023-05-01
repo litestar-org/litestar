@@ -48,12 +48,9 @@ def _create_struct_for_field_definitions(model_name: str, field_definitions: Fie
     for _k, v in field_definitions.items():
         field_name = v.serialization_name or v.name
         if isinstance(v, NestedFieldDefinition):
-            nested_struct = _create_struct_for_field_definitions(
-                f"{model_name}.{field_name}", v.nested_field_definitions
-            )
             struct_fields.append(
                 _create_struct_field_def(
-                    field_name, v.make_field_type(nested_struct), _create_msgspec_field(v.field_definition)
+                    field_name, v.make_field_type(v.transfer_model), _create_msgspec_field(v.field_definition)
                 )
             )
         else:

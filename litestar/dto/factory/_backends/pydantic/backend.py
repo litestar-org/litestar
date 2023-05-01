@@ -6,7 +6,7 @@ from uuid import uuid4
 
 from pydantic import BaseModel, parse_obj_as
 
-from litestar.dto.factory._backends.abc import AbstractDTOBackend, BackendContext
+from litestar.dto.factory._backends.abc import AbstractDTOBackend
 from litestar.serialization import decode_media_type
 
 from .utils import _build_data_from_pydantic_model, _create_model_for_field_definitions
@@ -14,6 +14,7 @@ from .utils import _build_data_from_pydantic_model, _create_model_for_field_defi
 if TYPE_CHECKING:
     from typing import Any, Collection
 
+    from litestar.dto.factory._backends.types import FieldDefinitionsType
     from litestar.dto.interface import ConnectionContext
     from litestar.types.serialization import LitestarEncodableType
 
@@ -26,8 +27,8 @@ T = TypeVar("T")
 class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):
     __slots__ = ()
 
-    def create_data_container_type(self, context: BackendContext) -> type[BaseModel]:
-        return _create_model_for_field_definitions(str(uuid4()), self.parsed_field_definitions)
+    def create_data_container_type(self, field_definitions: FieldDefinitionsType) -> type[BaseModel]:
+        return _create_model_for_field_definitions(str(uuid4()), field_definitions)
 
     def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> BaseModel | Collection[BaseModel]:
         return decode_media_type(  # type:ignore[no-any-return]

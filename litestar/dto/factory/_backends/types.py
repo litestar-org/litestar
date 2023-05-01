@@ -17,12 +17,13 @@ class TransferFieldDefinition(FieldDefinition):
     """Name of the field as it should feature on the transfer model."""
 
 
-@dataclass
+@dataclass(frozen=True)
 class NestedFieldDefinition:
     """For representing nested model."""
 
     field_definition: TransferFieldDefinition
     nested_type: Any
+    transfer_model: Any
     nested_field_definitions: FieldDefinitionsType = field(default_factory=dict)
 
     @property
