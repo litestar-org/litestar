@@ -56,9 +56,6 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
                 task_group.start_soon(self._redis.publish, channel, data)
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
-        if not self._pub_sub:
-            raise RuntimeError()
-
         while True:
             if not self._pub_sub.subscribed:
                 await asyncio.sleep(self._stream_sleep_no_subscriptions)  # no subscriptions found so we sleep a bit

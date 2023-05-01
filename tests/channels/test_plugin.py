@@ -42,6 +42,12 @@ def test_channels_no_channels_arbitrary_not_allowed_raises(memory_backend: Memor
         ChannelsPlugin(backend=memory_backend)
 
 
+def test_broadcast_not_initialized_raises(memory_backend: MemoryChannelsBackend) -> None:
+    plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
+    with pytest.raises(RuntimeError):
+        plugin.broadcast("foo", "bar")
+
+
 @pytest.mark.parametrize("socket_send_mode", ["text", "binary"])
 async def test_pub_sub(channels_backend: ChannelsBackend, socket_send_mode: WebSocketMode) -> None:
     @websocket("/")

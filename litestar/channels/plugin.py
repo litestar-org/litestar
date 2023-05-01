@@ -88,10 +88,11 @@ class ChannelsPlugin(InitPluginProtocol):
     def broadcast(self, data: LitestarEncodableType, channels: str | Iterable[str]) -> None:
         if isinstance(channels, str):
             channels = [channels]
-        if self._pub_queue is None:
-            raise RuntimeError()
         data = self.encode_data(data)
-        self._pub_queue.put_nowait((data, list(channels)))
+        try:
+            self._pub_queue.put_nowait((data, list(channels)))  # type: ignore[union-attr]
+        except AttributeError as e:
+            raise RuntimeError("Plugin not yet initialized. Did you forget to call on_startup?") from e
 
     async def subscribe(self, socket: WebSocket, channels: str | Iterable[str]) -> None:
         if isinstance(channels, str):
