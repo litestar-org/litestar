@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import asyncio
+import importlib.resources
 from abc import ABC
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Iterable
+from datetime import datetime, timedelta, timezone
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Iterable, cast
 
 from litestar.exceptions import ImproperlyConfiguredException
 
@@ -75,6 +77,9 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
 
         self._subscribed_channels: set[str] = set()
         self._cap_streams_approximate = cap_streams_approximate
+        self._prune_streams_script = self._redis.register_script(
+            importlib.resources.read_text("litestar.channels", "_redis_prune_streams.lua")
+        )
 
     async def on_startup(self) -> None:
         pass
@@ -124,3 +129,8 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
             data = await self._redis.xrange(self._make_key(channel))
 
         return [event[b"data"] for _, event in data]
+
+    async def prune_streams(self, cutoff: timedelta) -> int:
+        timestamp = str(int((datetime.now(tz=timezone.utc) - cutoff).timestamp() * 1000))
+        deleted_streams = await self._prune_streams_script(keys=[], args=[f"{self._key_prefix}*", timestamp])
+        return cast("int", deleted_streams)

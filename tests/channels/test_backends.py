@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import asyncio
+from datetime import timedelta
 from typing import AsyncGenerator, cast
 
 import pytest
 from _pytest.fixtures import FixtureRequest
 
 from litestar.channels import ChannelsBackend
-from litestar.channels.redis import RedisChannelsPubSubBackend
+from litestar.channels.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
 from litestar.utils.compat import async_next
 
 pytestmark = [pytest.mark.usefixtures("redis_service")]
@@ -97,3 +98,26 @@ async def test_memory_backend_discards_history_entries(channels_backend: Channel
         await channels_backend.publish(b"foo", {"bar"})
 
     assert len(await channels_backend.get_history("bar")) == 10
+
+
+async def test_redis_stream_backend_flush(redis_stream_backend: RedisChannelsStreamBackend) -> None:
+    await redis_stream_backend.publish(b"something", ["foo"])
+    await asyncio.sleep(2 / 1000)
+    await redis_stream_backend.publish(b"something", ["bar"])
+
+    deleted_streams_count = await redis_stream_backend.prune_streams(timedelta(milliseconds=1))
+
+    assert deleted_streams_count == 1
+    assert not await redis_stream_backend._redis.xrange(redis_stream_backend._make_key("foo"))
+    assert await redis_stream_backend._redis.xrange(redis_stream_backend._make_key("bar"))
+
+
+async def test_redis_stream_backend_flush_no_hits(redis_stream_backend: RedisChannelsStreamBackend) -> None:
+    await redis_stream_backend.publish(b"something", ["foo"])
+    await asyncio.sleep(1 / 1000)
+    await redis_stream_backend.publish(b"something else", ["foo"])
+
+    deleted_streams_count = await redis_stream_backend.prune_streams(timedelta(milliseconds=1))
+
+    assert deleted_streams_count == 0
+    assert await redis_stream_backend._redis.xrange(redis_stream_backend._make_key("foo"))
