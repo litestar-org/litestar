@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
+from litestar.utils.helpers import get_fqdn
 
 from .types import NestedFieldDefinition, TransferFieldDefinition
 from .utils import (
@@ -94,7 +95,9 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         """
         self.context = context
         self.parsed_field_definitions = self.parse_model(context.model_type, context.config.exclude)
-        self.data_container_type = self.create_data_container_type(self.parsed_field_definitions)
+        self.data_container_type = self.create_data_container_type(
+            get_fqdn(context.model_type), self.parsed_field_definitions
+        )
         self.annotation = build_annotation_for_backend(context.parsed_type.annotation, self.data_container_type)
 
     def parse_model(
@@ -145,6 +148,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
                 parsed_type=field_definition.parsed_type,
                 default_factory=field_definition.default_factory,
                 serialization_name=serialization_name,
+                model_fqdn=field_definition.model_fqdn,
             )
 
             if self.context.nested_field_detector(transfer_field_definition):
@@ -154,7 +158,9 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
                 nested_exclude = {split[1] for s in exclude if (split := s.split(".", 1))[0] == field_definition.name}
                 nested_type = get_model_type(transfer_field_definition.annotation)
                 nested_field_definitions = self.parse_model(nested_type, nested_exclude, nested_depth + 1)
-                transfer_model = self.create_data_container_type(nested_field_definitions)
+                transfer_model = self.create_data_container_type(
+                    transfer_field_definition.unique_name, nested_field_definitions
+                )
                 nested = NestedFieldDefinition(
                     field_definition=transfer_field_definition,
                     nested_type=nested_type,
@@ -167,10 +173,11 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         return defined_fields
 
     @abstractmethod
-    def create_data_container_type(self, field_definitions: FieldDefinitionsType) -> type[BackendT]:
+    def create_data_container_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[BackendT]:
         """Create a data container type to represent the context type.
 
         Args:
+            unique_name: name for the type that should be unique across all transfer types.
             field_definitions: field definitions for the container type.
 
         Returns:

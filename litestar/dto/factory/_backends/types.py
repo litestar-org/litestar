@@ -20,13 +20,8 @@ class TransferFieldDefinition(FieldDefinition):
 
 
 @dataclass(frozen=True)
-class NestedFieldDefinition:
-    """For representing nested model."""
-
+class NestedBase:
     field_definition: TransferFieldDefinition
-    nested_type: Any
-    transfer_model: Any
-    nested_field_definitions: FieldDefinitionsType = field(default_factory=dict)
 
     @property
     def name(self) -> str:
@@ -35,12 +30,18 @@ class NestedFieldDefinition:
 
     @property
     def parsed_type(self) -> ParsedType:
+        """Parsed type of the field."""
         return self.field_definition.parsed_type
 
     @property
     def serialization_name(self) -> str | None:
         """Serialization name of the field."""
         return self.field_definition.serialization_name
+
+    @property
+    def unique_name(self) -> str:
+        """Unique name of the field."""
+        return self.field_definition.unique_name
 
     def make_field_type(self, inner_type: type) -> Any:
         if self.field_definition.parsed_type.is_collection:
@@ -50,5 +51,35 @@ class NestedFieldDefinition:
         return inner_type
 
 
-FieldDefinitionsType: TypeAlias = "Mapping[str, TransferFieldDefinition | NestedFieldDefinition]"
+@dataclass(frozen=True)
+class NestedFieldDefinition(NestedBase):
+    """For representing nested model."""
+
+    nested_type: type[Any]
+    transfer_model: type[Any]
+    nested_field_definitions: FieldDefinitionsType = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class NestedMultiType(NestedBase):
+    """A nested type that may have one or more nested types, e.g., tuples and unions."""
+
+    nested_types: tuple[Any, ...]
+    transfer_models: tuple[Any, ...]
+    nested_field_definitions: tuple[FieldDefinitionsType, ...] = field(default_factory=tuple)
+
+
+@dataclass(frozen=True)
+class NestedTuple(NestedMultiType):
+    """A tuple where at least one of the inner types is a nested model."""
+
+
+@dataclass(frozen=True)
+class NestedUnion(NestedMultiType):
+    """A tuple where at least one of the inner types is a nested model."""
+
+
+AnyFieldDefinition: TypeAlias = "TransferFieldDefinition | NestedFieldDefinition | NestedUnion"
+"""For typing where any field definition is allowed."""
+FieldDefinitionsType: TypeAlias = "Mapping[str, AnyFieldDefinition]"
 """Generic representation of names and types."""
