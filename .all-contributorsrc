@@ -937,6 +937,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "aviral-nayya",
+      "name": "aviral-nayya",
+      "avatar_url": "https://avatars.githubusercontent.com/u/121891493?v=4",
+      "profile": "https://github.com/aviral-nayya",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
