@@ -196,8 +196,8 @@ async def _populate_channels_backend(*, message_count: int, channel: str, backen
     messages = [f"message {i}".encode() for i in range(message_count)]
 
     for message in messages:
-        await backend.publish(message, {channel})
-    await backend.publish(b"some other message", {"bar"})
+        await backend.publish(message, [channel])
+    await backend.publish(b"some other message", ["bar"])
     return messages
 
 

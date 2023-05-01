@@ -123,7 +123,7 @@ async def test_redis_stream_backend_prune_streams_no_hits(redis_stream_backend: 
     assert await redis_stream_backend._redis.xrange(redis_stream_backend._make_key("foo"))
 
 
-async def test_redis_streams_backend_flush_all(redis_stream_backend: RedisChannelsStreamBackend) -> None:
+async def test_redis_streams_backend_flushall(redis_stream_backend: RedisChannelsStreamBackend) -> None:
     await redis_stream_backend.publish(b"something", ["foo", "bar", "baz"])
 
     result = await redis_stream_backend.flush_all()

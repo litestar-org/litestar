@@ -4,7 +4,10 @@ import asyncio
 import importlib.resources
 from abc import ABC
 from datetime import datetime, timedelta, timezone
+from functools import partial
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Iterable, cast
+
+import anyio
 
 from litestar.exceptions import ImproperlyConfiguredException
 
@@ -43,8 +46,14 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
         await self._pub_sub.unsubscribe(*channels)
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
-        for channel in channels:
-            await self._redis.publish(channel, data)
+        channels = set(channels)
+        if len(channels) == 1:
+            await self._redis.publish(channels.pop(), data)
+            return
+
+        async with anyio.create_task_group() as task_group:
+            for channel in channels:
+                task_group.start_soon(self._redis.publish, channel, data)
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         if not self._pub_sub:
@@ -52,7 +61,7 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
 
         while True:
             if not self._pub_sub.subscribed:
-                await asyncio.sleep(0.0001)
+                await asyncio.sleep(0.0001)  # no subscriptions found. Sleep for 1 ms
                 continue
             message = await self._pub_sub.get_message(ignore_subscribe_messages=True, timeout=None)  # type: ignore[arg-type]
             if message is None:
@@ -93,20 +102,35 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
         self._subscribed_channels = self._subscribed_channels - set(channels)
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
-        for channel in channels:
+        channels = set(channels)
+        if len(channels) == 1:
+            channel = channels.pop()
             await self._redis.xadd(
-                self._make_key(channel),
-                {"data": data, "channel": channel},
+                name=self._make_key(channel),
+                fields={"data": data, "channel": channel},
                 maxlen=self._history,
                 approximate=self._cap_streams_approximate,
             )
+            return
+
+        async with anyio.create_task_group() as task_group:
+            for channel in channels:
+                task_group.start_soon(
+                    partial(
+                        self._redis.xadd,
+                        name=self._make_key(channel),
+                        fields={"data": data, "channel": channel},
+                        maxlen=self._history,
+                        approximate=self._cap_streams_approximate,
+                    )
+                )
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         stream_ids: dict[str, bytes] = {}
         while True:
             stream_keys = [self._make_key(c) for c in self._subscribed_channels]
             if not stream_keys:
-                await asyncio.sleep(0)
+                await asyncio.sleep(0.0001)  # no subscriptions found. Sleep for 1 ms
                 continue
             data: list[tuple[bytes, list[tuple[bytes, dict[bytes, bytes]]]]] = await self._redis.xread(
                 {key: stream_ids.get(key, 0) for key in stream_keys}, block=1
