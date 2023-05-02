@@ -109,7 +109,7 @@ def exec_examples(app_file: Path, run_configs: list[list[str]]) -> str:
             clean_args = ["curl", f"http://127.0.0.1:8000{url_path}", *options]
 
             proc = subprocess.run(
-                args,
+                args,  # noqa: S603
                 capture_output=True,
                 text=True,
             )

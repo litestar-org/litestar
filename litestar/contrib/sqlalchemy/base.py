@@ -16,6 +16,7 @@ from sqlalchemy.orm import (
     declarative_mixin,
     declared_attr,
     mapped_column,
+    orm_insert_sentinel,
     registry,
 )
 
@@ -124,8 +125,12 @@ class CommonTableAttributes:
         Returns:
             dict[str, Any]: A dict representation of the model
         """
-        exclude = set(exclude) if exclude else set()
+        exclude = exclude.union("_sentinel") if exclude else {"_sentinel"}
         return {field.name: getattr(self, field.name) for field in self.__table__.columns if field.name not in exclude}
+
+    @declared_attr
+    def _sentinel(cls) -> Mapped[int]:
+        return orm_insert_sentinel()
 
 
 def create_registry() -> registry:

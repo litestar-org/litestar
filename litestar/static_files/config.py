@@ -39,7 +39,7 @@ class StaticFilesConfig:
     """
     name: str | None = None
     """An optional string identifying the static files handler."""
-    file_system: Any = BaseLocalFileSystem()
+    file_system: Any = BaseLocalFileSystem()  # noqa: RUF009
     """The file_system spec to use for serving files.
 
     Notes:

@@ -119,4 +119,4 @@ def test_fields_alias_generator(
 
     with create_test_client(route_handlers=[handler], debug=True) as client:
         response_callback = client.post("/", json=data)
-        assert all([response_callback.json()[f] == data[f] for f in tested_fields])
+        assert all(response_callback.json()[f] == data[f] for f in tested_fields)
