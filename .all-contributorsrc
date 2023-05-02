@@ -564,7 +564,8 @@
       "profile": "http://www.kylesmith.me",
       "contributions": [
         "code",
-        "doc"
+        "doc",
+        "bug"
       ]
     },
     {
@@ -908,6 +909,42 @@
       "contributions": [
         "code",
         "test"
+      ]
+    },
+    {
+      "login": "patrickarmengol",
+      "name": "Patrick Armengol",
+      "avatar_url": "https://avatars.githubusercontent.com/u/42473149?v=4",
+      "profile": "https://patrickarmengol.com",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "SanderWegter",
+      "name": "Sander",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7465799?v=4",
+      "profile": "https://sanderwegter.nl",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "erhuabushuo",
+      "name": "疯人院主任",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1642364?v=4",
+      "profile": "https://github.com/erhuabushuo",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "aviral-nayya",
+      "name": "aviral-nayya",
+      "avatar_url": "https://avatars.githubusercontent.com/u/121891493?v=4",
+      "profile": "https://github.com/aviral-nayya",
+      "contributions": [
+        "code"
       ]
     }
   ],

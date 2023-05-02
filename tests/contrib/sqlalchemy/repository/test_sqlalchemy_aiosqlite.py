@@ -61,7 +61,7 @@ def fx_raw_authors() -> list[dict[str, Any]]:
             "updated": "0001-01-01T00:00:00",
         },
         {
-            "id": UUID("5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2"),
+            "id": "5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2",
             "name": "Leo Tolstoy",
             "dob": "1828-09-09",
             "created": "0001-01-01T00:00:00",
@@ -79,6 +79,20 @@ def fx_raw_books(raw_authors: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "title": "Murder on the Orient Express",
             "author_id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
             "author": raw_authors[0],
+            "created": "0001-01-01T00:00:00",
+            "updated": "0001-01-01T00:00:00",
+        },
+    ]
+
+
+@pytest.fixture(name="raw_log_events")
+def fx_raw_log_events() -> list[dict[str, Any]]:
+    """Unstructured log event representations."""
+    return [
+        {
+            "id": "f34545b9-663c-4fce-915d-dd1ae9cea42a",
+            "logged_at": "0001-01-01T00:00:00",
+            "payload": {"foo": "bar", "baz": datetime.now()},
             "created": "0001-01-01T00:00:00",
             "updated": "0001-01-01T00:00:00",
         },
@@ -128,6 +142,16 @@ def fx_book_repo(session: AsyncSession) -> BookRepository:
     return BookRepository(session=session)
 
 
+def test_json_type(author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy filter by kwargs with invalid column name.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    with pytest.raises(RepositoryError):
+        author_repo.filter_collection_by_kwargs(author_repo.statement, whoops="silly me")
+
+
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy filter by kwargs with invalid column name.
 
@@ -147,7 +171,7 @@ async def test_repo_count_method(author_repo: AuthorRepository) -> None:
     assert await author_repo.count() == 2
 
 
-async def test_repo_base_select_override(author_repo: AuthorRepository) -> None:
+async def test_repo_statement_override(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy base select override with sqlite.
 
     Args:
@@ -155,7 +179,7 @@ async def test_repo_base_select_override(author_repo: AuthorRepository) -> None:
     """
     all_count = await author_repo.count()
     filtered_count = await author_repo.count(
-        base_select=select(Author).where(Author.id == UUID("5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2"))
+        statement=select(Author).where(Author.id == UUID("5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2"))
     )
     assert all_count == 2
     assert filtered_count == 1
@@ -358,6 +382,21 @@ async def test_repo_get_or_create_method(author_repo: AuthorRepository) -> None:
     assert new_obj.id is not None
     assert new_obj.name == "New Author"
     assert new_created
+
+
+async def test_repo_get_or_create_match_filter(author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy Get or create with a match filter
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    now = datetime.now()
+    existing_obj, existing_created = await author_repo.get_or_create(
+        match_fields="name", name="Agatha Christie", dob=now
+    )
+    assert existing_obj.id == UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")
+    assert existing_obj.dob == now
+    assert existing_created is False
 
 
 async def test_repo_upsert_method(author_repo: AuthorRepository) -> None:

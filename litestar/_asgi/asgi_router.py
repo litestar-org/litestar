@@ -72,7 +72,7 @@ class ASGIRouter:
         self.route_handler_index: dict[str, RouteHandlerType] = {}
         self.route_mapping: dict[str, list[BaseRoute]] = defaultdict(list)
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
 
         The main entry point to the Router class.
@@ -123,7 +123,7 @@ class ASGIRouter:
             self.route_mapping[identifier].append(route)
             self.route_handler_index[identifier] = handler
 
-    async def _call_lifespan_handler(self, handler: "LifeSpanHandler") -> None:
+    async def _call_lifespan_handler(self, handler: LifeSpanHandler) -> None:
         """Determine whether the lifecycle handler expects an argument, and if so pass the `app.state` to it. If the
         handler is an async function, await the return.
 
@@ -158,7 +158,7 @@ class ASGIRouter:
         if self._mount_routes:
             self._mount_paths_regex = re.compile("|".join(sorted(set(self._mount_routes))))  # pyright: ignore
 
-    async def lifespan(self, receive: "LifeSpanReceive", send: "LifeSpanSend") -> None:
+    async def lifespan(self, receive: LifeSpanReceive, send: LifeSpanSend) -> None:
         """Handle the ASGI "lifespan" event on application startup and shutdown.
 
         Args:

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from email.utils import formatdate
 from inspect import iscoroutine
-from mimetypes import guess_type
+from mimetypes import encodings_map, guess_type
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Coroutine, Literal, cast
 from urllib.parse import quote
 from zlib import adler32
@@ -28,9 +28,12 @@ if TYPE_CHECKING:
     from litestar.types import HTTPResponseBodyEvent, PathType, Receive, ResponseCookies, Send
     from litestar.types.file_types import FileInfo, FileSystemProtocol
 
+# brotli not supported in 'mimetypes.encodings_map' until py 3.9.
+encodings_map[".br"] = "br"
+
 
 async def async_file_iterator(
-    file_path: "PathType", chunk_size: int, adapter: "FileSystemAdapter"
+    file_path: PathType, chunk_size: int, adapter: FileSystemAdapter
 ) -> AsyncGenerator[bytes, None]:
     """Return an async that asynchronously reads a file and yields its chunks.
 
@@ -125,8 +128,11 @@ class FileResponse(StreamingResponse):
                 providing an :class:`os.stat_result`.
         """
         if not media_type:
-            mimetype, _ = guess_type(filename) if filename else (None, None)
+            mimetype, content_encoding = guess_type(filename) if filename else (None, None)
             media_type = mimetype or "application/octet-stream"
+            if content_encoding is not None:
+                headers = headers or {}
+                headers.update({"content-encoding": content_encoding})
 
         self.chunk_size = chunk_size
         self.content_disposition_type = content_disposition_type
@@ -178,7 +184,7 @@ class FileResponse(StreamingResponse):
             return self.file_info["size"]
         return 0
 
-    async def send_body(self, send: "Send", receive: "Receive") -> None:
+    async def send_body(self, send: Send, receive: Receive) -> None:
         """Emit a stream of events correlating with the response body.
 
         Args:
@@ -200,7 +206,7 @@ class FileResponse(StreamingResponse):
             }
             await send(body_event)
 
-    async def start_response(self, send: "Send") -> None:
+    async def start_response(self, send: Send) -> None:
         """Emit the start event of the response. This event includes the headers and status codes.
 
         Args:

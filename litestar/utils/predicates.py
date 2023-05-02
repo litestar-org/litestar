@@ -243,7 +243,7 @@ def is_typed_dict(annotation: Any) -> TypeGuard[TypedDictClass]:
     return is_typeddict(annotation)
 
 
-def is_pydantic_model_class(annotation: Any) -> "TypeGuard[type[pydantic.BaseModel]]":  # pyright: ignore
+def is_pydantic_model_class(annotation: Any) -> TypeGuard[type[pydantic.BaseModel]]:  # pyright: ignore
     """Given a type annotation determine if the annotation is a subclass of pydantic's BaseModel.
 
     Args:
@@ -257,7 +257,7 @@ def is_pydantic_model_class(annotation: Any) -> "TypeGuard[type[pydantic.BaseMod
     return False  # pragma: no cover
 
 
-def is_pydantic_model_instance(annotation: Any) -> "TypeGuard[pydantic.BaseModel]":  # pyright: ignore
+def is_pydantic_model_instance(annotation: Any) -> TypeGuard[pydantic.BaseModel]:  # pyright: ignore
     """Given a type annotation determine if the annotation is an instance of pydantic's BaseModel.
 
     Args:

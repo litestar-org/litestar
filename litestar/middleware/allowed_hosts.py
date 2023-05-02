@@ -48,7 +48,7 @@ class AllowedHostsMiddleware(AbstractMiddleware):
             if redirect_domains:
                 self.redirect_domains = re.compile("|".join(sorted(redirect_domains)))  # pyright: ignore
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
 
         Args:

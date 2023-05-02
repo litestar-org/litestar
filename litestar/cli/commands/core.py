@@ -106,7 +106,7 @@ def run_command(
     if app_dir:
         process_args.update({"app_dir": app_dir})
 
-    subprocess.run(["uvicorn", env.app_path, *_convert_uvicorn_args(process_args)], check=True)
+    subprocess.run(["uvicorn", env.app_path, *_convert_uvicorn_args(process_args)], check=True)  # noqa: S603 S607
 
 
 @command(name="routes")

@@ -1,12 +1,15 @@
+from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Type, Union, cast
 from unittest.mock import MagicMock
 
 import pytest
 from pytest_lazyfixture import lazy_fixture
 
-from litestar import Request, WebSocket
+from litestar import Litestar, Request, WebSocket
 from litestar.datastructures import State
 from litestar.di import Provide
+from litestar.dto.factory import dto_field
+from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.websocket_handlers import WebsocketListener, websocket_listener
 from litestar.testing import create_test_client
@@ -106,6 +109,31 @@ def test_listener_receive_json(receive_mode: WebSocketMode, mock: MagicMock) -> 
     mock.assert_called_once_with(["foo", "bar"])
 
 
+@pytest.mark.parametrize("receive_mode", ["text", "binary"])
+def test_listener_receive_with_dto(receive_mode: WebSocketMode, mock: MagicMock) -> None:
+    @dataclass
+    class User:
+        name: str
+        hidden: str = field(default="super secret", metadata=dto_field("private"))
+
+    user_dto = DataclassDTO[User]
+
+    @websocket_listener(
+        "/", receive_mode=receive_mode, dto=user_dto, return_dto=None, signature_namespace={"User": User}
+    )
+    def handler(data: User) -> None:
+        mock(data)
+
+    client = create_test_client([handler], debug=True, openapi_config=None)
+    with client.websocket_connect("/") as ws:
+        ws.send_json({"name": "litestar user", "hidden": "whoops"}, mode=receive_mode)
+
+    called_with = mock.mock_calls[0].args[0]
+    assert isinstance(called_with, User)
+    assert called_with.name == "litestar user"
+    assert called_with.hidden == "super secret"
+
+
 @pytest.mark.parametrize("send_mode", ["text", "binary"])
 def test_listener_return_bytes(send_mode: WebSocketMode) -> None:
     @websocket_listener("/", send_mode=send_mode)
@@ -131,6 +159,25 @@ def test_listener_send_json(send_mode: WebSocketMode) -> None:
     with client.websocket_connect("/") as ws:
         ws.send_text("foo")
         assert ws.receive_json(mode=send_mode) == {"data": "foo"}
+
+
+@pytest.mark.parametrize("send_mode", ["text", "binary"])
+def test_listener_send_with_dto(send_mode: WebSocketMode, mock: MagicMock) -> None:
+    @dataclass
+    class User:
+        name: str
+        hidden: str = field(default="super secret", metadata=dto_field("private"))
+
+    user_dto = DataclassDTO[User]
+
+    @websocket_listener("/", send_mode=send_mode, dto=user_dto, signature_namespace={"User": User})
+    def handler(data: User) -> User:
+        return data
+
+    client = create_test_client([handler], debug=True)
+    with client.websocket_connect("/") as ws:
+        ws.send_json({"name": "litestar user"})
+        assert ws.receive_json(mode=send_mode) == {"name": "litestar user"}
 
 
 def test_listener_return_none() -> None:
@@ -196,6 +243,8 @@ def test_listener_callback_no_data_arg_raises() -> None:
         def handler() -> None:
             ...
 
+        handler.on_registration(Litestar())
+
 
 def test_listener_callback_request_and_body_arg_raises() -> None:
     with pytest.raises(ImproperlyConfiguredException):
@@ -204,8 +253,25 @@ def test_listener_callback_request_and_body_arg_raises() -> None:
         def handler_request(data: str, request: Request) -> None:
             ...
 
+        handler_request.on_registration(Litestar())
+
     with pytest.raises(ImproperlyConfiguredException):
 
         @websocket_listener("/")
         def handler_body(data: str, body: bytes) -> None:
             ...
+
+        handler_body.on_registration(Litestar())
+
+
+def test_listener_accept_connection_callback() -> None:
+    async def accept_connection(socket: WebSocket) -> None:
+        await socket.accept(headers={"Cookie": "custom-cookie"})
+
+    @websocket_listener("/", connection_accept_handler=accept_connection)
+    def handler(data: bytes) -> None:
+        return None
+
+    client = create_test_client([handler])
+    with client.websocket_connect("/") as ws:
+        assert ws.extra_headers == [(b"cookie", b"custom-cookie")]

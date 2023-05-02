@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 from litestar.types.internal_types import PathParameterDefinition
 
@@ -16,9 +16,9 @@ SEPARATORS_CLEANUP_PATTERN = re.compile(r"[!#$%&'*+\-.^_`|~:]+")
 
 
 def default_operation_id_creator(
-    route_handler: "HTTPRouteHandler",
-    http_method: "Method",
-    path_components: list[Union[str, "PathParameterDefinition"]],
+    route_handler: HTTPRouteHandler,
+    http_method: Method,
+    path_components: list[str | PathParameterDefinition],
 ) -> str:
     """Create a unique 'operationId' for an OpenAPI PathItem entry.
 

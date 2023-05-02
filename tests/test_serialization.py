@@ -24,17 +24,16 @@ from pydantic import (
 )
 from pydantic.color import Color
 
-from litestar.connection import Request
-from litestar.dto.interface import DTOInterface
+from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
 from litestar.serialization import (
     decode_json,
+    decode_media_type,
     decode_msgpack,
     default_serializer,
     encode_json,
     encode_msgpack,
 )
-from litestar.types.serialization import LitestarEncodableType
 from tests import PersonFactory
 
 person = PersonFactory.build()
@@ -156,21 +155,12 @@ def test_decode_msgpack_typed() -> None:
     assert decode_msgpack(encode_msgpack(model), Model).json() == model_json
 
 
-@pytest.mark.parametrize("ret_val", [b'{"a":1,"b":"2"}', {"a": 1, "b": "2"}])
-def test_encode_dto_instance(ret_val: "bytes | dict") -> None:
-    class DTO(DTOInterface):
-        def to_encodable_type(self) -> LitestarEncodableType:
-            return ret_val
+def test_decode_media_type() -> None:
+    model_json = model.json()
+    assert decode_media_type(model_json.encode("utf-8"), MediaType.JSON, Model).json() == model_json
+    assert decode_media_type(encode_msgpack(model), MediaType.MESSAGEPACK, Model).json() == model_json
 
-        def to_data_type(self) -> Any:
-            return None
 
-        @classmethod
-        def from_bytes(cls, raw: bytes, connection: Request[Any, Any, Any]) -> "DTO":
-            return cls()
-
-        @classmethod
-        def from_data(cls, data: Any, connection: Request[Any, Any, Any]) -> "DTO":
-            return cls()
-
-    assert encode_json(DTO()) == b'{"a":1,"b":"2"}'
+def test_decode_media_type_unsupported_media_type() -> None:
+    with pytest.raises(SerializationException):
+        decode_media_type(b"", MediaType.HTML, Model)

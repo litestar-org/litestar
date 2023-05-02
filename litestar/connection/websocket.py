@@ -69,7 +69,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
             An ASGI receive function.
         """
 
-        async def wrapped_receive() -> "ReceiveMessage":
+        async def wrapped_receive() -> ReceiveMessage:
             if self.connection_state == "disconnect":
                 raise WebSocketException(detail=DISCONNECT_MESSAGE)
             message = await receive()
@@ -93,7 +93,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
             An ASGI send function.
         """
 
-        async def wrapped_send(message: "Message") -> None:
+        async def wrapped_send(message: Message) -> None:
             if self.connection_state == "disconnect":
                 raise WebSocketDisconnect(detail=DISCONNECT_MESSAGE)  # pragma: no cover
             await send(message)
@@ -268,7 +268,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
         data: Any,
         mode: Literal["text", "binary"] = "text",
         encoding: str = "utf-8",
-        serializer: "Serializer" = default_serializer,
+        serializer: Serializer = default_serializer,
     ) -> None:
         """Send data as JSON.
 

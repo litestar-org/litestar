@@ -27,7 +27,7 @@ OpenAPI schema generation is enabled by default. To configure it you can pass an
 .. code-block:: python
 
    from litestar import Litestar
-   from litestar.config.openapi import OpenAPIConfig
+   from litestar.openapi import OpenAPIConfig
 
    app = Litestar(
        route_handlers=[...], openapi_config=OpenAPIConfig(title="My API", version="1.0.0")
@@ -145,7 +145,7 @@ app instance itself. For example:
 .. code-block:: python
 
    from litestar import Litestar, get
-   from litestar.config.openapi import OpenAPIConfig
+   from litestar.openapi import OpenAPIConfig
    from litestar.openapi.spec import Components, SecurityScheme, Tag
 
 
@@ -224,7 +224,7 @@ For example, lets say we wanted to change the base path of the OpenAPI related e
 .. code-block:: python
 
    from litestar import Litestar
-   from litestar.config.openapi import OpenAPIConfig
+   from litestar.openapi import OpenAPIConfig
    from litestar.openapi import OpenAPIController
 
 
@@ -250,7 +250,7 @@ You can change the default download paths for JS and CSS bundles as well as goog
 .. code-block:: python
 
    from litestar import Litestar
-   from litestar.config.openapi import OpenAPIConfig
+   from litestar.openapi import OpenAPIConfig
    from litestar.openapi import OpenAPIController
 
 

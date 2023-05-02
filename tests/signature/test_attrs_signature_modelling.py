@@ -14,6 +14,58 @@ person = PersonFactory.build()
 
 
 @pytest.mark.parametrize(
+    "value,expected",
+    (
+        ("1", True),
+        (b"1", True),
+        ("True", True),
+        (b"True", True),
+        ("on", True),
+        (b"on", True),
+        ("t", True),
+        (b"t", True),
+        ("true", True),
+        (b"true", True),
+        ("y", True),
+        (b"y", True),
+        ("yes", True),
+        (b"yes", True),
+        (1, True),
+        (True, True),
+        ("0", False),
+        (b"0", False),
+        ("False", False),
+        (b"False", False),
+        ("f", False),
+        (b"f", False),
+        ("false", False),
+        (b"false", False),
+        ("n", False),
+        (b"n", False),
+        ("no", False),
+        (b"no", False),
+        ("off", False),
+        (b"off", False),
+        (0, False),
+        (False, False),
+    ),
+)
+def test_cattrs_converter_structure_bool(value: Any, expected: Any) -> None:
+    result = _converter.structure(value, bool)
+    assert result == expected
+
+
+def test_cattrs_converter_structure_bool_value_error() -> None:
+    with pytest.raises(ValueError):
+        _converter.structure(None, bool)
+        _converter.structure("foofoofoo", bool)
+        _converter.structure(object(), bool)
+        _converter.structure(type, bool)
+        _converter.structure({}, bool)
+        _converter.structure([], bool)
+
+
+@pytest.mark.parametrize(
     "value,cls,expected",
     (
         (now, datetime, now.isoformat()),

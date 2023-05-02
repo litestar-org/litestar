@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 class OpenAPISchemaResponse(Response):
     """Response class for OpenAPI Schemas."""
 
-    def render(self, content: "OpenAPI") -> bytes:
+    def render(self, content: OpenAPI) -> bytes:
         """Handle rendering of schema into the correct format - either YAML or JSON.
 
         Args:
@@ -93,7 +93,7 @@ class OpenAPIController(Controller):
     return_dto = None
 
     @staticmethod
-    def get_schema_from_request(request: Request) -> "OpenAPI":
+    def get_schema_from_request(request: Request) -> OpenAPI:
         """Return the OpenAPI pydantic model from the request instance.
 
         Args:
@@ -104,7 +104,7 @@ class OpenAPIController(Controller):
         """
         return request.app.openapi_schema
 
-    def should_serve_endpoint(self, request: "Request") -> bool:
+    def should_serve_endpoint(self, request: Request) -> bool:
         """Verify that the requested path is within the enabled endpoints in the openapi_config.
 
         Args:

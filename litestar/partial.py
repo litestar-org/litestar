@@ -155,7 +155,7 @@ class Partial(Generic[T]):
         )
 
     @classmethod
-    def _create_partial_typeddict(cls, item: "TypedDictClass") -> None:
+    def _create_partial_typeddict(cls, item: TypedDictClass) -> None:
         """Receives a typeddict class and creates a new type with all attributes ``Optional``.
 
         Args:

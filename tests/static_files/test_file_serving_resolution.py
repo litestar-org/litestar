@@ -1,7 +1,9 @@
+import gzip
 import mimetypes
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import brotli
 import pytest
 from fsspec.implementations.local import LocalFileSystem
 
@@ -159,6 +161,25 @@ def test_static_files_response_mimetype(tmpdir: "Path", extension: str) -> None:
         assert expected_mime_type
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"].startswith(expected_mime_type)
+
+
+@pytest.mark.parametrize("extension", ["gz", "br"])
+def test_static_files_response_encoding(tmp_path: "Path", extension: str) -> None:
+    fn = f"test.js.{extension}"
+    path = tmp_path / fn
+    if extension == "br":
+        compressed_data = brotli.compress(b"content")
+    elif extension == "gz":
+        compressed_data = gzip.compress(b"content")
+    path.write_bytes(compressed_data)  # pyright: ignore
+    static_files_config = StaticFilesConfig(path="/static", directories=[tmp_path])
+    expected_encoding_type = mimetypes.guess_type(fn)[1]
+
+    with create_test_client([], static_files_config=[static_files_config]) as client:
+        response = client.get(f"/static/{fn}")
+        assert expected_encoding_type
+        assert response.status_code == HTTP_200_OK
+        assert response.headers["content-encoding"].startswith(expected_encoding_type)
 
 
 @pytest.mark.parametrize("send_as_attachment,disposition", [(True, "attachment"), (False, "inline")])

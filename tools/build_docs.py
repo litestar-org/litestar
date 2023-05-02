@@ -37,9 +37,9 @@ class VersionSpec(TypedDict):
 
 @contextmanager
 def checkout(branch: str) -> None:
-    subprocess.run(["git", "checkout", branch], check=True)
+    subprocess.run(["git", "checkout", branch], check=True)  # noqa: S603 S607
     yield
-    subprocess.run(["git", "checkout", "-"], check=True)
+    subprocess.run(["git", "checkout", "-"], check=True)  # noqa: S603 S607
 
 
 def load_version_spec() -> VersionSpec:
@@ -55,7 +55,7 @@ def build(output_dir: str, version: str | None) -> None:
     else:
         os.environ["_LITESTAR_DOCS_BUILD_VERSION"] = version
 
-    subprocess.run(["make", "docs"], check=True)
+    subprocess.run(["make", "docs"], check=True)  # noqa: S603 S607
 
     output_dir = Path(output_dir)
     output_dir.mkdir()

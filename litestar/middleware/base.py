@@ -25,7 +25,7 @@ class MiddlewareProtocol(Protocol):  # pragma: no cover
 
     app: ASGIApp
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """Execute the ASGI middleware.
 
         Called by the previous middleware in the stack if a response is not awaited prior.
@@ -117,7 +117,7 @@ class AbstractMiddleware:
 
         original__call__ = cls.__call__
 
-        async def wrapped_call(self: AbstractMiddleware, scope: "Scope", receive: "Receive", send: "Send") -> None:
+        async def wrapped_call(self: AbstractMiddleware, scope: Scope, receive: Receive, send: Send) -> None:
             if should_bypass_middleware(
                 scope=scope,
                 scopes=self.scopes,
@@ -132,7 +132,7 @@ class AbstractMiddleware:
         setattr(cls, "__call__", wrapped_call)
 
     @abstractmethod
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """Execute the ASGI middleware.
 
         Called by the previous middleware in the stack if a response is not awaited prior.

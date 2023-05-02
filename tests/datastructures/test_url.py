@@ -34,7 +34,7 @@ def test_url() -> None:
     assert url.password == "hunter2"
     assert url.port == 81
     assert url.hostname == "example.org"
-    assert url.query_params.dict() == {"query": ["param"], "bool": [True]}
+    assert url.query_params.dict() == {"query": ["param"], "bool": ["true"]}
 
 
 @pytest.mark.parametrize(

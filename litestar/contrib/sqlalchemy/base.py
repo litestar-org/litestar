@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar, runtime_chec
 from uuid import UUID, uuid4
 
 from pydantic import AnyHttpUrl, AnyUrl, EmailStr
-from sqlalchemy import JSON, MetaData, String, Uuid
+from sqlalchemy import MetaData, String
 from sqlalchemy.event import listens_for
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -16,13 +16,25 @@ from sqlalchemy.orm import (
     declarative_mixin,
     declared_attr,
     mapped_column,
+    orm_insert_sentinel,
     registry,
 )
+
+from .types import GUID, JSON
 
 if TYPE_CHECKING:
     from sqlalchemy.sql import FromClause
 
-__all__ = ("AuditBase", "AuditColumns", "Base", "CommonTableAttributes", "UUIDPrimaryKey", "touch_updated_timestamp")
+__all__ = (
+    "AuditBase",
+    "AuditColumns",
+    "Base",
+    "CommonTableAttributes",
+    "create_registry",
+    "ModelProtocol",
+    "touch_updated_timestamp",
+    "UUIDPrimaryKey",
+)
 
 
 BaseT = TypeVar("BaseT", bound="Base")
@@ -113,18 +125,27 @@ class CommonTableAttributes:
         Returns:
             dict[str, Any]: A dict representation of the model
         """
-        exclude = set(exclude) if exclude else set()
+        exclude = exclude.union("_sentinel") if exclude else {"_sentinel"}
         return {field.name: getattr(self, field.name) for field in self.__table__.columns if field.name not in exclude}
 
-
-meta = MetaData(naming_convention=convention)
-orm_registry = registry(
-    metadata=meta,
-    type_annotation_map={UUID: Uuid, EmailStr: String, AnyUrl: String, AnyHttpUrl: String, dict: JSON},
-)
+    @declared_attr
+    def _sentinel(cls) -> Mapped[int]:
+        return orm_insert_sentinel()
 
 
-class Base(CommonTableAttributes, UUIDPrimaryKey, DeclarativeBase):
+def create_registry() -> registry:
+    """Create a new SQLAlchemy registry."""
+    meta = MetaData(naming_convention=convention)
+    return registry(
+        metadata=meta,
+        type_annotation_map={UUID: GUID, EmailStr: String, AnyUrl: String, AnyHttpUrl: String, dict: JSON},
+    )
+
+
+orm_registry = create_registry()
+
+
+class Base(UUIDPrimaryKey, CommonTableAttributes, DeclarativeBase):
     """Base for all SQLAlchemy declarative models."""
 
     registry = orm_registry

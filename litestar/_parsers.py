@@ -34,8 +34,7 @@ def parse_query_string(query_string: bytes) -> tuple[tuple[str, Any], ...]:
     Returns:
         A tuple of key value pairs.
     """
-    _bools = {"true": True, "false": False, "True": True, "False": False}
-    return tuple((k, v if v not in _bools else _bools[v]) for k, v in fast_parse_query_string(query_string, "&"))
+    return tuple(fast_parse_query_string(query_string, "&"))
 
 
 @lru_cache(1024)

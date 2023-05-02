@@ -7,8 +7,8 @@ import pytest
 from sqlalchemy import create_engine
 
 from litestar.constants import SCOPE_STATE_NAMESPACE
-from litestar.contrib.sqlalchemy.init_plugin.config import SQLAlchemyAsyncConfig, SQLAlchemySyncConfig
-from litestar.contrib.sqlalchemy.init_plugin.config.common import SESSION_SCOPE_KEY
+from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig, SQLAlchemySyncConfig
+from litestar.contrib.sqlalchemy.plugins.init.config.common import SESSION_SCOPE_KEY
 from litestar.datastructures import State
 from litestar.exceptions import ImproperlyConfiguredException
 
@@ -131,7 +131,7 @@ def test_create_session_instance_if_session_already_in_scope_state(
 ) -> None:
     """Test provide_session if session already in scope state."""
     with patch(
-        "litestar.contrib.sqlalchemy.init_plugin.config.common.get_litestar_scope_state"
+        "litestar.contrib.sqlalchemy.plugins.init.config.common.get_litestar_scope_state"
     ) as get_litestar_scope_state_mock:
         session_mock = MagicMock()
         get_litestar_scope_state_mock.return_value = session_mock
@@ -144,7 +144,7 @@ def test_create_session_instance_if_session_not_in_scope_state(
 ) -> None:
     """Test provide_session if session not in scope state."""
     with patch(
-        "litestar.contrib.sqlalchemy.init_plugin.config.common.get_litestar_scope_state"
+        "litestar.contrib.sqlalchemy.plugins.init.config.common.get_litestar_scope_state"
     ) as get_litestar_scope_state_mock:
         get_litestar_scope_state_mock.return_value = None
         config = config_cls()

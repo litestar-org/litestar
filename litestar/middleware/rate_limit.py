@@ -58,7 +58,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         self.max_requests: int = config.rate_limit[1]
         self.unit: DurationUnit = config.rate_limit[0]
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
 
         Args:
@@ -98,7 +98,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             Send wrapper callable.
         """
 
-        async def send_wrapper(message: "Message") -> None:
+        async def send_wrapper(message: Message) -> None:
             """Wrap the ASGI ``Send`` callable.
 
             Args:
@@ -174,7 +174,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         cache_object.history = [int(time()), *cache_object.history]
         await store.set(key, encode_json(cache_object), expires_in=DURATION_VALUES[self.unit])
 
-    async def should_check_request(self, request: "Request[Any, Any, Any]") -> bool:
+    async def should_check_request(self, request: Request[Any, Any, Any]) -> bool:
         """Return a boolean indicating if a request should be checked for rate limiting.
 
         Args:

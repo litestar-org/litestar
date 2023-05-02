@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from litestar.types.callable_types import OperationIDCreator
 
 
-def get_description_for_handler(route_handler: "HTTPRouteHandler", use_handler_docstrings: bool) -> str | None:
+def get_description_for_handler(route_handler: HTTPRouteHandler, use_handler_docstrings: bool) -> str | None:
     """Produce the operation description for a route handler, either by using the description value if provided,
 
     or the docstring - if config is enabled.
@@ -43,7 +43,7 @@ def get_description_for_handler(route_handler: "HTTPRouteHandler", use_handler_d
 
 
 def extract_layered_values(
-    route_handler: "HTTPRouteHandler",
+    route_handler: HTTPRouteHandler,
 ) -> tuple[list[str] | None, list[dict[str, list[str]]] | None]:
     """Extract the tags and security values from the route handler layers.
 
@@ -54,7 +54,7 @@ def extract_layered_values(
         A tuple of optional lists.
     """
     tags: list[str] = []
-    security: list["SecurityRequirement"] = []
+    security: list[SecurityRequirement] = []
     for layer in route_handler.ownership_layers:
         if layer.tags:
             tags.extend(layer.tags)
@@ -65,10 +65,10 @@ def extract_layered_values(
 
 def create_path_item(
     create_examples: bool,
-    operation_id_creator: "OperationIDCreator",
-    plugins: list["OpenAPISchemaPluginProtocol"],
-    route: "HTTPRoute",
-    schemas: dict[str, "Schema"],
+    operation_id_creator: OperationIDCreator,
+    plugins: list[OpenAPISchemaPluginProtocol],
+    route: HTTPRoute,
+    schemas: dict[str, Schema],
     use_handler_docstrings: bool,
 ) -> tuple[PathItem, list[str]]:
     """Create a PathItem for the given route parsing all http_methods into Operation Models.
@@ -107,6 +107,7 @@ def create_path_item(
             request_body = None
             if "data" in handler_fields:
                 request_body = create_request_body(
+                    route_handler=route_handler,
                     field=handler_fields["data"],
                     generate_examples=create_examples,
                     plugins=plugins,

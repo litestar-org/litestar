@@ -41,10 +41,10 @@ class Dependency:
 
 
 async def resolve_dependency(
-    dependency: "Dependency",
-    connection: "ASGIConnection",
+    dependency: Dependency,
+    connection: ASGIConnection,
     kwargs: dict[str, Any],
-    cleanup_group: "DependencyCleanupGroup",
+    cleanup_group: DependencyCleanupGroup,
 ) -> None:
     """Resolve a given instance of :class:`Dependency <litestar._kwargs.Dependency>`.
 

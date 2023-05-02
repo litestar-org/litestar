@@ -15,8 +15,6 @@ from typing import (
 from uuid import UUID
 
 from _decimal import Decimal
-from dateutil.parser import parse
-from pytimeparse.timeparse import timeparse
 from typing_extensions import get_args
 
 from litestar._signature.field import SignatureField
@@ -35,15 +33,25 @@ try:
     import attrs
     import cattrs
 except ImportError as e:
-    raise MissingDependencyException("attrs is not installed") from e
+    raise MissingDependencyException("attrs") from e
+
+try:
+    from dateutil.parser import parse
+except ImportError as e:
+    raise MissingDependencyException("python-dateutil", "attrs") from e
+
+try:
+    from pytimeparse.timeparse import timeparse
+except ImportError as e:
+    raise MissingDependencyException("pytimeparse", "attrs") from e
 
 if TYPE_CHECKING:
-    from litestar.plugins import PluginMapping
     from litestar.utils.signature import ParsedSignature
 
-key_re = re.compile("@ attribute (.*)|'(.*)'")
-
 __all__ = ("AttrsSignatureModel",)
+key_re = re.compile("@ attribute (.*)|'(.*)'")
+TRUE_SET = {"1", "true", "on", "t", "y", "yes"}
+FALSE_SET = {"0", "false", "off", "f", "n", "no"}
 
 try:
     import pydantic
@@ -66,6 +74,22 @@ def _pass_through_structure_hook(value: Any, _: type[Any]) -> Any:
 
 def _pass_through_unstructure_hook(value: Any) -> Any:
     return value
+
+
+def _structure_bool(value: Any, _: type[bool]) -> bool:
+    if isinstance(value, bytes):
+        value = value.decode("utf-8").lower()
+
+    if isinstance(value, str):
+        value = value.lower()
+
+    if value == 0 or value in FALSE_SET:
+        return False
+
+    if value == 1 or value in TRUE_SET:
+        return True
+
+    raise ValueError(f"Cannot convert {value} to bool")
 
 
 def _structure_datetime(value: Any, cls: type[datetime]) -> datetime:
@@ -144,6 +168,7 @@ hooks: list[tuple[type[Any], Callable[[Any, type[Any]], Any]]] = [
     (UUID, _structure_uuid),
     (UploadFile, _pass_through_structure_hook),
     (WebSocket, _pass_through_structure_hook),
+    (bool, _structure_bool),
     (date, _structure_date),
     (datetime, _structure_datetime),
     (str, _structure_str),
@@ -211,7 +236,7 @@ def _extract_exceptions(e: Any) -> list[ErrorMessage]:
     Returns:
         A list of normalized exception messages.
     """
-    messages: "list[ErrorMessage]" = []
+    messages: list[ErrorMessage] = []
     if hasattr(e, "exceptions"):
         for exc in cast("list[Exception]", e.exceptions):
             if hasattr(exc, "exceptions"):  # pragma: no cover
@@ -294,7 +319,6 @@ class AttrsSignatureModel(SignatureModel):
         fn_name: str,
         fn_module: str | None,
         parsed_signature: ParsedSignature,
-        field_plugin_mappings: dict[str, PluginMapping],
         dependency_names: set[str],
         type_overrides: dict[str, Any],
     ) -> type[SignatureModel]:
@@ -341,7 +365,6 @@ class AttrsSignatureModel(SignatureModel):
             kw_only=True,
         )
         model.return_annotation = parsed_signature.return_type.annotation  # pyright: ignore
-        model.field_plugin_mappings = field_plugin_mappings  # pyright: ignore
         model.dependency_name_set = dependency_names  # pyright: ignore
         model.populate_signature_fields()  # pyright: ignore
         return model

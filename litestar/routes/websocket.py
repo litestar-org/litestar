@@ -43,7 +43,7 @@ class WebSocketRoute(BaseRoute):
             handler_names=[route_handler.handler_name],
         )
 
-    async def handle(self, scope: "WebSocketScope", receive: "Receive", send: "Send") -> None:  # type: ignore[override]
+    async def handle(self, scope: WebSocketScope, receive: Receive, send: Send) -> None:  # type: ignore[override]
         """ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function.
 
         Args:

@@ -30,7 +30,6 @@ def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
 
     handler_fields = create_signature_model(
         fn=handler,
-        plugins=[],
         dependency_name_set=set(),
         preferred_validation_backend=app.preferred_validation_backend,
         parsed_signature=route_handler.parsed_fn_signature,
@@ -115,7 +114,7 @@ def test_create_parameters() -> None:
             {
                 "type": "string",
                 "enum": ["M", "F", "O", "A"],
-                "examples": [{"description": "Example  value", "value": "A"}],
+                "examples": [{"description": "Example  value", "value": "M"}],
             },
         ],
         "examples": [{"value": "M"}, {"value": ["M", "O"]}],

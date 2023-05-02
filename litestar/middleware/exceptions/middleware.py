@@ -134,7 +134,7 @@ class ExceptionHandlerMiddleware:
         self.exception_handlers = exception_handlers
         self.debug = debug
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI-callable.
 
         Args:
@@ -164,7 +164,7 @@ class ExceptionHandlerMiddleware:
                 await self.handle_websocket_exception(send=send, exc=e)
 
     async def handle_request_exception(
-        self, litestar_app: "Litestar", scope: "Scope", receive: "Receive", send: "Send", exc: Exception
+        self, litestar_app: Litestar, scope: Scope, receive: Receive, send: Send, exc: Exception
     ) -> None:
         """Handle exception raised inside 'http' scope routes.
 
@@ -189,7 +189,7 @@ class ExceptionHandlerMiddleware:
         await response(scope=scope, receive=receive, send=send)
 
     @staticmethod
-    async def handle_websocket_exception(send: "Send", exc: Exception) -> None:
+    async def handle_websocket_exception(send: Send, exc: Exception) -> None:
         """Handle exception raised inside 'websocket' scope routes.
 
         Args:

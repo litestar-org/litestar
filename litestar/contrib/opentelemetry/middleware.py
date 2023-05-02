@@ -46,7 +46,7 @@ class OpenTelemetryInstrumentationMiddleware(AbstractMiddleware):
             tracer_provider=config.tracer_provider,
         )
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
 
         Args:

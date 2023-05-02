@@ -2,13 +2,14 @@ from dataclasses import dataclass
 from http import HTTPStatus
 from pathlib import Path
 from types import ModuleType
-from typing import Callable, Dict
+from typing import Any, Callable, Dict
+from unittest.mock import MagicMock
 
 import pytest
 from pydantic import BaseModel
 from typing_extensions import TypedDict
 
-from litestar import Controller, Litestar, MediaType, Response, get
+from litestar import Controller, Litestar, MediaType, Response, get, post
 from litestar._openapi.responses import (
     create_additional_responses,
     create_error_responses,
@@ -16,6 +17,7 @@ from litestar._openapi.responses import (
     create_success_response,
 )
 from litestar.datastructures import Cookie, ResponseHeader
+from litestar.dto.interface import DTOInterface
 from litestar.exceptions import (
     HTTPException,
     PermissionDeniedException,
@@ -322,7 +324,6 @@ def test_create_additional_responses() -> None:
     schema = schemas[reference.ref.split("/")[-1]]
     assert isinstance(schema, Schema)
     assert schema.title == "AuthenticationError"
-    assert schema.examples
 
     second_response = next(responses)
     assert second_response[0] == "500"
@@ -416,3 +417,21 @@ def handler() -> int:
     handler = get_registered_route_handler(module.handler, "test")
     response = create_success_response(handler, True, plugins=[], schemas={})
     assert next(iter(response.content.values())).schema.type == OpenAPIType.INTEGER  # type: ignore[union-attr]
+
+
+def test_response_generation_with_dto() -> None:
+    mock_dto = MagicMock(spec=DTOInterface)
+    mock_dto.create_openapi_schema.return_value = Schema()
+
+    @post(path="/form-upload", return_dto=mock_dto)
+    async def handler(data: Dict[str, Any]) -> Dict[str, Any]:
+        return data
+
+    create_success_response(
+        route_handler=handler,
+        generate_examples=False,
+        plugins=[],
+        schemas={},
+    )
+
+    mock_dto.create_openapi_schema.assert_called_once_with("return", str(handler), False, {})
