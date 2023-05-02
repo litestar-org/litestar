@@ -8,11 +8,15 @@ from litestar.dto.factory import Mark
 from litestar.types.builtin_types import NoneType
 from litestar.utils.signature import ParsedType
 
+from .types import TransferFieldDefinition
+
 if TYPE_CHECKING:
     from typing import AbstractSet, Any, Iterable
 
     from litestar.dto.factory.types import FieldDefinition, RenameStrategy
     from litestar.dto.types import ForType
+
+    from .types import FieldDefinitionsType, NestedFieldDefinition
 
 __all__ = (
     "RenameStrategies",
@@ -123,3 +127,22 @@ class RenameStrategies:
             word if index == 0 and not capitalize_first_letter else word.capitalize()
             for index, word in enumerate(string.split("_"))
         )
+
+
+def generate_reverse_name_map(field_definitions: FieldDefinitionsType) -> dict[str, str]:
+    result = {}
+    for field_definition in field_definitions.values():
+        result.update(_generate_reverse_name_map(field_definition))
+
+    return result
+
+
+def _generate_reverse_name_map(field_definition: TransferFieldDefinition | NestedFieldDefinition) -> dict[str, str]:
+    if isinstance(field_definition, TransferFieldDefinition):
+        return (
+            {field_definition.serialization_name: field_definition.name} if field_definition.serialization_name else {}
+        )
+
+    return generate_reverse_name_map(
+        {field_definition.name: field_definition.field_definition, **field_definition.nested_field_definitions}
+    )
