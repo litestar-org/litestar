@@ -11,7 +11,13 @@ from litestar._signature.field import SignatureField
 from litestar.utils.helpers import get_fqdn
 
 from .types import NestedFieldDefinition, TransferFieldDefinition
-from .utils import RenameStrategies, build_annotation_for_backend, get_model_type, should_exclude_field
+from .utils import (
+    RenameStrategies,
+    build_annotation_for_backend,
+    generate_reverse_name_map,
+    get_model_type,
+    should_exclude_field,
+)
 
 if TYPE_CHECKING:
     from typing import AbstractSet, Any, Callable, Final, Generator
@@ -90,9 +96,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         """
         self.context = context
         self.parsed_field_definitions = self.parse_model(context.model_type, context.config.exclude)
-        self.reverse_name_map = {
-            f.serialization_name: f.name for f in self.parsed_field_definitions.values() if f.serialization_name
-        }
+        self.reverse_name_map = generate_reverse_name_map(self.parsed_field_definitions)
         self.data_container_type = self.create_data_container_type(
             get_fqdn(context.model_type), self.parsed_field_definitions
         )
