@@ -16,8 +16,6 @@ from litestar.utils.helpers import unwrap_partial
 __all__ = ("info_command", "routes_command", "run_command")
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from litestar import Litestar
 
 
@@ -61,19 +59,12 @@ def info_command(app: Litestar) -> None:
 )
 @option("--host", help="Server under this host", default="127.0.0.1", show_default=True)
 @option("--debug", help="Run app in debug mode", is_flag=True)
-@option(
-    "--app-dir",
-    help="Look for APP in the specified directory, by adding this to the PYTHONPATH. Defaults to the current working directory.",
-    default=None,
-    show_default=False,
-)
 def run_command(
     reload: bool,
     port: int,
     web_concurrency: int,
     host: str,
     debug: bool,
-    app_dir: Path | None,
     env: LitestarEnv,
     app: Litestar,
 ) -> None:
@@ -103,9 +94,6 @@ def run_command(
         "workers": env.web_concurrency or web_concurrency,
         "factory": env.is_app_factory,
     }
-    if app_dir:
-        process_args.update({"app_dir": app_dir})
-
     subprocess.run(["uvicorn", env.app_path, *_convert_uvicorn_args(process_args)], check=True)  # noqa: S603 S607
 
 
