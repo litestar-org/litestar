@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "1.51.11"
+version = "1.51.12"
 description = "Performant, light and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = [
@@ -8,12 +8,13 @@ maintainers = [
     "Peter Schutt <peter.github@proton.me>",
     "Cody Fincher <cody.fincher@gmail.com>",
     "Janek Nouvertné <provinzkraut@posteo.de>",
+    "Jacob Coffee <jacob@z7x.org>",
 ]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/starlite-api/starlite"
-repository = "https://github.com/starlite-api/starlite"
-documentation = "https://starlite-api.github.io/starlite"
+homepage = "https://litestar.dev"
+repository = "https://github.com/litestar-org/litestar"
+documentation = "https://docs.litestar.dev/1/"
 keywords = ["api", "rest", "http", "asgi", "pydantic", "starlite", "framework", "websocket"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
