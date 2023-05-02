@@ -125,6 +125,7 @@ structlog = "*"
 tortoise-orm = ">=0.17.0"
 trio = "*"
 uvicorn = "*"
+pytest-rerunfailures = "^11.1.2"
 
 [tool.poetry.group.docs]
 optional = true

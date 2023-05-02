@@ -3,11 +3,8 @@ from __future__ import annotations
 import asyncio
 import importlib.resources
 from abc import ABC
-from datetime import datetime, timedelta, timezone
-from functools import partial
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Iterable, cast
-
-import anyio
 
 from litestar.exceptions import ImproperlyConfiguredException
 
@@ -47,13 +44,18 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
         channels = set(channels)
-        if len(channels) == 1:
-            await self._redis.publish(channels.pop(), data)
+
+        if len(channels) == 1:  # if we only issue one command, using a pipeline introduces unnecessary overhead
+            channel = channels.pop()
+            await self._redis.publish(channel, data)
             return
 
-        async with anyio.create_task_group() as task_group:
-            for channel in channels:
-                task_group.start_soon(self._redis.publish, channel, data)
+        pipeline = self._redis.pipeline()
+
+        for channel in channels:
+            pipeline.publish(channel, data)
+
+        await pipeline.execute()
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         while True:
@@ -74,11 +76,12 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
 class RedisChannelsStreamBackend(RedisChannelsBackend):
     def __init__(
         self,
-        history: int = 0,
+        history: int,
         *,
         redis: Redis,
         cap_streams_approximate: bool = True,
         stream_sleep_no_subscriptions: int = 1,
+        stream_ttl: int | timedelta = timedelta(seconds=60),
     ) -> None:
         super().__init__(redis=redis, stream_sleep_no_subscriptions=stream_sleep_no_subscriptions)
         if history < 1:
@@ -87,12 +90,10 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
         self._history_limit = history
         self._subscribed_channels: set[str] = set()
         self._cap_streams_approximate = cap_streams_approximate
-        self._prune_streams_script = self._redis.register_script(
-            importlib.resources.read_text("litestar.channels", "_redis_prune_streams.lua")
-        )
         self._flush_all_streams_script = self._redis.register_script(
             importlib.resources.read_text("litestar.channels", "_redis_flushall.lua")
         )
+        self._stream_ttl = stream_ttl
 
     async def on_startup(self) -> None:
         pass
@@ -108,27 +109,19 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
         channels = set(channels)
-        if len(channels) == 1:
-            channel = channels.pop()
-            await self._redis.xadd(
-                name=self._make_key(channel),
+        pipeline = self._redis.pipeline()
+
+        for channel in channels:
+            channel_key = self._make_key(channel)
+            pipeline.xadd(
+                name=channel_key,
                 fields={"data": data, "channel": channel},
                 maxlen=self._history_limit,
                 approximate=self._cap_streams_approximate,
             )
-            return
+            pipeline.pexpire(channel_key, time=self._stream_ttl)
 
-        async with anyio.create_task_group() as task_group:
-            for channel in channels:
-                task_group.start_soon(
-                    partial(
-                        self._redis.xadd,
-                        name=self._make_key(channel),
-                        fields={"data": data, "channel": channel},
-                        maxlen=self._history_limit,
-                        approximate=self._cap_streams_approximate,
-                    )
-                )
+        await pipeline.execute()
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         stream_ids: dict[str, bytes] = {}
@@ -137,11 +130,14 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
             if not stream_keys:
                 await asyncio.sleep(self._stream_sleep_no_subscriptions)  # no subscriptions found so we sleep a bit
                 continue
+
             data: list[tuple[bytes, list[tuple[bytes, dict[bytes, bytes]]]]] = await self._redis.xread(
                 {key: stream_ids.get(key, 0) for key in stream_keys}, block=1
             )
+
             if not data:
                 continue
+
             for stream_key, channel_events in data:
                 for event in channel_events:
                     event_data = event[1][b"data"]
@@ -157,11 +153,6 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
             data = await self._redis.xrange(self._make_key(channel))
 
         return [event[b"data"] for _, event in data]
-
-    async def prune_streams(self, cutoff: timedelta) -> int:
-        timestamp = str(int((datetime.now(tz=timezone.utc) - cutoff).timestamp() * 1000))
-        deleted_streams = await self._prune_streams_script(keys=[], args=[f"{self._key_prefix}*", timestamp])
-        return cast("int", deleted_streams)
 
     async def flush_all(self) -> int:
         deleted_streams = await self._flush_all_streams_script(keys=[], args=[f"{self._key_prefix}*"])

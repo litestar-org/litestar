@@ -6,6 +6,7 @@ from typing import AsyncGenerator, cast
 
 import pytest
 from _pytest.fixtures import FixtureRequest
+from redis.asyncio.client import Redis
 
 from litestar.channels import ChannelsBackend
 from litestar.channels.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
@@ -100,32 +101,21 @@ async def test_memory_backend_discards_history_entries(channels_backend: Channel
     assert len(await channels_backend.get_history("bar")) == 10
 
 
-async def test_redis_stream_backend_prune_streams(redis_stream_backend: RedisChannelsStreamBackend) -> None:
-    await redis_stream_backend.publish(b"something", ["foo"])
-    await asyncio.sleep(2 / 1000)
-    await redis_stream_backend.publish(b"something", ["bar"])
-
-    deleted_streams_count = await redis_stream_backend.prune_streams(timedelta(milliseconds=1))
-
-    assert deleted_streams_count == 1
-    assert not await redis_stream_backend._redis.xrange(redis_stream_backend._make_key("foo"))
-    assert await redis_stream_backend._redis.xrange(redis_stream_backend._make_key("bar"))
-
-
-async def test_redis_stream_backend_prune_streams_no_hits(redis_stream_backend: RedisChannelsStreamBackend) -> None:
-    await redis_stream_backend.publish(b"something", ["foo"])
-    await asyncio.sleep(1 / 1000)
-    await redis_stream_backend.publish(b"something else", ["foo"])
-
-    deleted_streams_count = await redis_stream_backend.prune_streams(timedelta(milliseconds=1))
-
-    assert deleted_streams_count == 0
-    assert await redis_stream_backend._redis.xrange(redis_stream_backend._make_key("foo"))
-
-
 async def test_redis_streams_backend_flushall(redis_stream_backend: RedisChannelsStreamBackend) -> None:
     await redis_stream_backend.publish(b"something", ["foo", "bar", "baz"])
 
     result = await redis_stream_backend.flush_all()
 
     assert result == 3
+
+
+@pytest.mark.flaky(reruns=5)  # this should not really happen but just in case, we retry
+async def test_redis_stream_backend_expires(redis_client: Redis) -> None:
+    backend = RedisChannelsStreamBackend(redis=redis_client, stream_ttl=timedelta(milliseconds=10), history=2)
+
+    await backend.publish(b"something", ["foo"])
+    await asyncio.sleep(0.1)
+    await backend.publish(b"something", ["bar"])
+
+    assert not await backend._redis.xrange(backend._make_key("foo"))
+    assert await backend._redis.xrange(backend._make_key("bar"))
