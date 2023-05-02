@@ -56,6 +56,7 @@ class CreateAppFileFixture(Protocol):
         directory: str | Path | None = None,
         content: str | None = None,
         init_content: str = "",
+        subdir: str | None = None,
     ) -> Path:
         ...
 
@@ -68,20 +69,18 @@ def _purge_module(module_names: list[str], path: str | Path) -> None:
 
 
 @pytest.fixture
-def create_app_file(
-    tmp_project_dir: Path,
-    request: FixtureRequest,
-) -> CreateAppFileFixture:
+def create_app_file(tmp_project_dir: Path, request: FixtureRequest) -> CreateAppFileFixture:
     def _create_app_file(
         file: str | Path,
         directory: str | Path | None = None,
         content: str | None = None,
         init_content: str = "",
+        subdir: str | None = None,
     ) -> Path:
         base = tmp_project_dir
         if directory:
-            base /= directory
-            base.mkdir()
+            base /= Path(Path(directory) / subdir) if subdir else Path(directory)
+            base.mkdir(parents=True)
             base.joinpath("__init__.py").write_text(init_content)
 
         tmp_app_file = base / file

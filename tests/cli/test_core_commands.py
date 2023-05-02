@@ -31,7 +31,7 @@ def mock_subprocess_run(mocker: MockerFixture) -> MagicMock:
 @pytest.mark.parametrize("port", [8081, None])
 @pytest.mark.parametrize("reload", [True, False, None])
 @pytest.mark.parametrize("web_concurrency", [2, None])
-@pytest.mark.parametrize("app_dir", [Path(project_base / "test_apps" / "logging_test_app"), None])
+@pytest.mark.parametrize("app_dir", ["custom_subfolder", None])
 def test_run_command(
     mocker: MockerFixture,
     runner: CliRunner,
@@ -40,18 +40,19 @@ def test_run_command(
     port: Optional[int],
     host: Optional[str],
     web_concurrency: Optional[int],
-    app_dir: Optional[Path],
+    app_dir: Optional[str],
     custom_app_file: Optional[Path],
     create_app_file: CreateAppFileFixture,
     set_in_env: bool,
     mock_subprocess_run: MagicMock,
+    tmp_project_dir: Path,
 ) -> None:
     mock_show_app_info = mocker.patch("litestar.cli.commands.core.show_app_info")
     args = []
     if custom_app_file:
         args.extend(["--app", f"{custom_app_file.stem}:app"])
     if app_dir is not None:
-        args.extend(["--app-dir", str(app_dir)])
+        args.extend(["--app-dir", str(Path(tmp_project_dir / app_dir))])
     args.extend(["run"])
 
     if reload:
@@ -85,7 +86,7 @@ def test_run_command(
             args.extend(["--web-concurrency", str(web_concurrency)])
     else:
         web_concurrency = 1
-    path = create_app_file(custom_app_file or "app.py")
+    path = create_app_file(custom_app_file or "app.py", subdir=app_dir)
 
     result = runner.invoke(cli_command, args)
 
