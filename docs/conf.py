@@ -64,7 +64,7 @@ autosectionlabel_prefix_document = True
 
 suppress_warnings = ["autosectionlabel.*"]
 
-html_theme = "starlite_sphinx_theme"
+html_theme = "litestar_sphinx_theme"
 html_static_path = ["_static"]
 html_js_files = ["versioning.js"]
 html_css_files = ["style.css"]
@@ -74,23 +74,41 @@ html_title = "Starlite Framework"
 
 html_theme_options = {
     "use_page_nav": False,
-    "github_repo_name": "starlite",
+    "github_repo_name": "litestar",
     "logo": {
-        "link": "https://starliteproject.dev",
+        "link": "https://litestar.dev",
     },
     "extra_navbar_items": {
         "Documentation": "index",
         "Community": {
-            "Contribution Guide": "contribution-guide",
-            "Code of Conduct": "https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md",
+            "Contributing": {
+                "description": "Learn how to contribute to the Litestar project",
+                "link": "https://docs.litestar.dev/2/contribution-guide.html",
+                "icon": "contributing",
+            },
+            "Code of Conduct": {
+                "description": "Review the etiquette for interacting with the Litestar community",
+                "link": "https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md",
+                "icon": "coc",
+            },
         },
         "About": {
-            "Organization": "https://starliteproject.dev/about/organization",
-            "Releases": "https://starliteproject.dev/about/starlite-releases",
+            "Litestar Organization": {
+                "description": "Details about the Litestar organization",
+                "link": "about/organization",
+                "icon": "org",
+            },
+            "Releases": {
+                "description": "Details about the Litestar release process",
+                "link": "about/litestar-releases",
+                "icon": "releases",
+            },
         },
         "Release notes": {
-            "1.x Changelog": "https://docs.starliteproject.dev/1/release-notes/changelog.html",
+            "2.x Changelog": "https://docs.litestar.dev/2/release-notes/changelog.html",
+            "1.x Changelog": "https://docs.litestar.dev/1/release-notes/changelog.html",
         },
+        "Help": "https://github.com/orgs/litestar-org/discussions",
     },
 }
 
