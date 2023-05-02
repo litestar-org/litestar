@@ -589,7 +589,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
                     scheme="Bearer",
                     name=self.auth_header,
                     security_scheme_in="header",
-                    flows=OAuthFlows(password=self.oauth_flow),  # pyright: reportGeneralTypeIssues=false
+                    flows=OAuthFlows(password=self.oauth_flow),  # pyright: ignore[reportGeneralTypeIssues]
                     bearer_format="JWT",
                     description=self.description,
                 )

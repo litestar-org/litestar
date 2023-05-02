@@ -95,7 +95,7 @@ def run_command(
         "factory": env.is_app_factory,
     }
 
-    subprocess.run(["uvicorn", env.app_path, *_convert_uvicorn_args(process_args)], check=True)
+    subprocess.run(["uvicorn", env.app_path, *_convert_uvicorn_args(process_args)], check=True)  # noqa: S603 S607
 
 
 @command(name="routes")
