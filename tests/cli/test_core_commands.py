@@ -26,7 +26,7 @@ def mock_subprocess_run(mocker: MockerFixture) -> MagicMock:
 
 
 @pytest.mark.parametrize("set_in_env", [True, False])
-@pytest.mark.parametrize("custom_app_file", [Path("main.py"), None])
+@pytest.mark.parametrize("custom_app_file", [Path("my_app.py"), None])
 @pytest.mark.parametrize("host", ["0.0.0.0", None])
 @pytest.mark.parametrize("port", [8081, None])
 @pytest.mark.parametrize("reload", [True, False, None])
