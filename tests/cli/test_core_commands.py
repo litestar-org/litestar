@@ -47,14 +47,13 @@ def test_run_command(
     mock_subprocess_run: MagicMock,
 ) -> None:
     mock_show_app_info = mocker.patch("litestar.cli.commands.core.show_app_info")
-
-    args = ["run"]
-
+    args = []
     if custom_app_file:
-        args[0:0] = ["--app", f"{custom_app_file.stem}:app"]
+        args.extend(["--app", f"{custom_app_file.stem}:app"])
     if app_dir is not None:
-        args.insert(0, "--app-dir")
-        args.insert(1, str(app_dir))
+        args.extend(["--app-dir", str(app_dir)])
+    args.extend(["run"])
+
     if reload:
         if set_in_env:
             monkeypatch.setenv("LITESTAR_RELOAD", "true")
