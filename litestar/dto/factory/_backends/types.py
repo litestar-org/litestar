@@ -32,6 +32,11 @@ class NestedFieldDefinition:
         return self.field_definition.name
 
     @property
+    def unique_name(self) -> str:
+        """Unique name of the field."""
+        return self.field_definition.unique_name
+
+    @property
     def serialization_name(self) -> str | None:
         """Serialization name of the field."""
         return self.field_definition.serialization_name
