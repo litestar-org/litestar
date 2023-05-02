@@ -25,6 +25,7 @@ def get_logger() -> "GetLogger":
     ).configure()
 
 
+@pytest.mark.usefixtures("reset_httpx_logging")
 def test_logging_middleware_regular_logger(get_logger: "GetLogger", caplog: "LogCaptureFixture") -> None:
     with TestClient(app=app) as client, caplog.at_level(logging.INFO):
         client.app.get_logger = get_logger

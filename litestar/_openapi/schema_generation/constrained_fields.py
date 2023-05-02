@@ -4,6 +4,7 @@ from datetime import datetime
 from re import Pattern
 from typing import TYPE_CHECKING, Any
 
+from litestar._openapi.schema_generation.utils import sort_schemas_and_references
 from litestar.exceptions import MissingDependencyException
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.schema import Schema
@@ -48,7 +49,7 @@ __all__ = (
 
 
 def create_numerical_constrained_field_schema(
-    field_type: type["ConstrainedFloat"] | type["ConstrainedInt"] | type["ConstrainedDecimal"],
+    field_type: type[ConstrainedFloat] | type[ConstrainedInt] | type[ConstrainedDecimal],
 ) -> Schema:
     """Create Schema from Constrained Int/Float/Decimal field."""
     schema = Schema(type=OpenAPIType.INTEGER if issubclass(field_type, int) else OpenAPIType.NUMBER)
@@ -65,7 +66,7 @@ def create_numerical_constrained_field_schema(
     return schema
 
 
-def create_date_constrained_field_schema(field_type: type["ConstrainedDate"]) -> Schema:
+def create_date_constrained_field_schema(field_type: type[ConstrainedDate]) -> Schema:
     """Create Schema from Constrained Date Field."""
     schema = Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.DATE)
     if field_type.le is not None:
@@ -79,7 +80,7 @@ def create_date_constrained_field_schema(field_type: type["ConstrainedDate"]) ->
     return schema
 
 
-def create_string_constrained_field_schema(field_type: type["ConstrainedStr"] | type["ConstrainedBytes"]) -> Schema:
+def create_string_constrained_field_schema(field_type: type[ConstrainedStr] | type[ConstrainedBytes]) -> Schema:
     """Create Schema from Constrained Str/Bytes field."""
     schema = Schema(type=OpenAPIType.STRING)
     if field_type.min_length:
@@ -94,9 +95,9 @@ def create_string_constrained_field_schema(field_type: type["ConstrainedStr"] | 
 
 
 def create_collection_constrained_field_schema(
-    field_type: type["ConstrainedList"] | type["ConstrainedSet"] | type["ConstrainedFrozenSet"],
-    children: tuple["SignatureField", ...] | None,
-    plugins: list["OpenAPISchemaPluginProtocol"],
+    field_type: type[ConstrainedList] | type[ConstrainedSet] | type[ConstrainedFrozenSet],
+    children: tuple[SignatureField, ...] | None,
+    plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
 ) -> Schema:
     """Create Schema from Constrained List/Set field.
@@ -127,7 +128,7 @@ def create_collection_constrained_field_schema(
             for sub_field in children
         ]
         if len(items) > 1:
-            schema.items = Schema(one_of=items)
+            schema.items = Schema(one_of=sort_schemas_and_references(items))
         else:
             schema.items = items[0]
     else:
@@ -143,19 +144,19 @@ def create_collection_constrained_field_schema(
 
 
 def create_constrained_field_schema(
-    field_type: type["ConstrainedBytes"]
-    | type["ConstrainedDate"]
-    | type["ConstrainedDecimal"]
-    | type["ConstrainedFloat"]
-    | type["ConstrainedFrozenSet"]
-    | type["ConstrainedInt"]
-    | type["ConstrainedList"]
-    | type["ConstrainedSet"]
-    | type["ConstrainedStr"],
-    children: tuple["SignatureField", ...] | None,
-    plugins: list["OpenAPISchemaPluginProtocol"],
+    field_type: type[ConstrainedBytes]
+    | type[ConstrainedDate]
+    | type[ConstrainedDecimal]
+    | type[ConstrainedFloat]
+    | type[ConstrainedFrozenSet]
+    | type[ConstrainedInt]
+    | type[ConstrainedList]
+    | type[ConstrainedSet]
+    | type[ConstrainedStr],
+    children: tuple[SignatureField, ...] | None,
+    plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
-) -> "Schema":
+) -> Schema:
     """Create Schema for Pydantic Constrained fields (created using constr(), conint() and so forth, or by subclassing
     Constrained*)
 

@@ -80,7 +80,9 @@ def extract_dataclass_items(
     return tuple((field.name, getattr(dt, field.name)) for field in dataclass_fields)
 
 
-def simple_asdict(obj: DataclassProtocol, exclude_none: bool = False, exclude_empty: bool = False) -> dict[str, Any]:
+def simple_asdict(
+    obj: DataclassProtocol, exclude_none: bool = False, exclude_empty: bool = False, convert_nested: bool = True
+) -> dict[str, Any]:
     """Convert a dataclass to a dictionary.
 
     This method has important differences to the standard library version:
@@ -91,6 +93,7 @@ def simple_asdict(obj: DataclassProtocol, exclude_none: bool = False, exclude_em
         obj: A dataclass instance.
         exclude_none: Whether to exclude None values.
         exclude_empty: Whether to exclude Empty values.
+        convert_nested: Whether to recursively convert nested dataclasses.
 
     Returns:
         A dictionary of key/value pairs.
@@ -98,7 +101,7 @@ def simple_asdict(obj: DataclassProtocol, exclude_none: bool = False, exclude_em
     ret = {}
     for field in extract_dataclass_fields(obj, exclude_none, exclude_empty):
         value = getattr(obj, field.name)
-        if isinstance(value, DataclassProtocol):
+        if isinstance(value, DataclassProtocol) and convert_nested:
             ret[field.name] = simple_asdict(value, exclude_none, exclude_empty)
         else:
             ret[field.name] = getattr(obj, field.name)

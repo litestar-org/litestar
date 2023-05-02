@@ -233,8 +233,16 @@ async def test_hx_location_response_with_all_parameters() -> None:
 @pytest.mark.parametrize(
     "engine, template, expected",
     (
-        (JinjaTemplateEngine, "path: {{ request.scope['path'] }}", "path: /"),
-        (MakoTemplateEngine, "path: ${request.scope['path']}", "path: /"),
+        (
+            JinjaTemplateEngine,
+            "path: {{ request.scope['path'] }} custom_key: {{ custom_key }}",
+            "path: / custom_key: custom_value",
+        ),
+        (
+            MakoTemplateEngine,
+            "path: ${request.scope['path']} custom_key: ${custom_key}",
+            "path: / custom_key: custom_value",
+        ),
     ),
 )
 def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str, template_dir: Path) -> None:
@@ -244,7 +252,7 @@ def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str
     def handler() -> HTMXTemplate:
         return HTMXTemplate(
             name="abc.html",
-            context={"request": {"scope": {"path": "nope"}}},
+            context={"request": {"scope": {"path": "nope"}}, "custom_key": "custom_value"},
             push_url="/about",
             re_swap="beforebegin",
             re_target="#new-target-id",

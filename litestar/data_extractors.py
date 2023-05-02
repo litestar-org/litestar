@@ -254,7 +254,7 @@ class ConnectionDataExtractor:
         """
         return request.content_type
 
-    async def extract_body(self, request: "Request[Any, Any, Any]") -> Any:
+    async def extract_body(self, request: Request[Any, Any, Any]) -> Any:
         """Extract the body from an ``ASGIConnection``
 
         Args:

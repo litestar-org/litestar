@@ -25,7 +25,7 @@ from litestar.utils.helpers import Ref
 
 if TYPE_CHECKING:
     from litestar.types.empty import EmptyType
-    from litestar.types.parsed_signature import ParsedSignature
+    from litestar.utils.signature import ParsedSignature
 
 __all__ = ("AsyncCallable", "AsyncIteratorWrapper", "as_async_callable_list", "async_partial", "is_async_callable")
 
@@ -95,7 +95,7 @@ class AsyncCallable(Generic[P, T]):
         Args:
             namespace: Namespace for forward ref resolution.
         """
-        from litestar.types.parsed_signature import ParsedSignature
+        from litestar.utils.signature import ParsedSignature
 
         self._parsed_signature = ParsedSignature.from_fn(self.ref.value, namespace)
 

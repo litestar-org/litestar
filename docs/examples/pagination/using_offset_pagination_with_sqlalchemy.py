@@ -1,14 +1,16 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, cast
 
-from sqlalchemy import Column, Integer, String, func, select
-from sqlalchemy.orm import Mapped, declarative_base
+from sqlalchemy import func, select
+from sqlalchemy.orm import Mapped
 
 from litestar import Litestar, get
+from litestar.contrib.sqlalchemy.base import Base
+from litestar.contrib.sqlalchemy.init_plugin.config import (
+    SQLAlchemyAsyncConfig,
+)
+from litestar.contrib.sqlalchemy.init_plugin.plugin import SQLAlchemyInitPlugin
 from litestar.di import Provide
 from litestar.pagination import AbstractAsyncOffsetPaginator, OffsetPagination
-from litestar.plugins.sql_alchemy import SQLAlchemyConfig, SQLAlchemyPlugin
-
-Base = declarative_base()
 
 if TYPE_CHECKING:
     from sqlalchemy.engine.result import ScalarResult
@@ -16,8 +18,7 @@ if TYPE_CHECKING:
 
 
 class Person(Base):
-    id: Mapped[int] = Column(Integer, primary_key=True)
-    name: Mapped[str] = Column(String)
+    name: Mapped[str]
 
 
 class PersonOffsetPaginator(AbstractAsyncOffsetPaginator[Person]):
@@ -25,7 +26,7 @@ class PersonOffsetPaginator(AbstractAsyncOffsetPaginator[Person]):
         self.async_session = async_session
 
     async def get_total(self) -> int:
-        return await self.async_session.scalar(select(func.count(Person.id)))
+        return cast("int", await self.async_session.scalar(select(func.count(Person.id))))
 
     async def get_items(self, limit: int, offset: int) -> List[Person]:
         people: "ScalarResult" = await self.async_session.scalars(select(Person).slice(offset, limit))
@@ -39,15 +40,15 @@ async def people_handler(paginator: PersonOffsetPaginator, limit: int, offset: i
     return await paginator(limit=limit, offset=offset)
 
 
-sqlalchemy_config = SQLAlchemyConfig(
-    connection_string="sqlite+aiosqlite:///test.sqlite", dependency_key="async_session"
+sqlalchemy_config = SQLAlchemyAsyncConfig(
+    connection_string="sqlite+aiosqlite:///test.sqlite", session_dependency_key="async_session"
 )  # Create 'async_session' dependency.
-sqlalchemy_plugin = SQLAlchemyPlugin(config=sqlalchemy_config)
+sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 
 
 async def on_startup() -> None:
     """Initializes the database."""
-    async with sqlalchemy_config.engine.begin() as conn:
+    async with sqlalchemy_config.create_engine().begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
 

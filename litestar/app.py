@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+import logging
 from datetime import date, datetime, time, timedelta
-from functools import partial
 from itertools import chain
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, Mapping, Sequence, cast
@@ -11,7 +11,6 @@ from typing_extensions import Self, TypedDict
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
 from litestar._openapi.path_item import create_path_item
-from litestar._signature import create_signature_model
 from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.app import AppConfig
 from litestar.config.response_cache import ResponseCacheConfig
@@ -23,7 +22,6 @@ from litestar.exceptions import (
     ImproperlyConfiguredException,
     NoRouteMatchFoundException,
 )
-from litestar.handlers.http_handlers import HTTPRouteHandler
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
 from litestar.middleware.cors import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
@@ -39,16 +37,12 @@ from litestar.static_files.base import StaticFiles
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty
 from litestar.types.internal_types import PathParameterDefinition
-from litestar.types.parsed_signature import ParsedSignature
 from litestar.utils import (
     as_async_callable_list,
-    async_partial,
-    is_async_callable,
     join_paths,
     unique,
 )
 from litestar.utils.dataclass import extract_dataclass_items
-from litestar.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
     from litestar.config.compression import CompressionConfig
@@ -57,7 +51,6 @@ if TYPE_CHECKING:
     from litestar.datastructures import CacheControlHeader, ETag, ResponseHeader
     from litestar.dto.interface import DTOInterface
     from litestar.events.listener import EventListener
-    from litestar.handlers.base import BaseRouteHandler
     from litestar.logging.config import BaseLoggingConfig
     from litestar.openapi.spec import SecurityRequirement
     from litestar.openapi.spec.open_api import OpenAPI
@@ -132,6 +125,7 @@ class Litestar(Router):
     """
 
     __slots__ = (
+        "_debug",
         "_openapi_schema",
         "after_exception",
         "after_shutdown",
@@ -145,13 +139,11 @@ class Litestar(Router):
         "compression_config",
         "cors_config",
         "csrf_config",
-        "debug",
         "event_emitter",
         "get_logger",
         "logger",
         "logging_config",
         "multipart_form_part_limit",
-        "signature_namespace",
         "on_shutdown",
         "on_startup",
         "openapi_config",
@@ -161,6 +153,7 @@ class Litestar(Router):
         "response_cache_config",
         "route_map",
         "serialization_plugins",
+        "signature_namespace",
         "state",
         "static_files_config",
         "stores",
@@ -373,6 +366,7 @@ class Litestar(Router):
             config = handler(config)
 
         self._openapi_schema: OpenAPI | None = None
+        self._debug: bool = True
         self.get_logger: GetLogger = get_logger_placeholder
         self.logger: Logger | None = None
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
@@ -389,7 +383,6 @@ class Litestar(Router):
         self.compression_config = config.compression_config
         self.cors_config = config.cors_config
         self.csrf_config = config.csrf_config
-        self.debug = config.debug
         self.event_emitter = config.event_emitter_backend(listeners=config.listeners)
         self.logging_config = config.logging_config
         self.multipart_form_part_limit = config.multipart_form_part_limit
@@ -405,6 +398,7 @@ class Litestar(Router):
         self.static_files_config = config.static_files_config
         self.template_engine = config.template_config.engine_instance if config.template_config else None
         self.websocket_class = config.websocket_class or WebSocket
+        self.debug = config.debug
 
         super().__init__(
             after_request=config.after_request,
@@ -435,9 +429,6 @@ class Litestar(Router):
         for route_handler in config.route_handlers:
             self.register(route_handler)
 
-        if self.debug and isinstance(self.logging_config, LoggingConfig):
-            self.logging_config.loggers["litestar"]["level"] = "DEBUG"
-
         if self.logging_config:
             self.get_logger = self.logging_config.configure()
             self.logger = self.get_logger("litestar")
@@ -450,7 +441,21 @@ class Litestar(Router):
 
         self.asgi_handler = self._create_asgi_handler()
 
-        self.stores = config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
+        self.stores: StoreRegistry = (
+            config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
+        )
+
+    @property
+    def debug(self) -> bool:
+        return self._debug
+
+    @debug.setter
+    def debug(self, value: bool) -> None:
+        if self.logger:
+            self.logger.setLevel(logging.DEBUG if value else logging.INFO)
+        if isinstance(self.logging_config, LoggingConfig):
+            self.logging_config.loggers["litestar"]["level"] = "DEBUG" if value else "INFO"
+        self._debug = value
 
     async def __call__(
         self,
@@ -528,9 +533,7 @@ class Litestar(Router):
             route_handlers = get_route_handlers(route)
 
             for route_handler in route_handlers:
-                route_handler.on_registration()
-                self._set_runtime_callables(route_handler=route_handler)
-                self._create_handler_signature_model(route_handler=route_handler)
+                route_handler.on_registration(self)
 
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()
@@ -650,7 +653,7 @@ class Litestar(Router):
             .. code-block: python
 
                 from litestar import Litestar
-                from litestar.config.static_files import StaticFilesConfig
+                from litestar.static_files.config import StaticFilesConfig
 
                 app = Litestar(
                     static_files_config=[StaticFilesConfig(directories=["css"], path="/static/css")]
@@ -707,63 +710,6 @@ class Litestar(Router):
             debug=self.debug, app=asgi_handler, exception_handlers=self.exception_handlers or {}
         )
 
-    @staticmethod
-    def _set_runtime_callables(route_handler: BaseRouteHandler) -> None:
-        """Optimize the ``route_handler.fn`` and any ``provider.dependency`` callables for runtime by doing the following:
-
-        1. ensure that the ``self`` argument is preserved by binding it using partial.
-        2. ensure sync functions are wrapped in AsyncCallable for sync_to_thread handlers.
-
-        Args:
-            route_handler: A route handler to process.
-
-        Returns:
-            None
-        """
-        from litestar.controller import Controller
-
-        if isinstance(route_handler.owner, Controller) and not hasattr(route_handler.fn.value, "func"):
-            route_handler.fn.value = partial(route_handler.fn.value, route_handler.owner)
-
-        if isinstance(route_handler, HTTPRouteHandler):
-            route_handler.has_sync_callable = False
-            if not is_async_callable(route_handler.fn.value):
-                if route_handler.sync_to_thread:
-                    route_handler.fn.value = async_partial(route_handler.fn.value)
-                else:
-                    route_handler.has_sync_callable = True
-
-        for provider in route_handler.resolve_dependencies().values():
-            if not is_async_callable(provider.dependency.value):
-                provider.has_sync_callable = False
-                if provider.sync_to_thread:
-                    provider.dependency.value = async_partial(provider.dependency.value)
-                else:
-                    provider.has_sync_callable = True
-
-    def _create_handler_signature_model(self, route_handler: BaseRouteHandler) -> None:
-        """Create function signature models for all route handler functions and provider dependencies."""
-        if not route_handler.signature_model:
-            route_handler.signature_model = create_signature_model(
-                dependency_name_set=route_handler.dependency_name_set,
-                fn=cast("AnyCallable", route_handler.fn.value),
-                plugins=self.serialization_plugins,
-                preferred_validation_backend=self.preferred_validation_backend,
-                parsed_signature=route_handler.parsed_fn_signature,
-            )
-
-        for provider in route_handler.resolve_dependencies().values():
-            if not getattr(provider, "signature_model", None):
-                provider.signature_model = create_signature_model(
-                    dependency_name_set=route_handler.dependency_name_set,
-                    fn=provider.dependency.value,
-                    plugins=self.serialization_plugins,
-                    preferred_validation_backend=self.preferred_validation_backend,
-                    parsed_signature=ParsedSignature.from_fn(
-                        unwrap_partial(provider.dependency.value), route_handler.resolve_signature_namespace()
-                    ),
-                )
-
     def _wrap_send(self, send: Send, scope: Scope) -> Send:
         """Wrap the ASGI send and handles any 'before send' hooks.
 
@@ -776,7 +722,7 @@ class Litestar(Router):
         """
         if self.before_send:
 
-            async def wrapped_send(message: "Message") -> None:
+            async def wrapped_send(message: Message) -> None:
                 for hook in self.before_send:
                     await hook(message, self.state, scope)
                 await send(message)

@@ -1,10 +1,13 @@
 import importlib.util
+import logging
+import random
+import string
 import sys
-from os import environ, urandom
+from os import urandom
+from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Any,
-    AsyncGenerator,
     Callable,
     Dict,
     Generator,
@@ -12,12 +15,13 @@ from typing import (
     Tuple,
     TypeVar,
     Union,
+    cast,
 )
-from uuid import uuid4
 
+import pytest
+from _pytest.fixtures import FixtureRequest
+from fakeredis.aioredis import FakeRedis
 from freezegun import freeze_time
-from piccolo.conf.apps import Finder
-from piccolo.table import create_db_tables, drop_db_tables
 from pytest_lazyfixture import lazy_fixture
 
 from litestar.middleware.session import SessionMiddleware
@@ -31,6 +35,10 @@ from litestar.middleware.session.server_side import (
     ServerSideSessionConfig,
 )
 from litestar.stores.base import Store
+from litestar.stores.file import FileStore
+from litestar.stores.memory import MemoryStore
+from litestar.stores.redis import RedisStore
+from litestar.testing import RequestFactory
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -49,46 +57,10 @@ if TYPE_CHECKING:
         Send,
     )
 
-from pathlib import Path
-from typing import cast
-
-import pytest
-from _pytest.fixtures import FixtureRequest
-from fakeredis.aioredis import FakeRedis
-
-from litestar.stores.file import FileStore
-from litestar.stores.memory import MemoryStore
-from litestar.stores.redis import RedisStore
-
-
-def pytest_generate_tests(metafunc: Callable) -> None:
-    """Sets ENV variables for 9-testing."""
-    environ.update(PICCOLO_CONF="tests.piccolo_conf")
-
 
 @pytest.fixture()
 def template_dir(tmp_path: Path) -> Path:
     return tmp_path
-
-
-@pytest.fixture()
-async def scaffold_tortoise() -> AsyncGenerator:
-    """Scaffolds Tortoise ORM and performs cleanup."""
-    from tests.contrib.tortoise_orm import cleanup, init_tortoise
-
-    await init_tortoise()
-    yield
-    await cleanup()
-
-
-@pytest.fixture()
-async def scaffold_piccolo() -> AsyncGenerator:
-    """Scaffolds Piccolo ORM and performs cleanup."""
-    tables = Finder().get_table_classes()
-    await drop_db_tables(*tables)
-    await create_db_tables(*tables)
-    yield
-    await drop_db_tables(*tables)
 
 
 @pytest.fixture(
@@ -266,7 +238,11 @@ def create_module(tmp_path: Path, monkeypatch: "MonkeyPatch") -> "Callable[[str]
             assert val is not None
             return val
 
-        module_name = uuid4().hex
+        def module_name_generator() -> str:
+            letters = string.ascii_lowercase
+            return "".join(random.choice(letters) for _ in range(10))
+
+        module_name = module_name_generator()
         path = tmp_path / f"{module_name}.py"
         path.write_text(source)
         # https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly
@@ -288,3 +264,18 @@ def mock_db() -> MemoryStore:
 def frozen_datetime() -> Generator["FrozenDateTimeFactory", None, None]:
     with freeze_time() as frozen:
         yield cast("FrozenDateTimeFactory", frozen)
+
+
+@pytest.fixture()
+def request_factory() -> RequestFactory:
+    return RequestFactory()
+
+
+@pytest.fixture()
+def reset_httpx_logging() -> Generator[None, None, None]:
+    # ensure that httpx logging is not interfering with our test client
+    httpx_logger = logging.getLogger("httpx")
+    initial_level = httpx_logger.level
+    httpx_logger.setLevel(logging.WARNING)
+    yield
+    httpx_logger.setLevel(initial_level)

@@ -1,11 +1,8 @@
 Litestar library documentation
 ==============================
 
-.. attention:: ``Starlite`` is renaming to ``Litestar``! Some links may be broken while we migrate.
-
-
 Litestar is a powerful, flexible, highly performant and opinionated ASGI framework,
-offering first class typing support and a full `Pydantic <https://github.com/samuelcolvin/pydantic>`_
+offering first class typing support and a full `Pydantic <https://github.com/pydantic/pydantic>`_
 integration.
 
 The Litestar framework supports :doc:`/usage/plugins/index`, ships
@@ -27,10 +24,13 @@ Installation
     :ref:`Brotli Compression Middleware <usage/middleware/builtin-middleware:brotli>`:
         :code:`pip install litestar[brotli]`
 
-    :ref:`Cookie based sessions <usage/middleware/builtin-middleware:client-side sessions>`
+    :ref:`Cookie Based Sessions <usage/middleware/builtin-middleware:client-side sessions>`
         :code:`pip install litestar[cryptography]`
 
-    :class:`RedisStore <litestar.stores.redis.RedisStore>`
+    :doc:`JWT Security Backends </usage/contrib/jwt>`
+        :code:`pip install litestar[jwt]`
+
+    :doc:`RedisStore </usage/stores>`
         :code:`pip install litestar[redis]`
 
     :ref:`Picologging <usage/the-litestar-app:using picologging>`
@@ -39,16 +39,25 @@ Installation
     :ref:`StructLog <usage/the-litestar-app:using structlog>`
         :code:`pip install litestar[structlog]`
 
-    :doc:`/usage/contrib/open-telemetry`
+    :doc:`Open Telemetry Instrumentation </usage/contrib/open-telemetry>`
         :code:`pip install litestar[openetelemetry]`
 
-    :doc:`/usage/cli`
+    :doc:`SQLAlchemy </usage/plugins/sqlalchemy/index>`
+        :code:`pip install litestar[sqlalchemy]`
+
+    :doc:`CLI </usage/cli>`
         :code:`pip install litestar[cli]`
 
-    Standard installation (includes CLI, picologging and Jinja2 templating):
+    :doc:`Jinja Templating </usage/templating>`
+        :code:`pip install litestar[jinja]`
+
+    Attrs
+        :code:`pip install litestar[attrs]`
+
+    Standard Installation (includes CLI and Jinja templating):
         :code:`pip install litestar[standard]`
 
-    All extras:
+    All Extras:
         :code:`pip install litestar[full]`
 
 
@@ -216,6 +225,7 @@ Example Applications
     :caption: Documentation
     :hidden:
 
+    tutorials/index
     usage/index
     reference/index
     migration/index

@@ -21,6 +21,9 @@ if TYPE_CHECKING:
     from litestar.types.callable_types import GetLogger
 
 
+pytestmark = pytest.mark.usefixtures("reset_httpx_logging")
+
+
 @get("/")
 def handler() -> Response:
     return Response(

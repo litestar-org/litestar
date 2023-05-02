@@ -7,7 +7,7 @@ import pytest
 from pydantic import BaseModel
 
 from litestar._signature.utils import _any_attrs_annotation, _any_pydantic_annotation
-from litestar.types.parsed_signature import ParsedSignature
+from litestar.utils.signature import ParsedSignature
 
 
 @attrs.define
@@ -32,4 +32,4 @@ def test_any_pydantic_annotation(annotation: Any) -> None:
     def fn(bar: annotation) -> None:
         ...
 
-    assert _any_pydantic_annotation(ParsedSignature.from_fn(fn, {"annotation": annotation}), {}) is True
+    assert _any_pydantic_annotation(ParsedSignature.from_fn(fn, {"annotation": annotation})) is True

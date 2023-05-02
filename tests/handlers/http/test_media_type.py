@@ -4,7 +4,7 @@ from typing import Any, AnyStr
 import pytest
 from pydantic.types import PaymentCardBrand
 
-from litestar import MediaType, get
+from litestar import Litestar, MediaType, get
 from tests import Person
 
 
@@ -34,5 +34,5 @@ def test_media_type_inference(annotation: Any, expected_media_type: MediaType) -
     def handler() -> annotation:
         return None
 
-    handler.on_registration()
+    handler.on_registration(Litestar())
     assert handler.media_type == expected_media_type

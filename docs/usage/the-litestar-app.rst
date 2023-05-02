@@ -163,7 +163,7 @@ and the **html files** on the ``/html`` path:
 .. code-block:: python
 
    from litestar import Litestar
-   from litestar.config.static_files import StaticFilesConfig
+   from litestar.static_files.config import StaticFilesConfig
 
    app = Litestar(
        route_handlers=[...],
@@ -247,7 +247,7 @@ Litestar has builtin pydantic based logging configuration that allows users to e
 .. code-block:: python
 
    from litestar import Litestar, Request, get
-   from litestar.config.logging import LoggingConfig
+   from litestar.logging import LoggingConfig
 
 
    @get("/")
@@ -289,7 +289,7 @@ logging config for using it:
 .. code-block:: python
 
    from litestar import Litestar, Request, get
-   from litestar.config.logging import StructLoggingConfig
+   from litestar.logging import StructLoggingConfig
 
 
    @get("/")
@@ -422,6 +422,7 @@ Parameters that support layering are:
 * :ref:`before_request <before_request>`
 * :ref:`cache_control <usage/responses:cache control>`
 * :doc:`dependencies </usage/dependency-injection>`
+* :doc:`dto </usage/dto/0-basic-use>`
 * :ref:`etag <usage/responses:etag>`
 * :doc:`exception_handlers </usage/exceptions>`
 * :doc:`guards </usage/security/guards>`
@@ -430,6 +431,7 @@ Parameters that support layering are:
 * :ref:`response_class <usage/responses:custom responses>`
 * :ref:`response_cookies <usage/responses:response cookies>`
 * :ref:`response_headers <usage/responses:response headers>`
+* :doc:`return_dto </usage/dto/0-basic-use>`
 * ``security``
 * ``tags``
 * ``type_encoders``

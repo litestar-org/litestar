@@ -292,7 +292,7 @@ class Response(Generic[T]):
         if self.background is not None:
             await self.background()
 
-    async def start_response(self, send: "Send") -> None:
+    async def start_response(self, send: Send) -> None:
         """Emit the start event of the response. This event includes the headers and status codes.
 
         Args:
@@ -316,7 +316,7 @@ class Response(Generic[T]):
 
         await send(event)
 
-    async def send_body(self, send: "Send", receive: "Receive") -> None:
+    async def send_body(self, send: Send, receive: Receive) -> None:
         """Emit the response body.
 
         Args:
@@ -332,7 +332,7 @@ class Response(Generic[T]):
         event: HTTPResponseBodyEvent = {"type": "http.response.body", "body": self.body, "more_body": False}
         await send(event)
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable of the ``Response``.
 
         Args:

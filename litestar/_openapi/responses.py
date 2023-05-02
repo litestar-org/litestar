@@ -47,7 +47,7 @@ def pascal_case_to_text(string: str) -> str:
     return " ".join(re.split(CAPITAL_LETTERS_PATTERN, string)).strip()
 
 
-def create_cookie_schema(cookie: "Cookie") -> Schema:
+def create_cookie_schema(cookie: Cookie) -> Schema:
     """Given a Cookie instance, return its corresponding OpenAPI schema.
 
     Args:
@@ -62,11 +62,11 @@ def create_cookie_schema(cookie: "Cookie") -> Schema:
     return Schema(description=cookie.description or "", example=value)
 
 
-def create_success_response(
-    route_handler: "HTTPRouteHandler",
+def create_success_response(  # noqa: C901
+    route_handler: HTTPRouteHandler,
     generate_examples: bool,
-    plugins: list["OpenAPISchemaPluginProtocol"],
-    schemas: dict[str, "Schema"],
+    plugins: list[OpenAPISchemaPluginProtocol],
+    schemas: dict[str, Schema],
 ) -> OpenAPIResponse:
     """Create the schema for a success response."""
     return_annotation = route_handler.parsed_fn_signature.return_type.annotation
@@ -88,12 +88,15 @@ def create_success_response(
         elif is_class_and_subclass(get_origin(return_annotation), LitestarResponse):
             return_annotation = get_args(return_annotation)[0] or Any
 
-        result = create_schema(
-            field=SignatureField.create(field_type=return_annotation),
-            generate_examples=generate_examples,
-            plugins=plugins,
-            schemas=schemas,
-        )
+        if dto := route_handler.resolve_return_dto():
+            result = dto.create_openapi_schema("return", str(route_handler), generate_examples, schemas)
+        else:
+            result = create_schema(
+                field=SignatureField.create(field_type=return_annotation),
+                generate_examples=generate_examples,
+                plugins=plugins,
+                schemas=schemas,
+            )
 
         schema = result if isinstance(result, Schema) else schemas[result.value]
 
@@ -214,9 +217,9 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
 
 
 def create_additional_responses(
-    route_handler: "HTTPRouteHandler",
-    plugins: list["OpenAPISchemaPluginProtocol"],
-    schemas: dict[str, "Schema"],
+    route_handler: HTTPRouteHandler,
+    plugins: list[OpenAPISchemaPluginProtocol],
+    schemas: dict[str, Schema],
 ) -> Iterator[tuple[str, OpenAPIResponse]]:
     """Create the schema for additional responses, if any."""
     if not route_handler.responses:
@@ -236,11 +239,11 @@ def create_additional_responses(
 
 
 def create_responses(
-    route_handler: "HTTPRouteHandler",
+    route_handler: HTTPRouteHandler,
     raises_validation_error: bool,
     generate_examples: bool,
-    plugins: list["OpenAPISchemaPluginProtocol"],
-    schemas: dict[str, "Schema"],
+    plugins: list[OpenAPISchemaPluginProtocol],
+    schemas: dict[str, Schema],
 ) -> Responses | None:
     """Create a Response model embedded in a `Responses` dictionary for the given RouteHandler or return None."""
 

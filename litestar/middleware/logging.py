@@ -93,7 +93,7 @@ class LoggingMiddleware(AbstractMiddleware):
             obfuscate_headers=self.config.response_headers_to_obfuscate,
         )
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
 
         Args:
@@ -116,7 +116,7 @@ class LoggingMiddleware(AbstractMiddleware):
 
         await self.app(scope, receive, send)
 
-    async def log_request(self, scope: "Scope", receive: "Receive") -> None:
+    async def log_request(self, scope: Scope, receive: Receive) -> None:
         """Extract request data and log the message.
 
         Args:
@@ -165,7 +165,7 @@ class LoggingMiddleware(AbstractMiddleware):
             return value.decode("utf-8")
         return value
 
-    async def extract_request_data(self, request: "Request") -> dict[str, Any]:
+    async def extract_request_data(self, request: Request) -> dict[str, Any]:
         """Create a dictionary of values for the message.
 
         Args:
@@ -224,7 +224,7 @@ class LoggingMiddleware(AbstractMiddleware):
             An ASGI send function.
         """
 
-        async def send_wrapper(message: "Message") -> None:
+        async def send_wrapper(message: Message) -> None:
             if message["type"] == HTTP_RESPONSE_START:
                 set_litestar_scope_state(scope, HTTP_RESPONSE_START, message)
             elif message["type"] == HTTP_RESPONSE_BODY:
@@ -340,7 +340,7 @@ class LoggingMiddlewareConfig:
             .. code-block: python
 
                 from litestar import Litestar, Request, get
-                from litestar.config.logging import LoggingConfig
+                from litestar.logging import LoggingConfig
                 from litestar.middleware.logging import LoggingMiddlewareConfig
 
                 logging_config = LoggingConfig()

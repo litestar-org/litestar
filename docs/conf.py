@@ -70,12 +70,27 @@ nitpick_ignore = [
     ("py:class", "sqlalchemy.orm.decl_api.DeclarativeMeta"),
     ("py:class", "sqlalchemy.sql.sqltypes.TupleType"),
     ("py:class", "sqlalchemy.dialects.postgresql.named_types.ENUM"),
+    ("py:class", "_orm.Mapper"),
+    ("py:class", "_orm.registry"),
+    ("py:class", "_schema.MetaData"),
+    ("py:class", "_schema.Table"),
+    ("py:class", "_RegistryType"),
+    ("py:class", "abc.Collection"),
+    ("py:class", "TypeEngine"),
+    ("py:class", "ExternalType"),
+    ("py:class", "UserDefinedType"),
+    ("py:class", "_types.TypeDecorator"),
+    ("py:meth", "_types.TypeDecorator.process_bind_param"),
+    ("py:meth", "_types.TypeDecorator.process_result_value"),
+    ("py:meth", "type_engine"),
     # type vars and aliases / intentionally undocumented
     ("py:class", "RouteHandlerType"),
     ("py:obj", "litestar.security.base.AuthType"),
     ("py:class", "ControllerRouterHandler"),
     ("py:class", "PathParameterDefinition"),
     ("py:class", "BaseSessionBackendT"),
+    ("py:class", "litestar.contrib.repository.abc.CollectionT"),
+    ("py:class", "litestar.contrib.sqlalchemy.repository.SelectT"),
     ("py:class", "AnyIOBackend"),
     ("py:class", "T"),
     ("py:class", "C"),
@@ -83,15 +98,17 @@ nitpick_ignore = [
     # intentionally undocumented
     ("py:class", "NoneType"),
     ("py:class", "litestar._signature.field.SignatureField"),
-    ("py:class", "types.parsed_signature.ParsedSignature"),
+    ("py:class", "litestar.utils.signature.ParsedType"),
+    ("py:class", "litestar.utils.signature.ParsedSignature"),
+    ("py:class", "litestar.utils.signature.ParsedParameter"),
     ("py:class", "litestar.utils.sync.AsyncCallable"),
-    ("py:class", "litestar.utils.sync.AsyncCallable"),
-    ("py:class", "types.parsed_signature.ParsedType"),
 ]
 nitpick_ignore_regex = [
     (r"py:.*", r"litestar\.types.*"),
     (r"py:.*", r"litestar.*\.T"),
     (r"py:.*", r".*R_co"),
+    (r"py:.*", r"ModelT"),
+    (r"py:.*", r"litestar.contrib.sqlalchemy.repository.ModelT"),
     (r"py:.*", r".*UserType"),
     (r"py:.*", r"litestar\.middleware\.session\.base\.BaseSessionBackendT"),
     (r"py:obj", r"typing\..*"),
@@ -115,12 +132,11 @@ ignore_missing_refs = {
     "litestar.template.base.TemplateEngineProtocol.get_template": {"litestar.template.base.T_co"},
     "litestar.template": {"litestar.template.base.T_co"},
     "litestar.openapi.OpenAPIController.security": {"SecurityRequirement"},
-    "litestar.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.handle_string_type": {"BINARY", "VARBINARY", "LargeBinary"},
-    "litestar.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.is_plugin_supported_type": {"DeclarativeMeta"},
-    re.compile(r"litestar\.plugins.*"): re.compile(".*(ModelT|DataContainerT)"),
-    re.compile(r"litestar\.contrib\.sqlalchemy\.init_plugin\.config.*"): re.compile(
-        ".*(ConnectionT|EngineT|SessionT|SessionMakerT)"
+    re.compile(r"litestar\.plugins.*"): re.compile(".*ModelT"),
+    re.compile(r"litestar\.contrib\.sqlalchemy\.*"): re.compile(
+        ".*(ConnectionT|EngineT|SessionT|SessionMakerT|SlotsBase|DataT)"
     ),
+    re.compile(r"litestar\.dto.*"): re.compile(".*DataT|.*ParsedType"),
 }
 
 
@@ -152,18 +168,35 @@ html_theme_options = {
     "extra_navbar_items": {
         "Documentation": "index",
         "Community": {
-            "Contribution Guide": "contribution-guide",
-            "Code of Conduct": "https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md",
+            "Contributing": {
+                "description": "Learn how to contribute to the Litestar project",
+                "link": "https://docs.litestar.dev/2/contribution-guide.html",
+                "icon": "contributing",
+            },
+            "Code of Conduct": {
+                "description": "Review the etiquette for interacting with the Litestar community",
+                "link": "https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md",
+                "icon": "coc",
+            },
         },
         "About": {
-            "Organization": "https://litestar.dev/about/organization",
-            "Releases": "https://litestar.dev/about/litestar-releases",
+            "Litestar Organization": {
+                "description": "Details about the Litestar organization",
+                "link": "about/organization",
+                "icon": "org",
+            },
+            "Releases": {
+                "description": "Details about the Litestar release process",
+                "link": "about/litestar-releases",
+                "icon": "releases",
+            },
         },
         "Release notes": {
             "2.0 migration guide": "release-notes/migration_guide_2",
             "2.x Changelog": "https://docs.litestar.dev/2/release-notes/changelog.html",
             "1.x Changelog": "https://docs.litestar.dev/1/release-notes/changelog.html",
         },
+        "Help": "https://github.com/orgs/litestar-org/discussions",
     },
 }
 

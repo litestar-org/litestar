@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing_extensions import Annotated
 
 from litestar import Litestar, get
 from litestar.exceptions import NotAuthorizedException
@@ -23,8 +24,8 @@ class User(BaseModel):
 @get(path="/users/{user_id:int}/")
 async def get_user(
     user_id: int,
-    token: str = Parameter(header="X-API-KEY"),
-    cookie: str = Parameter(cookie="my-cookie-param"),
+    token: Annotated[str, Parameter(header="X-API-KEY")],
+    cookie: Annotated[str, Parameter(cookie="my-cookie-param")],
 ) -> User:
     if not (token == VALID_TOKEN and cookie == VALID_COOKIE_VALUE):
         raise NotAuthorizedException

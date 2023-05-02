@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 import traceback
 from dataclasses import asdict
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from functools import lru_cache, partial
 from pathlib import PurePath
 from typing import (
@@ -15,8 +15,6 @@ from typing import (
 from uuid import UUID
 
 from _decimal import Decimal
-from dateutil.parser import parse
-from pytimeparse.timeparse import timeparse
 from typing_extensions import get_args
 
 from litestar._signature.field import SignatureField
@@ -35,15 +33,25 @@ try:
     import attrs
     import cattrs
 except ImportError as e:
-    raise MissingDependencyException("attrs is not installed") from e
+    raise MissingDependencyException("attrs") from e
+
+try:
+    from dateutil.parser import parse
+except ImportError as e:
+    raise MissingDependencyException("python-dateutil", "attrs") from e
+
+try:
+    from pytimeparse.timeparse import timeparse
+except ImportError as e:
+    raise MissingDependencyException("pytimeparse", "attrs") from e
 
 if TYPE_CHECKING:
-    from litestar.plugins import PluginMapping
-    from litestar.types.parsed_signature import ParsedSignature
-
-key_re = re.compile("@ attribute (.*)|'(.*)'")
+    from litestar.utils.signature import ParsedSignature
 
 __all__ = ("AttrsSignatureModel",)
+key_re = re.compile("@ attribute (.*)|'(.*)'")
+TRUE_SET = {"1", "true", "on", "t", "y", "yes"}
+FALSE_SET = {"0", "false", "off", "f", "n", "no"}
 
 try:
     import pydantic
@@ -68,12 +76,28 @@ def _pass_through_unstructure_hook(value: Any) -> Any:
     return value
 
 
+def _structure_bool(value: Any, _: type[bool]) -> bool:
+    if isinstance(value, bytes):
+        value = value.decode("utf-8").lower()
+
+    if isinstance(value, str):
+        value = value.lower()
+
+    if value == 0 or value in FALSE_SET:
+        return False
+
+    if value == 1 or value in TRUE_SET:
+        return True
+
+    raise ValueError(f"Cannot convert {value} to bool")
+
+
 def _structure_datetime(value: Any, cls: type[datetime]) -> datetime:
     if isinstance(value, datetime):
         return value
 
     try:
-        return cls.fromtimestamp(float(value))
+        return cls.fromtimestamp(float(value), tz=timezone.utc)
     except (ValueError, TypeError):
         pass
 
@@ -85,7 +109,7 @@ def _structure_date(value: Any, cls: type[date]) -> date:
         return value
 
     if isinstance(value, (float, int, Decimal)):
-        return cls.fromtimestamp(float(value))
+        return datetime.fromtimestamp(float(value), tz=timezone.utc).date()
 
     dt = _structure_datetime(value=value, cls=datetime)
     return cls(year=dt.year, month=dt.month, day=dt.day)
@@ -144,6 +168,7 @@ hooks: list[tuple[type[Any], Callable[[Any, type[Any]], Any]]] = [
     (UUID, _structure_uuid),
     (UploadFile, _pass_through_structure_hook),
     (WebSocket, _pass_through_structure_hook),
+    (bool, _structure_bool),
     (date, _structure_date),
     (datetime, _structure_datetime),
     (str, _structure_str),
@@ -211,7 +236,7 @@ def _extract_exceptions(e: Any) -> list[ErrorMessage]:
     Returns:
         A list of normalized exception messages.
     """
-    messages: "list[ErrorMessage]" = []
+    messages: list[ErrorMessage] = []
     if hasattr(e, "exceptions"):
         for exc in cast("list[Exception]", e.exceptions):
             if hasattr(exc, "exceptions"):  # pragma: no cover
@@ -294,7 +319,6 @@ class AttrsSignatureModel(SignatureModel):
         fn_name: str,
         fn_module: str | None,
         parsed_signature: ParsedSignature,
-        field_plugin_mappings: dict[str, PluginMapping],
         dependency_names: set[str],
         type_overrides: dict[str, Any],
     ) -> type[SignatureModel]:
@@ -303,25 +327,27 @@ class AttrsSignatureModel(SignatureModel):
         for parameter in parsed_signature.parameters.values():
             annotation = type_overrides.get(parameter.name, parameter.parsed_type.annotation)
 
-            if isinstance(parameter.default, (ParameterKwarg, BodyKwarg)):
-                attribute = attr.attrib(
-                    type=annotation,
-                    metadata={
-                        **asdict(parameter.default),
-                        "kwargs_model": parameter.default,
-                        "parsed_parameter": parameter,
-                    },
-                    default=parameter.default.default if parameter.default.default is not Empty else attr.NOTHING,
-                    validator=_create_validators(annotation=annotation, kwargs_model=parameter.default),
-                )
-            elif isinstance(parameter.default, DependencyKwarg):
-                attribute = attr.attrib(
-                    type=annotation,
-                    default=parameter.default.default if parameter.default.default is not Empty else None,
-                    metadata={
-                        "kwargs_model": parameter.default,
-                    },
-                )
+            if kwargs_container := parameter.kwarg_container:
+                if isinstance(kwargs_container, DependencyKwarg):
+                    attribute = attr.attrib(
+                        type=annotation if not kwargs_container.skip_validation else Any,
+                        default=kwargs_container.default if kwargs_container.default is not Empty else None,
+                        metadata={
+                            "kwargs_model": kwargs_container,
+                            "parsed_parameter": parameter,
+                        },
+                    )
+                else:
+                    attribute = attr.attrib(
+                        type=annotation,
+                        metadata={
+                            **asdict(kwargs_container),
+                            "kwargs_model": kwargs_container,
+                            "parsed_parameter": parameter,
+                        },
+                        default=kwargs_container.default if kwargs_container.default is not Empty else attr.NOTHING,
+                        validator=_create_validators(annotation=annotation, kwargs_model=kwargs_container),
+                    )
             elif parameter.has_default:
                 attribute = attr.attrib(type=annotation, default=parameter.default)
             else:
@@ -339,7 +365,6 @@ class AttrsSignatureModel(SignatureModel):
             kw_only=True,
         )
         model.return_annotation = parsed_signature.return_type.annotation  # pyright: ignore
-        model.field_plugin_mappings = field_plugin_mappings  # pyright: ignore
         model.dependency_name_set = dependency_names  # pyright: ignore
         model.populate_signature_fields()  # pyright: ignore
         return model

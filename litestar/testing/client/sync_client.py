@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound=ASGIApp)
 
 
-class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
+class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
     lifespan_handler: LifeSpanHandler
     exit_stack: ExitStack
 

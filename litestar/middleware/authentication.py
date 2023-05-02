@@ -55,7 +55,7 @@ class AbstractAuthenticationMiddleware(ABC):
         self.exclude_opt_key = exclude_from_auth_key
         self.exclude = build_exclude_path_pattern(exclude=exclude)
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
 
         Args:

@@ -1,4 +1,3 @@
-import pytest
 from polyfactory import BaseFactory
 
 from litestar import Litestar
@@ -8,15 +7,14 @@ from litestar._openapi.typescript_converter.converter import (
 from tests.openapi.utils import PersonController, PetController
 
 
-@pytest.mark.xfail
 def test_openapi_to_typescript_converter() -> None:
     BaseFactory.seed_random(1)
     app = Litestar(route_handlers=[PersonController, PetController])
     assert app.openapi_schema
 
     result = convert_openapi_to_typescript(openapi_schema=app.openapi_schema)
-    assert result.write() == (
-        "export namespace API {\n"
+    assert (
+        result.write() == "export namespace API {\n"
         "\texport namespace PetOwnerOrPetGetPetsOrOwners {\n"
         "\texport namespace Http200 {\n"
         "\texport type ResponseBody = ({\n"
@@ -255,7 +253,7 @@ def test_openapi_to_typescript_converter() -> None:
         "\tfirst_name: string;\n"
         "\tid: string;\n"
         "\tlast_name: string;\n"
-        "\toptional: null | string;\n"
+        "\toptional?: null | string;\n"
         "\tpets?: null | {\n"
         "\tage: number;\n"
         "\tname: string;\n"

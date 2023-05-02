@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "litestar"
-version = "2.0.0alpha3"
+version = "2.0.0alpha5"
 description = "Performant, light and flexible ASGI API Framework"
 authors = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
@@ -13,6 +13,7 @@ maintainers = [
     "Peter Schutt <peter.github@proton.me>",
     "Cody Fincher <cody.fincher@gmail.com>",
     "Janek Nouvertné <provinzkraut@posteo.de>",
+    "Jacob Coffee <jacob@z7x.org>",
 ]
 license = "MIT"
 readme = "README.md"
@@ -69,7 +70,7 @@ msgspec = "*"
 multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 picologging = { version = "*", optional = true }
-polyfactory = "*"
+polyfactory = ">=2"
 pydantic = "<2"
 python-dateutil = { version = "*", optional = true }
 python-jose = { version = "*", optional = true }
@@ -77,13 +78,15 @@ pytimeparse = { version = "*", optional = true }
 pyyaml = "*"
 redis = { version = ">=4.4.4,!=4.5.0,!=4.5.1,!=4.5.2,!=4.5.3", optional = true, extras = ["hiredis"] }
 rich = { version = ">=13.0.0", optional = true }
-sqlalchemy = { version = ">=2.0.4", optional = true }
 saq ={ version = "*", optional = true, extras = ["hiredis"] }
+sqlalchemy = { version = ">=2.0.12", optional = true }
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
+uvicorn = {extras = ["standard"], version = "^0.21.1", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
+asyncmy = "*"
 asyncpg = "*"
 attrs = "*"
 beautifulsoup4 = "*"
@@ -91,7 +94,7 @@ brotli = "*"
 cattrs = "*"
 click = "*"
 cryptography = "*"
-fakeredis = { extras = ["lua"], version = ">=2.10.2" }
+fakeredis = { extras = ["lua"], version = "2.11.0" }
 freezegun = "*"
 fsspec = "*"
 greenlet = "*"
@@ -143,7 +146,7 @@ uvicorn = "*"
 [tool.poetry.extras]
 attrs = ["attrs", "cattrs", "python-dateutil", "pytimeparse"]
 brotli = ["brotli"]
-cli = ["click", "rich", "jsbeautifier"]
+cli = ["click", "rich", "jsbeautifier", "uvicorn"]
 cryptography = ["cryptography"]
 jinja = ["jinja2"]
 jwt = ["python-jose", "cryptography"]
@@ -152,25 +155,29 @@ picologging = ["picologging"]
 redis = ["redis"]
 saq = ["saq", "redis"]
 sqlalchemy = ["sqlalchemy", "alembic"]
-standard = ["click", "jinja2", "jsbeautifier", "rich"]
+standard = ["click", "jinja2", "jsbeautifier", "rich", "uvicorn"]
 structlog = ["structlog"]
 tortoise-orm = ["tortoise-orm"]
 
 full = [
+    "alembic",
+    "attrs",
     "brotli",
+    "cattrs",
     "click",
     "cryptography",
     "jinja2",
     "jsbeautifier",
     "opentelemetry-instrumentation-asgi",
-    "picologging",
+    "python-dateutill",
     "python-jose",
+    "pytimeparse",
     "redis",
     "rich",
-    "saq",
+    "saq", 
     "sqlalchemy",
     "structlog",
-    "tortoise-orm",
+    "uvicorn",
 ]
 
 [tool.poetry.scripts]
@@ -184,6 +191,8 @@ build-backend = "poetry.core.masonry.api"
 line-length = 120
 include = '\.pyi?$'
 
+[tool.codespell]
+ignore-words-list = "selectin"
 
 [tool.coverage.run]
 omit = ["*/tests/*", "litestar/contrib/sqlalchemy_1/*"]
@@ -205,6 +214,10 @@ filterwarnings = [
     "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:164",
     "ignore::DeprecationWarning:pkg_resources:2803",
 ]
+markers = [
+    "sqlalchemy_asyncmy: SQLAlchemy MySQL (asyncmy) Tests",
+    "sqlalchemy_asyncpg: SQLAlchemy Postgres (asyncpg) Tests"
+]
 
 [tool.pyright]
 include = ["litestar", "tests", "examples"]
@@ -213,6 +226,7 @@ exclude = [
     "litestar/contrib/sqlalchemy_1",
     "litestar/openapi",
     "litestar/plugins",
+    "tests/contrib/sqlalchemy/test_dto.py",
     "tests/contrib/sqlalchemy_1",
     "tests/openapi",
     "tests/plugins",
@@ -274,7 +288,6 @@ ignore = [
     "D205",  # pydocstyle - 1 blank line required between summary line and description
     "D415",  # pydocstyle - first line should end with a period, question mark, or exclamation point
     "E501",  # pycodestyle line too long, handled by black
-    "UP037", # pyupgrade - removes quotes from type annotation
 ]
 line-length = 120
 src = ["litestar", "tests", "docs/examples"]
@@ -293,6 +306,7 @@ classmethod-decorators = [
     "pydantic.validator",
     "sqlalchemy.ext.declarative.declared_attr",
     "sqlalchemy.orm.declared_attr.directive",
+    "sqlalchemy.orm.declared_attr"
 ]
 
 [tool.ruff.isort]
@@ -352,6 +366,7 @@ known-first-party = ["litestar", "tests", "examples"]
 "docs/examples/**" = ["T201"]
 "litestar/exceptions/*.*" = ["N818"]
 "litestar/handlers/**/*.*" = ["N801"]
+"litestar/_openapi/schema_generation/schema.py" = ["C901"]
 "litestar/params.py" = ["N802"]
 "test_apps/**/*.*" = ["D", "TRY", "EM", "S", "PTH"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]

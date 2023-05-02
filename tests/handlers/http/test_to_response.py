@@ -23,7 +23,7 @@ from litestar.response import (
 from litestar.response_containers import File, Redirect, Stream, Template
 from litestar.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
 from litestar.testing import RequestFactory, create_test_client
-from litestar.types.parsed_signature import ParsedSignature
+from litestar.utils.signature import ParsedSignature
 from tests import Person, PersonFactory
 
 if TYPE_CHECKING:
@@ -93,7 +93,6 @@ async def test_to_response_async_await(anyio_backend: str) -> None:
     person_instance = PersonFactory.build()
     test_function.signature_model = create_signature_model(
         fn=test_function.fn.value,
-        plugins=[],
         preferred_validation_backend="pydantic",
         dependency_name_set=set(),
         parsed_signature=ParsedSignature.from_fn(test_function.fn.value, {}),
@@ -101,7 +100,6 @@ async def test_to_response_async_await(anyio_backend: str) -> None:
 
     response = await test_function.to_response(
         data=test_function.fn.value(data=person_instance),
-        plugins=[],
         app=Litestar(route_handlers=[]),
         request=RequestFactory().get(),
     )
@@ -117,7 +115,7 @@ async def test_to_response_returning_litestar_response() -> None:
         http_route: "HTTPRoute" = client.app.routes[0]
         route_handler = http_route.route_handlers[0]
         response = await route_handler.to_response(
-            data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()
+            data=route_handler.fn.value(), app=client.app, request=RequestFactory().get()
         )
         assert isinstance(response, Response)
 
@@ -142,7 +140,7 @@ async def test_to_response_returning_starlette_response(
         http_route: "HTTPRoute" = client.app.routes[0]
         route_handler = http_route.route_handlers[0]
         response = await route_handler.to_response(
-            data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()
+            data=route_handler.fn.value(), app=client.app, request=RequestFactory().get()
         )
         assert isinstance(response, StarletteResponse)
         assert response is expected_response  # type: ignore[unreachable]
@@ -170,7 +168,7 @@ async def test_to_response_returning_redirect_response(anyio_backend: str) -> No
         route: "HTTPRoute" = client.app.routes[0]
         route_handler = route.route_handlers[0]
         response = await route_handler.to_response(
-            data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()
+            data=route_handler.fn.value(), app=client.app, request=RequestFactory().get()
         )
         assert isinstance(response, RedirectResponse)
         assert response.headers["location"] == "/somewhere-else"
@@ -231,7 +229,7 @@ async def test_to_response_returning_file_response(anyio_backend: str) -> None:
         route: "HTTPRoute" = client.app.routes[0]
         route_handler = route.route_handlers[0]
         response = await route_handler.to_response(
-            data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()
+            data=route_handler.fn.value(), app=client.app, request=RequestFactory().get()
         )
         assert isinstance(response, FileResponse)
         assert response.file_info
@@ -289,7 +287,7 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool,
             route: "HTTPRoute" = client.app.routes[0]
             route_handler = route.route_handlers[0]
             response = await route_handler.to_response(
-                data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()
+                data=route_handler.fn.value(), app=client.app, request=RequestFactory().get()
             )
             assert isinstance(response, StreamingResponse)
             assert response.headers["local-header"] == "123"
@@ -327,7 +325,7 @@ async def func_to_response_template_response(anyio_backend: str) -> None:
         route: "HTTPRoute" = client.app.routes[0]
         route_handler = route.route_handlers[0]
         response = await route_handler.to_response(
-            data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()
+            data=route_handler.fn.value(), app=client.app, request=RequestFactory().get()
         )
         assert isinstance(response, TemplateResponse)
         assert response.headers["local-header"] == "123"

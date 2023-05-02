@@ -56,7 +56,7 @@ class HTTPRoute(BaseRoute):
             handler_names=[route_handler.handler_name for route_handler in self.route_handlers],
         )
 
-    async def handle(self, scope: "HTTPScope", receive: "Receive", send: "Send") -> None:  # type: ignore[override]
+    async def handle(self, scope: HTTPScope, receive: Receive, send: Send) -> None:  # type: ignore[override]
         """ASGI app that creates a Request from the passed in args, determines which handler function to call and then
         handles the call.
 
@@ -101,11 +101,11 @@ class HTTPRoute(BaseRoute):
 
     async def _get_response_for_request(
         self,
-        scope: "Scope",
+        scope: Scope,
         request: Request[Any, Any, Any],
-        route_handler: "HTTPRouteHandler",
-        parameter_model: "KwargsModel",
-    ) -> "ASGIApp":
+        route_handler: HTTPRouteHandler,
+        parameter_model: KwargsModel,
+    ) -> ASGIApp:
         """Return a response for the request.
 
         If caching is enabled and a response exist in the cache, the cached response will be returned.
@@ -140,8 +140,8 @@ class HTTPRoute(BaseRoute):
         return response
 
     async def _call_handler_function(
-        self, scope: "Scope", request: Request, parameter_model: "KwargsModel", route_handler: "HTTPRouteHandler"
-    ) -> "ASGIApp":
+        self, scope: Scope, request: Request, parameter_model: KwargsModel, route_handler: HTTPRouteHandler
+    ) -> ASGIApp:
         """Call the before request handlers, retrieve any data required for the route handler, and call the route
         handler's ``to_response`` method.
 
@@ -159,12 +159,7 @@ class HTTPRoute(BaseRoute):
                 route_handler=route_handler, parameter_model=parameter_model, request=request
             )
 
-        response: ASGIApp = await route_handler.to_response(
-            app=scope["app"],
-            data=response_data,
-            plugins=request.app.serialization_plugins,
-            request=request,
-        )
+        response: ASGIApp = await route_handler.to_response(app=scope["app"], data=response_data, request=request)
 
         if cleanup_group:
             await cleanup_group.cleanup()
@@ -173,8 +168,8 @@ class HTTPRoute(BaseRoute):
 
     @staticmethod
     async def _get_response_data(
-        route_handler: "HTTPRouteHandler", parameter_model: "KwargsModel", request: Request
-    ) -> tuple[Any, "DependencyCleanupGroup" | None]:
+        route_handler: HTTPRouteHandler, parameter_model: KwargsModel, request: Request
+    ) -> tuple[Any, DependencyCleanupGroup | None]:
         """Determine what kwargs are required for the given route handler's ``fn`` and calls it."""
         parsed_kwargs: dict[str, Any] = {}
         cleanup_group: DependencyCleanupGroup | None = None

@@ -146,9 +146,7 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
         return cast("dict[str, Any]", decode_json(data))
 
     @abstractmethod
-    async def store_in_message(
-        self, scope_session: "ScopeSession", message: "Message", connection: ASGIConnection
-    ) -> None:
+    async def store_in_message(self, scope_session: ScopeSession, message: Message, connection: ASGIConnection) -> None:
         """Store the necessary information in the outgoing ``Message``
 
         Args:
@@ -207,7 +205,7 @@ class SessionMiddleware(AbstractMiddleware, Generic[BaseSessionBackendT]):
             None
         """
 
-        async def wrapped_send(message: "Message") -> None:
+        async def wrapped_send(message: Message) -> None:
             """Wrap the ``send`` function.
 
             Declared in local scope to make use of closure values.
@@ -229,7 +227,7 @@ class SessionMiddleware(AbstractMiddleware, Generic[BaseSessionBackendT]):
 
         return wrapped_send
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI-callable.
 
         Args:

@@ -87,8 +87,8 @@ def test_parse_query_string() -> None:
         "value": ["10"],
         "veggies": ["tomato", "potato", "aubergine"],
         "calories": ["122.53"],
-        "healthy": [True],
-        "polluting": [False],
+        "healthy": ["True"],
+        "polluting": ["False"],
     }
 
 

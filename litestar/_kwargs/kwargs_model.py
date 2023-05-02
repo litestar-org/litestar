@@ -32,7 +32,6 @@ from litestar._kwargs.parameter_definition import (
 from litestar._signature import SignatureModel, get_signature_model
 from litestar._signature.field import SignatureField
 from litestar.constants import RESERVED_KWARGS
-from litestar.dto.interface import DTOInterface
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import BodyKwarg, ParameterKwarg
@@ -43,7 +42,8 @@ __all__ = ("KwargsModel",)
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.di import Provide
-    from litestar.types.parsed_signature import ParsedParameter, ParsedSignature
+    from litestar.dto.interface import DTOInterface
+    from litestar.utils.signature import ParsedSignature
 
 
 class KwargsModel:
@@ -72,9 +72,9 @@ class KwargsModel:
         self,
         *,
         expected_cookie_params: set[ParameterDefinition],
-        expected_dto_data: tuple[ParsedParameter, type[DTOInterface]] | None,
+        expected_dto_data: type[DTOInterface] | None,
         expected_dependencies: set[Dependency],
-        expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None,
+        expected_form_data: tuple[RequestEncodingType | str, SignatureField, type[DTOInterface] | None] | None,
         expected_msgpack_data: SignatureField | None,
         expected_header_params: set[ParameterDefinition],
         expected_path_params: set[ParameterDefinition],
@@ -302,9 +302,9 @@ class KwargsModel:
         expected_query_parameters = {p for p in param_definitions if p.param_type == ParamType.QUERY}
         sequence_query_parameter_names = {p.field_alias for p in expected_query_parameters if p.is_sequence}
 
-        expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None = None
+        expected_form_data: tuple[RequestEncodingType | str, SignatureField, type[DTOInterface] | None] | None = None
         expected_msgpack_data: SignatureField | None = None
-        expected_dto_data: tuple[ParsedParameter, type[DTOInterface]] | None = None
+        expected_dto_data: type[DTOInterface] | None = None
 
         data_signature_field = signature_fields.get("data")
 
@@ -312,23 +312,13 @@ class KwargsModel:
         if data_signature_field and isinstance(data_signature_field.kwarg_model, BodyKwarg):
             media_type = data_signature_field.kwarg_model.media_type
 
-        if data_signature_field and media_type:
-            if media_type in (
-                RequestEncodingType.MULTI_PART,
-                RequestEncodingType.URL_ENCODED,
-            ):
-                expected_form_data = (media_type, data_signature_field)
-
+        if data_signature_field:
+            if media_type in (RequestEncodingType.MULTI_PART, RequestEncodingType.URL_ENCODED):
+                expected_form_data = (media_type, data_signature_field, data_dto)
+            elif data_dto:
+                expected_dto_data = data_dto
             elif media_type == RequestEncodingType.MESSAGEPACK:
                 expected_msgpack_data = data_signature_field
-
-        elif data_signature_field:
-            parsed_parameter = parsed_signature.parameters["data"]
-            parsed_type = parsed_parameter.parsed_type
-            if parsed_type.is_subclass_of(DTOInterface):
-                expected_dto_data = (parsed_parameter, parsed_type.annotation)
-            elif data_dto:
-                expected_dto_data = (parsed_parameter, data_dto)
 
         for dependency in expected_dependencies:
             dependency_kwargs_model = cls.create_for_signature_model(
@@ -393,9 +383,7 @@ class KwargsModel:
 
         return output
 
-    async def resolve_dependencies(
-        self, connection: "ASGIConnection", kwargs: dict[str, Any]
-    ) -> "DependencyCleanupGroup":
+    async def resolve_dependencies(self, connection: ASGIConnection, kwargs: dict[str, Any]) -> DependencyCleanupGroup:
         """Resolve all dependencies into the kwargs, recursively.
 
         Args:
@@ -429,7 +417,7 @@ class KwargsModel:
     @classmethod
     def _validate_dependency_data(
         cls,
-        expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None,
+        expected_form_data: tuple[RequestEncodingType | str, SignatureField, type[DTOInterface] | None] | None,
         dependency_kwargs_model: KwargsModel,
     ) -> None:
         """Validate that the 'data' kwarg is compatible across dependencies."""
@@ -438,8 +426,8 @@ class KwargsModel:
                 "Dependencies have incompatible 'data' kwarg types: one expects JSON and the other expects form-data"
             )
         if expected_form_data and dependency_kwargs_model.expected_form_data:
-            local_media_type, _ = expected_form_data
-            dependency_media_type, _ = dependency_kwargs_model.expected_form_data
+            local_media_type = expected_form_data[0]
+            dependency_media_type = dependency_kwargs_model.expected_form_data[0]
             if local_media_type != dependency_media_type:
                 raise ImproperlyConfiguredException(
                     "Dependencies have incompatible form-data encoding: one expects url-encoded and the other expects multi-part"
