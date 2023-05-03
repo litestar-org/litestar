@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 @pytest.fixture(name="base")
 def fx_base() -> type[DeclarativeBase]:
-    class Base(DeclarativeBase):
+    class UUIDBase(DeclarativeBase):
         id: Mapped[UUID] = mapped_column(default=uuid4, primary_key=True)
         created: Mapped[datetime] = mapped_column(
             default=datetime.now, info={DTO_FIELD_META_KEY: DTOField(mark=Mark.READ_ONLY)}
@@ -41,7 +41,7 @@ def fx_base() -> type[DeclarativeBase]:
             """Infer table name from class name."""
             return cls.__name__.lower()
 
-    return Base
+    return UUIDBase
 
 
 @pytest.fixture(name="author_model")
@@ -243,14 +243,14 @@ from typing_extensions import Annotated
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig
 
-class Base(DeclarativeBase):
+class UUIDBase(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 
-class A(Base):
+class A(UUIDBase):
     __tablename__ = "a"
     b_id: Mapped[int] = mapped_column(ForeignKey("b.id"))
 
-class B(Base):
+class B(UUIDBase):
     __tablename__ = "b"
     a: Mapped[List[A]] = relationship("A")
 
@@ -282,13 +282,13 @@ from typing_extensions import Annotated
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig
 
-class Base(DeclarativeBase):
+class UUIDBase(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 
-class A(Base):
+class A(UUIDBase):
     __tablename__ = "a"
 
-class B(Base):
+class B(UUIDBase):
     __tablename__ = "b"
     a_id: Mapped[int] = mapped_column(ForeignKey("a.id"))
     a: Mapped[A] = relationship(A)
@@ -321,10 +321,10 @@ from typing_extensions import Annotated
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig
 
-class Base(DeclarativeBase):
+class UUIDBase(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 
-class A(Base):
+class A(UUIDBase):
     __tablename__ = "a"
     a: Mapped[Union[str, None]]
 
@@ -354,10 +354,10 @@ from typing_extensions import Annotated
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig
 
-class Base(DeclarativeBase):
+class UUIDBase(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 
-class A(Base):
+class A(UUIDBase):
     __tablename__ = "a"
     a: Mapped[str | None]
 
@@ -382,15 +382,15 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 
-class Base(DeclarativeBase):
+class UUIDBase(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 
-class A(Base):
+class A(UUIDBase):
     __tablename__ = "a"
     b_id: Mapped[int] = mapped_column(ForeignKey("b.id"))
     b: Mapped[B] = relationship(back_populates="a")
 
-class B(Base):
+class B(UUIDBase):
     __tablename__ = "b"
     a: Mapped[A] = relationship(back_populates="b")
 
@@ -424,13 +424,13 @@ from typing_extensions import Annotated
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig
 
-class Base(DeclarativeBase):
+class UUIDBase(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 
-class A(Base):
+class A(UUIDBase):
     __tablename__ = "a"
 
-class B(Base):
+class B(UUIDBase):
     __tablename__ = "b"
     a_id: Mapped[Optional[int]] = mapped_column(ForeignKey("a.id"))
     a: Mapped[Optional[A]] = relationship(A)
@@ -460,7 +460,7 @@ async def test_forward_ref_relationship_resolution(
 from __future__ import annotations
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-class Base(DeclarativeBase):
+class UUIDBase(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 """
     )
@@ -469,9 +469,9 @@ class Base(DeclarativeBase):
         f"""
 from __future__ import annotations
 
-from {base_module.__name__} import Base
+from {base_module.__name__} import UUIDBase
 
-class B(Base):
+class B(UUIDBase):
     __tablename__ = "b"
 """
     )
@@ -489,12 +489,12 @@ from typing_extensions import Annotated
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig
 
-from {base_module.__name__} import Base
+from {base_module.__name__} import UUIDBase
 
 if TYPE_CHECKING:
     from {b_module.__name__} import B
 
-class A(Base):
+class A(UUIDBase):
     __tablename__ = "a"
     b_id: Mapped[int] = mapped_column(ForeignKey("b.id"))
     b: Mapped[B] = relationship()

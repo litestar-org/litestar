@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import date
 from typing import TYPE_CHECKING
 from uuid import UUID
@@ -9,7 +11,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
 from litestar import Litestar, get
 from litestar.contrib.repository.filters import LimitOffset
-from litestar.contrib.sqlalchemy.base import AuditBase, Base
+from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
 from litestar.contrib.sqlalchemy.init_plugin import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
 from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
 from litestar.controller import Controller
@@ -31,21 +33,21 @@ class BaseModel(_BaseModel):
 
 # the SQLAlchemy base includes a declarative model for you to use in your models.
 # The `Base` class includes a `UUID` based primary key (`id`)
-class AuthorModel(Base):
+class AuthorModel(UUIDBase):
     # we can optionally provide the table name instead of auto-generating it
     __tablename__ = "author"
     name: Mapped[str]
     dob: Mapped[date | None]
-    books: Mapped[list["BookModel"]] = relationship(back_populates="author", lazy="noload")
+    books: Mapped[list[BookModel]] = relationship(back_populates="author", lazy="noload")
 
 
 # The `AuditBase` class includes the same UUID` based primary key (`id`) and 2 additional columns: `created` and `updated`.
 # `created` is a timestamp of when the record created, and `updated` is the last time the record was modified.
-class BookModel(AuditBase):
+class BookModel(UUIDAuditBase):
     __tablename__ = "book"
     title: Mapped[str]
     author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))
-    author: Mapped["AuthorModel"] = relationship(lazy="joined", innerjoin=True, viewonly=True)
+    author: Mapped[AuthorModel] = relationship(lazy="joined", innerjoin=True, viewonly=True)
 
 
 # we will explicitly define the schema instead of using DTO objects for clarity.
@@ -73,13 +75,13 @@ class AuthorRepository(SQLAlchemyAsyncRepository[AuthorModel]):
     model_type = AuthorModel
 
 
-async def provide_authors_repo(db_session: "AsyncSession") -> AuthorRepository:
+async def provide_authors_repo(db_session: AsyncSession) -> AuthorRepository:
     """This provides the default Authors repository."""
     return AuthorRepository(session=db_session)
 
 
 # we can optionally override the default `select` used for the repository to pass in specific SQL options such as join details
-async def provide_author_details_repo(db_session: "AsyncSession") -> AuthorRepository:
+async def provide_author_details_repo(db_session: AsyncSession) -> AuthorRepository:
     """This provides a simple example demonstrating how to override the join options for the repository."""
     return AuthorRepository(statement=select(AuthorModel).options(selectinload(AuthorModel.books)), session=db_session)
 
@@ -192,7 +194,7 @@ sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 async def on_startup() -> None:
     """Initializes the database."""
     async with sqlalchemy_config.create_engine().begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(UUIDBase.metadata.create_all)
 
 
 app = Litestar(

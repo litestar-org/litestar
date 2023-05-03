@@ -116,7 +116,7 @@ async def test_sets_created_updated_on_add() -> None:
     """Test that the repository updates the 'created' and 'updated' timestamps
     if necessary."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -145,7 +145,7 @@ async def test_does_not_set_created_updated() -> None:
     """Test that the repository does not update the 'updated' timestamps when
     appropriate."""
 
-    class Model(base.Base):
+    class Model(base.UUIDBase):
         """Inheriting from Base means the model has no created/updated
         timestamp columns."""
 
@@ -166,7 +166,7 @@ async def test_does_not_set_created_updated() -> None:
 async def test_add() -> None:
     """Test that the repository add method works correctly`."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -181,7 +181,7 @@ async def test_add() -> None:
 async def test_add_many() -> None:
     """Test that the repository add_many method works correctly`."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -196,7 +196,7 @@ async def test_add_many() -> None:
 async def test_update() -> None:
     """Test that the repository update method works correctly`."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -214,7 +214,7 @@ async def test_update() -> None:
 async def test_update_many() -> None:
     """Test that the repository add_many method works correctly`."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -234,7 +234,7 @@ async def test_update_many() -> None:
 async def test_upsert() -> None:
     """Test that the repository upsert method works correctly`."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -252,7 +252,7 @@ async def test_upsert() -> None:
 async def test_list() -> None:
     """Test that the repository list returns records."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -267,7 +267,7 @@ async def test_list() -> None:
 async def test_delete() -> None:
     """Test that the repository delete functionality."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -284,7 +284,7 @@ async def test_delete() -> None:
 async def test_delete_many() -> None:
     """Test that the repository delete many functionality."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -301,7 +301,7 @@ async def test_delete_many() -> None:
 async def test_list_and_count() -> None:
     """Test that the repository list_and_count returns records and the total record count."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -318,7 +318,7 @@ async def test_list_and_count() -> None:
 async def test_exists() -> None:
     """Test that the repository exists returns booleans."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -334,7 +334,7 @@ async def test_exists() -> None:
 async def test_count() -> None:
     """Test that the repository count returns the total record count."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -350,7 +350,7 @@ async def test_count() -> None:
 async def test_get() -> None:
     """Test that the repository get returns a model record correctly."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -367,7 +367,7 @@ async def test_get() -> None:
 async def test_get_one() -> None:
     """Test that the repository get_one returns a model record correctly."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -385,7 +385,7 @@ async def test_get_one() -> None:
 async def test_get_one_or_none() -> None:
     """Test that the repository get_one_or_none returns a model record correctly."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -403,7 +403,7 @@ async def test_get_one_or_none() -> None:
 async def test_get_or_create() -> None:
     """Test that the repository get_or_create returns a model record correctly."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -425,7 +425,7 @@ async def test_get_or_create() -> None:
 async def test_get_or_create_match_fields() -> None:
     """Test that the repository get_or_create returns a model record correctly."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 

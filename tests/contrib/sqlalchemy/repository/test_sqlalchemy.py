@@ -44,13 +44,13 @@ def mock_repo() -> SQLAlchemyAsyncRepository:
 async def test_sqlalchemy_tablename(monkeypatch: MonkeyPatch) -> None:
     """Test the snake case conversion for table names."""
 
-    class BigModel(base.AuditBase):
+    class BigModel(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
         ...
 
-    class TESTModel(base.AuditBase):
+    class TESTModel(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -63,13 +63,13 @@ async def test_sqlalchemy_tablename(monkeypatch: MonkeyPatch) -> None:
 async def test_sqlalchemy_sentinel(monkeypatch: MonkeyPatch) -> None:
     """Test the sqlalchemy sentinel column exists on `UUIDPrimaryKey` models."""
 
-    class AnotherModel(base.AuditBase):
+    class AnotherModel(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
         ...
 
-    class TheTestModel(base.Base):
+    class TheTestModel(base.UUIDBase):
         """Inheriting from DeclarativeBase gives the model 'id'  columns."""
 
         ...
@@ -109,7 +109,7 @@ async def test_sqlalchemy_repo_add(mock_repo: SQLAlchemyAsyncRepository) -> None
 async def test_sqlalchemy_repo_add_many(mock_repo: SQLAlchemyAsyncRepository, monkeypatch: MonkeyPatch) -> None:
     """Test expected method calls for add many operation."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -129,7 +129,7 @@ async def test_sqlalchemy_repo_add_many(mock_repo: SQLAlchemyAsyncRepository, mo
 async def test_sqlalchemy_repo_update_many(mock_repo: SQLAlchemyAsyncRepository, monkeypatch: MonkeyPatch) -> None:
     """Test expected method calls for update many operation."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -164,7 +164,7 @@ async def test_sqlalchemy_repo_delete(mock_repo: SQLAlchemyAsyncRepository, monk
 async def test_sqlalchemy_repo_delete_many(mock_repo: SQLAlchemyAsyncRepository, monkeypatch: MonkeyPatch) -> None:
     """Test expected method calls for delete operation."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
