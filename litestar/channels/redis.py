@@ -29,6 +29,9 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
     def __init__(self, *, redis: Redis, stream_sleep_no_subscriptions: int = 1) -> None:
         super().__init__(redis=redis, stream_sleep_no_subscriptions=stream_sleep_no_subscriptions)
         self._pub_sub: PubSub = self._redis.pubsub()
+        self._publish_script = self._redis.register_script(
+            importlib.resources.read_text("litestar.channels", "_redis_publish.lua")
+        )
 
     async def on_startup(self) -> None:
         pass
@@ -43,19 +46,7 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
         await self._pub_sub.unsubscribe(*channels)
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
-        channels = set(channels)
-
-        if len(channels) == 1:  # if we only issue one command, using a pipeline introduces unnecessary overhead
-            channel = channels.pop()
-            await self._redis.publish(channel, data)
-            return
-
-        pipeline = self._redis.pipeline()
-
-        for channel in channels:
-            pipeline.publish(channel, data)
-
-        await pipeline.execute()
+        await self._publish_script(keys=list(set(channels)), args=[data])
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         while True:
@@ -93,7 +84,8 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
         self._flush_all_streams_script = self._redis.register_script(
             importlib.resources.read_text("litestar.channels", "_redis_flushall.lua")
         )
-        self._stream_ttl = stream_ttl
+        self._stream_ttl = stream_ttl if isinstance(stream_ttl, int) else int(stream_ttl.total_seconds() * 1000)
+        self._publish_script = self._redis.register_script(importlib.resources.read_text("litestar.channels", "_redis_xadd_expire.lua"))
 
     async def on_startup(self) -> None:
         pass
@@ -109,19 +101,16 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
         channels = set(channels)
-        pipeline = self._redis.pipeline()
-
-        for channel in channels:
-            channel_key = self._make_key(channel)
-            pipeline.xadd(
-                name=channel_key,
-                fields={"data": data, "channel": channel},
-                maxlen=self._history_limit,
-                approximate=self._cap_streams_approximate,
-            )
-            pipeline.pexpire(channel_key, time=self._stream_ttl)
-
-        await pipeline.execute()
+        await self._publish_script(
+            keys=[self._make_key(key) for key in channels],
+            args=[
+                data,
+                self._history_limit,
+                self._stream_ttl,
+                int(self._cap_streams_approximate),
+                *channels,
+            ],
+        )
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         stream_ids: dict[str, bytes] = {}

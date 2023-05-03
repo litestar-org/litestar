@@ -25,7 +25,7 @@ class MemoryChannelsBackend(ChannelsBackend):
         if not self._queue:
             raise RuntimeError()
         for channel in channels:
-            await self._queue.put((channel, data))
+            self._queue.put_nowait((channel, data))
         if self._max_history_length:
             for channel in channels:
                 self._history[channel].append(data)
