@@ -55,7 +55,7 @@ example here lets say it's a pydantic model:
     Base = declarative_base()
 
 
-    class User(UUIDBase):
+    class User(Base):
         id: uuid.UUID | None = Column(
             UUID(as_uuid=True), default=uuid.uuid4, primary_key=True
         )

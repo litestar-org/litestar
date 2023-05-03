@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 @pytest.fixture(name="base")
 def fx_base() -> type[DeclarativeBase]:
-    class UUIDBase(DeclarativeBase):
+    class Base(DeclarativeBase):
         id: Mapped[UUID] = mapped_column(default=uuid4, primary_key=True)
         created: Mapped[datetime] = mapped_column(
             default=datetime.now, info={DTO_FIELD_META_KEY: DTOField(mark=Mark.READ_ONLY)}
@@ -41,7 +41,7 @@ def fx_base() -> type[DeclarativeBase]:
             """Infer table name from class name."""
             return cls.__name__.lower()
 
-    return UUIDBase
+    return Base
 
 
 @pytest.fixture(name="author_model")
@@ -243,14 +243,14 @@ from typing_extensions import Annotated
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig
 
-class UUIDBase(DeclarativeBase):
+class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 
-class A(UUIDBase):
+class A(Base):
     __tablename__ = "a"
     b_id: Mapped[int] = mapped_column(ForeignKey("b.id"))
 
-class B(UUIDBase):
+class B(Base):
     __tablename__ = "b"
     a: Mapped[List[A]] = relationship("A")
 
@@ -382,15 +382,15 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 
-class UUIDBase(DeclarativeBase):
+class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 
-class A(UUIDBase):
+class A(Base):
     __tablename__ = "a"
     b_id: Mapped[int] = mapped_column(ForeignKey("b.id"))
     b: Mapped[B] = relationship(back_populates="a")
 
-class B(UUIDBase):
+class B(Base):
     __tablename__ = "b"
     a: Mapped[A] = relationship(back_populates="b")
 
@@ -424,13 +424,13 @@ from typing_extensions import Annotated
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig
 
-class UUIDBase(DeclarativeBase):
+class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 
-class A(UUIDBase):
+class A(Base):
     __tablename__ = "a"
 
-class B(UUIDBase):
+class B(Base):
     __tablename__ = "b"
     a_id: Mapped[Optional[int]] = mapped_column(ForeignKey("a.id"))
     a: Mapped[Optional[A]] = relationship(A)
