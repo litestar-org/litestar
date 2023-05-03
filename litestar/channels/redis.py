@@ -85,7 +85,9 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
             importlib.resources.read_text("litestar.channels", "_redis_flushall.lua")
         )
         self._stream_ttl = stream_ttl if isinstance(stream_ttl, int) else int(stream_ttl.total_seconds() * 1000)
-        self._publish_script = self._redis.register_script(importlib.resources.read_text("litestar.channels", "_redis_xadd_expire.lua"))
+        self._publish_script = self._redis.register_script(
+            importlib.resources.read_text("litestar.channels", "_redis_xadd_expire.lua")
+        )
 
     async def on_startup(self) -> None:
         pass

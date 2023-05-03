@@ -36,7 +36,10 @@ class MemoryChannelsBackend(ChannelsBackend):
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         self._channels = self._channels - (set(channels))
         for channel in channels:
-            del self._history[channel]
+            try:
+                del self._history[channel]
+            except KeyError:
+                pass
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         while self._queue:
