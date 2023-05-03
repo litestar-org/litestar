@@ -214,9 +214,6 @@ Creating a new release
 
    * Use ``vMAJOR.MINOR.PATCH`` (e.g. ``v1.2.3``) as both the tag and release title
    * Fill in the release description. You can use the "Generate release notes" function to get a draft for this
-
-3. Update ``CHANGELOG.rst`` by adding a new ``.. changelog:: <version number>`` entry, with the version number. Include
-   the contents of the release notes as they relate to changes in code
-4. Commit your changes and push to ``main``
-5. Publish the release
-6. Check that the "publish" `action <https://github.com/litestar-org/litestar/actions>`_ has run successfully
+3. Commit your changes and push to ``main``
+4. Publish the release
+5. Check that the "publish" `action <https://github.com/litestar-org/litestar/actions>`_ has run successfully
