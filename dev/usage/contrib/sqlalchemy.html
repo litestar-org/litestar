@@ -1111,7 +1111,7 @@ document.write(`
 <section id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p>Pre-configured <code class="docutils literal notranslate"><span class="pre">DeclarativeBase</span></code> for <a class="reference external" href="https://docs.sqlalchemy.org/">SQLAlchemy</a> 2.0 that includes a UUID based primary-key and an optional version with audit columns.</p></li>
+<li><p>Pre-configured <code class="docutils literal notranslate"><span class="pre">DeclarativeBase</span></code> for <a class="reference external" href="https://docs.sqlalchemy.org/en/20/index.html" title="(in SQLAlchemy v2.0)"><span class="xref std std-doc">SQLAlchemy</span></a> 2.0 that includes a UUID based primary-key, a  <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/connections.html#configuring-sentinel-columns/">sentinel column</a> and an optional version with audit columns.</p></li>
 <li><p>Generic asynchronous repository for select, insert, update, and delete operations on SQLAlchemy models</p></li>
 <li><p>Implements optimized methods for bulk inserts, updates, and deletes.</p></li>
 <li><p>Integrated counts, pagination, sorting, filtering with <code class="docutils literal notranslate"><span class="pre">LIKE</span></code>, <code class="docutils literal notranslate"><span class="pre">IN</span></code>, and dates before and/or after.</p></li>
@@ -1124,8 +1124,8 @@ document.write(`
 <p>Models using these bases also include the following enhancements:
 * Auto-generated snake-case table name from class name
 * Pydantic BaseModel and Dict classes map to an optimized JSON type that is <a class="reference external" href="https://docs.sqlalchemy.org/en/20/dialects/postgresql.html#sqlalchemy.dialects.postgresql.JSONB" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONB</span></code></a> for the Postgres and <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/type_basics.html#sqlalchemy.types.JSON" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSON</span></code></a> for other dialects.</p>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">sqlalchemy_declarative_models.py</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">sqlalchemy_declarative_models.py</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
@@ -1187,8 +1187,8 @@ document.write(`
 <section id="basic-controller-integration">
 <h2>Basic Controller Integration<a class="headerlink" href="#basic-controller-integration" title="Permalink to this heading">#</a></h2>
 <p>Once you have declared your models, you are ready to use the <code class="docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code> class with your controllers and function based routes.</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">sqlalchemy_async_repository.py</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">sqlalchemy_async_repository.py</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>

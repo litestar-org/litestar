@@ -1175,7 +1175,7 @@ format which can be a time and space efficient alternative to JSON.</p>
 <p>It supports all the same types as JSON serialization. To send a <code class="docutils literal notranslate"><span class="pre">MessagePack</span></code> response,
 simply specify the media type as <code class="docutils literal notranslate"><span class="pre">MediaType.MESSAGEPACK</span></code>:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
@@ -1188,7 +1188,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">MediaType</span>
@@ -2161,7 +2161,7 @@ as the value for <code class="docutils literal notranslate"><span class="pre">me
 <p>To return a streaming response use the <a class="reference internal" href="../reference/response_containers.html#litestar.response_containers.Stream" title="litestar.response_containers.Stream"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> class. The Stream class receives a
 single required kwarg - <code class="docutils literal notranslate"><span class="pre">iterator</span></code>:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">sleep</span>
@@ -2188,7 +2188,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">sleep</span>
@@ -2288,7 +2288,7 @@ or an instance of <a class="reference internal" href="../reference/background_ta
 dunder method) that will be called after the response finishes sending the data.</p>
 <p>Thus, in the following example the passed in background task will be executed after the response sends:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+<input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id5">
@@ -2319,7 +2319,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-5">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id6">
@@ -2361,7 +2361,7 @@ enabling correct type checking for arguments and keyword arguments passed to it.
 </div>
 <p>Route decorators (e.g. <code class="docutils literal notranslate"><span class="pre">&#64;get</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;post</span></code>, etc.) also allow passing in a background task with the <code class="docutils literal notranslate"><span class="pre">background</span></code> kwarg:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+<input id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-6">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id7">
@@ -2389,7 +2389,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+<input checked="checked" id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-7">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id8">
@@ -2426,7 +2426,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>You can also use the <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTasks" title="litestar.background_tasks.BackgroundTasks"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTasks</span></code></a> class and pass to it an iterable
 (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>, etc.) of <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> instances:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+<input id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-8">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id9">
@@ -2467,7 +2467,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+<input checked="checked" id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-9">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id10">
@@ -2531,7 +2531,7 @@ of the box:</p>
 <h3>Classic Pagination<a class="headerlink" href="#classic-pagination" title="Permalink to this heading">#</a></h3>
 <p>In classic pagination the dataset is divided into pages of a specific size and the consumer then requests a specific page.</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
+<input id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-10">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id11">
@@ -2584,7 +2584,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
+<input checked="checked" id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-11">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id12">
@@ -2648,7 +2648,7 @@ the <a class="reference internal" href="../reference/pagination.html#litestar.pa
 <p>In offset pagination the consumer requests a number of items specified by <code class="docutils literal notranslate"><span class="pre">limit</span></code> and the <code class="docutils literal notranslate"><span class="pre">offset</span></code> from the beginning of the dataset.
 For example, given a list of 50 items, you could request <code class="docutils literal notranslate"><span class="pre">limit=10</span></code>, <code class="docutils literal notranslate"><span class="pre">offset=39</span></code> to request items 40-50.</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
+<input id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-12">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id13">
@@ -2702,7 +2702,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
+<input checked="checked" id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-13">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id14">
@@ -2767,7 +2767,7 @@ the <a class="reference internal" href="../reference/pagination.html#litestar.pa
 <p>When retrieving paginated data from the database using SQLAlchemy, the Paginator instance requires an SQLAlchemy session
 instance to make queries. This can be achieved with <a class="reference internal" href="dependency-injection.html#dependency-kwargs"><span class="std std-ref">dependency injection</span></a></p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
+<input id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-14">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id15">
@@ -2831,7 +2831,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
+<input checked="checked" id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-15">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id16">
@@ -2904,7 +2904,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>In cursor pagination the consumer requests a number of items specified by <code class="docutils literal notranslate"><span class="pre">results_per_page</span></code> and a <code class="docutils literal notranslate"><span class="pre">cursor</span></code> after which results are given.
 Cursor is unique identifier within the dataset that serves as a way to point the starting position.</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
+<input id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-16">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id17">
@@ -3004,7 +3004,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-18" name="sd-tab-set-8" type="radio">
+<input checked="checked" id="sd-tab-item-18" name="sd-tab-set-8" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-18">
 Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id19">

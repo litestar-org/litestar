@@ -1153,7 +1153,7 @@ a DTO for use with a SQLAlchemy model:</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;f4856023-88dd-4882-b118-5d85d2055f5e&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;8b02c833-7652-4199-963f-1fb565d6df04&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1210,7 +1210,7 @@ fields are never serialized into return data.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;094c955c-94ce-40ab-874c-811753a59c40&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;836dc62f-139d-49bd-b73b-62fec8f5986a&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1221,7 +1221,7 @@ fields are never serialized into return data.</p>
 <p>The following example demonstrates excluding attributes from the serialized response, including excluding fields from
 nested models.</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id3">
@@ -1272,7 +1272,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id4">
@@ -1339,7 +1339,7 @@ the user’s street address are excluded from the serialized response.</p>
 <p>Fields can be renamed using <a class="reference internal" href="../../reference/dto/factory/index.html#litestar.dto.factory.DTOConfig" title="litestar.dto.factory.DTOConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOConfig</span></code></a>. The following example uses the name
 <code class="docutils literal notranslate"><span class="pre">userName</span></code> client-side, and <code class="docutils literal notranslate"><span class="pre">user</span></code> internally.</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id5">
@@ -1378,7 +1378,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id6">
@@ -1421,13 +1421,13 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;b5ba201d-42b3-4c6f-a829-ac4c16b77363&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;34b8bd5e-ddbf-4ebc-b468-752b8f1d9d24&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
 <p>Fields can also be renamed using a renaming strategy that will be applied to all fields. The following example uses a pre-defined rename strategy that will convert all field names to camel case on client-side.</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+<input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id7">
@@ -1468,7 +1468,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-5">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id8">
@@ -1513,7 +1513,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;4a4981f2-bf9e-4c81-806e-fe28426dfe54&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;87055005-fdf1-4081-b5f7-8f346949a3e9&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1576,7 +1576,7 @@ However, we annotate the handler with the <code class="docutils literal notransl
 <p>In this example, we set <code class="docutils literal notranslate"><span class="pre">max_nested_depth=0</span></code> for the DTO that handles inbound client data, and leave it at the default
 of <code class="docutils literal notranslate"><span class="pre">1</span></code> for the return DTO.</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+<input id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-6">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id10">
@@ -1628,7 +1628,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+<input checked="checked" id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-7">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id11">

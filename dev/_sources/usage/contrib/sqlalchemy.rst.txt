@@ -6,7 +6,7 @@ Litestar comes with a built-in repository class (:class:`SQLAlchemyAsyncReposito
 Features
 --------
 
-* Pre-configured ``DeclarativeBase`` for `SQLAlchemy <https://docs.sqlalchemy.org/>`_ 2.0 that includes a UUID based primary-key and an optional version with audit columns.
+* Pre-configured ``DeclarativeBase`` for :doc:`SQLAlchemy <sqlalchemy:index>` 2.0 that includes a UUID based primary-key, a  `sentinel column <https://docs.sqlalchemy.org/en/20/core/connections.html#configuring-sentinel-columns/>`_ and an optional version with audit columns.
 * Generic asynchronous repository for select, insert, update, and delete operations on SQLAlchemy models
 * Implements optimized methods for bulk inserts, updates, and deletes.
 * Integrated counts, pagination, sorting, filtering with ``LIKE``, ``IN``, and dates before and/or after.
