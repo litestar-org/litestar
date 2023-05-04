@@ -45,7 +45,7 @@ def test_channels_no_channels_arbitrary_not_allowed_raises(memory_backend: Memor
 def test_broadcast_not_initialized_raises(memory_backend: MemoryChannelsBackend) -> None:
     plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
     with pytest.raises(RuntimeError):
-        plugin.broadcast("foo", "bar")
+        plugin.publish("foo", "bar")
 
 
 @pytest.mark.parametrize("socket_send_mode", ["text", "binary"])
@@ -68,7 +68,7 @@ async def test_pub_sub(channels_backend: ChannelsBackend, socket_send_mode: WebS
     app = Litestar([handler], plugins=[channels_plugin])
 
     with TestClient(app) as client, client.websocket_connect("/") as ws:
-        channels_plugin.broadcast(["foo"], "something")
+        channels_plugin.publish(["foo"], "something")
         assert ws.receive_json(mode=socket_send_mode, timeout=1) == ["foo"]
 
 
@@ -87,7 +87,7 @@ def test_pub_sub_create_route_handlers(
     app = Litestar(plugins=[channels_plugin])
 
     with TestClient(app) as client, client.websocket_connect(f"{handler_base_path or ''}/something") as ws:
-        channels_plugin.broadcast(["foo"], "something")
+        channels_plugin.publish(["foo"], "something")
         assert ws.receive_json(mode=socket_send_mode, timeout=0.1) == ["foo"]
 
 
@@ -100,11 +100,11 @@ async def test_create_route_handlers_arbitrary_channels_allowed(channels_backend
 
     with TestClient(app) as client:
         with client.websocket_connect("/ws/foo") as ws:
-            channels_plugin.broadcast("something", "foo")
+            channels_plugin.publish("something", "foo")
             assert ws.receive_text(timeout=1) == "something"
 
         with client.websocket_connect("/ws/bar") as ws:
-            channels_plugin.broadcast("something else", "bar")
+            channels_plugin.publish("something else", "bar")
             assert ws.receive_text(timeout=1) == "something else"
 
 
@@ -240,7 +240,7 @@ async def test_send_history(
 
 
 @pytest.mark.parametrize(
-    "message_count,history,expected_history_count",
+    "message_count,handler_send_history,expected_history_count",
     [
         (2, -1, 2),
         (2, 1, 1),
@@ -252,14 +252,14 @@ async def test_send_history(
 async def test_handler_sends_history(
     memory_backend: MemoryChannelsBackend,
     message_count: int,
-    history: int,
+    handler_send_history: int,
     expected_history_count: int,
 ) -> None:
     memory_backend._max_history_length = 10
     plugin = ChannelsPlugin(
         backend=memory_backend,
         arbitrary_channels_allowed=True,
-        history=history,
+        handler_send_history=handler_send_history,
         create_route_handlers=True,
     )
 

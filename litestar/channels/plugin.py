@@ -5,7 +5,7 @@ from asyncio import CancelledError, Queue, Task, create_task
 from contextlib import asynccontextmanager, suppress
 from functools import partial
 from os.path import join as join_path
-from typing import TYPE_CHECKING, AsyncGenerator, Awaitable, Callable, Iterable
+from typing import TYPE_CHECKING, AsyncGenerator, Awaitable, Callable, Iterable, NamedTuple
 
 import anyio
 import msgspec.json
@@ -44,12 +44,12 @@ class Subscriber:
                 break
             yield item
 
-    async def send_history(self, channels: Iterable[str], limit: int | None) -> None:
+    async def send_history(self, channels: Iterable[str], limit: int | None = None) -> None:
         async with anyio.create_task_group() as task_group:
             for channel in channels:
                 task_group.start_soon(self.send_channel_history, channel, limit)
 
-    async def send_channel_history(self, channel: str, limit: int | None) -> None:
+    async def send_channel_history(self, channel: str, limit: int | None = None) -> None:
         history = await self._backend.get_history(channel, limit)
         for entry in history:
             self._queue.put_nowait(entry)
@@ -102,7 +102,7 @@ class ChannelsPlugin(InitPluginProtocol):
         handler_base_path: str = "/",
         socket_send_mode: WebSocketMode = "text",
         type_encoders: TypeEncodersMap | None = None,
-        history: int = 0,
+        handler_send_history: int = 0,
     ) -> None:
         self._backend = backend
         self._pub_queue: Queue[tuple[bytes, list[str]]] | None = None
@@ -119,8 +119,8 @@ class ChannelsPlugin(InitPluginProtocol):
         self._encode_json = msgspec.json.Encoder(
             enc_hook=partial(default_serializer, type_encoders=type_encoders)
         ).encode
-        self._handler_should_send_history = bool(history)
-        self._history_limit = None if history < 0 else history
+        self._handler_should_send_history = bool(handler_send_history)
+        self._history_limit = None if handler_send_history < 0 else handler_send_history
 
         self._channels: dict[str, set[Subscriber]] = {channel: set() for channel in channels or []}
 
@@ -151,7 +151,7 @@ class ChannelsPlugin(InitPluginProtocol):
 
         return app_config
 
-    def broadcast(self, data: LitestarEncodableType, channels: str | Iterable[str]) -> None:
+    def publish(self, data: LitestarEncodableType, channels: str | Iterable[str]) -> None:
         if isinstance(channels, str):
             channels = [channels]
         data = self.encode_data(data)
