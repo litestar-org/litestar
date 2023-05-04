@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from asyncio import CancelledError, Queue, Task, create_task
 from contextlib import asynccontextmanager, suppress
 from functools import partial
@@ -10,7 +11,7 @@ import anyio
 import msgspec.json
 
 from litestar.di import Provide
-from litestar.exceptions import ImproperlyConfiguredException, LitestarException, WebSocketDisconnect
+from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.handlers import WebsocketRouteHandler
 from litestar.plugins import InitPluginProtocol
 from litestar.serialization import default_serializer
@@ -21,6 +22,55 @@ if TYPE_CHECKING:
     from litestar.connection import WebSocket
     from litestar.types import LitestarEncodableType, TypeEncodersMap
     from litestar.types.asgi_types import WebSocketMode
+
+
+class Subscriber:
+    def __init__(self, socket: WebSocket, handle_send: Callable[[WebSocket, bytes], Awaitable[None]]) -> None:
+        self._queue: Queue[bytes | None] = Queue()
+        self._handle_send = handle_send
+        self._socket = socket
+        self._task: asyncio.Task | None = None
+
+    async def put(self, item: bytes | None) -> None:
+        await self._queue.put(item)
+
+    def put_nowait(self, item: bytes | None) -> None:
+        self._queue.put_nowait(item)
+
+    async def iter_events(self) -> AsyncGenerator[bytes, None]:
+        while True:
+            item = await self._queue.get()
+            if item is None:
+                break
+            yield item
+
+    @asynccontextmanager
+    async def run_in_background(self) -> AsyncGenerator[None, None]:
+        self.start_in_background()
+        try:
+            yield
+        finally:
+            await self.stop()
+
+    async def _socket_worker(self) -> None:
+        async for event in self.iter_events():
+            await self._handle_send(self._socket, event)
+
+    def start_in_background(self) -> None:
+        if self._task is None:
+            self._task = asyncio.create_task(self._socket_worker())
+
+    @property
+    def is_running(self) -> bool:
+        return self._task is not None
+
+    async def stop(self) -> None:
+        if not self._task:
+            return
+        self._task.cancel()
+        with suppress(CancelledError):
+            await self._task
+        self._task = None
 
 
 class ChannelsPlugin(InitPluginProtocol):
@@ -35,7 +85,6 @@ class ChannelsPlugin(InitPluginProtocol):
         socket_send_mode: WebSocketMode = "text",
         type_encoders: TypeEncodersMap | None = None,
         history: int = 0,
-        send_history_chronological: bool = True,
     ) -> None:
         self._backend = backend
         self._pub_queue: Queue[tuple[bytes, list[str]]] | None = None
@@ -54,9 +103,9 @@ class ChannelsPlugin(InitPluginProtocol):
         ).encode
         self._handler_should_send_history = bool(history)
         self._history_limit = None if history < 0 else history
-        self._send_history_chronological = send_history_chronological
 
-        self._channels: dict[str, set[WebSocket]] = {channel: set() for channel in channels or []}
+        self._channels: dict[str, set[Subscriber]] = {channel: set() for channel in channels or []}
+        self._socket_subscribers: dict[WebSocket, Subscriber] = {}
 
     def encode_data(self, data: LitestarEncodableType) -> bytes:
         if isinstance(data, str):
@@ -94,10 +143,11 @@ class ChannelsPlugin(InitPluginProtocol):
         except AttributeError as e:
             raise RuntimeError("Plugin not yet initialized. Did you forget to call on_startup?") from e
 
-    async def subscribe(self, socket: WebSocket, channels: str | Iterable[str]) -> None:
+    async def subscribe(self, socket: WebSocket, channels: str | Iterable[str]) -> Subscriber:
         if isinstance(channels, str):
             channels = [channels]
 
+        subscriber = self._socket_subscribers.setdefault(socket, Subscriber(socket, self.handle_socket_send))
         channels_to_subscribe = set()
 
         for channel in channels:
@@ -112,73 +162,65 @@ class ChannelsPlugin(InitPluginProtocol):
             if not channel_subscribers:
                 channels_to_subscribe.add(channel)
 
-            channel_subscribers.add(socket)
+            channel_subscribers.add(subscriber)
 
         if channels_to_subscribe:
             await self._backend.subscribe(channels_to_subscribe)
 
-    @asynccontextmanager
-    async def start_subscription(self, socket: WebSocket, channels: str | list[str]) -> AsyncGenerator[None, None]:
-        await self.subscribe(socket, channels)
-        try:
-            yield
-        finally:
-            await self.unsubscribe(socket, channels)
+        return subscriber
 
-    async def send_history(
-        self, socket: WebSocket, channels: Iterable[str], limit: int | None, chronological: bool = True
-    ) -> None:
-        async with anyio.create_task_group() as task_group:
-            for channel in channels:
-                task_group.start_soon(self.send_channel_history, channel, socket, limit, chronological)
-
-    async def send_channel_history(
-        self, channel: str, socket: WebSocket, limit: int | None, chronological: bool = True
-    ) -> None:
-        history = await self._backend.get_history(channel, limit)
-        if chronological:
-            for entry in history:
-                await self.handle_socket_send(socket, entry)
-            return
-
-        async with anyio.create_task_group() as task_group:
-            for entry in history:
-                task_group.start_soon(self.handle_socket_send, socket, entry)
-
-    async def unsubscribe(self, socket: WebSocket, channels: str | Iterable[str] | None = None) -> None:
-        if channels is None:
-            channels = self._channels.keys()
-
+    async def unsubscribe(self, socket: WebSocket, channels: str | Iterable[str]) -> None:
         if isinstance(channels, str):
             channels = [channels]
 
-        channels_to_unsubscribe = []
+        subscriber = self._socket_subscribers[socket]
+
+        channels_to_unsubscribe: set[str] = set()
 
         for channel in channels:
-            channel_subscribers = self._channels.get(channel) or set()
-            channel_subscribers.remove(socket)
+            channel_subscribers = self._channels[channel]
+            channel_subscribers.remove(subscriber)
             if not channel_subscribers:
-                channels_to_unsubscribe.append(channel)
+                del self._channels[channel]
+                channels_to_unsubscribe.add(channel)
+
+        if not any(subscriber in queues for queues in self._channels.values()):
+            await subscriber.put(None)
+            del self._socket_subscribers[socket]
 
         if channels_to_unsubscribe:
             await self._backend.unsubscribe(channels_to_unsubscribe)
+        if subscriber.is_running and not any(subscriber in queues for queues in self._channels.values()):
+            await subscriber.stop()
 
-    def get_subscribers(self, channel: str) -> set[WebSocket]:
-        return self._channels[channel]
+    @asynccontextmanager
+    async def start_subscription(
+        self, socket: WebSocket, channels: str | Iterable[str]
+    ) -> AsyncGenerator[Subscriber, None]:
+        subscriber = await self.subscribe(socket, channels)
 
-    def get_subscriptions(self, socket: WebSocket) -> set[str]:
-        return {channel_name for channel_name, subscribers in self._channels.items() if socket in subscribers}
+        try:
+            yield subscriber
+        finally:
+            await self.unsubscribe(socket, channels)
+
+    async def send_history(self, socket: WebSocket, channels: Iterable[str], limit: int | None) -> None:
+        async with anyio.create_task_group() as task_group:
+            for channel in channels:
+                task_group.start_soon(self.send_channel_history, channel, socket, limit)
+
+    async def send_channel_history(self, channel: str, socket: WebSocket, limit: int | None) -> None:
+        subscriber = self._socket_subscribers[socket]
+        history = await self._backend.get_history(channel, limit)
+        for entry in history:
+            subscriber.put_nowait(entry)
 
     async def _ws_handler_func(self, channel_name: str, socket: WebSocket) -> None:
         await socket.accept()
-        async with self.start_subscription(socket, [channel_name]):
+        subscriber = await self.subscribe(socket, channel_name)
+        async with subscriber.run_in_background():
             if self._handler_should_send_history:
-                await self.send_channel_history(
-                    channel=channel_name,
-                    socket=socket,
-                    limit=self._history_limit,
-                    chronological=self._send_history_chronological,
-                )
+                await self.send_channel_history(channel=channel_name, socket=socket, limit=self._history_limit)
             while True:
                 await socket.receive()
 
@@ -189,10 +231,7 @@ class ChannelsPlugin(InitPluginProtocol):
         return ws_handler_func
 
     async def handle_socket_send(self, socket: WebSocket, data: bytes) -> None:
-        try:
-            await socket.send_data(data, mode=self._socket_send_mode)
-        except WebSocketDisconnect:
-            await self.unsubscribe(socket)
+        await socket.send_data(data, mode=self._socket_send_mode)
 
     async def _pub_worker(self) -> None:
         while self._pub_queue:
@@ -201,10 +240,9 @@ class ChannelsPlugin(InitPluginProtocol):
             self._pub_queue.task_done()
 
     async def _sub_worker(self) -> None:
-        async with anyio.create_task_group() as task_group:
-            async for channel, payload in self._backend.stream_events():
-                for socket in self._channels.get(channel, []):
-                    task_group.start_soon(self.handle_socket_send, socket, payload)
+        async for channel, payload in self._backend.stream_events():
+            for subscriber in self._channels.get(channel, []):
+                subscriber.put_nowait(payload)
 
     async def _on_startup(self) -> None:
         self._pub_queue = Queue()
@@ -215,6 +253,15 @@ class ChannelsPlugin(InitPluginProtocol):
             await self._backend.subscribe(list(self._channels))
 
     async def _on_shutdown(self) -> None:
+        await asyncio.gather(
+            *[
+                subscriber.stop()
+                for subscribers in self._channels.values()
+                for subscriber in subscribers
+                if subscriber.is_running
+            ]
+        )
+
         if self._pub_queue:
             await self._pub_queue.join()
             self._pub_queue = None
