@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 import asyncio
-import importlib.resources
+import sys
+
+if sys.version_info < (3, 9):
+    import importlib_resources
+else:
+    import importlib.resources as importlib_resources
 from abc import ABC
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Iterable, cast
@@ -13,6 +18,11 @@ from .base import ChannelsBackend
 if TYPE_CHECKING:
     from redis.asyncio import Redis
     from redis.asyncio.client import PubSub
+
+_resource_path = importlib_resources.files("litestar.channels")
+_PUBSUB_PUBLISH_SCRIPT = (_resource_path / "_redis_pubsub_publish.lua").read_text()
+_FLUSHALL_STREAMS_SCRIPT = (_resource_path / "_redis_flushall_streams.lua").read_text()
+_XADD_EXPIRE_SCRIPT = (_resource_path / "_redis_xadd_expire.lua").read_text()
 
 
 class RedisChannelsBackend(ChannelsBackend, ABC):
@@ -29,9 +39,7 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
     def __init__(self, *, redis: Redis, stream_sleep_no_subscriptions: int = 1) -> None:
         super().__init__(redis=redis, stream_sleep_no_subscriptions=stream_sleep_no_subscriptions)
         self._pub_sub: PubSub = self._redis.pubsub()
-        self._publish_script = self._redis.register_script(
-            importlib.resources.read_text("litestar.channels", "_redis_publish.lua")
-        )
+        self._publish_script = self._redis.register_script(_PUBSUB_PUBLISH_SCRIPT)
 
     async def on_startup(self) -> None:
         pass
@@ -81,13 +89,9 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
         self._history_limit = history
         self._subscribed_channels: set[str] = set()
         self._cap_streams_approximate = cap_streams_approximate
-        self._flush_all_streams_script = self._redis.register_script(
-            importlib.resources.read_text("litestar.channels", "_redis_flushall.lua")
-        )
         self._stream_ttl = stream_ttl if isinstance(stream_ttl, int) else int(stream_ttl.total_seconds() * 1000)
-        self._publish_script = self._redis.register_script(
-            importlib.resources.read_text("litestar.channels", "_redis_xadd_expire.lua")
-        )
+        self._flush_all_streams_script = self._redis.register_script(_FLUSHALL_STREAMS_SCRIPT)
+        self._publish_script = self._redis.register_script(_XADD_EXPIRE_SCRIPT)
 
     async def on_startup(self) -> None:
         pass

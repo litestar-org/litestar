@@ -1435,7 +1435,7 @@ name = "importlib-resources"
 version = "5.12.0"
 description = "Read resources from Python packages"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "importlib_resources-5.12.0-py3-none-any.whl", hash = "sha256:7b1deeebbf351c7578e09bf2f63fa2ce8b5ffec296e0d349139d43cca061a81a"},
@@ -3584,4 +3584,4 @@ tortoise-orm = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "26ceda9bd3765ce9d6d355c454c7d3a4e8cbd167c2d2e54c0ba145b29ddf582c"
+content-hash = "4920800c734ea75febf1be64e57f69643142a061859b4b00d4c5e705abbd7520"
