@@ -229,7 +229,7 @@ async def test_send_history(
 
     subscriber = await plugin.subscribe(channels=["foo"])
     async with subscriber.run_in_background(mock_socket):
-        await subscriber.send_history(channels=["foo"], limit=history_limit)
+        await subscriber.put_history(channels=["foo"], limit=history_limit)
 
     assert mock_handle_send.call_count == expected_history_count
     if expected_history_count:

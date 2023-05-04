@@ -5,7 +5,7 @@ from asyncio import CancelledError, Queue, Task, create_task
 from contextlib import asynccontextmanager, suppress
 from functools import partial
 from os.path import join as join_path
-from typing import TYPE_CHECKING, AsyncGenerator, Awaitable, Callable, Iterable, NamedTuple
+from typing import TYPE_CHECKING, AsyncGenerator, Awaitable, Callable, Iterable, Sequence
 
 import anyio
 import msgspec.json
@@ -44,12 +44,19 @@ class Subscriber:
                 break
             yield item
 
-    async def send_history(self, channels: Iterable[str], limit: int | None = None) -> None:
+    async def put_history(self, channels: str | Sequence[str], limit: int | None = None) -> None:
+        if isinstance(channels, str):
+            channels = [channels]
+
+        if len(channels) == 1:
+            await self._put_channel_history(channels[0], limit=limit)
+            return
+
         async with anyio.create_task_group() as task_group:
             for channel in channels:
-                task_group.start_soon(self.send_channel_history, channel, limit)
+                task_group.start_soon(self._put_channel_history, channel, limit)
 
-    async def send_channel_history(self, channel: str, limit: int | None = None) -> None:
+    async def _put_channel_history(self, channel: str, limit: int | None = None) -> None:
         history = await self._backend.get_history(channel, limit)
         for entry in history:
             self._queue.put_nowait(entry)
@@ -227,7 +234,7 @@ class ChannelsPlugin(InitPluginProtocol):
         await socket.accept()
         async with self.start_subscription(channel_name) as subscriber:
             if self._handler_should_send_history:
-                await subscriber.send_channel_history(channel=channel_name, limit=self._history_limit)
+                await subscriber.put_history(channels=channel_name, limit=self._history_limit)
 
             async with subscriber.run_in_background(socket):
                 while True:
