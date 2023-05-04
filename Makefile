@@ -23,7 +23,7 @@ test-sqlalchemy-asyncmy:
 	pytest tests -m='sqlalchemy_asyncmy'
 
 test:
-	pytest tests -m='not sqlalchemy_asyncmy and not sqlalchemy_asyncpg'"
+	pytest tests -m='not sqlalchemy_asyncmy and not sqlalchemy_asyncpg'
 
 test-all: test test-sqlalchemy-asyncpg test-sqlalchemy-asyncmy test-examples
 
