@@ -218,9 +218,11 @@ class ChannelsPlugin(InitPluginProtocol):
     async def _ws_handler_func(self, channel_name: str, socket: WebSocket) -> None:
         await socket.accept()
         subscriber = await self.subscribe(socket, channel_name)
+
+        if self._handler_should_send_history:
+            await self.send_channel_history(channel=channel_name, socket=socket, limit=self._history_limit)
+
         async with subscriber.run_in_background():
-            if self._handler_should_send_history:
-                await self.send_channel_history(channel=channel_name, socket=socket, limit=self._history_limit)
             while True:
                 await socket.receive()
 
