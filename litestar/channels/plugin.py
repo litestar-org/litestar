@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from asyncio import CancelledError, Queue, Task, create_task
-from contextlib import asynccontextmanager, suppress
+from contextlib import AsyncExitStack, asynccontextmanager, suppress
 from functools import partial
 from os.path import join as join_path
 from typing import TYPE_CHECKING, AsyncGenerator, Awaitable, Callable, Iterable, Sequence
@@ -53,6 +53,7 @@ class Subscriber:
             if item is None:
                 break
             yield item
+            self._queue.task_done()
 
     async def put_history(self, channels: str | Sequence[str], limit: int | None = None) -> None:
         """Fetch the history of ``channels`` from the backend and put them in the subscriber's stream"""
@@ -73,19 +74,23 @@ class Subscriber:
             self._queue.put_nowait(entry)
 
     @asynccontextmanager
-    async def run_in_background(self, socket: WebSocket) -> AsyncGenerator[None, None]:
+    async def run_in_background(self, socket: WebSocket, join: bool = True) -> AsyncGenerator[None, None]:
         """Start a task in the background that sends events from the subscriber's stream
         to ``socket`` as they become available. The task will be cancelled when the
         context manager exits.
 
         Args:
             socket: WebSocket to send data to
+            join: If ``True``, wait for all items in the stream to be processed before
+                stopping the worker. Note that an error occurring within the context
+                will always lead to the immediate cancellation of the worker
         """
         self.start_in_background(socket=socket)
-        try:
+        async with AsyncExitStack() as exit_stack:
+            exit_stack.push_async_callback(self.stop, join=False)
             yield
-        finally:
-            await self.stop()
+            exit_stack.pop_all()
+            await self.stop(join=join)
 
     async def _socket_worker(self, socket: WebSocket) -> None:
         handle_send = self._plugin.handle_socket_send
@@ -110,13 +115,20 @@ class Subscriber:
         """Return whether a sending task is currently running"""
         return self._task is not None
 
-    async def stop(self) -> None:
+    async def stop(self, join: bool = False) -> None:
         """Stop a task was previously started with
         :meth:`start_in_background` or :meth:`run_in_background`. If the task is not yet
         done it will be cancelled and awaited
+
+        Args:
+            join: If ``True`` wait for all items to be processed before stopping the
+                task
         """
         if not self._task:
             return
+
+        if join:
+            await self._queue.join()
 
         if not self._task.done():
             self._task.cancel()
