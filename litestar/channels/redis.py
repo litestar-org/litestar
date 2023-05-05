@@ -4,14 +4,12 @@ import asyncio
 import sys
 
 if sys.version_info < (3, 9):
-    import importlib_resources
+    import importlib_resources  # pragma: nocover
 else:
     import importlib.resources as importlib_resources
 from abc import ABC
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Iterable, cast
-
-from litestar.exceptions import ImproperlyConfiguredException
 
 from .base import ChannelsBackend
 
@@ -135,8 +133,6 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
         super().__init__(
             redis=redis, stream_sleep_no_subscriptions=stream_sleep_no_subscriptions, key_prefix=key_prefix
         )
-        if history < 1:
-            raise ImproperlyConfiguredException("history must be greater than 0")
 
         self._history_limit = history
         self._subscribed_channels: set[str] = set()

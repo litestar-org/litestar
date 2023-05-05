@@ -9,6 +9,7 @@ from _pytest.fixtures import FixtureRequest
 from redis.asyncio.client import Redis
 
 from litestar.channels import ChannelsBackend
+from litestar.channels.memory import MemoryChannelsBackend
 from litestar.channels.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
 from litestar.utils.compat import async_next
 
@@ -119,3 +120,10 @@ async def test_redis_stream_backend_expires(redis_client: Redis) -> None:
 
     assert not await backend._redis.xrange(backend._make_key("foo"))
     assert await backend._redis.xrange(backend._make_key("bar"))
+
+
+async def test_memory_publish_not_initialized_raises() -> None:
+    backend = MemoryChannelsBackend()
+
+    with pytest.raises(RuntimeError):
+        await backend.publish(b"foo", ["something"])
