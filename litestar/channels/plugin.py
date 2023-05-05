@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import asyncio
-from asyncio import CancelledError, Queue, Task, create_task
+from asyncio import CancelledError, Queue, QueueFull, Task, create_task
+from collections import deque
 from contextlib import AsyncExitStack, asynccontextmanager, suppress
 from functools import partial
 from os.path import join as join_path
-from typing import TYPE_CHECKING, AsyncGenerator, Awaitable, Callable, Iterable, Sequence
+from typing import TYPE_CHECKING, AsyncGenerator, Awaitable, Callable, Generic, Iterable, Literal, Sequence, TypeVar
 
 import anyio
 import msgspec.json
@@ -24,25 +25,54 @@ if TYPE_CHECKING:
     from litestar.types.asgi_types import WebSocketMode
 
 
+T = TypeVar("T")
+
+
 class ChannelsException(LitestarException):
     pass
 
 
+class AsyncDeque(Queue, Generic[T]):
+    def __init__(self, maxsize: int | None) -> None:
+        self._deque_maxlen = maxsize
+        super().__init__()
+
+    def _init(self, maxsize: int) -> None:
+        self._queue: deque[T] = deque(maxlen=self._deque_maxlen)
+
+
+BacklogStrategy = Literal["backoff", "dropleft"]
+
+
 class Subscriber:
-    def __init__(self, plugin: ChannelsPlugin) -> None:
+    def __init__(
+        self, plugin: ChannelsPlugin, max_backlog: int | None = None, backlog_strategy: BacklogStrategy = "backoff"
+    ) -> None:
         """A wrapper around a stream of events published to subscribed channels"""
-        self._queue: Queue[bytes | None] = Queue()
         self._task: asyncio.Task | None = None
         self._plugin = plugin
         self._backend = plugin._backend
+        self._queue: Queue[bytes | None] | AsyncDeque[bytes | None]
+
+        if max_backlog and backlog_strategy == "dropleft":
+            self._queue = AsyncDeque(maxsize=max_backlog or 0)
+        else:
+            self._queue = Queue(maxsize=max_backlog or 0)
 
     async def put(self, item: bytes | None) -> None:
-        """Put an item in the subscriber's stream"""
         await self._queue.put(item)
 
-    def put_nowait(self, item: bytes | None) -> None:
+    def put_nowait(self, item: bytes | None) -> bool:
         """Put an item in the subscriber's stream without waiting"""
-        self._queue.put_nowait(item)
+        try:
+            self._queue.put_nowait(item)
+            return True
+        except QueueFull:
+            return False
+
+    @property
+    def qsize(self) -> int:
+        return self._queue.qsize()
 
     async def iter_events(self) -> AsyncGenerator[bytes, None]:
         """Iterate over the stream of events. If no items are available, block until
@@ -151,6 +181,8 @@ class ChannelsPlugin(InitPluginProtocol):
         handler_base_path: str = "/",
         socket_send_mode: WebSocketMode = "text",
         type_encoders: TypeEncodersMap | None = None,
+        max_backlog: int | None = None,
+        backlog_strategy: BacklogStrategy = "backoff",
     ) -> None:
         """Plugin to handle broadcasting to WebSockets with support for channels.
 
@@ -171,6 +203,11 @@ class ChannelsPlugin(InitPluginProtocol):
             socket_send_mode: Send mode to use for sending data through a :class:`WebSocket <.connections.WebSocket>`.
                 This will be used when sending within generated route handlers or :meth:`Subscriber.run_in_background`
             type_encoders: An additional mapping of type encoders used to encode data before sending
+            max_backlog: Maximum amount of unsent messages to be held in memory for a given subscriber. If that limit
+                is reached, new messages will be treated accordingly to ``backlog_strategy``
+            backlog_strategy: Define the behaviour if ``max_backlog`` is reached for a subscriber. ``backoff`` will
+                result in new messages being dropped until older ones have been processed. ``dropleft`` will drop
+                older messages in favour of new ones.
         """
         self._backend = backend
         self._pub_queue: Queue[tuple[bytes, list[str]]] | None = None
@@ -189,6 +226,8 @@ class ChannelsPlugin(InitPluginProtocol):
         ).encode
         self._handler_should_send_history = bool(handler_send_history)
         self._history_limit = None if handler_send_history < 0 else handler_send_history
+        self._max_backlog = max_backlog
+        self._backlog_strategy: BacklogStrategy = backlog_strategy
 
         self._channels: dict[str, set[Subscriber]] = {channel: set() for channel in channels or []}
 
@@ -251,7 +290,7 @@ class ChannelsPlugin(InitPluginProtocol):
         if isinstance(channels, str):
             channels = [channels]
 
-        subscriber = Subscriber(self)
+        subscriber = Subscriber(plugin=self, max_backlog=self._max_backlog, backlog_strategy=self._backlog_strategy)
         channels_to_subscribe = set()
 
         for channel in channels:

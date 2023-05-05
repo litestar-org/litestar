@@ -9,6 +9,7 @@ from _pytest.fixtures import FixtureRequest
 from litestar import Litestar, WebSocket, get, websocket
 from litestar.channels import ChannelsBackend, ChannelsPlugin
 from litestar.channels.memory import MemoryChannelsBackend
+from litestar.channels.plugin import BacklogStrategy
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.testing import TestClient, create_test_client
 from litestar.types.asgi_types import WebSocketMode
@@ -278,3 +279,29 @@ async def test_handler_sends_history(
     if expected_history_count:
         expected_messages = messages[-expected_history_count:]
         assert [call.args[1] for call in mock_handle_send.call_args_list] == expected_messages
+
+
+@pytest.mark.parametrize("backlog_strategy", ["backoff", "dropleft"])
+async def test_backlog(memory_backend: MemoryChannelsBackend, backlog_strategy: BacklogStrategy) -> None:
+    plugin = ChannelsPlugin(
+        backend=memory_backend, arbitrary_channels_allowed=True, max_backlog=2, backlog_strategy=backlog_strategy
+    )
+    mock_handle_send = AsyncMock()
+    mock_socket = AsyncMock()
+    plugin.handle_socket_send = mock_handle_send  # type: ignore[method-assign]
+    messages = [b"foo", b"bar", b"baz"]
+
+    await plugin._on_startup()
+
+    subscriber = await plugin.subscribe(channels=["something"])
+
+    async with subscriber.run_in_background(mock_socket):
+        for message in messages:
+            plugin.publish(message, channels=["something"])
+
+        await plugin._on_shutdown()
+
+    expected_messages = messages[:-1] if backlog_strategy == "backoff" else messages[1:]
+
+    assert mock_handle_send.call_count == 2
+    assert [call.args[1] for call in mock_handle_send.call_args_list] == expected_messages
