@@ -94,9 +94,11 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
             if not self._pub_sub.subscribed:
                 await asyncio.sleep(self._stream_sleep_no_subscriptions)  # no subscriptions found so we sleep a bit
                 continue
+
             message = await self._pub_sub.get_message(ignore_subscribe_messages=True, timeout=None)  # type: ignore[arg-type]
             if message is None:
                 continue
+
             channel = message["channel"].decode()
             data = message["data"]
             yield channel, data

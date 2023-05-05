@@ -44,6 +44,7 @@ class MemoryChannelsBackend(ChannelsBackend):
         for channel in channels:
             if channel not in self._channels:
                 continue
+
             self._queue.put_nowait((channel, data))
         if self._max_history_length:
             for channel in channels:
