@@ -27,6 +27,8 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
+BacklogStrategy = Literal["backoff", "dropleft"]
+
 
 class ChannelsException(LitestarException):
     pass
@@ -41,14 +43,12 @@ class AsyncDeque(Queue, Generic[T]):
         self._queue: deque[T] = deque(maxlen=self._deque_maxlen)
 
 
-BacklogStrategy = Literal["backoff", "dropleft"]
-
-
 class Subscriber:
+    """A wrapper around a stream of events published to subscribed channels"""
+
     def __init__(
         self, plugin: ChannelsPlugin, max_backlog: int | None = None, backlog_strategy: BacklogStrategy = "backoff"
     ) -> None:
-        """A wrapper around a stream of events published to subscribed channels"""
         self._task: asyncio.Task | None = None
         self._plugin = plugin
         self._backend = plugin._backend
@@ -200,7 +200,7 @@ class ChannelsPlugin(InitPluginProtocol):
             handler_send_history: Amount of history entries to send from the generated route handlers after a client
                 has connected. A value of ``0`` indicates to not send a history
             handler_base_path: Path prefix used for the generated route handlers
-            socket_send_mode: Send mode to use for sending data through a :class:`WebSocket <.connections.WebSocket>`.
+            socket_send_mode: Send mode to use for sending data through a :class:`WebSocket <.connection.WebSocket>`.
                 This will be used when sending within generated route handlers or :meth:`Subscriber.run_in_background`
             type_encoders: An additional mapping of type encoders used to encode data before sending
             max_backlog: Maximum amount of unsent messages to be held in memory for a given subscriber. If that limit

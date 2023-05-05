@@ -119,7 +119,7 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
         stream_ttl: int | timedelta = timedelta(seconds=60),
         key_prefix: str = "LITESTAR_CHANNELS",
     ) -> None:
-        """Redis channels backend, `streams https://redis.io/docs/data-types/streams/>`_.
+        """Redis channels backend, `streams <https://redis.io/docs/data-types/streams/>`_.
 
         Args:
             history: Amount of messages to keep. This will set a ``MAXLEN`` to the streams
