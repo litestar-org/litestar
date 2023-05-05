@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from _pytest.fixtures import FixtureRequest
+from pytest_mock import MockerFixture
 
 from litestar import Litestar, WebSocket, get, websocket
 from litestar.channels import ChannelsBackend, ChannelsPlugin
@@ -55,7 +56,7 @@ async def test_pub_sub(channels_backend: ChannelsBackend, socket_send_mode: WebS
     async def handler(socket: WebSocket, channels: ChannelsPlugin) -> None:
         await socket.accept()
         subscriber = await channels.subscribe("something")
-        subscriber.start_in_background(socket)
+        subscriber.start_in_background(socket, mode=socket_send_mode)
 
         while True:
             try:
@@ -63,9 +64,7 @@ async def test_pub_sub(channels_backend: ChannelsBackend, socket_send_mode: WebS
             finally:
                 break
 
-    channels_plugin = ChannelsPlugin(
-        backend=channels_backend, channels=["something"], socket_send_mode=socket_send_mode
-    )
+    channels_plugin = ChannelsPlugin(backend=channels_backend, channels=["something"])
     app = Litestar([handler], plugins=[channels_plugin])
 
     with TestClient(app) as client, client.websocket_connect("/") as ws:
@@ -204,6 +203,11 @@ async def _populate_channels_backend(*, message_count: int, channel: str, backen
     return messages
 
 
+@pytest.fixture()
+def mock_handle_socket_send(mocker: MockerFixture) -> AsyncMock:
+    return mocker.patch("litestar.channels.plugin.Subscriber.handle_socket_send")
+
+
 @pytest.mark.parametrize(
     "message_count,history_limit,expected_history_count",
     [
@@ -218,12 +222,11 @@ async def test_send_history(
     message_count: int,
     history_limit: int,
     expected_history_count: int,
+    mock_handle_socket_send: AsyncMock,
 ) -> None:
     memory_backend._max_history_length = 10
     plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
-    mock_handle_send = AsyncMock()
     mock_socket = AsyncMock()
-    plugin.handle_socket_send = mock_handle_send  # type: ignore[method-assign]
 
     await memory_backend.on_startup()
     messages = await _populate_channels_backend(message_count=message_count, channel="foo", backend=memory_backend)
@@ -232,10 +235,10 @@ async def test_send_history(
     async with subscriber.run_in_background(mock_socket):
         await subscriber.put_history(channels=["foo"], limit=history_limit)
 
-    assert mock_handle_send.call_count == expected_history_count
+    assert mock_handle_socket_send.call_count == expected_history_count
     if expected_history_count:
         expected_messages = messages[-expected_history_count:]
-        assert [call.args[1] for call in mock_handle_send.call_args_list] == expected_messages
+        assert [call.args[1] for call in mock_handle_socket_send.call_args_list] == expected_messages
 
     await plugin._on_shutdown()
 
@@ -255,6 +258,7 @@ async def test_handler_sends_history(
     message_count: int,
     handler_send_history: int,
     expected_history_count: int,
+    mock_handle_socket_send: AsyncMock,
 ) -> None:
     memory_backend._max_history_length = 10
     plugin = ChannelsPlugin(
@@ -264,9 +268,6 @@ async def test_handler_sends_history(
         create_route_handlers=True,
     )
 
-    mock_handle_send = AsyncMock()
-    plugin.handle_socket_send = mock_handle_send  # type: ignore[method-assign]
-
     app = Litestar([], plugins=[plugin])
     with TestClient(app) as client:
         await memory_backend.subscribe(["foo"])
@@ -275,20 +276,20 @@ async def test_handler_sends_history(
         with client.websocket_connect("/foo"):
             pass
 
-    assert mock_handle_send.call_count == expected_history_count
+    assert mock_handle_socket_send.call_count == expected_history_count
     if expected_history_count:
         expected_messages = messages[-expected_history_count:]
-        assert [call.args[1] for call in mock_handle_send.call_args_list] == expected_messages
+        assert [call.args[1] for call in mock_handle_socket_send.call_args_list] == expected_messages
 
 
 @pytest.mark.parametrize("backlog_strategy", ["backoff", "dropleft"])
-async def test_backlog(memory_backend: MemoryChannelsBackend, backlog_strategy: BacklogStrategy) -> None:
+async def test_backlog(
+    memory_backend: MemoryChannelsBackend, backlog_strategy: BacklogStrategy, mock_handle_socket_send: AsyncMock
+) -> None:
     plugin = ChannelsPlugin(
         backend=memory_backend, arbitrary_channels_allowed=True, max_backlog=2, backlog_strategy=backlog_strategy
     )
-    mock_handle_send = AsyncMock()
     mock_socket = AsyncMock()
-    plugin.handle_socket_send = mock_handle_send  # type: ignore[method-assign]
     messages = [b"foo", b"bar", b"baz"]
 
     await plugin._on_startup()
@@ -303,5 +304,5 @@ async def test_backlog(memory_backend: MemoryChannelsBackend, backlog_strategy: 
 
     expected_messages = messages[:-1] if backlog_strategy == "backoff" else messages[1:]
 
-    assert mock_handle_send.call_count == 2
-    assert [call.args[1] for call in mock_handle_send.call_args_list] == expected_messages
+    assert mock_handle_socket_send.call_count == 2
+    assert [call.args[1] for call in mock_handle_socket_send.call_args_list] == expected_messages

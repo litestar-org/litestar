@@ -47,7 +47,10 @@ class Subscriber:
     """A wrapper around a stream of events published to subscribed channels"""
 
     def __init__(
-        self, plugin: ChannelsPlugin, max_backlog: int | None = None, backlog_strategy: BacklogStrategy = "backoff"
+        self,
+        plugin: ChannelsPlugin,
+        max_backlog: int | None = None,
+        backlog_strategy: BacklogStrategy = "backoff",
     ) -> None:
         self._task: asyncio.Task | None = None
         self._plugin = plugin
@@ -104,41 +107,54 @@ class Subscriber:
             self._queue.put_nowait(entry)
 
     @asynccontextmanager
-    async def run_in_background(self, socket: WebSocket, join: bool = True) -> AsyncGenerator[None, None]:
+    async def run_in_background(
+        self,
+        socket: WebSocket,
+        mode: WebSocketMode = "text",
+        join: bool = True,
+    ) -> AsyncGenerator[None, None]:
         """Start a task in the background that sends events from the subscriber's stream
-        to ``socket`` as they become available. The task will be cancelled when the
-        context manager exits.
+        to ``socket`` as they become available. On exit, it will prevent the stream from
+        accepting new events and wait until the currently enqueued ones are processed.
+        Should the context be left with an exception, the task will be cancelled
+        immediately.
 
         Args:
             socket: WebSocket to send data to
+            mode: WebSocket send mode
             join: If ``True``, wait for all items in the stream to be processed before
                 stopping the worker. Note that an error occurring within the context
                 will always lead to the immediate cancellation of the worker
         """
-        self.start_in_background(socket=socket)
+        self.start_in_background(socket=socket, mode=mode)
         async with AsyncExitStack() as exit_stack:
             exit_stack.push_async_callback(self.stop, join=False)
             yield
             exit_stack.pop_all()
             await self.stop(join=join)
 
-    async def _socket_worker(self, socket: WebSocket) -> None:
-        handle_send = self._plugin.handle_socket_send
+    async def handle_socket_send(self, socket: WebSocket, data: bytes, mode: WebSocketMode) -> None:
+        """Send ``data`` through ``socket``, using ``mode`` send mode"""
+        await socket.send_data(data, mode=mode)
+
+    async def _socket_worker(self, socket: WebSocket, mode: WebSocketMode) -> None:
+        handle_send = self.handle_socket_send
         try:
             async for event in self.iter_events():
-                await handle_send(socket, event)
+                await handle_send(socket, event, mode)
         finally:
             await self._plugin.unsubscribe(self)
 
-    def start_in_background(self, socket: WebSocket) -> None:
+    def start_in_background(self, socket: WebSocket, mode: WebSocketMode = "text") -> None:
         """Start a task in the background that sends events from the subscriber's stream
         to ``socket`` as they become available.
 
         Args:
             socket: WebSocket to send data to
+            mode: WebSocket send mode
         """
         if self._task is None:
-            self._task = asyncio.create_task(self._socket_worker(socket=socket))
+            self._task = asyncio.create_task(self._socket_worker(socket=socket, mode=mode))
 
     @property
     def is_running(self) -> bool:
@@ -183,6 +199,7 @@ class ChannelsPlugin(InitPluginProtocol):
         type_encoders: TypeEncodersMap | None = None,
         max_backlog: int | None = None,
         backlog_strategy: BacklogStrategy = "backoff",
+        subscriber_class: type[Subscriber] = Subscriber,
     ) -> None:
         """Plugin to handle broadcasting to WebSockets with support for channels.
 
@@ -208,6 +225,7 @@ class ChannelsPlugin(InitPluginProtocol):
             backlog_strategy: Define the behaviour if ``max_backlog`` is reached for a subscriber. ``backoff`` will
                 result in new messages being dropped until older ones have been processed. ``dropleft`` will drop
                 older messages in favour of new ones.
+            subscriber_class: A :class:`Subscriber` subclass to return from :meth:`subscribe`
         """
         self._backend = backend
         self._pub_queue: Queue[tuple[bytes, list[str]]] | None = None
@@ -228,6 +246,7 @@ class ChannelsPlugin(InitPluginProtocol):
         self._history_limit = None if handler_send_history < 0 else handler_send_history
         self._max_backlog = max_backlog
         self._backlog_strategy: BacklogStrategy = backlog_strategy
+        self._subscriber_class = subscriber_class
 
         self._channels: dict[str, set[Subscriber]] = {channel: set() for channel in channels or []}
 
@@ -290,7 +309,11 @@ class ChannelsPlugin(InitPluginProtocol):
         if isinstance(channels, str):
             channels = [channels]
 
-        subscriber = Subscriber(plugin=self, max_backlog=self._max_backlog, backlog_strategy=self._backlog_strategy)
+        subscriber = self._subscriber_class(
+            plugin=self,
+            max_backlog=self._max_backlog,
+            backlog_strategy=self._backlog_strategy,
+        )
         channels_to_subscribe = set()
 
         for channel in channels:
@@ -371,7 +394,7 @@ class ChannelsPlugin(InitPluginProtocol):
             if self._handler_should_send_history:
                 await subscriber.put_history(channels=channel_name, limit=self._history_limit)
 
-            async with subscriber.run_in_background(socket):
+            async with subscriber.run_in_background(socket, mode=self._socket_send_mode):
                 while True:
                     await socket.receive()
 
@@ -380,10 +403,6 @@ class ChannelsPlugin(InitPluginProtocol):
             await self._ws_handler_func(channel_name=channel_name, socket=socket)
 
         return ws_handler_func
-
-    async def handle_socket_send(self, socket: WebSocket, data: bytes) -> None:
-        """Send ``data`` through ``socket``"""
-        await socket.send_data(data, mode=self._socket_send_mode)
 
     async def _pub_worker(self) -> None:
         while self._pub_queue:
