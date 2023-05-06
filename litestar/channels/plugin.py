@@ -6,7 +6,18 @@ from collections import deque
 from contextlib import AsyncExitStack, asynccontextmanager, suppress
 from functools import partial
 from os.path import join as join_path
-from typing import TYPE_CHECKING, AsyncGenerator, Awaitable, Callable, Generic, Iterable, Literal, Sequence, TypeVar
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    AsyncGenerator,
+    Awaitable,
+    Callable,
+    Generic,
+    Iterable,
+    Literal,
+    Sequence,
+    TypeVar,
+)
 
 import anyio
 import msgspec.json
@@ -18,6 +29,8 @@ from litestar.plugins import InitPluginProtocol
 from litestar.serialization import default_serializer
 
 if TYPE_CHECKING:
+    from inspect import Traceback
+
     from litestar.channels.base import ChannelsBackend
     from litestar.config.app import AppConfig
     from litestar.connection import WebSocket
@@ -28,6 +41,7 @@ if TYPE_CHECKING:
 T = TypeVar("T")
 
 BacklogStrategy = Literal["backoff", "dropleft"]
+EventCallback = Callable[[bytes], Awaitable[Any]]
 
 
 class ChannelsException(LitestarException):
@@ -84,6 +98,7 @@ class Subscriber:
         while True:
             item = await self._queue.get()
             if item is None:
+                self._queue.task_done()
                 break
             yield item
             self._queue.task_done()
@@ -107,12 +122,7 @@ class Subscriber:
             self._queue.put_nowait(entry)
 
     @asynccontextmanager
-    async def run_in_background(
-        self,
-        socket: WebSocket,
-        mode: WebSocketMode = "text",
-        join: bool = True,
-    ) -> AsyncGenerator[None, None]:
+    async def run_in_background(self, on_event: EventCallback, join: bool = True) -> AsyncGenerator[None, None]:
         """Start a task in the background that sends events from the subscriber's stream
         to ``socket`` as they become available. On exit, it will prevent the stream from
         accepting new events and wait until the currently enqueued ones are processed.
@@ -120,41 +130,34 @@ class Subscriber:
         immediately.
 
         Args:
-            socket: WebSocket to send data to
-            mode: WebSocket send mode
+            on_event: Callback to invoke with the event data for every event
             join: If ``True``, wait for all items in the stream to be processed before
                 stopping the worker. Note that an error occurring within the context
                 will always lead to the immediate cancellation of the worker
         """
-        self.start_in_background(socket=socket, mode=mode)
+        self.start_in_background(on_event=on_event)
         async with AsyncExitStack() as exit_stack:
             exit_stack.push_async_callback(self.stop, join=False)
             yield
             exit_stack.pop_all()
             await self.stop(join=join)
 
-    async def handle_socket_send(self, socket: WebSocket, data: bytes, mode: WebSocketMode) -> None:
-        """Send ``data`` through ``socket``, using ``mode`` send mode"""
-        await socket.send_data(data, mode=mode)
-
-    async def _socket_worker(self, socket: WebSocket, mode: WebSocketMode) -> None:
-        handle_send = self.handle_socket_send
+    async def _worker(self, on_event: EventCallback) -> None:
         try:
             async for event in self.iter_events():
-                await handle_send(socket, event, mode)
+                await on_event(event)
         finally:
             await self._plugin.unsubscribe(self)
 
-    def start_in_background(self, socket: WebSocket, mode: WebSocketMode = "text") -> None:
+    def start_in_background(self, on_event: EventCallback) -> None:
         """Start a task in the background that sends events from the subscriber's stream
         to ``socket`` as they become available.
 
         Args:
-            socket: WebSocket to send data to
-            mode: WebSocket send mode
+            on_event: Callback to invoke with the event data for every event
         """
         if self._task is None:
-            self._task = asyncio.create_task(self._socket_worker(socket=socket, mode=mode))
+            self._task = asyncio.create_task(self._worker(on_event))
 
     @property
     def is_running(self) -> bool:
@@ -280,7 +283,14 @@ class ChannelsPlugin(InitPluginProtocol):
         return app_config
 
     def publish(self, data: LitestarEncodableType, channels: str | Iterable[str]) -> None:
-        """Publish ```data`` to ``channels``"""
+        """Schedule ``data`` to be published to ``channels``.
+
+        .. note::
+            This is a synchronous method that returns immediately. There are no
+            guarantees that when this method returns the data will have been published
+            to the backend. For that, use :meth:`wait_published`
+
+        """
         if isinstance(channels, str):
             channels = [channels]
         data = self.encode_data(data)
@@ -288,6 +298,14 @@ class ChannelsPlugin(InitPluginProtocol):
             self._pub_queue.put_nowait((data, list(channels)))  # type: ignore[union-attr]
         except AttributeError as e:
             raise RuntimeError("Plugin not yet initialized. Did you forget to call on_startup?") from e
+
+    async def wait_published(self, data: LitestarEncodableType, channels: str | Iterable[str]) -> None:
+        """Publish ``data`` to ``channels``"""
+        if isinstance(channels, str):
+            channels = [channels]
+        data = self.encode_data(data)
+
+        await self._backend.publish(data, channels)
 
     async def subscribe(self, channels: str | Iterable[str]) -> Subscriber:
         """Create a :class:`Subscriber`, providing a stream of all events in ``channels``.
@@ -390,11 +408,15 @@ class ChannelsPlugin(InitPluginProtocol):
 
     async def _ws_handler_func(self, channel_name: str, socket: WebSocket) -> None:
         await socket.accept()
+
+        # the ternary operator triggers a mypy bug: https://github.com/python/mypy/issues/10740
+        on_event: EventCallback = socket.send_text if self._socket_send_mode == "text" else socket.send_bytes  # type: ignore[assignment]
+
         async with self.start_subscription(channel_name) as subscriber:
             if self._handler_should_send_history:
                 await subscriber.put_history(channels=channel_name, limit=self._history_limit)
 
-            async with subscriber.run_in_background(socket, mode=self._socket_send_mode):
+            async with subscriber.run_in_background(on_event):
                 while True:
                     await socket.receive()
 
@@ -448,3 +470,15 @@ class ChannelsPlugin(InitPluginProtocol):
             self._pub_task.cancel()
             with suppress(CancelledError):
                 await self._pub_task
+
+    async def __aenter__(self) -> ChannelsPlugin:
+        await self._on_startup()
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: Traceback | None,
+    ) -> None:
+        await self._on_shutdown()

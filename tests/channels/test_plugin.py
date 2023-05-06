@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from typing import cast
 from unittest.mock import AsyncMock, MagicMock
 
@@ -7,13 +8,14 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 from pytest_mock import MockerFixture
 
-from litestar import Litestar, WebSocket, get, websocket
+from litestar import Litestar, get
 from litestar.channels import ChannelsBackend, ChannelsPlugin
 from litestar.channels.memory import MemoryChannelsBackend
 from litestar.channels.plugin import BacklogStrategy
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.testing import TestClient, create_test_client
 from litestar.types.asgi_types import WebSocketMode
+from litestar.utils.compat import async_next
 
 pytestmark = [pytest.mark.usefixtures("redis_service")]
 
@@ -50,26 +52,36 @@ def test_broadcast_not_initialized_raises(memory_backend: MemoryChannelsBackend)
         plugin.publish("foo", "bar")
 
 
-@pytest.mark.parametrize("socket_send_mode", ["text", "binary"])
-async def test_pub_sub(channels_backend: ChannelsBackend, socket_send_mode: WebSocketMode) -> None:
-    @websocket("/")
-    async def handler(socket: WebSocket, channels: ChannelsPlugin) -> None:
-        await socket.accept()
-        subscriber = await channels.subscribe("something")
-        subscriber.start_in_background(socket, mode=socket_send_mode)
+async def test_pub_sub(channels_backend: ChannelsBackend) -> None:
+    async with ChannelsPlugin(backend=channels_backend, channels=["something"]) as plugin:
+        subscriber = await plugin.subscribe("something")
+        stream = subscriber.iter_events()
+        await plugin.wait_published(b"foo", "something")
 
-        while True:
-            try:
-                await socket.receive()
-            finally:
-                break
+        res = await asyncio.wait_for(async_next(stream), timeout=1)
 
-    channels_plugin = ChannelsPlugin(backend=channels_backend, channels=["something"])
-    app = Litestar([handler], plugins=[channels_plugin])
+    assert res == b"foo"
 
-    with TestClient(app) as client, client.websocket_connect("/") as ws:
-        channels_plugin.publish(["foo"], "something")
-        assert ws.receive_json(mode=socket_send_mode, timeout=1) == ["foo"]
+
+async def test_pub_sub_non_blocking(channels_backend: ChannelsBackend) -> None:
+    async with ChannelsPlugin(backend=channels_backend, channels=["something"]) as plugin:
+        subscriber = await plugin.subscribe("something")
+        stream = subscriber.iter_events()
+        plugin.publish(b"foo", "something")
+
+        res = await asyncio.wait_for(async_next(stream), timeout=1)
+
+    assert res == b"foo"
+
+
+async def test_pub_sub_run_in_background(channels_backend: ChannelsBackend, async_mock: AsyncMock) -> None:
+    async with ChannelsPlugin(backend=channels_backend, channels=["something"]) as plugin:
+        subscriber = await plugin.subscribe("something")
+        async with subscriber.run_in_background(async_mock):
+            plugin.publish(b"foo", "something")
+            await asyncio.sleep(0.1)
+
+    assert async_mock.call_count == 1
 
 
 @pytest.mark.parametrize("socket_send_mode", ["text", "binary"])
@@ -203,11 +215,6 @@ async def _populate_channels_backend(*, message_count: int, channel: str, backen
     return messages
 
 
-@pytest.fixture()
-def mock_handle_socket_send(mocker: MockerFixture) -> AsyncMock:
-    return mocker.patch("litestar.channels.plugin.Subscriber.handle_socket_send")
-
-
 @pytest.mark.parametrize(
     "message_count,history_limit,expected_history_count",
     [
@@ -222,23 +229,22 @@ async def test_send_history(
     message_count: int,
     history_limit: int,
     expected_history_count: int,
-    mock_handle_socket_send: AsyncMock,
+    async_mock: AsyncMock,
 ) -> None:
     memory_backend._max_history_length = 10
     plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
-    mock_socket = AsyncMock()
 
     await memory_backend.on_startup()
     messages = await _populate_channels_backend(message_count=message_count, channel="foo", backend=memory_backend)
 
     subscriber = await plugin.subscribe(channels=["foo"])
-    async with subscriber.run_in_background(mock_socket):
+    async with subscriber.run_in_background(async_mock):
         await subscriber.put_history(channels=["foo"], limit=history_limit)
 
-    assert mock_handle_socket_send.call_count == expected_history_count
+    assert async_mock.call_count == expected_history_count
     if expected_history_count:
         expected_messages = messages[-expected_history_count:]
-        assert [call.args[1] for call in mock_handle_socket_send.call_args_list] == expected_messages
+        assert [call.args[0] for call in async_mock.call_args_list] == expected_messages
 
     await plugin._on_shutdown()
 
@@ -258,8 +264,9 @@ async def test_handler_sends_history(
     message_count: int,
     handler_send_history: int,
     expected_history_count: int,
-    mock_handle_socket_send: AsyncMock,
+    mocker: MockerFixture,
 ) -> None:
+    mock_socket_send = mocker.patch("litestar.connection.websocket.WebSocket.send_data")
     memory_backend._max_history_length = 10
     plugin = ChannelsPlugin(
         backend=memory_backend,
@@ -276,33 +283,32 @@ async def test_handler_sends_history(
         with client.websocket_connect("/foo"):
             pass
 
-    assert mock_handle_socket_send.call_count == expected_history_count
+    assert mock_socket_send.call_count == expected_history_count
     if expected_history_count:
         expected_messages = messages[-expected_history_count:]
-        assert [call.args[1] for call in mock_handle_socket_send.call_args_list] == expected_messages
+        assert [call.kwargs.get("data") for call in mock_socket_send.call_args_list] == expected_messages
 
 
 @pytest.mark.parametrize("backlog_strategy", ["backoff", "dropleft"])
 async def test_backlog(
-    memory_backend: MemoryChannelsBackend, backlog_strategy: BacklogStrategy, mock_handle_socket_send: AsyncMock
+    memory_backend: MemoryChannelsBackend, backlog_strategy: BacklogStrategy, async_mock: AsyncMock
 ) -> None:
     plugin = ChannelsPlugin(
         backend=memory_backend, arbitrary_channels_allowed=True, max_backlog=2, backlog_strategy=backlog_strategy
     )
-    mock_socket = AsyncMock()
     messages = [b"foo", b"bar", b"baz"]
 
     await plugin._on_startup()
 
     subscriber = await plugin.subscribe(channels=["something"])
 
-    async with subscriber.run_in_background(mock_socket):
+    async with subscriber.run_in_background(async_mock):
         for message in messages:
-            plugin.publish(message, channels=["something"])
+            await plugin.wait_published(message, channels=["something"])
 
         await plugin._on_shutdown()
 
     expected_messages = messages[:-1] if backlog_strategy == "backoff" else messages[1:]
 
-    assert mock_handle_socket_send.call_count == 2
-    assert [call.args[1] for call in mock_handle_socket_send.call_args_list] == expected_messages
+    assert async_mock.call_count == 2
+    assert [call.args[0] for call in async_mock.call_args_list] == expected_messages
