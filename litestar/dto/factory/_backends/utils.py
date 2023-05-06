@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypeVar, cast
+from typing import TYPE_CHECKING, Collection, TypeVar, cast
+from typing import Collection as CollectionsCollection
 
 from typing_extensions import get_origin
 
@@ -8,21 +9,25 @@ from litestar.dto.factory import Mark
 from litestar.types.builtin_types import NoneType
 from litestar.utils.signature import ParsedType
 
-from .types import TransferFieldDefinition
+from .types import NestedFieldDefinition
 
 if TYPE_CHECKING:
     from typing import AbstractSet, Any, Iterable
 
+    from msgspec import Struct
+
     from litestar.dto.factory.types import FieldDefinition, RenameStrategy
     from litestar.dto.types import ForType
 
-    from .types import FieldDefinitionsType, NestedFieldDefinition
+    from .types import FieldDefinitionsType
 
 __all__ = (
     "RenameStrategies",
     "build_annotation_for_backend",
     "get_model_type",
     "should_exclude_field",
+    "_build_data_from_transfer_data",
+    "_build_transfer_instance_from_model",
 )
 
 T = TypeVar("T")
@@ -129,20 +134,108 @@ class RenameStrategies:
         )
 
 
-def generate_reverse_name_map(field_definitions: FieldDefinitionsType) -> dict[str, str]:
-    result = {}
+def _build_model_from_transfer_instance(
+    model_type: type[T], data: Struct, field_definitions: FieldDefinitionsType
+) -> T:
+    """Create instance of ``model_type``.
+
+    Args:
+        model_type: the model type received by the DTO on type narrowing.
+        data: primitive data that has been parsed and validated via the backend.
+        field_definitions: model field definitions.
+
+    Returns:
+        Data parsed into ``model_type``.
+    """
+    unstructured_data = {}
     for field_definition in field_definitions.values():
-        result.update(_generate_reverse_name_map(field_definition))
+        transfer_model_name = field_definition.serialization_name or field_definition.name
+        v = getattr(data, transfer_model_name)
+        if isinstance(field_definition, NestedFieldDefinition) and field_definition.parsed_type.is_collection:
+            if field_definition.parsed_type.origin is None:  # pragma: no cover
+                raise RuntimeError("Unexpected origin value for collection type.")
+            unstructured_data[field_definition.name] = field_definition.parsed_type.origin(
+                _build_model_from_transfer_instance(
+                    field_definition.nested_type, item, field_definition.nested_field_definitions
+                )
+                for item in v
+            )
+        elif isinstance(field_definition, NestedFieldDefinition) and v is not None:
+            unstructured_data[field_definition.name] = _build_model_from_transfer_instance(
+                field_definition.nested_type, v, field_definition.nested_field_definitions
+            )
+        else:
+            unstructured_data[field_definition.name] = v
 
-    return result
+    return model_type(**unstructured_data)
 
 
-def _generate_reverse_name_map(field_definition: TransferFieldDefinition | NestedFieldDefinition) -> dict[str, str]:
-    if isinstance(field_definition, TransferFieldDefinition):
-        return (
-            {field_definition.serialization_name: field_definition.name} if field_definition.serialization_name else {}
+def _build_data_from_transfer_data(
+    model_type: type[T],
+    data: Any | Collection[Any],
+    field_definitions: FieldDefinitionsType,
+) -> T | Collection[T]:
+    """Create instance or iterable of instances of ``model_type``.
+
+    Args:
+        model_type: the model type received by the DTO on type narrowing.
+        data: primitive data that has been parsed and validated via the backend.
+        field_definitions: model field definitions.
+
+    Returns:
+        Data parsed into ``model_type``.
+    """
+    if isinstance(data, CollectionsCollection):
+        return type(data)(
+            _build_data_from_transfer_data(model_type, item, field_definitions)  # type:ignore[call-arg]
+            for item in data
         )
+    return _build_model_from_transfer_instance(model_type, data, field_definitions)
 
-    return generate_reverse_name_map(
-        {field_definition.name: field_definition.field_definition, **field_definition.nested_field_definitions}
+
+def _build_transfer_instance_from_model(
+    model: Any, transfer_type: type[Any], field_definitions: FieldDefinitionsType
+) -> Any:
+    """Convert ``model`` to instance of ``struct_type``
+
+    It is expected that attributes of ``struct_type`` are a subset of the attributes of ``model``.
+
+    Args:
+        model: a model instance
+        transfer_type: the transfer type built for the data model
+        field_definitions: model field definitions.
+
+    Returns:
+        Instance of ``struct_type``.
+    """
+    data = {}
+    for field_definition in field_definitions.values():
+        key = field_definition.serialization_name or field_definition.name
+        model_val = getattr(model, field_definition.name)
+        if isinstance(field_definition, NestedFieldDefinition) and field_definition.parsed_type.is_collection:
+            data[key] = _handle_collection_type(field_definition, model_val)
+        elif isinstance(field_definition, NestedFieldDefinition) and model_val is not None:
+            data[key] = _build_transfer_instance_from_model(
+                model_val, field_definition.transfer_model, field_definition.nested_field_definitions
+            )
+        else:
+            data[key] = model_val
+    return transfer_type(**data)
+
+
+def _handle_collection_type(field_definition: NestedFieldDefinition, model_val: Any) -> Any:
+    """Handle collection type.
+
+    Args:
+        field_definition: Field definition.
+        model_val: Model value.
+
+    Returns:
+        Model value.
+    """
+    return field_definition.parsed_type.origin(
+        _build_transfer_instance_from_model(
+            m, field_definition.transfer_model, field_definition.nested_field_definitions
+        )
+        for m in model_val
     )

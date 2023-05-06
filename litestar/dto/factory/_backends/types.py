@@ -10,6 +10,8 @@ if TYPE_CHECKING:
 
     from typing_extensions import TypeAlias
 
+    from litestar.utils.signature import ParsedType
+
 
 @dataclass(frozen=True)
 class TransferFieldDefinition(FieldDefinition):
@@ -30,6 +32,10 @@ class NestedFieldDefinition:
     def name(self) -> str:
         """Name of the field."""
         return self.field_definition.name
+
+    @property
+    def parsed_type(self) -> ParsedType:
+        return self.field_definition.parsed_type
 
     @property
     def serialization_name(self) -> str | None:

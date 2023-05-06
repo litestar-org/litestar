@@ -7,9 +7,10 @@ from uuid import uuid4
 from msgspec import Struct, from_builtins
 
 from litestar.dto.factory._backends.abc import AbstractDTOBackend
+from litestar.dto.factory._backends.utils import _build_data_from_transfer_data, _build_transfer_instance_from_model
 from litestar.serialization import decode_media_type
 
-from .utils import _build_data_from_struct, _build_struct_from_model, _create_struct_for_field_definitions
+from .utils import _create_struct_for_field_definitions
 
 if TYPE_CHECKING:
     from typing import Any, Collection
@@ -38,20 +39,20 @@ class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
 
     def populate_data_from_builtins(self, data: Any) -> Any:
         parsed_data = cast("Struct | Collection[Struct]", from_builtins(data, self.annotation))
-        return _build_data_from_struct(
-            self.context.model_type, parsed_data, self.parsed_field_definitions, self.reverse_name_map
-        )
+        return _build_data_from_transfer_data(self.context.model_type, parsed_data, self.parsed_field_definitions)
 
     def populate_data_from_raw(self, raw: bytes, connection_context: ConnectionContext) -> T | Collection[T]:
         parsed_data = self.parse_raw(raw, connection_context)
-        return _build_data_from_struct(
-            self.context.model_type, parsed_data, self.parsed_field_definitions, self.reverse_name_map
-        )
+        return _build_data_from_transfer_data(self.context.model_type, parsed_data, self.parsed_field_definitions)
 
     def encode_data(self, data: Any, connection_context: ConnectionContext) -> LitestarEncodableType:
         if isinstance(data, CollectionsCollection):
             return self.context.parsed_type.origin(  # type:ignore[no-any-return]
-                _build_struct_from_model(datum, self.data_container_type, self.reverse_name_map)
+                _build_transfer_instance_from_model(datum, self.data_container_type, self.parsed_field_definitions)
                 for datum in data  # pyright:ignore
             )
-        return _build_struct_from_model(data, self.data_container_type, self.reverse_name_map)
+        return _build_transfer_instance_from_model(  # type:ignore[no-any-return]
+            data,
+            self.data_container_type,
+            self.parsed_field_definitions,
+        )

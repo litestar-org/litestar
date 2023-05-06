@@ -7,9 +7,10 @@ from uuid import uuid4
 from pydantic import BaseModel, parse_obj_as
 
 from litestar.dto.factory._backends.abc import AbstractDTOBackend
+from litestar.dto.factory._backends.utils import _build_data_from_transfer_data
 from litestar.serialization import decode_media_type
 
-from .utils import _build_data_from_pydantic_model, _create_model_for_field_definitions
+from .utils import _create_model_for_field_definitions
 
 if TYPE_CHECKING:
     from typing import Any, Collection
@@ -37,11 +38,11 @@ class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):
 
     def populate_data_from_builtins(self, data: Any) -> T | Collection[T]:
         parsed_data = cast("BaseModel | Collection[BaseModel]", parse_obj_as(self.annotation, data))
-        return _build_data_from_pydantic_model(self.context.model_type, parsed_data, self.parsed_field_definitions)
+        return _build_data_from_transfer_data(self.context.model_type, parsed_data, self.parsed_field_definitions)
 
     def populate_data_from_raw(self, raw: bytes, connection_context: ConnectionContext) -> T | Collection[T]:
         parsed_data = self.parse_raw(raw, connection_context)
-        return _build_data_from_pydantic_model(self.context.model_type, parsed_data, self.parsed_field_definitions)
+        return _build_data_from_transfer_data(self.context.model_type, parsed_data, self.parsed_field_definitions)
 
     def encode_data(self, data: Any, connection_context: ConnectionContext) -> LitestarEncodableType:
         if isinstance(data, CollectionsCollection):
