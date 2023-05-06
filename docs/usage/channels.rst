@@ -1,43 +1,24 @@
 .. currentmodule:: litestar.channels
 
-WebSocket Channels
-===================
+Channels
+========
 
-**Channels** are a group of related functionalities facilitating the broadcasting of
-data through WebSockets. In particular, they offer:
+**Channels** are a group of related functionalities, built to facilitate the routing
+of event streams, which for example can be used to broadcast messages to WebSocket
+clients.
 
-1. Data publishing through different channels, optionally managing inter-process communication
-2. Channel based subscription management
-3. Sending of published data through, and lifetime management of :class:`WebSocket <.connection.WebSocket>` connections
-4. Automated management of "channel rooms"; WebSocket route handler endpoints, which accept a connection, subscribe
-   to a channel and send broadcast messages to the connected socket
-5. "Channel history": Store and publish a certain amount of messages and send them to new subscribers
+Channels provide:
 
-
-.. code-block:: python
-
-    from litestar import Litestar
-    from litestar.channels import ChannelsPlugin
-    from litestar.channels.memory import MemoryChannelsBackend
-
-    channels = ChannelsPlugin(
-        backend=MemoryChannelsBackend(),
-        arbitrary_channels_allowed=True,
-        create_route_handlers=True,
-        handler_base_path="/ws",
-    )
-
-    app = Litestar([], plugins=[channels])
-
-
-This is all that's required to set up a basic application using channels. Out of the box
-this application will now:
-
-1. Accept WebSocket connections on all paths following the ``/ws/<channel name>`` pattern
-2. Subscribe newly connected sockets to respective channel given by the path parameter
-3. Send all published events on that channel to all connected sockets
-4. Allow publishing events using
-   :meth:`channels.publish() <litestar.channels.plugin.ChannelsPlugin.publish>`
+1. Independent :term:`broker` backends, optionally handling inter-process communication
+   and data persistence on demand
+2. "Channel" based subscription management
+3. Subscriber objects as an abstraction over an individualized :term:`event stream`,
+   providing background workers and managed subscriptions
+4. Synchronous and asynchronous data publishing
+5. Optional history management on a per-channel basis
+6. :doc:`WebSocket </usage/websockets>` integration, generating WebSocket route
+   handlers for an application, to handle the subscription and publishing of incoming
+   events to the connected client
 
 
 Basic concepts
@@ -45,13 +26,37 @@ Basic concepts
 
 Utilizing channels involves a few moving parts, of which the most important ones are:
 
-1. The :class:`ChannelsPlugin <.plugin.ChannelsPlugin>`, a central instance managing
-   subscribers, the backend, root event stream, route handlers and general configuration
-2. A :class:`ChannelsBackend <.base.ChannelsBackend>`, responsible for synchronizing and
-   publishing events
-3. :class:`Subscriber <.subscriber.Subscriber>`, an entity representing an
-   individualized event stream, receiving events from all channels this subscriber is
-   subscribed to
+.. glossary::
+
+    event
+        A single piece of data published to, or received from a :term:`backend`, bound
+        to the channel it was originally published to
+
+    event stream
+        A stream of :term:`events <event>`, consisting of events from all the channels a
+        :term:`Subscriber` has previously subscribed to
+
+    subscriber
+        A :class:`Subscriber <.subscriber.Subscriber>`: An object wrapping an
+        :term:`event stream` and providing access to it through various methods
+
+    backend
+        A :class:`ChannelsBackend <.backends.base.ChannelsBackend>`. This object
+        manages communication between the plugin and the :term:`broker`, publishing
+        messages to and receiving messages from it. Each plugin instance is associated
+        with exactly one backend.
+
+    broker
+        Responsible for receiving and publishing messages to all connected
+        :term:`backends <backend>`; All backends sharing the same broker will have
+        access to the same messages, allowing for inter-process communication. This is
+        typically handled by a separate entity like `Redis <https://redis.io/>`_
+
+    plugin
+        The :class:`ChannelsPlugin <.plugin.ChannelsPlugin>`, a central instance
+        managing :term:`subscribers <subscriber>`, reading messages from the
+        :term:`backend`, putting them in the appropriate :term:`event stream` and
+        publishing data to the backend
 
 
 Flowcharts
@@ -60,7 +65,7 @@ Flowcharts
 
 .. mermaid::
     :align: center
-    :caption: Publishing flow from the application to the broker
+    :caption: Publishing flow from the application to the :term:`broker`
 
     flowchart LR
         Backend(Backend) --> Broker[(Broker)]
@@ -72,7 +77,7 @@ Flowcharts
 
 .. mermaid::
     :align: center
-    :caption: Fanout flow of data from the broker to the sockets, showing multiple plugin instances
+    :caption: Fanout flow of data from the :term:`broker` to the sockets, showing multiple plugin instances
 
     flowchart TD
         Broker[(Broker)]
@@ -91,15 +96,6 @@ Flowcharts
         Plugin_2 --> Subscriber_5[Subscriber]
         Plugin_2 --> Subscriber_6[Subscriber]
 
-        Subscriber_1 --> Socket_1((Socket))
-        Subscriber_2 --> Socket_2((Socket))
-        Subscriber_3 --> Socket_3((Socket))
-
-        Subscriber_4 --> Socket_4((Socket))
-        Subscriber_5 --> Socket_5((Socket))
-        Subscriber_6 --> Socket_6((Socket))
-
-
 
 The ``ChannelsPlugin``
 ----------------------
@@ -107,21 +103,21 @@ The ``ChannelsPlugin``
 .. currentmodule:: litestar.channels.plugin
 
 The :class:`ChannelsPlugin` acts as the central entity for managing channels and
-subscribers. It's used to publish messages, controls how data is stored, manages
+subscribers. It's used to publish messages, control how data is stored, manage
 subscribers, route handlers and configuration.
 
 
 .. tip::
     The plugin makes itself available as a dependency under the ``channels`` key, which
-    means it's not needed to import it and instead, it can be used from within route
-    handlers or other callables within the dependency tree directly.
+    means it's not necessary to import it and instead, it can be used from within route
+    handlers or other callables within the dependency tree directly
 
 
 Configuring the channels
 +++++++++++++++++++++++++
 
 The channels manged by the plugin can be either defined upfront, passing them to the
-``channels`` argument, or be created "on the fly" (i.e. on the first subscription to a
+``channels`` argument, or created "on the fly" (i.e. on the first subscription to a
 channel) by setting ``arbitrary_channels_allowed=True``.
 
 
@@ -158,16 +154,23 @@ One of the core aspects of the plugin is publishing data, which is done through 
 
 
 The above example will publish the data to the channel ``general``, subsequently putting
-it into all subscriber's respective event streams to be consumed.
+it into all subscriber's :term:`event stream` to be consumed.
 
-.. important::
-    While WebSockets and the channels plugin are fundamentally asynchronous, the
-    :meth:`publish <ChannelsPlugin.publish>` is synchronous. It is however non-blocking;
-    The messages are buffered internally and published to the backend in an
-    asynchronous manner.
+This method is non-blocking, even though channels and the associated
+:term:`backends <backend>` are fundamentally asynchronous.
 
-    The reason for this is to provide an easy way to publish data from synchronous
-    context.
+Calling ``publish`` effectively enqueues a message to be sent to the backend, from which
+follows that there's no guarantee that an event will be available in the backend
+immediately after this call.
+
+Alternatively, the asynchronous :meth:`wait_published <ChannelsPlugin.wait_published>`
+method can be used, which  the internal message queue, publishing the data to the
+backend directly.
+
+.. note::
+    While calling :meth:`publish <ChannelsPlugin.publish>` does not guarantee the
+    message is sent to the backend immediately, it will be sent there *eventually*; On
+    shutdown, the plugin will wait for all queues to empty
 
 
 Managing subscriptions
@@ -229,30 +232,54 @@ Or, using the context manager
 
 
 
+Managing history
++++++++++++++++++
+
+Some backends support a per-channel history, keeping a certain amount of
+:term:`events <event>` in storage. This history can then be pushed to a
+:term:`subscriber`.
+
+The plugin's :meth:`put_subscriber_history <ChannelsPlugin.put_subscriber_history>` can
+be used to fetch this history and put it into a subscriber's :term:`event stream`.
+
+.. literalinclude:: /examples/channels/put_history.py
+    :language: python
+
+
+.. note::
+    The publication of the history happens sequentially, one channel at a time, one
+    event at a time. This is done to ensure correct ordering of the events and to not
+    fill up a subscriber's backlog, resulting in dropped history entries. Should the
+    amount of entries exceed the maximum backlog size, the execution will wait until
+    previous events have been processed.
+
+    .. seealso::
+        `Managing backpressure`
+
+
 The ``Subscriber``
 ------------------
 
 .. py:currentmodule:: litestar.channels.subscriber
 
-The :class:`Subscriber` manages an individual event stream, provided to it by the
-plugin, consisting representing the sum of events from all channels the subscriber has
+The :class:`Subscriber` manages an individual :term:`event stream`, provided to it by
+the plugin, representing the sum of events from all channels the subscriber has
 subscribed to.
 
 It can be considered the endpoint of all events, while the backends act as the source,
 and the plugin as a router, being responsible for supplying events gathered from the
 backend into the appropriate subscriber's streams.
 
-In addition to being an abstraction of customized event stream, the :class:`Subscriber`
+In addition to being an abstraction of an :term:`event stream`, the :class:`Subscriber`
 provides different methods to handle this stream:
 
 :meth:`iter_events <Subscriber.iter_events>`
-    An asynchronous generator, producing one event from the stream at a time, blocking
+    An asynchronous generator, producing one event from the stream at a time, waiting
     until the next one becomes available
 
 :meth:`start_in_background <Subscriber.start_in_background>`
-    Starts a :class:`asyncio.Task` which runs in the background, consuming the event
-    stream and sending received events to a provided
-    :class:`WebSocket <litestar.connection.WebSocket>`
+    Starts a :class:`asyncio.Task` which runs in the background, consuming the
+    :term:`event stream` and invoking a provided callback with the received events
 
 :meth:`run_in_background <Subscriber.run_in_background>`
     A context manager, wrapping
@@ -270,153 +297,66 @@ provides different methods to handle this stream:
         lead to the cancellation of the task. By default this only happens when the context is
         left with an exception.
 
-:meth:`put_history <Subscriber.put_history>`
-    Retrieve the history for a given channel and put it into the subscriber's event
-    stream
+
+.. important::
+    The :term:`events <event>` in the :term:`event streams <event stream>` are always
+    bytes; When calling :meth:`ChannelsPlugin.publish`, data will be serialized before
+    being sent to the backend
+
+
+Consuming the event stream
++++++++++++++++++++++++++++
+
+There are two general methods of consuming the :term:`event stream`:
+
+1. By iterating over it directly, using :meth:`iter_events <Subscriber.iter_events>`
+2. By using a background task,
+   using :meth:`run_in_background <Subscriber.run_in_background>` or
+   :meth:`start_in_background <Subscriber.start_in_background>`
+
+Iterating over the stream directly is mostly useful if processing the events is the only
+concern, since :meth:`iter_events <Subscriber.iter_events>` is effectively an infinite
+loop. For all other applications, a background task is preferable, which also iterates
+over the event stream, but does so in an :class:`asyncio.Task`, giving control back to
+the caller immediately.
+
+
+.. literalinclude:: /examples/channels/iter_stream.py
+    :language: python
+
+
+In the above example, the stream is used to send data to a
+:class:`WebSocket <litestar.connection.WebSocket>`.
+
+The same can be achieve by passing
+:meth:`WebbSocket.send_text <litestar.connection.WebSocket.send_text>` as the callback
+to :meth:`run_in_background <Subscriber.run_in_background>`. This will cause the
+WebSocket's method to be invoked every time a new event becomes available in the stream,
+but gives control back to the application, providing an opportunity to perform other
+tasks, such as receiving incoming data from the socket.
+
+
+.. literalinclude:: /examples/channels/run_in_background.py
+    :language: python
 
 
 .. important::
-    The events in the event streams are always bytes; When calling
-    :meth:`ChannelsPlugin.publish`, data will be serialized before being sent to the
-    backend.
+    Iterating over :meth:`iter_events <Subscriber.iter_events>` should be approached
+    with caution when being used together with WebSockets.
 
-
-Integrating with websocket handlers
------------------------------------
-
-Using the methods described above, it's possible to integrate all functionality within a
-regular :class:`websocket route handler <litestar.handlers.websocket>`.
-
-
-Consuming the event stream directly
-+++++++++++++++++++++++++++++++++++
-
-If an application needs more fine grained control over how data is being sent, a
-:class:`Subscriber <Subscriber>`\ 's event stream can be consumed directly,
-using :meth:`iter_events <Subscriber.iter_events>`:
-
-
-.. code-block:: python
-
-    from litestar import websocket, WebSocket
-    from litestar.channels import ChannelsPlugin
-
-
-    @websocket("/ws")
-    async def handler(socket: WebSocket, channels: ChannelsPlugin) -> None:
-        await socket.accept()
-        async with channels.subscribe(["some_channel"]) as subscriber:
-            async for message in subscriber.iter_events():
-                await socket.send_data(message, mode="binary", encoding="ascii")
-
-
-Managing subscriptions and sending
-++++++++++++++++++++++++++++++++++
-
-By running a worker task in the background taking care of the sending of events to the
-socket, the application is free to interact with the socket in different ways, without
-being blocked by a busy loop:
-
-.. code-block:: python
-
-    from litestar import websocket, WebSocket
-    from litestar.channels import ChannelsPlugin
-
-
-    @websocket("/ws")
-    async def handler(socket: WebSocket, channels: ChannelsPlugin) -> None:
-        await socket.accept()
-
-        async with channels.start_subscription(["channel"]) as subscriber:
-            async with subscriber.run_in_background(socket):
-                while True:
-                    message = socket.receive_text()
-
-
-Customizing how data is sent through a socket
----------------------------------------------
-
-By default, data will be sent through a
-:class:`WebSocket <litestar.connection.WebSocket>` using the
-:meth:`send_data <litestar.connection.WebSocket.send_data>` method. This can be changed
-by overriding :meth:`Subscriber.handle_socket_send`:
-
-
-.. code-block:: python
-
-    from litestar.channels import ChannelsPlugin, Subscriber
-    from litestar import WebSocket
-    from litestar.types.asgi_types import WebSocketMode
-
-
-    class CustomSubscriber(Subscriber):
-        async def handle_socket_send(
-            self,
-            socket: WebSocket,
-            data: bytes,
-            mode: WebSocketMode,
-        ) -> None:
-            await socket.send_data(data, mode=mode, encoding="utf-16")
-
-
-    plugin = ChannelsPlugin(..., subscriber_class=CustomSubscriber)
-
-
-Generating route handlers
--------------------------
-
-A common pattern is to create a route handler per channel, sending data to the connected
-client from that channel. This can be fully automated, using the plugin to create these
-route handlers.
-
-.. code-block:: python
-    :caption: Setting ``create_route_handlers=True`` will create route handlers for all ``channels``
-
-    from litestar.channels import ChannelsPlugin
-    from litestar.channels.memory import MemoryChannelsBackend
-    from litestar import Litestar
-
-
-    channels_plugin = ChannelsPlugin(
-        backend=MemoryChannelsBackend(), channels=["foo", "bar"], create_route_handlers=True
-    )
-
-    app = Litestar(plugins=[channels_plugin])
-
-
-The generated route handlers can optionally be configured to send the channel's history
-after a client has connected:
-
-.. code-block:: python
-    :caption: Sending the first 10 history entries after a client connects
-
-    from litestar.channels import ChannelsPlugin
-    from litestar.channels.memory import MemoryChannelsBackend
-    from litestar import Litestar
-
-    channels_plugin = ChannelsPlugin(
-        backend=MemoryChannelsBackend(history=10),  # this number should be greater than
-        # or equal to the history to be sent
-        channels=["foo", "bar"],
-        create_route_handlers=True,
-        handler_send_history=10,
-    )
-
-    app = Litestar(plugins=[channels_plugin])
-
-
-.. tip::
-
-    When using the ``arbitrary_channels_allowed`` flag on the :class:`ChannelsPlugin`, a
-    single route handler will be generated instead, using a
-    :ref:`path parameter <usage/parameters:path parameters>` to specify the channel name
+    Since :exc:`WebSocketDisconnect` is only raised after the corresponding ASGI event
+    has been *received*, it can result in an indefinitely suspended coroutine. This can
+    happen if for example the client disconnects, but no further events are received.
+    The generator will then wait for new events, but since it will never receive any,
+    no ``send`` call on the WebSocket will be made, which in turn means no exception
+    will be raised to break the loop.
 
 
 
 Managing backpressure
 ---------------------
 
-Each subscriber manages its own backlog, i.e. a queue of messages it needs to send.
+Each subscriber manages its own backlog: A queue of unprocessed :term:`events <event>`.
 By default, this backlog is unlimited in size, allowing it to grow indefinitely. For
 most applications, this should be no issue, but when the recipient consistently can't
 process messages faster than they come in, an application might opt to handle this case.
@@ -477,3 +417,36 @@ implemented are:
     to deliver messages. It has a slightly higher latency when publishing than the
     Pub/Sub backend, but achieves the same throughput in message fanout. Recommended
     when history is needed
+
+
+
+Integrating with websocket handlers
+-----------------------------------
+
+
+Generating route handlers
++++++++++++++++++++++++++
+
+A common pattern is to create a route handler per channel, sending data to the connected
+client from that channel. This can be fully automated, using the plugin to create these
+route handlers.
+
+.. literalinclude:: /examples/channels/create_route_handlers.py
+    :language: python
+    :caption: Setting ``create_route_handlers=True`` will create route handlers for all ``channels``
+
+
+
+The generated route handlers can optionally be configured to send the channel's history
+after a client has connected:
+
+.. literalinclude:: /examples/channels/create_route_handlers_send_history.py
+    :language: python
+    :caption: Sending the first 10 history entries after a client connects
+
+
+.. tip::
+
+    When using the ``arbitrary_channels_allowed`` flag on the :class:`ChannelsPlugin`, a
+    single route handler will be generated instead, using a
+    :ref:`path parameter <usage/parameters:path parameters>` to specify the channel name
