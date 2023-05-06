@@ -3,8 +3,8 @@ from __future__ import annotations
 import asyncio
 import sys
 
-if sys.version_info < (3, 9):
-    import importlib_resources  # pragma: nocover
+if sys.version_info < (3, 9):  # pragma: nocover
+    import importlib_resources
 else:
     import importlib.resources as importlib_resources
 from abc import ABC

@@ -99,10 +99,12 @@ class ChannelsPlugin(InitPluginProtocol):
 
     def encode_data(self, data: LitestarEncodableType) -> bytes:
         """Encode data before storing it in the backend"""
-        if isinstance(data, str):
-            data = data.encode()
         if isinstance(data, bytes):
             return data
+
+        if isinstance(data, str):
+            return data.encode()
+
         return self._encode_json(data)
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:

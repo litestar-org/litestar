@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import contextlib
 from asyncio import Queue
 from collections import defaultdict, deque
 from typing import Any, AsyncGenerator, Iterable
@@ -57,9 +56,11 @@ class MemoryChannelsBackend(ChannelsBackend):
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         """Unsubscribe from ``channels``"""
         self._channels = self._channels - (set(channels))
-        for channel in channels:
-            with contextlib.suppress(KeyError):
+        try:
+            for channel in channels:
                 del self._history[channel]
+        except KeyError:
+            pass
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         """Return a generator, iterating over events of subscribed channels as they become available"""
