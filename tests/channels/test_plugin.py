@@ -84,6 +84,8 @@ async def test_pub_sub_non_blocking(channels_backend: ChannelsBackend) -> None:
         subscriber = await plugin.subscribe("something")
         plugin.publish(b"foo", "something")
 
+        await asyncio.sleep(0.1)  # give the worker time to process things
+
         res = await get_from_stream(subscriber, 1)
 
     assert res == [b"foo"]
