@@ -1,4 +1,5 @@
 from .backends.base import ChannelsBackend
-from .plugin import ChannelsPlugin, Subscriber
+from .plugin import ChannelsPlugin
+from .subscriber import Subscriber
 
 __all__ = ("ChannelsPlugin", "ChannelsBackend", "Subscriber")

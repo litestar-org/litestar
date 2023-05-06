@@ -11,7 +11,7 @@ from pytest_mock import MockerFixture
 from litestar import Litestar, get
 from litestar.channels import ChannelsBackend, ChannelsPlugin
 from litestar.channels.backends.memory import MemoryChannelsBackend
-from litestar.channels.plugin import BacklogStrategy
+from litestar.channels.subscriber import BacklogStrategy
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.testing import TestClient, create_test_client
 from litestar.types.asgi_types import WebSocketMode

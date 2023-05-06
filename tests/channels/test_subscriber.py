@@ -6,8 +6,9 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from litestar.channels import Subscriber
 from litestar.channels.backends.memory import MemoryChannelsBackend
-from litestar.channels.plugin import ChannelsPlugin, Subscriber
+from litestar.channels.plugin import ChannelsPlugin
 
 
 def test_subscriber_backlog_backoff() -> None:

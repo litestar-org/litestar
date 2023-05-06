@@ -49,8 +49,9 @@ Utilizing channels involves a few moving parts, of which the most important ones
    subscribers, the backend, root event stream, route handlers and general configuration
 2. A :class:`ChannelsBackend <.base.ChannelsBackend>`, responsible for synchronizing and
    publishing events
-3. :class:`Subscriber <.plugin.Subscriber>`, an entity representing an individualized
-   event stream, receiving events from all channels this subscriber is subscribed to
+3. :class:`Subscriber <.subscriber.Subscriber>`, an entity representing an
+   individualized event stream, receiving events from all channels this subscriber is
+   subscribed to
 
 
 Flowcharts
@@ -231,6 +232,8 @@ Or, using the context manager
 The ``Subscriber``
 ------------------
 
+.. py:currentmodule:: litestar.channels.subscriber
+
 The :class:`Subscriber` manages an individual event stream, provided to it by the
 plugin, consisting representing the sum of events from all channels the subscriber has
 subscribed to.
@@ -246,14 +249,14 @@ provides different methods to handle this stream:
     An asynchronous generator, producing one event from the stream at a time, blocking
     until the next one becomes available
 
-:meth:`start_in_background <.Subscriber.start_in_background>`
+:meth:`start_in_background <Subscriber.start_in_background>`
     Starts a :class:`asyncio.Task` which runs in the background, consuming the event
     stream and sending received events to a provided
     :class:`WebSocket <litestar.connection.WebSocket>`
 
-:meth:`run_in_background <.Subscriber.run_in_background>`
+:meth:`run_in_background <Subscriber.run_in_background>`
     A context manager, wrapping
-    :meth:`start_in_background <.Subscriber.start_in_background>`. Upon exit, it will
+    :meth:`start_in_background <Subscriber.start_in_background>`. Upon exit, it will
     attempt a graceful shutdown of the running task, waiting for all currently enqueued
     events in the stream to be processed. Should the context be left with an error, the
     task will be cancelled instead.
@@ -263,11 +266,11 @@ provides different methods to handle this stream:
 
     .. tip::
         It's possible to force the task to stop immediately, by passing ``join=False`` to
-        :meth:`run_in_background <.plugin.Subscriber.run_in_background>`, which will lead
-        to the cancellation of the task. By default this only happens when the context is
+        :meth:`run_in_background <Subscriber.run_in_background>`, which will
+        lead to the cancellation of the task. By default this only happens when the context is
         left with an exception.
 
-:meth:`put_history <.Subscriber.put_history>`
+:meth:`put_history <Subscriber.put_history>`
     Retrieve the history for a given channel and put it into the subscriber's event
     stream
 
@@ -289,8 +292,8 @@ Consuming the event stream directly
 +++++++++++++++++++++++++++++++++++
 
 If an application needs more fine grained control over how data is being sent, a
-:class:`Subscriber <.plugin.Subscriber>`\ 's event stream can be consumed directly,
-using :meth:`iter_events <.plugin.Subscriber.iter_events>`:
+:class:`Subscriber <Subscriber>`\ 's event stream can be consumed directly,
+using :meth:`iter_events <Subscriber.iter_events>`:
 
 
 .. code-block:: python
