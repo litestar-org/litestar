@@ -151,7 +151,7 @@ class ChannelsPlugin(InitPluginProtocol):
 
         await self._backend.publish(data, channels)
 
-    async def subscribe(self, channels: str | Iterable[str]) -> Subscriber:
+    async def subscribe(self, channels: str | Iterable[str], history: int | None = None) -> Subscriber:
         """Create a :class:`Subscriber`, providing a stream of all events in ``channels``.
 
         The created subscriber will be passive by default and has to be consumed manually,
@@ -160,6 +160,10 @@ class ChannelsPlugin(InitPluginProtocol):
 
         Args:
             channels: Channel(s) to subscribe to
+            history: If a non-negative integer, add this amount of history entries from
+                each channel to the subscriber's event stream. Note that this will wait
+                until all history entries are fetched and pushed to the subscriber's
+                stream. For more control use :meth:`set_subscriber_history`.
 
         Returns:
             A :class:`Subscriber`
@@ -194,6 +198,9 @@ class ChannelsPlugin(InitPluginProtocol):
 
         if channels_to_subscribe:
             await self._backend.subscribe(channels_to_subscribe)
+
+        if history:
+            await self.set_subscriber_history(subscriber=subscriber, limit=history, channels=channels)
 
         return subscriber
 
@@ -233,22 +240,42 @@ class ChannelsPlugin(InitPluginProtocol):
             await self._backend.unsubscribe(channels_to_unsubscribe)
 
     @asynccontextmanager
-    async def start_subscription(self, channels: str | Iterable[str]) -> AsyncGenerator[Subscriber, None]:
+    async def start_subscription(
+        self, channels: str | Iterable[str], history: int | None = None
+    ) -> AsyncGenerator[Subscriber, None]:
         """Create a :class:`Subscriber` and tie its subscriptions to a context manager;
         Upon exiting the context, :meth:`unsubscribe` will be called.
 
         Args:
             channels: Channel(s) to subscribe to
+            history: If a non-negative integer, add this amount of history entries from
+                each channel to the subscriber's event stream. Note that this will wait
+                until all history entries are fetched and pushed to the subscriber's
+                stream. For more control use :meth:`set_subscriber_history`.
 
         Returns:
             A :class:`Subscriber`
         """
-        subscriber = await self.subscribe(channels)
+        subscriber = await self.subscribe(channels, history=history)
 
         try:
             yield subscriber
         finally:
             await self.unsubscribe(subscriber, channels)
+
+    async def set_subscriber_history(
+        self, subscriber: Subscriber, channels: str | Iterable[str], limit: int | None = None
+    ) -> None:
+        """Fetch the history of ``channels`` from the backend and put them in the
+        subscriber's stream
+        """
+        if isinstance(channels, str):
+            channels = [channels]
+
+        for channel in channels:
+            history = await self._backend.get_history(channel, limit)
+            for entry in history:
+                await subscriber.put(entry)
 
     async def _ws_handler_func(self, channel_name: str, socket: WebSocket) -> None:
         await socket.accept()
@@ -258,7 +285,7 @@ class ChannelsPlugin(InitPluginProtocol):
 
         async with self.start_subscription(channel_name) as subscriber:
             if self._handler_should_send_history:
-                await subscriber.put_history(channels=channel_name, limit=self._history_limit)
+                await self.set_subscriber_history(subscriber, channels=channel_name, limit=self._history_limit)
 
             async with subscriber.run_in_background(on_event):
                 while True:

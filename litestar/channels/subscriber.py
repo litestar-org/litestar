@@ -4,12 +4,11 @@ import asyncio
 from asyncio import CancelledError, Queue, QueueFull
 from collections import deque
 from contextlib import AsyncExitStack, asynccontextmanager, suppress
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Generic, Literal, Sequence, TypeVar
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Generic, Literal, TypeVar
 
 if TYPE_CHECKING:
     from litestar.channels import ChannelsPlugin
 
-import anyio
 
 T = TypeVar("T")
 
@@ -72,24 +71,6 @@ class Subscriber:
                 break
             yield item
             self._queue.task_done()
-
-    async def put_history(self, channels: str | Sequence[str], limit: int | None = None) -> None:
-        """Fetch the history of ``channels`` from the backend and put them in the subscriber's stream"""
-        if isinstance(channels, str):
-            channels = [channels]
-
-        if len(channels) == 1:
-            await self._put_channel_history(channels[0], limit=limit)
-            return
-
-        async with anyio.create_task_group() as task_group:
-            for channel in channels:
-                task_group.start_soon(self._put_channel_history, channel, limit)
-
-    async def _put_channel_history(self, channel: str, limit: int | None = None) -> None:
-        history = await self._backend.get_history(channel, limit)
-        for entry in history:
-            self._queue.put_nowait(entry)
 
     @asynccontextmanager
     async def run_in_background(self, on_event: EventCallback, join: bool = True) -> AsyncGenerator[None, None]:

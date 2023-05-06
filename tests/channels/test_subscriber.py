@@ -1,14 +1,15 @@
 from __future__ import annotations
 
 import asyncio
-from typing import AsyncGenerator
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
 from litestar.channels import Subscriber
-from litestar.channels.backends.memory import MemoryChannelsBackend
-from litestar.channels.plugin import ChannelsPlugin
+from litestar.channels.subscriber import BacklogStrategy
+from litestar.utils.compat import async_next
+
+from .util import get_from_stream
 
 
 def test_subscriber_backlog_backoff() -> None:
@@ -49,25 +50,6 @@ async def test_iter_events_none_breaks() -> None:
     mock_callback.assert_called_once_with(b"foo")
 
 
-@pytest.fixture()
-async def plugin() -> AsyncGenerator[ChannelsPlugin, None]:
-    memory_backend = MemoryChannelsBackend(history=10)
-    plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
-    await plugin._on_startup()
-    yield plugin
-    await plugin._on_shutdown()
-
-
-@pytest.mark.parametrize("channels,expected_entries", [("foo", 1), (["foo", "bar"], 2)])
-async def test_put_history(channels: str | list[str], plugin: ChannelsPlugin, expected_entries: int) -> None:
-    subscriber = Subscriber(plugin)
-    await plugin._backend.publish(b"something", channels if isinstance(channels, list) else [channels])
-
-    await subscriber.put_history(channels)
-
-    assert subscriber.qsize == expected_entries
-
-
 @pytest.mark.parametrize("join", [False, True])
 async def test_stop(join: bool) -> None:
     subscriber = Subscriber(AsyncMock())
@@ -92,3 +74,30 @@ async def test_context_manager() -> None:
         assert subscriber._task
 
     assert not subscriber._task
+
+
+async def test_qsize() -> None:
+    subscriber = Subscriber(AsyncMock())
+
+    assert not subscriber.qsize
+    subscriber.put_nowait(b"foo")
+
+    assert subscriber.qsize == 1
+
+    await async_next(subscriber.iter_events())
+
+    assert not subscriber.qsize
+
+
+@pytest.mark.parametrize("backlog_strategy", ["backoff", "dropleft"])
+async def test_backlog(backlog_strategy: BacklogStrategy) -> None:
+    messages = [b"foo", b"bar", b"baz"]
+    subscriber = Subscriber(AsyncMock(), backlog_strategy=backlog_strategy, max_backlog=2)
+    expected_messages = messages[:-1] if backlog_strategy == "backoff" else messages[1:]
+    for message in messages:
+        subscriber.put_nowait(message)
+
+    assert subscriber.qsize == 2
+    enqueued_items = await get_from_stream(subscriber, 2)
+
+    assert expected_messages == enqueued_items
