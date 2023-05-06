@@ -287,6 +287,8 @@ class ChannelsPlugin(InitPluginProtocol):
             if self._handler_should_send_history:
                 await self.set_subscriber_history(subscriber, channels=channel_name, limit=self._history_limit)
 
+            # use the background task, so we can receive(), raising a WebSocketDisconnect
+            # when a connection closes, breaking the loop
             async with subscriber.run_in_background(on_event):
                 while True:
                     await socket.receive()
