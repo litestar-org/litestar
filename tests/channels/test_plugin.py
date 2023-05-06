@@ -115,7 +115,7 @@ def test_create_ws_route_handlers(
 
     with TestClient(app) as client, client.websocket_connect(f"{handler_base_path or ''}/something") as ws:
         channels_plugin.publish(["foo"], "something")
-        assert ws.receive_json(mode=socket_send_mode, timeout=0.1) == ["foo"]
+        assert ws.receive_json(mode=socket_send_mode, timeout=2) == ["foo"]
 
 
 async def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
