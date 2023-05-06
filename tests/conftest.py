@@ -429,7 +429,7 @@ async def mysql_responsive(host: str) -> bool:
             await cursor.execute("select 1 as is_available")
             resp = await cursor.fetchone()
         return bool(resp[0] == 1)
-    except asyncmy.errors.OperationalError:
+    except asyncmy.errors.OperationalError:  # pyright: ignore
         return False
 
 

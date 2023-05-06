@@ -135,7 +135,7 @@ class ASGIRouter:
         if async_callable.num_expected_args > 0:
             await async_callable(self.app.state)  # type: ignore[arg-type]
         else:
-            await async_callable()
+            await async_callable()  # pyright: ignore
 
     def construct_routing_trie(self) -> None:
         """Create a map of the app's routes.
