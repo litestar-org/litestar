@@ -195,14 +195,14 @@ class ChannelsPlugin(InitPluginProtocol):
         *,
         channels: Iterable[str] | None = None,
         arbitrary_channels_allowed: bool = False,
-        create_route_handlers: bool = False,
-        handler_send_history: int = 0,
-        handler_base_path: str = "/",
-        socket_send_mode: WebSocketMode = "text",
-        type_encoders: TypeEncodersMap | None = None,
-        max_backlog: int | None = None,
-        backlog_strategy: BacklogStrategy = "backoff",
+        create_ws_route_handlers: bool = False,
+        ws_handler_send_history: int = 0,
+        ws_handler_base_path: str = "/",
+        ws_send_mode: WebSocketMode = "text",
+        subscriber_max_backlog: int | None = None,
+        subscriber_backlog_strategy: BacklogStrategy = "backoff",
         subscriber_class: type[Subscriber] = Subscriber,
+        type_encoders: TypeEncodersMap | None = None,
     ) -> None:
         """Plugin to handle broadcasting to WebSockets with support for channels.
 
@@ -213,22 +213,23 @@ class ChannelsPlugin(InitPluginProtocol):
             channels: Channels to serve. If ``arbitrary_channels_allowed`` is ``False`` (the default), trying to
                 subscribe to a channel not in ``channels`` will raise an exception
             arbitrary_channels_allowed: Allow the creation of channels on the fly
-            create_route_handlers: If ``True``, route handlers will be created for all channels defined in ``channels``.
-                If ``arbitrary_channels_allowed`` is ``True``, a single handler will be created instead, handling all
-                channels. The handlers created will accept WebSocket connections and start sending received events for
-                their respective channels.
-            handler_send_history: Amount of history entries to send from the generated route handlers after a client
-                has connected. A value of ``0`` indicates to not send a history
-            handler_base_path: Path prefix used for the generated route handlers
-            socket_send_mode: Send mode to use for sending data through a :class:`WebSocket <.connection.WebSocket>`.
+            create_ws_route_handlers: If ``True``, websocket route handlers will be created for all channels defined in
+                ``channels``. If ``arbitrary_channels_allowed`` is ``True``, a single handler will be created instead,
+                handling all channels. The handlers created will accept WebSocket connections and start sending received
+                events for their respective channels.
+            ws_handler_send_history: Amount of history entries to send from the generated websocket route handlers after
+                a client has connected. A value of ``0`` indicates to not send a history
+            ws_handler_base_path: Path prefix used for the generated route handlers
+            ws_send_mode: Send mode to use for sending data through a :class:`WebSocket <.connection.WebSocket>`.
                 This will be used when sending within generated route handlers or :meth:`Subscriber.run_in_background`
-            type_encoders: An additional mapping of type encoders used to encode data before sending
-            max_backlog: Maximum amount of unsent messages to be held in memory for a given subscriber. If that limit
-                is reached, new messages will be treated accordingly to ``backlog_strategy``
-            backlog_strategy: Define the behaviour if ``max_backlog`` is reached for a subscriber. ``backoff`` will
-                result in new messages being dropped until older ones have been processed. ``dropleft`` will drop
-                older messages in favour of new ones.
+            subscriber_max_backlog: Maximum amount of unsent messages to be held in memory for a given subscriber. If
+                that limit is reached, new messages will be treated accordingly to ``backlog_strategy``
+            subscriber_backlog_strategy: Define the behaviour if ``max_backlog`` is reached for a subscriber. `
+                `backoff`` will result in new messages being dropped until older ones have been processed. ``dropleft``
+                will drop older messages in favour of new ones.
             subscriber_class: A :class:`Subscriber` subclass to return from :meth:`subscribe`
+            type_encoders: An additional mapping of type encoders used to encode data before sending
+
         """
         self._backend = backend
         self._pub_queue: Queue[tuple[bytes, list[str]]] | None = None
@@ -239,16 +240,16 @@ class ChannelsPlugin(InitPluginProtocol):
             raise ImproperlyConfiguredException("Must define either channels or set arbitrary_channels_allowed=True")
 
         self._arbitrary_channels_allowed = arbitrary_channels_allowed
-        self._create_route_handlers = create_route_handlers
-        self._handler_root_path = handler_base_path
-        self._socket_send_mode: WebSocketMode = socket_send_mode
+        self._create_route_handlers = create_ws_route_handlers
+        self._handler_root_path = ws_handler_base_path
+        self._socket_send_mode: WebSocketMode = ws_send_mode
         self._encode_json = msgspec.json.Encoder(
             enc_hook=partial(default_serializer, type_encoders=type_encoders)
         ).encode
-        self._handler_should_send_history = bool(handler_send_history)
-        self._history_limit = None if handler_send_history < 0 else handler_send_history
-        self._max_backlog = max_backlog
-        self._backlog_strategy: BacklogStrategy = backlog_strategy
+        self._handler_should_send_history = bool(ws_handler_send_history)
+        self._history_limit = None if ws_handler_send_history < 0 else ws_handler_send_history
+        self._max_backlog = subscriber_max_backlog
+        self._backlog_strategy: BacklogStrategy = subscriber_backlog_strategy
         self._subscriber_class = subscriber_class
 
         self._channels: dict[str, set[Subscriber]] = {channel: set() for channel in channels or []}

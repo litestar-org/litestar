@@ -91,10 +91,10 @@ def test_pub_sub_create_route_handlers(
 ) -> None:
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,
-        create_route_handlers=True,
+        create_ws_route_handlers=True,
         channels=["something"],
-        handler_base_path=handler_base_path or "/",
-        socket_send_mode=socket_send_mode,
+        ws_handler_base_path=handler_base_path or "/",
+        ws_send_mode=socket_send_mode,
     )
     app = Litestar(plugins=[channels_plugin])
 
@@ -105,7 +105,10 @@ def test_pub_sub_create_route_handlers(
 
 async def test_create_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
     channels_plugin = ChannelsPlugin(
-        backend=channels_backend, arbitrary_channels_allowed=True, create_route_handlers=True, handler_base_path="/ws"
+        backend=channels_backend,
+        arbitrary_channels_allowed=True,
+        create_ws_route_handlers=True,
+        ws_handler_base_path="/ws",
     )
 
     app = Litestar(plugins=[channels_plugin])
@@ -271,8 +274,8 @@ async def test_handler_sends_history(
     plugin = ChannelsPlugin(
         backend=memory_backend,
         arbitrary_channels_allowed=True,
-        handler_send_history=handler_send_history,
-        create_route_handlers=True,
+        ws_handler_send_history=handler_send_history,
+        create_ws_route_handlers=True,
     )
 
     app = Litestar([], plugins=[plugin])
@@ -294,7 +297,10 @@ async def test_backlog(
     memory_backend: MemoryChannelsBackend, backlog_strategy: BacklogStrategy, async_mock: AsyncMock
 ) -> None:
     plugin = ChannelsPlugin(
-        backend=memory_backend, arbitrary_channels_allowed=True, max_backlog=2, backlog_strategy=backlog_strategy
+        backend=memory_backend,
+        arbitrary_channels_allowed=True,
+        subscriber_max_backlog=2,
+        subscriber_backlog_strategy=backlog_strategy,
     )
     messages = [b"foo", b"bar", b"baz"]
 
