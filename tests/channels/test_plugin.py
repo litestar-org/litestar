@@ -328,7 +328,7 @@ async def test_set_subscriber_history(
         subscriber = await plugin.subscribe(channels)
         await memory_backend.publish(b"something", channels if isinstance(channels, list) else [channels])
 
-        await plugin.set_subscriber_history(subscriber, channels)
+        await plugin.put_subscriber_history(subscriber, channels)
 
         assert subscriber.qsize == expected_entry_count
         assert await get_from_stream(subscriber, 2) == [b"something", b"something"]
@@ -346,15 +346,12 @@ async def test_backlog(
     )
     messages = [b"foo", b"bar", b"baz"]
 
-    await plugin._on_startup()
-
-    subscriber = await plugin.subscribe(channels=["something"])
-
-    async with subscriber.run_in_background(async_mock):
-        for message in messages:
-            await plugin.wait_published(message, channels=["something"])
-
-        await plugin._on_shutdown()  # force a flush of all buffers here
+    async with plugin:
+        subscriber = await plugin.subscribe(channels=["something"])
+        async with subscriber.run_in_background(async_mock):
+            for message in messages:
+                await plugin.wait_published(message, channels=["something"])
+            await plugin._on_shutdown()  # force a flush of all buffers here
 
     expected_messages = messages[:-1] if backlog_strategy == "backoff" else messages[1:]
 

@@ -163,7 +163,7 @@ class ChannelsPlugin(InitPluginProtocol):
             history: If a non-negative integer, add this amount of history entries from
                 each channel to the subscriber's event stream. Note that this will wait
                 until all history entries are fetched and pushed to the subscriber's
-                stream. For more control use :meth:`set_subscriber_history`.
+                stream. For more control use :meth:`put_subscriber_history`.
 
         Returns:
             A :class:`Subscriber`
@@ -200,7 +200,7 @@ class ChannelsPlugin(InitPluginProtocol):
             await self._backend.subscribe(channels_to_subscribe)
 
         if history:
-            await self.set_subscriber_history(subscriber=subscriber, limit=history, channels=channels)
+            await self.put_subscriber_history(subscriber=subscriber, limit=history, channels=channels)
 
         return subscriber
 
@@ -251,7 +251,7 @@ class ChannelsPlugin(InitPluginProtocol):
             history: If a non-negative integer, add this amount of history entries from
                 each channel to the subscriber's event stream. Note that this will wait
                 until all history entries are fetched and pushed to the subscriber's
-                stream. For more control use :meth:`set_subscriber_history`.
+                stream. For more control use :meth:`put_subscriber_history`.
 
         Returns:
             A :class:`Subscriber`
@@ -263,7 +263,7 @@ class ChannelsPlugin(InitPluginProtocol):
         finally:
             await self.unsubscribe(subscriber, channels)
 
-    async def set_subscriber_history(
+    async def put_subscriber_history(
         self, subscriber: Subscriber, channels: str | Iterable[str], limit: int | None = None
     ) -> None:
         """Fetch the history of ``channels`` from the backend and put them in the
@@ -285,7 +285,7 @@ class ChannelsPlugin(InitPluginProtocol):
 
         async with self.start_subscription(channel_name) as subscriber:
             if self._handler_should_send_history:
-                await self.set_subscriber_history(subscriber, channels=channel_name, limit=self._history_limit)
+                await self.put_subscriber_history(subscriber, channels=channel_name, limit=self._history_limit)
 
             # use the background task, so we can receive(), raising a WebSocketDisconnect
             # when a connection closes, breaking the loop
@@ -319,18 +319,18 @@ class ChannelsPlugin(InitPluginProtocol):
             await self._backend.subscribe(list(self._channels))
 
     async def _on_shutdown(self) -> None:
+        if self._pub_queue:
+            await self._pub_queue.join()
+            self._pub_queue = None
+
         await asyncio.gather(
             *[
-                subscriber.stop()
+                subscriber.stop(join=False)
                 for subscribers in self._channels.values()
                 for subscriber in subscribers
                 if subscriber.is_running
             ]
         )
-
-        if self._pub_queue:
-            await self._pub_queue.join()
-            self._pub_queue = None
 
         await self._backend.on_shutdown()
 
