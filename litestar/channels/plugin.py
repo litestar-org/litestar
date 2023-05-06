@@ -31,7 +31,7 @@ from litestar.serialization import default_serializer
 if TYPE_CHECKING:
     from inspect import Traceback
 
-    from litestar.channels.base import ChannelsBackend
+    from litestar.channels.backends.base import ChannelsBackend
     from litestar.config.app import AppConfig
     from litestar.connection import WebSocket
     from litestar.types import LitestarEncodableType, TypeEncodersMap

@@ -11,13 +11,13 @@ from abc import ABC
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Iterable, cast
 
-from .base import ChannelsBackend
+from litestar.channels.backends.base import ChannelsBackend
 
 if TYPE_CHECKING:
     from redis.asyncio import Redis
     from redis.asyncio.client import PubSub
 
-_resource_path = importlib_resources.files("litestar.channels")
+_resource_path = importlib_resources.files("litestar.channels.backends")
 _PUBSUB_PUBLISH_SCRIPT = (_resource_path / "_redis_pubsub_publish.lua").read_text()
 _FLUSHALL_STREAMS_SCRIPT = (_resource_path / "_redis_flushall_streams.lua").read_text()
 _XADD_EXPIRE_SCRIPT = (_resource_path / "_redis_xadd_expire.lua").read_text()

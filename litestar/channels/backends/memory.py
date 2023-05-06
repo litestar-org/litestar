@@ -6,7 +6,7 @@ from asyncio import Queue
 from collections import defaultdict, deque
 from typing import Any, AsyncGenerator, Iterable
 
-from litestar.channels.base import ChannelsBackend
+from litestar.channels.backends.base import ChannelsBackend
 
 
 class MemoryChannelsBackend(ChannelsBackend):

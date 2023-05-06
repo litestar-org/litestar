@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from litestar.channels.memory import MemoryChannelsBackend
+from litestar.channels.backends.memory import MemoryChannelsBackend
 from litestar.channels.plugin import ChannelsPlugin, Subscriber
 
 

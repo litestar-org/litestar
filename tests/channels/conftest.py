@@ -4,8 +4,8 @@ import pytest
 from redis import Redis
 from redis.asyncio import Redis as AsyncRedis
 
-from litestar.channels.memory import MemoryChannelsBackend
-from litestar.channels.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
+from litestar.channels.backends.memory import MemoryChannelsBackend
+from litestar.channels.backends.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
 
 
 @pytest.fixture()

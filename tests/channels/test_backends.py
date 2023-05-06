@@ -9,8 +9,8 @@ from _pytest.fixtures import FixtureRequest
 from redis.asyncio.client import Redis
 
 from litestar.channels import ChannelsBackend
-from litestar.channels.memory import MemoryChannelsBackend
-from litestar.channels.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
+from litestar.channels.backends.memory import MemoryChannelsBackend
+from litestar.channels.backends.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
 from litestar.utils.compat import async_next
 
 pytestmark = [pytest.mark.usefixtures("redis_service")]

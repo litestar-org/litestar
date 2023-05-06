@@ -455,8 +455,8 @@ Backends
 --------
 
 The storing and fanout of messages is handled by a
-:class:`ChannelsBackend <litestar.channels.base.ChannelsBackend>`. Currently implemented
-are:
+:class:`ChannelsBackend <litestar.channels.backends.base.ChannelsBackend>`. Currently
+implemented are:
 
 :class:`MemoryChannelsBacked <.memory.MemoryChannelsBackend>`
     A basic in-memory backend, mostly useful for testing and local development, but
