@@ -1,12 +1,10 @@
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from typing import AsyncGenerator, Dict, List, Optional, Type, Union, cast
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import MagicMock
 
 import pytest
-from _pytest.fixtures import FixtureRequest
 from pytest_lazyfixture import lazy_fixture
-from pytest_mock import MockerFixture
 
 from litestar import Litestar, Request, WebSocket
 from litestar.datastructures import State
