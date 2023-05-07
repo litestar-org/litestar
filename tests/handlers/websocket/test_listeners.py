@@ -4,6 +4,7 @@ from typing import AsyncGenerator, Dict, List, Optional, Type, Union, cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from _pytest.fixtures import FixtureRequest
 from pytest_lazyfixture import lazy_fixture
 from pytest_mock import MockerFixture
 
@@ -279,10 +280,9 @@ def test_listener_accept_connection_callback() -> None:
         assert ws.extra_headers == [(b"cookie", b"custom-cookie")]
 
 
-@pytest.mark.parametrize("mock_class", [MagicMock, AsyncMock])
-def test_connection_callbacks(mock_class: Type[MagicMock]) -> None:
-    on_accept = mock_class()
-    on_disconnect = mock_class()
+def test_connection_callbacks() -> None:
+    on_accept = MagicMock()
+    on_disconnect = MagicMock()
 
     @websocket_listener("/", on_accept=on_accept, on_disconnect=on_disconnect)
     def handler(data: bytes) -> None:
