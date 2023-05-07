@@ -27,6 +27,7 @@ REDIRECT_TEMPLATE = """
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--version", required=False)
+parser.add_argument("--ignore-missing-examples-output", action="store_true", default=False)
 parser.add_argument("output")
 
 
@@ -49,11 +50,14 @@ def load_version_spec() -> VersionSpec:
     return {"versions": [], "latest": ""}
 
 
-def build(output_dir: str, version: str | None) -> None:
+def build(output_dir: str, version: str | None, ignore_missing_output: bool) -> None:
     if version is None:
         version = importlib.metadata.version("litestar").rsplit(".")[0]
     else:
         os.environ["_LITESTAR_DOCS_BUILD_VERSION"] = version
+
+    if ignore_missing_output:
+        os.environ["_LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT"] = "1"
 
     subprocess.run(["make", "docs"], check=True)  # noqa: S603 S607
 
@@ -83,7 +87,11 @@ def build(output_dir: str, version: str | None) -> None:
 
 def main() -> None:
     args = parser.parse_args()
-    build(output_dir=args.output, version=args.version)
+    build(
+        output_dir=args.output,
+        version=args.version,
+        ignore_missing_output=args.ignore_missing_output,
+    )
 
 
 if __name__ == "__main__":
