@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 import pytest
 from pytest_lazyfixture import lazy_fixture
 
-from litestar import Litestar, Request, WebSocket
+from litestar import Controller, Litestar, Request, WebSocket
 from litestar.datastructures import State
 from litestar.di import Provide
 from litestar.dto.factory import dto_field
@@ -316,3 +316,19 @@ def test_connection_lifespan() -> None:
 
     on_accept.assert_called_once()
     on_disconnect.assert_called_once()
+
+
+def test_listener_in_controller() -> None:
+    # test for https://github.com/litestar-org/litestar/issues/1615
+
+    class ClientController(Controller):
+        path: str = "/"
+
+        @websocket_listener("/ws")
+        async def websocket_handler(self, data: str, socket: WebSocket) -> str:
+            return data
+
+    with create_test_client(ClientController, debug=True) as client, client.websocket_connect("/ws") as ws:
+        ws.send_text("foo")
+        data = ws.receive_text(timeout=1)
+        assert data == "foo"

@@ -116,7 +116,7 @@ def create_handler_function(
 ) -> Callable[..., Coroutine[None, None, None]]:
     listener_callback = AsyncCallable(listener_context.listener_callback)
 
-    async def handler_fn(socket: WebSocket, **kwargs: Any) -> None:
+    async def handler_fn(*args: Any, socket: WebSocket, **kwargs: Any) -> None:
         ctx = ConnectionContext.from_connection(socket)
         data_dto = listener_context.resolved_data_dto(ctx) if listener_context.resolved_data_dto else None
         return_dto = listener_context.resolved_return_dto(ctx) if listener_context.resolved_return_dto else None
@@ -129,7 +129,7 @@ def create_handler_function(
         async with lifespan_manager(socket):
             while True:
                 received_data = await handle_receive(socket, data_dto)
-                data_to_send = await listener_callback(data=received_data, **kwargs)
+                data_to_send = await listener_callback(*args, data=received_data, **kwargs)
                 if handle_send:
                     await handle_send(socket, data_to_send, return_dto)
 

@@ -18,7 +18,7 @@ from msgspec.json import Encoder as JsonEncoder
 from litestar._signature import create_signature_model
 from litestar.connection import WebSocket
 from litestar.dto.interface import HandlerContext
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
 from litestar.serialization import default_serializer
 from litestar.types import (
     AnyCallable,
@@ -162,6 +162,8 @@ class websocket_listener(WebsocketRouteHandler):
             await self.on_accept(socket)
         try:
             yield
+        except WebSocketDisconnect:
+            pass
         finally:
             if self.on_disconnect:
                 await self.on_disconnect(socket)
