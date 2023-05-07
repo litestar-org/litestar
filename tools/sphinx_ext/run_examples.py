@@ -34,6 +34,8 @@ AVAILABLE_PORTS = list(range(9000, 9999))
 
 logger = logging.getLogger("sphinx")
 
+ignore_missing_output = os.getenv("_LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT", "") == "1"
+
 
 def _load_app_from_path(path: Path) -> Litestar:
     module = importlib.import_module(str(path.with_suffix("")).replace("/", "."))
@@ -115,7 +117,9 @@ def exec_examples(app_file: Path, run_configs: list[list[str]]) -> str:
             )
             stdout = proc.stdout.splitlines()
             if not stdout:
-                logger.error(f"Example: {app_file}:{args} yielded no results")
+                logger.debug(proc.stderr)
+                if not ignore_missing_output:
+                    logger.error(f"Example: {app_file}:{args} yielded no results")
                 continue
 
             result = "\n".join(line for line in ("> " + (" ".join(clean_args)), *stdout))
