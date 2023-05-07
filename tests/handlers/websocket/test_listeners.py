@@ -1,9 +1,11 @@
+from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Type, Union, cast
-from unittest.mock import MagicMock
+from typing import AsyncGenerator, Dict, List, Optional, Type, Union, cast
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from pytest_lazyfixture import lazy_fixture
+from pytest_mock import MockerFixture
 
 from litestar import Litestar, Request, WebSocket
 from litestar.datastructures import State
@@ -275,3 +277,44 @@ def test_listener_accept_connection_callback() -> None:
     client = create_test_client([handler])
     with client.websocket_connect("/") as ws:
         assert ws.extra_headers == [(b"cookie", b"custom-cookie")]
+
+
+@pytest.mark.parametrize("mock_class", [MagicMock, AsyncMock])
+def test_connection_callbacks(mock_class: type[MagicMock]) -> None:
+    on_accept = mock_class()
+    on_disconnect = mock_class()
+
+    @websocket_listener("/", on_accept=on_accept, on_disconnect=on_disconnect)
+    def handler(data: bytes) -> None:
+        pass
+
+    client = create_test_client([handler])
+    with client.websocket_connect("/"):
+        pass
+
+    on_accept.assert_called_once()
+    on_disconnect.assert_called_once()
+
+
+def test_connection_lifespan(mocker: MockerFixture) -> None:
+    on_accept = MagicMock()
+    on_disconnect = MagicMock()
+
+    @asynccontextmanager
+    async def lifespan(socket: WebSocket) -> AsyncGenerator[None, None]:
+        on_accept(socket)
+        try:
+            yield
+        finally:
+            on_disconnect(socket)
+
+    @websocket_listener("/", connection_lifespan=lifespan)
+    def handler(data: bytes) -> None:
+        pass
+
+    client = create_test_client([handler])
+    with client.websocket_connect("/", timeout=1):
+        pass
+
+    on_accept.assert_called_once()
+    on_disconnect.assert_called_once()
