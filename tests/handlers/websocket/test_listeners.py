@@ -280,7 +280,7 @@ def test_listener_accept_connection_callback() -> None:
 
 
 @pytest.mark.parametrize("mock_class", [MagicMock, AsyncMock])
-def test_connection_callbacks(mock_class: type[MagicMock]) -> None:
+def test_connection_callbacks(mock_class: Type[MagicMock]) -> None:
     on_accept = mock_class()
     on_disconnect = mock_class()
 
@@ -296,7 +296,7 @@ def test_connection_callbacks(mock_class: type[MagicMock]) -> None:
     on_disconnect.assert_called_once()
 
 
-def test_connection_lifespan(mocker: MockerFixture) -> None:
+def test_connection_lifespan() -> None:
     on_accept = MagicMock()
     on_disconnect = MagicMock()
 
