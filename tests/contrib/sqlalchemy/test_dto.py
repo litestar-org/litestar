@@ -282,13 +282,13 @@ from typing_extensions import Annotated
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig
 
-class UUIDBase(DeclarativeBase):
+class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 
-class A(UUIDBase):
+class A(Base):
     __tablename__ = "a"
 
-class B(UUIDBase):
+class B(Base):
     __tablename__ = "b"
     a_id: Mapped[int] = mapped_column(ForeignKey("a.id"))
     a: Mapped[A] = relationship(A)
@@ -321,10 +321,10 @@ from typing_extensions import Annotated
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig
 
-class UUIDBase(DeclarativeBase):
+class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 
-class A(UUIDBase):
+class A(Base):
     __tablename__ = "a"
     a: Mapped[Union[str, None]]
 
@@ -354,10 +354,10 @@ from typing_extensions import Annotated
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig
 
-class UUIDBase(DeclarativeBase):
+class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 
-class A(UUIDBase):
+class A(Base):
     __tablename__ = "a"
     a: Mapped[str | None]
 
@@ -460,7 +460,7 @@ async def test_forward_ref_relationship_resolution(
 from __future__ import annotations
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-class UUIDBase(DeclarativeBase):
+class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 """
     )
@@ -469,9 +469,9 @@ class UUIDBase(DeclarativeBase):
         f"""
 from __future__ import annotations
 
-from {base_module.__name__} import UUIDBase
+from {base_module.__name__} import Base
 
-class B(UUIDBase):
+class B(Base):
     __tablename__ = "b"
 """
     )
@@ -489,12 +489,12 @@ from typing_extensions import Annotated
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig
 
-from {base_module.__name__} import UUIDBase
+from {base_module.__name__} import Base
 
 if TYPE_CHECKING:
     from {b_module.__name__} import B
 
-class A(UUIDBase):
+class A(Base):
     __tablename__ = "a"
     b_id: Mapped[int] = mapped_column(ForeignKey("b.id"))
     b: Mapped[B] = relationship()

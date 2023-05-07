@@ -45,26 +45,33 @@ async def test_sqlalchemy_tablename(monkeypatch: MonkeyPatch) -> None:
     """Test the snake case conversion for table names."""
 
     class BigModel(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from UUIDAuditBase gives the model 'created' and 'updated'
         columns."""
 
         ...
 
     class TESTModel(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from UUIDAuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    class BigIntModel(base.BigIntAuditBase):
+        """Inheriting from BigIntAuditBase gives the model 'created' and 'updated'
         columns."""
 
         ...
 
     assert BigModel.__tablename__ == "big_model"
     assert TESTModel.__tablename__ == "test_model"
+    assert BigIntModel.__tablename__ == "big_int_model"
 
 
 async def test_sqlalchemy_sentinel(monkeypatch: MonkeyPatch) -> None:
     """Test the sqlalchemy sentinel column exists on `UUIDPrimaryKey` models."""
 
     class AnotherModel(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from UUIDAuditBase gives the model 'created' and 'updated'
         columns."""
 
         ...
@@ -74,12 +81,19 @@ async def test_sqlalchemy_sentinel(monkeypatch: MonkeyPatch) -> None:
 
         ...
 
+    class TheBigIntModel(base.BigIntBase):
+        """Inheriting from DeclarativeBase gives the model 'id'  columns."""
+
+        ...
+
     assert isinstance(AnotherModel._sentinel, MappedColumn)
     assert isinstance(TheTestModel._sentinel, MappedColumn)
-    model1, model2 = AnotherModel(), TheTestModel()
+    assert isinstance(TheBigIntModel._sentinel, MappedColumn)
+    model1, model2, model3 = AnotherModel(), TheTestModel(), TheBigIntModel()
     assert "created" not in model1.to_dict(exclude={"created"}).keys()
     assert "_sentinel" not in model1.to_dict().keys()
     assert "_sentinel" not in model2.to_dict().keys()
+    assert "_sentinel" not in model3.to_dict().keys()
 
 
 def test_wrap_sqlalchemy_integrity_error() -> None:
@@ -109,14 +123,22 @@ async def test_sqlalchemy_repo_add(mock_repo: SQLAlchemyAsyncRepository) -> None
 async def test_sqlalchemy_repo_add_many(mock_repo: SQLAlchemyAsyncRepository, monkeypatch: MonkeyPatch) -> None:
     """Test expected method calls for add many operation."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+    class UUIDModel(base.UUIDAuditBase):
+        """Inheriting from UUIDAuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    class BigIntModel(base.BigIntAuditBase):
+        """Inheriting from BigIntAuditBase gives the model 'created' and 'updated'
         columns."""
 
         ...
 
     mock_instances = [MagicMock(), MagicMock(), MagicMock()]
-    monkeypatch.setattr(mock_repo, "model_type", Model)
+    monkeypatch.setattr(mock_repo, "model_type", UUIDModel)
+    monkeypatch.setattr(mock_repo.session, "scalars", AsyncMock(return_value=mock_instances))
+    monkeypatch.setattr(mock_repo, "model_type", BigIntModel)
     monkeypatch.setattr(mock_repo.session, "scalars", AsyncMock(return_value=mock_instances))
     instances = await mock_repo.add_many(mock_instances)
     assert len(instances) == 3
@@ -129,15 +151,23 @@ async def test_sqlalchemy_repo_add_many(mock_repo: SQLAlchemyAsyncRepository, mo
 async def test_sqlalchemy_repo_update_many(mock_repo: SQLAlchemyAsyncRepository, monkeypatch: MonkeyPatch) -> None:
     """Test expected method calls for update many operation."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+    class UUIDModel(base.UUIDAuditBase):
+        """Inheriting from UUIDAuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    class BigIntModel(base.BigIntAuditBase):
+        """Inheriting from BigIntAuditBase gives the model 'created' and 'updated'
         columns."""
 
         ...
 
     mock_instances = [MagicMock(), MagicMock(), MagicMock()]
 
-    monkeypatch.setattr(mock_repo, "model_type", Model)
+    monkeypatch.setattr(mock_repo, "model_type", UUIDModel)
+    monkeypatch.setattr(mock_repo.session, "scalars", AsyncMock(return_value=mock_instances))
+    monkeypatch.setattr(mock_repo, "model_type", BigIntModel)
     monkeypatch.setattr(mock_repo.session, "scalars", AsyncMock(return_value=mock_instances))
     instances = await mock_repo.update_many(mock_instances)
 
@@ -164,15 +194,23 @@ async def test_sqlalchemy_repo_delete(mock_repo: SQLAlchemyAsyncRepository, monk
 async def test_sqlalchemy_repo_delete_many(mock_repo: SQLAlchemyAsyncRepository, monkeypatch: MonkeyPatch) -> None:
     """Test expected method calls for delete operation."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+    class UUIDModel(base.UUIDAuditBase):
+        """Inheriting from UUIDAuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    class BigIntModel(base.BigIntAuditBase):
+        """Inheriting from BigIntAuditBase gives the model 'created' and 'updated'
         columns."""
 
         ...
 
     mock_instances = [MagicMock(), MagicMock(id=uuid4())]
     monkeypatch.setattr(mock_repo.session, "scalars", AsyncMock(return_value=mock_instances))
-    monkeypatch.setattr(mock_repo, "model_type", Model)
+    monkeypatch.setattr(mock_repo, "model_type", UUIDModel)
+    monkeypatch.setattr(mock_repo.session, "execute", AsyncMock(return_value=mock_instances))
+    monkeypatch.setattr(mock_repo, "model_type", BigIntModel)
     monkeypatch.setattr(mock_repo.session, "execute", AsyncMock(return_value=mock_instances))
     monkeypatch.setattr(mock_repo, "list", AsyncMock(return_value=mock_instances))
     added_instances = await mock_repo.add_many(mock_instances)

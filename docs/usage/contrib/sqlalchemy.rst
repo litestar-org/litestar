@@ -24,9 +24,19 @@ Basic Use
 
 To use the :class:`SQLAlchemyAsyncRepository <litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository>`
 repository, you must first define your models using one of the included built-in ``DeclarativeBase`` ORM base
-implementations  (:class:`UUIDBase <litestar.contrib.sqlalchemy.base.UUIDBase>` and
-:class:`UUIDAuditBase <litestar.contrib.sqlalchemy.base.UUIDAuditBase>`).  Both include a UUID based primary key
+implementations:
+
+* :class:`UUIDBase <litestar.contrib.sqlalchemy.base.UUIDBase>`
+* :class:`UUIDAuditBase <litestar.contrib.sqlalchemy.base.UUIDAuditBase>`
+
+Both include a ``UUID`` based primary key
 and ``UUIDAuditBase`` includes an ``updated`` and ``created`` timestamp column.
+
+* :class:`BigIntBase <litestar.contrib.sqlalchemy.base.BigIntBase>`
+* :class:`BigIntAuditBase <litestar.contrib.sqlalchemy.base.BigIntAuditBase>`
+
+Both include a ``BigInteger`` based primary key
+and ``BigIntAuditBase`` includes an ``updated`` and ``created`` timestamp column.
 
 Models using these bases also include the following enhancements:
 * Auto-generated snake-case table name from class name
