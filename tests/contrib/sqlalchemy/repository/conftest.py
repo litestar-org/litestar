@@ -25,5 +25,7 @@ def _patch_bases(monkeypatch: MonkeyPatch) -> None:
     class NewAuditBase(base.UUIDPrimaryKey, base.CommonTableAttributes, base.AuditColumns, DeclarativeBase):
         ...
 
-    monkeypatch.setattr(base, "Base", NewBase)
-    monkeypatch.setattr(base, "AuditBase", NewAuditBase)
+    monkeypatch.setattr(base, "UUIDBase", NewBase)
+    monkeypatch.setattr(base, "UUIDAuditBase", NewAuditBase)
+    monkeypatch.setattr(base, "BigIntBase", NewBase)
+    monkeypatch.setattr(base, "BigIntAuditBase", NewAuditBase)
