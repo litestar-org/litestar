@@ -161,7 +161,7 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
         """Publish ``data`` to ``channels``.
 
         .. note::
-            This operation is performed atomically, using a lua script
+            This operation is performed atomically, using a Lua script
         """
         channels = set(channels)
         await self._publish_script(

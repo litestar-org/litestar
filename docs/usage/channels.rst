@@ -29,7 +29,7 @@ Utilizing channels involves a few moving parts, of which the most important ones
 .. glossary::
 
     event
-        A single piece of data published to, or received from a :term:`backend`, bound
+        A single piece of data published to, or received from a :term:`backend` bound
         to the channel it was originally published to
 
     event stream
@@ -103,7 +103,7 @@ The ``ChannelsPlugin``
 .. currentmodule:: litestar.channels.plugin
 
 The :class:`ChannelsPlugin` acts as the central entity for managing channels and
-subscribers. It's used to publish messages, control how data is stored, manage
+subscribers. It's used to publish messages, control how data is stored, and manage
 subscribers, route handlers and configuration.
 
 
@@ -116,7 +116,7 @@ subscribers, route handlers and configuration.
 Configuring the channels
 +++++++++++++++++++++++++
 
-The channels manged by the plugin can be either defined upfront, passing them to the
+The channels managed by the plugin can be either defined upfront, passing them to the
 ``channels`` argument, or created "on the fly" (i.e. on the first subscription to a
 channel) by setting ``arbitrary_channels_allowed=True``.
 
@@ -235,7 +235,7 @@ Or, using the context manager
 Managing history
 +++++++++++++++++
 
-Some backends support a per-channel history, keeping a certain amount of
+Some backends support per-channel history, keeping a certain amount of
 :term:`events <event>` in storage. This history can then be pushed to a
 :term:`subscriber`.
 
@@ -247,9 +247,9 @@ be used to fetch this history and put it into a subscriber's :term:`event stream
 
 
 .. note::
-    The publication of the history happens sequentially, one channel at a time, one
-    event at a time. This is done to ensure correct ordering of the events and to not
-    fill up a subscriber's backlog, resulting in dropped history entries. Should the
+    The publication of the history happens sequentially, one channel and one
+    event at a time. This is done to ensure the correct ordering of events and to avoid
+    filling up a subscriber's backlog, which would result in dropped history entries. Should the
     amount of entries exceed the maximum backlog size, the execution will wait until
     previous events have been processed.
 
@@ -285,7 +285,7 @@ provides different methods to handle this stream:
     A context manager, wrapping
     :meth:`start_in_background <Subscriber.start_in_background>`. Upon exit, it will
     attempt a graceful shutdown of the running task, waiting for all currently enqueued
-    events in the stream to be processed. Should the context be left with an error, the
+    events in the stream to be processed. If the context exits with an error, the
     task will be cancelled instead.
 
     This should be the preferred method of running the background task, since it ensures
@@ -301,7 +301,7 @@ provides different methods to handle this stream:
 .. important::
     The :term:`events <event>` in the :term:`event streams <event stream>` are always
     bytes; When calling :meth:`ChannelsPlugin.publish`, data will be serialized before
-    being sent to the backend
+    being sent to the backend.
 
 
 Consuming the event stream
