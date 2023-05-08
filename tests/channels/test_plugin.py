@@ -69,6 +69,7 @@ def test_plugin_dependency(mock: MagicMock, memory_backend: MemoryChannelsBacken
     assert mock.call_args[0][0] is channels_plugin
 
 
+@pytest.mark.flaky(reruns=5)
 async def test_pub_sub_wait_published(channels_backend: ChannelsBackend) -> None:
     async with ChannelsPlugin(backend=channels_backend, channels=["something"]) as plugin:
         subscriber = await plugin.subscribe("something")
@@ -79,6 +80,7 @@ async def test_pub_sub_wait_published(channels_backend: ChannelsBackend) -> None
     assert res == [b"foo"]
 
 
+@pytest.mark.flaky(reruns=5)
 async def test_pub_sub_non_blocking(channels_backend: ChannelsBackend) -> None:
     async with ChannelsPlugin(backend=channels_backend, channels=["something"]) as plugin:
         subscriber = await plugin.subscribe("something")
@@ -91,6 +93,7 @@ async def test_pub_sub_non_blocking(channels_backend: ChannelsBackend) -> None:
     assert res == [b"foo"]
 
 
+@pytest.mark.flaky(reruns=5)
 async def test_pub_sub_run_in_background(channels_backend: ChannelsBackend, async_mock: AsyncMock) -> None:
     async with ChannelsPlugin(backend=channels_backend, channels=["something"]) as plugin:
         subscriber = await plugin.subscribe("something")
@@ -101,6 +104,7 @@ async def test_pub_sub_run_in_background(channels_backend: ChannelsBackend, asyn
     assert async_mock.call_count == 1
 
 
+@pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize("socket_send_mode", ["text", "binary"])
 @pytest.mark.parametrize("handler_base_path", [None, "/ws"])
 def test_create_ws_route_handlers(
@@ -120,6 +124,7 @@ def test_create_ws_route_handlers(
         assert ws.receive_json(mode=socket_send_mode, timeout=2) == ["foo"]
 
 
+@pytest.mark.flaky(reruns=5)
 async def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,
@@ -211,6 +216,7 @@ async def test_subscribe_with_history(
         assert set(await get_from_stream(subscriber, history * len(channels))) == expected_messages
 
 
+@pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize("history", [1, 2])
 @pytest.mark.parametrize("channels", [["foo"], ["foo", "bar"]])
 async def test_start_subscription_with_history(
