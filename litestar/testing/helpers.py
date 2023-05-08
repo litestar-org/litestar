@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal, Mapping, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Literal, Mapping, Sequence
 
 from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
 from litestar.controller import Controller
@@ -10,6 +10,8 @@ from litestar.types import Empty
 from litestar.utils.predicates import is_class_and_subclass
 
 if TYPE_CHECKING:
+    from contextlib import AbstractAsyncContextManager
+
     from litestar import Request, WebSocket
     from litestar.config.allowed_hosts import AllowedHostsConfig
     from litestar.config.compression import CompressionConfig
@@ -89,6 +91,7 @@ def create_test_client(
     opt: Mapping[str, Any] | None = None,
     parameters: ParametersMap | None = None,
     plugins: OptionalSequence[PluginProtocol] = None,
+    lifespan: list[Callable[[], AbstractAsyncContextManager]] | None = None,
     preferred_validation_backend: Literal["pydantic", "attrs"] | None = None,
     raise_server_exceptions: bool = True,
     request_class: type[Request] | None = None,
@@ -185,6 +188,7 @@ def create_test_client(
             :class:`BaseEventEmitterBackend <.events.emitter.BaseEventEmitterBackend>`.
         exception_handlers: A mapping of status codes and/or exception types to handler functions.
         guards: A sequence of :class:`Guard <.types.Guard>` callables.
+        lifespan: A list of callables returning async context managers, wrapping the lifespan of the ASGI application
         listeners: A sequence of :class:`EventListener <.events.listener.EventListener>`.
         logging_config: A subclass of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>`.
         middleware: A sequence of :class:`Middleware <.types.Middleware>`.
@@ -260,6 +264,7 @@ def create_test_client(
         dependencies=dependencies,
         dto=dto,
         etag=etag,
+        lifespan=lifespan,
         event_emitter_backend=event_emitter_backend,
         exception_handlers=exception_handlers,
         guards=guards,
@@ -331,6 +336,7 @@ def create_async_test_client(
     event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
     exception_handlers: ExceptionHandlersMap | None = None,
     guards: OptionalSequence[Guard] = None,
+    lifespan: list[Callable[[], AbstractAsyncContextManager]] | None = None,
     listeners: OptionalSequence[EventListener] = None,
     logging_config: BaseLoggingConfig | EmptyType | None = Empty,
     middleware: OptionalSequence[Middleware] = None,
@@ -437,6 +443,7 @@ def create_async_test_client(
             :class:`BaseEventEmitterBackend <.events.emitter.BaseEventEmitterBackend>`.
         exception_handlers: A mapping of status codes and/or exception types to handler functions.
         guards: A sequence of :class:`Guard <.types.Guard>` callables.
+        lifespan: A list of callables returning async context managers, wrapping the lifespan of the ASGI application
         listeners: A sequence of :class:`EventListener <.events.listener.EventListener>`.
         logging_config: A subclass of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>`.
         middleware: A sequence of :class:`Middleware <.types.Middleware>`.
@@ -515,6 +522,7 @@ def create_async_test_client(
         event_emitter_backend=event_emitter_backend,
         exception_handlers=exception_handlers,
         guards=guards,
+        lifespan=lifespan,
         listeners=listeners,
         logging_config=logging_config,
         middleware=middleware,

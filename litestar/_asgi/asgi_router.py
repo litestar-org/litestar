@@ -12,7 +12,7 @@ from litestar._asgi.routing_trie.traversal import parse_path_to_route
 from litestar._asgi.routing_trie.types import create_node
 from litestar._asgi.utils import get_route_handlers
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.utils import AsyncCallable, normalize_path
+from litestar.utils import normalize_path
 
 __all__ = ("ASGIRouter",)
 
@@ -24,7 +24,6 @@ if TYPE_CHECKING:
     from litestar.routes.base import BaseRoute
     from litestar.types import (
         ASGIApp,
-        LifeSpanHandler,
         LifeSpanReceive,
         LifeSpanSend,
         LifeSpanShutdownCompleteEvent,
@@ -123,20 +122,6 @@ class ASGIRouter:
             self.route_mapping[identifier].append(route)
             self.route_handler_index[identifier] = handler
 
-    async def _call_lifespan_handler(self, handler: LifeSpanHandler) -> None:
-        """Determine whether the lifecycle handler expects an argument, and if so pass the `app.state` to it. If the
-        handler is an async function, await the return.
-
-        Args:
-            handler: sync or async callable that may or may not have an argument.
-        """
-        async_callable = AsyncCallable(handler)  # type: ignore
-
-        if async_callable.num_expected_args > 0:
-            await async_callable(self.app.state)  # type: ignore[arg-type]
-        else:
-            await async_callable()  # pyright: ignore
-
     def construct_routing_trie(self) -> None:
         """Create a map of the app's routes.
 
@@ -168,68 +153,27 @@ class ASGIRouter:
         Returns:
             None.
         """
-        message = await receive()
-        try:
-            shutdown_event: LifeSpanShutdownCompleteEvent = {"type": "lifespan.shutdown.complete"}
 
-            if message["type"] == "lifespan.startup":
-                await self.startup()
-                startup_event: LifeSpanStartupCompleteEvent = {"type": "lifespan.startup.complete"}
+        message = await receive()
+        shutdown_event: LifeSpanShutdownCompleteEvent = {"type": "lifespan.shutdown.complete"}
+        startup_event: LifeSpanStartupCompleteEvent = {"type": "lifespan.startup.complete"}
+
+        async with self.app.lifespan():
+            try:
                 await send(startup_event)
                 await receive()
-            else:  # pragma: no cover
-                await self.shutdown()
-                await send(shutdown_event)
-        except BaseException as e:
-            if message["type"] == "lifespan.startup":
-                startup_failure_event: LifeSpanStartupFailedEvent = {
-                    "type": "lifespan.startup.failed",
-                    "message": format_exc(),
-                }
-                await send(startup_failure_event)
-            else:  # pragma: no cover
-                shutdown_failure_event: LifeSpanShutdownFailedEvent = {
-                    "type": "lifespan.shutdown.failed",
-                    "message": format_exc(),
-                }
-                await send(shutdown_failure_event)
-            raise e
 
-        await self.shutdown()
+            except BaseException as e:
+                formatted_exception = format_exc()
+                failure_message: LifeSpanStartupFailedEvent | LifeSpanShutdownFailedEvent
+
+                if message["type"] == "lifespan.startup":
+                    failure_message = {"type": "lifespan.startup.failed", "message": formatted_exception}
+                else:
+                    failure_message = {"type": "lifespan.shutdown.failed", "message": formatted_exception}
+
+                await send(failure_message)
+
+                raise e
+
         await send(shutdown_event)
-
-    async def startup(self) -> None:
-        """Run any :class:`LifeSpanHandlers <litestar.types.LifeSpanHandler>` defined in the application's
-        ``.on_startup`` list.
-
-        Calls the ``before_startup`` hook and ``after_startup`` hook handlers respectively before and after calling in
-        the lifespan handlers.
-        """
-        await self.app.event_emitter.on_startup()
-
-        for hook in self.app.before_startup:
-            await hook(self.app)
-
-        for handler in self.app.on_startup:
-            await self._call_lifespan_handler(handler)
-
-        for hook in self.app.after_startup:
-            await hook(self.app)
-
-    async def shutdown(self) -> None:
-        """Run any :class:`LifeSpanHandlers <litestar.types.LifeSpanHandler>` defined in the application's
-        ``.on_shutdown`` list.
-
-        Calls the ``before_shutdown`` hook and ``after_shutdown`` hook handlers respectively before and after calling in
-        the lifespan handlers.
-        """
-        await self.app.event_emitter.on_shutdown()
-
-        for hook in self.app.before_shutdown:
-            await hook(self.app)
-
-        for handler in self.app.on_shutdown:
-            await self._call_lifespan_handler(handler)
-
-        for hook in self.app.after_shutdown:
-            await hook(self.app)

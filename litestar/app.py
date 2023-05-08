@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import logging
+from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager
 from datetime import date, datetime, time, timedelta
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, Mapping, Sequence, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Literal, Mapping, Sequence, cast
 
 from typing_extensions import Self, TypedDict
 
@@ -38,6 +39,7 @@ from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty
 from litestar.types.internal_types import PathParameterDefinition
 from litestar.utils import (
+    AsyncCallable,
     as_async_callable_list,
     join_paths,
     unique,
@@ -125,6 +127,7 @@ class Litestar(Router):
     """
 
     __slots__ = (
+        "_lifespan_managers",
         "_debug",
         "_openapi_schema",
         "after_exception",
@@ -213,6 +216,7 @@ class Litestar(Router):
         template_config: TemplateConfig | None = None,
         type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
+        lifespan: list[Callable[[], AbstractAsyncContextManager]] | None = None,
     ) -> None:
         """Initialize a ``Litestar`` application.
 
@@ -257,6 +261,7 @@ class Litestar(Router):
                 :class:`BaseEventEmitterBackend <.events.emitter.BaseEventEmitterBackend>`.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
+            lifespan: A list of callables returning async context managers, wrapping the lifespan of the ASGI application
             listeners: A sequence of :class:`EventListener <.events.listener.EventListener>`.
             logging_config: A subclass of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>`.
             middleware: A sequence of :class:`Middleware <.types.Middleware>`.
@@ -331,6 +336,7 @@ class Litestar(Router):
             event_emitter_backend=event_emitter_backend,
             exception_handlers=exception_handlers or {},
             guards=list(guards or []),
+            lifespan=lifespan or [],
             listeners=list(listeners or []),
             logging_config=cast("BaseLoggingConfig | None", logging_config),
             middleware=list(middleware or []),
@@ -367,6 +373,8 @@ class Litestar(Router):
 
         self._openapi_schema: OpenAPI | None = None
         self._debug: bool = True
+        self._lifespan_managers = config.lifespan
+
         self.get_logger: GetLogger = get_logger_placeholder
         self.logger: Logger | None = None
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
@@ -481,6 +489,50 @@ class Litestar(Router):
             return
         scope["state"] = {}
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
+
+    async def _call_lifespan_handler(self, handler: LifeSpanHandler) -> None:
+        """Determine whether the lifecycle handler expects an argument, and if so pass the `app.state` to it. If the
+        handler is an async function, await the return.
+
+        Args:
+            handler: sync or async callable that may or may not have an argument.
+        """
+        async_callable = AsyncCallable(handler)  # type: ignore[arg-type]
+
+        if async_callable.num_expected_args > 0:
+            await async_callable(self.state)  # type: ignore[arg-type]
+        else:
+            await async_callable()  # pyright: ignore
+
+    @asynccontextmanager
+    async def lifespan(self) -> AsyncGenerator[None, None]:
+        async with AsyncExitStack() as exit_stack:
+            for hook in self.before_startup:
+                await hook(self)
+
+            for manager in self._lifespan_managers:
+                await exit_stack.enter_async_context(manager())
+
+            await self.event_emitter.on_startup()
+
+            for handler in self.on_startup:
+                await self._call_lifespan_handler(handler)
+
+            for hook in self.after_startup:
+                await hook(self)
+
+            yield
+
+            for hook in self.before_shutdown:
+                await hook(self)
+
+            for handler in self.on_shutdown:
+                await self._call_lifespan_handler(handler)
+
+            await self.event_emitter.on_shutdown()
+
+        for hook in self.after_shutdown:
+            await hook(self)
 
     @property
     def openapi_schema(self) -> OpenAPI:
