@@ -90,7 +90,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
     def builtins_to_data_type(self, builtins: Any) -> Any:
         """Coerce the unstructured data into the data type."""
         backend = self._get_backend("data", self.connection_context.handler_id)
-        return backend.populate_data_from_builtins(builtins)
+        return backend.populate_data_from_builtins(builtins, self.connection_context)
 
     def bytes_to_data_type(self, raw: bytes) -> Any:
         """Return the data held by the DTO."""

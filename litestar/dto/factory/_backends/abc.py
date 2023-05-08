@@ -22,6 +22,7 @@ from .types import (
 )
 from .utils import (
     RenameStrategies,
+    _transfer_data,
     build_annotation_for_backend,
     should_exclude_field,
 )
@@ -94,9 +95,9 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
     __slots__ = (
         "annotation",
         "context",
-        "data_container_type",
         "parsed_field_definitions",
         "reverse_name_map",
+        "transfer_model_type",
     )
 
     def __init__(self, context: BackendContext) -> None:
@@ -107,10 +108,10 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         """
         self.context = context
         self.parsed_field_definitions = self.parse_model(context.model_type, context.config.exclude)
-        self.data_container_type = self.create_transfer_model_type(
+        self.transfer_model_type = self.create_transfer_model_type(
             get_fqdn(context.model_type), self.parsed_field_definitions
         )
-        self.annotation = build_annotation_for_backend(context.parsed_type.annotation, self.data_container_type)
+        self.annotation = build_annotation_for_backend(context.parsed_type.annotation, self.transfer_model_type)
 
     def parse_model(
         self,
@@ -192,28 +193,45 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
 
     @abstractmethod
     def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> Any:
-        """Parse raw bytes into primitive python types.
+        """Parse raw bytes into transfer model type.
 
         Args:
             raw: bytes
             connection_context: Information about the active connection.
 
         Returns:
-            The raw bytes parsed into primitive python types.
+            The raw bytes parsed into transfer model type.
         """
 
     @abstractmethod
-    def populate_data_from_builtins(self, data: Any) -> Any:
+    def parse_builtins(self, builtins: Any, connection_context: ConnectionContext) -> Any:
+        """Parse builtin types into transfer model type.
+
+        Args:
+            builtins: Builtin type.
+            connection_context: Information about the active connection.
+
+        Returns:
+            The builtin type parsed into transfer model type.
+        """
+
+    def populate_data_from_builtins(self, builtins: Any, connection_context: ConnectionContext) -> Any:
         """Populate model instance from builtin types.
 
         Args:
-            data: Builtin type.
+            builtins: Builtin type.
+            connection_context: Information about the active connection.
 
         Returns:
             Instance or collection of ``model_type`` instances.
         """
+        return _transfer_data(
+            self.context.model_type,
+            self.parse_builtins(builtins, connection_context),
+            self.parsed_field_definitions,
+            "data",
+        )
 
-    @abstractmethod
     def populate_data_from_raw(self, raw: bytes, connection_context: ConnectionContext) -> Any:
         """Parse raw bytes into instance of `model_type`.
 
@@ -224,8 +242,10 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         Returns:
             Instance or collection of ``model_type`` instances.
         """
+        return _transfer_data(
+            self.context.model_type, self.parse_raw(raw, connection_context), self.parsed_field_definitions, "data"
+        )
 
-    @abstractmethod
     def encode_data(self, data: Any, connection_context: ConnectionContext) -> LitestarEncodableType:
         """Encode data into a ``LitestarEncodableType``.
 
@@ -236,6 +256,9 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         Returns:
             Encoded data.
         """
+        return _transfer_data(
+            self.transfer_model_type, data, self.parsed_field_definitions, "return"  # type: ignore[arg-type]
+        )
 
     def create_openapi_schema(self, generate_examples: bool, schemas: dict[str, Schema]) -> Reference | Schema:
         """Create a RequestBody model for the given RouteHandler or return None."""

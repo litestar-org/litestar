@@ -151,10 +151,10 @@ def test_backend_scalar_annotation(backend_type: type[AbstractDTOBackend], backe
 
 @pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
 def test_backend_populate_data_from_builtins(
-    backend_type: type[AbstractDTOBackend], backend_context: BackendContext
+    backend_type: type[AbstractDTOBackend], backend_context: BackendContext, connection_context: ConnectionContext
 ) -> None:
     backend = backend_type(backend_context)
-    data = backend.populate_data_from_builtins(data=DESTRUCTURED)
+    data = backend.populate_data_from_builtins(builtins=DESTRUCTURED, connection_context=connection_context)
     assert data == STRUCTURED
 
 
