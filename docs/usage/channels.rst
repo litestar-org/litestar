@@ -189,8 +189,9 @@ Both :meth:`subscribe <ChannelsPlugin.subscribe>` and
 :class:`Subscriber`, which can be used to interact with the streams of events subscribed
 to.
 
-The context manager should be preferred, and using the methods directly should only be
-done when a context manager cannot be used, e.g. when the subscription would span
+The context manager should be preferred, since it ensures that channels are being
+unsubscribed. Using the ``subscriber`` and ``unsubscribe`` methods directly should only
+be done when a context manager cannot be used, e.g. when the subscription would span
 different contexts.
 
 
@@ -271,25 +272,18 @@ and the plugin as a router, being responsible for supplying events gathered from
 backend into the appropriate subscriber's streams.
 
 In addition to being an abstraction of an :term:`event stream`, the :class:`Subscriber`
-provides different methods to handle this stream:
+provides two methods to handle this stream:
 
 :meth:`iter_events <Subscriber.iter_events>`
     An asynchronous generator, producing one event from the stream at a time, waiting
     until the next one becomes available
 
-:meth:`start_in_background <Subscriber.start_in_background>`
-    Starts a :class:`asyncio.Task` which runs in the background, consuming the
-    :term:`event stream` and invoking a provided callback with the received events
-
 :meth:`run_in_background <Subscriber.run_in_background>`
-    A context manager, wrapping
-    :meth:`start_in_background <Subscriber.start_in_background>`. Upon exit, it will
-    attempt a graceful shutdown of the running task, waiting for all currently enqueued
-    events in the stream to be processed. If the context exits with an error, the
-    task will be cancelled instead.
-
-    This should be the preferred method of running the background task, since it ensures
-    the task's lifetime is handled correctly
+    A context manager, wrapping an :class:`asyncio.Task`, consuming events yielded by
+    :meth:`iter_events <Subscriber.iter_events>`, invoking a provided callback for each
+    of them. Upon exit, it will attempt a graceful shutdown of the running task, waiting
+    for all currently enqueued events in the stream to be processed. If the context
+    exits with an error, the task will be cancelled instead.
 
     .. tip::
         It's possible to force the task to stop immediately, by passing ``join=False`` to
@@ -310,15 +304,14 @@ Consuming the event stream
 There are two general methods of consuming the :term:`event stream`:
 
 1. By iterating over it directly, using :meth:`iter_events <Subscriber.iter_events>`
-2. By using a background task,
-   using :meth:`run_in_background <Subscriber.run_in_background>` or
-   :meth:`start_in_background <Subscriber.start_in_background>`
+2. By using the :meth:`run_in_background <Subscriber.run_in_background>` context manager,
+   which starts a background task, iterating over the stream, invoking a provided
+   callback for every :term:`event` received
 
 Iterating over the stream directly is mostly useful if processing the events is the only
 concern, since :meth:`iter_events <Subscriber.iter_events>` is effectively an infinite
-loop. For all other applications, a background task is preferable, which also iterates
-over the event stream, but does so in an :class:`asyncio.Task`, giving control back to
-the caller immediately.
+loop. For all other applications, using the context manager is preferable, since it
+allows to easily run other code concurrently.
 
 
 .. literalinclude:: /examples/channels/iter_stream.py

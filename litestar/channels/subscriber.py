@@ -86,7 +86,7 @@ class Subscriber:
                 stopping the worker. Note that an error occurring within the context
                 will always lead to the immediate cancellation of the worker
         """
-        self.start_in_background(on_event=on_event)
+        self._start_in_background(on_event=on_event)
         async with AsyncExitStack() as exit_stack:
             exit_stack.push_async_callback(self.stop, join=False)
             yield
@@ -94,13 +94,10 @@ class Subscriber:
             await self.stop(join=join)
 
     async def _worker(self, on_event: EventCallback) -> None:
-        try:
-            async for event in self.iter_events():
-                await on_event(event)
-        finally:
-            await self._plugin.unsubscribe(self)
+        async for event in self.iter_events():
+            await on_event(event)
 
-    def start_in_background(self, on_event: EventCallback) -> None:
+    def _start_in_background(self, on_event: EventCallback) -> None:
         """Start a task in the background that sends events from the subscriber's stream
         to ``socket`` as they become available.
 
@@ -116,13 +113,11 @@ class Subscriber:
         return self._task is not None
 
     async def stop(self, join: bool = False) -> None:
-        """Stop a task was previously started with
-        :meth:`start_in_background` or :meth:`run_in_background`. If the task is not yet
-        done it will be cancelled and awaited
+        """Stop a task was previously started with :meth:`run_in_background`. If the
+        task is not yet done it will be cancelled and awaited
 
         Args:
-            join: If ``True`` wait for all items to be processed before stopping the
-                task
+            join: If ``True`` wait for all items to be processed before stopping the task
         """
         if not self._task:
             return

@@ -157,8 +157,8 @@ class ChannelsPlugin(InitPluginProtocol):
         """Create a :class:`Subscriber`, providing a stream of all events in ``channels``.
 
         The created subscriber will be passive by default and has to be consumed manually,
-        either by calling :meth:`Subscriber.run_in_background`,
-        :meth:`Subscriber.start_in_background` or iterating over events using :meth:`Subscriber.iter_events`.
+        either by using :meth:`Subscriber.run_in_background` or iterating over events
+        using :meth:`Subscriber.iter_events`.
 
         Args:
             channels: Channel(s) to subscribe to

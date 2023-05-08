@@ -53,12 +53,15 @@ async def test_iter_events_none_breaks() -> None:
 @pytest.mark.parametrize("join", [False, True])
 async def test_stop(join: bool) -> None:
     subscriber = Subscriber(AsyncMock())
-    subscriber.start_in_background(AsyncMock())
-    subscriber.put_nowait(b"foo")
+    async with subscriber.run_in_background(AsyncMock()):
+        assert subscriber._task
+        assert subscriber.is_running
 
-    await subscriber.stop(join=join)
+        subscriber.put_nowait(b"foo")
 
-    assert subscriber._task is None
+        await subscriber.stop(join=join)
+
+        assert subscriber._task is None
 
 
 @pytest.mark.parametrize("join", [False, True])
@@ -66,14 +69,6 @@ async def test_stop_no_task(join: bool) -> None:
     subscriber = Subscriber(AsyncMock())
 
     await subscriber.stop(join=join)
-
-
-async def test_context_manager() -> None:
-    subscriber = Subscriber(AsyncMock())
-    async with subscriber.run_in_background(AsyncMock()):
-        assert subscriber._task
-
-    assert not subscriber._task
 
 
 async def test_qsize() -> None:
