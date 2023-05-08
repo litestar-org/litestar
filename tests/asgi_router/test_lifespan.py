@@ -1,6 +1,9 @@
-from contextlib import AbstractAsyncContextManager, asynccontextmanager
-from typing import AsyncGenerator, Callable
+from contextlib import asynccontextmanager
+from typing import TYPE_CHECKING, AsyncGenerator, Callable
 from unittest.mock import AsyncMock
+
+if TYPE_CHECKING:
+    from contextlib import AbstractAsyncContextManager
 
 import pytest
 
@@ -53,7 +56,7 @@ def shutdown_mock() -> AsyncMock:
     return AsyncMock()
 
 
-LifeSpanManager = Callable[[], AbstractAsyncContextManager[None]]
+LifeSpanManager = Callable[[], "AbstractAsyncContextManager[None]"]
 
 
 def create_lifespan_manager(startup_mock: AsyncMock, shutdown_mock: AsyncMock) -> LifeSpanManager:
