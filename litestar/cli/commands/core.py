@@ -98,12 +98,16 @@ def run_command(
 
 
 @command(name="routes")
-def routes_command(app: Litestar) -> None:  # pragma: no cover
+@option("--no-schema", help="Exclude shema routes", is_flag=True, default=False)
+def routes_command(app: Litestar, no_schema: bool) -> None:  # pragma: no cover
     """Display information about the application's routes."""
 
     tree = Tree("", hide_root=True)
 
     for route in sorted(app.routes, key=lambda r: r.path):
+        if no_schema and route.path.startswith("/schema"):
+            continue
+
         if isinstance(route, HTTPRoute):
             branch = tree.add(f"[green]{route.path}[/green] (HTTP)")
             for handler in route.route_handlers:

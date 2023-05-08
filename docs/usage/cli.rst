@@ -143,6 +143,16 @@ The ``routes`` command displays a tree view of the routing table
    litestar routes
 
 
+Options
+~~~~~~~
+
++-----------------+-----------------------+
+| Flag            | Description           |
++=================+=======================+
+| ``--no-schema`` | Exclude schema routes |
++-----------------+-----------------------+
+
+
 .. image:: /images/cli/litestar_routes.png
    :alt: litestar info
 

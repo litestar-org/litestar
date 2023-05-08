@@ -11,6 +11,7 @@ from litestar import __version__ as litestar_version
 from litestar.cli._utils import LoadedApp
 from litestar.cli.main import litestar_group as cli_command
 from tests.cli import (
+    APP_FILE_CONTENT,
     CREATE_APP_FILE_CONTENT,
     GENERIC_APP_FACTORY_FILE_CONTENT,
     GENERIC_APP_FACTORY_FILE_CONTENT_STRING_ANNOTATION,
@@ -186,3 +187,24 @@ def test_version_command(short: bool, runner: CliRunner) -> None:
     result = runner.invoke(cli_command, "version --short" if short else "version")
 
     assert result.output.strip() == litestar_version.formatted(short=short)
+
+
+@pytest.mark.parametrize(
+    "enable_no_schema_option, has_schema_line",
+    [
+        (True, False),
+        (False, True),
+    ],
+)
+def test_routes_command_no_schema(
+    runner: CliRunner,
+    enable_no_schema_option: bool,
+    has_schema_line: bool,
+    create_app_file: CreateAppFileFixture,
+) -> None:
+    create_app_file("app.py", content=APP_FILE_CONTENT)
+    command = "routes --no-schema" if enable_no_schema_option else "routes"
+    result = runner.invoke(cli_command, command)
+
+    assert result.exit_code == 0
+    assert ("/schema" in result.output) == has_schema_line
