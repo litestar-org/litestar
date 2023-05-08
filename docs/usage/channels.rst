@@ -164,7 +164,7 @@ follows that there's no guarantee that an event will be available in the backend
 immediately after this call.
 
 Alternatively, the asynchronous :meth:`wait_published <ChannelsPlugin.wait_published>`
-method can be used, which  the internal message queue, publishing the data to the
+method can be used, which skips the internal message queue, publishing the data to the
 backend directly.
 
 .. note::
