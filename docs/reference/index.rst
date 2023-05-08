@@ -8,6 +8,7 @@ API reference
 
     app
     background_tasks
+    channels/index
     config
     connection
     contrib/index

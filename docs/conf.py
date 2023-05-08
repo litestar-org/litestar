@@ -102,6 +102,7 @@ nitpick_ignore = [
     ("py:class", "litestar.utils.signature.ParsedSignature"),
     ("py:class", "litestar.utils.signature.ParsedParameter"),
     ("py:class", "litestar.utils.sync.AsyncCallable"),
+    ("py:class", "BacklogStrategy"),
 ]
 nitpick_ignore_regex = [
     (r"py:.*", r"litestar\.types.*"),
