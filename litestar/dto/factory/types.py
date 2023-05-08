@@ -1,18 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from functools import cached_property
 from typing import TYPE_CHECKING, Callable, Literal
 
-from litestar.types.empty import Empty
 from litestar.utils.signature import ParsedParameter
 
 if TYPE_CHECKING:
     from typing import Any
 
     from typing_extensions import TypeAlias
-
-    from litestar.types import EmptyType
 
     from .field import DTOField
 
@@ -25,9 +22,9 @@ class FieldDefinition(ParsedParameter):
 
     model_fqdn: str
     """Unique identifier of model that owns the field."""
-    default_factory: Callable[[], Any] | EmptyType = field(default=Empty)
+    default_factory: Callable[[], Any] | None
     """Default factory of the field."""
-    dto_field: DTOField | None = field(default=None)
+    dto_field: DTOField | None
     """DTO field configuration."""
 
     @cached_property

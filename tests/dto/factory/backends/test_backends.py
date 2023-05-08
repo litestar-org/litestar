@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from litestar.dto.factory import DTOConfig
 from litestar.dto.factory._backends import MsgspecDTOBackend, PydanticDTOBackend
 from litestar.dto.factory._backends.abc import BackendContext
-from litestar.dto.factory._backends.types import NestedFieldDefinition
+from litestar.dto.factory._backends.types import CollectionType, SimpleType
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.dto.interface import ConnectionContext
 from litestar.enums import MediaType
@@ -246,7 +246,7 @@ class Model:
 dto_type = DataclassDTO[Model]
     """
     )
-    config = DTOConfig(max_nested_depth=2, exclude={"a", "b.c", "b.d.e"})
+    config = DTOConfig(max_nested_depth=2, exclude={"a", "b.c", "b.d.0.e"})
     ctx = BackendContext(
         dto_config=config,
         dto_for="data",
@@ -258,9 +258,16 @@ dto_type = DataclassDTO[Model]
     parsed = MsgspecDTOBackend(context=ctx).parsed_field_definitions
     assert "a" not in parsed
     assert "b" in parsed
-    assert isinstance(parsed["b"], NestedFieldDefinition)
-    assert "c" not in parsed["b"].nested_field_definitions
-    assert "d" in parsed["b"].nested_field_definitions
-    assert isinstance(parsed["b"].nested_field_definitions["d"], NestedFieldDefinition)
-    assert "e" not in parsed["b"].nested_field_definitions["d"].nested_field_definitions
-    assert "f" in parsed["b"].nested_field_definitions["d"].nested_field_definitions
+    b_transfer_type = parsed["b"].transfer_type
+    assert isinstance(b_transfer_type, SimpleType)
+    b_transfer_model = b_transfer_type.transfer_model
+    assert b_transfer_model is not None
+    assert "c" not in b_transfer_model.field_definitions
+    assert "d" in b_transfer_model.field_definitions
+    b_d_transfer_type = b_transfer_model.field_definitions["d"].transfer_type
+    assert isinstance(b_d_transfer_type, CollectionType)
+    assert isinstance(b_d_transfer_type.inner_type, SimpleType)
+    b_d_transfer_model = b_d_transfer_type.inner_type.transfer_model
+    assert b_d_transfer_model is not None
+    assert "e" not in b_d_transfer_model.field_definitions
+    assert "f" in b_d_transfer_model.field_definitions

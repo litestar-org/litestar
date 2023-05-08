@@ -11,9 +11,10 @@ from litestar.types.empty import Empty
 from litestar.utils.helpers import get_fqdn
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Collection, Generator
+    from typing import ClassVar, Collection, Generator
 
     from litestar.types.protocols import DataclassProtocol
+    from litestar.utils.signature import ParsedType
 
 
 __all__ = ("DataclassDTO", "DataT")
@@ -36,14 +37,9 @@ class DataclassDTO(AbstractDTOFactory[DataT], Generic[DataT]):
             if not (dc_field := dc_fields.get(key)):
                 continue
 
-            default: Any = Empty
-            default_factory: Any = Empty
+            default = dc_field.default if dc_field.default is not MISSING else Empty
 
-            if dc_field.default is not MISSING:
-                default = dc_field.default
-
-            if dc_field.default_factory is not MISSING:
-                default_factory = dc_field.default_factory
+            default_factory = dc_field.default_factory if dc_field.default_factory is not MISSING else None
 
             field_def = FieldDefinition(
                 name=key,
@@ -57,7 +53,5 @@ class DataclassDTO(AbstractDTOFactory[DataT], Generic[DataT]):
             yield field_def
 
     @classmethod
-    def detect_nested_field(cls, field_definition: FieldDefinition) -> bool:
-        if not field_definition.parsed_type.inner_types:
-            return hasattr(field_definition.annotation, "__dataclass_fields__")
-        return any(hasattr(t.annotation, "__dataclass_fields__") for t in field_definition.parsed_type.inner_types)
+    def detect_nested_field(cls, parsed_type: ParsedType) -> bool:
+        return hasattr(parsed_type.annotation, "__dataclass_fields__")

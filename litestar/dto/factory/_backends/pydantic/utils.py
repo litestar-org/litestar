@@ -5,12 +5,13 @@ from typing import TYPE_CHECKING, TypeVar
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
 
-from litestar.dto.factory._backends.types import FieldDefinitionsType, NestedFieldDefinition
+from litestar.dto.factory._backends.utils import create_transfer_model_type_annotation
 from litestar.types import Empty
 
 if TYPE_CHECKING:
     from typing import Any
 
+    from litestar.dto.factory._backends.types import FieldDefinitionsType
     from litestar.dto.factory.types import FieldDefinition
 
 __all__ = ("_create_model_for_field_definitions",)
@@ -40,11 +41,7 @@ def _create_field_info(field_definition: FieldDefinition) -> FieldInfo:
 def _create_model_for_field_definitions(model_name: str, field_definitions: FieldDefinitionsType) -> type[BaseModel]:
     model_fields: dict[str, tuple[type, FieldInfo]] = {}
     for k, v in field_definitions.items():
-        if isinstance(v, NestedFieldDefinition):
-            nested_model = _create_model_for_field_definitions(f"{model_name}.{k}", v.nested_field_definitions)
-            model_fields[k] = (v.make_field_type(nested_model), _create_field_info(v.field_definition))
-        else:
-            model_fields[k] = (v.parsed_type.annotation, _create_field_info(v))
+        model_fields[k] = (create_transfer_model_type_annotation(v.transfer_type), _create_field_info(v))
     return create_model(
         model_name,
         __config__=None,

@@ -13,73 +13,80 @@ if TYPE_CHECKING:
     from litestar.utils.signature import ParsedType
 
 
+@dataclass
+class TransferModel:
+    """Type for representing fields and model type of nested model type."""
+
+    model: type[Any]
+    field_definitions: FieldDefinitionsType
+
+
+@dataclass
+class TransferType:
+    """Type for representing model types for data transfer."""
+
+    __slots__ = ("parsed_type",)
+
+    parsed_type: ParsedType
+
+
+@dataclass
+class SimpleType(TransferType):
+    """Represents indivisible, non-composite types."""
+
+    __slots__ = ("transfer_model",)
+
+    transfer_model: TransferModel | None
+    """If the type is a 'nested' type, this is the model generated for transfer to/from it."""
+
+
+@dataclass
+class CompositeType(TransferType):
+    """A type that is made up of other types."""
+
+    __slots__ = ("has_nested",)
+
+    has_nested: bool
+    """Whether the type represents nested model types within itself."""
+
+
+@dataclass
+class UnionType(CompositeType):
+    """Type for representing union types for data transfer."""
+
+    inner_types: tuple[TransferType, ...]
+
+
+@dataclass
+class CollectionType(CompositeType):
+    """Type for representing collection types for data transfer."""
+
+    inner_type: TransferType
+
+
+@dataclass
+class TupleType(CompositeType):
+    """Type for representing tuples for data transfer."""
+
+    inner_types: tuple[TransferType, ...]
+
+
+@dataclass
+class MappingType(CompositeType):
+    """Type for representing mappings for data transfer."""
+
+    key_type: TransferType
+    value_type: TransferType
+
+
 @dataclass(frozen=True)
 class TransferFieldDefinition(FieldDefinition):
+    transfer_type: TransferType
+    """Type of the field for transfer."""
     serialization_name: str | None = field(default=None)
     """Name of the field as it should feature on the transfer model."""
 
 
-@dataclass(frozen=True)
-class NestedBase:
-    field_definition: TransferFieldDefinition
-
-    @property
-    def name(self) -> str:
-        """Name of the field."""
-        return self.field_definition.name
-
-    @property
-    def parsed_type(self) -> ParsedType:
-        """Parsed type of the field."""
-        return self.field_definition.parsed_type
-
-    @property
-    def serialization_name(self) -> str | None:
-        """Serialization name of the field."""
-        return self.field_definition.serialization_name
-
-    @property
-    def unique_name(self) -> str:
-        """Unique name of the field."""
-        return self.field_definition.unique_name
-
-    def make_field_type(self, inner_type: type) -> Any:
-        if self.field_definition.parsed_type.is_collection:
-            return self.field_definition.parsed_type.safe_generic_origin[inner_type]
-        if self.field_definition.parsed_type.is_optional:
-            return self.field_definition.parsed_type.safe_generic_origin[inner_type, None]
-        return inner_type
-
-
-@dataclass(frozen=True)
-class NestedFieldDefinition(NestedBase):
-    """For representing nested model."""
-
-    nested_type: type[Any]
-    transfer_model: type[Any]
-    nested_field_definitions: FieldDefinitionsType = field(default_factory=dict)
-
-
-@dataclass(frozen=True)
-class NestedMultiType(NestedBase):
-    """A nested type that may have one or more nested types, e.g., tuples and unions."""
-
-    nested_types: tuple[Any, ...]
-    transfer_models: tuple[Any, ...]
-    nested_field_definitions: tuple[FieldDefinitionsType, ...] = field(default_factory=tuple)
-
-
-@dataclass(frozen=True)
-class NestedTuple(NestedMultiType):
-    """A tuple where at least one of the inner types is a nested model."""
-
-
-@dataclass(frozen=True)
-class NestedUnion(NestedMultiType):
-    """A tuple where at least one of the inner types is a nested model."""
-
-
-AnyFieldDefinition: TypeAlias = "TransferFieldDefinition | NestedFieldDefinition | NestedUnion"
 """For typing where any field definition is allowed."""
-FieldDefinitionsType: TypeAlias = "Mapping[str, AnyFieldDefinition]"
+FieldDefinitionsType: TypeAlias = "Mapping[str, TransferFieldDefinition]"
 """Generic representation of names and types."""

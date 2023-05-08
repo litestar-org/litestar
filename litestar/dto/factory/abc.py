@@ -112,14 +112,14 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
 
     @classmethod
     @abstractmethod
-    def detect_nested_field(cls, field_definition: FieldDefinition) -> bool:
+    def detect_nested_field(cls, parsed_type: ParsedType) -> bool:
         """Return ``True`` if ``field_definition`` represents a nested model field.
 
         Args:
-            field_definition: inspect type to determine if field definition represents a nested model.
+            parsed_type: inspect type to determine if field represents a nested model.
 
         Returns:
-            ``True`` if ``field_definition`` represents a nested model field.
+            ``True`` if ``parsed_type`` represents a nested model field.
         """
 
     @classmethod

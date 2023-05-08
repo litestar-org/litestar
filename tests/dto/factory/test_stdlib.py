@@ -30,10 +30,19 @@ def fx_dto_type() -> type[DataclassDTO[Model]]:
 def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> None:
     fqdn = get_fqdn(Model)
     assert list(dto_type.generate_field_definitions(Model)) == [
-        FieldDefinition(name="a", parsed_type=ParsedType(int), default=Empty, model_fqdn=fqdn),
-        FieldDefinition(name="b", parsed_type=ParsedType(str), default="b", model_fqdn=fqdn),
         FieldDefinition(
-            name="c", parsed_type=ParsedType(list[int]), default=Empty, default_factory=list, model_fqdn=fqdn
+            name="a", parsed_type=ParsedType(int), default=Empty, default_factory=None, dto_field=None, model_fqdn=fqdn
+        ),
+        FieldDefinition(
+            name="b", parsed_type=ParsedType(str), default="b", default_factory=None, dto_field=None, model_fqdn=fqdn
+        ),
+        FieldDefinition(
+            name="c",
+            parsed_type=ParsedType(list[int]),
+            default=Empty,
+            default_factory=list,
+            dto_field=None,
+            model_fqdn=fqdn,
         ),
     ]
 
@@ -41,30 +50,23 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
 def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> None:
     fqdn = get_fqdn(Model)
     assert list(dto_type.generate_field_definitions(Model)) == [
-        FieldDefinition(name="a", parsed_type=ParsedType(int), default=Empty, model_fqdn=fqdn),
-        FieldDefinition(name="b", parsed_type=ParsedType(str), default="b", model_fqdn=fqdn),
         FieldDefinition(
-            name="c", parsed_type=ParsedType(List[int]), default=Empty, default_factory=list, model_fqdn=fqdn
+            name="a", parsed_type=ParsedType(int), default=Empty, default_factory=None, dto_field=None, model_fqdn=fqdn
+        ),
+        FieldDefinition(
+            name="b", parsed_type=ParsedType(str), default="b", default_factory=None, dto_field=None, model_fqdn=fqdn
+        ),
+        FieldDefinition(
+            name="c",
+            parsed_type=ParsedType(List[int]),
+            default=Empty,
+            default_factory=list,
+            model_fqdn=fqdn,
+            dto_field=None,
         ),
     ]
 
 
 def test_dataclass_detect_nested(dto_type: type[DataclassDTO[Model]]) -> None:
-    assert (
-        dto_type.detect_nested_field(
-            FieldDefinition(name="a", parsed_type=ParsedType(Model), default=Empty, model_fqdn="")
-        )
-        is True
-    )
-    assert (
-        dto_type.detect_nested_field(
-            FieldDefinition(name="a", parsed_type=ParsedType(List[Model]), default=Empty, model_fqdn="")
-        )
-        is True
-    )
-    assert (
-        dto_type.detect_nested_field(
-            FieldDefinition(name="a", parsed_type=ParsedType(int), default=Empty, model_fqdn="")
-        )
-        is False
-    )
+    assert dto_type.detect_nested_field(ParsedType(Model)) is True
+    assert dto_type.detect_nested_field(ParsedType(int)) is False

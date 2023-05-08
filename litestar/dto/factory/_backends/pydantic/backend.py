@@ -27,7 +27,7 @@ T = TypeVar("T")
 class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):
     __slots__ = ()
 
-    def create_data_container_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[BaseModel]:
+    def create_transfer_model_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[BaseModel]:
         return _create_model_for_field_definitions(unique_name, field_definitions)
 
     def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> BaseModel | Collection[BaseModel]:
