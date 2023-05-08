@@ -90,7 +90,7 @@ def main() -> None:
     build(
         output_dir=args.output,
         version=args.version,
-        ignore_missing_output=args.ignore_missing_output,
+        ignore_missing_output=args.ignore_missing_examples_output,
     )
 
 
