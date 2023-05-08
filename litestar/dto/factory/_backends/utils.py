@@ -6,8 +6,6 @@ from typing import TYPE_CHECKING, TypeVar, cast
 from typing_extensions import get_origin
 
 from litestar.dto.factory import Mark
-from litestar.types.builtin_types import NoneType
-from litestar.utils.signature import ParsedType
 
 from .types import CollectionType, MappingType, SimpleType, TransferType, TupleType, UnionType
 
@@ -25,7 +23,6 @@ __all__ = (
     "RenameStrategies",
     "build_annotation_for_backend",
     "create_transfer_model_type_annotation",
-    "get_model_type",
     "should_exclude_field",
     "_transfer_data",
 )
@@ -69,25 +66,6 @@ def should_exclude_field(field_definition: FieldDefinition, exclude: AbstractSet
     private = dto_field and dto_field.mark is Mark.PRIVATE
     read_only_for_write = dto_for == "data" and dto_field and dto_field.mark is Mark.READ_ONLY
     return bool(excluded or private or read_only_for_write)
-
-
-def get_model_type(annotation: type) -> Any:
-    """Get model type represented by the DTO.
-
-    If ``annotation`` is a collection, then the inner type is returned.
-
-    Args:
-        annotation: any type.
-
-    Returns:
-        The model type that is represented by the DTO.
-    """
-    parsed_type = ParsedType(annotation)
-    if parsed_type.is_collection:
-        return parsed_type.inner_types[0].annotation
-    if parsed_type.is_optional:
-        return next(t for t in parsed_type.inner_types if t.annotation is not NoneType).annotation
-    return parsed_type.annotation
 
 
 class RenameStrategies:
