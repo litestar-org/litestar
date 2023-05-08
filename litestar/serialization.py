@@ -220,16 +220,16 @@ def encode_msgpack(obj: Any, enc_hook: Callable[[Any], Any] | None = default_ser
 
 
 @overload
-def decode_msgpack(raw: bytes | str) -> Any:
+def decode_msgpack(raw: bytes) -> Any:
     ...
 
 
 @overload
-def decode_msgpack(raw: bytes | str, type_: type[T]) -> T:
+def decode_msgpack(raw: bytes, type_: type[T]) -> T:
     ...
 
 
-def decode_msgpack(raw: bytes | str, type_: Any = Empty) -> Any:
+def decode_msgpack(raw: bytes, type_: Any = Empty) -> Any:
     """Decode a MessagePack string/bytes into an object.
 
     Args:
@@ -242,9 +242,6 @@ def decode_msgpack(raw: bytes | str, type_: Any = Empty) -> Any:
     Raises:
         SerializationException: If error decoding ``raw``.
     """
-    if isinstance(raw, str):
-        raw = raw.encode("utf-8")
-
     try:
         if type_ is Empty:
             return _msgspec_msgpack_decoder.decode(raw)
