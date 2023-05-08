@@ -1,3 +1,4 @@
+from __future__ import annotations
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, AsyncGenerator, Callable
 from unittest.mock import AsyncMock
