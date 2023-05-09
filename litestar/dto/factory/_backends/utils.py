@@ -177,21 +177,7 @@ def transfer_type_data(source_value: Any, transfer_type: TransferType, dto_for: 
 def transfer_nested_collection_type_data(
     origin_type: type[Any], transfer_type: CollectionType, dto_for: ForType, source_value: Any
 ) -> Any:
-    if not isinstance(transfer_type.inner_type, SimpleType):
-        raise RuntimeError("Compound inner types not yet supported")
-
-    if transfer_type.inner_type.nested_field_info is None:
-        raise RuntimeError("Inner type expected to have transfer model")
-
-    dest_type = (
-        transfer_type.inner_type.parsed_type.annotation
-        if dto_for == "data"
-        else transfer_type.inner_type.nested_field_info.model
-    )
-    return origin_type(
-        transfer_instance_data(dest_type, item, transfer_type.inner_type.nested_field_info.field_definitions, dto_for)
-        for item in source_value
-    )
+    return origin_type(transfer_type_data(item, transfer_type.inner_type, dto_for) for item in source_value)
 
 
 def transfer_nested_simple_type_data(
