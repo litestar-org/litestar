@@ -106,7 +106,9 @@ class ChangelogDirective(SphinxDirective):
             term = nodes.term()
             term += title
             target_id = f"{version}-{change_type}-{i}"
-            term += nodes.reference("#", "#", refuri="#" + target_id, internal=True, classes=["headerlink"], ids=[target_id])
+            term += nodes.reference(
+                "#", "#", refuri="#" + target_id, internal=True, classes=["headerlink"], ids=[target_id]
+            )
             if change_node.attributes["breaking"]:
                 breaking_notice = nodes.inline("breaking", "breaking")
                 breaking_notice.attributes["classes"].append("breaking-change")
