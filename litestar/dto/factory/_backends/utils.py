@@ -7,7 +7,7 @@ from typing_extensions import get_origin
 
 from litestar.dto.factory import Mark
 
-from .types import CollectionType, MappingType, SimpleType, TransferType, TupleType, UnionType
+from .types import CollectionType, MappingType, NestedFieldInfo, SimpleType, TransferType, TupleType, UnionType
 
 if TYPE_CHECKING:
     from typing import AbstractSet, Any, Collection, Iterable
@@ -112,76 +112,6 @@ class RenameStrategies:
         )
 
 
-def transfer_instance_data(
-    destination_type: type[T], source_instance: Struct, field_definitions: FieldDefinitionsType, dto_for: ForType
-) -> T:
-    """Create instance of ``destination_type`` with data from ``source_instance``.
-
-    Args:
-        destination_type: the model type received by the DTO on type narrowing.
-        source_instance: primitive data that has been parsed and validated via the backend.
-        field_definitions: model field definitions.
-        dto_for: indicates whether the DTO is for the request body or response.
-
-    Returns:
-        Data parsed into ``model_type``.
-    """
-    unstructured_data = {}
-    for field_definition in field_definitions:
-        transfer_type = field_definition.transfer_type
-        source_name = field_definition.serialization_name if dto_for == "data" else field_definition.name
-        destination_name = field_definition.name if dto_for == "data" else field_definition.serialization_name
-        source_value = getattr(source_instance, source_name)
-        if isinstance(transfer_type, SimpleType) and transfer_type.nested_field_info:
-            unstructured_data[destination_name] = transfer_instance_data(
-                transfer_type.parsed_type.annotation if dto_for == "data" else transfer_type.nested_field_info.model,
-                source_value,
-                transfer_type.nested_field_info.field_definitions,
-                dto_for,
-            )
-        elif isinstance(transfer_type, UnionType) and transfer_type.has_nested:
-            for inner_type in transfer_type.inner_types:
-                if (
-                    isinstance(inner_type, SimpleType)
-                    and inner_type.nested_field_info
-                    and isinstance(
-                        source_value,
-                        inner_type.nested_field_info.model if dto_for == "data" else inner_type.parsed_type.annotation,
-                    )
-                ):
-                    unstructured_data[destination_name] = transfer_instance_data(
-                        inner_type.parsed_type.annotation if dto_for == "data" else inner_type.nested_field_info.model,
-                        source_value,
-                        inner_type.nested_field_info.field_definitions,
-                        dto_for,
-                    )
-        elif isinstance(transfer_type, CollectionType) and transfer_type.has_nested:
-            if field_definition.parsed_type.origin is None:  # pragma: no cover
-                raise RuntimeError("Unexpected origin value for collection type.")
-
-            if not isinstance(transfer_type.inner_type, SimpleType):
-                raise RuntimeError("Compound inner types not yet supported")
-
-            if transfer_type.inner_type.nested_field_info is None:
-                raise RuntimeError("Inner type expected to have transfer model")
-
-            dest_type = (
-                transfer_type.inner_type.parsed_type.annotation
-                if dto_for == "data"
-                else transfer_type.inner_type.nested_field_info.model
-            )
-            unstructured_data[destination_name] = field_definition.parsed_type.origin(
-                transfer_instance_data(
-                    dest_type, item, transfer_type.inner_type.nested_field_info.field_definitions, dto_for
-                )
-                for item in source_value
-            )
-        else:
-            unstructured_data[destination_name] = source_value
-
-    return destination_type(**unstructured_data)
-
-
 def transfer_data(
     destination_type: type[T],
     source_data: Any | Collection[Any],
@@ -205,6 +135,93 @@ def transfer_data(
             for item in source_data
         )
     return transfer_instance_data(destination_type, source_data, field_definitions, dto_for)
+
+
+def transfer_instance_data(
+    destination_type: type[T], source_instance: Struct, field_definitions: FieldDefinitionsType, dto_for: ForType
+) -> T:
+    """Create instance of ``destination_type`` with data from ``source_instance``.
+
+    Args:
+        destination_type: the model type received by the DTO on type narrowing.
+        source_instance: primitive data that has been parsed and validated via the backend.
+        field_definitions: model field definitions.
+        dto_for: indicates whether the DTO is for the request body or response.
+
+    Returns:
+        Data parsed into ``model_type``.
+    """
+    unstructured_data = {}
+    for field_definition in field_definitions:
+        transfer_type = field_definition.transfer_type
+        source_name = field_definition.serialization_name if dto_for == "data" else field_definition.name
+        destination_name = field_definition.name if dto_for == "data" else field_definition.serialization_name
+        source_value = getattr(source_instance, source_name)
+        unstructured_data[destination_name] = transfer_type_data(source_value, transfer_type, dto_for)
+    return destination_type(**unstructured_data)
+
+
+def transfer_type_data(source_value: Any, transfer_type: TransferType, dto_for: ForType) -> Any:
+    if isinstance(transfer_type, SimpleType) and transfer_type.nested_field_info:
+        dest_type = transfer_type.parsed_type.annotation if dto_for == "data" else transfer_type.nested_field_info.model
+        return transfer_nested_simple_type_data(dest_type, transfer_type.nested_field_info, dto_for, source_value)
+    if isinstance(transfer_type, UnionType) and transfer_type.has_nested:
+        return transfer_nested_union_type_data(transfer_type, dto_for, source_value)
+    if isinstance(transfer_type, CollectionType) and transfer_type.has_nested:
+        return transfer_nested_collection_type_data(
+            transfer_type.parsed_type.origin, transfer_type, dto_for, source_value
+        )
+    return source_value
+
+
+def transfer_nested_collection_type_data(
+    origin_type: type[Any], transfer_type: CollectionType, dto_for: ForType, source_value: Any
+) -> Any:
+    if not isinstance(transfer_type.inner_type, SimpleType):
+        raise RuntimeError("Compound inner types not yet supported")
+
+    if transfer_type.inner_type.nested_field_info is None:
+        raise RuntimeError("Inner type expected to have transfer model")
+
+    dest_type = (
+        transfer_type.inner_type.parsed_type.annotation
+        if dto_for == "data"
+        else transfer_type.inner_type.nested_field_info.model
+    )
+    return origin_type(
+        transfer_instance_data(dest_type, item, transfer_type.inner_type.nested_field_info.field_definitions, dto_for)
+        for item in source_value
+    )
+
+
+def transfer_nested_simple_type_data(
+    destination_type: type[Any], nested_field_info: NestedFieldInfo, dto_for: ForType, source_value: Any
+) -> Any:
+    return transfer_instance_data(
+        destination_type,
+        source_value,
+        nested_field_info.field_definitions,
+        dto_for,
+    )
+
+
+def transfer_nested_union_type_data(transfer_type: UnionType, dto_for: ForType, source_value: Any) -> Any:
+    for inner_type in transfer_type.inner_types:
+        if (
+            isinstance(inner_type, SimpleType)
+            and inner_type.nested_field_info
+            and isinstance(
+                source_value,
+                inner_type.nested_field_info.model if dto_for == "data" else inner_type.parsed_type.annotation,
+            )
+        ):
+            return transfer_instance_data(
+                inner_type.parsed_type.annotation if dto_for == "data" else inner_type.nested_field_info.model,
+                source_value,
+                inner_type.nested_field_info.field_definitions,
+                dto_for,
+            )
+    return source_value
 
 
 def create_transfer_model_type_annotation(transfer_type: TransferType) -> Any:
