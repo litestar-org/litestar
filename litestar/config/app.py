@@ -31,6 +31,7 @@ if TYPE_CHECKING:
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
         AfterResponseHookHandler,
+        AnyCallable,
         BeforeMessageSendHookHandler,
         BeforeRequestHookHandler,
         ControllerRouterHandler,
@@ -45,6 +46,7 @@ if TYPE_CHECKING:
         TypeEncodersMap,
     )
     from litestar.types.empty import EmptyType
+
 
 __all__ = ("AppConfig",)
 
@@ -121,7 +123,7 @@ class AppConfig:
     """If set this enables the builtin CSRF middleware."""
     debug: bool = field(default=False)
     """If ``True``, app errors rendered as HTML with a stack trace."""
-    dependencies: dict[str, Provide] = field(default_factory=dict)
+    dependencies: dict[str, Provide | AnyCallable] = field(default_factory=dict)
     """A string keyed dictionary of dependency :class:`Provider <.di.Provide>` instances."""
     dto: type[DTOInterface] | None | EmptyType = field(default=Empty)
     """:class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and validation of request data."""
