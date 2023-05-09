@@ -24,7 +24,7 @@ __all__ = (
     "build_annotation_for_backend",
     "create_transfer_model_type_annotation",
     "should_exclude_field",
-    "_transfer_data",
+    "transfer_data",
 )
 
 T = TypeVar("T")
@@ -112,7 +112,7 @@ class RenameStrategies:
         )
 
 
-def _transfer_instance_data(
+def transfer_instance_data(
     destination_type: type[T], source_instance: Struct, field_definitions: FieldDefinitionsType, dto_for: ForType
 ) -> T:
     """Create instance of ``destination_type`` with data from ``source_instance``.
@@ -127,36 +127,32 @@ def _transfer_instance_data(
         Data parsed into ``model_type``.
     """
     unstructured_data = {}
-    for field_definition in field_definitions.values():
+    for field_definition in field_definitions:
         transfer_type = field_definition.transfer_type
-        source_name = (
-            field_definition.serialization_name or field_definition.name if dto_for == "data" else field_definition.name
-        )
-        destination_name = (
-            field_definition.name if dto_for == "data" else field_definition.serialization_name or field_definition.name
-        )
+        source_name = field_definition.serialization_name if dto_for == "data" else field_definition.name
+        destination_name = field_definition.name if dto_for == "data" else field_definition.serialization_name
         source_value = getattr(source_instance, source_name)
-        if isinstance(transfer_type, SimpleType) and transfer_type.transfer_model:
-            unstructured_data[destination_name] = _transfer_instance_data(
-                transfer_type.parsed_type.annotation if dto_for == "data" else transfer_type.transfer_model.model,
+        if isinstance(transfer_type, SimpleType) and transfer_type.nested_field_info:
+            unstructured_data[destination_name] = transfer_instance_data(
+                transfer_type.parsed_type.annotation if dto_for == "data" else transfer_type.nested_field_info.model,
                 source_value,
-                transfer_type.transfer_model.field_definitions,
+                transfer_type.nested_field_info.field_definitions,
                 dto_for,
             )
         elif isinstance(transfer_type, UnionType) and transfer_type.has_nested:
             for inner_type in transfer_type.inner_types:
                 if (
                     isinstance(inner_type, SimpleType)
-                    and inner_type.transfer_model
+                    and inner_type.nested_field_info
                     and isinstance(
                         source_value,
-                        inner_type.transfer_model.model if dto_for == "data" else inner_type.parsed_type.annotation,
+                        inner_type.nested_field_info.model if dto_for == "data" else inner_type.parsed_type.annotation,
                     )
                 ):
-                    unstructured_data[destination_name] = _transfer_instance_data(
-                        inner_type.parsed_type.annotation if dto_for == "data" else inner_type.transfer_model.model,
+                    unstructured_data[destination_name] = transfer_instance_data(
+                        inner_type.parsed_type.annotation if dto_for == "data" else inner_type.nested_field_info.model,
                         source_value,
-                        inner_type.transfer_model.field_definitions,
+                        inner_type.nested_field_info.field_definitions,
                         dto_for,
                     )
         elif isinstance(transfer_type, CollectionType) and transfer_type.has_nested:
@@ -166,17 +162,17 @@ def _transfer_instance_data(
             if not isinstance(transfer_type.inner_type, SimpleType):
                 raise RuntimeError("Compound inner types not yet supported")
 
-            if transfer_type.inner_type.transfer_model is None:
+            if transfer_type.inner_type.nested_field_info is None:
                 raise RuntimeError("Inner type expected to have transfer model")
 
             dest_type = (
                 transfer_type.inner_type.parsed_type.annotation
                 if dto_for == "data"
-                else transfer_type.inner_type.transfer_model.model
+                else transfer_type.inner_type.nested_field_info.model
             )
             unstructured_data[destination_name] = field_definition.parsed_type.origin(
-                _transfer_instance_data(
-                    dest_type, item, transfer_type.inner_type.transfer_model.field_definitions, dto_for
+                transfer_instance_data(
+                    dest_type, item, transfer_type.inner_type.nested_field_info.field_definitions, dto_for
                 )
                 for item in source_value
             )
@@ -186,7 +182,7 @@ def _transfer_instance_data(
     return destination_type(**unstructured_data)
 
 
-def _transfer_data(
+def transfer_data(
     destination_type: type[T],
     source_data: Any | Collection[Any],
     field_definitions: FieldDefinitionsType,
@@ -205,10 +201,10 @@ def _transfer_data(
     """
     if isinstance(source_data, CollectionsCollection):
         return type(source_data)(
-            _transfer_data(destination_type, item, field_definitions, dto_for)  # type:ignore[call-arg]
+            transfer_data(destination_type, item, field_definitions, dto_for)  # type:ignore[call-arg]
             for item in source_data
         )
-    return _transfer_instance_data(destination_type, source_data, field_definitions, dto_for)
+    return transfer_instance_data(destination_type, source_data, field_definitions, dto_for)
 
 
 def create_transfer_model_type_annotation(transfer_type: TransferType) -> Any:
@@ -218,26 +214,26 @@ def create_transfer_model_type_annotation(transfer_type: TransferType) -> Any:
     type to reconstruct the type annotation for the transfer model.
     """
     if isinstance(transfer_type, SimpleType):
-        if transfer_type.transfer_model:
-            return transfer_type.transfer_model.model
+        if transfer_type.nested_field_info:
+            return transfer_type.nested_field_info.model
         return transfer_type.parsed_type.annotation
 
     if isinstance(transfer_type, CollectionType):
-        return _create_transfer_model_collection_type(transfer_type)
+        return create_transfer_model_collection_type(transfer_type)
 
     if isinstance(transfer_type, MappingType):
-        return _create_transfer_model_mapping_type(transfer_type)
+        return create_transfer_model_mapping_type(transfer_type)
 
     if isinstance(transfer_type, TupleType):
-        return _create_transfer_model_tuple_type(transfer_type)
+        return create_transfer_model_tuple_type(transfer_type)
 
     if isinstance(transfer_type, UnionType):
-        return _create_transfer_model_union_type(transfer_type)
+        return create_transfer_model_union_type(transfer_type)
 
     raise RuntimeError(f"Unexpected transfer type: {type(transfer_type)}")
 
 
-def _create_transfer_model_collection_type(transfer_type: CollectionType) -> Any:
+def create_transfer_model_collection_type(transfer_type: CollectionType) -> Any:
     generic_collection_type = transfer_type.parsed_type.safe_generic_origin
     inner_type = create_transfer_model_type_annotation(transfer_type.inner_type)
     if transfer_type.parsed_type.origin is tuple:
@@ -245,17 +241,17 @@ def _create_transfer_model_collection_type(transfer_type: CollectionType) -> Any
     return generic_collection_type[inner_type]
 
 
-def _create_transfer_model_tuple_type(transfer_type: TupleType) -> Any:
+def create_transfer_model_tuple_type(transfer_type: TupleType) -> Any:
     inner_types = tuple(create_transfer_model_type_annotation(t) for t in transfer_type.inner_types)
     return transfer_type.parsed_type.safe_generic_origin[inner_types]
 
 
-def _create_transfer_model_union_type(transfer_type: UnionType) -> Any:
+def create_transfer_model_union_type(transfer_type: UnionType) -> Any:
     inner_types = tuple(create_transfer_model_type_annotation(t) for t in transfer_type.inner_types)
     return transfer_type.parsed_type.safe_generic_origin[inner_types]
 
 
-def _create_transfer_model_mapping_type(transfer_type: MappingType) -> Any:
+def create_transfer_model_mapping_type(transfer_type: MappingType) -> Any:
     key_type = create_transfer_model_type_annotation(transfer_type.key_type)
     value_type = create_transfer_model_type_annotation(transfer_type.value_type)
     return transfer_type.parsed_type.safe_generic_origin[key_type, value_type]

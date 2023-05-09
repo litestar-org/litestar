@@ -43,11 +43,13 @@ def _create_struct_field_def(
 
 def _create_struct_for_field_definitions(model_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
     struct_fields: list[tuple[str, type] | tuple[str, type, MsgspecField]] = []
-    for v in field_definitions.values():
-        field_name = v.serialization_name or v.name
+    for field_def in field_definitions:
+        field_name = field_def.serialization_name or field_def.name
         struct_fields.append(
             _create_struct_field_def(
-                field_name, create_transfer_model_type_annotation(v.transfer_type), _create_msgspec_field(v)
+                field_name,
+                create_transfer_model_type_annotation(field_def.transfer_type),
+                _create_msgspec_field(field_def),
             )
         )
     return defstruct(model_name, struct_fields, frozen=True, kw_only=True)

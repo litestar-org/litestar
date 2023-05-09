@@ -252,22 +252,22 @@ dto_type = DataclassDTO[Model]
         dto_for="data",
         parsed_type=ParsedType(module.Model),
         field_definition_generator=DataclassDTO.generate_field_definitions,
-        nested_field_detector=DataclassDTO.detect_nested_field,
+        is_nested_field=DataclassDTO.detect_nested_field,
         model_type=module.Model,
     )
     parsed = MsgspecDTOBackend(context=ctx).parsed_field_definitions
-    assert "a" not in parsed
-    assert "b" in parsed
-    b_transfer_type = parsed["b"].transfer_type
+    assert not any(f.name == "a" for f in parsed)
+    assert parsed[0].name == "b"
+    b_transfer_type = parsed[0].transfer_type
     assert isinstance(b_transfer_type, SimpleType)
-    b_transfer_model = b_transfer_type.transfer_model
-    assert b_transfer_model is not None
-    assert "c" not in b_transfer_model.field_definitions
-    assert "d" in b_transfer_model.field_definitions
-    b_d_transfer_type = b_transfer_model.field_definitions["d"].transfer_type
+    b_nested_info = b_transfer_type.nested_field_info
+    assert b_nested_info is not None
+    assert not any(f.name == "c" for f in b_nested_info.field_definitions)
+    assert b_nested_info.field_definitions[0].name == "d"
+    b_d_transfer_type = b_nested_info.field_definitions[0].transfer_type
     assert isinstance(b_d_transfer_type, CollectionType)
     assert isinstance(b_d_transfer_type.inner_type, SimpleType)
-    b_d_transfer_model = b_d_transfer_type.inner_type.transfer_model
-    assert b_d_transfer_model is not None
-    assert "e" not in b_d_transfer_model.field_definitions
-    assert "f" in b_d_transfer_model.field_definitions
+    b_d_nested_info = b_d_transfer_type.inner_type.nested_field_info
+    assert b_d_nested_info is not None
+    assert not any(f.name == "e" for f in b_d_nested_info.field_definitions)
+    assert b_d_nested_info.field_definitions[0].name == "f"

@@ -11,8 +11,7 @@ from litestar.types import Empty
 if TYPE_CHECKING:
     from typing import Any
 
-    from litestar.dto.factory._backends.types import FieldDefinitionsType
-    from litestar.dto.factory.types import FieldDefinition
+    from litestar.dto.factory._backends.types import FieldDefinitionsType, TransferFieldDefinition
 
 __all__ = ("_create_model_for_field_definitions",)
 
@@ -26,7 +25,7 @@ class _OrmModeBase(BaseModel):
         orm_mode = True
 
 
-def _create_field_info(field_definition: FieldDefinition) -> FieldInfo:
+def _create_field_info(field_definition: TransferFieldDefinition) -> FieldInfo:
     kws: dict[str, Any] = {}
     if field_definition.default is not Empty:
         kws["default"] = field_definition.default
@@ -40,8 +39,11 @@ def _create_field_info(field_definition: FieldDefinition) -> FieldInfo:
 
 def _create_model_for_field_definitions(model_name: str, field_definitions: FieldDefinitionsType) -> type[BaseModel]:
     model_fields: dict[str, tuple[type, FieldInfo]] = {}
-    for k, v in field_definitions.items():
-        model_fields[k] = (create_transfer_model_type_annotation(v.transfer_type), _create_field_info(v))
+    for field_def in field_definitions:
+        model_fields[field_def.serialization_name] = (
+            create_transfer_model_type_annotation(field_def.transfer_type),
+            _create_field_info(field_def),
+        )
     return create_model(
         model_name,
         __config__=None,

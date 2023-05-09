@@ -1,27 +1,29 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from litestar.dto.factory.types import FieldDefinition
 
 if TYPE_CHECKING:
-    from typing import Any, Mapping
+    from typing import Any
 
     from typing_extensions import TypeAlias
 
     from litestar.utils.signature import ParsedType
 
 
-@dataclass
-class TransferModel:
+@dataclass(frozen=True)
+class NestedFieldInfo:
     """Type for representing fields and model type of nested model type."""
+
+    __slots__ = ("model", "field_definitions")
 
     model: type[Any]
     field_definitions: FieldDefinitionsType
 
 
-@dataclass
+@dataclass(frozen=True)
 class TransferType:
     """Type for representing model types for data transfer."""
 
@@ -30,17 +32,17 @@ class TransferType:
     parsed_type: ParsedType
 
 
-@dataclass
+@dataclass(frozen=True)
 class SimpleType(TransferType):
     """Represents indivisible, non-composite types."""
 
-    __slots__ = ("transfer_model",)
+    __slots__ = ("nested_field_info",)
 
-    transfer_model: TransferModel | None
+    nested_field_info: NestedFieldInfo | None
     """If the type is a 'nested' type, this is the model generated for transfer to/from it."""
 
 
-@dataclass
+@dataclass(frozen=True)
 class CompositeType(TransferType):
     """A type that is made up of other types."""
 
@@ -50,30 +52,38 @@ class CompositeType(TransferType):
     """Whether the type represents nested model types within itself."""
 
 
-@dataclass
+@dataclass(frozen=True)
 class UnionType(CompositeType):
     """Type for representing union types for data transfer."""
+
+    __slots__ = ("inner_types",)
 
     inner_types: tuple[TransferType, ...]
 
 
-@dataclass
+@dataclass(frozen=True)
 class CollectionType(CompositeType):
     """Type for representing collection types for data transfer."""
+
+    __slots__ = ("inner_type",)
 
     inner_type: TransferType
 
 
-@dataclass
+@dataclass(frozen=True)
 class TupleType(CompositeType):
     """Type for representing tuples for data transfer."""
+
+    __slots__ = ("inner_types",)
 
     inner_types: tuple[TransferType, ...]
 
 
-@dataclass
+@dataclass(frozen=True)
 class MappingType(CompositeType):
     """Type for representing mappings for data transfer."""
+
+    __slots__ = ("key_type", "value_type")
 
     key_type: TransferType
     value_type: TransferType
@@ -81,12 +91,13 @@ class MappingType(CompositeType):
 
 @dataclass(frozen=True)
 class TransferFieldDefinition(FieldDefinition):
+    __slots__ = ("transfer_type", "serialization_name")
+
     transfer_type: TransferType
     """Type of the field for transfer."""
-    serialization_name: str | None = field(default=None)
+    serialization_name: str
     """Name of the field as it should feature on the transfer model."""
 
 
-"""For typing where any field definition is allowed."""
-FieldDefinitionsType: TypeAlias = "Mapping[str, TransferFieldDefinition]"
+FieldDefinitionsType: TypeAlias = "tuple[TransferFieldDefinition, ...]"
 """Generic representation of names and types."""

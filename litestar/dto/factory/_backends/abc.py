@@ -8,23 +8,23 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
-from litestar.utils.helpers import get_fqdn
+from litestar.utils.helpers import get_fully_qualified_class_name
 
 from .types import (
     CollectionType,
     CompositeType,
     MappingType,
+    NestedFieldInfo,
     SimpleType,
     TransferFieldDefinition,
-    TransferModel,
     TupleType,
     UnionType,
 )
 from .utils import (
     RenameStrategies,
-    _transfer_data,
     build_annotation_for_backend,
     should_exclude_field,
+    transfer_data,
 )
 
 if TYPE_CHECKING:
@@ -52,8 +52,8 @@ class BackendContext:
         "config",
         "dto_for",
         "field_definition_generator",
+        "is_nested_field",
         "model_type",
-        "nested_field_detector",
         "parsed_type",
     )
 
@@ -63,7 +63,7 @@ class BackendContext:
         dto_for: ForType,
         parsed_type: ParsedType,
         field_definition_generator: Callable[[Any], Generator[FieldDefinition, None, None]],
-        nested_field_detector: Callable[[ParsedType], bool],
+        is_nested_field: Callable[[ParsedType], bool],
         model_type: type[Any],
     ) -> None:
         """Create a backend context.
@@ -74,7 +74,7 @@ class BackendContext:
             parsed_type: Parsed type.
             field_definition_generator: Generator that produces
                 :class:`FieldDefinition <.dto.factory.types.FieldDefinition>` instances given ``model_type``.
-            nested_field_detector: Function that detects if a field is nested.
+            is_nested_field: Function that detects if a field is nested.
             model_type: Model type.
         """
         self.config: Final[DTOConfig] = dto_config
@@ -83,12 +83,16 @@ class BackendContext:
         self.field_definition_generator: Final[
             Callable[[Any], Generator[FieldDefinition, None, None]]
         ] = field_definition_generator
-        self.nested_field_detector: Final[Callable[[ParsedType], bool]] = nested_field_detector
+        self.is_nested_field: Final[Callable[[ParsedType], bool]] = is_nested_field
         self.model_type: Final[type[Any]] = model_type
 
 
-class _ExceedNestedDepthError(Exception):
-    """Raised when a nested type exceeds the maximum allowed depth."""
+class NestedDepthExceededError(Exception):
+    """Raised when a nested type exceeds the maximum allowed depth.
+
+    Not an exception that is intended to be raised into userland, rather a signal to the process that is iterating over
+    the field definitions that the current field should be skipped.
+    """
 
 
 class AbstractDTOBackend(ABC, Generic[BackendT]):
@@ -109,7 +113,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         self.context = context
         self.parsed_field_definitions = self.parse_model(context.model_type, context.config.exclude)
         self.transfer_model_type = self.create_transfer_model_type(
-            get_fqdn(context.model_type), self.parsed_field_definitions
+            get_fully_qualified_class_name(context.model_type), self.parsed_field_definitions
         )
         self.annotation = build_annotation_for_backend(context.parsed_type.annotation, self.transfer_model_type)
 
@@ -143,7 +147,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             Add a new field called "new_field", that may be `None`:
             {"new_field": (str | None, None)}
         """
-        defined_fields: dict[str, TransferFieldDefinition] = {}
+        defined_fields = []
         for field_definition in self.context.field_definition_generator(model_type):
             if should_exclude_field(field_definition, exclude, self.context.dto_for):
                 continue
@@ -153,10 +157,10 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
                     field_definition.parsed_type,
                     exclude,
                     field_definition.name,
-                    field_definition.unique_name,
+                    field_definition.unique_name(),
                     nested_depth,
                 )
-            except _ExceedNestedDepthError:
+            except NestedDepthExceededError:
                 continue
 
             if rename := self.context.config.rename_fields.get(field_definition.name):
@@ -172,12 +176,12 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
                 parsed_type=field_definition.parsed_type,
                 default_factory=field_definition.default_factory,
                 serialization_name=serialization_name,
-                model_fqdn=field_definition.model_fqdn,
+                unique_model_name=field_definition.unique_model_name,
                 transfer_type=transfer_type,
                 dto_field=field_definition.dto_field,
             )
-            defined_fields[transfer_field_definition.name] = transfer_field_definition
-        return defined_fields
+            defined_fields.append(transfer_field_definition)
+        return tuple(defined_fields)
 
     @abstractmethod
     def create_transfer_model_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[BackendT]:
@@ -225,7 +229,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         Returns:
             Instance or collection of ``model_type`` instances.
         """
-        return _transfer_data(
+        return transfer_data(
             self.context.model_type,
             self.parse_builtins(builtins, connection_context),
             self.parsed_field_definitions,
@@ -242,7 +246,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         Returns:
             Instance or collection of ``model_type`` instances.
         """
-        return _transfer_data(
+        return transfer_data(
             self.context.model_type, self.parse_raw(raw, connection_context), self.parsed_field_definitions, "data"
         )
 
@@ -256,7 +260,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         Returns:
             Encoded data.
         """
-        return _transfer_data(
+        return transfer_data(
             self.transfer_model_type, data, self.parsed_field_definitions, "return"  # type: ignore[arg-type]
         )
 
@@ -284,18 +288,18 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         if parsed_type.is_collection:
             return self._create_collection_type(parsed_type, exclude, unique_name, nested_depth)
 
-        transfer_model: TransferModel | None = None
-        if self.context.nested_field_detector(parsed_type):
+        transfer_model: NestedFieldInfo | None = None
+        if self.context.is_nested_field(parsed_type):
             if nested_depth == self.context.config.max_nested_depth:
-                raise _ExceedNestedDepthError()
+                raise NestedDepthExceededError()
 
             nested_field_definitions = self.parse_model(parsed_type.annotation, exclude, nested_depth + 1)
-            transfer_model = TransferModel(
+            transfer_model = NestedFieldInfo(
                 model=self.create_transfer_model_type(unique_name, nested_field_definitions),
                 field_definitions=nested_field_definitions,
             )
 
-        return SimpleType(parsed_type, transfer_model=transfer_model)
+        return SimpleType(parsed_type, nested_field_info=transfer_model)
 
     def _create_collection_type(
         self, parsed_type: ParsedType, exclude: AbstractSet[str], unique_name: str, nested_depth: int
@@ -387,5 +391,5 @@ def _enumerate_name(name: str, index: int) -> str:
 def _determine_has_nested(transfer_type: SimpleType | CompositeType) -> bool:
     """Determine if a transfer type has nested types."""
     if isinstance(transfer_type, SimpleType):
-        return bool(transfer_type.transfer_model)
+        return bool(transfer_type.nested_field_info)
     return transfer_type.has_nested

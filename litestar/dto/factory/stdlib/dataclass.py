@@ -8,7 +8,7 @@ from litestar.dto.factory.field import DTO_FIELD_META_KEY
 from litestar.dto.factory.types import FieldDefinition
 from litestar.dto.factory.utils import get_model_type_hints
 from litestar.types.empty import Empty
-from litestar.utils.helpers import get_fqdn
+from litestar.utils.helpers import get_fully_qualified_class_name
 
 if TYPE_CHECKING:
     from typing import ClassVar, Collection, Generator
@@ -47,7 +47,7 @@ class DataclassDTO(AbstractDTOFactory[DataT], Generic[DataT]):
                 default=default,
                 default_factory=default_factory,
                 dto_field=dc_field.metadata.get(DTO_FIELD_META_KEY),
-                model_fqdn=get_fqdn(model_type),
+                unique_model_name=get_fully_qualified_class_name(model_type),
             )
 
             yield field_def
