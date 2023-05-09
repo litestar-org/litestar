@@ -11,7 +11,9 @@ Usage
     request-data
     responses
     dependency-injection
+    dto/index
     websockets
+    channels
     middleware/index
     security/index
     stores

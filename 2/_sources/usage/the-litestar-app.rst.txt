@@ -422,6 +422,7 @@ Parameters that support layering are:
 * :ref:`before_request <before_request>`
 * :ref:`cache_control <usage/responses:cache control>`
 * :doc:`dependencies </usage/dependency-injection>`
+* :doc:`dto </usage/dto/0-basic-use>`
 * :ref:`etag <usage/responses:etag>`
 * :doc:`exception_handlers </usage/exceptions>`
 * :doc:`guards </usage/security/guards>`
@@ -430,6 +431,7 @@ Parameters that support layering are:
 * :ref:`response_class <usage/responses:custom responses>`
 * :ref:`response_cookies <usage/responses:response cookies>`
 * :ref:`response_headers <usage/responses:response headers>`
+* :doc:`return_dto </usage/dto/0-basic-use>`
 * ``security``
 * ``tags``
 * ``type_encoders``
