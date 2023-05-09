@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Dict, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Union
 
 import pytest
 
@@ -134,11 +134,7 @@ def create_transfer_type(
 
 
 @pytest.mark.parametrize(
-    (
-        "parsed_type",
-        "should_have_nested",
-        "has_nested_field_info",
-    ),
+    ("parsed_type", "should_have_nested", "has_nested_field_info"),
     [
         (ParsedType(Union[Model, None]), True, (True, False)),
         (ParsedType(Union[Model, str]), True, (True, False)),
@@ -164,11 +160,7 @@ def test_create_transfer_type_union(
 
 
 @pytest.mark.parametrize(
-    (
-        "parsed_type",
-        "should_have_nested",
-        "has_nested_field_info",
-    ),
+    ("parsed_type", "should_have_nested", "has_nested_field_info"),
     [
         (ParsedType(Tuple[Model, None]), True, (True, False)),
         (ParsedType(Tuple[Model, str]), True, (True, False)),
@@ -203,11 +195,7 @@ def test_create_transfer_type_tuple(
 
 
 @pytest.mark.parametrize(
-    (
-        "parsed_type",
-        "should_have_nested",
-        "has_nested_field_info",
-    ),
+    ("parsed_type", "should_have_nested", "has_nested_field_info"),
     [
         (ParsedType(Dict[Model, None]), True, (True, False)),
         (ParsedType(Dict[Model, str]), True, (True, False)),
@@ -230,3 +218,33 @@ def test_create_transfer_type_mapping(
     for inner_type, has_nested in zip((key_type, value_type), has_nested_field_info):
         assert isinstance(inner_type, SimpleType)
         assert bool(inner_type.nested_field_info) is has_nested
+
+
+@pytest.mark.parametrize(
+    ("parsed_type", "should_have_nested", "has_nested_field_info"),
+    [(ParsedType(List[Model]), True, True), (ParsedType(List[int]), False, False)],
+)
+def test_create_transfer_type_collection(
+    parsed_type: ParsedType, should_have_nested: bool, has_nested_field_info: bool, backend: AbstractDTOBackend
+) -> None:
+    transfer_type = create_transfer_type(backend, parsed_type)
+    assert isinstance(transfer_type, CollectionType)
+    assert transfer_type.has_nested is should_have_nested
+    inner_type = transfer_type.inner_type
+    assert isinstance(inner_type, SimpleType)
+    assert bool(inner_type.nested_field_info) is has_nested_field_info
+
+
+def test_create_collection_type_nested_union(backend: AbstractDTOBackend) -> None:
+    parsed_type = ParsedType(List[Union[Model, Model2]])
+    transfer_type = create_transfer_type(backend, parsed_type)
+    assert isinstance(transfer_type, CollectionType)
+    assert transfer_type.has_nested is True
+    inner_type = transfer_type.inner_type
+    assert isinstance(inner_type, UnionType)
+    assert inner_type.has_nested is True
+    inner_types = inner_type.inner_types
+    assert len(inner_types) == len(inner_type.parsed_type.inner_types)
+    for inner_type in inner_types:
+        assert isinstance(inner_type, SimpleType)
+        assert bool(inner_type.nested_field_info) is True
