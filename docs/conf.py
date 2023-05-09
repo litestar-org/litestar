@@ -137,7 +137,7 @@ ignore_missing_refs = {
     re.compile(r"litestar\.contrib\.sqlalchemy\.*"): re.compile(
         ".*(ConnectionT|EngineT|SessionT|SessionMakerT|SlotsBase|DataT)"
     ),
-    re.compile(r"litestar\.dto.*"): re.compile(".*DataT|.*ParsedType"),
+    re.compile(r"litestar\.dto.*"): re.compile(".*DataT|.*ParsedType|Empty"),
 }
 
 
