@@ -7,7 +7,16 @@ from typing_extensions import get_origin
 
 from litestar.dto.factory import Mark
 
-from .types import CollectionType, MappingType, NestedFieldInfo, SimpleType, TransferType, TupleType, UnionType
+from .types import (
+    CollectionType,
+    CompositeType,
+    MappingType,
+    NestedFieldInfo,
+    SimpleType,
+    TransferType,
+    TupleType,
+    UnionType,
+)
 
 if TYPE_CHECKING:
     from typing import AbstractSet, Any, Collection, Iterable
@@ -193,13 +202,12 @@ def transfer_nested_simple_type_data(
 
 def transfer_nested_union_type_data(transfer_type: UnionType, dto_for: ForType, source_value: Any) -> Any:
     for inner_type in transfer_type.inner_types:
-        if (
-            isinstance(inner_type, SimpleType)
-            and inner_type.nested_field_info
-            and isinstance(
-                source_value,
-                inner_type.nested_field_info.model if dto_for == "data" else inner_type.parsed_type.annotation,
-            )
+        if isinstance(inner_type, CompositeType):
+            raise RuntimeError("Composite inner types not (yet) supported for nested unions.")
+
+        if inner_type.nested_field_info and isinstance(
+            source_value,
+            inner_type.nested_field_info.model if dto_for == "data" else inner_type.parsed_type.annotation,
         ):
             return transfer_instance_data(
                 inner_type.parsed_type.annotation if dto_for == "data" else inner_type.nested_field_info.model,

@@ -58,7 +58,7 @@ class UnionType(CompositeType):
 
     __slots__ = ("inner_types",)
 
-    inner_types: tuple[TransferType, ...]
+    inner_types: tuple[CompositeType | SimpleType, ...]
 
 
 @dataclass(frozen=True)
@@ -67,7 +67,7 @@ class CollectionType(CompositeType):
 
     __slots__ = ("inner_type",)
 
-    inner_type: TransferType
+    inner_type: CompositeType | SimpleType
 
 
 @dataclass(frozen=True)
@@ -76,7 +76,7 @@ class TupleType(CompositeType):
 
     __slots__ = ("inner_types",)
 
-    inner_types: tuple[TransferType, ...]
+    inner_types: tuple[CompositeType | SimpleType, ...]
 
 
 @dataclass(frozen=True)
@@ -85,8 +85,8 @@ class MappingType(CompositeType):
 
     __slots__ = ("key_type", "value_type")
 
-    key_type: TransferType
-    value_type: TransferType
+    key_type: CompositeType | SimpleType
+    value_type: CompositeType | SimpleType
 
 
 @dataclass(frozen=True)
