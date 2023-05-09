@@ -2619,18 +2619,18 @@ files = [
 
 [[package]]
 name = "redis"
-version = "4.5.5"
+version = "4.5.4"
 description = "Python client for Redis database and key-value store"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "redis-4.5.5-py3-none-any.whl", hash = "sha256:77929bc7f5dab9adf3acba2d3bb7d7658f1e0c2f1cafe7eb36434e751c471119"},
-    {file = "redis-4.5.5.tar.gz", hash = "sha256:dc87a0bdef6c8bfe1ef1e1c40be7034390c2ae02d92dcd0c7ca1729443899880"},
+    {file = "redis-4.5.4-py3-none-any.whl", hash = "sha256:2c19e6767c474f2e85167909061d525ed65bea9301c0770bb151e041b7ac89a2"},
+    {file = "redis-4.5.4.tar.gz", hash = "sha256:73ec35da4da267d6847e47f68730fdd5f62e2ca69e3ef5885c6a78a9374c3893"},
 ]
 
 [package.dependencies]
-async-timeout = {version = ">=4.0.2", markers = "python_full_version <= \"3.11.2\""}
+async-timeout = {version = ">=4.0.2", markers = "python_version <= \"3.11.2\""}
 hiredis = {version = ">=1.0.0", optional = true, markers = "extra == \"hiredis\""}
 
 [package.extras]
@@ -3584,4 +3584,4 @@ tortoise-orm = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "4920800c734ea75febf1be64e57f69643142a061859b4b00d4c5e705abbd7520"
+content-hash = "811b4b0ee31732fde42535744cd1abc00b72614e2b75ef12237c565ba10b3924"
