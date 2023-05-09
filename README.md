@@ -53,7 +53,7 @@ pip install litestar
 You can check out the alpha version by instead running
 
 ```shell
-pip install litestar==2.0.0alpha3
+pip install litestar==2.0.0alpha6
 ```
 
 ## Quick Start
