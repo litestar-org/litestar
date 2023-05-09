@@ -8,7 +8,7 @@ from litestar.dto.factory.types import FieldDefinition
 if TYPE_CHECKING:
     from typing import Any
 
-    from typing_extensions import TypeAlias
+    from typing_extensions import Self, TypeAlias
 
     from litestar.utils.signature import ParsedType
 
@@ -97,6 +97,21 @@ class TransferFieldDefinition(FieldDefinition):
     """Type of the field for transfer."""
     serialization_name: str
     """Name of the field as it should feature on the transfer model."""
+
+    @classmethod
+    def from_field_definition(
+        cls, field_definition: FieldDefinition, transfer_type: TransferType, serialization_name: str
+    ) -> Self:
+        return cls(
+            name=field_definition.name,
+            default=field_definition.default,
+            parsed_type=field_definition.parsed_type,
+            default_factory=field_definition.default_factory,
+            serialization_name=serialization_name,
+            unique_model_name=field_definition.unique_model_name,
+            transfer_type=transfer_type,
+            dto_field=field_definition.dto_field,
+        )
 
 
 FieldDefinitionsType: TypeAlias = "tuple[TransferFieldDefinition, ...]"

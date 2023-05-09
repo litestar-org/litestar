@@ -1,13 +1,20 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, Tuple, Union
 
 import pytest
 
 from litestar.dto.factory import DTOConfig
 from litestar.dto.factory._backends.abc import AbstractDTOBackend, BackendContext
-from litestar.dto.factory._backends.types import CollectionType, CompositeType, SimpleType, TupleType, UnionType
+from litestar.dto.factory._backends.types import (
+    CollectionType,
+    CompositeType,
+    MappingType,
+    SimpleType,
+    TupleType,
+    UnionType,
+)
 from litestar.dto.factory.types import FieldDefinition
 from litestar.types.empty import Empty
 from litestar.utils.signature import ParsedType
@@ -193,3 +200,33 @@ def test_create_transfer_type_tuple(
         for inner_type, has_nested in zip(inner_types, has_nested_field_info):
             assert isinstance(inner_type, SimpleType)
             assert bool(inner_type.nested_field_info) is has_nested
+
+
+@pytest.mark.parametrize(
+    (
+        "parsed_type",
+        "should_have_nested",
+        "has_nested_field_info",
+    ),
+    [
+        (ParsedType(Dict[Model, None]), True, (True, False)),
+        (ParsedType(Dict[Model, str]), True, (True, False)),
+        (ParsedType(Dict[Model, int]), True, (True, False)),
+        (ParsedType(Dict[Model, Model2]), True, (True, True)),
+        (ParsedType(Dict[int, str]), False, (False, False)),
+    ],
+)
+def test_create_transfer_type_mapping(
+    parsed_type: ParsedType,
+    should_have_nested: bool,
+    has_nested_field_info: tuple[bool, ...],
+    backend: AbstractDTOBackend,
+) -> None:
+    transfer_type = create_transfer_type(backend, parsed_type)
+    assert isinstance(transfer_type, MappingType)
+    assert transfer_type.has_nested is should_have_nested
+    key_type = transfer_type.key_type
+    value_type = transfer_type.value_type
+    for inner_type, has_nested in zip((key_type, value_type), has_nested_field_info):
+        assert isinstance(inner_type, SimpleType)
+        assert bool(inner_type.nested_field_info) is has_nested

@@ -170,15 +170,10 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             else:
                 serialization_name = field_definition.name
 
-            transfer_field_definition = TransferFieldDefinition(
-                name=field_definition.name,
-                default=field_definition.default,
-                parsed_type=field_definition.parsed_type,
-                default_factory=field_definition.default_factory,
+            transfer_field_definition = TransferFieldDefinition.from_field_definition(
+                field_definition=field_definition,
                 serialization_name=serialization_name,
-                unique_model_name=field_definition.unique_model_name,
                 transfer_type=transfer_type,
-                dto_field=field_definition.dto_field,
             )
             defined_fields.append(transfer_field_definition)
         return tuple(defined_fields)
