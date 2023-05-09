@@ -252,7 +252,7 @@ dto_type = DataclassDTO[Model]
         dto_for="data",
         parsed_type=ParsedType(module.Model),
         field_definition_generator=DataclassDTO.generate_field_definitions,
-        is_nested_field=DataclassDTO.detect_nested_field,
+        is_nested_field_predicate=DataclassDTO.detect_nested_field,
         model_type=module.Model,
     )
     parsed = MsgspecDTOBackend(context=ctx).parsed_field_definitions

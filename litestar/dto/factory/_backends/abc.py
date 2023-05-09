@@ -52,7 +52,7 @@ class BackendContext:
         "config",
         "dto_for",
         "field_definition_generator",
-        "is_nested_field",
+        "is_nested_field_predicate",
         "model_type",
         "parsed_type",
     )
@@ -63,7 +63,7 @@ class BackendContext:
         dto_for: ForType,
         parsed_type: ParsedType,
         field_definition_generator: Callable[[Any], Generator[FieldDefinition, None, None]],
-        is_nested_field: Callable[[ParsedType], bool],
+        is_nested_field_predicate: Callable[[ParsedType], bool],
         model_type: type[Any],
     ) -> None:
         """Create a backend context.
@@ -74,7 +74,7 @@ class BackendContext:
             parsed_type: Parsed type.
             field_definition_generator: Generator that produces
                 :class:`FieldDefinition <.dto.factory.types.FieldDefinition>` instances given ``model_type``.
-            is_nested_field: Function that detects if a field is nested.
+            is_nested_field_predicate: Function that detects if a field is nested.
             model_type: Model type.
         """
         self.config: Final[DTOConfig] = dto_config
@@ -83,7 +83,7 @@ class BackendContext:
         self.field_definition_generator: Final[
             Callable[[Any], Generator[FieldDefinition, None, None]]
         ] = field_definition_generator
-        self.is_nested_field: Final[Callable[[ParsedType], bool]] = is_nested_field
+        self.is_nested_field_predicate: Final[Callable[[ParsedType], bool]] = is_nested_field_predicate
         self.model_type: Final[type[Any]] = model_type
 
 
@@ -289,7 +289,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             return self._create_collection_type(parsed_type, exclude, unique_name, nested_depth)
 
         transfer_model: NestedFieldInfo | None = None
-        if self.context.is_nested_field(parsed_type):
+        if self.context.is_nested_field_predicate(parsed_type):
             if nested_depth == self.context.config.max_nested_depth:
                 raise NestedDepthExceededError()
 
