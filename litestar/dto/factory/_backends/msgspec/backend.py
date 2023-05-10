@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import base64
 from typing import TYPE_CHECKING, NewType, TypeVar
+from uuid import uuid1
 
 from msgspec import Struct, from_builtins
 
@@ -22,11 +24,20 @@ MsgspecField = NewType("MsgspecField", type)
 T = TypeVar("T")
 
 
+def _gen_short_uniqueid(size=6) -> str:
+
+    # Generate a unique ID
+    unique_id = str(uuid1()).encode("utf-8")
+
+    # Convert the ID to a short alpha-numeric string
+    return base64.urlsafe_b64encode(unique_id)[:size].decode("ascii")
+
+
 class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
     __slots__ = ()
 
     def create_transfer_model_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
-        return _create_struct_for_field_definitions(unique_name, field_definitions)
+        return _create_struct_for_field_definitions(f"{unique_name}-{_gen_short_uniqueid()}", field_definitions)
 
     def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> Struct | Collection[Struct]:
         return decode_media_type(  # type:ignore[no-any-return]
@@ -35,3 +46,4 @@ class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
 
     def parse_builtins(self, builtins: Any, connection_context: ConnectionContext) -> Any:
         return from_builtins(builtins, self.annotation)
+
