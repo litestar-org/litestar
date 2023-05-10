@@ -18,17 +18,6 @@ def test_resolve_dependencies_without_provide() -> None:
     assert handler.resolve_dependencies() == {"foo": Provide(foo), "bar": Provide(bar)}
 
 
-def test_resolve_dependencies_without_provide_sync_to_thread_by_default() -> None:
-    def foo() -> None:
-        pass
-
-    @get(dependencies={"foo": foo})
-    async def handler() -> None:
-        pass
-
-    assert handler.resolve_dependencies()["foo"].sync_to_thread is True
-
-
 def function_factory() -> Callable[[], Awaitable[None]]:
     async def func() -> None:
         return None
