@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import inspect
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, Coroutine, cast
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, Dict, cast
 
 from litestar.di import Provide
 from litestar.dto.interface import ConnectionContext
@@ -119,7 +119,9 @@ def create_handler_function(
 ) -> Callable[..., Coroutine[None, None, None]]:
     listener_callback = AsyncCallable(listener_context.listener_callback)
 
-    async def handler_fn(*args: Any, socket: WebSocket, lifespan_stub__: dict[str, Any], **kwargs: Any) -> None:
+    async def handler_fn(
+        *args: Any, socket: WebSocket, lifespan_stub__: Dict[str, Any], **kwargs: Any   # noqa: UP006
+    ) -> None:
         ctx = ConnectionContext.from_connection(socket)
         data_dto = listener_context.resolved_data_dto(ctx) if listener_context.resolved_data_dto else None
         return_dto = listener_context.resolved_return_dto(ctx) if listener_context.resolved_return_dto else None
@@ -160,7 +162,7 @@ def create_handler_signature(callback_signature: inspect.Signature) -> inspect.S
         new_params.append(inspect.Parameter(name="socket", kind=inspect.Parameter.KEYWORD_ONLY, annotation="WebSocket"))
 
     new_params.append(
-        inspect.Parameter(name="lifespan_stub__", kind=inspect.Parameter.KEYWORD_ONLY, annotation="dict[str, Any]")
+        inspect.Parameter(name="lifespan_stub__", kind=inspect.Parameter.KEYWORD_ONLY, annotation="Dict[str, Any]")
     )
 
     return callback_signature.replace(parameters=new_params)
@@ -173,7 +175,7 @@ def create_stub_dependency(src: AnyCallable) -> Provide:
     src = unwrap_partial(src)
 
     @wraps(src)
-    async def stub(**kwargs: Any) -> dict[str, Any]:
+    async def stub(**kwargs: Any) -> Dict[str, Any]:  # noqa: UP006
         return kwargs
 
     return Provide(stub)

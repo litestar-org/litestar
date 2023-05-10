@@ -8,8 +8,11 @@ from typing import (
     Any,
     AsyncGenerator,
     Callable,
+    Dict,
     Mapping,
+    Optional,
     cast,
+    overload,
 )
 
 from msgspec.json import Encoder as JsonEncoder
@@ -64,6 +67,52 @@ class websocket_listener(WebsocketRouteHandler):
         "_connection_lifespan": None,
         "_dependency_stubs": None,
     }
+
+    @overload
+    def __init__(
+        self,
+        path: str | None | list[str] | None = None,
+        *,
+        connection_lifespan: Callable[..., AbstractAsyncContextManager[Any]] | None = None,
+        dependencies: Dependencies | None = None,
+        dto: type[DTOInterface] | None | EmptyType = Empty,
+        exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+        guards: list[Guard] | None = None,
+        middleware: list[Middleware] | None = None,
+        receive_mode: WebSocketMode = "text",
+        send_mode: WebSocketMode = "text",
+        name: str | None = None,
+        opt: dict[str, Any] | None = None,
+        return_dto: type[DTOInterface] | None | EmptyType = Empty,
+        signature_namespace: Mapping[str, Any] | None = None,
+        type_encoders: TypeEncodersMap | None = None,
+        **kwargs: Any,
+    ) -> None:
+        ...
+
+    @overload
+    def __init__(
+        self,
+        path: str | None | list[str] | None = None,
+        *,
+        connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
+        dependencies: Dependencies | None = None,
+        dto: type[DTOInterface] | None | EmptyType = Empty,
+        exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+        guards: list[Guard] | None = None,
+        middleware: list[Middleware] | None = None,
+        receive_mode: WebSocketMode = "text",
+        send_mode: WebSocketMode = "text",
+        name: str | None = None,
+        on_accept: AnyCallable | None = None,
+        on_disconnect: AnyCallable | None = None,
+        opt: dict[str, Any] | None = None,
+        return_dto: type[DTOInterface] | None | EmptyType = Empty,
+        signature_namespace: Mapping[str, Any] | None = None,
+        type_encoders: TypeEncodersMap | None = None,
+        **kwargs: Any,
+    ) -> None:
+        ...
 
     def __init__(
         self,
@@ -120,6 +169,12 @@ class websocket_listener(WebsocketRouteHandler):
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
+        if connection_lifespan and any([on_accept, on_disconnect, connection_accept_handler is not WebSocket.accept]):
+            raise ImproperlyConfiguredException(
+                "connection_lifespan can not be used with connection hooks "
+                "(on_accept, on_disconnect, connection_accept_handler)",
+            )
+
         self._listener_context = _utils.ListenerContext()
         self._receive_mode: WebSocketMode = receive_mode
         self._send_mode: WebSocketMode = send_mode
@@ -163,8 +218,8 @@ class websocket_listener(WebsocketRouteHandler):
     async def default_connection_lifespan(
         self,
         socket: WebSocket,
-        on_accept_dependencies: dict[str, Any] | None = None,
-        on_disconnect_dependencies: dict[str, Any] | None = None,
+        on_accept_dependencies: Optional[Dict[str, Any]] = None,  # noqa: UP007, UP006
+        on_disconnect_dependencies: Optional[Dict[str, Any]] = None,  # noqa: UP007, UP006
     ) -> AsyncGenerator[None, None]:
         """Handle the connection lifespan of a WebSocket.
 
