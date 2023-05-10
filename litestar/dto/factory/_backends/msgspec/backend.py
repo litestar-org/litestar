@@ -24,7 +24,7 @@ MsgspecField = NewType("MsgspecField", type)
 T = TypeVar("T")
 
 
-def _gen_short_uniqueid(size: int = 6) -> str:
+def _gen_short_uniqueid(size: int = 12) -> str:
     # Generate a unique ID
     unique_id = str(uuid1()).encode("utf-8")
 
