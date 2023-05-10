@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from typing import AsyncGenerator, Dict, List, Optional, Type, Union, cast
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, AsyncMock
 
 import pytest
 from pytest_lazyfixture import lazy_fixture
@@ -380,3 +380,18 @@ def test_hook_dependencies() -> None:
     assert isinstance(on_accept_mock.call_args_list[0].kwargs["query"], dict)
     assert isinstance(on_disconnect_mock.call_args_list[0].kwargs["state"], State)
     assert isinstance(on_disconnect_mock.call_args_list[0].kwargs["query"], dict)
+
+
+@pytest.mark.parametrize("hook_name", ["on_accept", "on_disconnect", "connection_accept_handler"])
+def test_listeners_lifespan_hooks_and_manager_raises(hook_name: str) -> None:
+    @asynccontextmanager
+    async def lifespan() -> AsyncGenerator[None, None]:
+        yield
+
+    hook_callback = AsyncMock()
+
+    with pytest.raises(ImproperlyConfiguredException):
+
+        @websocket_listener("/", **{hook_name: hook_callback}, connection_lifespan=lifespan)
+        def handler(data: bytes) -> None:
+            pass
