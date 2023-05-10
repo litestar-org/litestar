@@ -10,19 +10,19 @@ the application:
    from litestar.di import Provide
 
 
-   def bool_fn() -> bool:
+   async def bool_fn() -> bool:
        ...
 
 
-   def dict_fn() -> dict:
+   async def dict_fn() -> dict:
        ...
 
 
-   def list_fn() -> list:
+   async def list_fn() -> list:
        ...
 
 
-   def int_fn() -> int:
+   async def int_fn() -> int:
        ...
 
 
@@ -61,6 +61,21 @@ The above example illustrates how dependencies are declared on the different lay
 Dependencies can be either callables - sync or async functions, methods or class instances that implement the
 :meth:`object.__call__` method, or classes. These are in turn wrapped inside an instance of the
 :class:`Provide <.di.Provide>` class.
+
+.. admonition:: Sync vs. Async dependencies
+    :class: important
+
+    Litestar supports both synchronous and asynchronous dependencies. To ensure
+    To ensure synchronous dependencies don't block the main thread and therefore the
+    entire application (for example when they perform blocking I/O), the parameter
+    ``sync_to_thread`` will cause them to be run in a thread pool. If a synchronous
+    function is non-blocking, it should be considered to make it an async function
+    instead.
+
+.. tip::
+    Litestar will warn about the usage of synchronous dependency functions which don't
+    have ``sync_to_thread`` set.
+
 
 Pre-requisites and Scope
 ------------------------
