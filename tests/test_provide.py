@@ -6,6 +6,7 @@ import pytest
 
 from litestar._kwargs.cleanup import DependencyCleanupGroup
 from litestar.di import Provide
+from litestar.exceptions import LitestarWarning
 from litestar.types import Empty
 from litestar.utils.compat import async_next
 
@@ -186,3 +187,11 @@ async def test_cleanup_group_add_on_closed_raises(
 
     with pytest.raises(RuntimeError):
         group.add(async_generator)
+
+
+def test_sync_callable_without_sync_to_thread_warns() -> None:
+    def func() -> None:
+        pass
+
+    with pytest.warns(LitestarWarning):
+        Provide(func)
