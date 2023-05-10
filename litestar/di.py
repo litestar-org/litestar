@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
 from litestar.types import Empty
-from litestar.utils import Ref, get_name, is_async_callable
+from litestar.utils import Ref, is_async_callable
 
 __all__ = ("Provide",)
 
@@ -54,10 +54,11 @@ class Provide:
             warnings.warn(
                 "Using a synchronous callable with Provide might block the main thread "
                 "if the callable performs blocking operations and sync_to_thread is not"
-                f" set to True. If {get_name(dependency)!r} is non-blocking you can "
-                f"either make it an asynchronous callable or set sync_to_thread=False "
-                f"explicitly to silence this warning.",
+                " set to True. If the callable is non-blocking, either make it "
+                "asynchronous or set sync_to_thread=False explicitly to silence this "
+                "warning.",
                 category=LitestarWarning,
+                stacklevel=1,
             )
         self.sync_to_thread = bool(sync_to_thread)
         self.use_cache = use_cache

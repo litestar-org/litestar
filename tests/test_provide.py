@@ -77,10 +77,10 @@ async def test_run_in_thread(anyio_backend: str) -> None:
 
 
 def test_provider_equality_check() -> None:
-    first_provider = Provide(dependency=sync_fn)
-    second_provider = Provide(dependency=sync_fn)
+    first_provider = Provide(dependency=sync_fn, sync_to_thread=False)
+    second_provider = Provide(dependency=sync_fn, sync_to_thread=False)
     assert first_provider == second_provider
-    third_provider = Provide(dependency=sync_fn, use_cache=True)
+    third_provider = Provide(dependency=sync_fn, use_cache=True, sync_to_thread=False)
     assert first_provider != third_provider
     second_provider.value = True
     assert first_provider != second_provider
@@ -102,7 +102,7 @@ def test_provider_equality_check() -> None:
     ],
 )
 async def test_provide_for_callable(fn: Any, exp: Any, anyio_backend: str) -> None:
-    assert await Provide(fn)() == exp
+    assert await Provide(fn, sync_to_thread=False)() == exp
 
 
 @pytest.fixture
