@@ -35,14 +35,16 @@ def test_resolve_from_layers() -> None:
         path = "/controller"
         dependencies = {"controller": controller_dependency}
 
-        @get("/handler", dependencies={"handler": handler_dependency})
+        @get("/handler", dependencies={"handler": handler_dependency}, name="foo")
         async def handler(self) -> None:
             pass
 
     router = Router("/router", route_handlers=[MyController], dependencies={"router": router_dependency})
     app = Litestar([router], dependencies={"app": app_dependency})
 
-    handler = app.routes[0].route_handlers[0]  # type: ignore[union-attr]
+    handler_map = app.get_handler_index_by_name("foo")
+    assert handler_map
+    handler = handler_map["handler"]
 
     assert handler.resolve_dependencies() == {
         "app": Provide(app_dependency),
