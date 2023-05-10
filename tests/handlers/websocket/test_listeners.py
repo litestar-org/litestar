@@ -344,17 +344,18 @@ def test_lifespan_dependencies() -> None:
     mock = MagicMock()
 
     @asynccontextmanager
-    async def lifespan(state: State, query: dict) -> AsyncGenerator[None, None]:
-        mock(state=state, query=query)
+    async def lifespan(name: str, state: State, query: dict) -> AsyncGenerator[None, None]:
+        mock(name=name, state=state, query=query)
         yield
 
-    @websocket_listener("/", connection_lifespan=lifespan)
+    @websocket_listener("/{name:str}", connection_lifespan=lifespan)
     async def handler(data: str) -> None:
         pass
 
-    with create_test_client([handler], debug=True) as client, client.websocket_connect("/") as ws:
+    with create_test_client([handler], debug=True) as client, client.websocket_connect("/foo") as ws:
         ws.send_text("")
 
+    assert mock.call_args_list[0].kwargs["name"] == "foo"
     assert isinstance(mock.call_args_list[0].kwargs["state"], State)
     assert isinstance(mock.call_args_list[0].kwargs["query"], dict)
 
@@ -363,21 +364,23 @@ def test_hook_dependencies() -> None:
     on_accept_mock = MagicMock()
     on_disconnect_mock = MagicMock()
 
-    def on_accept(state: State, query: dict) -> None:
-        on_accept_mock(state=state, query=query)
+    def on_accept(name: str, state: State, query: dict) -> None:
+        on_accept_mock(name=name, state=state, query=query)
 
-    def on_disconnect(state: State, query: dict) -> None:
-        on_disconnect_mock(state=state, query=query)
+    def on_disconnect(name: str, state: State, query: dict) -> None:
+        on_disconnect_mock(name=name, state=state, query=query)
 
-    @websocket_listener("/", on_accept=on_accept, on_disconnect=on_disconnect)
+    @websocket_listener("/{name: str}", on_accept=on_accept, on_disconnect=on_disconnect)
     def handler(data: bytes) -> None:
         pass
 
-    with create_test_client([handler], debug=True) as client, client.websocket_connect("/") as ws:
+    with create_test_client([handler], debug=True) as client, client.websocket_connect("/foo") as ws:
         ws.send_text("")
 
+    assert on_accept_mock.call_args_list[0].kwargs["name"] == "foo"
     assert isinstance(on_accept_mock.call_args_list[0].kwargs["state"], State)
     assert isinstance(on_accept_mock.call_args_list[0].kwargs["query"], dict)
+    assert on_disconnect_mock.call_args_list[0].kwargs["name"] == "foo"
     assert isinstance(on_disconnect_mock.call_args_list[0].kwargs["state"], State)
     assert isinstance(on_disconnect_mock.call_args_list[0].kwargs["query"], dict)
 
