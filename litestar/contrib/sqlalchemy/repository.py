@@ -343,7 +343,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                 instances = list(
                     await self.session.scalars(  # type: ignore
                         update(self.model_type).returning(self.model_type),
-                        data_to_update,  # pyright: reportGeneralTypeIssues=false
+                        data_to_update,  # pyright: ignore[reportGeneralTypeIssues]
                     )
                 )
                 await self.session.flush()

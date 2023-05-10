@@ -908,7 +908,9 @@
       "profile": "https://github.com/sonpro1296",
       "contributions": [
         "code",
-        "test"
+        "test",
+        "infra",
+        "doc"
       ]
     },
     {
@@ -943,6 +945,15 @@
       "name": "aviral-nayya",
       "avatar_url": "https://avatars.githubusercontent.com/u/121891493?v=4",
       "profile": "https://github.com/aviral-nayya",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "whiskeyriver",
+      "name": "whiskeyriver",
+      "avatar_url": "https://avatars.githubusercontent.com/u/162092?v=4",
+      "profile": "https://github.com/whiskeyriver",
       "contributions": [
         "code"
       ]

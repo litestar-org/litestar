@@ -287,7 +287,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         """
         self.scope["session"] = Empty
 
-    def url_for(self, name: str, **path_parameters: dict[str, Any]) -> str:
+    def url_for(self, name: str, **path_parameters: Any) -> str:
         """Return the url for a given route handler name.
 
         Args:

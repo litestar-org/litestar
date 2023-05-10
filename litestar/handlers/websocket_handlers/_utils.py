@@ -4,11 +4,12 @@ import inspect
 from typing import TYPE_CHECKING, Any, Callable, Coroutine, cast
 
 from litestar.dto.interface import ConnectionContext
-from litestar.exceptions import WebSocketDisconnect
 from litestar.serialization import decode_json
 from litestar.utils import AsyncCallable
 
 if TYPE_CHECKING:
+    from contextlib import AbstractAsyncContextManager
+
     from msgspec.json import Encoder as JsonEncoder
 
     from litestar import WebSocket
@@ -111,34 +112,26 @@ def create_handle_send(
 
 def create_handler_function(
     listener_context: ListenerContext,
-    on_accept: AsyncCallable | None,
-    on_disconnect: AsyncCallable | None,
-    accept_connection_handler: Callable[[WebSocket], Coroutine[Any, Any, None]],
+    lifespan_manager: Callable[[WebSocket], AbstractAsyncContextManager],
 ) -> Callable[..., Coroutine[None, None, None]]:
-    async def handler_fn(socket: WebSocket, **kwargs: Any) -> None:
-        await accept_connection_handler(socket)
+    listener_callback = AsyncCallable(listener_context.listener_callback)
 
-        listener_callback = AsyncCallable(listener_context.listener_callback)
+    async def handler_fn(*args: Any, socket: WebSocket, **kwargs: Any) -> None:
         ctx = ConnectionContext.from_connection(socket)
         data_dto = listener_context.resolved_data_dto(ctx) if listener_context.resolved_data_dto else None
         return_dto = listener_context.resolved_return_dto(ctx) if listener_context.resolved_return_dto else None
-
-        if on_accept:
-            await on_accept(socket)
+        handle_receive = listener_context.handle_receive
+        handle_send = listener_context.handle_send if listener_context.can_send_data else None
 
         if listener_context.pass_socket:
             kwargs["socket"] = socket
 
-        while True:
-            try:
-                received_data = await listener_context.handle_receive(socket, data_dto)
-                data_to_send = await listener_callback(data=received_data, **kwargs)
-                if listener_context.can_send_data:
-                    await listener_context.handle_send(socket, data_to_send, return_dto)
-            except WebSocketDisconnect:
-                if on_disconnect:
-                    await on_disconnect(socket)
-                break
+        async with lifespan_manager(socket):
+            while True:
+                received_data = await handle_receive(socket, data_dto)
+                data_to_send = await listener_callback(*args, data=received_data, **kwargs)
+                if handle_send:
+                    await handle_send(socket, data_to_send, return_dto)
 
     return handler_fn
 

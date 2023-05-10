@@ -12,7 +12,7 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.261"
+    rev: "v0.0.265"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -31,7 +31,7 @@ repos:
     hooks:
       - id: blacken-docs
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "v3.0.0-alpha.6"
+    rev: "v3.0.0-alpha.9-for-vscode"
     hooks:
       - id: prettier
         exclude: "_templates"
@@ -88,7 +88,7 @@ repos:
             pytimeparse,
             pyyaml,
             rich,
-            sqlalchemy>2.0,
+            sqlalchemy>=2.0.12,
             starlette,
             structlog,
             tortoise-orm,
@@ -100,7 +100,7 @@ repos:
             uvicorn,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.303
+    rev: v1.1.306
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs|_openapi"
@@ -142,7 +142,7 @@ repos:
             pytimeparse,
             pyyaml,
             rich,
-            sqlalchemy>2.0,
+            sqlalchemy>=2.0.12,
             starlette,
             structlog,
             tortoise-orm,

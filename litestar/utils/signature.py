@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import sys
 import typing
+from collections.abc import Collection, Mapping
 from dataclasses import dataclass
 from inspect import Parameter, Signature, getmembers, isclass, ismethod
 from itertools import chain
-from typing import Any, AnyStr, Collection, ForwardRef, TypeVar, Union
+from typing import Any, AnyStr, ForwardRef, TypeVar, Union
 
 from typing_extensions import Annotated, NotRequired, Required, Self, get_args, get_origin, get_type_hints
 
@@ -155,6 +156,16 @@ class ParsedType:
     def is_forward_ref(self) -> bool:
         """Whether the annotation is a forward reference or not."""
         return isinstance(self.annotation, (str, ForwardRef))
+
+    @property
+    def is_mapping(self) -> bool:
+        """Whether the annotation is a mapping or not."""
+        return self.is_subclass_of(Mapping)
+
+    @property
+    def is_tuple(self) -> bool:
+        """Whether the annotation is a ``tuple`` or not."""
+        return self.is_subclass_of(tuple)
 
     @property
     def is_type_var(self) -> bool:

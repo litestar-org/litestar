@@ -102,6 +102,7 @@ nitpick_ignore = [
     ("py:class", "litestar.utils.signature.ParsedSignature"),
     ("py:class", "litestar.utils.signature.ParsedParameter"),
     ("py:class", "litestar.utils.sync.AsyncCallable"),
+    ("py:class", "BacklogStrategy"),
 ]
 nitpick_ignore_regex = [
     (r"py:.*", r"litestar\.types.*"),
@@ -136,7 +137,7 @@ ignore_missing_refs = {
     re.compile(r"litestar\.contrib\.sqlalchemy\.*"): re.compile(
         ".*(ConnectionT|EngineT|SessionT|SessionMakerT|SlotsBase|DataT)"
     ),
-    re.compile(r"litestar\.dto.*"): re.compile(".*DataT|.*ParsedType"),
+    re.compile(r"litestar\.dto.*"): re.compile(".*DataT|.*ParsedType|Empty"),
 }
 
 

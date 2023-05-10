@@ -11,6 +11,7 @@ from sqlalchemy.exc import IntegrityError, InvalidRequestError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
 )
+from sqlalchemy.orm import MappedColumn
 
 from litestar.contrib.repository.exceptions import ConflictError, RepositoryError
 from litestar.contrib.repository.filters import (
@@ -57,6 +58,28 @@ async def test_sqlalchemy_tablename(monkeypatch: MonkeyPatch) -> None:
 
     assert BigModel.__tablename__ == "big_model"
     assert TESTModel.__tablename__ == "test_model"
+
+
+async def test_sqlalchemy_sentinel(monkeypatch: MonkeyPatch) -> None:
+    """Test the sqlalchemy sentinel column exists on `UUIDPrimaryKey` models."""
+
+    class AnotherModel(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    class TheTestModel(base.Base):
+        """Inheriting from DeclarativeBase gives the model 'id'  columns."""
+
+        ...
+
+    assert isinstance(AnotherModel._sentinel, MappedColumn)
+    assert isinstance(TheTestModel._sentinel, MappedColumn)
+    model1, model2 = AnotherModel(), TheTestModel()
+    assert "created" not in model1.to_dict(exclude={"created"}).keys()
+    assert "_sentinel" not in model1.to_dict().keys()
+    assert "_sentinel" not in model2.to_dict().keys()
 
 
 def test_wrap_sqlalchemy_integrity_error() -> None:

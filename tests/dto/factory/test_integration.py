@@ -1,6 +1,8 @@
+# ruff: noqa: UP007
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Optional
 
 import pytest
 from typing_extensions import Annotated
@@ -77,10 +79,16 @@ def test_renamed_field() -> None:
 
 
 @dataclass
+class Spam:
+    main_id: str = "spam-id"
+
+
+@dataclass
 class Foo:
     bar: str = "hello"
     SPAM: str = "bye"
     spam_bar: str = "welcome"
+    spam_model: Optional[Spam] = None
 
 
 @pytest.mark.parametrize(
@@ -91,6 +99,7 @@ class Foo:
         (lambda x: x[::-1], Foo(bar="h", SPAM="bye!"), ["rab", "MAPS"], {"rab": "h", "MAPS": "bye!"}),
         ("camel", Foo(spam_bar="star"), ["spamBar"], {"spamBar": "star"}),
         ("pascal", Foo(spam_bar="star"), ["SpamBar"], {"SpamBar": "star"}),
+        ("camel", Foo(spam_model=Spam()), ["spamModel"], {"spamModel": {"mainId": "spam-id"}}),
     ],
 )
 def test_fields_alias_generator(
@@ -108,11 +117,6 @@ def test_fields_alias_generator(
         assert data.SPAM == instance.SPAM
         return data
 
-    with create_test_client(
-        route_handlers=[
-            handler,
-        ],
-        debug=True,
-    ) as client:
+    with create_test_client(route_handlers=[handler], debug=True) as client:
         response_callback = client.post("/", json=data)
-        assert all([response_callback.json()[f] == data[f] for f in tested_fields])
+        assert all(response_callback.json()[f] == data[f] for f in tested_fields)

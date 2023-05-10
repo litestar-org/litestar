@@ -10,6 +10,7 @@ from litestar.dto.factory.field import DTO_FIELD_META_KEY
 from litestar.dto.factory.types import FieldDefinition
 from litestar.dto.factory.utils import get_model_type_hints
 from litestar.types.empty import Empty
+from litestar.utils.helpers import get_fully_qualified_class_name
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Collection, Generator
@@ -17,6 +18,8 @@ if TYPE_CHECKING:
     from sqlalchemy import Column
     from sqlalchemy.orm import RelationshipProperty
     from typing_extensions import TypeAlias
+
+    from litestar.utils.signature import ParsedType
 
 
 __all__ = ("SQLAlchemyDTO", "DataT")
@@ -63,20 +66,19 @@ class SQLAlchemyDTO(AbstractDTOFactory[DataT], Generic[DataT]):
                 parsed_type=parsed_type,
                 default_factory=default_factory,
                 dto_field=elem.info.get(DTO_FIELD_META_KEY),
+                unique_model_name=get_fully_qualified_class_name(model_type),
             )
 
             yield field_def
 
     @classmethod
-    def detect_nested_field(cls, field_definition: FieldDefinition) -> bool:
-        if field_definition.parsed_type.inner_types:
-            return any(inner.is_subclass_of(DeclarativeBase) for inner in field_definition.parsed_type.inner_types)
-        return field_definition.parsed_type.is_subclass_of(DeclarativeBase)
+    def detect_nested_field(cls, parsed_type: ParsedType) -> bool:
+        return parsed_type.is_subclass_of(DeclarativeBase)
 
 
 def _detect_defaults(elem: ElementType) -> tuple[Any, Any]:
     default: Any = Empty
-    default_factory: Any = Empty  # pyright:ignore
+    default_factory: Any = None  # pyright:ignore
     if sqla_default := getattr(elem, "default", None):
         if sqla_default.is_scalar:
             default = sqla_default.arg
