@@ -120,7 +120,7 @@ def create_handler_function(
     listener_callback = AsyncCallable(listener_context.listener_callback)
 
     async def handler_fn(
-        *args: Any, socket: WebSocket, lifespan_stub__: Dict[str, Any], **kwargs: Any   # noqa: UP006
+        *args: Any, socket: WebSocket, lifespan_stub__: Dict[str, Any], **kwargs: Any  # noqa: UP006
     ) -> None:
         ctx = ConnectionContext.from_connection(socket)
         data_dto = listener_context.resolved_data_dto(ctx) if listener_context.resolved_data_dto else None

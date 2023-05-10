@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from typing import AsyncGenerator, Dict, List, Optional, Type, Union, cast
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from pytest_lazyfixture import lazy_fixture
