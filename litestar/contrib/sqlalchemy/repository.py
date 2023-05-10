@@ -60,6 +60,8 @@ def wrap_sqlalchemy_exception() -> Any:
         raise ConflictError from exc
     except SQLAlchemyError as exc:
         raise RepositoryError(f"An exception occurred: {exc}") from exc
+    except AttributeError as exc:
+        raise RepositoryError from exc
 
 
 class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]):
