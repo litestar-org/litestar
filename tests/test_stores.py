@@ -150,7 +150,8 @@ async def test_delete_all(store: Store) -> None:
     assert not any([await store.get(key) for key in keys])
 
 
-async def test_expires_in(store: Store) -> None:
+@pytest.mark.usefixtures("patch_storage_obj_frozen_datetime")
+async def test_expires_in(store: Store, frozen_datetime: FrozenDateTimeFactory) -> None:
     assert await store.expires_in("foo") is None
 
     await store.set("foo", "bar")
@@ -158,6 +159,9 @@ async def test_expires_in(store: Store) -> None:
 
     await store.set("foo", "bar", expires_in=10)
     assert math.ceil(await store.expires_in("foo") / 10) * 10 == 10  # type: ignore[operator]
+
+    frozen_datetime.tick(12)
+    assert await store.expires_in("foo") == -2
 
 
 @patch("litestar.stores.redis.Redis")
