@@ -6,7 +6,7 @@ from litestar._kwargs.dependencies import Dependency, create_dependency_batches
 from litestar.di import Provide
 
 
-def dummy() -> None:
+async def dummy() -> None:
     pass
 
 

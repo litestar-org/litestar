@@ -35,8 +35,8 @@ class SQLAlchemyInitPlugin(InitPluginProtocol, _slots_base.SlotsBase):
         """
         app_config.dependencies.update(
             {
-                self._config.engine_dependency_key: Provide(self._config.provide_engine),
-                self._config.session_dependency_key: Provide(self._config.provide_session),
+                self._config.engine_dependency_key: Provide(self._config.provide_engine, sync_to_thread=False),
+                self._config.session_dependency_key: Provide(self._config.provide_session, sync_to_thread=False),
             }
         )
         app_config.before_send.append(self._config.before_send_handler)
