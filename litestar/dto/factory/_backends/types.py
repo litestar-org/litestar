@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
+from uuid import UUID
+
+from msgspec import Struct
 
 from litestar.dto.factory.types import FieldDefinition
 
@@ -91,16 +94,22 @@ class MappingType(CompositeType):
 
 @dataclass(frozen=True)
 class TransferFieldDefinition(FieldDefinition):
-    __slots__ = ("transfer_type", "serialization_name")
+    __slots__ = (
+        "is_partial",
+        "serialization_name",
+        "transfer_type",
+    )
 
     transfer_type: TransferType
     """Type of the field for transfer."""
     serialization_name: str
     """Name of the field as it should feature on the transfer model."""
+    is_partial: bool
+    """Whether the field is optional for transfer."""
 
     @classmethod
     def from_field_definition(
-        cls, field_definition: FieldDefinition, transfer_type: TransferType, serialization_name: str
+        cls, field_definition: FieldDefinition, transfer_type: TransferType, serialization_name: str, is_partial: bool
     ) -> Self:
         return cls(
             name=field_definition.name,
@@ -111,8 +120,18 @@ class TransferFieldDefinition(FieldDefinition):
             unique_model_name=field_definition.unique_model_name,
             transfer_type=transfer_type,
             dto_field=field_definition.dto_field,
+            is_partial=is_partial,
         )
 
 
 FieldDefinitionsType: TypeAlias = "tuple[TransferFieldDefinition, ...]"
 """Generic representation of names and types."""
+
+
+class Missing(Struct, frozen=True):
+    """Sentinel value to indicate a missing value."""
+
+    missing: Final[UUID] = UUID("00000000-0000-0000-0000-000000000000")
+
+
+MISSING = Missing()

@@ -7,6 +7,7 @@ from typing_extensions import get_origin
 from litestar.dto.factory import Mark
 
 from .types import (
+    MISSING,
     CollectionType,
     CompositeType,
     MappingType,
@@ -159,11 +160,17 @@ def transfer_instance_data(
     """
     unstructured_data = {}
     source_is_mapping = isinstance(source_instance, Mapping)
+
+    def filter_missing(value: Any) -> bool:
+        return value is MISSING
+
     for field_definition in field_definitions:
         transfer_type = field_definition.transfer_type
         source_name = field_definition.serialization_name if dto_for == "data" else field_definition.name
         destination_name = field_definition.name if dto_for == "data" else field_definition.serialization_name
         source_value = source_instance[source_name] if source_is_mapping else getattr(source_instance, source_name)
+        if field_definition.is_partial and dto_for == "data" and filter_missing(source_value):
+            continue
         unstructured_data[destination_name] = transfer_type_data(source_value, transfer_type, dto_for)
     return destination_type(**unstructured_data)
 
