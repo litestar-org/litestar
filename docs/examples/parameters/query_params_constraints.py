@@ -6,7 +6,7 @@ from litestar import Litestar, get
 from litestar.params import Parameter
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def index(param: Annotated[int, Parameter(gt=5)]) -> Dict[str, int]:
     return {"param": param}
 

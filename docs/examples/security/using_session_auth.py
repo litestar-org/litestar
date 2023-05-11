@@ -111,7 +111,7 @@ async def signup(data: UserCreatePayload, request: Request[Any, Any, Any]) -> Us
 
 # the endpoint below requires the user to be already authenticated
 # to be able to access it.
-@get("/user")
+@get("/user", sync_to_thread=False)
 def get_user(request: Request[User, Dict[Literal["user_id"], str], Any]) -> Any:
     # because this route requires authentication, we can access
     # `request.user`, which is the authenticated user returned

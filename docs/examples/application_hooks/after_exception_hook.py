@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from litestar.types import Scope
 
 
-@get("/some-path")
+@get("/some-path", sync_to_thread=False)
 def my_handler() -> None:
     """Route handler that raises an exception."""
     raise HTTPException(detail="bad request", status_code=HTTP_400_BAD_REQUEST)

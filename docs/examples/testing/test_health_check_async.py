@@ -5,7 +5,7 @@ from litestar.status_codes import HTTP_200_OK
 from litestar.testing import AsyncTestClient
 
 
-@get(path="/health-check", media_type=MediaType.TEXT)
+@get(path="/health-check", media_type=MediaType.TEXT, sync_to_thread=False)
 def health_check() -> str:
     return "healthy"
 

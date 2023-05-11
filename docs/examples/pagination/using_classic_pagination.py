@@ -36,7 +36,7 @@ paginator = PersonClassicPaginator()
 
 # we now create a regular handler. The handler will receive two query parameters - 'page_size' and 'current_page', which
 # we will pass to the paginator.
-@get("/people")
+@get("/people", sync_to_thread=False)
 def people_handler(page_size: int, current_page: int) -> ClassicPagination[Person]:
     return paginator(page_size=page_size, current_page=current_page)
 

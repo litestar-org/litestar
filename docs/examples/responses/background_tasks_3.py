@@ -16,7 +16,7 @@ async def saving_task(name: str) -> None:
     greeted.add(name)
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def greeter(name: str) -> Response[Dict[str, str]]:
     return Response(
         {"hello": name},

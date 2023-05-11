@@ -11,7 +11,7 @@ async def logging_task(identifier: str, message: str) -> None:
     logger.info("%s: %s", identifier, message)
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def greeter(name: str) -> Response[Dict[str, str]]:
     return Response(
         {"hello": name},

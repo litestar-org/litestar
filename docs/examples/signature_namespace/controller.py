@@ -9,6 +9,6 @@ if TYPE_CHECKING:
 
 
 class MyController(Controller):
-    @post()
+    @post(sync_to_thread=False)
     def post_handler(self, data: Model) -> Model:
         return data

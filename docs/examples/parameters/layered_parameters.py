@@ -12,7 +12,7 @@ class MyController(Controller):
         "controller_param": Parameter(int, lt=100),
     }
 
-    @get("/{path_param:int}")
+    @get("/{path_param:int}", sync_to_thread=False)
     def my_handler(
         self,
         path_param: int,

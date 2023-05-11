@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from litestar.types import Message, Scope
 
 
-@get("/test")
+@get("/test", sync_to_thread=False)
 def handler() -> Dict[str, str]:
     """Example Handler function."""
     return {"key": "value"}

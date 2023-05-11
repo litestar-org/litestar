@@ -9,7 +9,7 @@ async def provide_str() -> str:
     return "whoops"
 
 
-@get("/", dependencies={"injected": Provide(provide_str)})
+@get("/", dependencies={"injected": Provide(provide_str)}, sync_to_thread=False)
 def hello_world(injected: int) -> Dict[str, Any]:
     """Handler expects and `int`, but we've provided a `str`."""
     return {"hello": injected}
