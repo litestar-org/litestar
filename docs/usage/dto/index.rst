@@ -1,6 +1,12 @@
 Data Transfer Object (DTO)
 ==========================
 
+In Litestar, a Data Transfer Object (DTO) is class that is used to control the flow of data from the client into a
+useful form for the developer to use in their handler, and then back again.
+
+The following diagram demonstrates how the DTO is used within the context of an individual request in Litestar:
+
+
 .. mermaid::
 
         sequenceDiagram
@@ -8,21 +14,21 @@ Data Transfer Object (DTO)
             actor Client
             participant Litestar
             participant DTO
-            actor Developer
+            participant Handler
             Client->>Litestar: Data as encoded bytes
             activate Litestar
             Litestar->>DTO: Encoded data
             deactivate Litestar
             activate DTO
-            Note over DTO: Perform primitive type validation<br>and converting into data model
-            DTO->>Developer: Data injected into handler
+            Note over DTO: Perform primitive type validation<br>and conversion into data model
+            DTO->>Handler: Data injected into handler
             deactivate DTO
-            activate Developer
-            Note over Developer: Developer receives data as type<br>declared in handler signature<br>and performs business logic
-            Developer->>DTO: Data returned from handler
-            deactivate Developer
+            activate Handler
+            Note over Handler: Handler receives data as type<br>declared in handler signature<br>and performs business logic
+            Handler->>DTO: Data returned from handler
+            deactivate Handler
             activate DTO
-            Note over DTO: Data returned from the handler<br>converted into type that can be<br>encoded into bytes by Litestar
+            Note over DTO: Data returned from the handler<br>is converted into a type that <br>Litestar can encode into bytes
             DTO->>Litestar: Litestar encodable type
             deactivate DTO
             activate Litestar
@@ -32,6 +38,8 @@ Data Transfer Object (DTO)
 
 Data movement
 -------------
+
+The following is a short summary of the interaction between each of the participants in the above diagram.
 
 Data moves between each of the participants in the DTO chart, and as it does so, different actions are performed on the
 data, and it takes different forms depending on the direction of data transfer, and the participants on either end of
@@ -44,21 +52,20 @@ Client → Litestar → DTO
 - Exception is multipart and URL encoded data, which is decoded into python built-in types before being passed to the
   DTO
 
-DTO → Developer
+DTO → Handler
 ~~~~~~~~~~~~~~~~
 - DTO receives data from client
 - Performs primitive type validation
 - Marshals the data into the data type declared in the handler annotation
 
-Developer → DTO
+Handler → DTO
 ~~~~~~~~~~~~~~~~
-- Developer receives data as type declared in handler signature
-- Developer performs business logic
-- Developer returns data from handler
+- Handler receives data as type declared in handler signature
+- Developer performs business logic and returns data from handler
 
 DTO → Litestar
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-- DTO receives data from developer
+- DTO receives data from handler
 - Marshals the data into a type that can be encoded into bytes by Litestar
 
 Litestar → Client
@@ -74,4 +81,3 @@ Contents
     0-basic-use
     1-dto-factory
     2-dto-interface
-    3-dto-tutorial
