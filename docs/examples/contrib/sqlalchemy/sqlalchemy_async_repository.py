@@ -10,7 +10,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 from litestar import Litestar, get
 from litestar.contrib.repository.filters import LimitOffset
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
-from litestar.contrib.sqlalchemy.init_plugin import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from litestar.contrib.sqlalchemy.plugins.init import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
 from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
 from litestar.controller import Controller
 from litestar.di import Provide
@@ -33,7 +33,7 @@ class BaseModel(_BaseModel):
 # The `Base` class includes a `UUID` based primary key (`id`)
 class AuthorModel(UUIDBase):
     # we can optionally provide the table name instead of auto-generating it
-    __tablename__ = "author"
+    __tablename__ = "author"  #  type: ignore[assignment]
     name: Mapped[str]
     dob: Mapped[date | None]
     books: Mapped[list["BookModel"]] = relationship(back_populates="author", lazy="noload")
@@ -42,7 +42,7 @@ class AuthorModel(UUIDBase):
 # The `AuditBase` class includes the same UUID` based primary key (`id`) and 2 additional columns: `created` and `updated`.
 # `created` is a timestamp of when the record created, and `updated` is the last time the record was modified.
 class BookModel(UUIDAuditBase):
-    __tablename__ = "book"
+    __tablename__ = "book"  #  type: ignore[assignment]
     title: Mapped[str]
     author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))
     author: Mapped["AuthorModel"] = relationship(lazy="joined", innerjoin=True, viewonly=True)

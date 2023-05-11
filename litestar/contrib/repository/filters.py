@@ -47,17 +47,17 @@ class LimitOffset:
 
 
 @dataclass
-class OrderBy(Generic[T]):
+class OrderBy:
     """Data required to construct a ``ORDER BY ...`` clause."""
 
     field_name: str
     """Name of the model attribute to sort on."""
-    sort_order: Literal["asc", "desc"]
+    sort_order: Literal["asc", "desc"] = "asc"
     """Sort ascending or descending"""
 
 
 @dataclass
-class SearchFilter(Generic[T]):
+class SearchFilter:
     """Data required to construct a ``WHERE field_name LIKE '%' || :value || '%'`` clause."""
 
     field_name: str
