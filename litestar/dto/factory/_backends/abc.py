@@ -374,12 +374,10 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             has_nested=any(_determine_has_nested(t) for t in inner_types),
         )
 
-    def _gen_uid_name(self, unique_name: str, size: int = 12) -> str:
+    def _gen_unique_name_id(self, unique_name: str, size: int = 12) -> str:
         # Generate a unique ID
-        unique_id = str(uuid1()).encode("utf-8")
-
         # Convert the ID to a short alphanumeric string
-        return f"{unique_name}-{base64.urlsafe_b64encode(unique_id)[:size].decode('ascii')}"
+        return f"{unique_name}-{base64.urlsafe_b64encode(str(uuid1()).encode('utf-8'))[:size].decode('ascii')}"
 
 
 def _filter_exclude(exclude: AbstractSet[str], field_name: str) -> AbstractSet[str]:
