@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, Literal, cast, overload
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Generic, Literal, cast, overload
 
 from litestar.connection.base import (
     ASGIConnection,
@@ -12,7 +12,7 @@ from litestar.connection.base import (
 )
 from litestar.datastructures.headers import Headers
 from litestar.exceptions import WebSocketDisconnect, WebSocketException
-from litestar.serialization import decode_json, default_serializer, encode_json
+from litestar.serialization import decode_json, decode_msgpack, default_serializer, encode_json, encode_msgpack
 from litestar.status_codes import WS_1000_NORMAL_CLOSURE
 
 __all__ = ("WebSocket",)
@@ -29,6 +29,7 @@ if TYPE_CHECKING:
         WebSocketAcceptEvent,
         WebSocketCloseEvent,
         WebSocketDisconnectEvent,
+        WebSocketMode,
         WebSocketReceiveEvent,
         WebSocketSendEvent,
     )
@@ -152,7 +153,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
     async def receive_data(self, mode: Literal["binary"]) -> bytes:
         ...
 
-    async def receive_data(self, mode: Literal["binary", "text"]) -> str | bytes:
+    async def receive_data(self, mode: WebSocketMode) -> str | bytes:
         """Receive an 'websocket.receive' event and returns the data stored on it.
 
         Args:
@@ -170,6 +171,26 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
             raise WebSocketDisconnect(detail=DISCONNECT_MESSAGE)  # pragma: no cover
         return event.get("text") or "" if mode == "text" else event.get("bytes") or b""
 
+    @overload
+    def iter_data(self, mode: Literal["text"]) -> AsyncGenerator[str, None]:
+        ...
+
+    @overload
+    def iter_data(self, mode: Literal["binary"]) -> AsyncGenerator[bytes, None]:
+        ...
+
+    async def iter_data(self, mode: WebSocketMode) -> AsyncGenerator[str | bytes, None]:
+        """Continuously receive data and yield it
+
+        Args:
+            mode: Socket mode to use. Either ``text`` or ``binary``
+        """
+        try:
+            while True:
+                yield await self.receive_data(mode)
+        except WebSocketDisconnect:
+            pass
+
     async def receive_text(self) -> str:
         """Receive data as text.
 
@@ -186,11 +207,8 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
         """
         return await self.receive_data(mode="binary")
 
-    async def receive_json(
-        self,
-        mode: Literal["text", "binary"] = "text",
-    ) -> Any:
-        """Receive data and loads it into JSON using orson.
+    async def receive_json(self, mode: WebSocketMode = "text") -> Any:
+        """Receive data and decode it as JSON.
 
         Args:
             mode: Either ``text`` or ``binary``.
@@ -201,9 +219,39 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
         data = await self.receive_data(mode=mode)
         return decode_json(data)
 
-    async def send_data(
-        self, data: str | bytes, mode: Literal["text", "binary"] = "text", encoding: str = "utf-8"
-    ) -> None:
+    async def receive_msgpack(self) -> Any:
+        """Receive data and decode it as MessagePack.
+
+        Note that since MessagePack is a binary format, this method will always receive
+        data in ``binary`` mode.
+
+        Returns:
+            An arbitrary value
+        """
+        data = await self.receive_data(mode="binary")
+        return decode_msgpack(data)
+
+    async def iter_json(self, mode: WebSocketMode) -> AsyncGenerator[Any, None]:
+        """Continuously receive data and yield it, decoding it as JSON in the process.
+
+        Args:
+            mode: Socket mode to use. Either ``text`` or ``binary``
+        """
+        async for data in self.iter_data(mode):
+            yield decode_json(data)
+
+    async def iter_msgpack(self) -> AsyncGenerator[Any, None]:
+        """Continuously receive data and yield it, decoding it as MessagePack in the
+        process.
+
+        Note that since MessagePack is a binary format, this method will always receive
+        data in ``binary`` mode.
+
+        """
+        async for data in self.iter_data(mode="binary"):
+            yield decode_msgpack(data)
+
+    async def send_data(self, data: str | bytes, mode: WebSocketMode = "text", encoding: str = "utf-8") -> None:
         """Send a 'websocket.send' event.
 
         Args:
@@ -266,7 +314,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
     async def send_json(
         self,
         data: Any,
-        mode: Literal["text", "binary"] = "text",
+        mode: WebSocketMode = "text",
         encoding: str = "utf-8",
         serializer: Serializer = default_serializer,
     ) -> None:
@@ -281,8 +329,25 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
         Returns:
             None
         """
-        await self.send_data(
-            data=encode_json(data, serializer),
-            mode=mode,
-            encoding=encoding,
-        )
+        await self.send_data(data=encode_json(data, serializer), mode=mode, encoding=encoding)
+
+    async def send_msgpack(
+        self,
+        data: Any,
+        encoding: str = "utf-8",
+        serializer: Serializer = default_serializer,
+    ) -> None:
+        """Send data as MessagePack.
+
+        Note that since MessagePack is a binary format, this method will always send
+        data in ``binary`` mode.
+
+        Args:
+            data: A value to serialize.
+            encoding: Encoding to use for binary data.
+            serializer: A serializer function.
+
+        Returns:
+            None
+        """
+        await self.send_data(data=encode_msgpack(data, serializer), mode="binary", encoding=encoding)

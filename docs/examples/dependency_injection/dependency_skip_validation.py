@@ -7,7 +7,7 @@ from litestar.di import Provide
 from litestar.params import Dependency
 
 
-def provide_str() -> str:
+async def provide_str() -> str:
     """Returns a string."""
     return "whoops"
 

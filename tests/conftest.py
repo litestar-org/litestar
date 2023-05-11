@@ -1,28 +1,38 @@
+from __future__ import annotations
+
+import asyncio
 import importlib.util
 import logging
 import random
 import string
 import sys
+import timeit
+from asyncio import AbstractEventLoop, get_event_loop_policy
 from os import urandom
 from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Any,
+    Awaitable,
     Callable,
-    Dict,
     Generator,
-    Optional,
-    Tuple,
+    Iterator,
     TypeVar,
     Union,
     cast,
 )
 
+import asyncmy
+import asyncpg
 import pytest
 from _pytest.fixtures import FixtureRequest
+from _pytest.nodes import Item
 from fakeredis.aioredis import FakeRedis
 from freezegun import freeze_time
+from pytest_docker.plugin import Services
 from pytest_lazyfixture import lazy_fixture
+from redis.asyncio import Redis as AsyncRedis
+from redis.exceptions import ConnectionError as RedisConnectionError
 
 from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.base import BaseSessionBackend
@@ -73,7 +83,7 @@ def anyio_backend(request: pytest.FixtureRequest) -> str:
     return request.param  # type: ignore[no-any-return]
 
 
-async def mock_asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+async def mock_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
     pass
 
 
@@ -118,7 +128,7 @@ def cookie_session_backend(cookie_session_backend_config: CookieBackendConfig) -
         pytest.param(lazy_fixture("server_side_session_config"), id="server-side"),
     ]
 )
-def session_backend_config(request: pytest.FixtureRequest) -> Union[ServerSideSessionConfig, CookieBackendConfig]:
+def session_backend_config(request: pytest.FixtureRequest) -> ServerSideSessionConfig | CookieBackendConfig:
     return cast("Union[ServerSideSessionConfig, CookieBackendConfig]", request.param)
 
 
@@ -160,33 +170,33 @@ def cookie_session_middleware(
 
 
 @pytest.fixture
-def test_client_backend(anyio_backend_name: str) -> "AnyIOBackend":
+def test_client_backend(anyio_backend_name: str) -> AnyIOBackend:
     return cast("AnyIOBackend", anyio_backend_name)
 
 
 @pytest.fixture
-def create_scope() -> Callable[..., "Scope"]:
+def create_scope() -> Callable[..., Scope]:
     def inner(
         *,
         type: str = "http",
-        app: Optional["Litestar"] = None,
-        asgi: Optional["ASGIVersion"] = None,
+        app: Litestar | None = None,
+        asgi: ASGIVersion | None = None,
         auth: Any = None,
-        client: Optional[Tuple[str, int]] = ("testclient", 50000),
-        extensions: Optional[Dict[str, Dict[object, object]]] = None,
+        client: tuple[str, int] | None = ("testclient", 50000),
+        extensions: dict[str, dict[object, object]] | None = None,
         http_version: str = "1.1",
         path: str = "/",
-        path_params: Optional[Dict[str, str]] = None,
+        path_params: dict[str, str] | None = None,
         query_string: str = "",
         root_path: str = "",
-        route_handler: Optional["RouteHandlerType"] = None,
+        route_handler: RouteHandlerType | None = None,
         scheme: str = "http",
-        server: Optional[Tuple[str, Optional[int]]] = ("testserver", 80),
-        session: "ScopeSession" = None,
-        state: Optional[Dict[str, Any]] = None,
+        server: tuple[str, int | None] | None = ("testserver", 80),
+        session: ScopeSession = None,
+        state: dict[str, Any] | None = None,
         user: Any = None,
-        **kwargs: Dict[str, Any],
-    ) -> "Scope":
+        **kwargs: dict[str, Any],
+    ) -> Scope:
         scope = {
             "app": app,
             "asgi": asgi or {"spec_version": "2.0", "version": "3.0"},
@@ -215,15 +225,15 @@ def create_scope() -> Callable[..., "Scope"]:
 
 
 @pytest.fixture
-def scope(create_scope: Callable[..., "Scope"]) -> "Scope":
+def scope(create_scope: Callable[..., Scope]) -> Scope:
     return create_scope()
 
 
 @pytest.fixture
-def create_module(tmp_path: Path, monkeypatch: "MonkeyPatch") -> "Callable[[str], ModuleType]":
+def create_module(tmp_path: Path, monkeypatch: MonkeyPatch) -> Callable[[str], ModuleType]:
     """Utility fixture for dynamic module creation."""
 
-    def wrapped(source: str) -> "ModuleType":
+    def wrapped(source: str) -> ModuleType:
         """
 
         Args:
@@ -234,7 +244,7 @@ def create_module(tmp_path: Path, monkeypatch: "MonkeyPatch") -> "Callable[[str]
         """
         T = TypeVar("T")
 
-        def not_none(val: Union[T, Optional[T]]) -> T:
+        def not_none(val: T | T | None) -> T:
             assert val is not None
             return val
 
@@ -261,7 +271,7 @@ def mock_db() -> MemoryStore:
 
 
 @pytest.fixture()
-def frozen_datetime() -> Generator["FrozenDateTimeFactory", None, None]:
+def frozen_datetime() -> Generator[FrozenDateTimeFactory, None, None]:
     with freeze_time() as frozen:
         yield cast("FrozenDateTimeFactory", frozen)
 
@@ -279,3 +289,190 @@ def reset_httpx_logging() -> Generator[None, None, None]:
     httpx_logger.setLevel(logging.WARNING)
     yield
     httpx_logger.setLevel(initial_level)
+
+
+# Docker services
+
+
+class DockerServiceRegistry:
+    """Registry for docker services. Allows to register fixtures and collect requested
+    services for this test session
+    """
+
+    def __init__(self) -> None:
+        self._fixture_services: dict[str, str] = {}
+        self.requested_services: set[str] = set()
+
+    def register(self, service_name: str) -> Callable[[Callable], Callable]:
+        """Register a service, making it available via a fixture"""
+
+        def decorator(fn: Callable) -> Callable:
+            self._fixture_services[fn.__name__] = service_name
+            return pytest.fixture(scope="session")(fn)
+
+        return decorator
+
+    def notify_fixture(self, fixture_name: str) -> None:
+        if service_name := self._fixture_services.get(fixture_name):
+            self.requested_services.add(service_name)
+
+
+docker_service_registry = DockerServiceRegistry()
+
+
+@pytest.fixture(scope="session")
+def docker_compose_file() -> Path:
+    """
+    Returns:
+        Path to the docker-compose file for end-to-end test environment.
+    """
+    return Path(__file__).parent / "docker-compose.yml"
+
+
+@pytest.fixture(scope="session")
+def event_loop() -> Iterator[AbstractEventLoop]:
+    """Need the event loop scoped to the session so that we can use it to check
+    containers are ready in session scoped containers fixture."""
+    policy = get_event_loop_policy()
+    loop = policy.new_event_loop()
+    yield loop
+    loop.close()
+
+
+@pytest.fixture(scope="session")
+def docker_setup() -> str:
+    command = "up --build -d"
+    for item in docker_service_registry.requested_services:
+        command += f" {item}"
+    return command
+
+
+def pytest_collection_modifyitems(items: list[Item]) -> None:
+    """Check items if they make use of docker service fixtures and notify the registry"""
+    for item in items:
+        for marker in item.iter_markers(name="usefixtures"):
+            for arg in marker.args:
+                docker_service_registry.notify_fixture(arg)
+
+
+async def wait_until_responsive(
+    check: Callable[..., Awaitable],
+    timeout: float,
+    pause: float,
+    **kwargs: Any,
+) -> None:
+    """Wait until a service is responsive.
+
+    Args:
+        check: Coroutine, return truthy value when waiting should stop.
+        timeout: Maximum seconds to wait.
+        pause: Seconds to wait between calls to `check`.
+        **kwargs: Given as kwargs to `check`.
+    """
+    ref = timeit.default_timer()
+    now = ref
+    while (now - ref) < timeout:
+        if await check(**kwargs):
+            return
+        await asyncio.sleep(pause)
+        now = timeit.default_timer()
+
+    raise Exception("Timeout reached while waiting on service!")
+
+
+async def redis_responsive(host: str) -> bool:
+    """Args:
+        host: docker IP address.
+
+    Returns:
+        Boolean indicating if we can connect to the redis server.
+    """
+    client: AsyncRedis = AsyncRedis(host=host, port=6397)
+    try:
+        return await client.ping()
+    except (ConnectionError, RedisConnectionError):
+        return False
+    finally:
+        await client.close()
+
+
+@docker_service_registry.register("redis")
+async def redis_service(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
+    """Starts containers for required services, fixture waits until they are
+    responsive before returning.
+
+    Args:
+        docker_ip: the test docker IP
+        docker_services: the test docker services
+    """
+    await wait_until_responsive(timeout=30.0, pause=0.1, check=redis_responsive, host=docker_ip)
+
+
+async def mysql_responsive(host: str) -> bool:
+    """
+    Args:
+        host: docker IP address.
+
+    Returns:
+        Boolean indicating if we can connect to the database.
+    """
+
+    try:
+        conn = await asyncmy.connect(
+            host=host,
+            port=3360,
+            user="app",
+            database="db",
+            password="super-secret",
+        )
+        async with conn.cursor() as cursor:
+            await cursor.execute("select 1 as is_available")
+            resp = await cursor.fetchone()
+        return bool(resp[0] == 1)
+    except asyncmy.errors.OperationalError:  # pyright: ignore
+        return False
+
+
+@docker_service_registry.register("mysql")
+async def mysql_service(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
+    """Starts containers for required services, fixture waits until they are
+    responsive before returning.
+
+    Args:
+        docker_ip:
+        docker_services:
+    """
+    await wait_until_responsive(timeout=30.0, pause=0.1, check=mysql_responsive, host=docker_ip)
+
+
+async def postgres_responsive(host: str) -> bool:
+    """
+    Args:
+        host: docker IP address.
+
+    Returns:
+        Boolean indicating if we can connect to the database.
+    """
+    try:
+        conn = await asyncpg.connect(
+            host=host, port=5423, user="postgres", database="postgres", password="super-secret"
+        )
+    except (ConnectionError, asyncpg.CannotConnectNowError):
+        return False
+
+    try:
+        return (await conn.fetchrow("SELECT 1"))[0] == 1  # type: ignore
+    finally:
+        await conn.close()
+
+
+@docker_service_registry.register("postgres")
+async def postgres_service(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
+    """Starts containers for required services, fixture waits until they are
+    responsive before returning.
+
+    Args:
+        docker_ip:
+        docker_services:
+    """
+    await wait_until_responsive(timeout=30.0, pause=0.1, check=postgres_responsive, host=docker_ip)

@@ -134,7 +134,7 @@ def test_dependency_validation_failure_raises_500(
     preferred_validation_backend: Literal["attrs", "pydantic"],
     error_extra: Any,
 ) -> None:
-    dependencies = {"dep": Provide(lambda: "thirteen")}
+    dependencies = {"dep": Provide(lambda: "thirteen", sync_to_thread=False)}
 
     @get("/")
     def test(dep: int, param: int, optional_dep: Optional[int] = Dependency()) -> None:
@@ -159,7 +159,7 @@ def test_dependency_validation_failure_raises_500(
 def test_validation_failure_raises_400(
     preferred_validation_backend: Literal["attrs", "pydantic"], error_extra: Any
 ) -> None:
-    dependencies = {"dep": Provide(lambda: 13)}
+    dependencies = {"dep": Provide(lambda: 13, sync_to_thread=False)}
 
     @get("/")
     def test(dep: int, param: int, optional_dep: Optional[int] = Dependency()) -> None:
@@ -178,7 +178,10 @@ def test_validation_failure_raises_400(
 
 
 def test_client_pydantic_backend_error_precedence_over_server_error() -> None:
-    dependencies = {"dep": Provide(lambda: "thirteen"), "optional_dep": Provide(lambda: "thirty-one")}
+    dependencies = {
+        "dep": Provide(lambda: "thirteen", sync_to_thread=False),
+        "optional_dep": Provide(lambda: "thirty-one", sync_to_thread=False),
+    }
 
     @get("/")
     def test(dep: int, param: int, optional_dep: Optional[int] = Dependency()) -> None:

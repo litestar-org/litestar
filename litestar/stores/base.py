@@ -119,7 +119,7 @@ class StorageObject(Struct):
         was set, return ``-1``.
         """
         if self.expires_at:
-            return (self.expires_at - datetime.now(tz=timezone.utc)).seconds
+            return int(self.expires_at.timestamp() - datetime.now(tz=timezone.utc).timestamp())
         return -1
 
     def to_bytes(self) -> bytes:

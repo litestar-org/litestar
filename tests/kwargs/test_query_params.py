@@ -210,7 +210,7 @@ def test_query_parsing_of_escaped_values(values: Tuple[Tuple[str, str], Tuple[st
 
 
 def test_query_param_dependency_with_alias() -> None:
-    def qp_dependency(page_size: int = Parameter(query="pageSize", gt=0, le=100)) -> int:
+    async def qp_dependency(page_size: int = Parameter(query="pageSize", gt=0, le=100)) -> int:
         return page_size
 
     @get("/", media_type=MediaType.TEXT)
