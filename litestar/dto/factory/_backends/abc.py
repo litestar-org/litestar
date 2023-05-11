@@ -6,6 +6,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Final, Generic, TypeVar, Union
 
+from msgspec import UNSET, UnsetType
+
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
 from litestar.dto.factory import DTOData
@@ -13,11 +15,9 @@ from litestar.utils.helpers import get_fully_qualified_class_name
 from litestar.utils.signature import ParsedType
 
 from .types import (
-    MISSING,
     CollectionType,
     CompositeType,
     MappingType,
-    Missing,
     NestedFieldInfo,
     SimpleType,
     TransferFieldDefinition,
@@ -164,7 +164,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
 
             if self.context.config.partial:
                 field_definition = field_definition.copy_with(  # noqa: PLW2901
-                    parsed_type=ParsedType(Union[field_definition.parsed_type.annotation, Missing]), default=MISSING
+                    parsed_type=ParsedType(Union[field_definition.parsed_type.annotation, UnsetType]), default=UNSET
                 )
 
             try:

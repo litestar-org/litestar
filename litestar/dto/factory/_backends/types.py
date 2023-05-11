@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Final
-from uuid import UUID
-
-from msgspec import Struct
+from typing import TYPE_CHECKING
 
 from litestar.dto.factory.types import FieldDefinition
 
@@ -126,12 +123,3 @@ class TransferFieldDefinition(FieldDefinition):
 
 FieldDefinitionsType: TypeAlias = "tuple[TransferFieldDefinition, ...]"
 """Generic representation of names and types."""
-
-
-class Missing(Struct, frozen=True):
-    """Sentinel value to indicate a missing value."""
-
-    missing: Final[UUID] = UUID("00000000-0000-0000-0000-000000000000")
-
-
-MISSING = Missing()

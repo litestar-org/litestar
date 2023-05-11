@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Collection, Mapping, TypeVar, cast
 
+from msgspec import UNSET
 from typing_extensions import get_origin
 
 from litestar.dto.factory import Mark
 
 from .types import (
-    MISSING,
     CollectionType,
     CompositeType,
     MappingType,
@@ -162,7 +162,7 @@ def transfer_instance_data(
     source_is_mapping = isinstance(source_instance, Mapping)
 
     def filter_missing(value: Any) -> bool:
-        return value is MISSING
+        return value is UNSET
 
     for field_definition in field_definitions:
         transfer_type = field_definition.transfer_type
