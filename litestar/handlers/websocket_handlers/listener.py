@@ -204,7 +204,7 @@ class websocket_listener(WebsocketRouteHandler):
         if not self.dependencies:
             self.dependencies = {}
         self.dependencies = dict(self.dependencies)
-        self.dependencies["lifespan_stub__"] = _utils.create_stub_dependency(
+        self.dependencies["connection_lifespan_dependencies"] = _utils.create_stub_dependency(
             self._connection_lifespan or self.default_connection_lifespan
         )
         if self.on_accept:

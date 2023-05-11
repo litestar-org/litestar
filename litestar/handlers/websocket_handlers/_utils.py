@@ -120,7 +120,7 @@ def create_handler_function(
     listener_callback = AsyncCallable(listener_context.listener_callback)
 
     async def handler_fn(
-        *args: Any, socket: WebSocket, lifespan_stub__: Dict[str, Any], **kwargs: Any  # noqa: UP006
+        *args: Any, socket: WebSocket, connection_lifespan_dependencies: Dict[str, Any], **kwargs: Any  # noqa: UP006
     ) -> None:
         ctx = ConnectionContext.from_connection(socket)
         data_dto = listener_context.resolved_data_dto(ctx) if listener_context.resolved_data_dto else None
@@ -131,7 +131,7 @@ def create_handler_function(
         if listener_context.pass_socket:
             kwargs["socket"] = socket
 
-        async with lifespan_manager(**lifespan_stub__):
+        async with lifespan_manager(**connection_lifespan_dependencies):
             while True:
                 received_data = await handle_receive(socket, data_dto)
                 data_to_send = await listener_callback(*args, data=received_data, **kwargs)
@@ -162,7 +162,9 @@ def create_handler_signature(callback_signature: inspect.Signature) -> inspect.S
         new_params.append(inspect.Parameter(name="socket", kind=inspect.Parameter.KEYWORD_ONLY, annotation="WebSocket"))
 
     new_params.append(
-        inspect.Parameter(name="lifespan_stub__", kind=inspect.Parameter.KEYWORD_ONLY, annotation="Dict[str, Any]")
+        inspect.Parameter(
+            name="connection_lifespan_dependencies", kind=inspect.Parameter.KEYWORD_ONLY, annotation="Dict[str, Any]"
+        )
     )
 
     return callback_signature.replace(parameters=new_params)
