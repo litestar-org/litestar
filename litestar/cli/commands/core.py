@@ -98,7 +98,7 @@ def run_command(
 
 
 @command(name="routes")
-@option("--no-schema", help="Exclude shema routes", is_flag=True, default=False)
+@option("--no-schema", help="Exclude schema routes", is_flag=True, default=False)
 def routes_command(app: Litestar, no_schema: bool) -> None:  # pragma: no cover
     """Display information about the application's routes."""
 
