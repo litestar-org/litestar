@@ -1,3 +1,5 @@
+from typing import Type
+
 import pytest
 
 from litestar import (
@@ -16,28 +18,32 @@ from litestar import route as route_decorator
 from litestar.exceptions import ImproperlyConfiguredException
 
 
-class MyController(Controller):
-    path = "/test"
+@pytest.fixture
+def controller() -> Type[Controller]:
+    class MyController(Controller):
+        path = "/test"
 
-    @post(include_in_schema=False)
-    def post_method(self) -> None:
-        pass
+        @post(include_in_schema=False)
+        def post_method(self) -> None:
+            pass
 
-    @get()
-    def get_method(self) -> None:
-        pass
+        @get()
+        def get_method(self) -> None:
+            pass
 
-    @get(path="/{id:int}")
-    def get_by_id_method(self) -> None:
-        pass
+        @get(path="/{id:int}")
+        def get_by_id_method(self) -> None:
+            pass
 
-    @websocket(path="/socket")
-    async def ws(self, socket: WebSocket) -> None:
-        pass
+        @websocket(path="/socket")
+        async def ws(self, socket: WebSocket) -> None:
+            pass
+
+    return MyController
 
 
-def test_register_with_controller_class() -> None:
-    router = Router(path="/base", route_handlers=[MyController])
+def test_register_with_controller_class(controller: Type[Controller]) -> None:
+    router = Router(path="/base", route_handlers=[controller])
     assert len(router.routes) == 3
     for route in router.routes:
         if len(route.methods) == 2:
@@ -48,18 +54,18 @@ def test_register_with_controller_class() -> None:
             assert route.path == "/base/test"
 
 
-def test_register_controller_on_different_routers() -> None:
-    first_router = Router(path="/first", route_handlers=[MyController])
-    second_router = Router(path="/second", route_handlers=[MyController])
-    third_router = Router(path="/third", route_handlers=[MyController])
+def test_register_controller_on_different_routers(controller: Type[Controller]) -> None:
+    first_router = Router(path="/first", route_handlers=[controller])
+    second_router = Router(path="/second", route_handlers=[controller])
+    third_router = Router(path="/third", route_handlers=[controller])
 
     assert first_router.routes[0].route_handlers[0].owner.owner is first_router  # type: ignore
     assert second_router.routes[0].route_handlers[0].owner.owner is second_router  # type: ignore
     assert third_router.routes[0].route_handlers[0].owner.owner is third_router  # type: ignore
 
 
-def test_register_with_router_instance() -> None:
-    top_level_router = Router(path="/top-level", route_handlers=[MyController])
+def test_register_with_router_instance(controller: Type[Controller]) -> None:
+    top_level_router = Router(path="/top-level", route_handlers=[controller])
     base_router = Router(path="/base", route_handlers=[top_level_router])
 
     assert len(base_router.routes) == 3
@@ -126,7 +132,7 @@ def test_register_router_on_itself() -> None:
         router.register(router)
 
 
-def test_route_handler_method_view() -> None:
+def test_route_handler_method_view(controller: Type[Controller]) -> None:
     @get(path="/root")
     def handler() -> None:
         ...
@@ -137,18 +143,18 @@ def test_route_handler_method_view() -> None:
     put_handler = put("/modify")(_handler)
     post_handler = post("/send")(_handler)
 
-    first_router = Router(path="/first", route_handlers=[MyController, post_handler, put_handler])
-    second_router = Router(path="/second", route_handlers=[MyController, post_handler, put_handler])
+    first_router = Router(path="/first", route_handlers=[controller, post_handler, put_handler])
+    second_router = Router(path="/second", route_handlers=[controller, post_handler, put_handler])
 
     app = Litestar(route_handlers=[first_router, second_router, handler])
 
     assert app.route_handler_method_view[str(handler)] == ["/root"]
-    assert app.route_handler_method_view[str(MyController.get_method)] == [
+    assert app.route_handler_method_view[str(controller.get_method)] == [  # type: ignore[attr-defined]
         "/first/test",
         "/second/test",
     ]
 
-    assert app.route_handler_method_view[str(MyController.ws)] == [
+    assert app.route_handler_method_view[str(controller.ws)] == [  # type: ignore[attr-defined]
         "/first/test/socket",
         "/second/test/socket",
     ]

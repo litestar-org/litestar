@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import warnings
 from inspect import isclass
 from typing import TYPE_CHECKING, Any
 
-from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
 from litestar.utils import Ref, is_async_callable
 from litestar.utils.warnings import warn_implicit_sync_to_thread

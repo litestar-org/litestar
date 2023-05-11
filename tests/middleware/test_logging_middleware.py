@@ -9,6 +9,7 @@ from litestar.config.compression import CompressionConfig
 from litestar.connection import Request
 from litestar.datastructures import Cookie
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.handlers import HTTPRouteHandler
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
 from litestar.middleware.logging import LoggingMiddlewareConfig
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
@@ -24,13 +25,17 @@ if TYPE_CHECKING:
 pytestmark = pytest.mark.usefixtures("reset_httpx_logging")
 
 
-@get("/")
-def handler() -> Response:
-    return Response(
-        content={"hello": "world"},
-        headers={"token": "123", "regular": "abc"},
-        cookies=[Cookie(key="first-cookie", value="abc"), Cookie(key="second-cookie", value="xxx")],
-    )
+@pytest.fixture
+def handler() -> HTTPRouteHandler:
+    @get("/")
+    def handler_fn() -> Response:
+        return Response(
+            content={"hello": "world"},
+            headers={"token": "123", "regular": "abc"},
+            cookies=[Cookie(key="first-cookie", value="abc"), Cookie(key="second-cookie", value="xxx")],
+        )
+
+    return handler_fn
 
 
 def test_logging_middleware_config_validation() -> None:
@@ -41,7 +46,9 @@ def test_logging_middleware_config_validation() -> None:
         LoggingMiddlewareConfig(request_log_fields=None)  # type: ignore
 
 
-def test_logging_middleware_regular_logger(get_logger: "GetLogger", caplog: "LogCaptureFixture") -> None:
+def test_logging_middleware_regular_logger(
+    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler
+) -> None:
     with create_test_client(
         route_handlers=[handler], middleware=[LoggingMiddlewareConfig().middleware]
     ) as client, caplog.at_level(INFO):
@@ -61,7 +68,7 @@ def test_logging_middleware_regular_logger(get_logger: "GetLogger", caplog: "Log
         )
 
 
-def test_logging_middleware_struct_logger() -> None:
+def test_logging_middleware_struct_logger(handler: HTTPRouteHandler) -> None:
     with create_test_client(
         route_handlers=[handler],
         middleware=[LoggingMiddlewareConfig().middleware],
@@ -102,7 +109,9 @@ def test_logging_middleware_struct_logger() -> None:
         }
 
 
-def test_logging_middleware_exclude_pattern(get_logger: "GetLogger", caplog: "LogCaptureFixture") -> None:
+def test_logging_middleware_exclude_pattern(
+    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler
+) -> None:
     @get("/exclude")
     def handler2() -> None:
         return None
@@ -124,7 +133,9 @@ def test_logging_middleware_exclude_pattern(get_logger: "GetLogger", caplog: "Lo
         assert len(caplog.messages) == 2
 
 
-def test_logging_middleware_exclude_opt_key(get_logger: "GetLogger", caplog: "LogCaptureFixture") -> None:
+def test_logging_middleware_exclude_opt_key(
+    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler
+) -> None:
     @get("/exclude", skip_logging=True)
     def handler2() -> None:
         return None
@@ -148,7 +159,7 @@ def test_logging_middleware_exclude_opt_key(get_logger: "GetLogger", caplog: "Lo
 
 @pytest.mark.parametrize("include", [True, False])
 def test_logging_middleware_compressed_response_body(
-    get_logger: "GetLogger", include: bool, caplog: "LogCaptureFixture"
+    get_logger: "GetLogger", include: bool, caplog: "LogCaptureFixture", handler: HTTPRouteHandler
 ) -> None:
     with create_test_client(
         route_handlers=[handler],
@@ -203,7 +214,9 @@ def test_logging_messages_are_not_doubled(
         assert len(caplog.messages) == 2
 
 
-def test_logging_middleware_log_fields(get_logger: "GetLogger", caplog: "LogCaptureFixture") -> None:
+def test_logging_middleware_log_fields(
+    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler
+) -> None:
     with create_test_client(
         route_handlers=[handler],
         middleware=[

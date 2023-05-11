@@ -11,7 +11,6 @@ def sync_handler() -> str:
 
 @pytest.mark.parametrize("sync_to_thread", [True, False])
 def test_sync_to_thread(sync_to_thread: bool) -> None:
-
     handler = get("/", media_type=MediaType.TEXT, sync_to_thread=sync_to_thread)(sync_handler)
 
     with create_test_client(handler) as client:

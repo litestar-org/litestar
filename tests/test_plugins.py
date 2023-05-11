@@ -11,12 +11,11 @@ if TYPE_CHECKING:
     from litestar.datastructures import State
 
 
-@get("/", media_type=MediaType.TEXT)
-def greet() -> str:
-    return "hello world"
-
-
 def test_plugin_on_app_init() -> None:
+    @get("/", media_type=MediaType.TEXT)
+    def greet() -> str:
+        return "hello world"
+
     tag = "on_app_init_called"
 
     def on_startup(state: State) -> None:

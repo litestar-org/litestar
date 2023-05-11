@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from enum import Enum
 from typing import TYPE_CHECKING, AnyStr, Mapping, cast
 
@@ -13,7 +12,6 @@ from litestar.enums import HttpMethod, MediaType
 from litestar.exceptions import (
     HTTPException,
     ImproperlyConfiguredException,
-    LitestarWarning,
 )
 from litestar.handlers.base import BaseRouteHandler
 from litestar.handlers.http_handlers._utils import (

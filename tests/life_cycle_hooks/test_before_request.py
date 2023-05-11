@@ -3,13 +3,8 @@ from typing import Optional
 import pytest
 
 from litestar import Controller, Request, Response, Router, get
-from litestar.handlers.http_handlers import HTTPRouteHandler
 from litestar.testing import create_test_client
-from litestar.types import BeforeRequestHookHandler
-
-
-def greet() -> dict:
-    return {"hello": "world"}
+from litestar.types import AnyCallable, BeforeRequestHookHandler
 
 
 def sync_before_request_handler_with_return_value(request: Request) -> dict:
@@ -43,16 +38,20 @@ async def async_after_request_handler(response: Response) -> Response:
 
 
 @pytest.mark.parametrize(
-    "handler, expected",
+    "before_request, expected",
     (
-        (get(path="/")(greet), {"hello": "world"}),
-        (get(path="/", before_request=sync_before_request_handler_with_return_value)(greet), {"hello": "moon"}),
-        (get(path="/", before_request=async_before_request_handler_with_return_value)(greet), {"hello": "moon"}),
-        (get(path="/", before_request=sync_before_request_handler_without_return_value)(greet), {"hello": "world"}),
-        (get(path="/", before_request=async_before_request_handler_without_return_value)(greet), {"hello": "world"}),
+        (None, {"hello": "world"}),
+        (sync_before_request_handler_with_return_value, {"hello": "moon"}),
+        (async_before_request_handler_with_return_value, {"hello": "moon"}),
+        (sync_before_request_handler_without_return_value, {"hello": "world"}),
+        (async_before_request_handler_without_return_value, {"hello": "world"}),
     ),
 )
-def test_before_request_handler_called(handler: HTTPRouteHandler, expected: dict) -> None:
+def test_before_request_handler_called(before_request: Optional[AnyCallable], expected: dict) -> None:
+    @get(before_request=before_request)
+    def handler() -> dict:
+        return {"hello": "world"}
+
     with create_test_client(route_handlers=handler) as client:
         response = client.get("/")
         assert response.json() == expected
