@@ -220,7 +220,7 @@ def test_listener_pass_socket(mock: MagicMock) -> None:
 
 
 def test_listener_pass_additional_dependencies(mock: MagicMock) -> None:
-    def foo_dependency(state: State) -> int:
+    async def foo_dependency(state: State) -> int:
         if not hasattr(state, "foo"):
             state.foo = 0
         state.foo += 1

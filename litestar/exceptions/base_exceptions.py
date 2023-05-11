@@ -45,3 +45,7 @@ class MissingDependencyException(LitestarException, ImportError):
 
 class SerializationException(LitestarException):
     """Encoding or decoding of an object failed."""
+
+
+class LitestarWarning(UserWarning):
+    """Base class for Litestar warnings"""

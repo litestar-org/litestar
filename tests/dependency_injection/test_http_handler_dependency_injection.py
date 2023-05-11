@@ -45,12 +45,15 @@ test_path = "/test"
 
 class FirstController(Controller):
     path = test_path
-    dependencies = {"first": Provide(controller_first_dependency), "second": Provide(controller_second_dependency)}
+    dependencies = {
+        "first": Provide(controller_first_dependency, sync_to_thread=False),
+        "second": Provide(controller_second_dependency),
+    }
 
     @get(
         path="/{path_param:str}",
         dependencies={
-            "first": Provide(local_method_first_dependency),
+            "first": Provide(local_method_first_dependency, sync_to_thread=False),
         },
     )
     def test_method(self, first: int, second: dict, third: bool) -> None:
@@ -63,7 +66,7 @@ def test_controller_dependency_injection() -> None:
     with create_test_client(
         FirstController,
         dependencies={
-            "second": Provide(router_first_dependency),
+            "second": Provide(router_first_dependency, sync_to_thread=False),
             "third": Provide(router_second_dependency),
         },
     ) as client:
@@ -75,8 +78,8 @@ def test_function_dependency_injection() -> None:
     @get(
         path=test_path + "/{path_param:str}",
         dependencies={
-            "first": Provide(local_method_first_dependency),
-            "third": Provide(local_method_second_dependency),
+            "first": Provide(local_method_first_dependency, sync_to_thread=False),
+            "third": Provide(local_method_second_dependency, sync_to_thread=False),
         },
     )
     def test_function(first: int, second: bool, third: str) -> None:
@@ -87,7 +90,7 @@ def test_function_dependency_injection() -> None:
     with create_test_client(
         test_function,
         dependencies={
-            "first": Provide(router_first_dependency),
+            "first": Provide(router_first_dependency, sync_to_thread=False),
             "second": Provide(router_second_dependency),
         },
     ) as client:
