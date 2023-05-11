@@ -1123,19 +1123,19 @@ the application:</p>
 <span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
 
 
-<span class="k">def</span> <span class="nf">bool_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">bool_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="o">...</span>
 
 
-<span class="k">def</span> <span class="nf">dict_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">dict_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="o">...</span>
 
 
-<span class="k">def</span> <span class="nf">list_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">list_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
     <span class="o">...</span>
 
 
-<span class="k">def</span> <span class="nf">int_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">int_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="o">...</span>
 
 
@@ -1174,6 +1174,19 @@ the application:</p>
 <p>Dependencies can be either callables - sync or async functions, methods or class instances that implement the
 <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__call__" title="(in Python v3.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">object.__call__()</span></code></a> method, or classes. These are in turn wrapped inside an instance of the
 <a class="reference internal" href="../reference/di.html#litestar.di.Provide" title="litestar.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a> class.</p>
+<div class="important admonition">
+<p class="admonition-title">Sync vs. Async dependencies</p>
+<p>Litestar supports both <strong>synchronous</strong> and <strong>asynchronous</strong> dependencies.
+To ensure <strong>synchronous</strong> dependencies don’t block the main thread
+- <em>and therefore the entire application, for example when they perform blocking I/O</em> -
+the parameter <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> will ensure they are run in a thread pool.
+If a <strong>synchronous</strong> function is non-blocking, you should consider making it an async function instead.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Litestar will warn about the usage of synchronous dependency functions which do not
+have <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> set.</p>
+</div>
 <section id="pre-requisites-and-scope">
 <h2>Pre-requisites and Scope<a class="headerlink" href="#pre-requisites-and-scope" title="Permalink to this heading">#</a></h2>
 <p>The pre-requisites for dependency injection are these:</p>
@@ -1556,7 +1569,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
 
 
-<span class="k">def</span> <span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a string.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s2">&quot;whoops&quot;</span>
 
@@ -1583,7 +1596,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
 
 
-<span class="k">def</span> <span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a string.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s2">&quot;whoops&quot;</span>
 
@@ -1616,7 +1629,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Dependency</span>
 
 
-<span class="k">def</span> <span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a string.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s2">&quot;whoops&quot;</span>
 
@@ -1646,7 +1659,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Dependency</span>
 
 
-<span class="k">def</span> <span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a string.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s2">&quot;whoops&quot;</span>
 

@@ -1294,7 +1294,7 @@ other places.</p>
     <span class="k">return</span> <span class="n">my_middleware</span>
 
 
-<span class="k">def</span> <span class="nf">my_dependency</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_dependency</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Dependencies can receive state via injection.&quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;state value in dependency: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
