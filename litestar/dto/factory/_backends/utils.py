@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from collections.abc import Collection as CollectionsCollection
-from typing import TYPE_CHECKING, TypeVar, cast
+from typing import TYPE_CHECKING, Collection, Mapping, TypeVar, cast
 
+from msgspec import UNSET
 from typing_extensions import get_origin
 
 from litestar.dto.factory import Mark
@@ -19,9 +19,7 @@ from .types import (
 )
 
 if TYPE_CHECKING:
-    from typing import AbstractSet, Any, Collection, Iterable
-
-    from msgspec import Struct
+    from typing import AbstractSet, Any, Iterable
 
     from litestar.dto.factory.types import FieldDefinition, RenameStrategy
     from litestar.dto.types import ForType
@@ -138,7 +136,7 @@ def transfer_data(
     Returns:
         Data parsed into ``destination_type``.
     """
-    if isinstance(source_data, CollectionsCollection):
+    if not isinstance(source_data, Mapping) and isinstance(source_data, Collection):
         return type(source_data)(
             transfer_data(destination_type, item, field_definitions, dto_for)  # type:ignore[call-arg]
             for item in source_data
@@ -147,7 +145,7 @@ def transfer_data(
 
 
 def transfer_instance_data(
-    destination_type: type[T], source_instance: Struct, field_definitions: FieldDefinitionsType, dto_for: ForType
+    destination_type: type[T], source_instance: Any, field_definitions: FieldDefinitionsType, dto_for: ForType
 ) -> T:
     """Create instance of ``destination_type`` with data from ``source_instance``.
 
@@ -161,11 +159,18 @@ def transfer_instance_data(
         Data parsed into ``model_type``.
     """
     unstructured_data = {}
+    source_is_mapping = isinstance(source_instance, Mapping)
+
+    def filter_missing(value: Any) -> bool:
+        return value is UNSET
+
     for field_definition in field_definitions:
         transfer_type = field_definition.transfer_type
         source_name = field_definition.serialization_name if dto_for == "data" else field_definition.name
         destination_name = field_definition.name if dto_for == "data" else field_definition.serialization_name
-        source_value = getattr(source_instance, source_name)
+        source_value = source_instance[source_name] if source_is_mapping else getattr(source_instance, source_name)
+        if field_definition.is_partial and dto_for == "data" and filter_missing(source_value):
+            continue
         unstructured_data[destination_name] = transfer_type_data(source_value, transfer_type, dto_for)
     return destination_type(**unstructured_data)
 

@@ -6,6 +6,7 @@ import pytest
 
 from litestar._kwargs.cleanup import DependencyCleanupGroup
 from litestar.di import Provide
+from litestar.exceptions import LitestarWarning
 from litestar.types import Empty
 from litestar.utils.compat import async_next
 
@@ -76,10 +77,10 @@ async def test_run_in_thread(anyio_backend: str) -> None:
 
 
 def test_provider_equality_check() -> None:
-    first_provider = Provide(dependency=sync_fn)
-    second_provider = Provide(dependency=sync_fn)
+    first_provider = Provide(dependency=sync_fn, sync_to_thread=False)
+    second_provider = Provide(dependency=sync_fn, sync_to_thread=False)
     assert first_provider == second_provider
-    third_provider = Provide(dependency=sync_fn, use_cache=True)
+    third_provider = Provide(dependency=sync_fn, use_cache=True, sync_to_thread=False)
     assert first_provider != third_provider
     second_provider.value = True
     assert first_provider != second_provider
@@ -101,7 +102,7 @@ def test_provider_equality_check() -> None:
     ],
 )
 async def test_provide_for_callable(fn: Any, exp: Any, anyio_backend: str) -> None:
-    assert await Provide(fn)() == exp
+    assert await Provide(fn, sync_to_thread=False)() == exp
 
 
 @pytest.fixture
@@ -186,3 +187,11 @@ async def test_cleanup_group_add_on_closed_raises(
 
     with pytest.raises(RuntimeError):
         group.add(async_generator)
+
+
+def test_sync_callable_without_sync_to_thread_warns() -> None:
+    def func() -> None:
+        pass
+
+    with pytest.warns(LitestarWarning):
+        Provide(func)

@@ -109,7 +109,7 @@ class ChannelsPlugin(InitPluginProtocol):
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         """Plugin hook. Set up a ``channels`` dependency, add route handlers and register application hooks"""
-        app_config.dependencies["channels"] = Provide(lambda: self, use_cache=True)
+        app_config.dependencies["channels"] = Provide(lambda: self, use_cache=True, sync_to_thread=False)
         app_config.on_startup.append(self._on_startup)
         app_config.on_shutdown.append(self._on_shutdown)
 

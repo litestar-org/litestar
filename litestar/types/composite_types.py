@@ -23,7 +23,7 @@ from typing import (
 from litestar.enums import ScopeType
 
 from .asgi_types import ASGIApp
-from .callable_types import ExceptionHandler
+from .callable_types import AnyCallable, ExceptionHandler
 
 if TYPE_CHECKING:
     from litestar.datastructures.cookie import Cookie
@@ -44,7 +44,7 @@ else:
 T = TypeVar("T")
 
 
-Dependencies = Mapping[str, Provide]
+Dependencies = Mapping[str, Union[Provide, AnyCallable]]
 ExceptionHandlersMap = Mapping[Union[int, Type[Exception]], ExceptionHandler]
 MaybePartial = Union[T, partial]
 Middleware = Union[
