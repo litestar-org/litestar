@@ -19,11 +19,19 @@ def _patch_bases(monkeypatch: MonkeyPatch) -> None:
 
     from litestar.contrib.sqlalchemy import base
 
-    class NewBase(base.UUIDPrimaryKey, base.CommonTableAttributes, DeclarativeBase):
+    class NewUUIDBase(base.UUIDPrimaryKey, base.CommonTableAttributes, DeclarativeBase):
         ...
 
-    class NewAuditBase(base.UUIDPrimaryKey, base.CommonTableAttributes, base.AuditColumns, DeclarativeBase):
+    class NewUUIDAuditBase(base.UUIDPrimaryKey, base.CommonTableAttributes, base.AuditColumns, DeclarativeBase):
         ...
 
-    monkeypatch.setattr(base, "Base", NewBase)
-    monkeypatch.setattr(base, "AuditBase", NewAuditBase)
+    class NewBigIntBase(base.BigIntPrimaryKey, base.CommonTableAttributes, DeclarativeBase):
+        ...
+
+    class NewBigIntAuditBase(base.BigIntPrimaryKey, base.CommonTableAttributes, base.AuditColumns, DeclarativeBase):
+        ...
+
+    monkeypatch.setattr(base, "UUIDBase", NewUUIDBase)
+    monkeypatch.setattr(base, "UUIDAuditBase", NewUUIDAuditBase)
+    monkeypatch.setattr(base, "BigIntBase", NewBigIntBase)
+    monkeypatch.setattr(base, "BigIntAuditBase", NewBigIntAuditBase)

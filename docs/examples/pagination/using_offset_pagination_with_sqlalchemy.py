@@ -4,11 +4,8 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Mapped
 
 from litestar import Litestar, get
-from litestar.contrib.sqlalchemy.base import Base
-from litestar.contrib.sqlalchemy.init_plugin.config import (
-    SQLAlchemyAsyncConfig,
-)
-from litestar.contrib.sqlalchemy.init_plugin.plugin import SQLAlchemyInitPlugin
+from litestar.contrib.sqlalchemy.base import UUIDBase
+from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
 from litestar.di import Provide
 from litestar.pagination import AbstractAsyncOffsetPaginator, OffsetPagination
 
@@ -17,7 +14,7 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 
-class Person(Base):
+class Person(UUIDBase):
     name: Mapped[str]
 
 
@@ -49,7 +46,7 @@ sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 async def on_startup() -> None:
     """Initializes the database."""
     async with sqlalchemy_config.create_engine().begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(UUIDBase.metadata.create_all)
 
 
 app = Litestar(route_handlers=[people_handler], on_startup=[on_startup], plugins=[sqlalchemy_plugin])

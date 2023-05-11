@@ -9,7 +9,7 @@ these items.
    :caption: modelling.py
 
 Did I mention that we love SQLAlchemy? We love it so much that we've included a suite of utilities for working with
-SQLAlchemy in ``litestar.contrib.sqlalchemy``. One of these utilities is a ``Base`` class that we can use to declare our
+SQLAlchemy in ``litestar.contrib.sqlalchemy``. One of these utilities is a ``UUIDBase`` class that we can use to declare our
 models:
 
 .. literalinclude:: /examples/plugins/sqlalchemy/modelling.py
@@ -17,7 +17,7 @@ models:
    :emphasize-lines: 1
    :linenos:
 
-``Base`` is a subclass of :class:`DeclarativeBase <sqlalchemy.orm.DeclarativeBase>`, and in addition to instrumenting
+``UUIDBase`` is a subclass of :class:`DeclarativeBase <sqlalchemy.orm.DeclarativeBase>`, and in addition to instrumenting
 the class with SQLAlchemy's internals, it also gives us a ``UUID`` identity column, and automatic table name generation.
 
 The next element that we import is SQLAlchemy's :class:`Mapped <sqlalchemy.orm.Mapped>` class.

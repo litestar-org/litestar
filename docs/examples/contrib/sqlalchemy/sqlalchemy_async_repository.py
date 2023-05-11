@@ -9,7 +9,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
 from litestar import Litestar, get
 from litestar.contrib.repository.filters import LimitOffset
-from litestar.contrib.sqlalchemy.base import AuditBase, Base
+from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
 from litestar.contrib.sqlalchemy.init_plugin import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
 from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
 from litestar.controller import Controller
@@ -31,7 +31,7 @@ class BaseModel(_BaseModel):
 
 # the SQLAlchemy base includes a declarative model for you to use in your models.
 # The `Base` class includes a `UUID` based primary key (`id`)
-class AuthorModel(Base):
+class AuthorModel(UUIDBase):
     # we can optionally provide the table name instead of auto-generating it
     __tablename__ = "author"
     name: Mapped[str]
@@ -41,7 +41,7 @@ class AuthorModel(Base):
 
 # The `AuditBase` class includes the same UUID` based primary key (`id`) and 2 additional columns: `created` and `updated`.
 # `created` is a timestamp of when the record created, and `updated` is the last time the record was modified.
-class BookModel(AuditBase):
+class BookModel(UUIDAuditBase):
     __tablename__ = "book"
     title: Mapped[str]
     author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))
@@ -192,7 +192,7 @@ sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 async def on_startup() -> None:
     """Initializes the database."""
     async with sqlalchemy_config.create_engine().begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(UUIDBase.metadata.create_all)
 
 
 app = Litestar(
