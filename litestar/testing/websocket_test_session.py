@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 from anyio import sleep
 
 from litestar.exceptions import WebSocketDisconnect
-from litestar.serialization import decode_json, encode_json
+from litestar.serialization import decode_json, decode_msgpack, encode_json, encode_msgpack
 from litestar.status_codes import WS_1000_NORMAL_CLOSURE
 
 if TYPE_CHECKING:
@@ -146,9 +146,20 @@ class WebSocketTestSession:
             mode: Either ``text`` or ``binary``
 
         Returns:
-            None.
+            None
         """
         self.send(encode_json(data), mode=mode)
+
+    def send_msgpack(self, data: Any) -> None:
+        """Sends the given data as MessagePack.
+
+        Args:
+            data: The data to send.
+
+        Returns:
+            None
+        """
+        self.send(encode_msgpack(data), mode="binary")
 
     def close(self, code: int = WS_1000_NORMAL_CLOSURE) -> None:
         """Sends an 'websocket.disconnect' event.
@@ -232,3 +243,7 @@ class WebSocketTestSession:
             return decode_json(cast("str", message.get("text", "")))
 
         return decode_json(cast("bytes", message.get("bytes", b"")))
+
+    def receive_msgpack(self, block: bool = True, timeout: float | None = None) -> Any:
+        message = self.receive(block=block, timeout=timeout)
+        return decode_msgpack(cast("bytes", message.get("bytes", b"")))

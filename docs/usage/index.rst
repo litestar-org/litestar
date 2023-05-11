@@ -13,6 +13,7 @@ Usage
     dependency-injection
     dto/index
     websockets
+    channels
     middleware/index
     security/index
     stores

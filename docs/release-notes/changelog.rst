@@ -3,6 +3,142 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.0.0alpha6
+    :date: 09.06.2023
+
+    .. change:: Relax typing of ``**kwargs`` in ``ASGIConnection.url_for``
+        :type: bugfix
+        :pr: 1610
+
+        Change the typing of the ``**kwargs`` in
+        :meth:`ASGIConnection.url_for <litestar.connection.ASGIConnection.url_for>` from
+        ``dict[str, Any]`` to ``Any``
+
+
+    .. change:: Fix: Using ``websocket_listener`` in controller causes ``TypeError``
+        :type: bugfix
+        :pr: 1627
+        :issue: 1615
+
+        A bug was fixed that would cause a type error when using a
+        :class:`websocket_listener <litestar.handlers.websocket_listener>`
+        in a ``Controller``
+
+    .. change:: Add ``connection_accept_handler`` to ``websocket_listener``
+        :type: feature
+        :pr: 1572
+        :issue: 1571
+
+        Add a new ``connection_accept_handler`` parameter to
+        :class:`websocket_listener <litestar.handlers.websocket_listener>`,
+        which can be used to customize how a connection is accepted, for example to
+        add headers or subprotocols
+
+    .. change:: Testing: Add ``block`` and ``timeout`` parameters to ``WebSocketTestSession`` receive methods
+        :type: feature
+        :pr: 1593
+
+        Two parameters, ``block`` and ``timeout`` have been added to the following methods:
+
+        - :meth:`receive <litestar.testing.WebSocketTestSession.receive>`
+        - :meth:`receive_text <litestar.testing.WebSocketTestSession.receive_text>`
+        - :meth:`receive_bytes <litestar.testing.WebSocketTestSession.receive_bytes>`
+        - :meth:`receive_json <litestar.testing.WebSocketTestSession.receive_json>`
+
+    .. change:: CLI: Add ``--app-dir`` option to root command
+        :type: feature
+        :pr: 1506
+
+        The ``--app-dir`` option was added to the root CLI command, allowing to set the
+        run applications from a path that's not the current working directory.
+
+
+    .. change:: WebSockets: Data iterators
+        :type: feature
+        :pr: 1626
+
+        Two new methods were added to the :class:`WebSocket <litestar.connection.WebSocket>`
+        connection, which allow to continuously receive data and iterate over it:
+
+        - :meth:`iter_data <litestar.connection.WebSocket.iter_data>`
+        - :meth:`iter_json <litestar.connection.WebSocket.iter_json>`
+
+
+    .. change:: WebSockets: MessagePack support
+        :type: feature
+        :pr: 1626
+
+        Add support for `MessagePack <https://msgpack.org/index.html>`_ to the
+        :class:`WebSocket <litestar.connection.WebSocket>` connection.
+
+        Three new methods have been added for handling MessagePack:
+
+        - :meth:`send_msgpack <litestar.connection.WebSocket.send_msgpack>`
+        - :meth:`receive_msgpack <litestar.connection.WebSocket.receive_msgpack>`
+        - :meth:`iter_msgpack <litestar.connection.WebSocket.iter_msgpack>`
+
+        In addition, two MessagePack related methods were added to
+        :class:`WebSocketTestSession <litestar.testing.WebSocketTestSession>`:
+
+        - :meth:`send_msgpack <litestar.testing.WebSocketTestSession.send_msgpack>`
+        - :meth:`receive_msgpack <litestar.testing.WebSocketTestSession.receive_msgpack>`
+
+    .. change:: SQLAlchemy repository: Add support for sentinel column
+        :type: feature
+        :pr: 1603
+
+        This change adds support for ``sentinel column`` feature added in ``sqlalchemy``
+        2.0.10. Without it, there are certain cases where ``add_many`` raises an
+        exception.
+
+        The ``_sentinel`` value added to the declarative base should be excluded from
+        normal select operations automatically and is excluded in the ``to_dict``
+        methods.
+
+    .. change:: DTO: Alias generator for field names
+        :type: feature
+        :pr: 1590
+
+        A new argument ``rename_strategy`` has been added to the :class:`DTOConfig <litestar.dto.factory.DTOConfig>`,
+        allowing to remap field names with strategies such as "camelize".
+
+    .. change:: DTO: Nested field exclusion
+        :type: feature
+        :pr: 1596
+        :issue: 1197
+
+        This feature adds support for excluding nested model fields using dot-notation,
+        e.g., ``"a.b"`` excludes field ``b`` from nested model field ``a``
+
+    .. change:: WebSockets: Managing a socket's lifespan using a context manager in websocket listeners
+        :type: feature
+        :pr: 1625
+
+        Changes the way a socket's lifespan - accepting the connection and calling the
+        appropriate event hooks - to use a context manager.
+
+        The ``connection_lifespan`` argument was added to the
+        :class:`WebSocketListener <litestar.handlers.websocket_listener>`, which accepts
+        an asynchronous context manager, which can be used to handle the lifespan of
+        the socket.
+
+    .. change:: New module: Channels
+        :type: feature
+        :pr: 1587
+
+        A new module :doc:`channels </usage/channels>` has been added: A general purpose
+        event streaming library, which can for example be used to broadcast messages
+        via WebSockets.
+
+    .. change:: DTO: Undocumented ``dto.factory.backends`` has been made private
+        :breaking:
+        :type: misc
+        :pr: 1589
+
+        The undocumented ``dto.factory.backends`` module has been made private
+
+
+
 .. changelog:: 2.0.0alpha5
 
     .. change:: Pass template context to HTMX template response

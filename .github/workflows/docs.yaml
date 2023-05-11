@@ -36,7 +36,7 @@ jobs:
         run: git fetch origin gh-pages --depth=1
       - name: Build docs (preview)
         if: ${{ github.event_name != 'release' && github.ref == 'refs/heads/main'}}
-        run: poetry run python tools/build_docs.py docs-build  --version=dev
+        run: poetry run python tools/build_docs.py docs-build  --version=dev --ignore-missing-examples-output
       - name: Build docs (release)
         if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
         run: poetry run python tools/build_docs.py docs-build

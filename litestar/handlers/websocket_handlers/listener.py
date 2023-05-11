@@ -1,15 +1,24 @@
 from __future__ import annotations
 
+import inspect
 from abc import ABC, abstractmethod
+from contextlib import AbstractAsyncContextManager, asynccontextmanager
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, Mapping, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    AsyncGenerator,
+    Callable,
+    Mapping,
+    cast,
+)
 
 from msgspec.json import Encoder as JsonEncoder
 
 from litestar._signature import create_signature_model
 from litestar.connection import WebSocket
 from litestar.dto.interface import HandlerContext
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
 from litestar.serialization import default_serializer
 from litestar.types import (
     AnyCallable,
@@ -36,10 +45,8 @@ if TYPE_CHECKING:
     from litestar.dto.interface import DTOInterface
     from litestar.types.asgi_types import WebSocketMode
 
-__all__ = (
-    "WebsocketListener",
-    "websocket_listener",
-)
+
+__all__ = ("WebsocketListener", "websocket_listener")
 
 
 class websocket_listener(WebsocketRouteHandler):
@@ -48,21 +55,23 @@ class websocket_listener(WebsocketRouteHandler):
     returned
     """
 
-    __slots__ = (
-        "_on_accept",
-        "_on_disconnect",
-        "_pass_socket",
-        "_receive_mode",
-        "_send_mode",
-        "_listener_context",
-        "accept_connection_handler",
-    )
+    __slots__ = {
+        "connection_accept_handler": "Callback to accept a WebSocket connection. By default, calls WebSocket.accept",
+        "on_accept": "Callback invoked after a WebSocket connection has been accepted",
+        "on_disconnect": "Callback invoked after a WebSocket connection has been closed",
+        "_pass_socket": None,
+        "_receive_mode": None,
+        "_send_mode": None,
+        "_listener_context": None,
+        "_connection_lifespan": None,
+    }
 
     def __init__(
         self,
         path: str | None | list[str] | None = None,
         *,
         connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
+        connection_lifespan: Callable[[WebSocket], AbstractAsyncContextManager[Any]] | None = None,
         dependencies: Dependencies | None = None,
         dto: type[DTOInterface] | None | EmptyType = Empty,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
@@ -86,6 +95,8 @@ class websocket_listener(WebsocketRouteHandler):
                 to ``/``
             connection_accept_handler: A callable that accepts a :class:`WebSocket <.connection.WebSocket>` instance
                 and returns a coroutine that when awaited, will accept the connection. Defaults to ``WebSocket.accept``.
+            connection_lifespan: An asynchronous context manager, handling the lifespan of the connection. By default,
+                it calls the ``connection_accept_handler``, ``on_connect`` and ``on_disconnect``.
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
             dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
                 validation of request data.
@@ -112,9 +123,11 @@ class websocket_listener(WebsocketRouteHandler):
         self._listener_context = _utils.ListenerContext()
         self._receive_mode: WebSocketMode = receive_mode
         self._send_mode: WebSocketMode = send_mode
-        self._on_accept = AsyncCallable(on_accept) if on_accept else None
-        self._on_disconnect = AsyncCallable(on_disconnect) if on_disconnect else None
-        self.accept_connection_handler = connection_accept_handler
+        self._connection_lifespan = connection_lifespan
+
+        self.connection_accept_handler = connection_accept_handler
+        self.on_accept = AsyncCallable(on_accept) if on_accept else None
+        self.on_disconnect = AsyncCallable(on_disconnect) if on_disconnect else None
         self.type_encoders = type_encoders
 
         super().__init__(
@@ -132,6 +145,28 @@ class websocket_listener(WebsocketRouteHandler):
         # need to be assigned after the super() call
         self.dto = dto
         self.return_dto = return_dto
+
+    @asynccontextmanager
+    async def default_connection_lifespan(self, socket: WebSocket) -> AsyncGenerator[None, None]:
+        """Handle the connection lifespan of a WebSocket.
+
+        By, default this will
+
+            - Call :attr:`connection_accept_handler` to accept a connection
+            - Call :attr:`on_accept` if defined after a connection has been accepted
+            - Call :attr:`on_disconnect` upon leaving the context
+        """
+        await self.connection_accept_handler(socket)
+
+        if self.on_accept:
+            await self.on_accept(socket)
+        try:
+            yield
+        except WebSocketDisconnect:
+            pass
+        finally:
+            if self.on_disconnect:
+                await self.on_disconnect(socket)
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""
@@ -152,9 +187,7 @@ class websocket_listener(WebsocketRouteHandler):
         self._listener_context.listener_callback = listener_callback
         self._listener_context.handler_function = handler_function = _utils.create_handler_function(
             listener_context=self._listener_context,
-            on_accept=self._on_accept,
-            on_disconnect=self._on_disconnect,
-            accept_connection_handler=self.accept_connection_handler,
+            lifespan_manager=self._connection_lifespan or self.default_connection_lifespan,
         )
         return super().__call__(handler_function)
 
@@ -165,6 +198,12 @@ class websocket_listener(WebsocketRouteHandler):
     def _create_signature_model(self, app: Litestar) -> None:
         """Create signature model for handler function."""
         if not self.signature_model:
+            extra_signatures = []
+            if self.on_accept:
+                extra_signatures.append(inspect.signature(self.on_accept))
+            if self.on_disconnect:
+                extra_signatures.append(inspect.signature(self.on_disconnect))
+
             new_signature = _utils.create_handler_signature(
                 self._listener_context.listener_callback_signature.original_signature
             )
