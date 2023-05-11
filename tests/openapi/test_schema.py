@@ -69,13 +69,13 @@ def test_process_schema_result() -> None:
 
 
 def test_dependency_schema_generation() -> None:
-    def top_dependency(query_param: int) -> int:
+    async def top_dependency(query_param: int) -> int:
         return query_param
 
-    def mid_level_dependency(header_param: str = Parameter(header="header_param", required=False)) -> int:
+    async def mid_level_dependency(header_param: str = Parameter(header="header_param", required=False)) -> int:
         return 5
 
-    def local_dependency(path_param: int, mid_level: int, top_level: int) -> int:
+    async def local_dependency(path_param: int, mid_level: int, top_level: int) -> int:
         return path_param + mid_level + top_level
 
     class MyController(Controller):

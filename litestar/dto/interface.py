@@ -124,10 +124,10 @@ class DTOInterface(Protocol):
 
     @classmethod
     def on_registration(cls, handler_context: HandlerContext) -> None:
-        """Receive the ``parsed_type`` and ``route_handler`` that this DTO is configured to represent.
+        """Receive information about the handler and application of the DTO.
 
-        At this point, if the DTO type does not support the annotated type of ``parsed_type``, it should raise an
-        ``UnsupportedType`` exception.
+        At this point, if the DTO type does not support the annotated type of ``handler_context.parsed_type``, it should
+        raise an ``UnsupportedType`` exception.
 
         Args:
             handler_context: A :class:`HandlerContext <.HandlerContext>` instance. Provides information about the

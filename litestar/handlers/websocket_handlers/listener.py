@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import inspect
 from abc import ABC, abstractmethod
 from contextlib import AbstractAsyncContextManager, asynccontextmanager
 from functools import partial
@@ -9,8 +8,11 @@ from typing import (
     Any,
     AsyncGenerator,
     Callable,
+    Dict,
     Mapping,
+    Optional,
     cast,
+    overload,
 )
 
 from msgspec.json import Encoder as JsonEncoder
@@ -28,7 +30,6 @@ from litestar.types import (
     ExceptionHandler,
     Guard,
     Middleware,
-    SyncOrAsyncUnion,
     TypeEncodersMap,
 )
 from litestar.types.builtin_types import NoneType
@@ -64,14 +65,15 @@ class websocket_listener(WebsocketRouteHandler):
         "_send_mode": None,
         "_listener_context": None,
         "_connection_lifespan": None,
+        "_dependency_stubs": None,
     }
 
+    @overload
     def __init__(
         self,
         path: str | None | list[str] | None = None,
         *,
-        connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
-        connection_lifespan: Callable[[WebSocket], AbstractAsyncContextManager[Any]] | None = None,
+        connection_lifespan: Callable[..., AbstractAsyncContextManager[Any]] | None = None,
         dependencies: Dependencies | None = None,
         dto: type[DTOInterface] | None | EmptyType = Empty,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
@@ -80,8 +82,54 @@ class websocket_listener(WebsocketRouteHandler):
         receive_mode: WebSocketMode = "text",
         send_mode: WebSocketMode = "text",
         name: str | None = None,
-        on_accept: Callable[[WebSocket], SyncOrAsyncUnion[None]] | None = None,
-        on_disconnect: Callable[[WebSocket], SyncOrAsyncUnion[None]] | None = None,
+        opt: dict[str, Any] | None = None,
+        return_dto: type[DTOInterface] | None | EmptyType = Empty,
+        signature_namespace: Mapping[str, Any] | None = None,
+        type_encoders: TypeEncodersMap | None = None,
+        **kwargs: Any,
+    ) -> None:
+        ...
+
+    @overload
+    def __init__(
+        self,
+        path: str | None | list[str] | None = None,
+        *,
+        connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
+        dependencies: Dependencies | None = None,
+        dto: type[DTOInterface] | None | EmptyType = Empty,
+        exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+        guards: list[Guard] | None = None,
+        middleware: list[Middleware] | None = None,
+        receive_mode: WebSocketMode = "text",
+        send_mode: WebSocketMode = "text",
+        name: str | None = None,
+        on_accept: AnyCallable | None = None,
+        on_disconnect: AnyCallable | None = None,
+        opt: dict[str, Any] | None = None,
+        return_dto: type[DTOInterface] | None | EmptyType = Empty,
+        signature_namespace: Mapping[str, Any] | None = None,
+        type_encoders: TypeEncodersMap | None = None,
+        **kwargs: Any,
+    ) -> None:
+        ...
+
+    def __init__(
+        self,
+        path: str | None | list[str] | None = None,
+        *,
+        connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
+        connection_lifespan: Callable[..., AbstractAsyncContextManager[Any]] | None = None,
+        dependencies: Dependencies | None = None,
+        dto: type[DTOInterface] | None | EmptyType = Empty,
+        exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+        guards: list[Guard] | None = None,
+        middleware: list[Middleware] | None = None,
+        receive_mode: WebSocketMode = "text",
+        send_mode: WebSocketMode = "text",
+        name: str | None = None,
+        on_accept: AnyCallable | None = None,
+        on_disconnect: AnyCallable | None = None,
         opt: dict[str, Any] | None = None,
         return_dto: type[DTOInterface] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
@@ -96,7 +144,8 @@ class websocket_listener(WebsocketRouteHandler):
             connection_accept_handler: A callable that accepts a :class:`WebSocket <.connection.WebSocket>` instance
                 and returns a coroutine that when awaited, will accept the connection. Defaults to ``WebSocket.accept``.
             connection_lifespan: An asynchronous context manager, handling the lifespan of the connection. By default,
-                it calls the ``connection_accept_handler``, ``on_connect`` and ``on_disconnect``.
+                it calls the ``connection_accept_handler``, ``on_connect`` and ``on_disconnect``. Can request any
+                dependencies, for example the :class:`WebSocket <.connection.WebSocket>` connection
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
             dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
                 validation of request data.
@@ -106,10 +155,10 @@ class websocket_listener(WebsocketRouteHandler):
             receive_mode: Websocket mode to receive data in, either `text` or `binary`.
             send_mode: Websocket mode to receive data in, either `text` or `binary`.
             name: A string identifying the route handler.
-            on_accept: Callback invoked after a connection has been accepted, receiving the
-                :class:`WebSocket <.connection.WebSocket>` instance as its only argument
-            on_disconnect: Callback invoked after a connection has been closed, receiving the
-                :class:`WebSocket <.connection.WebSocket>` instance as its only argument
+            on_accept: Callback invoked after a connection has been accepted. Can request any dependencies, for example
+                the :class:`WebSocket <.connection.WebSocket>` connection
+            on_disconnect: Callback invoked after a connection has been closed. Can request any dependencies, for
+                example the :class:`WebSocket <.connection.WebSocket>` connection
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or
                 :class:`ASGI Scope <.types.Scope>`.
@@ -120,6 +169,12 @@ class websocket_listener(WebsocketRouteHandler):
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
+        if connection_lifespan and any([on_accept, on_disconnect, connection_accept_handler is not WebSocket.accept]):
+            raise ImproperlyConfiguredException(
+                "connection_lifespan can not be used with connection hooks "
+                "(on_accept, on_disconnect, connection_accept_handler)",
+            )
+
         self._listener_context = _utils.ListenerContext()
         self._receive_mode: WebSocketMode = receive_mode
         self._send_mode: WebSocketMode = send_mode
@@ -146,9 +201,32 @@ class websocket_listener(WebsocketRouteHandler):
         self.dto = dto
         self.return_dto = return_dto
 
+        if not self.dependencies:
+            self.dependencies = {}
+        self.dependencies = dict(self.dependencies)
+        self.dependencies["connection_lifespan_dependencies"] = _utils.create_stub_dependency(
+            self._connection_lifespan or self.default_connection_lifespan
+        )
+        if self.on_accept:
+            self.dependencies["on_accept_dependencies"] = _utils.create_stub_dependency(self.on_accept.ref.value)
+        if self.on_disconnect:
+            self.dependencies["on_disconnect_dependencies"] = _utils.create_stub_dependency(
+                self.on_disconnect.ref.value
+            )
+
     @asynccontextmanager
-    async def default_connection_lifespan(self, socket: WebSocket) -> AsyncGenerator[None, None]:
-        """Handle the connection lifespan of a WebSocket.
+    async def default_connection_lifespan(
+        self,
+        socket: WebSocket,
+        on_accept_dependencies: Optional[Dict[str, Any]] = None,  # noqa: UP007, UP006
+        on_disconnect_dependencies: Optional[Dict[str, Any]] = None,  # noqa: UP007, UP006
+    ) -> AsyncGenerator[None, None]:
+        """Handle the connection lifespan of a :class:`WebSocket <.connection.WebSocket>`.
+
+        Args:
+            socket: The :class:`WebSocket <.connection.WebSocket>` connection
+            on_accept_dependencies: Dependencies requested by the :attr:`on_accept` hook
+            on_disconnect_dependencies: Dependencies requested by the :attr:`on_disconnect` hook
 
         By, default this will
 
@@ -159,14 +237,14 @@ class websocket_listener(WebsocketRouteHandler):
         await self.connection_accept_handler(socket)
 
         if self.on_accept:
-            await self.on_accept(socket)
+            await self.on_accept(**(on_accept_dependencies or {}))
         try:
             yield
         except WebSocketDisconnect:
             pass
         finally:
             if self.on_disconnect:
-                await self.on_disconnect(socket)
+                await self.on_disconnect(**(on_disconnect_dependencies or {}))
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""
@@ -198,12 +276,6 @@ class websocket_listener(WebsocketRouteHandler):
     def _create_signature_model(self, app: Litestar) -> None:
         """Create signature model for handler function."""
         if not self.signature_model:
-            extra_signatures = []
-            if self.on_accept:
-                extra_signatures.append(inspect.signature(self.on_accept))
-            if self.on_disconnect:
-                extra_signatures.append(inspect.signature(self.on_disconnect))
-
             new_signature = _utils.create_handler_signature(
                 self._listener_context.listener_callback_signature.original_signature
             )
@@ -260,8 +332,12 @@ class WebsocketListener(ABC):
     """A sequence of :class:`Guard <.types.Guard>` callables."""
     middleware: list[Middleware] | None = None
     """A sequence of :class:`Middleware <.types.Middleware>`."""
+    on_accept: AnyCallable | None = None
+    """Called after a :class:`WebSocket <.connection.WebSocket>` connection has been accepted. Can receive any dependencies"""
+    on_disconnect: AnyCallable | None = None
+    """Called after a :class:`WebSocket <.connection.WebSocket>` connection has been disconnected. Can receive any dependencies"""
     receive_mode: WebSocketMode = "text"
-    """Websocket mode to receive data in, either `text` or `binary`."""
+    """:class:`WebSocket <.connection.WebSocket>` mode to receive data in, either ``text`` or ``binary``."""
     send_mode: WebSocketMode = "text"
     """Websocket mode to send data in, either `text` or `binary`."""
     name: str | None = None
@@ -301,9 +377,6 @@ class WebsocketListener(ABC):
             type_encoders=self.type_encoders,
         )(self.on_receive)
 
-    def on_accept(self, socket: WebSocket) -> SyncOrAsyncUnion[None]:  # noqa: B027
-        """Called after a WebSocket connection has been accepted"""
-
     @abstractmethod
     def on_receive(self, *args: Any, **kwargs: Any) -> Any:
         """Called after data has been received from the WebSocket.
@@ -316,6 +389,3 @@ class WebsocketListener(ABC):
         according to handler configuration.
         """
         raise NotImplementedError
-
-    def on_disconnect(self, socket: WebSocket) -> SyncOrAsyncUnion[None]:  # noqa: B027
-        """Called after a WebSocket connection has been disconnected"""

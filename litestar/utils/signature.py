@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import sys
 import typing
+from collections.abc import Collection, Mapping
 from dataclasses import dataclass
 from inspect import Parameter, Signature, getmembers, isclass, ismethod
 from itertools import chain
-from typing import Any, AnyStr, Collection, ForwardRef, TypeVar, Union
+from typing import Any, AnyStr, ForwardRef, TypeVar, Union
 
 from typing_extensions import Annotated, NotRequired, Required, Self, get_args, get_origin, get_type_hints
 
@@ -16,6 +17,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from litestar.types import AnyCallable, Empty
 from litestar.types.builtin_types import UNION_TYPES, NoneType
+from litestar.utils.dataclass import simple_asdict
 from litestar.utils.typing import get_safe_generic_origin, unwrap_annotation
 
 _GLOBAL_NAMES = {
@@ -157,6 +159,16 @@ class ParsedType:
         return isinstance(self.annotation, (str, ForwardRef))
 
     @property
+    def is_mapping(self) -> bool:
+        """Whether the annotation is a mapping or not."""
+        return self.is_subclass_of(Mapping)
+
+    @property
+    def is_tuple(self) -> bool:
+        """Whether the annotation is a ``tuple`` or not."""
+        return self.is_subclass_of(tuple)
+
+    @property
     def is_type_var(self) -> bool:
         """Whether the annotation is a TypeVar or not."""
         return isinstance(self.annotation, TypeVar)
@@ -277,6 +289,18 @@ class ParsedParameter:
             default=Empty if parameter.default is Signature.empty else parameter.default,
             parsed_type=ParsedType(annotation),
         )
+
+    def copy_with(self, **kwargs: Any) -> Self:
+        """Create a copy of the parameter with the given attributes updated.
+
+        Args:
+            kwargs: Attributes to update.
+
+        Returns:
+            ParsedParameter
+        """
+        data = {**simple_asdict(self), **kwargs}
+        return type(self)(**data)
 
 
 @dataclass(frozen=True)

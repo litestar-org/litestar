@@ -10,6 +10,7 @@ from litestar.utils.signature import ParsedType
 from ._backends import MsgspecDTOBackend, PydanticDTOBackend
 from ._backends.abc import BackendContext
 from .config import DTOConfig
+from .data_structures import DTOData
 from .exc import InvalidAnnotation
 from .utils import parse_configs_from_annotation
 
@@ -90,7 +91,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
     def builtins_to_data_type(self, builtins: Any) -> Any:
         """Coerce the unstructured data into the data type."""
         backend = self._get_backend("data", self.connection_context.handler_id)
-        return backend.populate_data_from_builtins(builtins)
+        return backend.populate_data_from_builtins(builtins, self.connection_context)
 
     def bytes_to_data_type(self, raw: bytes) -> Any:
         """Return the data held by the DTO."""
@@ -112,14 +113,14 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
 
     @classmethod
     @abstractmethod
-    def detect_nested_field(cls, field_definition: FieldDefinition) -> bool:
+    def detect_nested_field(cls, parsed_type: ParsedType) -> bool:
         """Return ``True`` if ``field_definition`` represents a nested model field.
 
         Args:
-            field_definition: inspect type to determine if field definition represents a nested model.
+            parsed_type: inspect type to determine if field represents a nested model.
 
         Returns:
-            ``True`` if ``field_definition`` represents a nested model field.
+            ``True`` if ``parsed_type`` represents a nested model field.
         """
 
     @classmethod
@@ -130,12 +131,17 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
             handler_context: A :class:`HandlerContext <.HandlerContext>` instance. Provides information about the
                 handler and application of the DTO.
         """
-        if handler_context.parsed_type.is_collection:
-            if len(handler_context.parsed_type.inner_types) != 1:
-                raise InvalidAnnotation("AbstractDTOFactory only supports homogeneous collection types")
-            handler_type = handler_context.parsed_type.inner_types[0]
+        if handler_context.parsed_type.is_subclass_of(DTOData):
+            parsed_type = handler_context.parsed_type.annotation.parsed_type
         else:
-            handler_type = handler_context.parsed_type
+            parsed_type = handler_context.parsed_type
+
+        if parsed_type.is_collection:
+            if len(parsed_type.inner_types) != 1:
+                raise InvalidAnnotation("AbstractDTOFactory only supports homogeneous collection types")
+            handler_type = parsed_type.inner_types[0]
+        else:
+            handler_type = parsed_type
 
         if not handler_type.is_subclass_of(cls.model_type):
             raise InvalidAnnotation(

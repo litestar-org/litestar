@@ -20,7 +20,6 @@ __all__ = ("Router",)
 
 if TYPE_CHECKING:
     from litestar.datastructures import CacheControlHeader, ETag
-    from litestar.di import Provide
     from litestar.dto.interface import DTOInterface
     from litestar.openapi.spec import SecurityRequirement
     from litestar.routes import BaseRoute
@@ -39,7 +38,7 @@ if TYPE_CHECKING:
         RouteHandlerType,
         TypeEncodersMap,
     )
-    from litestar.types.composite_types import ResponseHeaders
+    from litestar.types.composite_types import Dependencies, ResponseHeaders
     from litestar.types.empty import EmptyType
 
 
@@ -84,7 +83,7 @@ class Router:
         after_response: AfterResponseHookHandler | None = None,
         before_request: BeforeRequestHookHandler | None = None,
         cache_control: CacheControlHeader | None = None,
-        dependencies: Mapping[str, Provide] | None = None,
+        dependencies: Dependencies | None = None,
         dto: type[DTOInterface] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
