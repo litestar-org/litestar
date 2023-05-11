@@ -23,9 +23,9 @@ __all__ = (
 
 
 if TYPE_CHECKING:
+    from litestar.di import Provide
     from litestar.handlers.base import BaseRouteHandler
     from litestar.openapi.spec import Reference
-    from litestar.types import Dependencies
     from litestar.types.internal_types import PathParameterDefinition
 
 
@@ -144,7 +144,7 @@ def create_parameter(
 def get_recursive_handler_parameters(
     field_name: str,
     signature_field: SignatureField,
-    dependencies: Dependencies,
+    dependency_providers: dict[str, Provide],
     route_handler: BaseRouteHandler,
     path_parameters: tuple[PathParameterDefinition, ...],
     generate_examples: bool,
@@ -156,7 +156,7 @@ def get_recursive_handler_parameters(
     `create_parameter_for_handler()` is called to generate parameters for the dependency.
     """
 
-    if field_name not in dependencies:
+    if field_name not in dependency_providers:
         return [
             create_parameter(
                 generate_examples=generate_examples,
@@ -166,7 +166,7 @@ def get_recursive_handler_parameters(
                 signature_field=signature_field,
             )
         ]
-    dependency_fields = dependencies[field_name].signature_model.fields
+    dependency_fields = dependency_providers[field_name].signature_model.fields
     return create_parameter_for_handler(
         route_handler, dependency_fields, path_parameters, generate_examples, schemas=schemas
     )
@@ -239,7 +239,7 @@ def create_parameter_for_handler(
             continue
 
         for parameter in get_recursive_handler_parameters(
-            dependencies=dependencies,
+            dependency_providers=dependencies,
             field_name=field_name,
             generate_examples=generate_examples,
             path_parameters=path_parameters,
