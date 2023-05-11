@@ -192,6 +192,7 @@ def test_backend_model_name_uniqueness(backend_type: type[AbstractDTOBackend], b
             unique_model_name="some_module.SomeModel",
             serialization_name="a",
             transfer_type=transfer_type,
+            is_partial=False,
         ),
     )
     for i in range(100):
