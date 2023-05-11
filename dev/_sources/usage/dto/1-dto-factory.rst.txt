@@ -134,3 +134,38 @@ is injected for our data parameter (line 35).
 We then add a ``B`` instance to the data (line 39), which includes a reference back to ``a``, and from inspection of the
 return data can see that ``b`` is included in the response data, however ``b.a`` is not, due to the default
 ``max_nested_depth`` of ``1``.
+
+DTO Data
+--------
+
+Sometimes we need to be able to access the data that has been parsed and validated by the DTO, but not converted into
+an instance of our data model.
+
+In the following example, we create a DTO that doesn't allow clients to set the ``id`` field on the ``Person`` model and
+declare it on the handler.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/dto_data_problem_statement.py
+    :language: python
+    :emphasize-lines: 18,19,20,21,27
+    :linenos:
+
+Notice that we get a ``500`` response from the handler - this is because the DTO has attempted to convert the request
+data into a ``Person`` object and failed because it has no value for the required ``id`` field.
+
+One way to handle this is to create different models, e.g., we might create a ``CreatePerson`` model that has no ``id``
+field, and decode the client data into that. However, this method can become quite cumbersome when we have a lot of
+variability in the data that we accept from clients, for example, PATCH requests.
+
+This is where the :class:`DTOData <litestar.dto.factory.DTOData>` class comes in. It is a generic class that accepts the
+type of the data that it will contain, and provides useful methods for interacting with that data.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/dto_data_usage.py
+    :language: python
+    :emphasize-lines: 7,25,27
+    :linenos:
+
+In the above example, we've injected an instance of :class:`DTOData <litestar.dto.factory.DTOData>` into our handler,
+and have used that to create our ``Person`` instance, after augmenting the client data with a server generated ``id``
+value.
+
+Consult the :class:`Reference Docs <litestar.dto.factory.DTOData>` for more information on the methods available.
