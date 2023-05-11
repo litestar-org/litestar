@@ -36,13 +36,13 @@ class EventLog(UUIDAuditBase):
 class Store(BigIntAuditBase):
     """The store domain object."""
 
-    store_name: Mapped[str]
+    store_name: Mapped[str] = mapped_column(String(length=250))
 
 
 class Ingredient(BigIntBase):
     """The ingredient domain object."""
 
-    name: Mapped[str]
+    name: Mapped[str] = mapped_column(String(length=250))
 
 
 class AuthorRepository(SQLAlchemyAsyncRepository[Author]):

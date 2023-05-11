@@ -53,14 +53,14 @@ def fx_author_repository(
 @pytest.fixture(name="ingredient_repository_type")
 def fx_ingredient_repository_type(
     ingredients: list[Ingredient], monkeypatch: pytest.MonkeyPatch
-) -> type[GenericAsyncMockRepository[Author]]:
+) -> type[GenericAsyncMockRepository[Ingredient]]:
     """Mock Author repository, pre-seeded with collection data."""
     repo = GenericAsyncMockRepository[Ingredient]
     repo.seed_collection(ingredients)
     return repo
 
 
-@pytest.fixture(name="author_repository")
+@pytest.fixture(name="ingredient_repository")
 def fx_ingredient_repository(
     ingredient_repository_type: type[GenericAsyncMockRepository[Author]],
 ) -> GenericAsyncMockRepository[Author]:
@@ -199,24 +199,24 @@ async def test_does_not_set_created_updated() -> None:
         ...
 
     uuid_instance = UUIDModel()
-    repo = GenericAsyncMockRepository[UUIDModel]()
+    uuid_repo = GenericAsyncMockRepository[UUIDModel]()
     assert "created" not in vars(uuid_instance)
     assert "updated" not in vars(uuid_instance)
-    uuid_instance = await repo.add(uuid_instance)
+    uuid_instance = await uuid_repo.add(uuid_instance)
     assert "created" not in vars(uuid_instance)
     assert "updated" not in vars(uuid_instance)
-    uuid_instance = await repo.update(uuid_instance)
+    uuid_instance = await uuid_repo.update(uuid_instance)
     assert "created" not in vars(uuid_instance)
     assert "updated" not in vars(uuid_instance)
 
     bigint_instance = BigIntModel()
-    repo = GenericAsyncMockRepository[BigIntModel]()
+    bigint_repo = GenericAsyncMockRepository[BigIntModel]()
     assert "created" not in vars(bigint_instance)
     assert "updated" not in vars(bigint_instance)
-    bigint_instance = await repo.add(bigint_instance)
+    bigint_instance = await bigint_repo.add(bigint_instance)
     assert "created" not in vars(bigint_instance)
     assert "updated" not in vars(bigint_instance)
-    bigint_instance = await repo.update(bigint_instance)
+    bigint_instance = await bigint_repo.update(bigint_instance)
     assert "created" not in vars(bigint_instance)
     assert "updated" not in vars(bigint_instance)
 
@@ -243,7 +243,7 @@ async def test_add() -> None:
 
     bigint_instance = BigIntModel()
 
-    inserted_bigint_instance = await GenericAsyncMockRepository[UUIDModel]().add(bigint_instance)
+    inserted_bigint_instance = await GenericAsyncMockRepository[BigIntModel]().add(bigint_instance)
     assert inserted_bigint_instance == bigint_instance
 
 
@@ -266,7 +266,7 @@ async def test_add_many() -> None:
     bigint_instance = [BigIntModel(), BigIntModel()]
 
     inserted_uuid_instances = await GenericAsyncMockRepository[UUIDModel]().add_many(uuid_instances)
-    inserted_bigint_instance = await GenericAsyncMockRepository[UUIDModel]().add_many(bigint_instance)
+    inserted_bigint_instance = await GenericAsyncMockRepository[BigIntModel]().add_many(bigint_instance)
 
     assert len(uuid_instances) == len(inserted_uuid_instances)
     assert len(bigint_instance) == len(inserted_bigint_instance)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from sqlalchemy.dialects.postgresql import JSONB as PG_JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
@@ -26,7 +26,7 @@ class GUID(TypeDecorator):
     cache_ok = True
     python_type = uuid.UUID
 
-    def __init__(self, binary=True) -> None:
+    def __init__(self, binary: bool = True) -> None:
         self.binary = binary
 
     def load_dialect_impl(self, dialect: Dialect) -> Any:
@@ -41,20 +41,19 @@ class GUID(TypeDecorator):
             return value
         if dialect.name == "postgresql":
             return str(value)
-        if not isinstance(value, uuid.UUID):
-            value = self.to_uuid(value)
-        if self.binary:
-            return value.bytes
-        return value.hex
+        value = self.to_uuid(value)
+        if value is None:
+            return value
+        return value.bytes if self.binary else value.hex
 
-    def process_result_value(self, value: str | uuid.UUID | None, dialect: Dialect) -> uuid.UUID | None:
+    def process_result_value(self, value: bytes | str | uuid.UUID | None, dialect: Dialect) -> uuid.UUID | None:
         if value is None:
             return value
         if isinstance(value, uuid.UUID):
             return value
         if self.binary:
-            return uuid.UUID(bytes=value)
-        return uuid.UUID(hex=value)
+            return uuid.UUID(bytes=cast("bytes", value))
+        return uuid.UUID(hex=cast("str", value))
 
     @staticmethod
     def to_uuid(value: Any) -> uuid.UUID | None:
@@ -64,7 +63,7 @@ class GUID(TypeDecorator):
             value = uuid.UUID(hex=value)
         except (TypeError, ValueError):
             value = uuid.UUID(bytes=value)
-        return value
+        return cast("uuid.UUID | None", value)
 
 
 class JSON(_JSON):
