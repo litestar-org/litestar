@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from typing import AsyncGenerator, Dict, List, Optional, Type, Union, cast
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from pytest_lazyfixture import lazy_fixture
@@ -279,8 +279,14 @@ def test_listener_accept_connection_callback() -> None:
 
 
 def test_connection_callbacks() -> None:
-    on_accept = MagicMock()
-    on_disconnect = MagicMock()
+    on_accept_mock = MagicMock()
+    on_disconnect_mock = MagicMock()
+
+    def on_accept(socket: WebSocket) -> None:
+        on_accept_mock()
+
+    def on_disconnect(socket: WebSocket) -> None:
+        on_disconnect_mock()
 
     @websocket_listener("/", on_accept=on_accept, on_disconnect=on_disconnect)
     def handler(data: bytes) -> None:
@@ -290,8 +296,8 @@ def test_connection_callbacks() -> None:
     with client.websocket_connect("/"):
         pass
 
-    on_accept.assert_called_once()
-    on_disconnect.assert_called_once()
+    on_accept_mock.assert_called_once()
+    on_disconnect_mock.assert_called_once()
 
 
 def test_connection_lifespan() -> None:
@@ -328,7 +334,67 @@ def test_listener_in_controller() -> None:
         async def websocket_handler(self, data: str, socket: WebSocket) -> str:
             return data
 
-    with create_test_client(ClientController, debug=True) as client, client.websocket_connect("/ws") as ws:
+    with create_test_client(ClientController) as client, client.websocket_connect("/ws") as ws:
         ws.send_text("foo")
         data = ws.receive_text(timeout=1)
         assert data == "foo"
+
+
+def test_lifespan_dependencies() -> None:
+    mock = MagicMock()
+
+    @asynccontextmanager
+    async def lifespan(name: str, state: State, query: dict) -> AsyncGenerator[None, None]:
+        mock(name=name, state=state, query=query)
+        yield
+
+    @websocket_listener("/{name:str}", connection_lifespan=lifespan)
+    async def handler(data: str) -> None:
+        pass
+
+    with create_test_client([handler], debug=True) as client, client.websocket_connect("/foo") as ws:
+        ws.send_text("")
+
+    assert mock.call_args_list[0].kwargs["name"] == "foo"
+    assert isinstance(mock.call_args_list[0].kwargs["state"], State)
+    assert isinstance(mock.call_args_list[0].kwargs["query"], dict)
+
+
+def test_hook_dependencies() -> None:
+    on_accept_mock = MagicMock()
+    on_disconnect_mock = MagicMock()
+
+    def on_accept(name: str, state: State, query: dict) -> None:
+        on_accept_mock(name=name, state=state, query=query)
+
+    def on_disconnect(name: str, state: State, query: dict) -> None:
+        on_disconnect_mock(name=name, state=state, query=query)
+
+    @websocket_listener("/{name: str}", on_accept=on_accept, on_disconnect=on_disconnect)
+    def handler(data: bytes) -> None:
+        pass
+
+    with create_test_client([handler], debug=True) as client, client.websocket_connect("/foo") as ws:
+        ws.send_text("")
+
+    assert on_accept_mock.call_args_list[0].kwargs["name"] == "foo"
+    assert isinstance(on_accept_mock.call_args_list[0].kwargs["state"], State)
+    assert isinstance(on_accept_mock.call_args_list[0].kwargs["query"], dict)
+    assert on_disconnect_mock.call_args_list[0].kwargs["name"] == "foo"
+    assert isinstance(on_disconnect_mock.call_args_list[0].kwargs["state"], State)
+    assert isinstance(on_disconnect_mock.call_args_list[0].kwargs["query"], dict)
+
+
+@pytest.mark.parametrize("hook_name", ["on_accept", "on_disconnect", "connection_accept_handler"])
+def test_listeners_lifespan_hooks_and_manager_raises(hook_name: str) -> None:
+    @asynccontextmanager
+    async def lifespan() -> AsyncGenerator[None, None]:
+        yield
+
+    hook_callback = AsyncMock()
+
+    with pytest.raises(ImproperlyConfiguredException):
+
+        @websocket_listener("/", **{hook_name: hook_callback}, connection_lifespan=lifespan)
+        def handler(data: bytes) -> None:
+            pass
