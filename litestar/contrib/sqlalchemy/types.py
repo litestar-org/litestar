@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 
 from sqlalchemy.dialects.postgresql import JSONB as PG_JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.types import CHAR, TypeDecorator
+from sqlalchemy.types import BINARY, CHAR, TypeDecorator
 from sqlalchemy.types import JSON as _JSON
 
 if TYPE_CHECKING:
@@ -16,37 +16,54 @@ class GUID(TypeDecorator):
     """Platform-independent GUID type.
 
     Uses PostgreSQL's UUID type, otherwise uses
-    CHAR(32), storing as stringified hex values.
+    BINARY(16) or CHAR(32), storing as stringified hex values.
 
     Will accept stringified UUIDs as a hexstring or an actual UUID
 
     """
 
-    impl = CHAR
+    impl = BINARY(16)
     cache_ok = True
+    python_type = uuid.UUID
+
+    def __init__(self, binary=True) -> None:
+        self.binary = binary
 
     def load_dialect_impl(self, dialect: Dialect) -> Any:
         if dialect.name == "postgresql":
             return dialect.type_descriptor(PG_UUID())
+        if self.binary:
+            return dialect.type_descriptor(BINARY(16))
         return dialect.type_descriptor(CHAR(32))
 
-    def process_bind_param(self, value: str | uuid.UUID | None, dialect: Dialect) -> str | None:
+    def process_bind_param(self, value: bytes | str | uuid.UUID | None, dialect: Dialect) -> bytes | str | None:
         if value is None:
             return value
         if dialect.name == "postgresql":
             return str(value)
-
         if not isinstance(value, uuid.UUID):
-            return "%.32x" % uuid.UUID(value).int
-
-        # hexstring
-        return "%.32x" % value.int
+            value = self.to_uuid(value)
+        if self.binary:
+            return value.bytes
+        return value.hex
 
     def process_result_value(self, value: str | uuid.UUID | None, dialect: Dialect) -> uuid.UUID | None:
         if value is None:
             return value
-        if not isinstance(value, uuid.UUID):
-            return uuid.UUID(value)
+        if isinstance(value, uuid.UUID):
+            return value
+        if self.binary:
+            return uuid.UUID(bytes=value)
+        return uuid.UUID(hex=value)
+
+    @staticmethod
+    def to_uuid(value: Any) -> uuid.UUID | None:
+        if isinstance(value, uuid.UUID) or value is None:
+            return value
+        try:
+            value = uuid.UUID(hex=value)
+        except (TypeError, ValueError):
+            value = uuid.UUID(bytes=value)
         return value
 
 
