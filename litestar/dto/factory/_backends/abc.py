@@ -3,8 +3,10 @@ back again, to bytes.
 """
 from __future__ import annotations
 
+import base64
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Generic, TypeVar
+from uuid import uuid1
 
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
@@ -371,6 +373,13 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             inner_types=inner_types,
             has_nested=any(_determine_has_nested(t) for t in inner_types),
         )
+
+    def _gen_uid_name(self, unique_name: str, size: int = 12) -> str:
+        # Generate a unique ID
+        unique_id = str(uuid1()).encode("utf-8")
+
+        # Convert the ID to a short alphanumeric string
+        return f"{unique_name}-{base64.urlsafe_b64encode(unique_id)[:size].decode('ascii')}"
 
 
 def _filter_exclude(exclude: AbstractSet[str], field_name: str) -> AbstractSet[str]:
