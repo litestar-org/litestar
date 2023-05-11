@@ -30,5 +30,17 @@ class DTOData(Generic[T]):
         data = {**self._data_as_builtins, **kwargs}
         return self.parsed_type.annotation(**data)  # type:ignore[no-any-return]
 
+    def update_instance(self, instance: T, **kwargs: Any) -> T:
+        """Update an instance with the DTO validated data.
+
+        Args:
+            instance: The instance to update.
+            **kwargs: Additional data to update the instance with. Takes precedence over DTO validated data.
+        """
+        data = {**self._data_as_builtins, **kwargs}
+        for k, v in data.items():
+            setattr(instance, k, v)
+        return instance
+
     def as_builtins(self) -> Any:
         return self._data_as_builtins

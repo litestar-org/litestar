@@ -17,6 +17,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from litestar.types import AnyCallable, Empty
 from litestar.types.builtin_types import UNION_TYPES, NoneType
+from litestar.utils.dataclass import simple_asdict
 from litestar.utils.typing import get_safe_generic_origin, unwrap_annotation
 
 _GLOBAL_NAMES = {
@@ -288,6 +289,18 @@ class ParsedParameter:
             default=Empty if parameter.default is Signature.empty else parameter.default,
             parsed_type=ParsedType(annotation),
         )
+
+    def copy_with(self, **kwargs: Any) -> Self:
+        """Create a copy of the parameter with the given attributes updated.
+
+        Args:
+            kwargs: Attributes to update.
+
+        Returns:
+            ParsedParameter
+        """
+        data = {**simple_asdict(self), **kwargs}
+        return type(self)(**data)
 
 
 @dataclass(frozen=True)
