@@ -160,6 +160,7 @@ class OpenAPIController(Controller):
         path="/openapi.yaml",
         media_type=OpenAPIMediaType.OPENAPI_YAML,
         include_in_schema=False,
+        sync_to_thread=False
     )
     def retrieve_schema_yaml(self, request: Request) -> Response:
         """Return the OpenAPI schema as YAML with an ``application/vnd.oai.openapi`` Content-Type header.
@@ -177,7 +178,8 @@ class OpenAPIController(Controller):
             )
         return Response(content={}, status_code=HTTP_404_NOT_FOUND)
 
-    @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False)
+    @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False,
+        sync_to_thread=False)
     def retrieve_schema_json(self, request: Request) -> Response:
         """Return the OpenAPI schema as JSON with an ``application/vnd.oai.openapi+json`` Content-Type header.
 
@@ -194,7 +196,8 @@ class OpenAPIController(Controller):
             )
         return Response(content={}, status_code=HTTP_404_NOT_FOUND)
 
-    @get(path="/", media_type=MediaType.HTML, include_in_schema=False)
+    @get(path="/", media_type=MediaType.HTML, include_in_schema=False,
+        sync_to_thread=False)
     def root(self, request: Request) -> Response:
         """Render a static documentation site.
 
@@ -226,7 +229,8 @@ class OpenAPIController(Controller):
             media_type=MediaType.HTML,
         )
 
-    @get(path="/swagger", media_type=MediaType.HTML, include_in_schema=False)
+    @get(path="/swagger", media_type=MediaType.HTML, include_in_schema=False,
+        sync_to_thread=False)
     def swagger_ui(self, request: Request) -> Response:
         """Route handler responsible for rendering Swagger-UI.
 
@@ -245,7 +249,8 @@ class OpenAPIController(Controller):
             media_type=MediaType.HTML,
         )
 
-    @get(path="/elements", media_type=MediaType.HTML, include_in_schema=False)
+    @get(path="/elements", media_type=MediaType.HTML, include_in_schema=False,
+        sync_to_thread=False)
     def stoplight_elements(self, request: Request) -> Response:
         """Route handler responsible for rendering StopLight Elements.
 
@@ -260,7 +265,8 @@ class OpenAPIController(Controller):
             return Response(content=self.render_stoplight_elements(request), media_type=MediaType.HTML)
         return Response(content=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
-    @get(path="/redoc", media_type=MediaType.HTML, include_in_schema=False)
+    @get(path="/redoc", media_type=MediaType.HTML, include_in_schema=False,
+        sync_to_thread=False)
     def redoc(self, request: Request) -> Response:  # pragma: no cover
         """Route handler responsible for rendering Redoc.
 

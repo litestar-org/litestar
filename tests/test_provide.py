@@ -189,6 +189,7 @@ async def test_cleanup_group_add_on_closed_raises(
         group.add(async_generator)
 
 
+@pytest.mark.usefixtures("enable_warn_implicit_sync_to_thread")
 def test_sync_callable_without_sync_to_thread_warns() -> None:
     def func() -> None:
         pass

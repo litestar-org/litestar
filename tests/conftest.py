@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import importlib.util
 import logging
+import os
 import random
 import string
 import sys
@@ -476,3 +477,18 @@ async def postgres_service(docker_ip: str, docker_services: Services) -> None:  
         docker_services:
     """
     await wait_until_responsive(timeout=30.0, pause=0.1, check=postgres_responsive, host=docker_ip)
+
+
+# the monkeypatch fixture does not work with session scoped dependencies
+@pytest.fixture(autouse=True, scope="session")
+def disable_warn_implicit_sync_to_thread() -> Generator[None, None, None]:
+    old_value = os.getenv("LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD")
+    os.environ["LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD"] = "0"
+    yield
+    if old_value is not None:
+        os.environ["LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD"] = old_value
+
+
+@pytest.fixture()
+def enable_warn_implicit_sync_to_thread(monkeypatch) -> None:
+    monkeypatch.setenv("LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD", "1")
