@@ -7,9 +7,9 @@ from typing import Optional
 import pytest
 from typing_extensions import Annotated
 
-from litestar import post
+from litestar import patch, post
 from litestar.datastructures import UploadFile
-from litestar.dto.factory import DTOConfig, dto_field
+from litestar.dto.factory import DTOConfig, DTOData, dto_field
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.dto.factory.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
@@ -120,3 +120,59 @@ def test_fields_alias_generator(
     with create_test_client(route_handlers=[handler], debug=True) as client:
         response_callback = client.post("/", json=data)
         assert all(response_callback.json()[f] == data[f] for f in tested_fields)
+
+
+def test_dto_data_injection() -> None:
+    @dataclass
+    class Foo:
+        bar: str
+
+    @post(dto=DataclassDTO[Foo], return_dto=None, signature_namespace={"Foo": Foo})
+    def handler(data: DTOData[Foo]) -> Foo:
+        assert isinstance(data, DTOData)
+        assert data.as_builtins() == {"bar": "hello"}
+        assert isinstance(data.create_instance(), Foo)
+        return data.create_instance()
+
+    with create_test_client(route_handlers=[handler], debug=True) as client:
+        response = client.post("/", json={"bar": "hello"})
+        assert response.json() == {"bar": "hello"}
+
+
+def test_dto_data_with_url_encoded_form_data() -> None:
+    @dataclass
+    class User:
+        name: str
+        age: int
+        read_only: str = field(default="read-only", metadata=dto_field("read-only"))
+
+    @post(dto=DataclassDTO[User], signature_namespace={"User": User})
+    def handler(data: DTOData[User] = Body(media_type=RequestEncodingType.URL_ENCODED)) -> User:
+        return data.create_instance()
+
+    with create_test_client(route_handlers=[handler], debug=True) as client:
+        response = client.post(
+            "/",
+            content=b"id=1&name=John&age=42&read_only=whoops",
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+        assert response.json() == {"name": "John", "age": 42, "read_only": "read-only"}
+
+
+def test_dto_data_with_patch_request() -> None:
+    @dataclass
+    class User:
+        name: str
+        age: int
+        read_only: str = field(default="read-only", metadata=dto_field("read-only"))
+
+    class PatchDTO(DataclassDTO[User]):
+        config = DTOConfig(partial=True)
+
+    @patch(dto=PatchDTO, return_dto=None, signature_namespace={"User": User})
+    def handler(data: DTOData[User]) -> User:
+        return data.update_instance(User(name="John", age=42))
+
+    with create_test_client(route_handlers=[handler], debug=True) as client:
+        response = client.patch("/", json={"age": 41, "read_only": "whoops"})
+        assert response.json() == {"name": "John", "age": 41, "read_only": "read-only"}

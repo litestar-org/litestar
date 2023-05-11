@@ -10,6 +10,7 @@ from litestar.utils.signature import ParsedType
 from ._backends import MsgspecDTOBackend, PydanticDTOBackend
 from ._backends.abc import BackendContext
 from .config import DTOConfig
+from .data_structures import DTOData
 from .exc import InvalidAnnotation
 from .utils import parse_configs_from_annotation
 
@@ -130,12 +131,17 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
             handler_context: A :class:`HandlerContext <.HandlerContext>` instance. Provides information about the
                 handler and application of the DTO.
         """
-        if handler_context.parsed_type.is_collection:
-            if len(handler_context.parsed_type.inner_types) != 1:
-                raise InvalidAnnotation("AbstractDTOFactory only supports homogeneous collection types")
-            handler_type = handler_context.parsed_type.inner_types[0]
+        if handler_context.parsed_type.is_subclass_of(DTOData):
+            parsed_type = handler_context.parsed_type.annotation.parsed_type
         else:
-            handler_type = handler_context.parsed_type
+            parsed_type = handler_context.parsed_type
+
+        if parsed_type.is_collection:
+            if len(parsed_type.inner_types) != 1:
+                raise InvalidAnnotation("AbstractDTOFactory only supports homogeneous collection types")
+            handler_type = parsed_type.inner_types[0]
+        else:
+            handler_type = parsed_type
 
         if not handler_type.is_subclass_of(cls.model_type):
             raise InvalidAnnotation(
