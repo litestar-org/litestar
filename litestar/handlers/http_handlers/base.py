@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from enum import Enum
 from typing import TYPE_CHECKING, AnyStr, Mapping, cast
 
@@ -12,6 +13,7 @@ from litestar.enums import HttpMethod, MediaType
 from litestar.exceptions import (
     HTTPException,
     ImproperlyConfiguredException,
+    LitestarWarning,
 )
 from litestar.handlers.base import BaseRouteHandler
 from litestar.handlers.http_handlers._utils import (
@@ -139,7 +141,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         response_headers: ResponseHeaders | None = None,
         return_dto: type[DTOInterface] | None | EmptyType = Empty,
         status_code: int | None = None,
-        sync_to_thread: bool = False,
+        sync_to_thread: bool | None = None,
         # OpenAPI related attributes
         content_encoding: str | None = None,
         content_media_type: str | None = None,
@@ -280,6 +282,16 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
         """Replace a function with itself."""
+        if not is_async_callable(fn) and self.sync_to_thread is None:
+            warnings.warn(
+                "Using a synchronous callable in a route handler might block the "
+                "main thread if the callable performs blocking operations and "
+                "sync_to_thread is not set to True. If the callable is non-blocking,"
+                "either make it asynchronous or set sync_to_thread=False explicitly "
+                "to silence this warning.",
+                category=LitestarWarning,
+                stacklevel=1,
+            )
         super().__call__(fn)
         return self
 
