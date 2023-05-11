@@ -18,7 +18,6 @@ if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.config.response_cache import CACHE_FOREVER
     from litestar.datastructures import CacheControlHeader, ETag
-    from litestar.di import Provide
     from litestar.dto.interface import DTOInterface
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
@@ -27,6 +26,7 @@ if TYPE_CHECKING:
         AfterResponseHookHandler,
         BeforeRequestHookHandler,
         CacheKeyBuilder,
+        Dependencies,
         EmptyType,
         ExceptionHandlersMap,
         Guard,
@@ -60,7 +60,7 @@ class delete(HTTPRouteHandler):
         cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
-        dependencies: dict[str, Provide] | None = None,
+        dependencies: Dependencies | None = None,
         dto: type[DTOInterface] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -221,7 +221,7 @@ class get(HTTPRouteHandler):
         cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
-        dependencies: dict[str, Provide] | None = None,
+        dependencies: Dependencies | None = None,
         dto: type[DTOInterface] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -383,7 +383,7 @@ class head(HTTPRouteHandler):
         cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
-        dependencies: dict[str, Provide] | None = None,
+        dependencies: Dependencies | None = None,
         dto: type[DTOInterface] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -562,7 +562,7 @@ class patch(HTTPRouteHandler):
         cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
-        dependencies: dict[str, Provide] | None = None,
+        dependencies: Dependencies | None = None,
         dto: type[DTOInterface] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -723,7 +723,7 @@ class post(HTTPRouteHandler):
         cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
-        dependencies: dict[str, Provide] | None = None,
+        dependencies: Dependencies | None = None,
         dto: type[DTOInterface] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -884,7 +884,7 @@ class put(HTTPRouteHandler):
         cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
-        dependencies: dict[str, Provide] | None = None,
+        dependencies: Dependencies | None = None,
         dto: type[DTOInterface] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,

@@ -4,11 +4,15 @@ back again, to bytes.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Final, Generic, TypeVar, Union
+
+from msgspec import UNSET, UnsetType
 
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
+from litestar.dto.factory import DTOData
 from litestar.utils.helpers import get_fully_qualified_class_name
+from litestar.utils.signature import ParsedType
 
 from .types import (
     CollectionType,
@@ -28,7 +32,7 @@ from .utils import (
 )
 
 if TYPE_CHECKING:
-    from typing import AbstractSet, Any, Callable, Final, Generator
+    from typing import AbstractSet, Any, Callable, Generator
 
     from litestar.dto.factory import DTOConfig
     from litestar.dto.factory.types import FieldDefinition
@@ -36,7 +40,6 @@ if TYPE_CHECKING:
     from litestar.dto.types import ForType
     from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
-    from litestar.utils.signature import ParsedType
 
     from .types import FieldDefinitionsType
 
@@ -99,6 +102,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
     __slots__ = (
         "annotation",
         "context",
+        "dto_data_type",
         "parsed_field_definitions",
         "reverse_name_map",
         "transfer_model_type",
@@ -115,7 +119,13 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         self.transfer_model_type = self.create_transfer_model_type(
             get_fully_qualified_class_name(context.model_type), self.parsed_field_definitions
         )
-        self.annotation = build_annotation_for_backend(context.parsed_type.annotation, self.transfer_model_type)
+        self.dto_data_type: type[DTOData] | None = None
+        if context.parsed_type.is_subclass_of(DTOData):
+            self.dto_data_type = context.parsed_type.annotation
+            annotation = self.dto_data_type.parsed_type.annotation
+        else:
+            annotation = context.parsed_type.annotation
+        self.annotation = build_annotation_for_backend(annotation, self.transfer_model_type)
 
     def parse_model(
         self,
@@ -152,6 +162,11 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             if should_exclude_field(field_definition, exclude, self.context.dto_for):
                 continue
 
+            if self.context.config.partial:
+                field_definition = field_definition.copy_with(  # noqa: PLW2901
+                    parsed_type=ParsedType(Union[field_definition.parsed_type.annotation, UnsetType]), default=UNSET
+                )
+
             try:
                 transfer_type = self._create_transfer_type(
                     field_definition.parsed_type,
@@ -174,6 +189,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
                 field_definition=field_definition,
                 serialization_name=serialization_name,
                 transfer_type=transfer_type,
+                is_partial=self.context.config.partial,
             )
             defined_fields.append(transfer_field_definition)
         return tuple(defined_fields)
@@ -224,12 +240,25 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         Returns:
             Instance or collection of ``model_type`` instances.
         """
-        return transfer_data(
-            self.context.model_type,
-            self.parse_builtins(builtins, connection_context),
-            self.parsed_field_definitions,
-            "data",
-        )
+        if self.dto_data_type:
+            return self.dto_data_type(
+                backend=self,
+                data_as_builtins=transfer_data(
+                    dict, self.parse_builtins(builtins, connection_context), self.parsed_field_definitions, "data"
+                ),
+            )
+        return self.transfer_data_from_builtins(self.parse_builtins(builtins, connection_context))
+
+    def transfer_data_from_builtins(self, builtins: Any) -> Any:
+        """Populate model instance from builtin types.
+
+        Args:
+            builtins: Builtin type.
+
+        Returns:
+            Instance or collection of ``model_type`` instances.
+        """
+        return transfer_data(self.context.model_type, builtins, self.parsed_field_definitions, "data")
 
     def populate_data_from_raw(self, raw: bytes, connection_context: ConnectionContext) -> Any:
         """Parse raw bytes into instance of `model_type`.
@@ -241,6 +270,13 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         Returns:
             Instance or collection of ``model_type`` instances.
         """
+        if self.dto_data_type:
+            return self.dto_data_type(
+                backend=self,
+                data_as_builtins=transfer_data(
+                    dict, self.parse_raw(raw, connection_context), self.parsed_field_definitions, "data"
+                ),
+            )
         return transfer_data(
             self.context.model_type, self.parse_raw(raw, connection_context), self.parsed_field_definitions, "data"
         )

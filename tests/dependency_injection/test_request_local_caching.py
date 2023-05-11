@@ -7,13 +7,13 @@ from litestar.testing import create_test_client
 def test_caching_per_request() -> None:
     value = 1
 
-    def first_dependency() -> int:
+    async def first_dependency() -> int:
         nonlocal value
         tmp = value
         value += 1
         return tmp  # noqa: R504
 
-    def second_dependency(first: int) -> int:
+    async def second_dependency(first: int) -> int:
         return first + 5
 
     @get()

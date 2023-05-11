@@ -18,12 +18,12 @@ def test_injection_of_classes() -> None:
 
     class MyController(Controller):
         path = "/test"
-        dependencies = {"path_param_dependency": Provide(TopLevelDependency)}
+        dependencies = {"path_param_dependency": Provide(TopLevelDependency, sync_to_thread=False)}
 
         @get(
             path="/{path_param:int}",
             dependencies={
-                "container": Provide(HandlerDependency),
+                "container": Provide(HandlerDependency, sync_to_thread=False),
             },
         )
         def test_function(self, container: HandlerDependency) -> str:
