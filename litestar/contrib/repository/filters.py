@@ -2,11 +2,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime  # noqa: TCH003
 from typing import TYPE_CHECKING, Generic, Literal, TypeVar
 
 if TYPE_CHECKING:
     from collections import abc
-    from datetime import datetime
+
 
 T = TypeVar("T")
 
