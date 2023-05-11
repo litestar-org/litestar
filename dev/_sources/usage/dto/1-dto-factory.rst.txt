@@ -154,7 +154,8 @@ data into a ``Person`` object and failed because it has no value for the require
 
 One way to handle this is to create different models, e.g., we might create a ``CreatePerson`` model that has no ``id``
 field, and decode the client data into that. However, this method can become quite cumbersome when we have a lot of
-variability in the data that we accept from clients, for example, PATCH requests.
+variability in the data that we accept from clients, for example,
+`PATCH <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH>`_ requests.
 
 This is where the :class:`DTOData <litestar.dto.factory.DTOData>` class comes in. It is a generic class that accepts the
 type of the data that it will contain, and provides useful methods for interacting with that data.
@@ -169,3 +170,25 @@ and have used that to create our ``Person`` instance, after augmenting the clien
 value.
 
 Consult the :class:`Reference Docs <litestar.dto.factory.DTOData>` for more information on the methods available.
+
+DTO Factory and PATCH requests
+------------------------------
+
+`PATCH <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH>`_ requests are a special case when it comes to
+data transfer objects. The reason for this is that we need to be able to accept and validate any subset of the model
+attributes in the client payload, which requires some special handling internally.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/patch_requests.py
+    :language: python
+    :emphasize-lines: 7,21,32,34
+    :linenos:
+
+The ``PatchDTO`` class is defined for the Person class. The ``config`` attribute of ``WriteDTO`` is set to exclude the
+id field, preventing clients from setting it when updating a person, and the ``partial`` attribute is set to ``True``,
+which allows the DTO to accept a subset of the model attributes.
+
+Inside the handler, the :meth:`DTOData.update_instance <litestar.dto.factory.DTOData.update_instance>` method is called
+to update the instance of ``Person`` before returning it.
+
+In our request, we set only the ``name`` property of the ``Person``, from ``"Peter"`` to ``"Peter Pan"`` and received
+the full object - with the modified name - back in the response.

@@ -1141,7 +1141,7 @@ field from a nested <code class="docutils literal notranslate"><span class="pre"
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.dto.factory.DTOConfig.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exclude:</span> <span class="pre">AbstractSet[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_fields:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_strategy:</span> <span class="pre">RenameStrategy</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_nested_depth:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.dto.factory.DTOConfig.__init__" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exclude:</span> <span class="pre">AbstractSet[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_fields:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_strategy:</span> <span class="pre">RenameStrategy</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_nested_depth:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partial:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.dto.factory.DTOConfig.__init__" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1160,6 +1160,12 @@ return a string.</p>
 <dd><p>The maximum depth of nested items allowed for data transfer.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.dto.factory.DTOConfig.partial">
+<span class="sig-name descname"><span class="pre">partial</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#litestar.dto.factory.DTOConfig.partial" title="Permalink to this definition">#</a></dt>
+<dd><p>Allow transfer of partial data.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -1170,6 +1176,20 @@ return a string.</p>
 <dt class="sig sig-object py" id="litestar.dto.factory.DTOData.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AbstractDTOBackend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_as_builtins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.dto.factory.DTOData.__init__" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.dto.factory.DTOData.update_instance">
+<span class="sig-name descname"><span class="pre">update_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#litestar.dto.factory.DTOData.update_instance" title="Permalink to this definition">#</a></dt>
+<dd><p>Update an instance with the DTO validated data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> – The instance to update.</p></li>
+<li><p><strong>**kwargs</strong> – Additional data to update the instance with. Takes precedence over DTO validated data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -1294,10 +1314,12 @@ field.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.DTOConfig.__init__"><code class="docutils literal notranslate"><span class="pre">DTOConfig.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.DTOConfig.rename_strategy"><code class="docutils literal notranslate"><span class="pre">DTOConfig.rename_strategy</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.DTOConfig.max_nested_depth"><code class="docutils literal notranslate"><span class="pre">DTOConfig.max_nested_depth</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.DTOConfig.partial"><code class="docutils literal notranslate"><span class="pre">DTOConfig.partial</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.DTOData"><code class="docutils literal notranslate"><span class="pre">DTOData</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.DTOData.__init__"><code class="docutils literal notranslate"><span class="pre">DTOData.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.DTOData.update_instance"><code class="docutils literal notranslate"><span class="pre">DTOData.update_instance()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.DTOField"><code class="docutils literal notranslate"><span class="pre">DTOField</span></code></a><ul class="visible nav section-nav flex-column">
