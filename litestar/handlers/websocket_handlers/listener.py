@@ -221,7 +221,7 @@ class websocket_listener(WebsocketRouteHandler):
         on_accept_dependencies: Optional[Dict[str, Any]] = None,  # noqa: UP007, UP006
         on_disconnect_dependencies: Optional[Dict[str, Any]] = None,  # noqa: UP007, UP006
     ) -> AsyncGenerator[None, None]:
-        """Handle the connection lifespan of a WebSocket.
+        """Handle the connection lifespan of a :class:`WebSocket <.connection.WebSocket>`.
 
         Args:
             socket: The :class:`WebSocket <.connection.WebSocket>` connection
