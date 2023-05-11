@@ -12,6 +12,7 @@ from litestar.cli._utils import LoadedApp
 from litestar.cli.main import litestar_group as cli_command
 from tests.cli import (
     APP_FILE_CONTENT,
+    APP_FILE_CONTENT_OPENAPI_CONFIG,
     CREATE_APP_FILE_CONTENT,
     GENERIC_APP_FACTORY_FILE_CONTENT,
     GENERIC_APP_FACTORY_FILE_CONTENT_STRING_ANNOTATION,
@@ -190,21 +191,27 @@ def test_version_command(short: bool, runner: CliRunner) -> None:
 
 
 @pytest.mark.parametrize(
-    "enable_no_schema_option, has_schema_line",
+    "app_content, enable_no_schema_option, has_schema_line",
     [
-        (True, False),
-        (False, True),
+        (APP_FILE_CONTENT, True, False),
+        (APP_FILE_CONTENT, False, True),
+        (APP_FILE_CONTENT_OPENAPI_CONFIG, True, False),
+        (APP_FILE_CONTENT_OPENAPI_CONFIG, False, True),
     ],
 )
 def test_routes_command_no_schema(
     runner: CliRunner,
+    app_content: str,
     enable_no_schema_option: bool,
     has_schema_line: bool,
     create_app_file: CreateAppFileFixture,
 ) -> None:
-    create_app_file("app.py", content=APP_FILE_CONTENT)
+    create_app_file("app.py", content=app_content)
     command = "routes --no-schema" if enable_no_schema_option else "routes"
     result = runner.invoke(cli_command, command)
 
+    assert result.exception is None
     assert result.exit_code == 0
-    assert ("/schema" in result.output) == has_schema_line
+
+    schema_path = "/api-docs" if "/api-docs" in app_content else "/schema"
+    assert (schema_path in result.output) == has_schema_line

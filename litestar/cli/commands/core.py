@@ -9,6 +9,7 @@ import click
 from click import command, option
 from rich.tree import Tree
 
+from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.cli._utils import LitestarEnv, console, show_app_info
 from litestar.routes import HTTPRoute, WebSocketRoute
 from litestar.utils.helpers import unwrap_partial
@@ -104,8 +105,11 @@ def routes_command(app: Litestar, no_schema: bool) -> None:  # pragma: no cover
 
     tree = Tree("", hide_root=True)
 
+    openapi_config = app.openapi_config or DEFAULT_OPENAPI_CONFIG
+    schema_path = openapi_config.openapi_controller.path  # /schema or user-defined path
+
     for route in sorted(app.routes, key=lambda r: r.path):
-        if no_schema and route.path.startswith("/schema"):
+        if no_schema and route.path.startswith(schema_path):
             continue
 
         if isinstance(route, HTTPRoute):
