@@ -199,4 +199,3 @@ def test_dto_openapi_model_name_collision() -> None:
             k.startswith("tests.dto.factory.test_integration.test_dto_openapi_model_name_collision.<locals>.Bar")
             for k in response.json()["components"]["schemas"]
         )
-        # todo - compare data schema vs return schema to ensure that they are different schemas
