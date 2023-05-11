@@ -224,7 +224,7 @@ class websocket_listener(WebsocketRouteHandler):
         """Handle the connection lifespan of a WebSocket.
 
         Args:
-            socket: The WebSocket connection
+            socket: The :class:`WebSocket <.connection.WebSocket>` connection
             on_accept_dependencies: Dependencies requested by the :attr:`on_accept` hook
             on_disconnect_dependencies: Dependencies requested by the :attr:`on_disconnect` hook
 
@@ -237,14 +237,14 @@ class websocket_listener(WebsocketRouteHandler):
         await self.connection_accept_handler(socket)
 
         if self.on_accept:
-            await self.on_accept(**on_accept_dependencies or {})
+            await self.on_accept(**(on_accept_dependencies or {}))
         try:
             yield
         except WebSocketDisconnect:
             pass
         finally:
             if self.on_disconnect:
-                await self.on_disconnect(**on_disconnect_dependencies or {})
+                await self.on_disconnect(**(on_disconnect_dependencies or {}))
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""
@@ -333,11 +333,11 @@ class WebsocketListener(ABC):
     middleware: list[Middleware] | None = None
     """A sequence of :class:`Middleware <.types.Middleware>`."""
     on_accept: AnyCallable | None = None
-    """Called after a WebSocket connection has been accepted. Can receive any dependencies"""
+    """Called after a :class:`WebSocket <.connection.WebSocket>` connection has been accepted. Can receive any dependencies"""
     on_disconnect: AnyCallable | None = None
-    """Called after a WebSocket connection has been disconnected. Can receive any dependencies"""
+    """Called after a :class:`WebSocket <.connection.WebSocket>` connection has been disconnected. Can receive any dependencies"""
     receive_mode: WebSocketMode = "text"
-    """Websocket mode to receive data in, either `text` or `binary`."""
+    """:class:`WebSocket <.connection.WebSocket>` mode to receive data in, either ``text`` or ``binary``."""
     send_mode: WebSocketMode = "text"
     """Websocket mode to send data in, either `text` or `binary`."""
     name: str | None = None
