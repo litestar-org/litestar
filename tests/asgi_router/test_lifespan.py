@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, AsyncGenerator, Callable
 from unittest.mock import AsyncMock
@@ -90,17 +91,23 @@ def test_lifespan_context_manager(
 def test_lifespan_context_manager_with_hooks(
     lifespan_manager: LifeSpanManager, startup_mock: AsyncMock, shutdown_mock: AsyncMock
 ) -> None:
-    on_startup = AsyncMock()
-    on_shutdown = AsyncMock()
+    on_startup_hook_mock = AsyncMock()
+    on_shutdown_hook_mock = AsyncMock()
+
+    async def on_startup() -> None:
+        await on_startup_hook_mock()
+
+    async def on_shutdown() -> None:
+        await on_shutdown_hook_mock()
 
     with create_test_client(lifespan=[lifespan_manager], on_startup=[on_startup], on_shutdown=[on_shutdown]):
         assert startup_mock.call_count == 1
-        assert on_startup.call_count == 1
+        assert on_startup_hook_mock.call_count == 1
         assert shutdown_mock.call_count == 0
-        assert on_shutdown.call_count == 0
+        assert on_shutdown_hook_mock.call_count == 0
 
     assert shutdown_mock.call_count == 1
-    assert on_shutdown.call_count == 1
+    assert on_shutdown_hook_mock.call_count == 1
 
 
 def test_multiple_lifespan_managers() -> None:
