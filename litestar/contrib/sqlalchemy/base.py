@@ -34,6 +34,9 @@ __all__ = (
     "ModelProtocol",
     "touch_updated_timestamp",
     "UUIDPrimaryKey",
+    "BigIntPrimaryKey",
+    "BigIntBase",
+    "BigIntAuditBase",
 )
 
 
