@@ -53,8 +53,8 @@ class Provide:
         if self.has_sync_callable and sync_to_thread is None:
             warnings.warn(
                 "Using a synchronous callable with Provide might block the main thread "
-                "if the callable performs blocking operations and sync_to_thread is not"
-                " set to True. If the callable is non-blocking, either make it "
+                "if the callable performs blocking operations and sync_to_thread is not "
+                "set to True. If the callable is non-blocking, either make it "
                 "asynchronous or set sync_to_thread=False explicitly to silence this "
                 "warning.",
                 category=LitestarWarning,
