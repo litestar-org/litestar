@@ -216,7 +216,7 @@ class Litestar(Router):
         template_config: TemplateConfig | None = None,
         type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
-        lifespan: list[Callable[[], AbstractAsyncContextManager]] | None = None,
+        lifespan: list[Callable[[Litestar], AbstractAsyncContextManager]] | None = None,
     ) -> None:
         """Initialize a ``Litestar`` application.
 
@@ -506,12 +506,20 @@ class Litestar(Router):
 
     @asynccontextmanager
     async def lifespan(self) -> AsyncGenerator[None, None]:
+        """Context manager handling the ASGI lifespan.
+
+        It will be entered when the ``lifespan`` message has been received from the
+        server, and exit after the ``asgi.shutdown`` message. During this period, it is
+        responsible for calling the ``before_startup``, ``after_startup``,
+        `on_startup``, ``before_shutdown``, ``on_shutdown`` and ``after_shutdown``
+        hooks, as well as custom lifespan managers.
+        """
         async with AsyncExitStack() as exit_stack:
             for hook in self.before_startup:
                 await hook(self)
 
             for manager in self._lifespan_managers:
-                await exit_stack.enter_async_context(manager())
+                await exit_stack.enter_async_context(manager(self))
 
             await self.event_emitter.on_startup()
 

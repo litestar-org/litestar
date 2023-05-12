@@ -4,12 +4,14 @@ from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, AsyncGenerator, Callable
 from unittest.mock import AsyncMock
 
+from litestar import Litestar
+
 if TYPE_CHECKING:
     from contextlib import AbstractAsyncContextManager
 
 import pytest
 
-from litestar.testing import create_test_client
+from litestar.testing import TestClient, create_test_client
 
 
 class _LifeSpanCallable:
@@ -58,14 +60,14 @@ def shutdown_mock() -> AsyncMock:
     return AsyncMock()
 
 
-LifeSpanManager = Callable[[], "AbstractAsyncContextManager[None]"]
+LifeSpanManager = Callable[[Litestar], "AbstractAsyncContextManager[None]"]
 
 
 def create_lifespan_manager(startup_mock: AsyncMock, shutdown_mock: AsyncMock) -> LifeSpanManager:
     @asynccontextmanager
-    async def lifespan() -> AsyncGenerator[None, None]:
+    async def lifespan(app: Litestar) -> AsyncGenerator[None, None]:
         try:
-            await startup_mock()
+            await startup_mock(app)
             yield
         finally:
             await shutdown_mock()
@@ -121,8 +123,10 @@ def test_multiple_lifespan_managers() -> None:
         startup_mocks.append(startup_mock)
         shutdown_mocks.append(shutdown_mock)
 
-    with create_test_client(lifespan=managers):
-        assert all(m.call_count == 1 for m in startup_mocks)
+    app = Litestar(lifespan=managers)
+    with TestClient(app=app):
+        for m in startup_mocks:
+            m.assert_called_once_with(app)
         assert all(m.call_count == 0 for m in shutdown_mocks)
 
     assert all(m.call_count == 1 for m in startup_mocks)
