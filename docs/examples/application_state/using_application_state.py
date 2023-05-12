@@ -27,7 +27,7 @@ def middleware_factory(*, app: "ASGIApp") -> "ASGIApp":
     return my_middleware
 
 
-def my_dependency(state: State) -> Any:
+async def my_dependency(state: State) -> Any:
     """Dependencies can receive state via injection."""
     logger.info("state value in dependency: %s", state.value)
 

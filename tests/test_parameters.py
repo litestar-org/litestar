@@ -68,7 +68,7 @@ def test_parsing_of_body_as_default_value(backend: Any) -> None:
 
 @pytest.mark.parametrize("backend", ("pydantic", "attrs"))
 def test_parsing_of_dependency_as_annotated(backend: Any) -> None:
-    @get(path="/", dependencies={"dep": Provide(lambda: None)})
+    @get(path="/", dependencies={"dep": Provide(lambda: None, sync_to_thread=False)})
     def handler(dep: Annotated[int, Dependency(skip_validation=True)]) -> int:
         return dep
 
@@ -79,7 +79,7 @@ def test_parsing_of_dependency_as_annotated(backend: Any) -> None:
 
 @pytest.mark.parametrize("backend", ("pydantic", "attrs"))
 def test_parsing_of_dependency_as_default_value(backend: Any) -> None:
-    @get(path="/", dependencies={"dep": Provide(lambda: None)})
+    @get(path="/", dependencies={"dep": Provide(lambda: None, sync_to_thread=False)})
     def handler(dep: int = Dependency(skip_validation=True)) -> int:
         return dep
 

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar, cast
 
 from litestar._signature import create_signature_model
 from litestar._signature.field import SignatureField
+from litestar.di import Provide
 from litestar.dto.interface import HandlerContext
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Dependencies, Empty, ExceptionHandlersMap, Guard, Middleware, TypeEncodersMap
@@ -20,7 +21,6 @@ if TYPE_CHECKING:
     from litestar._signature.models import SignatureModel
     from litestar.connection import ASGIConnection
     from litestar.controller import Controller
-    from litestar.di import Provide
     from litestar.dto.interface import DTOInterface
     from litestar.params import ParameterKwarg
     from litestar.plugins import SerializationPluginProtocol
@@ -251,6 +251,8 @@ class BaseRouteHandler(Generic[T]):
 
             for layer in self.ownership_layers:
                 for key, value in (layer.dependencies or {}).items():
+                    if not isinstance(value, Provide):
+                        value = Provide(value)  # noqa: PLW2901
                     self._validate_dependency_is_unique(
                         dependencies=self._resolved_dependencies, key=key, provider=value
                     )
