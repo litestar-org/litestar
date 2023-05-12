@@ -37,7 +37,7 @@ def root(store: DictStore) -> Optional[Item]:
     return store.get("0")
 
 
-def get_item_store() -> DictStore:
+async def get_item_store() -> DictStore:
     return DictStore(model=Item)  # type: ignore
 
 

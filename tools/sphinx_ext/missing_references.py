@@ -26,7 +26,7 @@ def _get_import_nodes(nodes: list[ast.stmt]) -> Generator[ast.Import | ast.Impor
     for node in nodes:
         if isinstance(node, (ast.Import, ast.ImportFrom)):
             yield node
-        elif isinstance(node, ast.If) and node.test.id == "TYPE_CHECKING":
+        elif isinstance(node, ast.If) and getattr(node.test, "id", None) == "TYPE_CHECKING":
             yield from _get_import_nodes(node.body)
 
 

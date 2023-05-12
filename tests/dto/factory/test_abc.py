@@ -118,7 +118,7 @@ def test_config_field_rename() -> None:
     dto_type = DataclassDTO[Annotated[Model, config]]
     dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Model)))
     field_definitions = get_backend(dto_type).parsed_field_definitions
-    assert field_definitions["a"].serialization_name == "z"
+    assert field_definitions[0].serialization_name == "z"
 
 
 def test_type_narrowing_with_multiple_configs() -> None:
@@ -172,7 +172,7 @@ def test_sub_types_supported() -> None:
         c: int
 
     dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(SubType)))
-    assert "c" in dto_type._handler_backend_map[("data", "handler")].parsed_field_definitions
+    assert dto_type._handler_backend_map[("data", "handler")].parsed_field_definitions[-1].name == "c"
 
 
 def test_create_openapi_schema(monkeypatch: MonkeyPatch) -> None:

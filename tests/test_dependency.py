@@ -39,7 +39,7 @@ def test_non_optional_with_default() -> None:
 
 
 def test_no_default_dependency_provided() -> None:
-    @get(dependencies={"value": Provide(lambda: 13)})
+    @get(dependencies={"value": Provide(lambda: 13, sync_to_thread=False)})
     def test(value: int = Dependency()) -> Dict[str, int]:
         return {"value": value}
 
@@ -64,7 +64,7 @@ def test_dependency_provided_on_controller() -> None:
 
     class C(Controller):
         path = ""
-        dependencies = {"value": Provide(lambda: 13)}
+        dependencies = {"value": Provide(lambda: 13, sync_to_thread=False)}
 
         @get()
         def test(self, value: int = Dependency()) -> Dict[str, int]:
@@ -85,7 +85,7 @@ def test_dependency_skip_validation() -> None:
         return {"value": value}
 
     with create_test_client(
-        route_handlers=[validated, skipped], dependencies={"value": Provide(lambda: "str")}
+        route_handlers=[validated, skipped], dependencies={"value": Provide(lambda: "str", sync_to_thread=False)}
     ) as client:
         validated_resp = client.get("/validated")
         assert validated_resp.status_code == HTTP_500_INTERNAL_SERVER_ERROR
@@ -110,7 +110,7 @@ def test_nested_sequence_dependency() -> None:
         def __init__(self, seq: List[str]) -> None:
             self.seq = seq
 
-    def provides_obj(seq: List[str]) -> Obj:
+    async def provides_obj(seq: List[str]) -> Obj:
         return Obj(seq)
 
     @get("/obj")

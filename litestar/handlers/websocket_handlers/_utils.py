@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import inspect
-from typing import TYPE_CHECKING, Any, Callable, Coroutine, cast
+from functools import wraps
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, Dict, cast
 
+from litestar.di import Provide
 from litestar.dto.interface import ConnectionContext
 from litestar.serialization import decode_json
 from litestar.utils import AsyncCallable
+from litestar.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
     from contextlib import AbstractAsyncContextManager
@@ -112,11 +115,13 @@ def create_handle_send(
 
 def create_handler_function(
     listener_context: ListenerContext,
-    lifespan_manager: Callable[[WebSocket], AbstractAsyncContextManager],
+    lifespan_manager: Callable[..., AbstractAsyncContextManager],
 ) -> Callable[..., Coroutine[None, None, None]]:
     listener_callback = AsyncCallable(listener_context.listener_callback)
 
-    async def handler_fn(*args: Any, socket: WebSocket, **kwargs: Any) -> None:
+    async def handler_fn(
+        *args: Any, socket: WebSocket, connection_lifespan_dependencies: Dict[str, Any], **kwargs: Any  # noqa: UP006
+    ) -> None:
         ctx = ConnectionContext.from_connection(socket)
         data_dto = listener_context.resolved_data_dto(ctx) if listener_context.resolved_data_dto else None
         return_dto = listener_context.resolved_return_dto(ctx) if listener_context.resolved_return_dto else None
@@ -126,7 +131,7 @@ def create_handler_function(
         if listener_context.pass_socket:
             kwargs["socket"] = socket
 
-        async with lifespan_manager(socket):
+        async with lifespan_manager(**connection_lifespan_dependencies):
             while True:
                 received_data = await handle_receive(socket, data_dto)
                 data_to_send = await listener_callback(*args, data=received_data, **kwargs)
@@ -155,4 +160,24 @@ def create_handler_signature(callback_signature: inspect.Signature) -> inspect.S
     new_params = [p for p in callback_signature.parameters.values() if p.name not in {"data"}]
     if "socket" not in callback_signature.parameters:
         new_params.append(inspect.Parameter(name="socket", kind=inspect.Parameter.KEYWORD_ONLY, annotation="WebSocket"))
+
+    new_params.append(
+        inspect.Parameter(
+            name="connection_lifespan_dependencies", kind=inspect.Parameter.KEYWORD_ONLY, annotation="Dict[str, Any]"
+        )
+    )
+
     return callback_signature.replace(parameters=new_params)
+
+
+def create_stub_dependency(src: AnyCallable) -> Provide:
+    """Create a stub dependency, accepting any kwargs defined in ``src``, and
+    wrap it in ``Provide``
+    """
+    src = unwrap_partial(src)
+
+    @wraps(src)
+    async def stub(**kwargs: Any) -> Dict[str, Any]:  # noqa: UP006
+        return kwargs
+
+    return Provide(stub)
