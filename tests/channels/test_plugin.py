@@ -263,6 +263,14 @@ async def test_unsubscribe(
         assert subscriber_2 in plugin._channels[channel]
 
 
+async def test_subscribe_after_unsubscribe(memory_backend: MemoryChannelsBackend) -> None:
+    plugin = ChannelsPlugin(backend=memory_backend, channels=["foo"])
+    subscriber = await plugin.subscribe("foo")
+    await plugin.unsubscribe(subscriber)
+
+    await plugin.subscribe("foo")
+
+
 async def test_unsubscribe_last_subscriber_unsubscribes_backend(
     memory_backend: MemoryChannelsBackend, async_mock: AsyncMock
 ) -> None:
