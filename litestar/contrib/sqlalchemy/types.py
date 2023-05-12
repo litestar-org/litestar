@@ -5,11 +5,20 @@ from typing import TYPE_CHECKING, Any, cast
 
 from sqlalchemy.dialects.postgresql import JSONB as PG_JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.types import BINARY, CHAR, TypeDecorator
+from sqlalchemy.types import BINARY, CHAR, BigInteger, Integer, TypeDecorator
 from sqlalchemy.types import JSON as _JSON
 
 if TYPE_CHECKING:
     from sqlalchemy.engine import Dialect
+
+BigIntIdentity = BigInteger().with_variant(Integer, "sqlite")
+"""Platform-independent BigInteger Primary Key.
+
+User a Big Integer on engines that support it.
+
+Uses Integer for sqlite since there is no
+
+"""
 
 
 class GUID(TypeDecorator):

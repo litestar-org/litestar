@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar, runtime_chec
 from uuid import UUID, uuid4
 
 from pydantic import AnyHttpUrl, AnyUrl, EmailStr
-from sqlalchemy import BigInteger, Identity, MetaData, String
+from sqlalchemy import Identity, MetaData, String
 from sqlalchemy.event import listens_for
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -20,7 +20,7 @@ from sqlalchemy.orm import (
     registry,
 )
 
-from .types import GUID, JSON
+from .types import GUID, JSON, BigIntIdentity
 
 if TYPE_CHECKING:
     from sqlalchemy.sql import FromClause
@@ -102,7 +102,7 @@ class BigIntPrimaryKey:
 
     __abstract__ = True
 
-    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    id: Mapped[int] = mapped_column(BigIntIdentity, Identity(always=True), primary_key=True)
     """BigInt Primary key column."""
 
 
