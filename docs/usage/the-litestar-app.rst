@@ -77,7 +77,7 @@ long running tasks, or those that need to keep a certain context object, such as
 connection around.
 
 
-.. literalinclude:: /examples/application_hooks.py
+.. literalinclude:: /examples/application_hooks/lifespan_manager.py
     :language: python
     :caption: A lifetime manager, printing the time every second in the background
 
