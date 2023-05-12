@@ -68,6 +68,20 @@ establish the connection, and another to close it, and then pass them to the Lit
     :language: python
 
 
+Lifespan context managers
+-------------------------
+
+In addition to the lifespan hooks, Litestar also supports managing the lifespan of an
+application using asynchronous context managers. This can be useful when dealing with
+long running tasks, or those that need to keep a certain context object, such as a
+connection around.
+
+
+.. literalinclude:: /examples/application_hooks.py
+    :language: python
+    :caption: A lifetime manager, printing the time every second in the background
+
+
 
 Using Application State
 -----------------------
