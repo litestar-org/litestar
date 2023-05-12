@@ -131,7 +131,7 @@ def _structure_timedelta(value: Any, cls: type[timedelta]) -> timedelta:
         return value
     if isinstance(value, (float, int, Decimal)):
         return cls(seconds=int(value))
-    return cls(seconds=timeparse(value))
+    return cls(seconds=timeparse(value))  # pyright: ignore
 
 
 def _structure_decimal(value: Any, cls: type[Decimal]) -> Decimal:

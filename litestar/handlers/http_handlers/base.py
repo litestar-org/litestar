@@ -32,6 +32,7 @@ from litestar.types import (
     ASGIApp,
     BeforeRequestHookHandler,
     CacheKeyBuilder,
+    Dependencies,
     Empty,
     EmptyType,
     ExceptionHandlersMap,
@@ -55,7 +56,6 @@ if TYPE_CHECKING:
     from litestar.connection import Request
     from litestar.datastructures import CacheControlHeader, ETag
     from litestar.datastructures.headers import Header
-    from litestar.di import Provide
     from litestar.dto.interface import DTOInterface
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
@@ -124,7 +124,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
-        dependencies: Mapping[str, Provide] | None = None,
+        dependencies: Dependencies | None = None,
         dto: type[DTOInterface] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,

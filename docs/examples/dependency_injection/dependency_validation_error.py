@@ -4,7 +4,7 @@ from litestar import Litestar, get
 from litestar.di import Provide
 
 
-def provide_str() -> str:
+async def provide_str() -> str:
     """Returns a string."""
     return "whoops"
 

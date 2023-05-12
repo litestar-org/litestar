@@ -7,13 +7,13 @@ from litestar.testing import create_test_client
 
 
 def test_inter_dependencies() -> None:
-    def top_dependency(query_param: int) -> int:
+    async def top_dependency(query_param: int) -> int:
         return query_param
 
-    def mid_level_dependency() -> int:
+    async def mid_level_dependency() -> int:
         return 5
 
-    def local_dependency(path_param: int, mid_level: int, top_level: int) -> int:
+    async def local_dependency(path_param: int, mid_level: int, top_level: int) -> int:
         return path_param + mid_level + top_level
 
     class MyController(Controller):
@@ -36,10 +36,10 @@ def test_inter_dependencies() -> None:
 
 
 def test_inter_dependencies_on_same_app_level() -> None:
-    def first_dependency() -> int:
+    async def first_dependency() -> int:
         return randint(1, 10)
 
-    def second_dependency(injected_integer: int) -> bool:
+    async def second_dependency(injected_integer: int) -> bool:
         return injected_integer % 2 == 0
 
     @get("/true-or-false")
