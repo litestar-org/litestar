@@ -17,7 +17,7 @@ class User(Base):
 UserDTO = SQLAlchemyDTO[User]
 
 
-@post("/users", dto=UserDTO)
+@post("/users", dto=UserDTO, sync_to_thread=False)
 def create_user(data: User) -> User:
     return data
 

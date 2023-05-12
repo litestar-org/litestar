@@ -20,7 +20,7 @@ config = DTOConfig(rename_fields={"name": "userName"})
 UserDTO = SQLAlchemyDTO[Annotated[User, config]]
 
 
-@post("/users", dto=UserDTO)
+@post("/users", dto=UserDTO, sync_to_thread=False)
 def create_user(data: User) -> User:
     assert data.name == "Litestar User"
     data.created_at = datetime.min

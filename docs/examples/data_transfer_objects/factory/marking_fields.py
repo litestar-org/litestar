@@ -18,7 +18,7 @@ class User(Base):
 UserDTO = SQLAlchemyDTO[User]
 
 
-@post("/users", dto=UserDTO)
+@post("/users", dto=UserDTO, sync_to_thread=False)
 def create_user(data: User) -> User:
     # even though the client sent the password and created_at field, it is not in the data object
     assert "password" not in vars(data)
