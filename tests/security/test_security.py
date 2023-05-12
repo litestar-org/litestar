@@ -41,7 +41,7 @@ def test_abstract_security_config_sets_dependencies(session_backend_config_memor
     security_config = SessionAuth[Any, ServerSideSessionBackend](
         retrieve_user_handler=retrieve_user_handler,
         session_backend_config=session_backend_config_memory,
-        dependencies={"value": Provide(lambda: 13)},
+        dependencies={"value": Provide(lambda: 13, sync_to_thread=False)},
     )
 
     with create_test_client([], on_app_init=[security_config.on_app_init]) as client:

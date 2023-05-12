@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from litestar.dto.factory import DTOConfig
 from litestar.dto.factory._backends import MsgspecDTOBackend, PydanticDTOBackend
 from litestar.dto.factory._backends.abc import BackendContext
-from litestar.dto.factory._backends.types import NestedFieldDefinition
+from litestar.dto.factory._backends.types import CollectionType, SimpleType
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.dto.interface import ConnectionContext
 from litestar.enums import MediaType
@@ -151,10 +151,10 @@ def test_backend_scalar_annotation(backend_type: type[AbstractDTOBackend], backe
 
 @pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
 def test_backend_populate_data_from_builtins(
-    backend_type: type[AbstractDTOBackend], backend_context: BackendContext
+    backend_type: type[AbstractDTOBackend], backend_context: BackendContext, connection_context: ConnectionContext
 ) -> None:
     backend = backend_type(backend_context)
-    data = backend.populate_data_from_builtins(data=DESTRUCTURED)
+    data = backend.populate_data_from_builtins(builtins=DESTRUCTURED, connection_context=connection_context)
     assert data == STRUCTURED
 
 
@@ -246,21 +246,28 @@ class Model:
 dto_type = DataclassDTO[Model]
     """
     )
-    config = DTOConfig(max_nested_depth=2, exclude={"a", "b.c", "b.d.e"})
+    config = DTOConfig(max_nested_depth=2, exclude={"a", "b.c", "b.d.0.e"})
     ctx = BackendContext(
         dto_config=config,
         dto_for="data",
         parsed_type=ParsedType(module.Model),
         field_definition_generator=DataclassDTO.generate_field_definitions,
-        nested_field_detector=DataclassDTO.detect_nested_field,
+        is_nested_field_predicate=DataclassDTO.detect_nested_field,
         model_type=module.Model,
     )
     parsed = MsgspecDTOBackend(context=ctx).parsed_field_definitions
-    assert "a" not in parsed
-    assert "b" in parsed
-    assert isinstance(parsed["b"], NestedFieldDefinition)
-    assert "c" not in parsed["b"].nested_field_definitions
-    assert "d" in parsed["b"].nested_field_definitions
-    assert isinstance(parsed["b"].nested_field_definitions["d"], NestedFieldDefinition)
-    assert "e" not in parsed["b"].nested_field_definitions["d"].nested_field_definitions
-    assert "f" in parsed["b"].nested_field_definitions["d"].nested_field_definitions
+    assert not any(f.name == "a" for f in parsed)
+    assert parsed[0].name == "b"
+    b_transfer_type = parsed[0].transfer_type
+    assert isinstance(b_transfer_type, SimpleType)
+    b_nested_info = b_transfer_type.nested_field_info
+    assert b_nested_info is not None
+    assert not any(f.name == "c" for f in b_nested_info.field_definitions)
+    assert b_nested_info.field_definitions[0].name == "d"
+    b_d_transfer_type = b_nested_info.field_definitions[0].transfer_type
+    assert isinstance(b_d_transfer_type, CollectionType)
+    assert isinstance(b_d_transfer_type.inner_type, SimpleType)
+    b_d_nested_info = b_d_transfer_type.inner_type.nested_field_info
+    assert b_d_nested_info is not None
+    assert not any(f.name == "e" for f in b_d_nested_info.field_definitions)
+    assert b_d_nested_info.field_definitions[0].name == "f"

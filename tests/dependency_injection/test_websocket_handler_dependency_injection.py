@@ -45,12 +45,15 @@ test_path = "/test"
 
 class FirstController(Controller):
     path = test_path
-    dependencies = {"first": Provide(controller_first_dependency), "second": Provide(controller_second_dependency)}
+    dependencies = {
+        "first": Provide(controller_first_dependency, sync_to_thread=True),
+        "second": Provide(controller_second_dependency),
+    }
 
     @websocket(
         path="/{path_param:str}",
         dependencies={
-            "first": Provide(local_method_first_dependency),
+            "first": Provide(local_method_first_dependency, sync_to_thread=False),
         },
     )
     async def test_method(self, socket: WebSocket, first: int, second: dict, third: bool) -> None:
@@ -68,7 +71,7 @@ def test_controller_dependency_injection() -> None:
     client = create_test_client(
         FirstController,
         dependencies={
-            "second": Provide(router_first_dependency),
+            "second": Provide(router_first_dependency, sync_to_thread=False),
             "third": Provide(router_second_dependency),
         },
     )
@@ -80,8 +83,8 @@ def test_function_dependency_injection() -> None:
     @websocket(
         path=test_path + "/{path_param:str}",
         dependencies={
-            "first": Provide(local_method_first_dependency),
-            "third": Provide(local_method_second_dependency),
+            "first": Provide(local_method_first_dependency, sync_to_thread=False),
+            "third": Provide(local_method_second_dependency, sync_to_thread=False),
         },
     )
     async def test_function(socket: WebSocket, first: int, second: bool, third: str) -> None:
@@ -97,7 +100,7 @@ def test_function_dependency_injection() -> None:
     client = create_test_client(
         test_function,
         dependencies={
-            "first": Provide(router_first_dependency),
+            "first": Provide(router_first_dependency, sync_to_thread=False),
             "second": Provide(router_second_dependency),
         },
     )

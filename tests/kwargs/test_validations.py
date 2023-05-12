@@ -12,7 +12,7 @@ from litestar.handlers.http_handlers import HTTPRouteHandler
 from litestar.params import Body, Parameter
 
 
-def my_dependency() -> int:
+async def my_dependency() -> int:
     return 1
 
 
@@ -106,13 +106,13 @@ def json_dependency(data: Dict[str, Any] = Body()) -> Dict[str, Any]:
     return data
 
 
-@post("/", dependencies={"first": Provide(json_dependency)})
+@post("/", dependencies={"first": Provide(json_dependency, sync_to_thread=True)})
 def accepted_json_handler(data: Dict[str, Any], first: Dict[str, Any]) -> None:
     assert data
     assert first
 
 
-@post("/", dependencies={"first": Provide(url_encoded_dependency)})
+@post("/", dependencies={"first": Provide(url_encoded_dependency, sync_to_thread=True)})
 def accepted_url_encoded_handler(
     first: Dict[str, Any],
     data: Dict[str, Any] = Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -121,7 +121,7 @@ def accepted_url_encoded_handler(
     assert first
 
 
-@post("/", dependencies={"first": Provide(multi_part_dependency)})
+@post("/", dependencies={"first": Provide(multi_part_dependency, sync_to_thread=True)})
 def accepted_multi_part_handler(
     first: Dict[str, Any],
     data: Dict[str, Any] = Body(media_type=RequestEncodingType.MULTI_PART),
@@ -147,7 +147,7 @@ def test_dependency_data_kwarg_validation_success_scenarios(handler: HTTPRouteHa
     ],
 )
 def test_dependency_data_kwarg_validation_failure_scenarios(body: FieldInfo, dependency: Callable) -> None:
-    @post("/", dependencies={"first": Provide(dependency)})
+    @post("/", dependencies={"first": Provide(dependency, sync_to_thread=False)})
     def handler(first: Dict[str, Any], data: Any = body) -> None:
         assert first
         assert data

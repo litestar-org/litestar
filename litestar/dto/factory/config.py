@@ -36,3 +36,5 @@ class DTOConfig:
     Fields defined in ``rename_fields`` are ignored."""
     max_nested_depth: int = 1
     """The maximum depth of nested items allowed for data transfer."""
+    partial: bool = False
+    """Allow transfer of partial data."""

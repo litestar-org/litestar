@@ -69,15 +69,21 @@ class ChangeDirective(SphinxDirective):
 class ChangelogDirective(SphinxDirective):
     required_arguments = 1
     has_content = True
+    option_spec = {"date": directives.unchanged}
 
     def run(self) -> list[nodes.Node]:
         self.assert_has_content()
 
         version = self.arguments[0]
+        release_date = self.options.get("date")
 
         changelog_node = nodes.section()
         changelog_node += nodes.title(version, version)
         section_target = nodes.target("", "", ids=[version])
+
+        if release_date:
+            changelog_node += nodes.strong("", "Released: ")
+            changelog_node += nodes.Text(release_date)
 
         self.state.nested_parse(self.content, self.content_offset, changelog_node)
 
@@ -91,7 +97,7 @@ class ChangelogDirective(SphinxDirective):
 
         nodes_to_remove = []
 
-        for change_node in changelog_node.findall(Change):
+        for i, change_node in enumerate(changelog_node.findall(Change)):
             change_type = change_node.attributes["change_type"]
             title = change_node.attributes["title"]
 
@@ -99,6 +105,10 @@ class ChangelogDirective(SphinxDirective):
 
             term = nodes.term()
             term += title
+            target_id = f"{version}-{change_type}-{i}"
+            term += nodes.reference(
+                "#", "#", refuri="#" + target_id, internal=True, classes=["headerlink"], ids=[target_id]
+            )
             if change_node.attributes["breaking"]:
                 breaking_notice = nodes.inline("breaking", "breaking")
                 breaking_notice.attributes["classes"].append("breaking-change")

@@ -145,13 +145,21 @@ def test_deduplication_for_param_where_key_and_type_are_equal() -> None:
     class BDep(BaseDep):
         ...
 
-    def c_dep(other_param: float) -> float:
+    async def c_dep(other_param: float) -> float:
         return other_param
 
-    def d_dep(other_param: float) -> float:
+    async def d_dep(other_param: float) -> float:
         return other_param
 
-    @get("/test", dependencies={"a": Provide(ADep), "b": Provide(BDep), "c": Provide(c_dep), "d": Provide(d_dep)})
+    @get(
+        "/test",
+        dependencies={
+            "a": Provide(ADep, sync_to_thread=False),
+            "b": Provide(BDep, sync_to_thread=False),
+            "c": Provide(c_dep),
+            "d": Provide(d_dep),
+        },
+    )
     def handler(a: ADep, b: BDep, c: float, d: float) -> str:
         return "OK"
 
@@ -164,10 +172,10 @@ def test_deduplication_for_param_where_key_and_type_are_equal() -> None:
 
 
 def test_raise_for_multiple_parameters_of_same_name_and_differing_types() -> None:
-    def a_dep(query_param: int) -> int:
+    async def a_dep(query_param: int) -> int:
         return query_param
 
-    def b_dep(query_param: str) -> int:
+    async def b_dep(query_param: str) -> int:
         return 1
 
     @get("/test", dependencies={"a": Provide(a_dep), "b": Provide(b_dep)})
@@ -181,7 +189,7 @@ def test_raise_for_multiple_parameters_of_same_name_and_differing_types() -> Non
 
 
 def test_dependency_params_in_docs_if_dependency_provided() -> None:
-    def produce_dep(param: str) -> int:
+    async def produce_dep(param: str) -> int:
         return 13
 
     @get(dependencies={"dep": Provide(produce_dep)})

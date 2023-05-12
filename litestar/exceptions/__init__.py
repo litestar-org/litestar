@@ -1,8 +1,4 @@
-from .base_exceptions import (
-    LitestarException,
-    MissingDependencyException,
-    SerializationException,
-)
+from .base_exceptions import LitestarException, LitestarWarning, MissingDependencyException, SerializationException
 from .http_exceptions import (
     ClientException,
     HTTPException,
@@ -25,6 +21,8 @@ __all__ = (
     "HTTPException",
     "ImproperlyConfiguredException",
     "InternalServerException",
+    "LitestarException",
+    "LitestarWarning",
     "MethodNotAllowedException",
     "MissingDependencyException",
     "NoRouteMatchFoundException",
@@ -33,7 +31,6 @@ __all__ = (
     "PermissionDeniedException",
     "SerializationException",
     "ServiceUnavailableException",
-    "LitestarException",
     "TemplateNotFoundException",
     "TooManyRequestsException",
     "ValidationException",

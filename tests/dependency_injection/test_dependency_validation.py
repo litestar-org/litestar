@@ -5,12 +5,12 @@ from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException
 
 
-def first_method(query_param: int) -> int:
+async def first_method(query_param: int) -> int:
     assert isinstance(query_param, int)
     return query_param
 
 
-def second_method(path_param: str) -> str:
+async def second_method(path_param: str) -> str:
     assert isinstance(path_param, str)
     return path_param
 
