@@ -214,7 +214,8 @@ filterwarnings = [
 ]
 markers = [
     "sqlalchemy_asyncmy: SQLAlchemy MySQL (asyncmy) Tests",
-    "sqlalchemy_asyncpg: SQLAlchemy Postgres (asyncpg) Tests"
+    "sqlalchemy_asyncpg: SQLAlchemy Postgres (asyncpg) Tests",
+    "sqlalchemy_psycopg_async: SQLAlchemy Postgres (psycopg async) Tests"
 ]
 
 [tool.pyright]
