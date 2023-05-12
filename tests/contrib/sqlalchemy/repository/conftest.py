@@ -69,8 +69,6 @@ def fx_raw_books(raw_authors: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "title": "Murder on the Orient Express",
             "author_id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
             "author": raw_authors[0],
-            "created": "0001-01-01T00:00:00",
-            "updated": "0001-01-01T00:00:00",
         },
     ]
 
@@ -83,6 +81,29 @@ def fx_raw_log_events() -> list[dict[str, Any]]:
             "id": "f34545b9-663c-4fce-915d-dd1ae9cea42a",
             "logged_at": "0001-01-01T00:00:00",
             "payload": {"foo": "bar", "baz": datetime.now()},
+            "created": "0001-01-01T00:00:00",
+            "updated": "0001-01-01T00:00:00",
+        },
+    ]
+
+
+@pytest.fixture(name="raw_ingredients")
+def fx_raw_ingredients() -> list[dict[str, Any]]:
+    """Unstructured ingredients representations."""
+    return [{"name": "Apple"}, {"name": "Orange"}]
+
+
+@pytest.fixture(name="raw_stores")
+def fx_raw_stores() -> list[dict[str, Any]]:
+    """Unstructured store representations."""
+    return [
+        {
+            "store_name": "Super Market - Talladega, AL",
+            "created": "0001-01-01T00:00:00",
+            "updated": "0001-01-01T00:00:00",
+        },
+        {
+            "store_name": "Corner Store - Moody, AL",
             "created": "0001-01-01T00:00:00",
             "updated": "0001-01-01T00:00:00",
         },

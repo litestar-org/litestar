@@ -13,10 +13,23 @@ from sqlalchemy.ext.asyncio import (
 
 from litestar.contrib.repository.exceptions import RepositoryError
 from litestar.contrib.sqlalchemy import base
-from tests.contrib.sqlalchemy.models import Author, AuthorRepository, BookRepository
+from tests.contrib.sqlalchemy.models import (
+    Author,
+    AuthorRepository,
+    BookRepository,
+    Ingredient,
+    Store,
+    StoreRepository,
+)
 
 
-async def seed_db(engine: AsyncEngine, raw_authors: list[dict[str, Any]], raw_books: list[dict[str, Any]]) -> None:
+async def seed_db(
+    engine: AsyncEngine,
+    raw_authors: list[dict[str, Any]],
+    raw_books: list[dict[str, Any]],
+    raw_stores: list[dict[str, Any]],
+    raw_ingredients: list[dict[str, Any]],
+) -> None:
     """Populate test database with sample data.
 
     Args:
@@ -27,11 +40,15 @@ async def seed_db(engine: AsyncEngine, raw_authors: list[dict[str, Any]], raw_bo
         raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d")
         raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
         raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
-
+    for raw_store in raw_stores:
+        raw_store["created"] = datetime.strptime(raw_store["created"], "%Y-%m-%dT%H:%M:%S")
+        raw_store["updated"] = datetime.strptime(raw_store["updated"], "%Y-%m-%dT%H:%M:%S")
     async with engine.begin() as conn:
         await conn.run_sync(base.orm_registry.metadata.drop_all)
         await conn.run_sync(base.orm_registry.metadata.create_all)
         await conn.execute(insert(Author).values(raw_authors))
+        await conn.execute(insert(Ingredient).values(raw_ingredients))
+        await conn.execute(insert(Store).values(raw_stores))
 
 
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorRepository) -> None:
@@ -44,27 +61,41 @@ def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorRepos
         author_repo.filter_collection_by_kwargs(author_repo.statement, whoops="silly me")
 
 
-async def test_repo_count_method(author_repo: AuthorRepository) -> None:
+async def test_repo_count_method(author_repo: AuthorRepository, store_repo: StoreRepository) -> None:
     """Test SQLALchemy count with asyncpg.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
     """
     assert await author_repo.count() == 2
+    assert await store_repo.count() == 2
 
 
-async def test_repo_list_and_count_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
+async def test_repo_list_and_count_method(
+    raw_authors: list[dict[str, Any]],
+    author_repo: AuthorRepository,
+    raw_stores: list[dict[str, Any]],
+    store_repo: StoreRepository,
+) -> None:
     """Test SQLALchemy list with count in asyncpg.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
+        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
+        store_repo (StoreRepository): The store mock repository
     """
     exp_count = len(raw_authors)
     collection, count = await author_repo.list_and_count()
     assert exp_count == count
     assert isinstance(collection, list)
     assert len(collection) == exp_count
+
+    exp_count2 = len(raw_stores)
+    collection2, count2 = await store_repo.list_and_count()
+    assert exp_count2 == count2
+    assert isinstance(collection2, list)
+    assert len(collection2) == exp_count2
 
 
 async def test_repo_list_and_count_method_empty(book_repo: BookRepository) -> None:
@@ -81,25 +112,44 @@ async def test_repo_list_and_count_method_empty(book_repo: BookRepository) -> No
     assert len(collection) == 0
 
 
-async def test_repo_list_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
+async def test_repo_list_method(
+    raw_authors: list[dict[str, Any]],
+    author_repo: AuthorRepository,
+    raw_stores: list[dict[str, Any]],
+    store_repo: StoreRepository,
+) -> None:
     """Test SQLALchemy list with asyncpg.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
+        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
+        store_repo (StoreRepository): The store mock repository
     """
     exp_count = len(raw_authors)
     collection = await author_repo.list()
     assert isinstance(collection, list)
     assert len(collection) == exp_count
 
+    exp_count2 = len(raw_stores)
+    collection2 = await store_repo.list()
+    assert isinstance(collection2, list)
+    assert len(collection2) == exp_count2
 
-async def test_repo_add_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
+
+async def test_repo_add_method(
+    raw_authors: list[dict[str, Any]],
+    author_repo: AuthorRepository,
+    raw_stores: list[dict[str, Any]],
+    store_repo: StoreRepository,
+) -> None:
     """Test SQLALchemy Add with asyncpg.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
+        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
+        store_repo (StoreRepository): The store mock repository
     """
     exp_count = len(raw_authors) + 1
     new_author = Author(name="Testing", dob=datetime.now())
@@ -109,6 +159,16 @@ async def test_repo_add_method(raw_authors: list[dict[str, Any]], author_repo: A
     assert isinstance(obj, Author)
     assert new_author.name == obj.name
     assert obj.id is not None
+
+    exp_count2 = len(raw_stores) + 1
+    new_store = Store(store_name="Flea Market (Like a Mini Mall) - Montgomery, AL")
+    obj2 = await store_repo.add(new_store)
+    count2 = await store_repo.count()
+    assert exp_count2 == count2
+    assert isinstance(obj2, Store)
+    assert new_store.store_name == obj2.store_name
+    assert obj2.id is not None
+    assert obj2.id > 0
 
 
 async def test_repo_add_many_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:

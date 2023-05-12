@@ -14,10 +14,39 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from tests.contrib.sqlalchemy.models import AuthorRepository, BookRepository
+from tests.contrib.sqlalchemy.models import AuthorRepository, BookRepository, IngredientRepository, StoreRepository
 from tests.contrib.sqlalchemy.repository import sqlalchemy_tests as st
 
 
+# we need to override these for sqlite.  It doesnt force you to use the identity column and doesn't autogenerate this way.
+@pytest.mark.sqlalchemy_aiosqlite
+@pytest.fixture(name="raw_ingredients")
+def fx_raw_ingredients() -> list[dict[str, Any]]:
+    """Unstructured ingredients representations."""
+    return [{"id": 1, "name": "Apple"}, {"id": 2, "name": "Orange"}]
+
+
+@pytest.mark.sqlalchemy_aiosqlite
+@pytest.fixture(name="raw_stores")
+def fx_raw_stores() -> list[dict[str, Any]]:
+    """Unstructured store representations."""
+    return [
+        {
+            "id": 1,
+            "store_name": "Super Market - Talladega, AL",
+            "created": "0001-01-01T00:00:00",
+            "updated": "0001-01-01T00:00:00",
+        },
+        {
+            "id": 2,
+            "store_name": "Corner Store - Moody, AL",
+            "created": "0001-01-01T00:00:00",
+            "updated": "0001-01-01T00:00:00",
+        },
+    ]
+
+
+@pytest.mark.sqlalchemy_aiosqlite
 @pytest.fixture(scope="session")
 def event_loop() -> Iterator[AbstractEventLoop]:
     """Need the event loop scoped to the session so that we can use it to check
@@ -28,6 +57,7 @@ def event_loop() -> Iterator[AbstractEventLoop]:
     loop.close()
 
 
+@pytest.mark.sqlalchemy_aiosqlite
 @pytest.fixture(name="engine")
 async def fx_engine(tmp_path: Path) -> AsyncGenerator[AsyncEngine, None]:
     """SQLite engine for end-to-end testing.
@@ -46,14 +76,19 @@ async def fx_engine(tmp_path: Path) -> AsyncGenerator[AsyncEngine, None]:
         await engine.dispose()
 
 
+@pytest.mark.sqlalchemy_aiosqlite
 @pytest.fixture(
     name="session",
 )
 async def fx_session(
-    engine: AsyncEngine, raw_authors: list[dict[str, Any]], raw_books: list[dict[str, Any]]
+    engine: AsyncEngine,
+    raw_authors: list[dict[str, Any]],
+    raw_books: list[dict[str, Any]],
+    raw_stores: list[dict[str, Any]],
+    raw_ingredients: list[dict[str, Any]],
 ) -> AsyncGenerator[AsyncSession, None]:
     session = async_sessionmaker(bind=engine)()
-    await st.seed_db(engine, raw_authors, raw_books)
+    await st.seed_db(engine, raw_authors, raw_books, raw_stores, raw_ingredients)
     try:
         yield session
     finally:
@@ -61,16 +96,31 @@ async def fx_session(
         await session.close()
 
 
+@pytest.mark.sqlalchemy_aiosqlite
 @pytest.fixture(name="author_repo")
 def fx_author_repo(session: AsyncSession) -> AuthorRepository:
     return AuthorRepository(session=session)
 
 
+@pytest.mark.sqlalchemy_aiosqlite
 @pytest.fixture(name="book_repo")
 def fx_book_repo(session: AsyncSession) -> BookRepository:
     return BookRepository(session=session)
 
 
+@pytest.mark.sqlalchemy_aiosqlite
+@pytest.fixture(name="store_repo")
+def fx_store_repo(session: AsyncSession) -> StoreRepository:
+    return StoreRepository(session=session)
+
+
+@pytest.mark.sqlalchemy_aiosqlite
+@pytest.fixture(name="ingredient_repo")
+def fx_ingredient_repo(session: AsyncSession) -> IngredientRepository:
+    return IngredientRepository(session=session)
+
+
+@pytest.mark.sqlalchemy_aiosqlite
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy filter by kwargs with invalid column name.
 
@@ -80,27 +130,39 @@ def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorRepos
     st.test_filter_by_kwargs_with_incorrect_attribute_name(author_repo=author_repo)
 
 
-async def test_repo_count_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy count with aiosqlite.
+@pytest.mark.sqlalchemy_aiosqlite
+async def test_repo_count_method(author_repo: AuthorRepository, store_repo: StoreRepository) -> None:
+    """Test SQLALchemy count.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
     """
-    await st.test_repo_count_method(author_repo=author_repo)
+    await st.test_repo_count_method(author_repo=author_repo, store_repo=store_repo)
 
 
-async def test_repo_list_and_count_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy list with count in aiosqlite.
+@pytest.mark.sqlalchemy_aiosqlite
+async def test_repo_list_and_count_method(
+    raw_authors: list[dict[str, Any]],
+    author_repo: AuthorRepository,
+    raw_stores: list[dict[str, Any]],
+    store_repo: StoreRepository,
+) -> None:
+    """Test SQLALchemy list with count.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
+        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
+        store_repo (StoreRepository): The store mock repository
     """
-    await st.test_repo_list_and_count_method(raw_authors=raw_authors, author_repo=author_repo)
+    await st.test_repo_list_and_count_method(
+        raw_authors=raw_authors, author_repo=author_repo, raw_stores=raw_stores, store_repo=store_repo
+    )
 
 
+@pytest.mark.sqlalchemy_aiosqlite
 async def test_repo_list_and_count_method_empty(book_repo: BookRepository) -> None:
-    """Test SQLALchemy list with count in aiosqlite.
+    """Test SQLALchemy list with count.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
@@ -110,28 +172,49 @@ async def test_repo_list_and_count_method_empty(book_repo: BookRepository) -> No
     await st.test_repo_list_and_count_method_empty(book_repo=book_repo)
 
 
-async def test_repo_list_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy list with aiosqlite.
+@pytest.mark.sqlalchemy_aiosqlite
+async def test_repo_list_method(
+    raw_authors: list[dict[str, Any]],
+    author_repo: AuthorRepository,
+    raw_stores: list[dict[str, Any]],
+    store_repo: StoreRepository,
+) -> None:
+    """Test SQLALchemy list.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
+        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
+        store_repo (StoreRepository): The store mock repository
     """
-    await st.test_repo_list_method(raw_authors=raw_authors, author_repo=author_repo)
+    await st.test_repo_list_method(
+        raw_authors=raw_authors, author_repo=author_repo, raw_stores=raw_stores, store_repo=store_repo
+    )
 
 
-async def test_repo_add_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Add with aiosqlite.
+@pytest.mark.sqlalchemy_aiosqlite
+async def test_repo_add_method(
+    raw_authors: list[dict[str, Any]],
+    author_repo: AuthorRepository,
+    raw_stores: list[dict[str, Any]],
+    store_repo: StoreRepository,
+) -> None:
+    """Test SQLALchemy list.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
+        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
+        store_repo (StoreRepository): The store mock repository
     """
-    await st.test_repo_add_method(raw_authors=raw_authors, author_repo=author_repo)
+    await st.test_repo_add_method(
+        raw_authors=raw_authors, author_repo=author_repo, raw_stores=raw_stores, store_repo=store_repo
+    )
 
 
+@pytest.mark.sqlalchemy_aiosqlite
 async def test_repo_add_many_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Add Many with aiosqlite.
+    """Test SQLALchemy Add Many.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
@@ -140,8 +223,9 @@ async def test_repo_add_many_method(raw_authors: list[dict[str, Any]], author_re
     await st.test_repo_add_many_method(raw_authors=raw_authors, author_repo=author_repo)
 
 
+@pytest.mark.sqlalchemy_aiosqlite
 async def test_repo_update_many_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Update Many with aiosqlite.
+    """Test SQLALchemy Update Many.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -149,8 +233,9 @@ async def test_repo_update_many_method(author_repo: AuthorRepository) -> None:
     await st.test_repo_update_many_method(author_repo=author_repo)
 
 
+@pytest.mark.sqlalchemy_aiosqlite
 async def test_repo_exists_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy exists with aiosqlite.
+    """Test SQLALchemy exists.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -158,8 +243,9 @@ async def test_repo_exists_method(author_repo: AuthorRepository) -> None:
     await st.test_repo_exists_method(author_repo=author_repo)
 
 
+@pytest.mark.sqlalchemy_aiosqlite
 async def test_repo_update_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Update with aiosqlite.
+    """Test SQLALchemy Update.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -167,8 +253,9 @@ async def test_repo_update_method(author_repo: AuthorRepository) -> None:
     await st.test_repo_update_method(author_repo=author_repo)
 
 
+@pytest.mark.sqlalchemy_aiosqlite
 async def test_repo_delete_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy delete with aiosqlite.
+    """Test SQLALchemy delete.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -176,8 +263,9 @@ async def test_repo_delete_method(author_repo: AuthorRepository) -> None:
     await st.test_repo_delete_method(author_repo=author_repo)
 
 
+@pytest.mark.sqlalchemy_aiosqlite
 async def test_repo_delete_many_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy delete many with aiosqlite.
+    """Test SQLALchemy delete many.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -185,8 +273,9 @@ async def test_repo_delete_many_method(author_repo: AuthorRepository) -> None:
     await st.test_repo_delete_many_method(author_repo=author_repo)
 
 
+@pytest.mark.sqlalchemy_aiosqlite
 async def test_repo_get_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Get with aiosqlite.
+    """Test SQLALchemy Get.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -194,8 +283,9 @@ async def test_repo_get_method(author_repo: AuthorRepository) -> None:
     await st.test_repo_get_method(author_repo=author_repo)
 
 
+@pytest.mark.sqlalchemy_aiosqlite
 async def test_repo_get_one_or_none_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Get One with aiosqlite.
+    """Test SQLALchemy Get One.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -203,8 +293,9 @@ async def test_repo_get_one_or_none_method(author_repo: AuthorRepository) -> Non
     await st.test_repo_get_one_or_none_method(author_repo=author_repo)
 
 
+@pytest.mark.sqlalchemy_aiosqlite
 async def test_repo_get_one_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Get One with aiosqlite.
+    """Test SQLALchemy Get One.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -212,8 +303,9 @@ async def test_repo_get_one_method(author_repo: AuthorRepository) -> None:
     await st.test_repo_get_one_method(author_repo=author_repo)
 
 
+@pytest.mark.sqlalchemy_aiosqlite
 async def test_repo_get_or_create_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Get or create with aiosqlite.
+    """Test SQLALchemy Get or create.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -221,6 +313,7 @@ async def test_repo_get_or_create_method(author_repo: AuthorRepository) -> None:
     await st.test_repo_get_or_create_method(author_repo=author_repo)
 
 
+@pytest.mark.sqlalchemy_aiosqlite
 async def test_repo_get_or_create_match_filter(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy Get or create with a match filter
 
@@ -230,8 +323,9 @@ async def test_repo_get_or_create_match_filter(author_repo: AuthorRepository) ->
     await st.test_repo_get_or_create_match_filter(author_repo=author_repo)
 
 
+@pytest.mark.sqlalchemy_aiosqlite
 async def test_repo_upsert_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy upsert with aiosqlite.
+    """Test SQLALchemy upsert.
 
     Args:
         author_repo (AuthorRepository): The author mock repository

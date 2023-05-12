@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from tests.contrib.sqlalchemy.models import AuthorRepository, BookRepository
+from tests.contrib.sqlalchemy.models import AuthorRepository, BookRepository, IngredientRepository, StoreRepository
 from tests.contrib.sqlalchemy.repository import sqlalchemy_tests as st
 
 pytestmark = [
@@ -65,10 +65,14 @@ async def fx_engine(docker_ip: str) -> AsyncEngine:
     name="session",
 )
 async def fx_session(
-    engine: AsyncEngine, raw_authors: list[dict[str, Any]], raw_books: list[dict[str, Any]]
+    engine: AsyncEngine,
+    raw_authors: list[dict[str, Any]],
+    raw_books: list[dict[str, Any]],
+    raw_stores: list[dict[str, Any]],
+    raw_ingredients: list[dict[str, Any]],
 ) -> AsyncGenerator[AsyncSession, None]:
     session = async_sessionmaker(bind=engine)()
-    await st.seed_db(engine, raw_authors, raw_books)
+    await st.seed_db(engine, raw_authors, raw_books, raw_stores, raw_ingredients)
     try:
         yield session
     finally:
@@ -88,6 +92,16 @@ def fx_book_repo(session: AsyncSession) -> BookRepository:
     return BookRepository(session=session)
 
 
+@pytest.fixture(name="store_repo")
+def fx_store_repo(session: AsyncSession) -> StoreRepository:
+    return StoreRepository(session=session)
+
+
+@pytest.fixture(name="ingredient_repo")
+def fx_ingredient_repo(session: AsyncSession) -> IngredientRepository:
+    return IngredientRepository(session=session)
+
+
 @pytest.mark.sqlalchemy_psycopg_async
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy filter by kwargs with invalid column name.
@@ -99,29 +113,38 @@ def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorRepos
 
 
 @pytest.mark.sqlalchemy_psycopg_async
-async def test_repo_count_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy count with psycopg async.
+async def test_repo_count_method(author_repo: AuthorRepository, store_repo: StoreRepository) -> None:
+    """Test SQLALchemy count.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
     """
-    await st.test_repo_count_method(author_repo=author_repo)
+    await st.test_repo_count_method(author_repo=author_repo, store_repo=store_repo)
 
 
 @pytest.mark.sqlalchemy_psycopg_async
-async def test_repo_list_and_count_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy list with count in psycopg async.
+async def test_repo_list_and_count_method(
+    raw_authors: list[dict[str, Any]],
+    author_repo: AuthorRepository,
+    raw_stores: list[dict[str, Any]],
+    store_repo: StoreRepository,
+) -> None:
+    """Test SQLALchemy list with count.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
+        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
+        store_repo (StoreRepository): The store mock repository
     """
-    await st.test_repo_list_and_count_method(raw_authors=raw_authors, author_repo=author_repo)
+    await st.test_repo_list_and_count_method(
+        raw_authors=raw_authors, author_repo=author_repo, raw_stores=raw_stores, store_repo=store_repo
+    )
 
 
 @pytest.mark.sqlalchemy_psycopg_async
 async def test_repo_list_and_count_method_empty(book_repo: BookRepository) -> None:
-    """Test SQLALchemy list with count in psycopg async.
+    """Test SQLALchemy list with count.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
@@ -132,30 +155,48 @@ async def test_repo_list_and_count_method_empty(book_repo: BookRepository) -> No
 
 
 @pytest.mark.sqlalchemy_psycopg_async
-async def test_repo_list_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy list with psycopg async.
+async def test_repo_list_method(
+    raw_authors: list[dict[str, Any]],
+    author_repo: AuthorRepository,
+    raw_stores: list[dict[str, Any]],
+    store_repo: StoreRepository,
+) -> None:
+    """Test SQLALchemy list.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
+        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
+        store_repo (StoreRepository): The store mock repository
     """
-    await st.test_repo_list_method(raw_authors=raw_authors, author_repo=author_repo)
+    await st.test_repo_list_method(
+        raw_authors=raw_authors, author_repo=author_repo, raw_stores=raw_stores, store_repo=store_repo
+    )
 
 
 @pytest.mark.sqlalchemy_psycopg_async
-async def test_repo_add_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Add with psycopg async.
+async def test_repo_add_method(
+    raw_authors: list[dict[str, Any]],
+    author_repo: AuthorRepository,
+    raw_stores: list[dict[str, Any]],
+    store_repo: StoreRepository,
+) -> None:
+    """Test SQLALchemy list.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
+        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
+        store_repo (StoreRepository): The store mock repository
     """
-    await st.test_repo_add_method(raw_authors=raw_authors, author_repo=author_repo)
+    await st.test_repo_add_method(
+        raw_authors=raw_authors, author_repo=author_repo, raw_stores=raw_stores, store_repo=store_repo
+    )
 
 
 @pytest.mark.sqlalchemy_psycopg_async
 async def test_repo_add_many_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Add Many with psycopg async.
+    """Test SQLALchemy Add Many.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
@@ -166,7 +207,7 @@ async def test_repo_add_many_method(raw_authors: list[dict[str, Any]], author_re
 
 @pytest.mark.sqlalchemy_psycopg_async
 async def test_repo_update_many_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Update Many with psycopg async.
+    """Test SQLALchemy Update Many.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -176,7 +217,7 @@ async def test_repo_update_many_method(author_repo: AuthorRepository) -> None:
 
 @pytest.mark.sqlalchemy_psycopg_async
 async def test_repo_exists_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy exists with psycopg async.
+    """Test SQLALchemy exists.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -186,7 +227,7 @@ async def test_repo_exists_method(author_repo: AuthorRepository) -> None:
 
 @pytest.mark.sqlalchemy_psycopg_async
 async def test_repo_update_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Update with psycopg async.
+    """Test SQLALchemy Update.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -196,7 +237,7 @@ async def test_repo_update_method(author_repo: AuthorRepository) -> None:
 
 @pytest.mark.sqlalchemy_psycopg_async
 async def test_repo_delete_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy delete with psycopg async.
+    """Test SQLALchemy delete.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -206,7 +247,7 @@ async def test_repo_delete_method(author_repo: AuthorRepository) -> None:
 
 @pytest.mark.sqlalchemy_psycopg_async
 async def test_repo_delete_many_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy delete many with psycopg async.
+    """Test SQLALchemy delete many.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -216,7 +257,7 @@ async def test_repo_delete_many_method(author_repo: AuthorRepository) -> None:
 
 @pytest.mark.sqlalchemy_psycopg_async
 async def test_repo_get_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Get with psycopg async.
+    """Test SQLALchemy Get.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -226,7 +267,7 @@ async def test_repo_get_method(author_repo: AuthorRepository) -> None:
 
 @pytest.mark.sqlalchemy_psycopg_async
 async def test_repo_get_one_or_none_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Get One with psycopg async.
+    """Test SQLALchemy Get One.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -236,7 +277,7 @@ async def test_repo_get_one_or_none_method(author_repo: AuthorRepository) -> Non
 
 @pytest.mark.sqlalchemy_psycopg_async
 async def test_repo_get_one_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Get One with psycopg async.
+    """Test SQLALchemy Get One.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -246,7 +287,7 @@ async def test_repo_get_one_method(author_repo: AuthorRepository) -> None:
 
 @pytest.mark.sqlalchemy_psycopg_async
 async def test_repo_get_or_create_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Get or create with psycopg async.
+    """Test SQLALchemy Get or create.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -266,7 +307,7 @@ async def test_repo_get_or_create_match_filter(author_repo: AuthorRepository) ->
 
 @pytest.mark.sqlalchemy_psycopg_async
 async def test_repo_upsert_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy upsert with psycopg async.
+    """Test SQLALchemy upsert.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
