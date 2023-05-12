@@ -24,7 +24,7 @@ class GUID(TypeDecorator):
 
     impl = BINARY(16)
     cache_ok = True
-    python_type = uuid.UUID
+    python_type = type(uuid.UUID)
 
     def __init__(self, binary: bool = True) -> None:
         self.binary = binary
