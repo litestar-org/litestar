@@ -41,6 +41,7 @@ __all__ = (
 
 
 UUIDBaseT = TypeVar("UUIDBaseT", bound="UUIDBase")
+BigIntBaseT = TypeVar("BigIntBaseT", bound="BigIntBase")
 
 convention = {
     "ix": "ix_%(column_0_label)s",
