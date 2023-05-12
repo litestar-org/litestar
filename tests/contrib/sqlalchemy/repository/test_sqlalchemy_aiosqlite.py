@@ -18,34 +18,6 @@ from tests.contrib.sqlalchemy.models import AuthorRepository, BookRepository, In
 from tests.contrib.sqlalchemy.repository import sqlalchemy_tests as st
 
 
-# we need to override these for sqlite.  It doesnt force you to use the identity column and does not autogenerate this way.
-@pytest.mark.sqlalchemy_aiosqlite
-@pytest.fixture(name="raw_ingredients")
-def fx_raw_ingredients() -> list[dict[str, Any]]:
-    """Unstructured ingredients representations."""
-    return [{"id": 1, "name": "Apple"}, {"id": 2, "name": "Orange"}]
-
-
-@pytest.mark.sqlalchemy_aiosqlite
-@pytest.fixture(name="raw_stores")
-def fx_raw_stores() -> list[dict[str, Any]]:
-    """Unstructured store representations."""
-    return [
-        {
-            "id": 1,
-            "store_name": "Super Market - Talladega, AL",
-            "created": "0001-01-01T00:00:00",
-            "updated": "0001-01-01T00:00:00",
-        },
-        {
-            "id": 2,
-            "store_name": "Corner Store - Moody, AL",
-            "created": "0001-01-01T00:00:00",
-            "updated": "0001-01-01T00:00:00",
-        },
-    ]
-
-
 @pytest.mark.sqlalchemy_aiosqlite
 @pytest.fixture(scope="session")
 def event_loop() -> Iterator[AbstractEventLoop]:
