@@ -515,6 +515,8 @@ class Litestar(Router):
         hooks, as well as custom lifespan managers.
         """
         async with AsyncExitStack() as exit_stack:
+            exit_stack.push_async_callback(self.event_emitter.on_shutdown)
+
             for hook in self.before_startup:
                 await hook(self)
 

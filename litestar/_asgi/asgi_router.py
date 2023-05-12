@@ -158,22 +158,22 @@ class ASGIRouter:
         shutdown_event: LifeSpanShutdownCompleteEvent = {"type": "lifespan.shutdown.complete"}
         startup_event: LifeSpanStartupCompleteEvent = {"type": "lifespan.startup.complete"}
 
-        async with self.app.lifespan():
-            try:
+        try:
+            async with self.app.lifespan():
                 await send(startup_event)
-                await receive()
+                message = await receive()
 
-            except BaseException as e:
-                formatted_exception = format_exc()
-                failure_message: LifeSpanStartupFailedEvent | LifeSpanShutdownFailedEvent
+        except BaseException as e:
+            formatted_exception = format_exc()
+            failure_message: LifeSpanStartupFailedEvent | LifeSpanShutdownFailedEvent
 
-                if message["type"] == "lifespan.startup":
-                    failure_message = {"type": "lifespan.startup.failed", "message": formatted_exception}
-                else:
-                    failure_message = {"type": "lifespan.shutdown.failed", "message": formatted_exception}
+            if message["type"] == "lifespan.startup":
+                failure_message = {"type": "lifespan.startup.failed", "message": formatted_exception}
+            else:
+                failure_message = {"type": "lifespan.shutdown.failed", "message": formatted_exception}
 
-                await send(failure_message)
+            await send(failure_message)
 
-                raise e
+            raise e
 
         await send(shutdown_event)

@@ -2,9 +2,12 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, AsyncGenerator, Callable
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
+
+from pytest_mock import MockerFixture
 
 from litestar import Litestar
+from litestar._asgi.asgi_router import ASGIRouter
 
 if TYPE_CHECKING:
     from contextlib import AbstractAsyncContextManager
@@ -131,3 +134,44 @@ def test_multiple_lifespan_managers() -> None:
 
     assert all(m.call_count == 1 for m in startup_mocks)
     assert all(m.call_count == 1 for m in shutdown_mocks)
+
+
+@pytest.fixture()
+def mock_format_exc(mocker: MockerFixture) -> MagicMock:
+    return mocker.patch("litestar._asgi.asgi_router.format_exc")
+
+
+async def test_lifespan_startup_failure(mock_format_exc: MagicMock) -> None:
+    receive = AsyncMock()
+    receive.return_value = {"type": "lifespan.startup"}
+    send = AsyncMock()
+    exception = ValueError("foo")
+    mock_format_exc.return_value = str(exception)
+
+    mock_on_startup = AsyncMock(side_effect=exception)
+
+    router = ASGIRouter(app=Litestar(on_startup=[mock_on_startup]))
+
+    with pytest.raises(ValueError):
+        await router.lifespan(receive, send)
+
+    assert send.call_count == 1
+    send.assert_called_once_with({"type": "lifespan.startup.failed", "message": mock_format_exc.return_value})
+
+
+async def test_lifespan_shutdown_failure(mock_format_exc: MagicMock) -> None:
+    receive = AsyncMock()
+    receive.return_value = {"type": "lifespan.shutdown"}
+    send = AsyncMock()
+    exception = ValueError("foo")
+    mock_format_exc.return_value = str(exception)
+
+    mock_on_shutdown = AsyncMock(side_effect=exception)
+
+    router = ASGIRouter(app=Litestar(on_shutdown=[mock_on_shutdown]))
+
+    with pytest.raises(ValueError):
+        await router.lifespan(receive, send)
+
+    assert send.call_count == 2
+    assert send.call_args_list[1][0][0] == {"type": "lifespan.shutdown.failed", "message": mock_format_exc.return_value}
