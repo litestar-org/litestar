@@ -12,10 +12,19 @@ def test_initial_pattern_app():
     assert response.json() == {"name": "peter", "age": 30, "email": "email_of_peter@example.com"}
 
 
-def test_simple_dto_example():
-    from docs.examples.data_transfer_objects.factory.tutorial.simple_dto_example import app
+def test_simple_dto_exclude():
+    from docs.examples.data_transfer_objects.factory.tutorial.simple_dto_exclude import app
 
     with TestClient(app=app) as client:
         response = client.get("/person/peter")
     assert response.status_code == 200
     assert response.json() == {"name": "peter", "age": 30}
+
+
+def test_nested_exclude():
+    from docs.examples.data_transfer_objects.factory.tutorial.nested_exclude import app
+
+    with TestClient(app=app) as client:
+        response = client.get("/person/peter")
+    assert response.status_code == 200
+    assert response.json() == {"name": "peter", "age": 30, "address": {"city": "Cityville", "country": "Countryland"}}

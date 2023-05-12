@@ -5,4 +5,4 @@ Tutorials
     :hidden:
 
     todo-app/index
-    dto-tutorial
+    dto-tutorial/index
