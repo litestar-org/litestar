@@ -9,15 +9,15 @@ Features
 --------
 
 * Pre-configured ``DeclarativeBase`` for :doc:`SQLAlchemy <sqlalchemy:index>` 2.0 that includes a
-UUID based primary-key,
-a  `sentinel column <https://docs.sqlalchemy.org/en/20/core/connections.html#configuring-sentinel-columns/>`_ and
-an optional version with audit columns.
+  UUID based primary-key,
+  a  `sentinel column <https://docs.sqlalchemy.org/en/20/core/connections.html#configuring-sentinel-columns/>`_ and
+  an optional version with audit columns.
 * Generic asynchronous repository for select, insert, update, and delete operations on SQLAlchemy models
 * Implements optimized methods for bulk inserts, updates, and deletes.
 * Integrated counts, pagination, sorting, filtering with ``LIKE``, ``IN``, and dates before and/or after.
 * Support for SQLite via `aiosqlite <https://aiosqlite.omnilib.dev/en/stable/>`_, Postgres
-via `asyncpg <https://magicstack.github.io/asyncpg/current/>`_, and
-MySQL via `asyncmy <https://github.com/long2ice/asyncmy>`_
+  via `asyncpg <https://magicstack.github.io/asyncpg/current/>`_, and
+  MySQL via `asyncmy <https://github.com/long2ice/asyncmy>`_
 
 Basic Use
 ---------
