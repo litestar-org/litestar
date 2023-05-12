@@ -210,7 +210,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
                     setattr(existing, field_name, new_field_value)
 
             return existing, False
-        return await self.add(self.model_type(**kwargs)), True
+        return await self.add(self.model_type(**kwargs)), True  # pyright: ignore[reportGeneralTypeIssues]
 
     async def get_one(self, **kwargs: Any) -> ModelT:
         """Get instance identified by query filters.

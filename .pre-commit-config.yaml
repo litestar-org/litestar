@@ -46,7 +46,7 @@ repos:
       - id: slotscheck
         exclude: "test_*|docs"
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.2.0"
+    rev: "v1.3.0"
     hooks:
       - id: mypy
         exclude: "test_apps|tools|docs"
@@ -56,6 +56,7 @@ repos:
             async_timeout,
             asyncmy,
             asyncpg,
+            psycopg,
             attrs,
             beanie,
             beautifulsoup4,
@@ -100,7 +101,7 @@ repos:
             uvicorn,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.306
+    rev: v1.1.307
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs|_openapi"
@@ -110,6 +111,7 @@ repos:
             async_timeout,
             asyncmy,
             asyncpg,
+            psycopg,
             attrs,
             beanie,
             beautifulsoup4,

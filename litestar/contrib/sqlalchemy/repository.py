@@ -60,6 +60,8 @@ def wrap_sqlalchemy_exception() -> Any:
         raise ConflictError from exc
     except SQLAlchemyError as exc:
         raise RepositoryError(f"An exception occurred: {exc}") from exc
+    except AttributeError as exc:
+        raise RepositoryError from exc
 
 
 class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]):
@@ -266,7 +268,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             match_filter = kwargs
         existing = await self.get_one_or_none(**match_filter)
         if not existing:
-            return await self.add(self.model_type(**kwargs)), True
+            return await self.add(self.model_type(**kwargs)), True  # pyright: ignore[reportGeneralTypeIssues]
         if upsert:
             for field_name, new_field_value in kwargs.items():
                 field = getattr(existing, field_name, None)
