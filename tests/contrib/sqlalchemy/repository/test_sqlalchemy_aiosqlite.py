@@ -18,7 +18,7 @@ from tests.contrib.sqlalchemy.models import AuthorRepository, BookRepository, In
 from tests.contrib.sqlalchemy.repository import sqlalchemy_tests as st
 
 
-# we need to override these for sqlite.  It doesnt force you to use the identity column and doesn't autogenerate this way.
+# we need to override these for sqlite.  It doesnt force you to use the identity column and does not autogenerate this way.
 @pytest.mark.sqlalchemy_aiosqlite
 @pytest.fixture(name="raw_ingredients")
 def fx_raw_ingredients() -> list[dict[str, Any]]:
