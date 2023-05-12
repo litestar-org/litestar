@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar, runtime_chec
 from uuid import UUID, uuid4
 
 from pydantic import AnyHttpUrl, AnyUrl, EmailStr
-from sqlalchemy import MetaData, String
+from sqlalchemy import Identity, MetaData, String
 from sqlalchemy.event import listens_for
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -20,24 +20,28 @@ from sqlalchemy.orm import (
     registry,
 )
 
-from .types import GUID, JSON
+from .types import GUID, JSON, BigIntIdentity
 
 if TYPE_CHECKING:
     from sqlalchemy.sql import FromClause
 
 __all__ = (
-    "AuditBase",
     "AuditColumns",
-    "Base",
+    "BigIntAuditBase",
+    "BigIntBase",
+    "BigIntPrimaryKey",
     "CommonTableAttributes",
     "create_registry",
     "ModelProtocol",
     "touch_updated_timestamp",
+    "UUIDAuditBase",
+    "UUIDBase",
     "UUIDPrimaryKey",
 )
 
 
-BaseT = TypeVar("BaseT", bound="Base")
+UUIDBaseT = TypeVar("UUIDBaseT", bound="UUIDBase")
+BigIntBaseT = TypeVar("BigIntBaseT", bound="BigIntBase")
 
 convention = {
     "ix": "ix_%(column_0_label)s",
@@ -93,6 +97,16 @@ class UUIDPrimaryKey:
 
 
 @declarative_mixin
+class BigIntPrimaryKey:
+    """BigInt Primary Key Field Mixin."""
+
+    __abstract__ = True
+
+    id: Mapped[int] = mapped_column(BigIntIdentity, Identity(always=True), primary_key=True)
+    """BigInt Primary key column."""
+
+
+@declarative_mixin
 class AuditColumns:
     """Created/Updated At Fields Mixin."""
 
@@ -145,13 +159,25 @@ def create_registry() -> registry:
 orm_registry = create_registry()
 
 
-class Base(UUIDPrimaryKey, CommonTableAttributes, DeclarativeBase):
-    """Base for all SQLAlchemy declarative models."""
+class UUIDBase(UUIDPrimaryKey, CommonTableAttributes, DeclarativeBase):
+    """Base for all SQLAlchemy declarative models with UUID primary keys."""
 
     registry = orm_registry
 
 
-class AuditBase(CommonTableAttributes, UUIDPrimaryKey, AuditColumns, DeclarativeBase):
-    """Base for declarative models with audit columns."""
+class UUIDAuditBase(CommonTableAttributes, UUIDPrimaryKey, AuditColumns, DeclarativeBase):
+    """Base for declarative models with UUID primary keys and audit columns."""
+
+    registry = orm_registry
+
+
+class BigIntBase(BigIntPrimaryKey, CommonTableAttributes, DeclarativeBase):
+    """Base for all SQLAlchemy declarative models with BigInt primary keys."""
+
+    registry = orm_registry
+
+
+class BigIntAuditBase(CommonTableAttributes, BigIntPrimaryKey, AuditColumns, DeclarativeBase):
+    """Base for declarative models with BigInt primary keys and audit columns."""
 
     registry = orm_registry

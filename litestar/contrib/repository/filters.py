@@ -2,11 +2,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime  # noqa: TCH003
 from typing import TYPE_CHECKING, Generic, Literal, TypeVar
 
 if TYPE_CHECKING:
     from collections import abc
-    from datetime import datetime
+
 
 T = TypeVar("T")
 
@@ -46,17 +47,17 @@ class LimitOffset:
 
 
 @dataclass
-class OrderBy(Generic[T]):
+class OrderBy:
     """Data required to construct a ``ORDER BY ...`` clause."""
 
     field_name: str
     """Name of the model attribute to sort on."""
-    sort_order: Literal["asc", "desc"]
+    sort_order: Literal["asc", "desc"] = "asc"
     """Sort ascending or descending"""
 
 
 @dataclass
-class SearchFilter(Generic[T]):
+class SearchFilter:
     """Data required to construct a ``WHERE field_name LIKE '%' || :value || '%'`` clause."""
 
     field_name: str

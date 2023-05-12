@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime
+from random import random
 from uuid import uuid4
 
 import pytest
@@ -11,7 +12,7 @@ from litestar.contrib.repository.testing.generic_mock_repository import (
     GenericAsyncMockRepository,
 )
 from litestar.contrib.sqlalchemy import base
-from tests.contrib.sqlalchemy.models import Author, Book
+from tests.contrib.sqlalchemy.models import Author, Book, Ingredient
 
 
 @pytest.fixture(name="authors")
@@ -20,6 +21,14 @@ def fx_authors() -> list[Author]:
     return [
         Author(id=uuid4(), name=name, dob=dob, created=datetime.min, updated=datetime.min)
         for name, dob in [("Agatha Christie", date(1890, 9, 15)), ("Leo Tolstoy", date(1828, 9, 9))]
+    ]
+
+
+@pytest.fixture(name="ingredients")
+def fx_ingredients() -> list[Ingredient]:
+    """Collection of Author models."""
+    return [
+        Ingredient(id=int(random()), name=name) for name in ["Celery", "Carrot", "Potato", "Apple", "Pear", "Peach"]
     ]
 
 
@@ -39,6 +48,24 @@ def fx_author_repository(
 ) -> GenericAsyncMockRepository[Author]:
     """Mock Author repository instance."""
     return author_repository_type()
+
+
+@pytest.fixture(name="ingredient_repository_type")
+def fx_ingredient_repository_type(
+    ingredients: list[Ingredient], monkeypatch: pytest.MonkeyPatch
+) -> type[GenericAsyncMockRepository[Ingredient]]:
+    """Mock Author repository, pre-seeded with collection data."""
+    repo = GenericAsyncMockRepository[Ingredient]
+    repo.seed_collection(ingredients)
+    return repo
+
+
+@pytest.fixture(name="ingredient_repository")
+def fx_ingredient_repository(
+    ingredient_repository_type: type[GenericAsyncMockRepository[Author]],
+) -> GenericAsyncMockRepository[Author]:
+    """Mock Author repository instance."""
+    return ingredient_repository_type()
 
 
 async def test_repo_raises_conflict_if_add_with_id(
@@ -116,19 +143,33 @@ async def test_sets_created_updated_on_add() -> None:
     """Test that the repository updates the 'created' and 'updated' timestamps
     if necessary."""
 
-    class Model(base.AuditBase):
+    class UUIDModel(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
         ...
 
-    instance = Model()
-    assert "created" not in vars(instance)
-    assert "updated" not in vars(instance)
+    class BigIntModel(base.BigIntAuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
 
-    instance = await GenericAsyncMockRepository[Model]().add(instance)
-    assert "created" in vars(instance)
-    assert "updated" in vars(instance)
+        ...
+
+    uuid_instance = UUIDModel()
+    assert "created" not in vars(uuid_instance)
+    assert "updated" not in vars(uuid_instance)
+
+    uuid_instance = await GenericAsyncMockRepository[UUIDModel]().add(uuid_instance)
+    assert "created" in vars(uuid_instance)
+    assert "updated" in vars(uuid_instance)
+
+    bigint_instance = BigIntModel()
+    assert "created" not in vars(bigint_instance)
+    assert "updated" not in vars(bigint_instance)
+
+    bigint_instance = await GenericAsyncMockRepository[BigIntModel]().add(bigint_instance)
+    assert "created" in vars(bigint_instance)
+    assert "updated" in vars(bigint_instance)
 
 
 async def test_sets_updated_on_update(author_repository: GenericAsyncMockRepository[Author]) -> None:
@@ -145,58 +186,96 @@ async def test_does_not_set_created_updated() -> None:
     """Test that the repository does not update the 'updated' timestamps when
     appropriate."""
 
-    class Model(base.Base):
-        """Inheriting from Base means the model has no created/updated
-        timestamp columns."""
+    class UUIDModel(base.UUIDBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
 
         ...
 
-    instance = Model()
-    repo = GenericAsyncMockRepository[Model]()
-    assert "created" not in vars(instance)
-    assert "updated" not in vars(instance)
-    instance = await repo.add(instance)
-    assert "created" not in vars(instance)
-    assert "updated" not in vars(instance)
-    instance = await repo.update(instance)
-    assert "created" not in vars(instance)
-    assert "updated" not in vars(instance)
+    class BigIntModel(base.BigIntBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    uuid_instance = UUIDModel()
+    uuid_repo = GenericAsyncMockRepository[UUIDModel]()
+    assert "created" not in vars(uuid_instance)
+    assert "updated" not in vars(uuid_instance)
+    uuid_instance = await uuid_repo.add(uuid_instance)
+    assert "created" not in vars(uuid_instance)
+    assert "updated" not in vars(uuid_instance)
+    uuid_instance = await uuid_repo.update(uuid_instance)
+    assert "created" not in vars(uuid_instance)
+    assert "updated" not in vars(uuid_instance)
+
+    bigint_instance = BigIntModel()
+    bigint_repo = GenericAsyncMockRepository[BigIntModel]()
+    assert "created" not in vars(bigint_instance)
+    assert "updated" not in vars(bigint_instance)
+    bigint_instance = await bigint_repo.add(bigint_instance)
+    assert "created" not in vars(bigint_instance)
+    assert "updated" not in vars(bigint_instance)
+    bigint_instance = await bigint_repo.update(bigint_instance)
+    assert "created" not in vars(bigint_instance)
+    assert "updated" not in vars(bigint_instance)
 
 
 async def test_add() -> None:
     """Test that the repository add method works correctly`."""
 
-    class Model(base.AuditBase):
+    class UUIDModel(base.UUIDBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
         ...
 
-    instance = Model()
+    class BigIntModel(base.BigIntBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
 
-    inserted_instance = await GenericAsyncMockRepository[Model]().add(instance)
-    assert inserted_instance == instance
+        ...
+
+    uuid_instance = UUIDModel()
+
+    inserted_uuid_instance = await GenericAsyncMockRepository[UUIDModel]().add(uuid_instance)
+    assert inserted_uuid_instance == uuid_instance
+
+    bigint_instance = BigIntModel()
+
+    inserted_bigint_instance = await GenericAsyncMockRepository[BigIntModel]().add(bigint_instance)
+    assert inserted_bigint_instance == bigint_instance
 
 
 async def test_add_many() -> None:
     """Test that the repository add_many method works correctly`."""
 
-    class Model(base.AuditBase):
+    class UUIDModel(base.UUIDBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
         ...
 
-    instances = [Model(), Model()]
+    class BigIntModel(base.BigIntBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
 
-    inserted_instances = await GenericAsyncMockRepository[Model]().add_many(instances)
-    assert len(instances) == len(inserted_instances)
+        ...
+
+    uuid_instances = [UUIDModel(), UUIDModel()]
+    bigint_instance = [BigIntModel(), BigIntModel()]
+
+    inserted_uuid_instances = await GenericAsyncMockRepository[UUIDModel]().add_many(uuid_instances)
+    inserted_bigint_instance = await GenericAsyncMockRepository[BigIntModel]().add_many(bigint_instance)
+
+    assert len(uuid_instances) == len(inserted_uuid_instances)
+    assert len(bigint_instance) == len(inserted_bigint_instance)
 
 
 async def test_update() -> None:
     """Test that the repository update method works correctly`."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -214,7 +293,7 @@ async def test_update() -> None:
 async def test_update_many() -> None:
     """Test that the repository add_many method works correctly`."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -234,7 +313,7 @@ async def test_update_many() -> None:
 async def test_upsert() -> None:
     """Test that the repository upsert method works correctly`."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -252,7 +331,7 @@ async def test_upsert() -> None:
 async def test_list() -> None:
     """Test that the repository list returns records."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -267,7 +346,7 @@ async def test_list() -> None:
 async def test_delete() -> None:
     """Test that the repository delete functionality."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -284,7 +363,7 @@ async def test_delete() -> None:
 async def test_delete_many() -> None:
     """Test that the repository delete many functionality."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -301,7 +380,7 @@ async def test_delete_many() -> None:
 async def test_list_and_count() -> None:
     """Test that the repository list_and_count returns records and the total record count."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -318,7 +397,7 @@ async def test_list_and_count() -> None:
 async def test_exists() -> None:
     """Test that the repository exists returns booleans."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -334,7 +413,7 @@ async def test_exists() -> None:
 async def test_count() -> None:
     """Test that the repository count returns the total record count."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -350,7 +429,7 @@ async def test_count() -> None:
 async def test_get() -> None:
     """Test that the repository get returns a model record correctly."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -367,7 +446,7 @@ async def test_get() -> None:
 async def test_get_one() -> None:
     """Test that the repository get_one returns a model record correctly."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -385,7 +464,7 @@ async def test_get_one() -> None:
 async def test_get_one_or_none() -> None:
     """Test that the repository get_one_or_none returns a model record correctly."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -403,7 +482,7 @@ async def test_get_one_or_none() -> None:
 async def test_get_or_create() -> None:
     """Test that the repository get_or_create returns a model record correctly."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
@@ -425,7 +504,7 @@ async def test_get_or_create() -> None:
 async def test_get_or_create_match_fields() -> None:
     """Test that the repository get_or_create returns a model record correctly."""
 
-    class Model(base.AuditBase):
+    class Model(base.UUIDAuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
         columns."""
 
