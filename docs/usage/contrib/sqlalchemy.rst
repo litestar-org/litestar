@@ -17,7 +17,7 @@ Features
 * Integrated counts, pagination, sorting, filtering with ``LIKE``, ``IN``, and dates before and/or after.
 * Support for SQLite via `aiosqlite <https://aiosqlite.omnilib.dev/en/stable/>`_, Postgres
   via `asyncpg <https://magicstack.github.io/asyncpg/current/>`_ or `psycopg3 (async) <https://www.psycopg.org/psycopg3/>`_, and
-  MySQL via `asyncmy <https://github.com/long2ice/asyncmy>`_
+  MySQL via `asyncmy <https://github.com/long2ice/asyncmy>`_.
 
 Basic Use
 ---------

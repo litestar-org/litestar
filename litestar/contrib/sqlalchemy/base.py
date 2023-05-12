@@ -37,9 +37,6 @@ __all__ = (
     "UUIDAuditBase",
     "UUIDBase",
     "UUIDPrimaryKey",
-    "BigIntPrimaryKey",
-    "BigIntBase",
-    "BigIntAuditBase",
 )
 
 
