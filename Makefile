@@ -19,11 +19,14 @@ test-examples:
 test-sqlalchemy-asyncpg:
 	pytest tests -m='sqlalchemy_asyncpg'
 
+test-sqlalchemy-psycopg-async:
+	pytest tests -m='sqlalchemy_psycopg_async'
+
 test-sqlalchemy-asyncmy:
 	pytest tests -m='sqlalchemy_asyncmy'
 
 test:
-	pytest tests -m='not sqlalchemy_asyncmy and not sqlalchemy_asyncpg'
+	pytest tests -m='not sqlalchemy_asyncmy and not sqlalchemy_asyncpg and not sqlalchemy_psycopg_async'
 
 test-all: test test-sqlalchemy-asyncpg test-sqlalchemy-asyncmy test-examples
 
