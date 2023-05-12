@@ -3,9 +3,10 @@ from __future__ import annotations
 import logging
 from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager
 from datetime import date, datetime, time, timedelta
+from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Literal, Mapping, Sequence, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Literal, Mapping, Sequence, cast
 
 from typing_extensions import Self, TypedDict
 
@@ -515,7 +516,15 @@ class Litestar(Router):
         hooks, as well as custom lifespan managers.
         """
         async with AsyncExitStack() as exit_stack:
-            exit_stack.push_async_callback(self.event_emitter.on_shutdown)
+            exit_callbacks: list[Callable[[], Awaitable[Any]]] = [
+                *[partial(hook, self) for hook in self.after_shutdown[::-1]],
+                *[partial(self._call_lifespan_handler, handler) for handler in self.on_shutdown[::-1]],
+                self.event_emitter.on_shutdown,
+                *[partial(hook, self) for hook in self.before_shutdown[::-1]],
+            ]
+
+            for hook in exit_callbacks:
+                exit_stack.push_async_callback(hook)
 
             for hook in self.before_startup:
                 await hook(self)
@@ -532,17 +541,6 @@ class Litestar(Router):
                 await hook(self)
 
             yield
-
-            for hook in self.before_shutdown:
-                await hook(self)
-
-            for handler in self.on_shutdown:
-                await self._call_lifespan_handler(handler)
-
-            await self.event_emitter.on_shutdown()
-
-        for hook in self.after_shutdown:
-            await hook(self)
 
     @property
     def openapi_schema(self) -> OpenAPI:
