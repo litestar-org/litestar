@@ -141,7 +141,7 @@ DTO Data
 Sometimes we need to be able to access the data that has been parsed and validated by the DTO, but not converted into
 an instance of our data model.
 
-In the following example, we create a ``Person`` model, that is a :class:`dataclass <dataclasses.dataclass>` with 3
+In the following example, we create a ``Person`` model, that is a :func:`dataclass <dataclasses.dataclass>` with 3
 required fields, ``id``, ``name``, and ``age``.
 
 We also create a DTO that doesn't allow clients to set the ``id`` field on the ``Person`` model and set it on the

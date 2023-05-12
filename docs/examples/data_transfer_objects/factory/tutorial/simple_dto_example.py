@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from typing_extensions import Annotated
-
-from litestar import Litestar, get, post
+from litestar import Litestar, get
 from litestar.dto.factory import DTOConfig
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 
@@ -16,20 +14,15 @@ class Person:
     email: str
 
 
-config = DTOConfig(exclude={"email"})
-ReadDTO = DataclassDTO[Annotated[Person, config]]
+class ReadDTO(DataclassDTO[Person]):
+    config = DTOConfig(exclude={"email"})
 
 
-@post("/create-person")
-def create_person(data: Person) -> Person:
-    return data
-
-
-@get("/person/{name:str}", dto=ReadDTO)
+@get("/person/{name:str}", return_dto=ReadDTO)
 def get_person(name: str) -> Person:
     # Your logic to retrieve the person goes here
     # For demonstration purposes, a placeholder Person instance is returned
-    return Person(name="John Doe", age=30, email="johndoe@example.com")
+    return Person(name=name, age=30, email=f"email_of_{name}@example.com")
 
 
-app = Litestar(route_handlers=[create_person, get_person])
+app = Litestar(route_handlers=[get_person])
