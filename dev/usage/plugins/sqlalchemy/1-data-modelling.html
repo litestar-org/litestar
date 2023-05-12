@@ -1127,37 +1127,37 @@ these items.</p>
 <div class="code-block-caption"><span class="caption-text">modelling.py</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span>
 
-<span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">Base</span>
+<span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">UUIDBase</span>
 
 
-<span class="k">class</span> <span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">TodoItem</span><span class="p">(</span><span class="n">UUIDBase</span><span class="p">):</span>
     <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 <p>Did I mention that we love SQLAlchemy? We love it so much that we’ve included a suite of utilities for working with
-SQLAlchemy in <code class="docutils literal notranslate"><span class="pre">litestar.contrib.sqlalchemy</span></code>. One of these utilities is a <code class="docutils literal notranslate"><span class="pre">Base</span></code> class that we can use to declare our
+SQLAlchemy in <code class="docutils literal notranslate"><span class="pre">litestar.contrib.sqlalchemy</span></code>. One of these utilities is a <code class="docutils literal notranslate"><span class="pre">UUIDBase</span></code> class that we can use to declare our
 models:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="hll"><span class="linenos">1</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span>
 </span><span class="linenos">2</span>
-<span class="linenos">3</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">Base</span>
+<span class="linenos">3</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">UUIDBase</span>
 <span class="linenos">4</span>
 <span class="linenos">5</span>
-<span class="linenos">6</span><span class="k">class</span> <span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="linenos">6</span><span class="k">class</span> <span class="nc">TodoItem</span><span class="p">(</span><span class="n">UUIDBase</span><span class="p">):</span>
 <span class="linenos">7</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 <span class="linenos">8</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">Base</span></code> is a subclass of <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/mapping_api.html#sqlalchemy.orm.DeclarativeBase" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeclarativeBase</span></code></a>, and in addition to instrumenting
+<p><code class="docutils literal notranslate"><span class="pre">UUIDBase</span></code> is a subclass of <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/mapping_api.html#sqlalchemy.orm.DeclarativeBase" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeclarativeBase</span></code></a>, and in addition to instrumenting
 the class with SQLAlchemy’s internals, it also gives us a <code class="docutils literal notranslate"><span class="pre">UUID</span></code> identity column, and automatic table name generation.</p>
 <p>The next element that we import is SQLAlchemy’s <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.Mapped" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapped</span></code></a> class.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span>
 <span class="linenos">2</span>
-<span class="hll"><span class="linenos">3</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">Base</span>
+<span class="hll"><span class="linenos">3</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">UUIDBase</span>
 </span><span class="linenos">4</span>
 <span class="linenos">5</span>
-<span class="linenos">6</span><span class="k">class</span> <span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="linenos">6</span><span class="k">class</span> <span class="nc">TodoItem</span><span class="p">(</span><span class="n">UUIDBase</span><span class="p">):</span>
 <span class="linenos">7</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 <span class="linenos">8</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
 </pre></div>
@@ -1166,10 +1166,10 @@ the class with SQLAlchemy’s internals, it also gives us a <code class="docutil
 <p>Then, we define our model:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span>
 <span class="linenos">2</span>
-<span class="linenos">3</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">Base</span>
+<span class="linenos">3</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">UUIDBase</span>
 <span class="linenos">4</span>
 <span class="linenos">5</span>
-<span class="hll"><span class="linenos">6</span><span class="k">class</span> <span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="hll"><span class="linenos">6</span><span class="k">class</span> <span class="nc">TodoItem</span><span class="p">(</span><span class="n">UUIDBase</span><span class="p">):</span>
 </span><span class="hll"><span class="linenos">7</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </span><span class="hll"><span class="linenos">8</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
 </span></pre></div>

@@ -1294,11 +1294,15 @@ document.write(`
 </li>
         <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.SearchFilter.__init__">(litestar.contrib.repository.filters.SearchFilter method)</a>
 </li>
-        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.AuditBase.__init__">(litestar.contrib.sqlalchemy.base.AuditBase method)</a>
+        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntAuditBase.__init__">(litestar.contrib.sqlalchemy.base.BigIntAuditBase method)</a>
 </li>
-        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.Base.__init__">(litestar.contrib.sqlalchemy.base.Base method)</a>
+        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntBase.__init__">(litestar.contrib.sqlalchemy.base.BigIntBase method)</a>
 </li>
         <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.ModelProtocol.__init__">(litestar.contrib.sqlalchemy.base.ModelProtocol method)</a>
+</li>
+        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDAuditBase.__init__">(litestar.contrib.sqlalchemy.base.UUIDAuditBase method)</a>
+</li>
+        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDBase.__init__">(litestar.contrib.sqlalchemy.base.UUIDBase method)</a>
 </li>
         <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.AsyncSessionConfig.__init__">(litestar.contrib.sqlalchemy.plugins.AsyncSessionConfig method)</a>
 </li>
@@ -1317,6 +1321,8 @@ document.write(`
         <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig.__init__">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig method)</a>
 </li>
         <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.__init__">(litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+</li>
+        <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.GUID.__init__">(litestar.contrib.sqlalchemy.types.GUID method)</a>
 </li>
         <li><a href="reference/controller.html#litestar.controller.Controller.__init__">(litestar.controller.Controller method)</a>
 </li>
@@ -1839,8 +1845,6 @@ document.write(`
 </li>
       <li><a href="reference/contrib/jwt.html#litestar.contrib.jwt.Token.aud">aud (litestar.contrib.jwt.Token attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.AuditBase">AuditBase (class in litestar.contrib.sqlalchemy.base)</a>
-</li>
       <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.AuditColumns">AuditColumns (class in litestar.contrib.sqlalchemy.base)</a>
 </li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.auth">auth (litestar.connection.ASGIConnection property)</a>
@@ -1941,8 +1945,6 @@ document.write(`
 </li>
       <li><a href="reference/background_tasks.html#litestar.background_tasks.BackgroundTasks">BackgroundTasks (class in litestar.background_tasks)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.Base">Base (class in litestar.contrib.sqlalchemy.base)</a>
-</li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.base_url">base_url (litestar.connection.ASGIConnection property)</a>
 
       <ul>
@@ -1973,8 +1975,6 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.SecurityScheme.bearer_format">bearer_format (litestar.openapi.spec.SecurityScheme attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.BeforeAfter.before">before (litestar.contrib.repository.filters.BeforeAfter attribute)</a>
 </li>
       <li><a href="reference/config.html#litestar.config.app.AppConfig.before_request">before_request (litestar.config.app.AppConfig attribute)</a>
@@ -1985,6 +1985,8 @@ document.write(`
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.before_request">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/config.html#litestar.config.app.AppConfig.before_send">before_send (litestar.config.app.AppConfig attribute)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.before_send_handler">before_send_handler (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
@@ -2006,6 +2008,14 @@ document.write(`
       <li><a href="reference/types.html#litestar.types.BeforeRequestHookHandler">BeforeRequestHookHandler (in module litestar.types)</a>
 </li>
       <li><a href="reference/datastructures.html#litestar.datastructures.Accept.best_match">best_match() (litestar.datastructures.Accept method)</a>
+</li>
+      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntAuditBase">BigIntAuditBase (class in litestar.contrib.sqlalchemy.base)</a>
+</li>
+      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntBase">BigIntBase (class in litestar.contrib.sqlalchemy.base)</a>
+</li>
+      <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.BigIntIdentity">BigIntIdentity (in module litestar.contrib.sqlalchemy.types)</a>
+</li>
+      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntPrimaryKey">BigIntPrimaryKey (class in litestar.contrib.sqlalchemy.base)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSessionConfig.bind">bind (litestar.contrib.sqlalchemy.plugins.GenericSessionConfig attribute)</a>
 </li>
@@ -3557,8 +3567,12 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/contrib/jwt.html#litestar.contrib.jwt.Token.iat">iat (litestar.contrib.jwt.Token attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDPrimaryKey.id">id (litestar.contrib.sqlalchemy.base.UUIDPrimaryKey attribute)</a>
+      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntPrimaryKey.id">id (litestar.contrib.sqlalchemy.base.BigIntPrimaryKey attribute)</a>
+
+      <ul>
+        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDPrimaryKey.id">(litestar.contrib.sqlalchemy.base.UUIDPrimaryKey attribute)</a>
 </li>
+      </ul></li>
       <li><a href="reference/contrib/repository/abc.html#litestar.contrib.repository.abc.AbstractAsyncRepository.id_attribute">id_attribute (litestar.contrib.repository.abc.AbstractAsyncRepository attribute)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.HandlerIndex.identifier">identifier (litestar.app.HandlerIndex attribute)</a>
@@ -3578,8 +3592,6 @@ document.write(`
       <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableMultiDict">ImmutableMultiDict (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState">ImmutableState (class in litestar.datastructures)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.GUID.impl">impl (litestar.contrib.sqlalchemy.types.GUID attribute)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OAuthFlows.implicit">implicit (litestar.openapi.spec.OAuthFlows attribute)</a>
 </li>
@@ -4467,10 +4479,14 @@ document.write(`
 </li>
       <li><a href="reference/types.html#litestar.types.Message">Message (in module litestar.types)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.AuditBase.metadata">metadata (litestar.contrib.sqlalchemy.base.AuditBase attribute)</a>
+      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntAuditBase.metadata">metadata (litestar.contrib.sqlalchemy.base.BigIntAuditBase attribute)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.Base.metadata">(litestar.contrib.sqlalchemy.base.Base attribute)</a>
+        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntBase.metadata">(litestar.contrib.sqlalchemy.base.BigIntBase attribute)</a>
+</li>
+        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDAuditBase.metadata">(litestar.contrib.sqlalchemy.base.UUIDAuditBase attribute)</a>
+</li>
+        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDBase.metadata">(litestar.contrib.sqlalchemy.base.UUIDBase attribute)</a>
 </li>
       </ul></li>
       <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.meter">meter (litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
@@ -5426,10 +5442,14 @@ document.write(`
         <li><a href="reference/template.html#litestar.template.TemplateEngineProtocol.register_template_callable">(litestar.template.TemplateEngineProtocol method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.AuditBase.registry">registry (litestar.contrib.sqlalchemy.base.AuditBase attribute)</a>
+      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntAuditBase.registry">registry (litestar.contrib.sqlalchemy.base.BigIntAuditBase attribute)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.Base.registry">(litestar.contrib.sqlalchemy.base.Base attribute)</a>
+        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntBase.registry">(litestar.contrib.sqlalchemy.base.BigIntBase attribute)</a>
+</li>
+        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDAuditBase.registry">(litestar.contrib.sqlalchemy.base.UUIDAuditBase attribute)</a>
+</li>
+        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDBase.registry">(litestar.contrib.sqlalchemy.base.UUIDBase attribute)</a>
 </li>
       </ul></li>
       <li><a href="reference/dto/factory/index.html#litestar.dto.factory.DTOConfig.rename_fields">rename_fields (litestar.dto.factory.DTOConfig attribute)</a>
@@ -5496,6 +5516,8 @@ document.write(`
 </li>
       <li><a href="reference/testing.html#litestar.testing.RequestFactory">RequestFactory (class in litestar.testing)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.required">required (litestar.datastructures.ResponseHeader attribute)</a>
 
       <ul>
@@ -5510,8 +5532,6 @@ document.write(`
         <li><a href="reference/params.html#litestar.params.ParameterKwarg.required">(litestar.params.ParameterKwarg attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_after_response">resolve_after_response() (litestar.handlers.HTTPRouteHandler method)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_before_request">resolve_before_request() (litestar.handlers.HTTPRouteHandler method)</a>
@@ -6429,10 +6449,10 @@ document.write(`
       </ul></li>
       <li><a href="reference/app.html#litestar.app.Litestar.update_openapi_schema">update_openapi_schema() (litestar.app.Litestar method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.AuditColumns.updated">updated (litestar.contrib.sqlalchemy.base.AuditColumns attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/datastructures.html#litestar.datastructures.UploadFile">UploadFile (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/contrib/repository/abc.html#litestar.contrib.repository.abc.AbstractAsyncRepository.upsert">upsert() (litestar.contrib.repository.abc.AbstractAsyncRepository method)</a>
@@ -6474,6 +6494,10 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/datastructures.html#litestar.datastructures.URL.username">username (litestar.datastructures.URL attribute)</a>
+</li>
+      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDAuditBase">UUIDAuditBase (class in litestar.contrib.sqlalchemy.base)</a>
+</li>
+      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDBase">UUIDBase (class in litestar.contrib.sqlalchemy.base)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDPrimaryKey">UUIDPrimaryKey (class in litestar.contrib.sqlalchemy.base)</a>
 </li>
