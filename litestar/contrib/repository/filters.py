@@ -1,13 +1,10 @@
 """Collection filter datastructures."""
 from __future__ import annotations
 
+from collections import abc  # noqa: TCH003
 from dataclasses import dataclass
 from datetime import datetime  # noqa: TCH003
-from typing import TYPE_CHECKING, Generic, Literal, TypeVar
-
-if TYPE_CHECKING:
-    from collections import abc
-
+from typing import Generic, Literal, TypeVar
 
 T = TypeVar("T")
 
