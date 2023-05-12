@@ -268,7 +268,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             match_filter = kwargs
         existing = await self.get_one_or_none(**match_filter)
         if not existing:
-            return await self.add(self.model_type(**kwargs)), True # pyright: ignore[reportGeneralTypeIssues]
+            return await self.add(self.model_type(**kwargs)), True  # pyright: ignore[reportGeneralTypeIssues]
         if upsert:
             for field_name, new_field_value in kwargs.items():
                 field = getattr(existing, field_name, None)
