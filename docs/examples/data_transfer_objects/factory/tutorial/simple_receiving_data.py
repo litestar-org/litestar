@@ -18,7 +18,7 @@ class ReadDTO(DataclassDTO[Person]):
     config = DTOConfig(exclude={"email"})
 
 
-@post("/person", return_dto=ReadDTO)
+@post("/person", return_dto=ReadDTO, sync_to_thread=False)
 def create_person(data: Person) -> Person:
     # Logic for persisting the person goes here
     return data

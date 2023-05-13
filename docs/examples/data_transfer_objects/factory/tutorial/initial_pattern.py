@@ -12,7 +12,7 @@ class Person:
     email: str
 
 
-@get("/person/{name:str}")
+@get("/person/{name:str}", sync_to_thread=False)
 def get_person(name: str) -> Person:
     # Your logic to retrieve the person goes here
     # For demonstration purposes, a placeholder Person instance is returned

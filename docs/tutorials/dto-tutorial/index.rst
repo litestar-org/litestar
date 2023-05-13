@@ -41,10 +41,11 @@ Save the above script as ``app.py``, run it using the ``litestar run`` command, 
 following:
 
 .. image:: images/initial_pattern.png
+    :align: center
 
 However, real-world applications are rarely this simple. What if we want to restrict the information about users that we
 expose after they have been created? For example, we may want to hide the user's email address from the response. This
-is where data transfer objects come in.
+is where Data Transfer Objects come in.
 
 .. toctree::
     :hidden:
@@ -55,3 +56,4 @@ is where data transfer objects come in.
     04-max-nested-depth
     05-renaming-fields
     06-receiving-data
+    07-read-only-fields

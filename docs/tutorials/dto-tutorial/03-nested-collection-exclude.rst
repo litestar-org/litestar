@@ -18,7 +18,7 @@ To demonstrate, lets add a self-referencing ``children`` relationship to our ``P
    :linenos:
    :emphasize-lines: 23,27,35,36,42
 
-Now, a ``Person`` can have one, or many ``children``, and each ``child`` can have one, or many ``children``, and so on.
+Now, a ``Person`` can have one or many ``children``, and each ``child`` can have one or many ``children``, and so on.
 
 We have explicitly excluded the ``email`` and ``address`` fields of all represented ``children``
 (``"children.0.email", "children.0.address"``).
@@ -28,6 +28,7 @@ In our handler we add ``children`` to the ``Person``, and each child has no ``ch
 Here's the output:
 
 .. image:: images/nested_collection_exclude.png
+    :align: center
 
 Fantastic! Our ``children`` are now represented in the output, and their email and addresses are excluded. However,
 astute readers may have noticed that we didn't exclude the ``children`` field of ``Person.children``

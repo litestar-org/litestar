@@ -31,7 +31,7 @@ class ReadDTO(DataclassDTO[Person]):
     )
 
 
-@get("/person/{name:str}", return_dto=ReadDTO)
+@get("/person/{name:str}", return_dto=ReadDTO, sync_to_thread=False)
 def get_person(name: str) -> Person:
     # Your logic to retrieve the person goes here
     # For demonstration purposes, a placeholder Person instance is returned

@@ -19,7 +19,7 @@ Our handler is now a :class:`@post() <litestar.handlers.post>` handler, that is 
 instance of ``Person``.
 
 Litestar can natively decode request payloads into Python :func:`dataclasses <dataclasses.dataclass>`, so we don't
-_need_ a DTO defined for the inbound data for this script to work.
+*need* a DTO defined for the inbound data for this script to work.
 
 Now that we need to send data to the server to test our program, you can use a tool like
 `postman <https://www.postman.com/>`_. Here's an example of a request/response payload:

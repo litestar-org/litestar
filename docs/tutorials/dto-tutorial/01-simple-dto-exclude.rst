@@ -37,5 +37,6 @@ response.
 Lets try it out, again visit `<http://localhost:8000/person/peter>`_ and you should see the following response:
 
 .. image:: images/simple_exclude.png
+    :align: center
 
 That's better, now we are not exposing the user's email address!

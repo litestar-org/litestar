@@ -22,3 +22,4 @@ Inside the handler, we create an ``Address`` instance and assign it to the ``add
 When we call our handler, we can see that the ``street`` attribute is not included in the response:
 
 .. image:: images/nested_exclude.png
+    :align: center

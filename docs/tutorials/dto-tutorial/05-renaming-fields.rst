@@ -20,6 +20,7 @@ In this example, we rename the ``address`` field to ``location``:
 Notice how the ``address`` field is renamed to ``location``
 
 .. image:: images/explicit_field_renaming.png
+    :align: center
 
 Field renaming strategies
 =========================
@@ -51,3 +52,4 @@ Let's modify our example to use the ``upper`` strategy:
 And the result:
 
 .. image:: images/field_renaming_strategy.png
+    :align: center
