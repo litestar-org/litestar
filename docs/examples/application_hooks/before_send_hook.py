@@ -28,9 +28,9 @@ async def before_send_hook_handler(message: Message, state: State, scope: Scope)
         headers["My Header"] = state.message
 
 
-def on_startup(state: State) -> None:
+def on_startup(app: Litestar) -> None:
     """A function that will populate the app state before any requests are received."""
-    state.message = "value injected during send"
+    app.state.message = "value injected during send"
 
 
 app = Litestar(route_handlers=[handler], on_startup=[on_startup], before_send=[before_send_hook_handler])

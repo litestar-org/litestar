@@ -46,7 +46,7 @@ if TYPE_CHECKING:
         ResponseType,
         TypeEncodersMap,
     )
-    from litestar.types.callable_types import LifeSpanHook
+    from litestar.types.callable_types import LifespanHook
     from litestar.types.empty import EmptyType
 
 
@@ -130,10 +130,10 @@ class AppConfig:
     """An instance of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>` subclass."""
     middleware: list[Middleware] = field(default_factory=list)
     """A list of :class:`Middleware <.types.Middleware>`."""
-    on_shutdown: list[LifeSpanHook] = field(default_factory=list)
-    """A list of :class:`LifeSpanHandler <.types.LifeSpanHandler>` called during application shutdown."""
-    on_startup: list[LifeSpanHook] = field(default_factory=list)
-    """A list of :class:`LifeSpanHandler <.types.LifeSpanHandler>` called during application startup."""
+    on_shutdown: list[LifespanHook] = field(default_factory=list)
+    """A list of :class:`LifespanHook <.types.LifespanHook>` called during application shutdown."""
+    on_startup: list[LifespanHook] = field(default_factory=list)
+    """A list of :class:`LifespanHook <.types.LifespanHook>` called during application startup."""
     openapi_config: OpenAPIConfig | None = field(default=None)
     """Defaults to :data:`DEFAULT_OPENAPI_CONFIG <litestar.app.DEFAULT_OPENAPI_CONFIG>`"""
     opt: dict[str, Any] = field(default_factory=dict)

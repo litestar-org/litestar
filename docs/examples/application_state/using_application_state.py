@@ -11,9 +11,9 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def set_state_on_startup(state: State) -> None:
+def set_state_on_startup(app: Litestar) -> None:
     """Startup and shutdown hooks can receive `State` as a keyword arg."""
-    state.value = "abc123"
+    app.state.value = "abc123"
 
 
 def middleware_factory(*, app: "ASGIApp") -> "ASGIApp":

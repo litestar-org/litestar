@@ -29,9 +29,7 @@ Callable types
 
 .. autodata:: litestar.types.Guard
 
-.. autodata:: litestar.types.LifeSpanHandler
-
-.. autodata:: litestar.types.LifeSpanHookHandler
+.. autodata:: litestar.types.LifespanHook
 
 .. autodata:: litestar.types.OnAppInitHandler
 

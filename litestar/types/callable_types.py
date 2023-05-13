@@ -49,7 +49,7 @@ ExceptionHandler = Callable[[Request, ExceptionT], Response]
 ExceptionLoggingHandler = Callable[[Logger, Scope, List[str]], None]
 GetLogger = Callable[..., Logger]
 Guard = Callable[[ASGIConnection, BaseRouteHandler], SyncOrAsyncUnion[None]]
-LifeSpanHook = Union[
+LifespanHook = Union[
     Callable[[LitestarType], SyncOrAsyncUnion[Any]],
     Callable[[], SyncOrAsyncUnion[Any]],
 ]

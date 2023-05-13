@@ -93,7 +93,7 @@ if TYPE_CHECKING:
         Send,
         TypeEncodersMap,
     )
-    from litestar.types.callable_types import LifeSpanHook
+    from litestar.types.callable_types import LifespanHook
 
 __all__ = ("HandlerIndex", "Litestar", "DEFAULT_OPENAPI_CONFIG")
 
@@ -187,8 +187,8 @@ class Litestar(Router):
         middleware: OptionalSequence[Middleware] = None,
         multipart_form_part_limit: int = 1000,
         on_app_init: OptionalSequence[OnAppInitHandler] = None,
-        on_shutdown: OptionalSequence[LifeSpanHook] = None,
-        on_startup: OptionalSequence[LifeSpanHook] = None,
+        on_shutdown: OptionalSequence[LifespanHook] = None,
+        on_startup: OptionalSequence[LifespanHook] = None,
         openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
         opt: Mapping[str, Any] | None = None,
         parameters: ParametersMap | None = None,
@@ -256,9 +256,9 @@ class Litestar(Router):
                 an instance of :class:`AppConfig <.config.app.AppConfig>` that will have been initially populated with
                 the parameters passed to :class:`Litestar <litestar.app.Litestar>`, and must return an instance of same.
                 If more than one handler is registered they are called in the order they are provided.
-            on_shutdown: A sequence of :class:`LifeSpanHandler <.types.LifeSpanHandler>` called during application
+            on_shutdown: A sequence of :class:`LifespanHook <.types.LifespanHook>` called during application
                 shutdown.
-            on_startup: A sequence of :class:`LifeSpanHandler <litestar.types.LifeSpanHandler>` called during
+            on_startup: A sequence of :class:`LifespanHook <litestar.types.LifespanHook>` called during
                 application startup.
             openapi_config: Defaults to :attr:`DEFAULT_OPENAPI_CONFIG`
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
@@ -467,7 +467,7 @@ class Litestar(Router):
         scope["state"] = {}
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 
-    async def _call_lifespan_hook(self, hook: LifeSpanHook) -> None:
+    async def _call_lifespan_hook(self, hook: LifespanHook) -> None:
         ret = hook(self) if inspect.signature(hook).parameters else hook()  # type: ignore
 
         if is_async_callable(hook):  # type: ignore
