@@ -150,7 +150,10 @@ async def test_lifespan_startup_failure(mock_format_exc: MagicMock) -> None:
 
     mock_on_startup = AsyncMock(side_effect=exception)
 
-    router = ASGIRouter(app=Litestar(on_startup=[mock_on_startup]))
+    async def on_startup():
+        await mock_on_startup()
+
+    router = ASGIRouter(app=Litestar(on_startup=[on_startup]))
 
     with pytest.raises(ValueError):
         await router.lifespan(receive, send)
@@ -168,7 +171,10 @@ async def test_lifespan_shutdown_failure(mock_format_exc: MagicMock) -> None:
 
     mock_on_shutdown = AsyncMock(side_effect=exception)
 
-    router = ASGIRouter(app=Litestar(on_shutdown=[mock_on_shutdown]))
+    async def on_shutdown():
+        await mock_on_shutdown()
+
+    router = ASGIRouter(app=Litestar(on_shutdown=[on_shutdown]))
 
     with pytest.raises(ValueError):
         await router.lifespan(receive, send)
