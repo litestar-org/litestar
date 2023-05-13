@@ -1,10 +1,16 @@
 from __future__ import annotations
 
 import math
+import sys
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from contextlib import AbstractAsyncContextManager, AsyncExitStack
+from contextlib import AsyncExitStack
 from typing import TYPE_CHECKING, Any, DefaultDict, Sequence
+
+if sys.version_info < (3, 9):
+    from typing import AsyncContextManager
+else:
+    from contextlib import AbstractAsyncContextManager as AsyncContextManager
 
 import anyio
 
@@ -21,7 +27,7 @@ if TYPE_CHECKING:
     from litestar.events.listener import EventListener
 
 
-class BaseEventEmitterBackend(AbstractAsyncContextManager["BaseEventEmitterBackend"], ABC):
+class BaseEventEmitterBackend(AsyncContextManager["BaseEventEmitterBackend"], ABC):
     """Abstract class used to define event emitter backends."""
 
     __slots__ = ("listeners",)
