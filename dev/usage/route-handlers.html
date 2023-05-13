@@ -1052,7 +1052,11 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -1120,10 +1124,10 @@ document.write(`
 <p>Route handlers are the core of Litestar. They are constructed by decorating a function or class method with one of the
 handler decorators exported from Litestar.</p>
 <p>For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">greet</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="s2">&quot;hello world&quot;</span>
 </pre></div>
@@ -1136,6 +1140,22 @@ header of <code class="docutils literal notranslate"><span class="pre">text/plai
 descriptor classes that record all the data necessary for the given function or method - this includes a modelling of
 the function signature, which allows for injection of kwargs and dependencies, as well as data pertinent to OpenAPI
 spec generation.</p>
+<div class="important admonition">
+<p class="admonition-title">Synchronous and asynchronous callables</p>
+<p>Both synchronous and asynchronous callables are supported. One important aspect of
+this is that using a synchronous function which perform blocking operations, such
+as I/O or computationally intensive tasks, can potentially block the main thread
+running the event loop, and in turn block the whole application.</p>
+<p>To mitigate this, the <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> parameter can be set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, which
+will result in the function being run in a thread pool. Should the function be
+non-blocking, <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> should be set to <code class="docutils literal notranslate"><span class="pre">False</span></code> instead.</p>
+<p>If a synchronous function is passed, without setting an explicit <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code>
+value, a warning will be raised.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../topics/sync-vs-async.html"><span class="doc">Sync vs. Async</span></a></p>
+</div>
+</div>
 <section id="declaring-path-s">
 <h2>Declaring path(s)<a class="headerlink" href="#declaring-path-s" title="Permalink to this heading">#</a></h2>
 <p>All route handler decorator accept an optional path argument. This argument can be declared as a kwarg using the <code class="docutils literal notranslate"><span class="pre">path</span></code>
@@ -1144,7 +1164,7 @@ key word:</p>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some-path&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="o">...</span>
 </pre></div>
 </div>
@@ -1153,7 +1173,7 @@ key word:</p>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="o">...</span>
 </pre></div>
 </div>
@@ -1162,7 +1182,7 @@ key word:</p>
 
 
 <span class="nd">@get</span><span class="p">([</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="s2">&quot;/some-other-path&quot;</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="o">...</span>
 </pre></div>
 </div>
@@ -1173,7 +1193,7 @@ key word:</p>
 <span class="nd">@get</span><span class="p">(</span>
     <span class="p">[</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="s2">&quot;/some-path/{some_id:int}&quot;</span><span class="p">],</span>
 <span class="p">)</span>
-<span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">(</span><span class="n">some_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">(</span><span class="n">some_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="o">...</span>
 </pre></div>
 </div>
@@ -1211,7 +1231,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">my_request_handler</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_request_handler</span><span class="p">(</span>
     <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span>
     <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
     <span class="n">headers</span><span class="p">:</span> <span class="n">Headers</span><span class="p">,</span>
@@ -1231,7 +1251,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">my_request_handler</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_request_handler</span><span class="p">(</span>
     <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span>
     <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
     <span class="n">headers</span><span class="p">:</span> <span class="n">Headers</span><span class="p">,</span>
@@ -1271,7 +1291,7 @@ is aliased as the decorator called <a class="reference internal" href="../refere
 
 
 <span class="nd">@route</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">http_method</span><span class="o">=</span><span class="p">[</span><span class="n">HttpMethod</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">HttpMethod</span><span class="o">.</span><span class="n">POST</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">my_endpoint</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_endpoint</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="o">...</span>
 </pre></div>
 </div>
@@ -1282,7 +1302,7 @@ above:</p>
 
 
 <span class="nd">@HTTPRouteHandler</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">http_method</span><span class="o">=</span><span class="p">[</span><span class="n">HttpMethod</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">HttpMethod</span><span class="o">.</span><span class="n">POST</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">my_endpoint</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_endpoint</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="o">...</span>
 </pre></div>
 </div>
@@ -1314,37 +1334,37 @@ verb, which correlates with their name:</p>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">list_resources</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Resource</span><span class="p">]:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">list_resources</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Resource</span><span class="p">]:</span>
     <span class="o">...</span>
 
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">create_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Resource</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">create_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Resource</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span>
     <span class="o">...</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">retrieve_resource</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_resource</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span>
     <span class="o">...</span>
 
 
 <span class="nd">@head</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">retrieve_resource_head</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_resource_head</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="o">...</span>
 
 
 <span class="nd">@put</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">update_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">update_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span>
     <span class="o">...</span>
 
 
 <span class="nd">@patch</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">partially_update_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Partial</span><span class="p">[</span><span class="n">Resource</span><span class="p">],</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">partially_update_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Partial</span><span class="p">[</span><span class="n">Resource</span><span class="p">],</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span>
     <span class="o">...</span>
 
 
 <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">delete_resource</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">delete_resource</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="o">...</span>
 </pre></div>
 </div>
@@ -1356,23 +1376,6 @@ regarded as a distinct <a class="reference external" href="https://spec.openapis
 should be distinguished by a unique <code class="docutils literal notranslate"><span class="pre">operation_id</span></code> and optimally also have a <code class="docutils literal notranslate"><span class="pre">summary</span></code> and <code class="docutils literal notranslate"><span class="pre">description</span></code> sections.</p>
 <p>As such, using the <code class="docutils literal notranslate"><span class="pre">route</span></code> decorator is discouraged. Instead, the preferred pattern is to share code using secondary
 class methods or by abstracting code to reusable functions.</p>
-</section>
-<section id="using-sync-handler-functions">
-<h3>Using sync handler functions<a class="headerlink" href="#using-sync-handler-functions" title="Permalink to this heading">#</a></h3>
-<p>You can use both sync and async functions as the base for route handler functions, but which should you use? and when?</p>
-<p>If your route handler needs to perform an I/O operation (read or write data from or to a service / db etc.), the most
-performant solution within the scope of an ASGI application, including Litestar, is going to be by using an async
-solution for this purpose.</p>
-<p>The reason for this is that async code, if written correctly, is <strong>non-blocking</strong>. That is, async code can be paused and
-resumed, and it therefore does not interrupt the main event loop from executing (if written correctly). On the other
-hand, sync I/O handling is often <strong>blocking</strong>, and if you use such code in your function it can create performance
-issues.</p>
-<p>In this case you should use the <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> option. What this does, is tell Litestar to run the sync function in a
-separate async thread, where it can block but will not interrupt the main event loop’s execution.</p>
-<p>The problem with this though is that this will slow down the execution of your sync code quite dramatically - by between
-%40-60%. So this is really quite far from performant. Thus, you should use this option <strong>only</strong> when your sync code
-performs blocking I/O operations. If your sync code simply performs simple tasks, non-expensive calculations, etc. you
-should not use the <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> option.</p>
 </section>
 </section>
 <section id="websocket-route-handlers">
@@ -1667,7 +1670,7 @@ any directives to control behavior of linters.</p>
 
 
 <span class="k">class</span> <span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-    <span class="nd">@post</span><span class="p">()</span>
+    <span class="nd">@post</span><span class="p">(</span><span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">post_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">data</span>
 </pre></div>
@@ -1759,7 +1762,6 @@ required.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#http-route-handlers">HTTP route handlers</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#http-route-handlers-kwargs">HTTP route handlers kwargs</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#semantic-handler-decorators">Semantic handler decorators</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-sync-handler-functions">Using sync handler functions</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#websocket-route-handlers">Websocket route handlers</a></li>

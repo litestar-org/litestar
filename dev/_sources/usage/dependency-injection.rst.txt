@@ -62,18 +62,9 @@ Dependencies can be either callables - sync or async functions, methods or class
 :meth:`object.__call__` method, or classes. These are in turn wrapped inside an instance of the
 :class:`Provide <.di.Provide>` class.
 
-.. admonition:: Sync vs. Async dependencies
-    :class: important
 
-    Litestar supports both **synchronous** and **asynchronous** dependencies.
-    To ensure **synchronous** dependencies don't block the main thread
-    - *and therefore the entire application, for example when they perform blocking I/O* -
-    the parameter ``sync_to_thread`` will ensure they are run in a thread pool.
-    If a **synchronous** function is non-blocking, you should consider making it an async function instead.
+.. include:: /admonitions/sync-to-thread-info.rst
 
-.. tip::
-    Litestar will warn about the usage of synchronous dependency functions which do not
-    have ``sync_to_thread`` set.
 
 
 Pre-requisites and Scope

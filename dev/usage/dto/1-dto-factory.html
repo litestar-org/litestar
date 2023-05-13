@@ -1052,7 +1052,11 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../topics/sync-vs-async.html">Sync vs. Async</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -1154,7 +1158,7 @@ a DTO for use with a SQLAlchemy model:</p>
 <span class="n">UserDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -1166,7 +1170,7 @@ a DTO for use with a SQLAlchemy model:</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;ab3a1ee7-e038-48c8-9d5a-e554143275a2&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;979d8e2b-0586-45f5-acd9-26ac4dfc7762&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1206,7 +1210,7 @@ fields are never serialized into return data.</p>
 <span class="linenos">18</span><span class="n">UserDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]</span>
 <span class="linenos">19</span>
 <span class="linenos">20</span>
-<span class="linenos">21</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">)</span>
+<span class="linenos">21</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="linenos">22</span><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 <span class="linenos">23</span>    <span class="c1"># even though the client sent the password and created_at field, it is not in the data object</span>
 <span class="linenos">24</span>    <span class="k">assert</span> <span class="s2">&quot;password&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -1223,7 +1227,7 @@ fields are never serialized into return data.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;abd989d6-1980-477e-9c98-611972bbb2fd&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;a7c9bec8-5e42-40ec-925d-5aafc87eb31f&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1273,7 +1277,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span class="hll"><span class="linenos">32</span><span class="n">ReadUserDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">config</span><span class="p">]]</span>
 </span><span class="linenos">33</span>
 <span class="linenos">34</span>
-<span class="hll"><span class="linenos">35</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">ReadUserDTO</span><span class="p">)</span>
+<span class="hll"><span class="linenos">35</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">ReadUserDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span><span class="linenos">36</span><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 <span class="linenos">37</span>    <span class="n">data</span><span class="o">.</span><span class="n">created_at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span>
 <span class="linenos">38</span>    <span class="n">data</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">Address</span><span class="p">(</span><span class="n">street</span><span class="o">=</span><span class="s2">&quot;123 Main St&quot;</span><span class="p">,</span> <span class="n">city</span><span class="o">=</span><span class="s2">&quot;Anytown&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s2">&quot;NY&quot;</span><span class="p">,</span> <span class="nb">zip</span><span class="o">=</span><span class="s2">&quot;12345&quot;</span><span class="p">)</span>
@@ -1324,7 +1328,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </span><span class="hll"><span class="linenos">32</span><span class="n">ReadUserDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">config</span><span class="p">]]</span>
 </span><span class="linenos">33</span>
 <span class="linenos">34</span>
-<span class="hll"><span class="linenos">35</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">ReadUserDTO</span><span class="p">)</span>
+<span class="hll"><span class="linenos">35</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">ReadUserDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span><span class="linenos">36</span><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 <span class="linenos">37</span>    <span class="n">data</span><span class="o">.</span><span class="n">created_at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span>
 <span class="linenos">38</span>    <span class="n">data</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">Address</span><span class="p">(</span><span class="n">street</span><span class="o">=</span><span class="s2">&quot;123 Main St&quot;</span><span class="p">,</span> <span class="n">city</span><span class="o">=</span><span class="s2">&quot;Anytown&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s2">&quot;NY&quot;</span><span class="p">,</span> <span class="nb">zip</span><span class="o">=</span><span class="s2">&quot;12345&quot;</span><span class="p">)</span>
@@ -1379,7 +1383,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span class="hll"><span class="linenos">20</span><span class="n">UserDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">config</span><span class="p">]]</span>
 </span><span class="linenos">21</span>
 <span class="linenos">22</span>
-<span class="linenos">23</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">)</span>
+<span class="linenos">23</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="hll"><span class="linenos">24</span><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 </span><span class="linenos">25</span>    <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Litestar User&quot;</span>
 <span class="linenos">26</span>    <span class="n">data</span><span class="o">.</span><span class="n">created_at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span>
@@ -1418,7 +1422,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </span><span class="hll"><span class="linenos">20</span><span class="n">UserDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">config</span><span class="p">]]</span>
 </span><span class="linenos">21</span>
 <span class="linenos">22</span>
-<span class="linenos">23</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">)</span>
+<span class="linenos">23</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="hll"><span class="linenos">24</span><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 </span><span class="linenos">25</span>    <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Litestar User&quot;</span>
 <span class="linenos">26</span>    <span class="n">data</span><span class="o">.</span><span class="n">created_at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span>
@@ -1434,7 +1438,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;55131aeb-ed63-48bf-acf5-8570505123e7&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;e6bd752b-6e87-4f93-9e13-9ee30401611f&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1469,7 +1473,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span class="hll"><span class="linenos">22</span><span class="n">UserDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">config</span><span class="p">]]</span>
 </span><span class="linenos">23</span>
 <span class="hll"><span class="linenos">24</span>
-</span><span class="linenos">25</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">)</span>
+</span><span class="linenos">25</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="linenos">26</span><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 <span class="linenos">27</span>    <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">first_name</span> <span class="o">==</span> <span class="s2">&quot;Litestar User&quot;</span>
 <span class="linenos">28</span>    <span class="n">data</span><span class="o">.</span><span class="n">created_at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span>
@@ -1510,7 +1514,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </span><span class="hll"><span class="linenos">22</span><span class="n">UserDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">config</span><span class="p">]]</span>
 </span><span class="linenos">23</span>
 <span class="hll"><span class="linenos">24</span>
-</span><span class="linenos">25</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">)</span>
+</span><span class="linenos">25</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="linenos">26</span><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 <span class="linenos">27</span>    <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">first_name</span> <span class="o">==</span> <span class="s2">&quot;Litestar User&quot;</span>
 <span class="linenos">28</span>    <span class="n">data</span><span class="o">.</span><span class="n">created_at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span>
@@ -1525,7 +1529,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;0fd7cb32-cb20-481f-94fc-8a46f0d6f7f4&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1624,7 +1629,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos">29</span><span class="n">ReturnDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">A</span><span class="p">]</span>
 <span class="linenos">30</span>
 <span class="linenos">31</span>
-<span class="linenos">32</span><span class="nd">@put</span><span class="p">(</span><span class="s2">&quot;/a&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">DataDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">ReturnDTO</span><span class="p">)</span>
+<span class="linenos">32</span><span class="nd">@put</span><span class="p">(</span><span class="s2">&quot;/a&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">DataDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">ReturnDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="linenos">33</span><span class="k">def</span> <span class="nf">update_a</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
 <span class="linenos">34</span>    <span class="c1"># this shows that &quot;b&quot; was not parsed out of the inbound data</span>
 <span class="hll"><span class="linenos">35</span>    <span class="k">assert</span> <span class="s2">&quot;b&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -1676,7 +1681,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos">29</span><span class="n">ReturnDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">A</span><span class="p">]</span>
 <span class="linenos">30</span>
 <span class="linenos">31</span>
-<span class="linenos">32</span><span class="nd">@put</span><span class="p">(</span><span class="s2">&quot;/a&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">DataDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">ReturnDTO</span><span class="p">)</span>
+<span class="linenos">32</span><span class="nd">@put</span><span class="p">(</span><span class="s2">&quot;/a&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">DataDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">ReturnDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="linenos">33</span><span class="k">def</span> <span class="nf">update_a</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
 <span class="linenos">34</span>    <span class="c1"># this shows that &quot;b&quot; was not parsed out of the inbound data</span>
 <span class="hll"><span class="linenos">35</span>    <span class="k">assert</span> <span class="s2">&quot;b&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -1797,7 +1802,7 @@ type of the data that it will contain, and provides useful methods for interacti
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/person<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;2d095a9c-b774-450c-8ec6-f0cc465631c4&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;72e2538a-a288-47b5-ae1b-abb048ee9249&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
 </pre></div>
 </div>
 </div>

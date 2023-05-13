@@ -1052,7 +1052,11 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -1175,17 +1179,20 @@ the application:</p>
 <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__call__" title="(in Python v3.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">object.__call__()</span></code></a> method, or classes. These are in turn wrapped inside an instance of the
 <a class="reference internal" href="../reference/di.html#litestar.di.Provide" title="litestar.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a> class.</p>
 <div class="important admonition">
-<p class="admonition-title">Sync vs. Async dependencies</p>
-<p>Litestar supports both <strong>synchronous</strong> and <strong>asynchronous</strong> dependencies.
-To ensure <strong>synchronous</strong> dependencies don’t block the main thread
-- <em>and therefore the entire application, for example when they perform blocking I/O</em> -
-the parameter <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> will ensure they are run in a thread pool.
-If a <strong>synchronous</strong> function is non-blocking, you should consider making it an async function instead.</p>
+<p class="admonition-title">Synchronous and asynchronous callables</p>
+<p>Both synchronous and asynchronous callables are supported. One important aspect of
+this is that using a synchronous function which perform blocking operations, such
+as I/O or computationally intensive tasks, can potentially block the main thread
+running the event loop, and in turn block the whole application.</p>
+<p>To mitigate this, the <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> parameter can be set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, which
+will result in the function being run in a thread pool. Should the function be
+non-blocking, <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> should be set to <code class="docutils literal notranslate"><span class="pre">False</span></code> instead.</p>
+<p>If a synchronous function is passed, without setting an explicit <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code>
+value, a warning will be raised.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../topics/sync-vs-async.html"><span class="doc">Sync vs. Async</span></a></p>
 </div>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>Litestar will warn about the usage of synchronous dependency functions which do not
-have <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> set.</p>
 </div>
 <section id="pre-requisites-and-scope">
 <h2>Pre-requisites and Scope<a class="headerlink" href="#pre-requisites-and-scope" title="Permalink to this heading">#</a></h2>
@@ -1574,7 +1581,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="s2">&quot;whoops&quot;</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_str</span><span class="p">)})</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_str</span><span class="p">)},</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler expects and `int`, but we&#39;ve provided a `str`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">injected</span><span class="p">}</span>
@@ -1601,7 +1608,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="s2">&quot;whoops&quot;</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_str</span><span class="p">)})</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_str</span><span class="p">)},</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler expects and `int`, but we&#39;ve provided a `str`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">injected</span><span class="p">}</span>
@@ -1634,7 +1641,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="s2">&quot;whoops&quot;</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_str</span><span class="p">)})</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_str</span><span class="p">)},</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">(</span><span class="n">skip_validation</span><span class="o">=</span><span class="kc">True</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler expects an `int`, but we&#39;ve provided a `str`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">injected</span><span class="p">}</span>
@@ -1664,7 +1671,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="s2">&quot;whoops&quot;</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_str</span><span class="p">)})</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_str</span><span class="p">)},</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">(</span><span class="n">skip_validation</span><span class="o">=</span><span class="kc">True</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler expects an `int`, but we&#39;ve provided a `str`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">injected</span><span class="p">}</span>
@@ -1698,7 +1705,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">optional_dependency</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Notice we haven&#39;t provided the dependency to the route.</span>
 
@@ -1722,7 +1729,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">optional_dependency</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Notice we haven&#39;t provided the dependency to the route.</span>
 
@@ -1754,7 +1761,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Dependency</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">optional_dependency</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Notice we haven&#39;t provided the dependency to the route.</span>
 
@@ -1781,7 +1788,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Dependency</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">optional_dependency</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Notice we haven&#39;t provided the dependency to the route.</span>
 
