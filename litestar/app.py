@@ -471,7 +471,7 @@ class Litestar(Router):
         ret = hook(self) if inspect.signature(hook).parameters else hook()  # type: ignore
 
         if is_async_callable(hook):  # type: ignore
-            await ret  # type: ignore
+            await ret
 
     @asynccontextmanager
     async def lifespan(self) -> AsyncGenerator[None, None]:

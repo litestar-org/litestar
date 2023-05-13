@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, List
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from litestar.datastructures import State
 from litestar.testing import create_test_client
@@ -8,64 +10,44 @@ if TYPE_CHECKING:
 
 
 def test_lifespan() -> None:
-    events: List[str] = []
+    events: list[str] = []
     counter = {"value": 0}
 
-    async def before_startup(app: "Litestar") -> None:
-        events.append("before_startup")
-        assert app
-
-    async def after_startup(app: "Litestar") -> None:
-        events.append("after_startup")
-        assert app
-
-    async def before_shutdown(app: "Litestar") -> None:
-        events.append("before_shutdown")
-        assert app
-
-    async def after_shutdown(app: "Litestar") -> None:
-        events.append("after_shutdown")
-        assert app
-
-    def sync_function_without_state() -> None:
-        events.append("sync_function_without_state")
+    def sync_function_without_app() -> None:
+        events.append("sync_function_without_app")
         counter["value"] += 1
 
-    async def async_function_without_state() -> None:
-        events.append("async_function_without_state")
+    async def async_function_without_app() -> None:
+        events.append("async_function_without_app")
         counter["value"] += 1
 
-    def sync_function_with_state(state: "State") -> None:
-        events.append("sync_function_with_state")
-        assert state is not None
-        assert isinstance(state, State)
+    def sync_function_with_app(app: Litestar) -> None:
+        events.append("sync_function_with_app")
+        assert app is not None
+        assert isinstance(app.state, State)
         counter["value"] += 1
-        state.x = True
+        app.state.x = True
 
-    async def async_function_with_state(state: "State") -> None:
-        events.append("async_function_with_state")
-        assert state is not None
-        assert isinstance(state, State)
+    async def async_function_with_app(app: Litestar) -> None:
+        events.append("async_function_with_app")
+        assert app is not None
+        assert isinstance(app.state, State)
         counter["value"] += 1
-        state.y = True
+        app.state.y = True
 
     with create_test_client(
         [],
-        after_shutdown=[after_shutdown],
-        after_startup=[after_startup],
-        before_shutdown=[before_shutdown],
-        before_startup=[before_startup],
         on_startup=[
-            sync_function_without_state,
-            async_function_without_state,
-            sync_function_with_state,
-            async_function_with_state,
+            sync_function_without_app,
+            async_function_without_app,
+            sync_function_with_app,
+            async_function_with_app,
         ],
         on_shutdown=[
-            sync_function_without_state,
-            async_function_without_state,
-            sync_function_with_state,
-            async_function_with_state,
+            sync_function_without_app,
+            async_function_without_app,
+            sync_function_with_app,
+            async_function_with_app,
         ],
     ) as client:
         assert counter["value"] == 4
@@ -75,16 +57,12 @@ def test_lifespan() -> None:
         assert counter["value"] == 0
     assert counter["value"] == 4
     assert events == [
-        "before_startup",
-        "sync_function_without_state",
-        "async_function_without_state",
-        "sync_function_with_state",
-        "async_function_with_state",
-        "after_startup",
-        "before_shutdown",
-        "sync_function_without_state",
-        "async_function_without_state",
-        "sync_function_with_state",
-        "async_function_with_state",
-        "after_shutdown",
+        "sync_function_without_app",
+        "async_function_without_app",
+        "sync_function_with_app",
+        "async_function_with_app",
+        "sync_function_without_app",
+        "async_function_without_app",
+        "sync_function_with_app",
+        "async_function_with_app",
     ]

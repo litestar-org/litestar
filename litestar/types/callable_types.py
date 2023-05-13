@@ -49,7 +49,10 @@ ExceptionHandler = Callable[[Request, ExceptionT], Response]
 ExceptionLoggingHandler = Callable[[Logger, Scope, List[str]], None]
 GetLogger = Callable[..., Logger]
 Guard = Callable[[ASGIConnection, BaseRouteHandler], SyncOrAsyncUnion[None]]
-LifeSpanHook = Union[Callable[[LitestarType], SyncOrAsyncUnion[None]], Callable[[], SyncOrAsyncUnion[None]]]
+LifeSpanHook = Union[
+    Callable[[LitestarType], SyncOrAsyncUnion[Any]],
+    Callable[[], SyncOrAsyncUnion[Any]],
+]
 OnAppInitHandler = Callable[[AppConfig], AppConfig]
 OperationIDCreator = Callable[[HTTPRouteHandler, Method, List[Union[str, PathParameterDefinition]]], str]
 Serializer = Callable[[Any], Any]

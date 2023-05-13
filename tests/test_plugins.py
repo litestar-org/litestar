@@ -2,13 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from litestar import MediaType, get
+from litestar import Litestar, MediaType, get
 from litestar.plugins import InitPluginProtocol
 from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
     from litestar.config.app import AppConfig
-    from litestar.datastructures import State
 
 
 def test_plugin_on_app_init() -> None:
@@ -18,8 +17,8 @@ def test_plugin_on_app_init() -> None:
 
     tag = "on_app_init_called"
 
-    def on_startup(state: State) -> None:
-        state.called = True
+    def on_startup(app: Litestar) -> None:
+        app.state.called = True
 
     class PluginWithInitOnly(InitPluginProtocol):
         def on_app_init(self, app_config: AppConfig) -> AppConfig:

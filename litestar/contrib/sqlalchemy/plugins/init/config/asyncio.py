@@ -6,10 +6,7 @@ from typing import TYPE_CHECKING, cast
 from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 
 from litestar.types import Empty
-from litestar.utils import (
-    delete_litestar_scope_state,
-    get_litestar_scope_state,
-)
+from litestar.utils import delete_litestar_scope_state, get_litestar_scope_state
 
 from .common import SESSION_SCOPE_KEY, SESSION_TERMINUS_ASGI_EVENTS, GenericSessionConfig, GenericSQLAlchemyConfig
 
@@ -18,6 +15,7 @@ if TYPE_CHECKING:
 
     from sqlalchemy.orm import Session
 
+    from litestar import Litestar
     from litestar.datastructures.state import State
     from litestar.types import BeforeMessageSendHookHandler, EmptyType, Message, Scope
 
@@ -81,14 +79,14 @@ class SQLAlchemyAsyncConfig(GenericSQLAlchemyConfig[AsyncEngine, AsyncSession, a
         """
         return {"AsyncEngine": AsyncEngine, "AsyncSession": AsyncSession}
 
-    async def on_shutdown(self, state: State) -> None:
+    async def on_shutdown(self, app: Litestar) -> None:
         """Disposes of the SQLAlchemy engine.
 
         Args:
-            state: The ``Litestar.state`` instance.
+            app: The ``Litestar`` instance.
 
         Returns:
             None
         """
-        engine = cast("AsyncEngine", state.pop(self.engine_app_state_key))
+        engine = cast("AsyncEngine", app.state.pop(self.engine_app_state_key))
         await engine.dispose()

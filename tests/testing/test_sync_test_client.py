@@ -42,7 +42,7 @@ def test_use_testclient_in_endpoint(test_client_backend: AnyIOBackend) -> None:
     assert response.json() == {"mock": "example"}
 
 
-def raise_error() -> NoReturn:
+def raise_error(app: Litestar) -> NoReturn:
     raise RuntimeError()
 
 

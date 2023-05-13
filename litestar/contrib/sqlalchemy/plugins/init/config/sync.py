@@ -6,16 +6,14 @@ from typing import TYPE_CHECKING, cast
 from sqlalchemy import Connection, Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from litestar.utils import (
-    delete_litestar_scope_state,
-    get_litestar_scope_state,
-)
+from litestar.utils import delete_litestar_scope_state, get_litestar_scope_state
 
 from .common import SESSION_SCOPE_KEY, SESSION_TERMINUS_ASGI_EVENTS, GenericSessionConfig, GenericSQLAlchemyConfig
 
 if TYPE_CHECKING:
     from typing import Any, Callable
 
+    from litestar import Litestar
     from litestar.datastructures.state import State
     from litestar.types import BeforeMessageSendHookHandler, Message, Scope
 
@@ -71,14 +69,14 @@ class SQLAlchemySyncConfig(GenericSQLAlchemyConfig[Engine, Session, sessionmaker
         """
         return {"Engine": Engine, "Session": Session}
 
-    def on_shutdown(self, state: State) -> None:
+    def on_shutdown(self, app: Litestar) -> None:
         """Disposes of the SQLAlchemy engine.
 
         Args:
-            state: The ``Litestar.state`` instance.
+            app: The ``Litestar`` instance.
 
         Returns:
             None
         """
-        engine = cast("Engine", state.pop(self.engine_app_state_key))
+        engine = cast("Engine", app.state.pop(self.engine_app_state_key))
         engine.dispose()

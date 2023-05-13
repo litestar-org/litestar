@@ -116,7 +116,7 @@ def test_lifespan_context_manager_with_hooks(
 
 
 def test_multiple_lifespan_managers() -> None:
-    managers: list[LifeSpanManager] = []
+    managers: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] = []
     startup_mocks: list[AsyncMock] = []
     shutdown_mocks: list[AsyncMock] = []
     for _ in range(3):

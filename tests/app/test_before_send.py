@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from litestar import get
+from litestar import Litestar, get
 from litestar.datastructures import MutableScopeHeaders
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
@@ -25,8 +25,8 @@ def test_before_send() -> None:
             headers = MutableScopeHeaders(message)
             headers.add("My Header", state.message)
 
-    def on_startup(state: State) -> None:
-        state.message = "value injected during send"
+    def on_startup(app: Litestar) -> None:
+        app.state.message = "value injected during send"
 
     with create_test_client(handler, on_startup=[on_startup], before_send=[before_send_hook_handler]) as client:
         response = client.get("/test")
