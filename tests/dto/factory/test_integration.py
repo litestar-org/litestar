@@ -176,3 +176,27 @@ def test_dto_data_with_patch_request() -> None:
     with create_test_client(route_handlers=[handler], debug=True) as client:
         response = client.patch("/", json={"age": 41, "read_only": "whoops"})
         assert response.json() == {"name": "John", "age": 41, "read_only": "read-only"}
+
+
+def test_dto_openapi_model_name_collision() -> None:
+    @dataclass
+    class Bar:
+        id: int
+        foo: str
+
+    write_dto = DataclassDTO[Annotated[Bar, DTOConfig(exclude={"id"})]]
+    read_dto = DataclassDTO[Bar]
+
+    @post(dto=write_dto, return_dto=read_dto, signature_namespace={"Bar": Bar})
+    def handler(data: Bar) -> Bar:
+        return data
+
+    with create_test_client(route_handlers=[handler], debug=True) as client:
+        response = client.get("/schema/openapi.json")
+        schemas = list(response.json()["components"]["schemas"].values())
+        assert len(schemas) == 2
+        assert schemas[0] != schemas[1]
+        assert all(
+            k.startswith("tests.dto.factory.test_integration.test_dto_openapi_model_name_collision.<locals>.Bar")
+            for k in response.json()["components"]["schemas"]
+        )

@@ -26,7 +26,8 @@ class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
     __slots__ = ()
 
     def create_transfer_model_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
-        return _create_struct_for_field_definitions(unique_name, field_definitions)
+        fqn_uid: str = self._gen_unique_name_id(unique_name)
+        return _create_struct_for_field_definitions(fqn_uid, field_definitions)
 
     def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> Struct | Collection[Struct]:
         return decode_media_type(  # type:ignore[no-any-return]

@@ -3,6 +3,7 @@ back again, to bytes.
 """
 from __future__ import annotations
 
+import secrets
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Final, Generic, TypeVar, Union
 
@@ -407,6 +408,11 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             inner_types=inner_types,
             has_nested=any(_determine_has_nested(t) for t in inner_types),
         )
+
+    def _gen_unique_name_id(self, unique_name: str, size: int = 12) -> str:
+        # Generate a unique ID
+        # Convert the ID to a short alphanumeric string
+        return f"{unique_name}-{secrets.token_hex(8)}"
 
 
 def _filter_exclude(exclude: AbstractSet[str], field_name: str) -> AbstractSet[str]:

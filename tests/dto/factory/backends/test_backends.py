@@ -12,13 +12,14 @@ from pydantic import BaseModel
 from litestar.dto.factory import DTOConfig
 from litestar.dto.factory._backends import MsgspecDTOBackend, PydanticDTOBackend
 from litestar.dto.factory._backends.abc import BackendContext
-from litestar.dto.factory._backends.types import CollectionType, SimpleType
+from litestar.dto.factory._backends.types import CollectionType, SimpleType, TransferFieldDefinition
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.dto.interface import ConnectionContext
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
 from litestar.openapi.spec.reference import Reference
 from litestar.serialization import encode_json
+from litestar.types.empty import Empty
 from litestar.utils.signature import ParsedType
 
 if TYPE_CHECKING:
@@ -173,6 +174,32 @@ def test_backend_create_openapi_schema(backend_type: type[AbstractDTOBackend], b
     nested_schema = schemas[nested.value]
     assert nested_schema.properties["a"].type == "integer"
     assert nested_schema.properties["b"].type == "string"
+
+
+@pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
+def test_backend_model_name_uniqueness(backend_type: type[AbstractDTOBackend], backend_context: BackendContext) -> None:
+    backend = backend_type(backend_context)
+    unique_names: set = set()
+    transfer_type = SimpleType(parsed_type=ParsedType(int), nested_field_info=None)
+
+    fd = (
+        TransferFieldDefinition(
+            name="a",
+            default=Empty,
+            parsed_type=ParsedType(int),
+            default_factory=None,
+            dto_field=None,
+            unique_model_name="some_module.SomeModel",
+            serialization_name="a",
+            transfer_type=transfer_type,
+            is_partial=False,
+        ),
+    )
+    for i in range(100):
+        model_class = backend.create_transfer_model_type("some_module.SomeModel", fd)
+        model_name = model_class.__name__
+        assert model_name not in unique_names
+        unique_names.add(model_name)
 
 
 @pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])

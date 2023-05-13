@@ -2076,7 +2076,7 @@ files = [
 name = "outcome"
 version = "1.2.0"
 description = "Capture the outcome of Python function calls."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -2843,7 +2843,7 @@ files = [
 name = "sortedcontainers"
 version = "2.4.0"
 description = "Sorted Containers -- Sorted List, Sorted Dict, Sorted Set"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 files = [
@@ -3263,7 +3263,7 @@ psycopg = ["psycopg[binary,pool] (==3.0.12)"]
 name = "trio"
 version = "0.22.0"
 description = "A friendly Python library for async concurrency and I/O"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
