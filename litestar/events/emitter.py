@@ -1,13 +1,12 @@
 from __future__ import annotations
 
+import math
 from abc import ABC, abstractmethod
-from asyncio import Queue
 from collections import defaultdict
 from contextlib import AbstractAsyncContextManager, AsyncExitStack
 from typing import TYPE_CHECKING, Any, DefaultDict, Sequence
 
 import anyio
-import sniffio
 
 from litestar.exceptions import ImproperlyConfiguredException
 
@@ -15,10 +14,14 @@ __all__ = ("BaseEventEmitterBackend", "SimpleEventEmitter")
 
 
 if TYPE_CHECKING:
+    from types import TracebackType
+
+    from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
+
     from litestar.events.listener import EventListener
 
 
-class BaseEventEmitterBackend(AbstractAsyncContextManager, ABC):
+class BaseEventEmitterBackend(AbstractAsyncContextManager["BaseEventEmitterBackend"], ABC):
     """Abstract class used to define event emitter backends."""
 
     __slots__ = ("listeners",)
@@ -54,7 +57,7 @@ class BaseEventEmitterBackend(AbstractAsyncContextManager, ABC):
 class SimpleEventEmitter(BaseEventEmitterBackend):
     """Event emitter the works only in the current process"""
 
-    __slots__ = ("_queue", "_exit_stack")
+    __slots__ = ("_queue", "_exit_stack", "_receive_stream", "_send_stream")
 
     def __init__(self, listeners: Sequence[EventListener]):
         """Create an event emitter instance.
@@ -63,43 +66,45 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
             listeners: A list of listeners.
         """
         super().__init__(listeners=listeners)
-        self._queue: Queue | None = None
+        self._receive_stream: MemoryObjectReceiveStream | None = None
+        self._send_stream: MemoryObjectSendStream | None = None
         self._exit_stack: AsyncExitStack | None = None
 
-    async def _worker(self) -> None:
+    @staticmethod
+    async def _worker(receive_stream: MemoryObjectReceiveStream) -> None:
         """Worker that runs in a separate task and continuously pulls events from asyncio queue.
 
         Returns:
             None
         """
-        while self._queue:
-            item = await self._queue.get()
-            if item is None:
-                self._queue.task_done()
-                break
-            fn, args, kwargs = item
-            await fn(*args, **kwargs)
-            self._queue.task_done()
+        async with receive_stream:
+            async for item in receive_stream:
+                fn, args, kwargs = item
+                await fn(*args, **kwargs)
 
     async def __aenter__(self) -> SimpleEventEmitter:
-        if sniffio.current_async_library() != "asyncio":
-            return self
-
-        self._queue = Queue()
         self._exit_stack = AsyncExitStack()
+        send_stream, receive_stream = anyio.create_memory_object_stream(math.inf)
+        self._send_stream = send_stream
         task_group = anyio.create_task_group()
+
         await self._exit_stack.enter_async_context(task_group)
-        task_group.start_soon(self._worker)
+        await self._exit_stack.enter_async_context(send_stream)
+        task_group.start_soon(self._worker, receive_stream)
+
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
-        if self._queue:
-            self._queue.put_nowait(None)
-            self._queue = None
-
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         if self._exit_stack:
-            await self._exit_stack.aclose()
-            self._exit_stack = None
+            await self._exit_stack.__aexit__(exc_type, exc_val, exc_tb)
+
+        self._exit_stack = None
+        self._send_stream = None
 
     def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.
@@ -112,14 +117,11 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         Returns:
             None
         """
-        if not self._queue:
-            if sniffio.current_async_library() != "asyncio":
-                raise ImproperlyConfiguredException(f"{type(self).__name__} only supports 'asyncio' based event loops")
-
-            raise ImproperlyConfiguredException("Worker not running")
+        if not (self._send_stream and self._exit_stack):
+            raise RuntimeError("Emitter not initialized")
 
         if listeners := self.listeners.get(event_id):
             for listener in listeners:
-                self._queue.put_nowait((listener.fn, args, kwargs))
+                self._send_stream.send_nowait((listener.fn, args, kwargs))
             return
         raise ImproperlyConfiguredException(f"no event listeners are registered for event ID: {event_id}")

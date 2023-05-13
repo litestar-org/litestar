@@ -189,8 +189,3 @@ This solution works well if the system does not need to rely on complex behaviou
 mechanism, persistence, or scheduling/cron. For these more complex use cases, users should implement their own backend
 using either a DB/Key store that supports events (Redis, Postgres etc.), or a message broker, job queue or task queue
 technology.
-
-..  attention::
-    The :class:`SimpleEventEmitter <litestar.events.SimpleEventEmitter>` works only with ``asyncio`` due to the
-    limitation of ``trio`` (intentionally) not supporting "worker tasks" - i.e. tasks that run in a detached state. If
-    you want to use this functionality with ``trio``, you will need to create a custom implementation for your use case.
