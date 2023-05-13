@@ -18,6 +18,7 @@ on:
 jobs:
   test:
     runs-on: ${{ inputs.os }}
+    timeout-minutes: 10
     defaults:
       run:
         shell: bash
