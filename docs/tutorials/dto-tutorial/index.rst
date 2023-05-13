@@ -57,3 +57,5 @@ is where Data Transfer Objects come in.
     05-renaming-fields
     06-receiving-data
     07-read-only-fields
+    08-dto-data
+    09-patch-handlers

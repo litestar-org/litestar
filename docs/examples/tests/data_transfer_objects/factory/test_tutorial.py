@@ -103,3 +103,13 @@ def test_read_only_fields():
 
     assert response.status_code == 500
     assert "__init__() missing 1 required positional argument: 'id'" in response.json()["detail"]
+
+
+def test_dto_data():
+    from docs.examples.data_transfer_objects.factory.tutorial.dto_data import app
+
+    with TestClient(app=app) as client:
+        response = client.post("/person", json={"name": "peter", "age": 40, "email": "email_of_peter@example.com"})
+
+    assert response.status_code == 201
+    assert response.json() == {"id": 1, "name": "peter", "age": 40}
