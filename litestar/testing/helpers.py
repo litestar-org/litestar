@@ -41,8 +41,7 @@ if TYPE_CHECKING:
         EmptyType,
         ExceptionHandlersMap,
         Guard,
-        LifeSpanHandler,
-        LifeSpanHookHandler,
+        LifeSpanHook,
         Middleware,
         OnAppInitHandler,
         OptionalSequence,
@@ -59,16 +58,12 @@ def create_test_client(
     after_exception: OptionalSequence[AfterExceptionHookHandler] = None,
     after_request: AfterRequestHookHandler | None = None,
     after_response: AfterResponseHookHandler | None = None,
-    after_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
-    after_startup: OptionalSequence[LifeSpanHookHandler] = None,
     allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
     backend: Literal["asyncio", "trio"] = "asyncio",
     backend_options: Mapping[str, Any] | None = None,
     base_url: str = "http://testserver.local",
     before_request: BeforeRequestHookHandler | None = None,
     before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
-    before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
-    before_startup: OptionalSequence[LifeSpanHookHandler] = None,
     cache_control: CacheControlHeader | None = None,
     compression_config: CompressionConfig | None = None,
     cors_config: CORSConfig | None = None,
@@ -85,13 +80,13 @@ def create_test_client(
     middleware: OptionalSequence[Middleware] = None,
     multipart_form_part_limit: int = 1000,
     on_app_init: OptionalSequence[OnAppInitHandler] = None,
-    on_shutdown: OptionalSequence[LifeSpanHandler] = None,
-    on_startup: OptionalSequence[LifeSpanHandler] = None,
+    on_shutdown: OptionalSequence[LifeSpanHook] = None,
+    on_startup: OptionalSequence[LifeSpanHook] = None,
     openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
     opt: Mapping[str, Any] | None = None,
     parameters: ParametersMap | None = None,
     plugins: OptionalSequence[PluginProtocol] = None,
-    lifespan: list[Callable[[Litestar], AbstractAsyncContextManager]] | None = None,
+    lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
     preferred_validation_backend: Literal["pydantic", "attrs"] | None = None,
     raise_server_exceptions: bool = True,
     request_class: type[Request] | None = None,
@@ -155,10 +150,6 @@ def create_test_client(
             object has been resolved. Receives the response object.
         after_response: A sync or async function called after the response has been awaited. It receives the
             :class:`Request <.connection.Request>` object and should not return any values.
-        after_shutdown: A sequence of :class:`life-span hook handlers <.types.LifeSpanHookHandler>`. Called during
-            the ASGI shutdown, after all callables in the 'on_shutdown' list have been called.
-        after_startup: A sequence of :class:`life-span hook handlers <.types.LifeSpanHookHandler>`. Called during
-            the ASGI startup, after all callables in the 'on_startup' list have been called.
         allowed_hosts: A sequence of allowed hosts, or an
             :class:`AllowedHostsConfig <.config.allowed_hosts.AllowedHostsConfig>` instance. Enables the builtin
             allowed hosts middleware.
@@ -167,10 +158,6 @@ def create_test_client(
             response, bypassing the route handler.
         before_send: A sequence of :class:`before send hook handlers <.types.BeforeMessageSendHookHandler>`. Called
             when the ASGI send function is called.
-        before_shutdown: A sequence of :class:`life-span hook handlers <.types.LifeSpanHookHandler>`. Called during
-            the ASGI shutdown, before any 'on_shutdown' hooks are called.
-        before_startup: A sequence of :class:`life-span hook handlers <.types.LifeSpanHookHandler>`. Called during
-            the ASGI startup, before any 'on_startup' hooks are called.
         cache_control: A ``cache-control`` header of type
             :class:`CacheControlHeader <litestar.datastructures.CacheControlHeader>` to add to route handlers of
             this app. Can be overridden by route handlers.
@@ -249,13 +236,9 @@ def create_test_client(
         after_exception=after_exception,
         after_request=after_request,
         after_response=after_response,
-        after_shutdown=after_shutdown,
-        after_startup=after_startup,
         allowed_hosts=allowed_hosts,
         before_request=before_request,
         before_send=before_send,
-        before_shutdown=before_shutdown,
-        before_startup=before_startup,
         cache_control=cache_control,
         compression_config=compression_config,
         cors_config=cors_config,
@@ -315,16 +298,12 @@ def create_async_test_client(
     after_exception: OptionalSequence[AfterExceptionHookHandler] = None,
     after_request: AfterRequestHookHandler | None = None,
     after_response: AfterResponseHookHandler | None = None,
-    after_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
-    after_startup: OptionalSequence[LifeSpanHookHandler] = None,
     allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
     backend: Literal["asyncio", "trio"] = "asyncio",
     backend_options: Mapping[str, Any] | None = None,
     base_url: str = "http://testserver.local",
     before_request: BeforeRequestHookHandler | None = None,
     before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
-    before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
-    before_startup: OptionalSequence[LifeSpanHookHandler] = None,
     cache_control: CacheControlHeader | None = None,
     compression_config: CompressionConfig | None = None,
     cors_config: CORSConfig | None = None,
@@ -336,14 +315,14 @@ def create_async_test_client(
     event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
     exception_handlers: ExceptionHandlersMap | None = None,
     guards: OptionalSequence[Guard] = None,
-    lifespan: list[Callable[[Litestar], AbstractAsyncContextManager]] | None = None,
+    lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
     listeners: OptionalSequence[EventListener] = None,
     logging_config: BaseLoggingConfig | EmptyType | None = Empty,
     middleware: OptionalSequence[Middleware] = None,
     multipart_form_part_limit: int = 1000,
     on_app_init: OptionalSequence[OnAppInitHandler] = None,
-    on_shutdown: OptionalSequence[LifeSpanHandler] = None,
-    on_startup: OptionalSequence[LifeSpanHandler] = None,
+    on_shutdown: OptionalSequence[LifeSpanHook] = None,
+    on_startup: OptionalSequence[LifeSpanHook] = None,
     openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
     opt: Mapping[str, Any] | None = None,
     parameters: ParametersMap | None = None,
@@ -410,10 +389,6 @@ def create_async_test_client(
             object has been resolved. Receives the response object.
         after_response: A sync or async function called after the response has been awaited. It receives the
             :class:`Request <.connection.Request>` object and should not return any values.
-        after_shutdown: A sequence of :class:`life-span hook handlers <.types.LifeSpanHookHandler>`. Called during
-            the ASGI shutdown, after all callables in the 'on_shutdown' list have been called.
-        after_startup: A sequence of :class:`life-span hook handlers <.types.LifeSpanHookHandler>`. Called during
-            the ASGI startup, after all callables in the 'on_startup' list have been called.
         allowed_hosts: A sequence of allowed hosts, or an
             :class:`AllowedHostsConfig <.config.allowed_hosts.AllowedHostsConfig>` instance. Enables the builtin
             allowed hosts middleware.
@@ -422,10 +397,6 @@ def create_async_test_client(
             response, bypassing the route handler.
         before_send: A sequence of :class:`before send hook handlers <.types.BeforeMessageSendHookHandler>`. Called
             when the ASGI send function is called.
-        before_shutdown: A sequence of :class:`life-span hook handlers <.types.LifeSpanHookHandler>`. Called during
-            the ASGI shutdown, before any 'on_shutdown' hooks are called.
-        before_startup: A sequence of :class:`life-span hook handlers <.types.LifeSpanHookHandler>`. Called during
-            the ASGI startup, before any 'on_startup' hooks are called.
         cache_control: A ``cache-control`` header of type
             :class:`CacheControlHeader <litestar.datastructures.CacheControlHeader>` to add to route handlers of
             this app. Can be overridden by route handlers.
@@ -504,13 +475,9 @@ def create_async_test_client(
         after_exception=after_exception,
         after_request=after_request,
         after_response=after_response,
-        after_shutdown=after_shutdown,
-        after_startup=after_startup,
         allowed_hosts=allowed_hosts,
         before_request=before_request,
         before_send=before_send,
-        before_shutdown=before_shutdown,
-        before_startup=before_startup,
         cache_control=cache_control,
         compression_config=compression_config,
         cors_config=cors_config,

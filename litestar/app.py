@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import inspect
 import logging
 from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager
 from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Literal, Mapping, Sequence, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Literal, Mapping, Sequence, cast
 
 from typing_extensions import Self, TypedDict
 
@@ -40,8 +41,8 @@ from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty
 from litestar.types.internal_types import PathParameterDefinition
 from litestar.utils import (
-    AsyncCallable,
     as_async_callable_list,
+    is_async_callable,
     join_paths,
     unique,
 )
@@ -75,8 +76,6 @@ if TYPE_CHECKING:
         ExceptionHandlersMap,
         GetLogger,
         Guard,
-        LifeSpanHandler,
-        LifeSpanHookHandler,
         LifeSpanReceive,
         LifeSpanScope,
         LifeSpanSend,
@@ -94,6 +93,7 @@ if TYPE_CHECKING:
         Send,
         TypeEncodersMap,
     )
+    from litestar.types.callable_types import LifeSpanHook
 
 __all__ = ("HandlerIndex", "Litestar", "DEFAULT_OPENAPI_CONFIG")
 
@@ -132,14 +132,10 @@ class Litestar(Router):
         "_debug",
         "_openapi_schema",
         "after_exception",
-        "after_shutdown",
-        "after_startup",
         "allowed_hosts",
         "asgi_handler",
         "asgi_router",
         "before_send",
-        "before_shutdown",
-        "before_startup",
         "compression_config",
         "cors_config",
         "csrf_config",
@@ -172,13 +168,9 @@ class Litestar(Router):
         after_exception: OptionalSequence[AfterExceptionHookHandler] = None,
         after_request: AfterRequestHookHandler | None = None,
         after_response: AfterResponseHookHandler | None = None,
-        after_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
-        after_startup: OptionalSequence[LifeSpanHookHandler] = None,
         allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
         before_request: BeforeRequestHookHandler | None = None,
         before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
-        before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
-        before_startup: OptionalSequence[LifeSpanHookHandler] = None,
         cache_control: CacheControlHeader | None = None,
         compression_config: CompressionConfig | None = None,
         cors_config: CORSConfig | None = None,
@@ -195,8 +187,8 @@ class Litestar(Router):
         middleware: OptionalSequence[Middleware] = None,
         multipart_form_part_limit: int = 1000,
         on_app_init: OptionalSequence[OnAppInitHandler] = None,
-        on_shutdown: OptionalSequence[LifeSpanHandler] = None,
-        on_startup: OptionalSequence[LifeSpanHandler] = None,
+        on_shutdown: OptionalSequence[LifeSpanHook] = None,
+        on_startup: OptionalSequence[LifeSpanHook] = None,
         openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
         opt: Mapping[str, Any] | None = None,
         parameters: ParametersMap | None = None,
@@ -217,7 +209,7 @@ class Litestar(Router):
         template_config: TemplateConfig | None = None,
         type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
-        lifespan: list[Callable[[Litestar], AbstractAsyncContextManager]] | None = None,
+        lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
     ) -> None:
         """Initialize a ``Litestar`` application.
 
@@ -229,10 +221,6 @@ class Litestar(Router):
                 object has been resolved. Receives the response object.
             after_response: A sync or async function called after the response has been awaited. It receives the
                 :class:`Request <.connection.Request>` object and should not return any values.
-            after_shutdown: A sequence of :class:`life-span hook handlers <.types.LifeSpanHookHandler>`. Called during
-                the ASGI shutdown, after all callables in the 'on_shutdown' list have been called.
-            after_startup: A sequence of :class:`life-span hook handlers <.types.LifeSpanHookHandler>`. Called during
-                the ASGI startup, after all callables in the 'on_startup' list have been called.
             allowed_hosts: A sequence of allowed hosts, or an
                 :class:`AllowedHostsConfig <.config.allowed_hosts.AllowedHostsConfig>` instance. Enables the builtin
                 allowed hosts middleware.
@@ -241,10 +229,6 @@ class Litestar(Router):
                 response, bypassing the route handler.
             before_send: A sequence of :class:`before send hook handlers <.types.BeforeMessageSendHookHandler>`. Called
                 when the ASGI send function is called.
-            before_shutdown: A sequence of :class:`life-span hook handlers <.types.LifeSpanHookHandler>`. Called during
-                the ASGI shutdown, before any 'on_shutdown' hooks are called.
-            before_startup: A sequence of :class:`life-span hook handlers <.types.LifeSpanHookHandler>`. Called during
-                the ASGI startup, before any 'on_startup' hooks are called.
             cache_control: A ``cache-control`` header of type
                 :class:`CacheControlHeader <litestar.datastructures.CacheControlHeader>` to add to route handlers of
                 this app. Can be overridden by route handlers.
@@ -319,13 +303,9 @@ class Litestar(Router):
             after_exception=list(after_exception or []),
             after_request=after_request,
             after_response=after_response,
-            after_shutdown=list(after_shutdown or []),
-            after_startup=list(after_startup or []),
             allowed_hosts=allowed_hosts if isinstance(allowed_hosts, AllowedHostsConfig) else list(allowed_hosts or []),
             before_request=before_request,
             before_send=list(before_send or []),
-            before_shutdown=list(before_shutdown or []),
-            before_startup=list(before_startup or []),
             cache_control=cache_control,
             compression_config=compression_config,
             cors_config=cors_config,
@@ -383,12 +363,8 @@ class Litestar(Router):
 
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
         self.after_exception = as_async_callable_list(config.after_exception)
-        self.after_shutdown = as_async_callable_list(config.after_shutdown)
-        self.after_startup = as_async_callable_list(config.after_startup)
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
         self.before_send = as_async_callable_list(config.before_send)
-        self.before_shutdown = as_async_callable_list(config.before_shutdown)
-        self.before_startup = as_async_callable_list(config.before_startup)
         self.compression_config = config.compression_config
         self.cors_config = config.cors_config
         self.csrf_config = config.csrf_config
@@ -491,19 +467,11 @@ class Litestar(Router):
         scope["state"] = {}
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 
-    async def _call_lifespan_handler(self, handler: LifeSpanHandler) -> None:
-        """Determine whether the lifecycle handler expects an argument, and if so pass the `app.state` to it. If the
-        handler is an async function, await the return.
+    async def _call_lifespan_hook(self, hook: LifeSpanHook) -> None:
+        ret = hook(self) if inspect.signature(hook).parameters else hook()  # type: ignore
 
-        Args:
-            handler: sync or async callable that may or may not have an argument.
-        """
-        async_callable = AsyncCallable(handler)  # type: ignore[arg-type]
-
-        if async_callable.num_expected_args > 0:
-            await async_callable(self.state)  # type: ignore[arg-type]
-        else:
-            await async_callable()  # pyright: ignore
+        if is_async_callable(hook):  # type: ignore
+            await ret  # type: ignore
 
     @asynccontextmanager
     async def lifespan(self) -> AsyncGenerator[None, None]:
@@ -516,29 +484,20 @@ class Litestar(Router):
         hooks, as well as custom lifespan managers.
         """
         async with AsyncExitStack() as exit_stack:
-            exit_callbacks: list[Callable[[], Awaitable[Any]]] = [
-                *[partial(hook, self) for hook in self.after_shutdown[::-1]],
-                *[partial(self._call_lifespan_handler, handler) for handler in self.on_shutdown[::-1]],
-                self.event_emitter.on_shutdown,
-                *[partial(hook, self) for hook in self.before_shutdown[::-1]],
-            ]
+            for hook in self.on_shutdown[::-1]:
+                exit_stack.push_async_callback(partial(self._call_lifespan_hook, hook))
 
-            for hook in exit_callbacks:
-                exit_stack.push_async_callback(hook)
-
-            for hook in self.before_startup:
-                await hook(self)
+            exit_stack.push_async_callback(self.event_emitter.on_shutdown)
 
             for manager in self._lifespan_managers:
-                await exit_stack.enter_async_context(manager(self))
+                if not isinstance(manager, AbstractAsyncContextManager):
+                    manager = manager(self)
+                await exit_stack.enter_async_context(manager)
 
             await self.event_emitter.on_startup()
 
-            for handler in self.on_startup:
-                await self._call_lifespan_handler(handler)
-
-            for hook in self.after_startup:
-                await hook(self)
+            for hook in self.on_startup:
+                await self._call_lifespan_hook(hook)
 
             yield
 
