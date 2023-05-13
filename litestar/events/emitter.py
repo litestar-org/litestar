@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from asyncio import CancelledError, Queue, Task, create_task
+from asyncio import Queue
 from collections import defaultdict
-from contextlib import suppress
+from contextlib import AbstractAsyncContextManager, AsyncExitStack
 from typing import TYPE_CHECKING, Any, DefaultDict, Sequence
 
+import anyio
 import sniffio
 
 from litestar.exceptions import ImproperlyConfiguredException
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
     from litestar.events.listener import EventListener
 
 
-class BaseEventEmitterBackend(ABC):
+class BaseEventEmitterBackend(AbstractAsyncContextManager, ABC):
     """Abstract class used to define event emitter backends."""
 
     __slots__ = ("listeners",)
@@ -49,31 +50,11 @@ class BaseEventEmitterBackend(ABC):
         """
         raise NotImplementedError("not implemented")
 
-    @abstractmethod
-    async def on_startup(self) -> None:  # pragma: no cover
-        """Hook called on application startup, used to establish connection or perform other async operations.
-
-        Returns:
-            None
-        """
-        raise NotImplementedError("not implemented")
-
-    @abstractmethod
-    async def on_shutdown(self) -> None:  # pragma: no cover
-        """Hook called on application shutdown, used to perform cleanup.
-
-        Returns:
-            None
-        """
-        raise NotImplementedError("not implemented")
-
 
 class SimpleEventEmitter(BaseEventEmitterBackend):
     """Event emitter the works only in the current process"""
 
-    __slots__ = ("_queue", "_worker_task")
-
-    _worker_task: Task | None
+    __slots__ = ("_queue", "_exit_stack")
 
     def __init__(self, listeners: Sequence[EventListener]):
         """Create an event emitter instance.
@@ -83,7 +64,7 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         """
         super().__init__(listeners=listeners)
         self._queue: Queue | None = None
-        self._worker_task = None
+        self._exit_stack: AsyncExitStack | None = None
 
     async def _worker(self) -> None:
         """Worker that runs in a separate task and continuously pulls events from asyncio queue.
@@ -92,39 +73,33 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
             None
         """
         while self._queue:
-            fn, args, kwargs = await self._queue.get()
+            item = await self._queue.get()
+            if item is None:
+                self._queue.task_done()
+                break
+            fn, args, kwargs = item
             await fn(*args, **kwargs)
             self._queue.task_done()
 
-    async def on_startup(self) -> None:
-        """Hook called on application startup, used to establish connection or perform other async operations.
-
-        Returns:
-            None
-        """
+    async def __aenter__(self) -> SimpleEventEmitter:
         if sniffio.current_async_library() != "asyncio":
-            return
+            return self
 
         self._queue = Queue()
-        self._worker_task = create_task(self._worker())
+        self._exit_stack = AsyncExitStack()
+        task_group = anyio.create_task_group()
+        await self._exit_stack.enter_async_context(task_group)
+        task_group.start_soon(self._worker)
+        return self
 
-    async def on_shutdown(self) -> None:
-        """Hook called on application shutdown, used to perform cleanup.
-
-        Returns:
-            None
-        """
-
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
         if self._queue:
-            await self._queue.join()
+            self._queue.put_nowait(None)
+            self._queue = None
 
-        if self._worker_task:
-            self._worker_task.cancel()
-            with suppress(CancelledError):
-                await self._worker_task
-
-        self._worker_task = None
-        self._queue = None
+        if self._exit_stack:
+            await self._exit_stack.aclose()
+            self._exit_stack = None
 
     def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.
@@ -137,9 +112,9 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         Returns:
             None
         """
-        if not (self._worker_task and self._queue):
+        if not self._queue:
             if sniffio.current_async_library() != "asyncio":
-                raise ImproperlyConfiguredException("{type(self).__name__} only supports 'asyncio' based event loops")
+                raise ImproperlyConfiguredException(f"{type(self).__name__} only supports 'asyncio' based event loops")
 
             raise ImproperlyConfiguredException("Worker not running")
 

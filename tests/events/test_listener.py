@@ -50,13 +50,9 @@ def test_event_listener(mock: MagicMock, listener: EventListener) -> None:
 
 
 async def test_shutdown_awaits_pending(async_listener: EventListener, mock: MagicMock) -> None:
-    emitter = SimpleEventEmitter([async_listener])
-    await emitter.on_startup()
-
-    for _ in range(100):
-        emitter.emit("test_event")
-
-    await emitter.on_shutdown()
+    async with SimpleEventEmitter([async_listener]) as emitter:
+        for _ in range(100):
+            emitter.emit("test_event")
 
     assert mock.call_count == 100
 
@@ -108,7 +104,6 @@ async def test_raises_when_not_initialized() -> None:
 async def test_raises_for_wrong_async_backend(async_listener: EventListener) -> None:
     with create_test_client([], listeners=[async_listener], backend="trio") as client:
         assert not client.app.event_emitter._queue
-        assert not client.app.event_emitter._worker_task
         with pytest.raises(ImproperlyConfiguredException):
             client.app.emit("test_event")
 
