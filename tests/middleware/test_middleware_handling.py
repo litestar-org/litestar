@@ -52,11 +52,6 @@ class MiddlewareWithArgsAndKwargs(BaseHTTPMiddleware):
         ...
 
 
-@get(path="/")
-def handler() -> None:
-    ...
-
-
 @pytest.mark.parametrize(
     "middleware",
     [
@@ -68,6 +63,10 @@ def handler() -> None:
     ],
 )
 def test_custom_middleware_processing(middleware: Any) -> None:
+    @get(path="/")
+    def handler() -> None:
+        ...
+
     with create_test_client(route_handlers=[handler], middleware=[middleware]) as client:
         app = client.app
         assert app.middleware == [middleware]
@@ -103,12 +102,11 @@ class JSONRequest(BaseModel):
     programmer: bool
 
 
-@post(path="/")
-def post_handler(data: JSONRequest) -> JSONRequest:
-    return data
-
-
 def test_request_body_logging_middleware(caplog: "LogCaptureFixture") -> None:
+    @post(path="/")
+    def post_handler(data: JSONRequest) -> JSONRequest:
+        return data
+
     with caplog.at_level(logging.INFO):
         client = create_test_client(
             route_handlers=[post_handler], middleware=[MiddlewareProtocolRequestLoggingMiddleware]

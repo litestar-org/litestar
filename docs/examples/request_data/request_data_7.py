@@ -6,7 +6,7 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 
 
-@post(path="/", media_type=MediaType.TEXT)
+@post(path="/", media_type=MediaType.TEXT, sync_to_thread=False)
 def handle_file_upload(
     data: Annotated[UploadFile, Body(media_type=RequestEncodingType.MULTI_PART)],
 ) -> str:

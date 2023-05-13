@@ -6,7 +6,7 @@ from litestar import Litestar, get
 from litestar.params import Dependency
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def hello_world(optional_dependency: Annotated[int, Dependency(default=3)]) -> Dict[str, Any]:
     """Notice we haven't provided the dependency to the route.
 

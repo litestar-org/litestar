@@ -4,13 +4,8 @@ from typing import Any, Dict, List
 from litestar import Litestar, get
 
 
-@get("/")
-def index(
-    date: datetime,
-    number: int,
-    floating_number: float,
-    strings: List[str],
-) -> Dict[str, Any]:
+@get("/", sync_to_thread=False)
+def index(date: datetime, number: int, floating_number: float, strings: List[str]) -> Dict[str, Any]:
     return {
         "datetime": date + timedelta(days=1),
         "int": number,

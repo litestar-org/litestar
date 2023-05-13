@@ -9,7 +9,7 @@ class Resource(BaseModel):
     name: str
 
 
-@get("/resources")
+@get("/resources", sync_to_thread=False)
 def retrieve_resource() -> Response[Resource]:
     return Response(
         Resource(

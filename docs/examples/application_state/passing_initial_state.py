@@ -2,7 +2,7 @@ from litestar import Litestar, get
 from litestar.datastructures import State
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def handler(state: State) -> dict:
     return state.dict()
 

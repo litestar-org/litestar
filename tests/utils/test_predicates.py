@@ -38,12 +38,12 @@ class C:
     pass
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def naive_handler() -> Dict[str, int]:
     return {}
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def response_handler() -> Response[Any]:
     return Response(content=b"")
 

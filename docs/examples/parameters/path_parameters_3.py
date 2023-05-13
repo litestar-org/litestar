@@ -15,7 +15,7 @@ class Version(BaseModel):
 VERSIONS = {1: Version(id=1, specs='{"some": "value"}')}
 
 
-@get(path="/versions/{version:int}")
+@get(path="/versions/{version:int}", sync_to_thread=False)
 def get_product_version(
     version: Annotated[
         int,

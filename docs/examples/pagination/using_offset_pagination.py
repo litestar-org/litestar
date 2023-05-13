@@ -37,7 +37,7 @@ paginator = PersonOffsetPaginator()
 
 # we now create a regular handler. The handler will receive two query parameters - 'limit' and 'offset', which
 # we will pass to the paginator.
-@get("/people")
+@get("/people", sync_to_thread=False)
 def people_handler(limit: int, offset: int) -> OffsetPagination[Person]:
     return paginator(limit=limit, offset=offset)
 

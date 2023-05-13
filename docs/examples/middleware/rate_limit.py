@@ -4,7 +4,7 @@ from litestar.middleware.rate_limit import RateLimitConfig
 rate_limit_config = RateLimitConfig(rate_limit=("minute", 1), exclude=["/schema"])
 
 
-@get("/", media_type=MediaType.TEXT)
+@get("/", media_type=MediaType.TEXT, sync_to_thread=False)
 def handler() -> str:
     """Handler which should not be accessed more than once per minute."""
     return "ok"

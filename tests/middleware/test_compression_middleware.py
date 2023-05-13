@@ -6,6 +6,7 @@ from litestar import MediaType, WebSocket, get, websocket
 from litestar.config.compression import CompressionConfig
 from litestar.enums import CompressionEncoding
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.handlers import HTTPRouteHandler
 from litestar.response_containers import Stream
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
@@ -13,14 +14,13 @@ from litestar.testing import create_test_client
 BrotliMode = Literal["text", "generic", "font"]
 
 
-@get(path="/", media_type=MediaType.TEXT)
-def handler() -> str:
-    return "_litestar_" * 4000
+@pytest.fixture()
+def handler() -> HTTPRouteHandler:
+    @get(path="/", media_type=MediaType.TEXT)
+    def handler_fn() -> str:
+        return "_litestar_" * 4000
 
-
-@get(path="/no-compression", media_type=MediaType.TEXT)
-def no_compress_handler() -> str:
-    return "_litestar_"
+    return handler_fn
 
 
 async def streaming_iter(content: bytes, count: int) -> AsyncIterator[bytes]:
@@ -28,7 +28,7 @@ async def streaming_iter(content: bytes, count: int) -> AsyncIterator[bytes]:
         yield content
 
 
-def test_compression_disabled_for_unsupported_client() -> None:
+def test_compression_disabled_for_unsupported_client(handler: HTTPRouteHandler) -> None:
     with create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="brotli")) as client:
         response = client.get("/", headers={"accept-encoding": "deflate"})
         assert response.status_code == HTTP_200_OK
@@ -41,7 +41,7 @@ def test_compression_disabled_for_unsupported_client() -> None:
     "backend, compression_encoding", (("brotli", CompressionEncoding.BROTLI), ("gzip", CompressionEncoding.GZIP))
 )
 def test_regular_compressed_response(
-    backend: Literal["gzip", "brotli"], compression_encoding: CompressionEncoding
+    backend: Literal["gzip", "brotli"], compression_encoding: CompressionEncoding, handler: HTTPRouteHandler
 ) -> None:
     with create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="brotli")) as client:
         response = client.get("/", headers={"Accept-Encoding": str(compression_encoding.value)})
@@ -77,6 +77,10 @@ def test_compression_works_for_streaming_response(
 def test_compression_skips_small_responses(
     backend: Literal["gzip", "brotli"], compression_encoding: CompressionEncoding
 ) -> None:
+    @get(path="/no-compression", media_type=MediaType.TEXT)
+    def no_compress_handler() -> str:
+        return "_litestar_"
+
     with create_test_client(
         route_handlers=[no_compress_handler], compression_config=CompressionConfig(backend=backend)
     ) as client:
@@ -87,7 +91,7 @@ def test_compression_skips_small_responses(
         assert int(response.headers["Content-Length"]) == 10
 
 
-def test_brotli_with_gzip_fallback_enabled() -> None:
+def test_brotli_with_gzip_fallback_enabled(handler: HTTPRouteHandler) -> None:
     with create_test_client(
         route_handlers=[handler], compression_config=CompressionConfig(backend="brotli", brotli_gzip_fallback=True)
     ) as client:
@@ -98,7 +102,7 @@ def test_brotli_with_gzip_fallback_enabled() -> None:
         assert int(response.headers["Content-Length"]) < 40000
 
 
-def test_brotli_gzip_fallback_disabled() -> None:
+def test_brotli_gzip_fallback_disabled(handler: HTTPRouteHandler) -> None:
     with create_test_client(
         route_handlers=[handler],
         compression_config=CompressionConfig(backend="brotli", brotli_gzip_fallback=False),

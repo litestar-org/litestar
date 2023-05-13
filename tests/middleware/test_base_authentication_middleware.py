@@ -49,13 +49,12 @@ class AuthMiddleware(AbstractAuthenticationMiddleware):
         raise PermissionDeniedException("unauthenticated")
 
 
-@get(path="/")
-def http_route_handler(request: Request[User, Auth, Any]) -> None:
-    assert isinstance(request.user, User)
-    assert isinstance(request.auth, Auth)
-
-
 def test_authentication_middleware_http_routes() -> None:
+    @get(path="/")
+    def http_route_handler(request: Request[User, Auth, Any]) -> None:
+        assert isinstance(request.user, User)
+        assert isinstance(request.auth, Auth)
+
     client = create_test_client(route_handlers=[http_route_handler], middleware=[AuthMiddleware])
     token = "abc"
     error_response = client.get("/", headers={"Authorization": token})

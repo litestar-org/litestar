@@ -7,7 +7,7 @@ from litestar.testing import TestClient
 session_config = ServerSideSessionConfig()
 
 
-@get(path="/test")
+@get(path="/test", sync_to_thread=False)
 def get_session_data(request: Request) -> Dict[str, Any]:
     return request.session
 

@@ -8,7 +8,6 @@ from litestar.constants import RESERVED_KWARGS, SKIP_VALIDATION_NAMES
 from litestar.di import Provide
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.handlers.http_handlers import HTTPRouteHandler
 from litestar.params import Body, Parameter
 
 
@@ -16,56 +15,33 @@ async def my_dependency() -> int:
     return 1
 
 
-@get("/{my_key:str}")
-def handler_with_path_param_and_aliased_query_parameter_collision(my_key: str = Parameter(query="my_key")) -> None:
-    ...
+@pytest.mark.parametrize("param_field", ["query", "header", "cookie"])
+def test_path_param_and_param_with_same_key_raises(param_field: str) -> None:
+    @get("/{my_key:str}")
+    def handler(my_key: str = Parameter(**{param_field: "my_key"})) -> None:  # type: ignore[arg-type]
+        pass
 
-
-@get("/{my_key:str}")
-def handler_with_path_param_and_aliased_header_parameter_collision(my_key: str = Parameter(header="my_key")) -> None:
-    ...
-
-
-@get("/{my_key:str}")
-def handler_with_path_param_and_aliased_cookie_parameter_collision(my_key: str = Parameter(cookie="my_key")) -> None:
-    ...
-
-
-@get("/{my_key:str}", dependencies={"my_key": Provide(my_dependency)})
-def handler_with_path_param_dependency_collision(my_key: str) -> None:
-    ...
-
-
-@get("/", dependencies={"my_key": Provide(my_dependency)})
-def handler_with_dependency_and_aliased_query_parameter_collision(my_key: str = Parameter(query="my_key")) -> None:
-    ...
-
-
-@get("/", dependencies={"my_key": Provide(my_dependency)})
-def handler_with_dependency_and_aliased_header_parameter_collision(my_key: str = Parameter(header="my_key")) -> None:
-    ...
-
-
-@get("/", dependencies={"my_key": Provide(my_dependency)})
-def handler_with_dependency_and_aliased_cookie_parameter_collision(my_key: str = Parameter(cookie="my_key")) -> None:
-    ...
-
-
-@pytest.mark.parametrize(
-    "handler",
-    [
-        handler_with_path_param_and_aliased_query_parameter_collision,
-        handler_with_path_param_and_aliased_header_parameter_collision,
-        handler_with_path_param_and_aliased_cookie_parameter_collision,
-        handler_with_path_param_dependency_collision,
-        handler_with_dependency_and_aliased_query_parameter_collision,
-        handler_with_dependency_and_aliased_header_parameter_collision,
-        handler_with_dependency_and_aliased_cookie_parameter_collision,
-    ],
-)
-def test_raises_exception_when_keys_are_ambiguous(handler: HTTPRouteHandler) -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        Litestar(route_handlers=[handler])
+        Litestar([handler])
+
+
+def test_path_param_and_dependency_with_same_key_raises() -> None:
+    @get("/{my_key:str}", dependencies={"my_key": Provide(my_dependency)})
+    def handler(my_key: str) -> None:
+        pass
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Litestar([handler])
+
+
+@pytest.mark.parametrize("param_field", ["query", "header", "cookie"])
+def test_dependency_and_aliased_param_raises(param_field: str) -> None:
+    @get("/", dependencies={"my_key": Provide(my_dependency)})
+    def handler(my_key: str = Parameter(**{param_field: "my_key"})) -> None:  # type: ignore[arg-type]
+        pass
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Litestar([handler])
 
 
 @pytest.mark.parametrize("reserved_kwarg", RESERVED_KWARGS)
@@ -106,32 +82,19 @@ def json_dependency(data: Dict[str, Any] = Body()) -> Dict[str, Any]:
     return data
 
 
-@post("/", dependencies={"first": Provide(json_dependency, sync_to_thread=True)})
-def accepted_json_handler(data: Dict[str, Any], first: Dict[str, Any]) -> None:
-    assert data
-    assert first
+@pytest.mark.parametrize(
+    "body, dependency",
+    [
+        (Body(), json_dependency),
+        (Body(media_type=RequestEncodingType.MULTI_PART), multi_part_dependency),
+        (Body(media_type=RequestEncodingType.URL_ENCODED), url_encoded_dependency),
+    ],
+)
+def test_dependency_data_kwarg_validation_success_scenarios(body: FieldInfo, dependency: Callable) -> None:
+    @post("/", dependencies={"first": Provide(dependency)})
+    def handler(first: Dict[str, Any], data: Any = body) -> None:
+        pass
 
-
-@post("/", dependencies={"first": Provide(url_encoded_dependency, sync_to_thread=True)})
-def accepted_url_encoded_handler(
-    first: Dict[str, Any],
-    data: Dict[str, Any] = Body(media_type=RequestEncodingType.URL_ENCODED),
-) -> None:
-    assert data
-    assert first
-
-
-@post("/", dependencies={"first": Provide(multi_part_dependency, sync_to_thread=True)})
-def accepted_multi_part_handler(
-    first: Dict[str, Any],
-    data: Dict[str, Any] = Body(media_type=RequestEncodingType.MULTI_PART),
-) -> None:
-    assert data
-    assert first
-
-
-@pytest.mark.parametrize("handler", [accepted_json_handler, accepted_url_encoded_handler, accepted_multi_part_handler])
-def test_dependency_data_kwarg_validation_success_scenarios(handler: HTTPRouteHandler) -> None:
     Litestar(route_handlers=[handler])
 
 

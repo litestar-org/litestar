@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional, cast
+from typing import TYPE_CHECKING, List, Optional, Type, cast
 
 import pytest
 from polyfactory import BaseFactory
@@ -14,7 +14,6 @@ from litestar.openapi.spec import OpenAPI
 from litestar.openapi.spec.enums import OpenAPIType
 from litestar.params import Dependency, Parameter
 from litestar.utils import find_index
-from tests.openapi.utils import PersonController
 
 if TYPE_CHECKING:
     from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
@@ -43,9 +42,9 @@ def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
     )
 
 
-def test_create_parameters() -> None:
+def test_create_parameters(person_controller: Type[Controller]) -> None:
     BaseFactory.seed_random(1)
-    parameters = _create_parameters(app=Litestar(route_handlers=[PersonController]), path="/{service_id}/person")
+    parameters = _create_parameters(app=Litestar(route_handlers=[person_controller]), path="/{service_id}/person")
     assert len(parameters) == 9
     page, name, page_size, service_id, from_date, to_date, gender, secret_header, cookie_value = tuple(parameters)
 

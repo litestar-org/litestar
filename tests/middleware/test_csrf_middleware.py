@@ -11,6 +11,7 @@ from litestar.config.csrf import CSRFConfig
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
 from litestar.enums import RequestEncodingType
+from litestar.handlers import HTTPRouteHandler
 from litestar.params import Body
 from litestar.response_containers import Template
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN
@@ -18,32 +19,36 @@ from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
 
 
-@get(path="/")
-def get_handler() -> None:
-    return None
+def handler_fn() -> None:
+    pass
 
 
-@post(path="/")
-def post_handler() -> None:
-    return None
+@pytest.fixture
+def get_handler() -> HTTPRouteHandler:
+    return get()(handler_fn)
 
 
-@put(path="/")
-def put_handler() -> None:
-    return None
+@pytest.fixture
+def post_handler() -> HTTPRouteHandler:
+    return post()(handler_fn)
 
 
-@delete(path="/")
-def delete_handler() -> None:
-    return None
+@pytest.fixture
+def put_handler() -> HTTPRouteHandler:
+    return put()(handler_fn)
 
 
-@patch(path="/")
-def patch_handler() -> None:
-    return None
+@pytest.fixture
+def delete_handler() -> HTTPRouteHandler:
+    return delete()(handler_fn)
 
 
-def test_csrf_successful_flow() -> None:
+@pytest.fixture
+def patch_handler() -> HTTPRouteHandler:
+    return patch()(handler_fn)
+
+
+def test_csrf_successful_flow(get_handler: HTTPRouteHandler, post_handler: HTTPRouteHandler) -> None:
     with create_test_client(
         route_handlers=[get_handler, post_handler], csrf_config=CSRFConfig(secret="secret")
     ) as client:
@@ -69,7 +74,14 @@ def test_csrf_successful_flow() -> None:
     "method",
     ["POST", "PUT", "DELETE", "PATCH"],
 )
-def test_unsafe_method_fails_without_csrf_header(method: str) -> None:
+def test_unsafe_method_fails_without_csrf_header(
+    method: str,
+    get_handler: HTTPRouteHandler,
+    post_handler: HTTPRouteHandler,
+    put_handler: HTTPRouteHandler,
+    delete_handler: HTTPRouteHandler,
+    patch_handler: HTTPRouteHandler,
+) -> None:
     with create_test_client(
         route_handlers=[get_handler, post_handler, put_handler, delete_handler, patch_handler],
         csrf_config=CSRFConfig(secret="secret"),
@@ -85,7 +97,7 @@ def test_unsafe_method_fails_without_csrf_header(method: str) -> None:
         assert response.json() == {"detail": "CSRF token verification failed", "status_code": 403}
 
 
-def test_invalid_csrf_token() -> None:
+def test_invalid_csrf_token(get_handler: HTTPRouteHandler, post_handler: HTTPRouteHandler) -> None:
     with create_test_client(
         route_handlers=[get_handler, post_handler], csrf_config=CSRFConfig(secret="secret")
     ) as client:
@@ -100,7 +112,7 @@ def test_invalid_csrf_token() -> None:
         assert response.json() == {"detail": "CSRF token verification failed", "status_code": 403}
 
 
-def test_csrf_token_too_short() -> None:
+def test_csrf_token_too_short(get_handler: HTTPRouteHandler, post_handler: HTTPRouteHandler) -> None:
     with create_test_client(
         route_handlers=[get_handler, post_handler], csrf_config=CSRFConfig(secret="secret")
     ) as client:
@@ -128,7 +140,7 @@ def test_websocket_ignored() -> None:
         assert response is not None
 
 
-def test_custom_csrf_config() -> None:
+def test_custom_csrf_config(get_handler: HTTPRouteHandler, post_handler: HTTPRouteHandler) -> None:
     with create_test_client(
         base_url="http://test.com",
         route_handlers=[get_handler, post_handler],

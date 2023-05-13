@@ -31,17 +31,16 @@ class DictStore(Store[Item]):
         return None
 
 
-@get("/")
-def root(store: DictStore) -> Optional[Item]:
-    assert isinstance(store, DictStore)
-    return store.get("0")
-
-
 async def get_item_store() -> DictStore:
     return DictStore(model=Item)  # type: ignore
 
 
 def test_generic_model_injection() -> None:
+    @get("/")
+    def root(store: DictStore) -> Optional[Item]:
+        assert isinstance(store, DictStore)
+        return store.get("0")
+
     with create_test_client(root, dependencies={"store": Provide(get_item_store, use_cache=True)}) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK

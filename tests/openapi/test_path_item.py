@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Tuple, cast
+from typing import TYPE_CHECKING, Any, Tuple, Type, cast
 
 import pytest
 
@@ -8,25 +8,24 @@ from litestar._openapi.utils import default_operation_id_creator
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.http_handlers import HTTPRouteHandler
 from litestar.utils import find_index
-from tests.openapi.utils import PersonController
 
 if TYPE_CHECKING:
     from litestar.routes import HTTPRoute
 
 
 @pytest.fixture()
-def route() -> "HTTPRoute":
-    app = Litestar(route_handlers=[PersonController], openapi_config=None)
+def route(person_controller: Type[Controller]) -> "HTTPRoute":
+    app = Litestar(route_handlers=[person_controller], openapi_config=None)
     index = find_index(app.routes, lambda x: x.path_format == "/{service_id}/person/{person_id}")
     return cast("HTTPRoute", app.routes[index])
 
 
 @pytest.fixture()
-def routes_with_router() -> Tuple["HTTPRoute", "HTTPRoute"]:
-    class PersonControllerV2(PersonController):
+def routes_with_router(person_controller: Type[Controller]) -> Tuple["HTTPRoute", "HTTPRoute"]:
+    class PersonControllerV2(person_controller):  # type: ignore
         pass
 
-    router_v1 = Router(path="/v1", route_handlers=[PersonController])
+    router_v1 = Router(path="/v1", route_handlers=[person_controller])
     router_v2 = Router(path="/v2", route_handlers=[PersonControllerV2])
     app = Litestar(route_handlers=[router_v1, router_v2], openapi_config=None)
     index_v1 = find_index(app.routes, lambda x: x.path_format == "/v1/{service_id}/person/{person_id}")

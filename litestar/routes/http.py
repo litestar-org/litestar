@@ -328,6 +328,7 @@ class HTTPRoute(BaseRoute):
             path=path,
             http_method=[HttpMethod.OPTIONS],
             include_in_schema=False,
+            sync_to_thread=False,
         )(options_handler)
 
     @staticmethod

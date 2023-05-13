@@ -75,7 +75,7 @@ class delete(HTTPRouteHandler):
         return_dto: type[DTOInterface] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         status_code: int | None = None,
-        sync_to_thread: bool = False,
+        sync_to_thread: bool | None = None,
         # OpenAPI related attributes
         content_encoding: str | None = None,
         content_media_type: str | None = None,
@@ -236,7 +236,7 @@ class get(HTTPRouteHandler):
         return_dto: type[DTOInterface] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         status_code: int | None = None,
-        sync_to_thread: bool = False,
+        sync_to_thread: bool | None = None,
         # OpenAPI related attributes
         content_encoding: str | None = None,
         content_media_type: str | None = None,
@@ -397,7 +397,7 @@ class head(HTTPRouteHandler):
         response_headers: ResponseHeaders | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
         status_code: int | None = None,
-        sync_to_thread: bool = False,
+        sync_to_thread: bool | None = None,
         # OpenAPI related attributes
         content_encoding: str | None = None,
         content_media_type: str | None = None,
@@ -577,7 +577,7 @@ class patch(HTTPRouteHandler):
         return_dto: type[DTOInterface] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         status_code: int | None = None,
-        sync_to_thread: bool = False,
+        sync_to_thread: bool | None = None,
         # OpenAPI related attributes
         content_encoding: str | None = None,
         content_media_type: str | None = None,
@@ -738,7 +738,7 @@ class post(HTTPRouteHandler):
         return_dto: type[DTOInterface] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         status_code: int | None = None,
-        sync_to_thread: bool = False,
+        sync_to_thread: bool | None = None,
         # OpenAPI related attributes
         content_encoding: str | None = None,
         content_media_type: str | None = None,
@@ -899,7 +899,7 @@ class put(HTTPRouteHandler):
         return_dto: type[DTOInterface] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         status_code: int | None = None,
-        sync_to_thread: bool = False,
+        sync_to_thread: bool | None = None,
         # OpenAPI related attributes
         content_encoding: str | None = None,
         content_media_type: str | None = None,

@@ -10,6 +10,7 @@ class MyController(Controller):
         path="/",
         response_cookies=[Cookie(key="my-cookie", value="456")],
         media_type=MediaType.TEXT,
+        sync_to_thread=False,
     )
     def my_route_handler(self) -> str:
         return "hello world"

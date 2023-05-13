@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from http import HTTPStatus
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Callable, Dict
+from typing import Any, Callable, Dict, Type
 from unittest.mock import MagicMock
 
 import pytest
@@ -37,7 +37,7 @@ from litestar.status_codes import (
     HTTP_406_NOT_ACCEPTABLE,
 )
 from tests import Person, PersonFactory
-from tests.openapi.utils import PersonController, PetController, PetException
+from tests.openapi.utils import PetException
 
 
 def get_registered_route_handler(handler: "HTTPRouteHandler | type[Controller]", name: str) -> HTTPRouteHandler:
@@ -45,8 +45,8 @@ def get_registered_route_handler(handler: "HTTPRouteHandler | type[Controller]",
     return app.asgi_router.route_handler_index[name]  # type: ignore[return-value]
 
 
-def test_create_responses() -> None:
-    for route in Litestar(route_handlers=[PersonController]).routes:
+def test_create_responses(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
+    for route in Litestar(route_handlers=[person_controller]).routes:
         assert isinstance(route, HTTPRoute)
         for route_handler, _ in route.route_handler_map.values():
             if route_handler.include_in_schema:
@@ -61,7 +61,10 @@ def test_create_responses() -> None:
                 assert str(route_handler.status_code) in responses
                 assert str(HTTP_400_BAD_REQUEST) in responses
 
-    handler = get_registered_route_handler(PetController, "tests.openapi.utils.PetController.get_pets_or_owners")
+    handler = get_registered_route_handler(
+        pet_controller,
+        "tests.openapi.conftest.create_pet_controller.<locals>.PetController.get_pets_or_owners",
+    )
     responses = create_responses(
         route_handler=handler,
         raises_validation_error=False,

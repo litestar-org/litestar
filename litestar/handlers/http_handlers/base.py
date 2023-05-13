@@ -46,6 +46,7 @@ from litestar.types import (
 )
 from litestar.types.builtin_types import NoneType
 from litestar.utils import AsyncCallable, async_partial, is_async_callable
+from litestar.utils.warnings import warn_implicit_sync_to_thread
 
 if TYPE_CHECKING:
     from typing import Any, Awaitable, Callable, Sequence
@@ -139,7 +140,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         response_headers: ResponseHeaders | None = None,
         return_dto: type[DTOInterface] | None | EmptyType = Empty,
         status_code: int | None = None,
-        sync_to_thread: bool = False,
+        sync_to_thread: bool | None = None,
         # OpenAPI related attributes
         content_encoding: str | None = None,
         content_media_type: str | None = None,
@@ -280,6 +281,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
         """Replace a function with itself."""
+        if not is_async_callable(fn) and self.sync_to_thread is None:
+            warn_implicit_sync_to_thread(fn, stacklevel=3)
         super().__call__(fn)
         return self
 

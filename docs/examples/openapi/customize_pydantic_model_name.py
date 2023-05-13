@@ -11,7 +11,7 @@ class IdModel(BaseModel):
     id: UUID
 
 
-@get("/id")
+@get("/id", sync_to_thread=False)
 def retrieve_id_handler() -> IdModel:
     """
 

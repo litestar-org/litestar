@@ -14,6 +14,7 @@ class MyController(Controller):
             ResponseHeader(name="my-local-header", value="local header", description="local level header")
         ],
         media_type=MediaType.TEXT,
+        sync_to_thread=False,
     )
     def my_route_handler(self) -> str:
         return "hello world"

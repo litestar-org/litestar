@@ -1,5 +1,7 @@
 from asyncio import sleep
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any, Dict, Type
+
+import pytest
 
 from litestar import Controller, get
 from litestar.di import Provide
@@ -43,28 +45,32 @@ def local_method_second_dependency(path_param: str) -> str:
 test_path = "/test"
 
 
-class FirstController(Controller):
-    path = test_path
-    dependencies = {
-        "first": Provide(controller_first_dependency, sync_to_thread=False),
-        "second": Provide(controller_second_dependency),
-    }
+@pytest.fixture
+def first_controller() -> Type[Controller]:
+    class FirstController(Controller):
+        path = test_path
+        dependencies = {
+            "first": Provide(controller_first_dependency, sync_to_thread=False),
+            "second": Provide(controller_second_dependency),
+        }
 
-    @get(
-        path="/{path_param:str}",
-        dependencies={
-            "first": Provide(local_method_first_dependency, sync_to_thread=False),
-        },
-    )
-    def test_method(self, first: int, second: dict, third: bool) -> None:
-        assert isinstance(first, int)
-        assert isinstance(second, dict)
-        assert third is False
+        @get(
+            path="/{path_param:str}",
+            dependencies={
+                "first": Provide(local_method_first_dependency, sync_to_thread=False),
+            },
+        )
+        def test_method(self, first: int, second: dict, third: bool) -> None:
+            assert isinstance(first, int)
+            assert isinstance(second, dict)
+            assert third is False
+
+    return FirstController
 
 
-def test_controller_dependency_injection() -> None:
+def test_controller_dependency_injection(first_controller: Type[Controller]) -> None:
     with create_test_client(
-        FirstController,
+        first_controller,
         dependencies={
             "second": Provide(router_first_dependency, sync_to_thread=False),
             "third": Provide(router_second_dependency),
@@ -98,7 +104,7 @@ def test_function_dependency_injection() -> None:
         assert response.status_code == HTTP_200_OK
 
 
-def test_dependency_isolation() -> None:
+def test_dependency_isolation(first_controller: Type[Controller]) -> None:
     class SecondController(Controller):
         path = "/second"
 
@@ -106,6 +112,6 @@ def test_dependency_isolation() -> None:
         def test_method(self, first: dict) -> None:
             pass
 
-    with create_test_client([FirstController, SecondController]) as client:
+    with create_test_client([first_controller, SecondController]) as client:
         response = client.get("/second")
         assert response.status_code == HTTP_400_BAD_REQUEST
