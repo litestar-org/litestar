@@ -230,7 +230,6 @@ class ChannelsPlugin(InitPluginProtocol):
                 continue
 
             if not channel_subscribers:
-                del self._channels[channel]
                 channels_to_unsubscribe.add(channel)
 
         if not any(subscriber in queues for queues in self._channels.values()):

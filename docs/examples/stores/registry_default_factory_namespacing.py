@@ -7,7 +7,7 @@ from litestar.stores.registry import StoreRegistry
 root_store = RedisStore.with_client()
 
 
-@get(cache=True)
+@get(cache=True, sync_to_thread=False)
 def cached_handler() -> str:
     # this will use app.stores.get("response_cache")
     return "Hello, world!"

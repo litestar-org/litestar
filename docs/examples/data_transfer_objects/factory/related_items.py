@@ -29,7 +29,7 @@ DataDTO = SQLAlchemyDTO[Annotated[A, data_config]]
 ReturnDTO = SQLAlchemyDTO[A]
 
 
-@put("/a", dto=DataDTO, return_dto=ReturnDTO)
+@put("/a", dto=DataDTO, return_dto=ReturnDTO, sync_to_thread=False)
 def update_a(data: A) -> A:
     # this shows that "b" was not parsed out of the inbound data
     assert "b" not in vars(data)

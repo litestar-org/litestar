@@ -71,7 +71,7 @@ async def login_custom_response_handler(data: "User") -> "Response[User]":
 
 
 # We also have some other routes, for example:
-@get("/some-path")
+@get("/some-path", sync_to_thread=False)
 def some_route_handler(request: "Request[User, Token, Any]") -> Any:
     # request.user is set to the instance of user returned by the middleware
     assert isinstance(request.user, User)

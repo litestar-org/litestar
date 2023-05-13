@@ -9,13 +9,13 @@ from litestar.middleware.session.client_side import CookieBackendConfig
 session_config = CookieBackendConfig(secret=urandom(16))  # type: ignore[arg-type]
 
 
-@get("/session")
+@get("/session", sync_to_thread=False)
 def check_session_handler(request: Request) -> Dict[str, bool]:
     """Handler function that accesses request.session."""
     return {"has_session": request.session != {}}
 
 
-@post("/session")
+@post("/session", sync_to_thread=False)
 def create_session_handler(request: Request) -> None:
     """Handler to set the session."""
     if not request.session:
@@ -23,7 +23,7 @@ def create_session_handler(request: Request) -> None:
         request.set_session({"username": "moishezuchmir"})
 
 
-@delete("/session")
+@delete("/session", sync_to_thread=False)
 def delete_session_handler(request: Request) -> None:
     """Handler to clear the session."""
     if request.session:

@@ -2,7 +2,6 @@ from json import dumps as json_dumps
 from typing import TYPE_CHECKING
 
 import pytest
-from test_apps.openapi_test_app.main import app as openapi_test_app
 from yaml import dump as dump_yaml
 
 from litestar.cli.main import litestar_group as cli_command
@@ -20,6 +19,8 @@ def test_openapi_schema_command(
     monkeypatch.setenv("LITESTAR_APP", "test_apps.openapi_test_app.main:app")
     mock_path_write_text = mocker.patch("pathlib.Path.write_text")
     command = "schema openapi"
+
+    from test_apps.openapi_test_app.main import app as openapi_test_app
 
     assert openapi_test_app.openapi_schema
     schema = openapi_test_app.openapi_schema.to_schema()

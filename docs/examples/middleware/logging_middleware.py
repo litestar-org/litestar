@@ -7,7 +7,7 @@ from litestar.middleware.logging import LoggingMiddlewareConfig
 logging_middleware_config = LoggingMiddlewareConfig()
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def my_handler() -> Dict[str, str]:
     return {"hello": "world"}
 

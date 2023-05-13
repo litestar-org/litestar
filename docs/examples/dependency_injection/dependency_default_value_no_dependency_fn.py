@@ -3,7 +3,7 @@ from typing import Any, Dict
 from litestar import Litestar, get
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def hello_world(optional_dependency: int = 3) -> Dict[str, Any]:
     """Notice we haven't provided the dependency to the route.
 

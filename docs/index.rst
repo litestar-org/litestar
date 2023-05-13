@@ -228,5 +228,6 @@ Example Applications
     tutorials/index
     usage/index
     reference/index
+    topics/index
     migration/index
     benchmarks

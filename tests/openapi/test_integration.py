@@ -1,14 +1,16 @@
+from typing import Type
+
 import yaml
 
+from litestar import Controller
 from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.enums import OpenAPIMediaType
 from litestar.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from litestar.testing import create_test_client
-from tests.openapi.utils import PersonController, PetController
 
 
-def test_openapi_yaml() -> None:
-    with create_test_client([PersonController, PetController], openapi_config=DEFAULT_OPENAPI_CONFIG) as client:
+def test_openapi_yaml(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
+    with create_test_client([person_controller, pet_controller], openapi_config=DEFAULT_OPENAPI_CONFIG) as client:
         assert client.app.openapi_schema
         openapi_schema = client.app.openapi_schema
         assert openapi_schema.paths
@@ -19,8 +21,8 @@ def test_openapi_yaml() -> None:
         assert yaml.unsafe_load(response.content) == client.app.openapi_schema.to_schema()
 
 
-def test_openapi_json() -> None:
-    with create_test_client([PersonController, PetController], openapi_config=DEFAULT_OPENAPI_CONFIG) as client:
+def test_openapi_json(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
+    with create_test_client([person_controller, pet_controller], openapi_config=DEFAULT_OPENAPI_CONFIG) as client:
         assert client.app.openapi_schema
         openapi_schema = client.app.openapi_schema
         assert openapi_schema.paths
@@ -31,11 +33,11 @@ def test_openapi_json() -> None:
         assert response.json() == client.app.openapi_schema.to_schema()
 
 
-def test_openapi_yaml_not_allowed() -> None:
+def test_openapi_yaml_not_allowed(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
     openapi_config = DEFAULT_OPENAPI_CONFIG
     openapi_config.enabled_endpoints.discard("openapi.yaml")
 
-    with create_test_client([PersonController, PetController], openapi_config=openapi_config) as client:
+    with create_test_client([person_controller, pet_controller], openapi_config=openapi_config) as client:
         assert client.app.openapi_schema
         openapi_schema = client.app.openapi_schema
         assert openapi_schema.paths
@@ -43,11 +45,11 @@ def test_openapi_yaml_not_allowed() -> None:
         assert response.status_code == HTTP_404_NOT_FOUND
 
 
-def test_openapi_json_not_allowed() -> None:
+def test_openapi_json_not_allowed(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
     openapi_config = DEFAULT_OPENAPI_CONFIG
     openapi_config.enabled_endpoints.discard("openapi.json")
 
-    with create_test_client([PersonController, PetController], openapi_config=openapi_config) as client:
+    with create_test_client([person_controller, pet_controller], openapi_config=openapi_config) as client:
         assert client.app.openapi_schema
         openapi_schema = client.app.openapi_schema
         assert openapi_schema.paths

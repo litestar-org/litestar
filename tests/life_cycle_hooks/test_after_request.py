@@ -3,14 +3,9 @@ from typing import Optional
 import pytest
 
 from litestar import Controller, Response, Router, get
-from litestar.handlers.http_handlers import HTTPRouteHandler
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 from litestar.types import AfterRequestHookHandler
-
-
-def greet() -> dict:
-    return {"hello": "world"}
 
 
 def sync_after_request_handler(response: Response) -> Response:
@@ -32,14 +27,18 @@ async def async_after_request_handler_with_hello_world(response: Response) -> Re
 
 
 @pytest.mark.parametrize(
-    "handler, expected",
+    "after_request, expected",
     [
-        [get(path="/")(greet), {"hello": "world"}],
-        [get(path="/", after_request=sync_after_request_handler)(greet), {"hello": "moon"}],
-        [get(path="/", after_request=async_after_request_handler)(greet), {"hello": "moon"}],
+        [None, {"hello": "world"}],
+        [sync_after_request_handler, {"hello": "moon"}],
+        [async_after_request_handler, {"hello": "moon"}],
     ],
 )
-def test_after_request_handler_called(handler: HTTPRouteHandler, expected: dict) -> None:
+def test_after_request_handler_called(after_request: Optional[AfterRequestHookHandler], expected: dict) -> None:
+    @get(after_request=after_request)
+    def handler() -> dict:
+        return {"hello": "world"}
+
     with create_test_client(route_handlers=handler) as client:
         response = client.get("/")
         assert response.json() == expected

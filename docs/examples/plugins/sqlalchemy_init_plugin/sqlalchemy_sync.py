@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from sqlalchemy.orm import Session
 
 
-@get(path="/sqlalchemy-app")
+@get(path="/sqlalchemy-app", sync_to_thread=True)
 def async_sqlalchemy_init(db_session: Session, db_engine: Engine) -> str:
     """Interact with SQLAlchemy engine and session."""
     one = db_session.execute(text("SELECT 1")).scalar_one()

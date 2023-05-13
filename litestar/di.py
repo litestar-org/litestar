@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import warnings
 from inspect import isclass
 from typing import TYPE_CHECKING, Any
 
-from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
 from litestar.utils import Ref, is_async_callable
+from litestar.utils.warnings import warn_implicit_sync_to_thread
 
 __all__ = ("Provide",)
 
@@ -51,15 +51,7 @@ class Provide:
         self.dependency = Ref["AnyCallable"](dependency)
         self.has_sync_callable = isclass(dependency) or not is_async_callable(dependency)
         if self.has_sync_callable and sync_to_thread is None:
-            warnings.warn(
-                "Using a synchronous callable with Provide might block the main thread "
-                "if the callable performs blocking operations and sync_to_thread is not "
-                "set to True. If the callable is non-blocking, either make it "
-                "asynchronous or set sync_to_thread=False explicitly to silence this "
-                "warning.",
-                category=LitestarWarning,
-                stacklevel=1,
-            )
+            warn_implicit_sync_to_thread(dependency, stacklevel=3)
         self.sync_to_thread = bool(sync_to_thread)
         self.use_cache = use_cache
         self.value: Any = Empty

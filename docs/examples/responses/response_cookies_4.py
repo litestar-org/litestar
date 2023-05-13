@@ -11,7 +11,7 @@ class Resource(BaseModel):
     name: str
 
 
-@get("/resources")
+@get("/resources", sync_to_thread=False)
 def retrieve_resource() -> Resource:
     return Resource(
         id=1,

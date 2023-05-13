@@ -32,7 +32,7 @@ config = DTOConfig(exclude={"id", "address.id", "address.street"})
 ReadUserDTO = SQLAlchemyDTO[Annotated[User, config]]
 
 
-@post("/users", dto=UserDTO, return_dto=ReadUserDTO)
+@post("/users", dto=UserDTO, return_dto=ReadUserDTO, sync_to_thread=False)
 def create_user(data: User) -> User:
     data.created_at = datetime.min
     data.address = Address(street="123 Main St", city="Anytown", state="NY", zip="12345")

@@ -14,7 +14,7 @@ from litestar.testing import create_test_client
 from tests import Person, PersonFactory
 
 
-@delete()
+@delete(sync_to_thread=False)
 def root_delete_handler() -> None:
     return None
 

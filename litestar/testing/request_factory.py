@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 
 def _create_default_route_handler() -> HTTPRouteHandler:
-    @get("/")
+    @get("/", sync_to_thread=False)
     def _default_route_handler() -> None:
         ...
 

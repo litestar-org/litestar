@@ -18,6 +18,7 @@ class Resource(BaseModel):
             name="Random-Header", description="a random number in the range 1 - 100", documentation_only=True
         )
     ],
+    sync_to_thread=False,
 )
 def retrieve_resource() -> Response[Resource]:
     return Response(

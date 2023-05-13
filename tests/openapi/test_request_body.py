@@ -1,16 +1,15 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Type
 from unittest.mock import MagicMock
 
 from pydantic import BaseConfig, BaseModel
 
-from litestar import Litestar, post
+from litestar import Controller, Litestar, post
 from litestar._openapi.request_body import create_request_body
 from litestar._signature.field import SignatureField
 from litestar.datastructures.upload_file import UploadFile
 from litestar.dto.interface import DTOInterface
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from tests.openapi.utils import PersonController
 
 
 class FormData(BaseModel):
@@ -21,8 +20,8 @@ class FormData(BaseModel):
         arbitrary_types_allowed = True
 
 
-def test_create_request_body() -> None:
-    for route in Litestar(route_handlers=[PersonController]).routes:
+def test_create_request_body(person_controller: Type[Controller]) -> None:
+    for route in Litestar(route_handlers=[person_controller]).routes:
         for route_handler, _ in route.route_handler_map.values():  # type: ignore
             handler_fields = route_handler.signature_model.fields  # type: ignore
             if "data" in handler_fields:

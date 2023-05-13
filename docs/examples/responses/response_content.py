@@ -1,7 +1,7 @@
 from litestar import Litestar, MediaType, Request, Response, get
 
 
-@get("/resource")
+@get("/resource", sync_to_thread=False)
 def retrieve_resource(request: Request) -> Response[bytes]:
     provided_types = [MediaType.TEXT, MediaType.HTML, "application/xml"]
     preferred_type = request.accept.best_match(provided_types, default=MediaType.TEXT)

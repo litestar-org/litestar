@@ -44,25 +44,25 @@ async def websocket_handler(socket: "WebSocket") -> None:
     await socket.close()
 
 
-@get("/first_path")
+@get("/first_path", sync_to_thread=False)
 def first_handler() -> Dict[str, str]:
     """Handler is excluded due to regex pattern matching "first_path"."""
     return {"hello": "first"}
 
 
-@get("/second_path")
+@get("/second_path", sync_to_thread=False)
 def second_handler() -> Dict[str, str]:
     """Handler is excluded due to regex pattern matching "second_path"."""
     return {"hello": "second"}
 
 
-@get("/third_path", exclude_from_middleware=True)
+@get("/third_path", exclude_from_middleware=True, sync_to_thread=False)
 def third_handler() -> Dict[str, str]:
     """Handler is excluded due to the opt key 'exclude_from_middleware' matching the middleware 'exclude_opt_key'."""
     return {"hello": "second"}
 
 
-@get("/greet")
+@get("/greet", sync_to_thread=False)
 def not_excluded_handler() -> Dict[str, str]:
     """This handler is not excluded, and thus the middleware will execute on every incoming request to it."""
     return {"hello": "world"}

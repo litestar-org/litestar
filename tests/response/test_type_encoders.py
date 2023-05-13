@@ -22,19 +22,17 @@ controller_type, controller_encoder = create_mock_encoder("ControllerType")
 app_type, app_encoder = create_mock_encoder("AppType")
 
 
-class MyController(Controller):
-    type_encoders = {controller_type: controller_encoder}
-
-    @get("/", type_encoders={handler_type: handler_encoder})
-    def handler(self) -> Any:
-        ...
-
-
-router = Router("/router", type_encoders={router_type: router_encoder}, route_handlers=[MyController])
-app = Litestar([router], type_encoders={app_type: app_encoder})
-
-
 def test_resolve_type_encoders() -> None:
+    class MyController(Controller):
+        type_encoders = {controller_type: controller_encoder}
+
+        @get("/", type_encoders={handler_type: handler_encoder})
+        def handler(self) -> Any:
+            ...
+
+    router = Router("/router", type_encoders={router_type: router_encoder}, route_handlers=[MyController])
+    app = Litestar([router], type_encoders={app_type: app_encoder})
+
     route_handler = app.routes[0].route_handler_map[HttpMethod.GET][0]  # type: ignore
     assert route_handler.resolve_type_encoders() == {
         handler_type: handler_encoder,

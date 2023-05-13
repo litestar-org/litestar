@@ -5,7 +5,7 @@ from litestar.testing import AsyncTestClient
 session_config = ServerSideSessionConfig()
 
 
-@post(path="/test")
+@post(path="/test", sync_to_thread=False)
 def set_session_data(request: Request) -> None:
     request.session["foo"] = "bar"
 

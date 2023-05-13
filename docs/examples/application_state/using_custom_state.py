@@ -9,7 +9,7 @@ class MyState(State):
         self.count += 1
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def handler(state: MyState) -> dict:
     state.increment()
     return state.dict()

@@ -1,7 +1,7 @@
 from typing import Dict
 
 from litestar import Litestar, get
-from tests.openapi.utils import PersonController, PetController
+from tests.openapi.conftest import create_person_controller, create_pet_controller
 
 
 @get("/")
@@ -10,7 +10,7 @@ async def greet() -> Dict[str, str]:
 
 
 app = Litestar(
-    route_handlers=[greet, PersonController, PetController],
+    route_handlers=[greet, create_person_controller(), create_pet_controller()],
 )
 
 

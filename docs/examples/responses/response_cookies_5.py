@@ -20,6 +20,7 @@ class Resource(BaseModel):
             documentation_only=True,
         )
     ],
+    sync_to_thread=False,
 )
 def retrieve_resource() -> Response[Resource]:
     return Response(

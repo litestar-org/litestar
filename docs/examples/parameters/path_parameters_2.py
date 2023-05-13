@@ -19,7 +19,7 @@ ORDERS_BY_DATETIME = {
 }
 
 
-@get(path="/orders/{from_date:int}")
+@get(path="/orders/{from_date:int}", sync_to_thread=False)
 def get_orders(from_date: datetime) -> List[Order]:
     return ORDERS_BY_DATETIME[from_date]
 
