@@ -92,7 +92,7 @@ class Response(Generic[T]):
             dict(headers) if isinstance(headers, Mapping) else {h.name: h.value for h in headers or {}}
         )
         self.is_head_response = is_head_response
-        self.media_type = get_enum_string_value(media_type)
+        self.media_type = get_enum_string_value(media_type) or MediaType.JSON
         self.status_allows_body = not (
             status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or status_code < HTTP_200_OK
         )
@@ -240,7 +240,7 @@ class Response(Generic[T]):
             An encoded bytes string
         """
         try:
-            if self.media_type.startswith("text/"):
+            if self.media_type.startswith("text/") or isinstance(content, str):
                 if not content:
                     return b""
 
@@ -249,7 +249,10 @@ class Response(Generic[T]):
             if self.media_type == MediaType.MESSAGEPACK:
                 return encode_msgpack(content, self._enc_hook)
 
-            return encode_json(content, self._enc_hook)
+            if self.media_type.startswith("application/json"):
+                return encode_json(content, self._enc_hook)
+
+            raise ImproperlyConfiguredException(f"unsupported media_type {self.media_type} for content {content!r}")
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
 

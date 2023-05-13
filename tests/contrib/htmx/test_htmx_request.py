@@ -85,7 +85,7 @@ def test_current_url_set() -> None:
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/", headers={HTMXHeaders.CURRENT_URL.value: "https://example.com"})
-        assert response.text == '"https://example.com"'
+        assert response.text == "https://example.com"
 
 
 def test_current_url_set_url_encoded() -> None:
@@ -102,7 +102,7 @@ def test_current_url_set_url_encoded() -> None:
                 HTMXHeaders.CURRENT_URL.value + "-URI-AutoEncoded": "true",
             },
         )
-        assert response.text == '"https://example.com/?"'
+        assert response.text == "https://example.com/?"
 
 
 def test_current_url_abs_path_default() -> None:
@@ -126,7 +126,7 @@ def test_current_url_abs_path_set() -> None:
         response = client.get(
             "/", headers={HTMXHeaders.CURRENT_URL.value: "http://testserver.local/duck/?quack=true#h2"}
         )
-        assert response.text == '"/duck/?quack=true#h2"'
+        assert response.text == "/duck/?quack=true#h2"
 
 
 def test_current_url_abs_path_set_other_domain() -> None:
@@ -181,7 +181,7 @@ def test_prompt_set() -> None:
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/", headers={HTMXHeaders.PROMPT.value: "Yes"})
-        assert response.text == '"Yes"'
+        assert response.text == "Yes"
 
 
 def test_target_default() -> None:
@@ -203,7 +203,7 @@ def test_target_set() -> None:
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/", headers={HTMXHeaders.TARGET.value: "#element"})
-        assert response.text == '"#element"'
+        assert response.text == "#element"
 
 
 def test_trigger_default() -> None:
@@ -225,7 +225,7 @@ def test_trigger_set() -> None:
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/", headers={HTMXHeaders.TRIGGER_ID.value: "#element"})
-        assert response.text == '"#element"'
+        assert response.text == "#element"
 
 
 def test_trigger_name_default() -> None:
@@ -247,7 +247,7 @@ def test_trigger_name_set() -> None:
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/", headers={HTMXHeaders.TRIGGER_NAME.value: "name_of_element"})
-        assert response.text == '"name_of_element"'
+        assert response.text == "name_of_element"
 
 
 def test_triggering_event_none() -> None:
