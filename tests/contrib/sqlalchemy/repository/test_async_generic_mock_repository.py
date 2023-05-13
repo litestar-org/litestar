@@ -487,7 +487,7 @@ async def test_get_or_create() -> None:
         columns."""
 
         random_column: Mapped[str]
-        cool_attribute: Mapped[str] = mapped_column(nullable=True)
+        cool_attribute: Mapped[str] = mapped_column(nullable=True)  # pyright: ignore
 
     instances = [Model(random_column="value 1", cool_attribute="yep"), Model(random_column="value 2")]
     mock_repo = GenericAsyncMockRepository[Model]()
@@ -509,7 +509,7 @@ async def test_get_or_create_match_fields() -> None:
         columns."""
 
         random_column: Mapped[str]
-        cool_attribute: Mapped[str] = mapped_column(nullable=True)
+        cool_attribute: Mapped[str] = mapped_column(nullable=True)  # pyright: ignore
 
     instances = [Model(random_column="value 1", cool_attribute="yep"), Model(random_column="value 2")]
     mock_repo = GenericAsyncMockRepository[Model]()

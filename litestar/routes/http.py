@@ -320,7 +320,7 @@ class HTTPRoute(BaseRoute):
             return Response(
                 content=None,
                 status_code=HTTP_204_NO_CONTENT,
-                headers={"Allow": ", ".join(sorted(self.methods))},
+                headers={"Allow": ", ".join(sorted(self.methods))},  # pyright: ignore
                 media_type=MediaType.TEXT,
             )
 

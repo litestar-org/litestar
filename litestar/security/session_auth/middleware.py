@@ -59,7 +59,7 @@ class MiddlewareWrapper:
             )
             exception_middleware = ExceptionHandlerMiddleware(
                 app=auth_middleware,
-                exception_handlers=litestar_app.exception_handlers or {},
+                exception_handlers=litestar_app.exception_handlers or {},  # pyright: ignore
                 debug=litestar_app.debug,
             )
             self.app = SessionMiddleware(

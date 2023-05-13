@@ -182,7 +182,7 @@ class BaseRouteHandler(Generic[T]):
     def dependency_name_set(self) -> set[str]:
         """Set of all dependency names provided in the handler's ownership layers."""
         layered_dependencies = (layer.dependencies or {} for layer in self.ownership_layers)
-        return {name for layer in layered_dependencies for name in layer}
+        return {name for layer in layered_dependencies for name in layer}  # pyright: ignore
 
     @property
     def ownership_layers(self) -> list[T | Controller | Router]:
@@ -238,7 +238,7 @@ class BaseRouteHandler(Generic[T]):
             self._resolved_guards = []
 
             for layer in self.ownership_layers:
-                self._resolved_guards.extend(layer.guards or [])
+                self._resolved_guards.extend(layer.guards or [])  # pyright: ignore
 
             self._resolved_guards = cast("list[Guard]", [AsyncCallable(guard) for guard in self._resolved_guards])
 
@@ -268,7 +268,7 @@ class BaseRouteHandler(Generic[T]):
         """
         resolved_middleware: list[Middleware] = []
         for layer in self.ownership_layers:
-            resolved_middleware.extend(layer.middleware or [])
+            resolved_middleware.extend(layer.middleware or [])  # pyright: ignore
         return list(reversed(resolved_middleware))
 
     def resolve_exception_handlers(self) -> ExceptionHandlersMap:
@@ -278,7 +278,7 @@ class BaseRouteHandler(Generic[T]):
         """
         resolved_exception_handlers: dict[int | type[Exception], ExceptionHandler] = {}
         for layer in self.ownership_layers:
-            resolved_exception_handlers.update(layer.exception_handlers or {})
+            resolved_exception_handlers.update(layer.exception_handlers or {})  # pyright: ignore
         return resolved_exception_handlers
 
     def resolve_opts(self) -> None:
@@ -290,7 +290,7 @@ class BaseRouteHandler(Generic[T]):
 
         opt: dict[str, Any] = {}
         for layer in self.ownership_layers:
-            opt.update(layer.opt or {})
+            opt.update(layer.opt or {})  # pyright: ignore
 
         self.opt = opt
 

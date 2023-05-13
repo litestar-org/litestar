@@ -97,7 +97,7 @@ def create_frame_html(frame: FrameInfo, collapsed: bool) -> str:
 
     code_lines: list[str] = []
     for idx, line in enumerate(frame.code_context or []):
-        code_lines.append(create_line_html(line, frame.lineno, frame.index or 0, idx))
+        code_lines.append(create_line_html(line, frame.lineno, frame.index or 0, idx))  # pyright: ignore
 
     data = {
         "file": escape(frame.filename),
