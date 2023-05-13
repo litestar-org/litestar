@@ -28,3 +28,17 @@ def test_nested_exclude():
         response = client.get("/person/peter")
     assert response.status_code == 200
     assert response.json() == {"name": "peter", "age": 30, "address": {"city": "Cityville", "country": "Countryland"}}
+
+
+def test_nested_collection_exclude():
+    from docs.examples.data_transfer_objects.factory.tutorial.nested_collection_exclude import app
+
+    with TestClient(app=app) as client:
+        response = client.get("/person/peter")
+    assert response.status_code == 200
+    assert response.json() == {
+        "name": "peter",
+        "age": 30,
+        "address": {"city": "Cityville", "country": "Countryland"},
+        "children": [{"name": "Child1", "age": 10}, {"name": "Child2", "age": 8}],
+    }
