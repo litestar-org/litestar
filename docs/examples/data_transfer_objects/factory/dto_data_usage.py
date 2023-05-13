@@ -21,7 +21,7 @@ class WriteDTO(DataclassDTO[Person]):
     config = DTOConfig(exclude={"id"})
 
 
-@post("/person", dto=WriteDTO, return_dto=None)
+@post("/person", dto=WriteDTO, return_dto=None, sync_to_thread=False)
 def create_person(data: DTOData[Person]) -> Person:
     """Create a person."""
     return data.create_instance(id=uuid4())

@@ -28,7 +28,7 @@ database = {
 }
 
 
-@patch("/person/{person_id:uuid}", dto=WriteDTO, return_dto=None)
+@patch("/person/{person_id:uuid}", dto=WriteDTO, return_dto=None, sync_to_thread=False)
 def update_person(person_id: UUID, data: DTOData[Person]) -> Person:
     """Create a person."""
     return data.update_instance(database.get(person_id))
