@@ -11,6 +11,7 @@ from litestar.events.listener import EventListener, listener
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
+from litestar.types import AnyIOBackend
 
 
 @pytest.fixture()
@@ -37,12 +38,12 @@ def async_listener(mock: MagicMock) -> EventListener:
 
 
 @pytest.mark.parametrize("listener", [lazy_fixture("sync_listener"), lazy_fixture("async_listener")])
-def test_event_listener(mock: MagicMock, listener: EventListener) -> None:
+def test_event_listener(mock: MagicMock, listener: EventListener, anyio_backend: AnyIOBackend) -> None:
     @get("/")
     def route_handler(request: Request[Any, Any, Any]) -> None:
         request.app.emit("test_event", "positional", keyword="keyword-value")
 
-    with create_test_client(route_handlers=[route_handler], listeners=[listener]) as client:
+    with create_test_client(route_handlers=[route_handler], listeners=[listener], backend=anyio_backend) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         sleep(0.01)
@@ -50,30 +51,30 @@ def test_event_listener(mock: MagicMock, listener: EventListener) -> None:
 
 
 async def test_shutdown_awaits_pending(async_listener: EventListener, mock: MagicMock) -> None:
-    emitter = SimpleEventEmitter([async_listener])
-    await emitter.on_startup()
-
-    for _ in range(100):
-        emitter.emit("test_event")
-
-    await emitter.on_shutdown()
+    async with SimpleEventEmitter([async_listener]) as emitter:
+        for _ in range(100):
+            emitter.emit("test_event")
 
     assert mock.call_count == 100
 
 
-def test_multiple_event_listeners(async_listener: EventListener, sync_listener: EventListener, mock: MagicMock) -> None:
+def test_multiple_event_listeners(
+    async_listener: EventListener, sync_listener: EventListener, mock: MagicMock, anyio_backend: AnyIOBackend
+) -> None:
     @get("/")
     def route_handler(request: Request[Any, Any, Any]) -> None:
         request.app.emit("test_event")
 
-    with create_test_client(route_handlers=[route_handler], listeners=[async_listener, sync_listener]) as client:
+    with create_test_client(
+        route_handlers=[route_handler], listeners=[async_listener, sync_listener], backend=anyio_backend
+    ) as client:
         response = client.get("/")
         sleep(0.01)
         assert response.status_code == HTTP_200_OK
         assert mock.call_count == 2
 
 
-def test_multiple_event_ids(mock: MagicMock) -> None:
+def test_multiple_event_ids(mock: MagicMock, anyio_backend: AnyIOBackend) -> None:
     @listener("test_event_1", "test_event_2")
     def event_handler() -> None:
         mock()
@@ -82,7 +83,7 @@ def test_multiple_event_ids(mock: MagicMock) -> None:
     def route_handler(request: Request[Any, Any, Any], event_id: int) -> None:
         request.app.emit(f"test_event_{event_id}")
 
-    with create_test_client(route_handlers=[route_handler], listeners=[event_handler]) as client:
+    with create_test_client(route_handlers=[route_handler], listeners=[event_handler], backend=anyio_backend) as client:
         response = client.get("/1")
         sleep(0.01)
         assert response.status_code == HTTP_200_OK
@@ -101,16 +102,8 @@ async def test_raises_when_decorator_called_without_callable() -> None:
 async def test_raises_when_not_initialized() -> None:
     app = Litestar([])
 
-    with pytest.raises(ImproperlyConfiguredException):
+    with pytest.raises(RuntimeError):
         app.emit("x")
-
-
-async def test_raises_for_wrong_async_backend(async_listener: EventListener) -> None:
-    with create_test_client([], listeners=[async_listener], backend="trio") as client:
-        assert not client.app.event_emitter._queue
-        assert not client.app.event_emitter._worker_task
-        with pytest.raises(ImproperlyConfiguredException):
-            client.app.emit("test_event")
 
 
 async def test_raises_when_not_listener_are_registered_for_an_event_id(async_listener: EventListener) -> None:
