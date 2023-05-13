@@ -10,8 +10,7 @@ supported:
 - Running synchronous callables directly
 - Running synchronous callables in a thread pool
 
-There are a few important differences between those, which the following article tries
-to give an overview of.
+This article gives an overview of important differences between these modes.
 
 
 Blocking and non-blocking
@@ -33,7 +32,7 @@ would. More importantly, anything that happens inside an asynchronous function
 Technically speaking, this means that there are no non-blocking functions in Python,
 since async functions only "unblock" at each ``await``. As this is not a useful
 definition of the term, "blocking" usually refers to callables that *block for a long
-time*. long period of time*.
+time*.
 
 .. note::
 
