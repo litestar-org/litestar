@@ -487,14 +487,12 @@ class Litestar(Router):
             for hook in self.on_shutdown[::-1]:
                 exit_stack.push_async_callback(partial(self._call_lifespan_hook, hook))
 
-            exit_stack.push_async_callback(self.event_emitter.on_shutdown)
+            await exit_stack.enter_async_context(self.event_emitter)
 
             for manager in self._lifespan_managers:
                 if not isinstance(manager, AbstractAsyncContextManager):
                     manager = manager(self)
                 await exit_stack.enter_async_context(manager)
-
-            await self.event_emitter.on_startup()
 
             for hook in self.on_startup:
                 await self._call_lifespan_hook(hook)
