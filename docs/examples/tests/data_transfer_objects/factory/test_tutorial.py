@@ -93,3 +93,13 @@ def test_simple_receiving_data():
         response = client.post("/person", json={"name": "peter", "age": 40, "email": "email_of_peter@example.com"})
     assert response.status_code == 201
     assert response.json() == {"name": "peter", "age": 40}
+
+
+def test_read_only_fields():
+    from docs.examples.data_transfer_objects.factory.tutorial.read_only_fields_error import app
+
+    with TestClient(app=app) as client:
+        response = client.post("/person", json={"name": "peter", "age": 40, "email": "email_of_peter@example.com"})
+
+    assert response.status_code == 500
+    assert "__init__() missing 1 required positional argument: 'id'" in response.json()["detail"]
