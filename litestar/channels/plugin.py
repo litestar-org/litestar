@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from asyncio import Queue
+import math
 from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager
 from functools import partial
 from os.path import join as join_path
@@ -20,6 +20,8 @@ from .subscriber import BacklogStrategy, EventCallback, Subscriber
 
 if TYPE_CHECKING:
     from types import TracebackType
+
+    from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 
     from litestar.channels.backends.base import ChannelsBackend
     from litestar.config.app import AppConfig
@@ -76,7 +78,7 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
 
         """
         self._backend = backend
-        self._pub_queue: Queue[tuple[bytes, list[str]]] | None = None
+        self._send_stream: MemoryObjectSendStream[tuple[bytes, list[str]]] | None = None
         self._exit_stack: AsyncExitStack | None = None
 
         if not (channels or arbitrary_channels_allowed):
@@ -138,7 +140,7 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
             channels = [channels]
         data = self.encode_data(data)
         try:
-            self._pub_queue.put_nowait((data, list(channels)))  # type: ignore[union-attr]
+            self._send_stream.send_nowait((data, list(channels)))  # type: ignore[union-attr]
         except AttributeError as e:
             raise RuntimeError("Plugin not yet initialized. Did you forget to call on_startup?") from e
 
@@ -229,7 +231,7 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
             if not channel_subscribers:
                 channels_to_unsubscribe.add(channel)
 
-        if all(subscriber not in queues for queues in self._channels.values()):
+        if all(subscriber not in channel_subscribers for channel_subscribers in self._channels.values()):
             await subscriber.put(None)  # this will stop any running task or generator by breaking the inner loop
             if subscriber.is_running:
                 await subscriber.stop()
@@ -297,55 +299,34 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
 
         return ws_handler_func
 
-    async def _pub_worker(self) -> None:
-        while self._pub_queue:
-            data, channels = await self._pub_queue.get()
-            await self._backend.publish(data, channels)
-            self._pub_queue.task_done()
+    async def _pub_worker(self, receive_stream: MemoryObjectReceiveStream) -> None:
+        async with receive_stream:
+            async for data, channels in receive_stream:
+                await self._backend.publish(data, channels)
 
     async def _sub_worker(self) -> None:
         async for channel, payload in self._backend.stream_events():
             for subscriber in self._channels.get(channel, []):
                 subscriber.put_nowait(payload)
 
-    @asynccontextmanager
-    async def _run(self) -> AsyncGenerator[None, None]:
-        self._pub_queue = Queue()
-
-        async with anyio.create_task_group() as task_group:
-            task_group.start_soon(self._sub_worker)
-            task_group.start_soon(self._pub_worker)
-
-            await self._backend.on_startup()
-
-            if self._channels:
-                await self._backend.subscribe(list(self._channels))
-
-            yield
-
-            if self._pub_queue:
-                await self._pub_queue.join()
-                self._pub_queue = None
-
-            await asyncio.gather(
-                *[
-                    subscriber.stop(join=False)
-                    for subscribers in self._channels.values()
-                    for subscriber in subscribers
-                    if subscriber.is_running
-                ]
-            )
-
-            await self._backend.on_shutdown()
-
-            task_group.cancel_scope.cancel()
-
     async def __aenter__(self) -> ChannelsPlugin:
+        await self._backend.on_startup()
+
+        if self._channels:
+            await self._backend.subscribe(list(self._channels))
+
         self._exit_stack = AsyncExitStack()
-        await self._exit_stack.__aenter__()
-        ctx = self._run()
-        self._exit_stack.push_async_exit(ctx)
-        await self._exit_stack.enter_async_context(ctx)
+
+        self._send_stream, receive_stream = anyio.create_memory_object_stream(math.inf)
+
+        self._task_group = anyio.create_task_group()
+        await self._exit_stack.enter_async_context(self._task_group)
+
+        self._task_group.start_soon(self._pub_worker, receive_stream)
+
+        await self._exit_stack.enter_async_context(self._send_stream)
+        self._task_group.start_soon(self._sub_worker)
+
         return self
 
     async def __aexit__(
@@ -354,6 +335,22 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
         exc_val: BaseException | None,
         exc_tb: TracebackType | None,
     ) -> None:
+        await asyncio.gather(
+            *[
+                subscriber.stop(join=False)
+                for subscribers in self._channels.values()
+                for subscriber in subscribers
+                if subscriber.is_running
+            ]
+        )
+
+        if self._task_group:
+            self._task_group.cancel_scope.cancel()
+
         if self._exit_stack:
             await self._exit_stack.aclose()
-            self._exit_stack = None
+
+        await self._backend.on_shutdown()
+
+        self._exit_stack = None
+        self._send_stream = None

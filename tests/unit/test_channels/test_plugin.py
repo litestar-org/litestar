@@ -361,7 +361,7 @@ async def test_backlog(
         async with subscriber.run_in_background(async_mock):
             for message in messages:
                 await plugin.wait_published(message, channels=["something"])
-            await plugin._exit_stack.aclose()  # type: ignore[union-attr]  # force a flush of all buffers here
+            await plugin.__aexit__(None, None, None)  # force a flush of all buffers here
 
     expected_messages = messages[:-1] if backlog_strategy == "backoff" else messages[1:]
 
