@@ -172,25 +172,22 @@ had ``**kwargs`` in both:
 Creating Event Emitters
 -----------------------
 
-An "event emitter" is a class that inherits from :class:`BaseEventEmitterBackend <litestar.events.BaseEventEmitterBackend>`
-and implements its abstract methods:
+An "event emitter" is a class that inherits from
+:class:`BaseEventEmitterBackend <litestar.events.BaseEventEmitterBackend>`, which
+itself inherits from :obj:`contextlib.AbstractAsyncContextManager`.
 
-- :meth:`on_startup <litestar.events.BaseEventEmitterBackend.on_startup>`: Called on application startup. This method
-  allows for performing any required async setup.
-- :meth:`on_shutdown <litestar.events.BaseEventEmitterBackend.on_shutdown>`: Called on application shutdown. This method
-  allows for performing any required async teardown and cleanup.
 - :meth:`emit <litestar.events.BaseEventEmitterBackend.emit>`: This is the method that performs the actual emitting
   logic.
 
-By default Litestar uses the :class:`SimpleEventEmitter <litestar.events.SimpleEventEmitter>`, which offers an in-memory
-based async queue.
+Additionally, the abstract ``__aenter__`` and ``__aexit__`` methods from
+:obj:`contextlib.AbstractAsyncContextManager` must be implemented, allowing the
+emitter to be used as an async context manager.
+
+By default Litestar uses the
+:class:`SimpleEventEmitter <litestar.events.SimpleEventEmitter>`, which offers an
+in-memory async queue.
 
 This solution works well if the system does not need to rely on complex behaviour, such as a retry
 mechanism, persistence, or scheduling/cron. For these more complex use cases, users should implement their own backend
 using either a DB/Key store that supports events (Redis, Postgres etc.), or a message broker, job queue or task queue
 technology.
-
-..  attention::
-    The :class:`SimpleEventEmitter <litestar.events.SimpleEventEmitter>` works only with ``asyncio`` due to the
-    limitation of ``trio`` (intentionally) not supporting "worker tasks" - i.e. tasks that run in a detached state. If
-    you want to use this functionality with ``trio``, you will need to create a custom implementation for your use case.
