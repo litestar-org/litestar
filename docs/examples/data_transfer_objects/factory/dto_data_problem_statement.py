@@ -24,7 +24,7 @@ class WriteDTO(DataclassDTO[Person]):
 # We need a dto for the handler to parse the request data per the configuration, however,
 # we don't need a return DTO as we are returning a dataclass, and Litestar already knows
 # how to serialize dataclasses.
-@post("/person", dto=WriteDTO, return_dto=None)
+@post("/person", dto=WriteDTO, return_dto=None, sync_to_thread=False)
 def create_person(data: Person) -> Person:
     """Create a person."""
     return data
