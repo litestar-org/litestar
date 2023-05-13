@@ -77,7 +77,7 @@ async def test_push_url_response() -> None:
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        assert response.text == '"Success!"'
+        assert response.text == "Success!"
         assert response.headers[HTMXHeaders.PUSH_URL] == "/index.html"
 
 
@@ -100,7 +100,7 @@ async def test_replace_url_response() -> None:
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        assert response.text == '"Success!"'
+        assert response.text == "Success!"
         assert response.headers[HTMXHeaders.REPLACE_URL] == "/index.html"
 
 
@@ -112,7 +112,7 @@ async def test_reswap_response() -> None:
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        assert response.text == '"Success!"'
+        assert response.text == "Success!"
         assert response.headers[HTMXHeaders.RE_SWAP] == "beforebegin"
 
 
@@ -124,7 +124,7 @@ async def test_retarget_response() -> None:
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        assert response.text == '"Success!"'
+        assert response.text == "Success!"
         assert response.headers[HTMXHeaders.RE_TARGET] == "#element"
 
 
@@ -138,7 +138,7 @@ async def test_trigger_event_response_success() -> None:
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        assert response.text == '"Success!"'
+        assert response.text == "Success!"
         assert response.headers[HTMXHeaders.TRIGGER_EVENT] == '{"alert":{"warning":"Confirm your choice!"}}'
 
 
@@ -151,7 +151,7 @@ async def test_trigger_event_response_no_params() -> None:
         response = client.get("/")
 
         assert response.status_code == HTTP_200_OK
-        assert response.text == '"Success!"'
+        assert response.text == "Success!"
         assert response.headers[HTMXHeaders.TRIGGER_EVENT] == '{"alert":{}}'
 
 
@@ -165,7 +165,7 @@ async def test_trigger_event_response_after_settle() -> None:
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        assert response.text == '"Success!"'
+        assert response.text == "Success!"
         assert response.headers[HTMXHeaders.TRIGGER_AFTER_SETTLE] == '{"alert":{"warning":"Confirm your choice!"}}'
 
 
@@ -177,7 +177,7 @@ async def test_trigger_event_response_after_swap() -> None:
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        assert response.text == '"Success!"'
+        assert response.text == "Success!"
         assert response.headers[HTMXHeaders.TRIGGER_AFTER_SWAP] == '{"alert":{"warning":"Confirm your choice!"}}'
 
 
