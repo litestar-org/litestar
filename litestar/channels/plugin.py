@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import asyncio
-from asyncio import CancelledError, Queue, Task, create_task
-from contextlib import AbstractAsyncContextManager, asynccontextmanager, suppress
+from asyncio import Queue
+from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager
 from functools import partial
 from os.path import join as join_path
 from typing import TYPE_CHECKING, AsyncGenerator, Awaitable, Callable, Iterable
 
+import anyio
 import msgspec.json
 
 from litestar.di import Provide
@@ -76,8 +77,7 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
         """
         self._backend = backend
         self._pub_queue: Queue[tuple[bytes, list[str]]] | None = None
-        self._pub_task: Task | None = None
-        self._sub_task: Task | None = None
+        self._exit_stack: AsyncExitStack | None = None
 
         if not (channels or arbitrary_channels_allowed):
             raise ImproperlyConfiguredException("Must define either channels or set arbitrary_channels_allowed=True")
@@ -308,42 +308,44 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
             for subscriber in self._channels.get(channel, []):
                 subscriber.put_nowait(payload)
 
-    async def _on_startup(self) -> None:
+    @asynccontextmanager
+    async def _run(self) -> AsyncGenerator[None, None]:
         self._pub_queue = Queue()
-        self._pub_task = create_task(self._pub_worker())
-        self._sub_task = create_task(self._sub_worker())
-        await self._backend.on_startup()
-        if self._channels:
-            await self._backend.subscribe(list(self._channels))
 
-    async def _on_shutdown(self) -> None:
-        if self._pub_queue:
-            await self._pub_queue.join()
-            self._pub_queue = None
+        async with anyio.create_task_group() as task_group:
+            task_group.start_soon(self._sub_worker)
+            task_group.start_soon(self._pub_worker)
 
-        await asyncio.gather(
-            *[
-                subscriber.stop(join=False)
-                for subscribers in self._channels.values()
-                for subscriber in subscribers
-                if subscriber.is_running
-            ]
-        )
+            await self._backend.on_startup()
 
-        await self._backend.on_shutdown()
+            if self._channels:
+                await self._backend.subscribe(list(self._channels))
 
-        if self._sub_task:
-            self._sub_task.cancel()
-            with suppress(CancelledError):
-                await self._sub_task
+            yield
 
-        if self._pub_task:
-            self._pub_task.cancel()
-            with suppress(CancelledError):
-                await self._pub_task
+            if self._pub_queue:
+                await self._pub_queue.join()
+                self._pub_queue = None
+
+            await asyncio.gather(
+                *[
+                    subscriber.stop(join=False)
+                    for subscribers in self._channels.values()
+                    for subscriber in subscribers
+                    if subscriber.is_running
+                ]
+            )
+
+            await self._backend.on_shutdown()
+
+            task_group.cancel_scope.cancel()
 
     async def __aenter__(self) -> ChannelsPlugin:
-        await self._on_startup()
+        self._exit_stack = AsyncExitStack()
+        await self._exit_stack.__aenter__()
+        ctx = self._run()
+        self._exit_stack.push_async_exit(ctx)
+        await self._exit_stack.enter_async_context(ctx)
         return self
 
     async def __aexit__(
@@ -352,4 +354,6 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
         exc_val: BaseException | None,
         exc_tb: TracebackType | None,
     ) -> None:
-        await self._on_shutdown()
+        if self._exit_stack:
+            await self._exit_stack.aclose()
+            self._exit_stack = None
