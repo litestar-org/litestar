@@ -1170,7 +1170,7 @@ a DTO for use with a SQLAlchemy model:</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;30091e8c-2dfc-4047-939d-5f4705075c61&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;9f21a561-4b6c-4391-b6f4-1f99960bfdd1&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1226,8 +1226,7 @@ fields are never serialized into return data.</p>
 </div>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;cdc567fb-446d-4f7a-a1d8-d932f7fcf7d2&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="o">}</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>
@@ -1438,7 +1437,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;84124cc5-cb5a-4580-a333-3b39390ba45f&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;68176f90-d67c-4b83-9052-367ad2d15d4d&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1530,7 +1529,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;97dcf7df-141d-4685-8fd7-6abea3feca6e&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;8523b64b-04f5-459f-9357-6169200e2539&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1743,7 +1742,7 @@ declare it on the handler.</p>
 <span class="linenos">24</span><span class="c1"># We need a dto for the handler to parse the request data per the configuration, however,</span>
 <span class="linenos">25</span><span class="c1"># we don&#39;t need a return DTO as we are returning a dataclass, and Litestar already knows</span>
 <span class="linenos">26</span><span class="c1"># how to serialize dataclasses.</span>
-<span class="hll"><span class="linenos">27</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/person&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">WriteDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="hll"><span class="linenos">27</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/person&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">WriteDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span><span class="linenos">28</span><span class="k">def</span> <span class="nf">create_person</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Person</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
 <span class="linenos">29</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a person.&quot;&quot;&quot;</span>
 <span class="linenos">30</span>    <span class="k">return</span> <span class="n">data</span>
@@ -1790,7 +1789,7 @@ type of the data that it will contain, and provides useful methods for interacti
 <span class="linenos">21</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">})</span>
 <span class="linenos">22</span>
 <span class="linenos">23</span>
-<span class="linenos">24</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/person&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">WriteDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="linenos">24</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/person&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">WriteDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="hll"><span class="linenos">25</span><span class="k">def</span> <span class="nf">create_person</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">Person</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
 </span><span class="linenos">26</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a person.&quot;&quot;&quot;</span>
 <span class="hll"><span class="linenos">27</span>    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">create_instance</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">uuid4</span><span class="p">())</span>
@@ -1802,7 +1801,7 @@ type of the data that it will contain, and provides useful methods for interacti
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/person<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;e1074427-86a1-458e-9ffa-7bc09094bc06&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;f12f740a-28d8-46a4-b338-e4527c7b7660&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1846,7 +1845,7 @@ attributes in the client payload, which requires some special handling internall
 <span class="linenos">28</span><span class="p">}</span>
 <span class="linenos">29</span>
 <span class="linenos">30</span>
-<span class="linenos">31</span><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;/person/{person_id:uuid}&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">WriteDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="linenos">31</span><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;/person/{person_id:uuid}&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">WriteDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="hll"><span class="linenos">32</span><span class="k">def</span> <span class="nf">update_person</span><span class="p">(</span><span class="n">person_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">Person</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
 </span><span class="linenos">33</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a person.&quot;&quot;&quot;</span>
 <span class="hll"><span class="linenos">34</span>    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">update_instance</span><span class="p">(</span><span class="n">database</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">person_id</span><span class="p">))</span>

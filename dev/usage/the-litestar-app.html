@@ -1253,6 +1253,87 @@ establish the connection, and another to close it, and then pass them to the Lit
 </div>
 </div>
 </section>
+<section id="lifespan-context-managers">
+<h2>Lifespan context managers<a class="headerlink" href="#lifespan-context-managers" title="Permalink to this heading">#</a></h2>
+<p>In addition to the lifespan hooks, Litestar also supports managing the lifespan of an
+application using asynchronous context managers. This can be useful when dealing with
+long running tasks, or those that need to keep a certain context object, such as a
+connection around.</p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">A lifetime manager, printing the time every second in the background</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">asynccontextmanager</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">worker</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="nd">@asynccontextmanager</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">lifespan</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">worker</span><span class="p">())</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+
+    <span class="k">await</span> <span class="n">task</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="p">[</span><span class="n">lifespan</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">A lifetime manager, printing the time every second in the background</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">asynccontextmanager</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">worker</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="nd">@asynccontextmanager</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">lifespan</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">worker</span><span class="p">())</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+
+    <span class="k">await</span> <span class="n">task</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="p">[</span><span class="n">lifespan</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="using-application-state">
 <h2>Using Application State<a class="headerlink" href="#using-application-state" title="Permalink to this heading">#</a></h2>
 <p>As seen in the examples for the <a class="reference external" href="#before-after-startup">on_startup</a> / <a class="reference external" href="#before-after-shutdown">on_shutdown</a> ,
@@ -1267,8 +1348,8 @@ wherever the scope mapping is available, e.g. in middleware, on <a class="refere
 <a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.websocket.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">Websocket</span></code></a> instances (accessible as <code class="docutils literal notranslate"><span class="pre">request.app</span></code> / <code class="docutils literal notranslate"><span class="pre">socket.app</span></code>) and many
 other places.</p>
 <p>Therefore, state offers an easy way to share contextual data between disparate parts of the application, as seen below:</p>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Using Application State</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Using Application State</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 
@@ -1318,8 +1399,8 @@ other places.</p>
 <h3>Initializing Application State<a class="headerlink" href="#initializing-application-state" title="Permalink to this heading">#</a></h3>
 <p>To seed application state, you can pass a <a class="reference internal" href="../reference/datastructures.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> object to the <code class="docutils literal notranslate"><span class="pre">state</span></code> kwarg of
 the Litestar constructor:</p>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Using Application State</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Using Application State</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">State</span>
 
@@ -1368,8 +1449,8 @@ state can lead to code that’s hard to reason about and bugs that are difficult
 different ASGI contexts. As such, this pattern should be used only when it is the best choice and in a limited fashion.
 To discourage its use, Litestar also offers a builtin <code class="docutils literal notranslate"><span class="pre">ImmutableState</span></code> class. You can use this class to type state and
 ensure that no mutation of state is allowed:</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Using Custom State</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Using Custom State</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">ImmutableState</span>
 
@@ -1542,8 +1623,8 @@ If a list is provided, it is called in the order it is given.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">before_startup</span></code> and <code class="docutils literal notranslate"><span class="pre">after_startup</span></code> hooks take a <a class="reference internal" href="../reference/types.html#litestar.types.LifeSpanHookHandler" title="litestar.types.LifeSpanHookHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">sync</span> <span class="pre">or</span> <span class="pre">async</span> <span class="pre">callable</span></code></a> that
 receives the Litestar application as an argument and run during the ASGI startup event. The callable is invoked
 respectively before or after the list of callables defined in the <code class="docutils literal notranslate"><span class="pre">on_startup</span></code> list of callables.</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Before and After Startup Hooks</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Before and After Startup Hooks</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">sleep</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
@@ -1588,8 +1669,8 @@ respectively before or after the list of callables defined in the <code class="d
 <p>The <code class="docutils literal notranslate"><span class="pre">before_shutdown</span></code> and <code class="docutils literal notranslate"><span class="pre">after_shutdown</span></code> are basically identical, with the difference being that the
 <a class="reference internal" href="../reference/types.html#litestar.types.LifeSpanHookHandler" title="litestar.types.LifeSpanHookHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">callable</span> <span class="pre">they</span> <span class="pre">receive</span></code></a> in callable is invoked respectively before or after the
 list of callables defined in the <code class="docutils literal notranslate"><span class="pre">on_shutdown</span></code> list of callables.</p>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Before and After Shutdown Hooks</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Before and After Shutdown Hooks</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">sleep</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
@@ -1634,8 +1715,8 @@ list of callables defined in the <code class="docutils literal notranslate"><spa
 <p>The <code class="docutils literal notranslate"><span class="pre">after_exception</span></code> hook takes a <a class="reference internal" href="../reference/types.html#litestar.types.AfterExceptionHookHandler" title="litestar.types.AfterExceptionHookHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">sync</span> <span class="pre">or</span> <span class="pre">async</span> <span class="pre">callable</span></code></a> that is called with
 three arguments: the <code class="docutils literal notranslate"><span class="pre">exception</span></code> that occurred, the ASGI <code class="docutils literal notranslate"><span class="pre">scope</span></code> of the request or websocket connection and the
 application <code class="docutils literal notranslate"><span class="pre">state</span></code>.</p>
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">After Exception Hook</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">After Exception Hook</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
@@ -1685,8 +1766,8 @@ To handle exceptions you should define <a class="reference internal" href="excep
 <h3>Before Send<a class="headerlink" href="#before-send" title="Permalink to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">before_send</span></code> hook takes a <a class="reference internal" href="../reference/types.html#litestar.types.BeforeMessageSendHookHandler" title="litestar.types.BeforeMessageSendHookHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">sync</span> <span class="pre">or</span> <span class="pre">async</span> <span class="pre">callable</span></code></a> that is called when
 an ASGI message is sent. The hook receives the message instance and the application state.</p>
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Before Send Hook</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">Before Send Hook</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
@@ -1739,8 +1820,8 @@ develop third-party application configuration systems.</p>
 <p><cite>on_app_init</cite> handlers cannot be <cite>async def</cite> functions, as they are called within <cite>Litestar.__init__()</cite>, outside of
 an async context.</p>
 </div>
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">After Exception Hook</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">After Exception Hook</span><a class="headerlink" href="#id15" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
@@ -1856,6 +1937,7 @@ overriding of parameters.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#application-object">Application object</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validation-backends">Validation Backends</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#startup-and-shutdown">Startup and Shutdown</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lifespan-context-managers">Lifespan context managers</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-application-state">Using Application State</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initializing-application-state">Initializing Application State</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#injecting-application-state-into-route-handlers-and-dependencies">Injecting Application State into Route Handlers and Dependencies</a></li>
