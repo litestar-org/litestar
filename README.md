@@ -20,7 +20,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-100-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-101-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -413,6 +413,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/aviral-nayya"><img src="https://avatars.githubusercontent.com/u/121891493?v=4?s=100" width="100px;" alt="aviral-nayya"/><br /><sub><b>aviral-nayya</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=aviral-nayya" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/whiskeyriver"><img src="https://avatars.githubusercontent.com/u/162092?v=4?s=100" width="100px;" alt="whiskeyriver"/><br /><sub><b>whiskeyriver</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=whiskeyriver" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://hexcode.tech"><img src="https://avatars.githubusercontent.com/u/419606?v=4?s=100" width="100px;" alt="Phyo Arkar Lwin"/><br /><sub><b>Phyo Arkar Lwin</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=v3ss0n" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
