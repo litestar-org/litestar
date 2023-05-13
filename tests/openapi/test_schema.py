@@ -2,8 +2,10 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Dict, Literal
 
+import msgspec
 import pytest
 from pydantic import BaseModel
+from typing_extensions import Annotated
 
 from litestar import Controller, MediaType, get
 from litestar._openapi.schema_generation.schema import (
@@ -245,3 +247,17 @@ class Foo(TypedDict):
     )
     schema = create_schema_for_typed_dict(module.Foo, generate_examples=False, plugins=[], schemas={})
     assert schema.properties and all(key in schema.properties for key in ("foo", "bar", "baz"))
+
+
+def test_create_schema_from_msgspec_annotated_type() -> None:
+    class Lookup(msgspec.Struct):
+        id: Annotated[str, msgspec.Meta(max_length=16)]
+
+    schemas: Dict[str, Schema] = {}
+    create_schema(
+        field=SignatureField.create(name="Lookup", field_type=Lookup),
+        generate_examples=False,
+        plugins=[],
+        schemas=schemas,
+    )
+    assert schemas["Lookup"]

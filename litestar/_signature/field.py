@@ -3,7 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Literal
 
-from typing_extensions import get_args, get_origin
+from msgspec import Meta
+from typing_extensions import Annotated, get_args, get_origin
 
 from litestar.constants import UNDEFINED_SENTINELS
 from litestar.params import BodyKwarg, DependencyKwarg, ParameterKwarg
@@ -20,6 +21,26 @@ from litestar.utils.predicates import (
 from litestar.utils.typing import make_non_optional_union
 
 __all__ = ("SignatureField",)
+
+
+def _create_metadata_from_type(
+    value: Any, model: type[ParameterKwarg] | type[BodyKwarg], field_type: Any
+) -> ParameterKwarg | BodyKwarg | None:
+    if isinstance(value, Meta):
+        is_sequence_container = is_non_string_sequence(field_type)
+        return model(
+            gt=value.gt,
+            ge=value.ge,
+            lt=value.lt,
+            le=value.le,
+            multiple_of=value.multiple_of,
+            regex=value.pattern,
+            min_length=value.min_length if not is_sequence_container else None,
+            max_length=value.max_length if not is_sequence_container else None,
+            min_items=value.min_length if is_sequence_container else None,
+            max_items=value.max_length if is_sequence_container else None,
+        )
+    return None
 
 
 @dataclass(unsafe_hash=True, frozen=True)
@@ -170,8 +191,17 @@ class SignatureField:
         if kwarg_model and default_value is Empty:
             default_value = kwarg_model.default
 
-        if not children and get_origin(field_type) and (type_args := get_args(field_type)):
-            children = tuple(SignatureField.create(arg) for arg in type_args)
+        origin = get_origin(field_type)
+
+        if not children and origin and (type_args := get_args(field_type)):
+            if origin is Annotated:
+                field_type = type_args[0]
+                if not kwarg_model:
+                    kwarg_model = _create_metadata_from_type(
+                        type_args[1], BodyKwarg if name == "data" else ParameterKwarg, field_type=field_type
+                    )
+            else:
+                children = tuple(SignatureField.create(arg) for arg in type_args)
 
         return SignatureField(
             name=name,
