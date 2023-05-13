@@ -84,3 +84,12 @@ def test_field_renaming_strategy():
         "ADDRESS": {"CITY": "Cityville", "COUNTRY": "Countryland"},
         "CHILDREN": [{"NAME": "Child1", "AGE": 10}, {"NAME": "Child2", "AGE": 8}],
     }
+
+
+def test_simple_receiving_data():
+    from docs.examples.data_transfer_objects.factory.tutorial.simple_receiving_data import app
+
+    with TestClient(app=app) as client:
+        response = client.post("/person", json={"name": "peter", "age": 40, "email": "email_of_peter@example.com"})
+    assert response.status_code == 201
+    assert response.json() == {"name": "peter", "age": 40}

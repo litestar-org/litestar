@@ -54,3 +54,4 @@ is where data transfer objects come in.
     03-nested-collection-exclude
     04-max-nested-depth
     05-renaming-fields
+    06-receiving-data
