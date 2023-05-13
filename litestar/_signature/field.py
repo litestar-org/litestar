@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Any, Literal
 
 from msgspec import Meta
+from pydantic.fields import FieldInfo
 from typing_extensions import Annotated, get_args, get_origin
 
 from litestar.constants import UNDEFINED_SENTINELS
@@ -40,6 +41,28 @@ def _create_metadata_from_type(
             min_items=value.min_length if is_sequence_container else None,
             max_items=value.max_length if is_sequence_container else None,
         )
+    if isinstance(value, FieldInfo):
+        values: dict[str, Any] = {
+            k: v
+            for k, v in {
+                "gt": value.gt,
+                "ge": value.ge,
+                "lt": value.lt,
+                "le": value.le,
+                "multiple_of": value.multiple_of,
+                "regex": value.regex,
+                "min_length": value.min_length,
+                "max_length": value.max_length,
+                "min_items": value.min_items,
+                "max_items": value.max_items,
+                "description": value.description,
+                "title": value.title,
+                "const": value.const is not None,
+            }.items()
+            if v is not None
+        }
+        if values:
+            return model(**values)
     return None
 
 
@@ -191,15 +214,19 @@ class SignatureField:
         if kwarg_model and default_value is Empty:
             default_value = kwarg_model.default
 
+        elif isinstance(default_value, FieldInfo) and not kwarg_model:
+            kwarg_model = _create_metadata_from_type(
+                default_value, BodyKwarg if name == "data" else ParameterKwarg, field_type=field_type
+            )
+
         origin = get_origin(field_type)
 
         if not children and origin and (type_args := get_args(field_type)):
             if origin is Annotated:
                 field_type = type_args[0]
-                if not kwarg_model:
-                    kwarg_model = _create_metadata_from_type(
-                        type_args[1], BodyKwarg if name == "data" else ParameterKwarg, field_type=field_type
-                    )
+                kwarg_model = kwarg_model or _create_metadata_from_type(
+                    type_args[1], BodyKwarg if name == "data" else ParameterKwarg, field_type=field_type
+                )
             else:
                 children = tuple(SignatureField.create(arg) for arg in type_args)
 
