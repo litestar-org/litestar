@@ -40,14 +40,13 @@ if TYPE_CHECKING:
         ControllerRouterHandler,
         ExceptionHandlersMap,
         Guard,
-        LifeSpanHandler,
-        LifeSpanHookHandler,
         Middleware,
         ParametersMap,
         ResponseCookies,
         ResponseType,
         TypeEncodersMap,
     )
+    from litestar.types.callable_types import LifespanHook
     from litestar.types.empty import EmptyType
 
 
@@ -78,16 +77,6 @@ class AppConfig:
     """A sync or async function called after the response has been awaited. It receives the
     :class:`Request <.connection.Request>` object and should not return any values.
     """
-    after_shutdown: list[LifeSpanHookHandler] = field(default_factory=list)
-    """An application level :class:`life-span hook handler <.types.LifeSpanHookHandler>` or list thereof.
-
-    This hook is called during the ASGI shutdown, after all callables in the ``on_shutdown`` list have been called.
-    """
-    after_startup: list[LifeSpanHookHandler] = field(default_factory=list)
-    """An application level :class:`life-span hook handler <.types.LifeSpanHookHandler>` or list thereof.
-
-    This hook is called during the ASGI startup, after all callables in the ``on_startup`` list have been called.
-    """
     allowed_hosts: list[str] | AllowedHostsConfig | None = field(default=None)
     """If set enables the builtin allowed hosts middleware."""
     before_request: BeforeRequestHookHandler | None = field(default=None)
@@ -99,16 +88,6 @@ class AppConfig:
     """An application level :class:`before send hook handler <.types.BeforeMessageSendHookHandler>` or list thereof.
 
     This hook is called when the ASGI send function is called.
-    """
-    before_shutdown: list[LifeSpanHookHandler] = field(default_factory=list)
-    """An application level :class:`life-span hook handler <.types.LifeSpanHookHandler>` or list thereof.
-
-    This hook is called during the ASGI shutdown, before any callables in the ``on_shutdown`` list have been called.
-    """
-    before_startup: list[LifeSpanHookHandler] = field(default_factory=list)
-    """An application level :class:`life-span hook handler <.types.LifeSpanHookHandler>` or list thereof.
-
-    This hook is called during the ASGI startup, before any callables in the ``on_startup`` list have been called.
     """
     cache_control: CacheControlHeader | None = field(default=None)
     """A ``cache-control`` header of type :class:`CacheControlHeader <.datastructures.CacheControlHeader>` to add to
@@ -141,7 +120,9 @@ class AppConfig:
     """A dictionary that maps handler functions to status codes and/or exception types."""
     guards: list[Guard] = field(default_factory=list)
     """A list of :class:`Guard <.types.Guard>` callables."""
-    lifespan: list[Callable[[Litestar], AbstractAsyncContextManager]] = field(default_factory=list)
+    lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] = field(
+        default_factory=list
+    )
     """A list of callables returning async context managers, wrapping the lifespan of the ASGI application"""
     listeners: list[EventListener] = field(default_factory=list)
     """A list of :class:`EventListener <.events.listener.EventListener>`."""
@@ -149,10 +130,10 @@ class AppConfig:
     """An instance of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>` subclass."""
     middleware: list[Middleware] = field(default_factory=list)
     """A list of :class:`Middleware <.types.Middleware>`."""
-    on_shutdown: list[LifeSpanHandler] = field(default_factory=list)
-    """A list of :class:`LifeSpanHandler <.types.LifeSpanHandler>` called during application shutdown."""
-    on_startup: list[LifeSpanHandler] = field(default_factory=list)
-    """A list of :class:`LifeSpanHandler <.types.LifeSpanHandler>` called during application startup."""
+    on_shutdown: list[LifespanHook] = field(default_factory=list)
+    """A list of :class:`LifespanHook <.types.LifespanHook>` called during application shutdown."""
+    on_startup: list[LifespanHook] = field(default_factory=list)
+    """A list of :class:`LifespanHook <.types.LifespanHook>` called during application startup."""
     openapi_config: OpenAPIConfig | None = field(default=None)
     """Defaults to :data:`DEFAULT_OPENAPI_CONFIG <litestar.app.DEFAULT_OPENAPI_CONFIG>`"""
     opt: dict[str, Any] = field(default_factory=dict)

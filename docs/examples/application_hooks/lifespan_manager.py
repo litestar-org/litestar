@@ -1,27 +1,22 @@
-import asyncio
-import time
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
+
+from sqlalchemy.ext.asyncio import create_async_engine
 
 from litestar import Litestar
 
 
-async def worker() -> None:
-    while True:
-        print(time.time())
-        await asyncio.sleep(1)
-
-
 @asynccontextmanager
-async def lifespan(app: Litestar) -> AsyncGenerator[None, None]:
-    task = asyncio.create_task(worker())
+async def db_connection(app: Litestar) -> AsyncGenerator[None, None]:
+    engine = getattr(app.state, "engine", None)
+    if engine is None:
+        engine = create_async_engine("postgresql+asyncpg://postgres:mysecretpassword@pg.db:5432/db")
+        app.state.engine = engine
 
     try:
         yield
     finally:
-        task.cancel()
-
-    await task
+        await engine.dispose()
 
 
-app = Litestar(lifespan=[lifespan])
+app = Litestar(lifespan=[db_connection])

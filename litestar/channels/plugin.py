@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from asyncio import CancelledError, Queue, Task, create_task
-from contextlib import asynccontextmanager, suppress
+from contextlib import AbstractAsyncContextManager, asynccontextmanager, suppress
 from functools import partial
 from os.path import join as join_path
 from typing import TYPE_CHECKING, AsyncGenerator, Awaitable, Callable, Iterable
@@ -18,7 +18,7 @@ from litestar.serialization import default_serializer
 from .subscriber import BacklogStrategy, EventCallback, Subscriber
 
 if TYPE_CHECKING:
-    from inspect import Traceback
+    from types import TracebackType
 
     from litestar.channels.backends.base import ChannelsBackend
     from litestar.config.app import AppConfig
@@ -31,7 +31,7 @@ class ChannelsException(LitestarException):
     pass
 
 
-class ChannelsPlugin(InitPluginProtocol):
+class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
     def __init__(
         self,
         backend: ChannelsBackend,
@@ -110,8 +110,7 @@ class ChannelsPlugin(InitPluginProtocol):
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         """Plugin hook. Set up a ``channels`` dependency, add route handlers and register application hooks"""
         app_config.dependencies["channels"] = Provide(lambda: self, use_cache=True, sync_to_thread=False)
-        app_config.on_startup.append(self._on_startup)
-        app_config.on_shutdown.append(self._on_shutdown)
+        app_config.lifespan.append(self)
 
         if self._create_route_handlers:
             if self._arbitrary_channels_allowed:
@@ -353,6 +352,6 @@ class ChannelsPlugin(InitPluginProtocol):
         self,
         exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
-        exc_tb: Traceback | None,
+        exc_tb: TracebackType | None,
     ) -> None:
         await self._on_shutdown()

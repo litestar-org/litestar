@@ -163,7 +163,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
                 continue
 
             if self.context.config.partial:
-                field_definition = field_definition.copy_with(  # noqa: PLW2901
+                field_definition = field_definition.copy_with(
                     parsed_type=ParsedType(Union[field_definition.parsed_type.annotation, UnsetType]), default=UNSET
                 )
 

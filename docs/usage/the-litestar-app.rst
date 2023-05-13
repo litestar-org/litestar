@@ -74,12 +74,12 @@ Lifespan context managers
 In addition to the lifespan hooks, Litestar also supports managing the lifespan of an
 application using asynchronous context managers. This can be useful when dealing with
 long running tasks, or those that need to keep a certain context object, such as a
-connection around.
+connection, around.
 
 
 .. literalinclude:: /examples/application_hooks/lifespan_manager.py
     :language: python
-    :caption: A lifetime manager, printing the time every second in the background
+    :caption: Handling a database connection
 
 
 
@@ -333,30 +333,6 @@ observability (monitoring, tracing, logging etc.).
 
     All application hook kwargs detailed below receive either a single callable or a list of callables.
     If a list is provided, it is called in the order it is given.
-
-Before / After Startup
-^^^^^^^^^^^^^^^^^^^^^^
-
-The ``before_startup`` and ``after_startup`` hooks take a :class:`sync or async callable <litestar.types.LifeSpanHookHandler>` that
-receives the Litestar application as an argument and run during the ASGI startup event. The callable is invoked
-respectively before or after the list of callables defined in the ``on_startup`` list of callables.
-
-.. literalinclude:: /examples/application_hooks/startup_hooks.py
-    :caption: Before and After Startup Hooks
-    :language: python
-
-
-
-Before / After Shutdown
-^^^^^^^^^^^^^^^^^^^^^^^
-
-The ``before_shutdown`` and ``after_shutdown`` are basically identical, with the difference being that the
-:class:`callable they receive <litestar.types.LifeSpanHookHandler>` in callable is invoked respectively before or after the
-list of callables defined in the ``on_shutdown`` list of callables.
-
-.. literalinclude:: /examples/application_hooks/shutdown_hooks.py
-    :caption: Before and After Shutdown Hooks
-    :language: python
 
 
 After Exception

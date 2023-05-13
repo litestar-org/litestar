@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from sqlalchemy.orm.session import JoinTransactionMode
     from sqlalchemy.sql import TableClause
 
+    from litestar import Litestar
     from litestar.datastructures.state import State
     from litestar.types import BeforeMessageSendHookHandler, EmptyType, Scope
 
@@ -240,10 +241,10 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
             self.session_maker_app_state_key: self.create_session_maker(),
         }
 
-    def update_app_state(self, state: State) -> None:
+    def update_app_state(self, app: Litestar) -> None:
         """Set the app state with engine and session.
 
         Args:
-            state: The ``Litestar.state`` instance.
+            app: The ``Litestar`` instance.
         """
-        state.update(self.create_app_state_items())
+        app.state.update(self.create_app_state_items())

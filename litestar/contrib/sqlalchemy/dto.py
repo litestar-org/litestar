@@ -56,7 +56,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[DataT], Generic[DataT]):
                 continue
 
             if parsed_type.origin is Mapped:
-                (parsed_type,) = parsed_type.inner_types  # noqa: PLW2901
+                (parsed_type,) = parsed_type.inner_types
 
             default, default_factory = _detect_defaults(elem)
 
