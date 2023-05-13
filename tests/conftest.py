@@ -490,5 +490,10 @@ def disable_warn_implicit_sync_to_thread() -> Generator[None, None, None]:
 
 
 @pytest.fixture()
+def disable_warn_sync_to_thread_with_async(monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.setenv("LITESTAR_WARN_SYNC_TO_THREAD_WITH_ASYNC", "0")
+
+
+@pytest.fixture()
 def enable_warn_implicit_sync_to_thread(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.setenv("LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD", "1")

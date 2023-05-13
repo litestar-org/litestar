@@ -36,7 +36,7 @@ def test_default_cache_response(sync_to_thread: bool, mock: MagicMock) -> None:
         cache=True,
         type_encoders={int: str},  # test pickling issues. see https://github.com/litestar-org/litestar/issues/1096
     )
-    async def handler() -> str:
+    def handler() -> str:
         return mock()  # type: ignore[no-any-return]
 
     with create_test_client([handler], after_request=after_request_handler) as client:
@@ -131,7 +131,7 @@ async def test_custom_cache_key(sync_to_thread: bool, anyio_backend: str, mock: 
         return request.url.path + ":::cached"
 
     @get("/cached", sync_to_thread=sync_to_thread, cache=True, cache_key_builder=custom_cache_key_builder)
-    async def handler() -> str:
+    def handler() -> str:
         return mock()  # type: ignore[no-any-return]
 
     app = Litestar([handler])

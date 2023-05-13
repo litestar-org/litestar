@@ -46,7 +46,7 @@ from litestar.types import (
 )
 from litestar.types.builtin_types import NoneType
 from litestar.utils import AsyncCallable, async_partial, is_async_callable
-from litestar.utils.warnings import warn_implicit_sync_to_thread
+from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
 if TYPE_CHECKING:
     from typing import Any, Awaitable, Callable, Sequence
@@ -281,8 +281,12 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
         """Replace a function with itself."""
-        if not is_async_callable(fn) and self.sync_to_thread is None:
-            warn_implicit_sync_to_thread(fn, stacklevel=3)
+        if not is_async_callable(fn):
+            if self.sync_to_thread is None:
+                warn_implicit_sync_to_thread(fn, stacklevel=3)
+        elif self.sync_to_thread is not None:
+            warn_sync_to_thread_with_async_callable(fn, stacklevel=3)
+
         super().__call__(fn)
         return self
 
