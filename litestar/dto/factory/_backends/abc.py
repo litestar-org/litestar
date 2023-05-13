@@ -3,10 +3,9 @@ back again, to bytes.
 """
 from __future__ import annotations
 
-import base64
+import secrets
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Final, Generic, TypeVar, Union
-from uuid import uuid1
 
 from msgspec import UNSET, UnsetType
 
@@ -413,7 +412,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
     def _gen_unique_name_id(self, unique_name: str, size: int = 12) -> str:
         # Generate a unique ID
         # Convert the ID to a short alphanumeric string
-        return f"{unique_name}-{base64.urlsafe_b64encode(str(uuid1()).encode('utf-8'))[:size].decode('ascii')}"
+        return f"{unique_name}-{secrets.token_hex(8)}"
 
 
 def _filter_exclude(exclude: AbstractSet[str], field_name: str) -> AbstractSet[str]:
