@@ -20,7 +20,7 @@ def test_dependency_validation() -> None:
         path="/{path_param:int}",
         dependencies={
             "first": Provide(first_method),
-            "second": Provide(second_method, sync_to_thread=True),
+            "second": Provide(second_method),
         },
     )
     def test_function(first: int, second: str, third: int) -> None:
@@ -29,9 +29,7 @@ def test_dependency_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         Litestar(
             route_handlers=[test_function],
-            dependencies={
-                "third": Provide(first_method),
-            },
+            dependencies={"third": Provide(first_method)},
         )
 
 

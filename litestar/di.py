@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
 from litestar.utils import Ref, is_async_callable
-from litestar.utils.warnings import warn_implicit_sync_to_thread
+from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
 __all__ = ("Provide",)
 
@@ -52,6 +52,10 @@ class Provide:
         self.has_sync_callable = isclass(dependency) or not is_async_callable(dependency)
         if self.has_sync_callable and sync_to_thread is None:
             warn_implicit_sync_to_thread(dependency, stacklevel=3)
+
+        if not self.has_sync_callable and sync_to_thread is not None:
+            warn_sync_to_thread_with_async_callable(dependency, stacklevel=3)
+
         self.sync_to_thread = bool(sync_to_thread)
         self.use_cache = use_cache
         self.value: Any = Empty

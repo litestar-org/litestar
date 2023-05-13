@@ -101,6 +101,7 @@ def test_provider_equality_check() -> None:
         (sync_partial, "why-three-and-one"),
     ],
 )
+@pytest.mark.usefixtures("disable_warn_sync_to_thread_with_async")
 async def test_provide_for_callable(fn: Any, exp: Any, anyio_backend: str) -> None:
     assert await Provide(fn, sync_to_thread=False)() == exp
 
@@ -194,5 +195,14 @@ def test_sync_callable_without_sync_to_thread_warns() -> None:
     def func() -> None:
         pass
 
-    with pytest.warns(LitestarWarning):
+    with pytest.warns(LitestarWarning, match="discouraged since synchronous callables"):
         Provide(func)
+
+
+@pytest.mark.parametrize("sync_to_thread", [True, False])
+def test_async_callable_with_sync_to_thread_warns(sync_to_thread: bool) -> None:
+    async def func() -> None:
+        pass
+
+    with pytest.warns(LitestarWarning, match="asynchronous callable"):
+        Provide(func, sync_to_thread=sync_to_thread)

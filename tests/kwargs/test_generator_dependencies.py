@@ -151,6 +151,7 @@ def test_generator_dependency_exception_during_cleanup(
 
 
 @pytest.mark.parametrize("dependency_fixture", ["generator_dependency", "async_generator_dependency"])
+@pytest.mark.usefixtures("disable_warn_sync_to_thread_with_async")
 def test_generator_dependency_nested(
     request: FixtureRequest,
     dependency_fixture: str,
