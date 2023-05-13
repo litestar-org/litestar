@@ -194,7 +194,8 @@ def test_dto_openapi_model_name_collision() -> None:
     with create_test_client(route_handlers=[handler], debug=True) as client:
         response = client.get("/schema/openapi.json")
         schemas = list(response.json()["components"]["schemas"].values())
-        assert len(set(schemas)) == 2
+        assert len(schemas) == 2
+        assert schemas[0] != schemas[1]
         assert all(
             k.startswith("tests.dto.factory.test_integration.test_dto_openapi_model_name_collision.<locals>.Bar")
             for k in response.json()["components"]["schemas"]
