@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Literal, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Literal, Sequence
 
 from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.response_cache import ResponseCacheConfig
@@ -10,6 +10,9 @@ from litestar.events.emitter import SimpleEventEmitter
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
+    from contextlib import AbstractAsyncContextManager
+
+    from litestar import Litestar
     from litestar.config.compression import CompressionConfig
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
@@ -138,6 +141,8 @@ class AppConfig:
     """A dictionary that maps handler functions to status codes and/or exception types."""
     guards: list[Guard] = field(default_factory=list)
     """A list of :class:`Guard <.types.Guard>` callables."""
+    lifespan: list[Callable[[Litestar], AbstractAsyncContextManager]] = field(default_factory=list)
+    """A list of callables returning async context managers, wrapping the lifespan of the ASGI application"""
     listeners: list[EventListener] = field(default_factory=list)
     """A list of :class:`EventListener <.events.listener.EventListener>`."""
     logging_config: BaseLoggingConfig | None = field(default=None)
