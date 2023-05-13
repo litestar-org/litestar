@@ -14,35 +14,35 @@ from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
 class Author(UUIDAuditBase):
     """The Author domain object."""
 
-    name: Mapped[str] = mapped_column(String(length=100))
-    dob: Mapped[date] = mapped_column(nullable=True)
+    name: Mapped[str] = mapped_column(String(length=100))  # pyright: ignore
+    dob: Mapped[date] = mapped_column(nullable=True)  # pyright: ignore
 
 
 class Book(UUIDBase):
     """The Book domain object."""
 
-    title: Mapped[str] = mapped_column(String(length=250))
-    author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))
-    author: Mapped[Author] = relationship(lazy="joined", innerjoin=True)
+    title: Mapped[str] = mapped_column(String(length=250))  # pyright: ignore
+    author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))  # pyright: ignore
+    author: Mapped[Author] = relationship(lazy="joined", innerjoin=True)  # pyright: ignore
 
 
 class EventLog(UUIDAuditBase):
     """The event log domain object."""
 
-    logged_at: Mapped[datetime] = mapped_column(default=datetime.now())
-    payload: Mapped[dict] = mapped_column(default={})
+    logged_at: Mapped[datetime] = mapped_column(default=datetime.now())  # pyright: ignore
+    payload: Mapped[dict] = mapped_column(default={})  # pyright: ignore
 
 
 class Store(BigIntAuditBase):
     """The store domain object."""
 
-    store_name: Mapped[str] = mapped_column(String(length=250))
+    store_name: Mapped[str] = mapped_column(String(length=250))  # pyright: ignore
 
 
 class Ingredient(BigIntBase):
     """The ingredient domain object."""
 
-    name: Mapped[str] = mapped_column(String(length=250))
+    name: Mapped[str] = mapped_column(String(length=250))  # pyright: ignore
 
 
 class AuthorRepository(SQLAlchemyAsyncRepository[Author]):

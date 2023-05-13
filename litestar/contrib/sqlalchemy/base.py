@@ -92,7 +92,7 @@ class UUIDPrimaryKey:
 
     __abstract__ = True
 
-    id: Mapped[UUID] = mapped_column(default=uuid4, primary_key=True)
+    id: Mapped[UUID] = mapped_column(default=uuid4, primary_key=True)  # pyright: ignore
     """UUID Primary key column."""
 
 
@@ -102,7 +102,7 @@ class BigIntPrimaryKey:
 
     __abstract__ = True
 
-    id: Mapped[int] = mapped_column(BigIntIdentity, Identity(always=True), primary_key=True)
+    id: Mapped[int] = mapped_column(BigIntIdentity, Identity(always=True), primary_key=True)  # pyright: ignore
     """BigInt Primary key column."""
 
 
@@ -112,9 +112,9 @@ class AuditColumns:
 
     __abstract__ = True
 
-    created: Mapped[datetime] = mapped_column(default=datetime.now)
+    created: Mapped[datetime] = mapped_column(default=datetime.now)  # pyright: ignore
     """Date/time of instance creation."""
-    updated: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated: Mapped[datetime] = mapped_column(default=datetime.now)  # pyright: ignore
     """Date/time of instance last update."""
 
 

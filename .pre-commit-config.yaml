@@ -12,7 +12,7 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.265"
+    rev: "v0.0.267"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -101,7 +101,7 @@ repos:
             uvicorn,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.307
+    rev: v1.1.308
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs|_openapi"

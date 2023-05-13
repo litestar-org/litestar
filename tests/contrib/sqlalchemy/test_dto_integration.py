@@ -15,7 +15,7 @@ from litestar.testing import create_test_client
 
 
 class Base(DeclarativeBase):
-    id: Mapped[str] = mapped_column(primary_key=True)
+    id: Mapped[str] = mapped_column(primary_key=True)  # pyright: ignore
 
     # noinspection PyMethodParameters
     @declared_attr.directive
@@ -25,23 +25,23 @@ class Base(DeclarativeBase):
 
 
 class Author(Base):
-    name: Mapped[str] = mapped_column(default="Arthur")
-    date_of_birth: Mapped[str] = mapped_column(nullable=True)
+    name: Mapped[str] = mapped_column(default="Arthur")  # pyright: ignore
+    date_of_birth: Mapped[str] = mapped_column(nullable=True)  # pyright: ignore
 
 
 class BookReview(Base):
-    review: Mapped[str]
-    book_id: Mapped[str] = mapped_column(ForeignKey("book.id"), default="000")
+    review: Mapped[str]  # pyright: ignore
+    book_id: Mapped[str] = mapped_column(ForeignKey("book.id"), default="000")  # pyright: ignore
 
 
 class Book(Base):
-    title: Mapped[str] = mapped_column(String(length=250), default="Hi")
-    author_id: Mapped[str] = mapped_column(ForeignKey("author.id"), default="123")
-    first_author: Mapped[Author] = relationship(lazy="joined", innerjoin=True)
-    reviews: Mapped[List[BookReview]] = relationship(lazy="joined", innerjoin=True)
-    bar: Mapped[str] = mapped_column(default="Hello")
-    SPAM: Mapped[str] = mapped_column(default="Bye")
-    spam_bar: Mapped[str] = mapped_column(default="Goodbye")
+    title: Mapped[str] = mapped_column(String(length=250), default="Hi")  # pyright: ignore
+    author_id: Mapped[str] = mapped_column(ForeignKey("author.id"), default="123")  # pyright: ignore
+    first_author: Mapped[Author] = relationship(lazy="joined", innerjoin=True)  # pyright: ignore
+    reviews: Mapped[List[BookReview]] = relationship(lazy="joined", innerjoin=True)  # pyright: ignore
+    bar: Mapped[str] = mapped_column(default="Hello")  # pyright: ignore
+    SPAM: Mapped[str] = mapped_column(default="Bye")  # pyright: ignore
+    spam_bar: Mapped[str] = mapped_column(default="Goodbye")  # pyright: ignore
 
 
 @dataclass

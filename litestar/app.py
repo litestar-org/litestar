@@ -350,7 +350,7 @@ class Litestar(Router):
             on_app_init or [],
             (p.on_app_init for p in config.plugins if isinstance(p, InitPluginProtocol)),
         ):
-            config = handler(config)
+            config = handler(config)  # pyright: ignore
 
         self._openapi_schema: OpenAPI | None = None
         self._debug: bool = True
@@ -724,7 +724,7 @@ class Litestar(Router):
             asgi_handler = CORSMiddleware(app=asgi_handler, config=self.cors_config)
 
         return wrap_in_exception_handler(
-            debug=self.debug, app=asgi_handler, exception_handlers=self.exception_handlers or {}
+            debug=self.debug, app=asgi_handler, exception_handlers=self.exception_handlers or {}  # pyright: ignore
         )
 
     def _wrap_send(self, send: Send, scope: Scope) -> Send:

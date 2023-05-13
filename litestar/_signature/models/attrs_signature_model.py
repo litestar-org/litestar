@@ -219,6 +219,12 @@ class Converter(cattrs.Converter):
             False,
         )
 
+        # ensure attrs instances are not unstructured into dict
+        self.register_unstructure_hook_factory(
+            lambda value: attrs.has(value) and AttrsSignatureModel not in list(value.__mro__),
+            _pass_through_unstructure_hook,
+        )
+
         for cls, structure_hook in hooks:
             self.register_structure_hook(cls, structure_hook)
             self.register_unstructure_hook(cls, _pass_through_unstructure_hook)
