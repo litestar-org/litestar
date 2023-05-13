@@ -56,3 +56,31 @@ def test_max_nested_depth():
         "address": {"city": "Cityville", "country": "Countryland"},
         "children": [{"name": "Child1", "age": 10, "children": []}, {"name": "Child2", "age": 8, "children": []}],
     }
+
+
+def test_explicit_field_renaming():
+    from docs.examples.data_transfer_objects.factory.tutorial.explicit_field_renaming import app
+
+    with TestClient(app=app) as client:
+        response = client.get("/person/peter")
+    assert response.status_code == 200
+    assert response.json() == {
+        "name": "peter",
+        "age": 30,
+        "location": {"city": "Cityville", "country": "Countryland"},
+        "children": [{"name": "Child1", "age": 10}, {"name": "Child2", "age": 8}],
+    }
+
+
+def test_field_renaming_strategy():
+    from docs.examples.data_transfer_objects.factory.tutorial.field_renaming_strategy import app
+
+    with TestClient(app=app) as client:
+        response = client.get("/person/peter")
+    assert response.status_code == 200
+    assert response.json() == {
+        "NAME": "peter",
+        "AGE": 30,
+        "ADDRESS": {"CITY": "Cityville", "COUNTRY": "Countryland"},
+        "CHILDREN": [{"NAME": "Child1", "AGE": 10}, {"NAME": "Child2", "AGE": 8}],
+    }

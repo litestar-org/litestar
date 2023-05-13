@@ -28,3 +28,6 @@ Let's now modify our script to include the children of children in the response:
 We now see those empty collections in our output:
 
 .. image:: images/max_nested_depth.png
+
+Now that we've seen how to use the ``max_nested_depth`` configuration, we'll revert to using the default value of ``1``
+for the remainder of this tutorial.
