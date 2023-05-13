@@ -52,3 +52,4 @@ is where data transfer objects come in.
     01-simple-dto-exclude
     02-nested-exclude
     03-nested-collection-exclude
+    04-max-nested-depth

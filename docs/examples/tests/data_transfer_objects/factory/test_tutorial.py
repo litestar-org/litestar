@@ -42,3 +42,17 @@ def test_nested_collection_exclude():
         "address": {"city": "Cityville", "country": "Countryland"},
         "children": [{"name": "Child1", "age": 10}, {"name": "Child2", "age": 8}],
     }
+
+
+def test_max_nested_depth():
+    from docs.examples.data_transfer_objects.factory.tutorial.max_nested_depth import app
+
+    with TestClient(app=app) as client:
+        response = client.get("/person/peter")
+    assert response.status_code == 200
+    assert response.json() == {
+        "name": "peter",
+        "age": 30,
+        "address": {"city": "Cityville", "country": "Countryland"},
+        "children": [{"name": "Child1", "age": 10, "children": []}, {"name": "Child2", "age": 8, "children": []}],
+    }
