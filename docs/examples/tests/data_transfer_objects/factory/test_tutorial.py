@@ -113,3 +113,13 @@ def test_dto_data():
 
     assert response.status_code == 201
     assert response.json() == {"id": 1, "name": "peter", "age": 40}
+
+
+def test_patch_handler():
+    from docs.examples.data_transfer_objects.factory.tutorial.patch_handlers import app
+
+    with TestClient(app=app) as client:
+        response = client.patch("/person/1", json={"name": "peter"})
+
+    assert response.status_code == 200
+    assert response.json() == {"id": 1, "name": "peter", "age": 50}
