@@ -29,4 +29,4 @@ And our app is back to a working state:
     :align: center
 
 The :class:`DTOData <litestar.dto.factory.DTOData>` type has some other useful methods, and we'll take a look at those
-in the next section: :ref:`patch-handlers`.
+in the next section: :ref:`updating`.

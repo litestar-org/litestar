@@ -115,6 +115,16 @@ def test_dto_data():
     assert response.json() == {"id": 1, "name": "peter", "age": 40}
 
 
+def test_put_handler():
+    from docs.examples.data_transfer_objects.factory.tutorial.put_handlers import app
+
+    with TestClient(app=app) as client:
+        response = client.put("/person/1", json={"name": "peter", "age": 50, "email": "email_of_peter@example.com"})
+
+    assert response.status_code == 200
+    assert response.json() == {"id": 1, "name": "peter", "age": 50}
+
+
 def test_patch_handler():
     from docs.examples.data_transfer_objects.factory.tutorial.patch_handlers import app
 
@@ -123,3 +133,35 @@ def test_patch_handler():
 
     assert response.status_code == 200
     assert response.json() == {"id": 1, "name": "peter", "age": 50}
+
+
+def test_multiple_handlers():
+    from docs.examples.data_transfer_objects.factory.tutorial.multiple_handlers import app
+
+    with TestClient(app=app) as client:
+        response = client.put("/person/1", json={"name": "peter", "age": 50, "email": "email_of_peter@example.com"})
+    assert response.status_code == 200
+
+    with TestClient(app=app) as client:
+        response = client.patch("/person/1", json={"name": "peter"})
+    assert response.status_code == 200
+
+    with TestClient(app=app) as client:
+        response = client.post("/person", json={"name": "peter", "age": 40, "email": "email_of_peter@example.com"})
+    assert response.status_code == 201
+
+
+def test_controller():
+    from docs.examples.data_transfer_objects.factory.tutorial.controller import app
+
+    with TestClient(app=app) as client:
+        response = client.put("/person/1", json={"name": "peter", "age": 50, "email": "email_of_peter@example.com"})
+    assert response.status_code == 200
+
+    with TestClient(app=app) as client:
+        response = client.patch("/person/1", json={"name": "peter"})
+    assert response.status_code == 200
+
+    with TestClient(app=app) as client:
+        response = client.post("/person", json={"name": "peter", "age": 40, "email": "email_of_peter@example.com"})
+    assert response.status_code == 201
