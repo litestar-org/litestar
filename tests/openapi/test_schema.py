@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Dict, Literal
 
 import msgspec
 import pytest
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing_extensions import Annotated
 
 from litestar import Controller, MediaType, get
@@ -260,4 +260,22 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
         plugins=[],
         schemas=schemas,
     )
-    assert schemas["Lookup"]
+    schema = schemas["Lookup"]
+    assert schema.properties["id"].type == OpenAPIType.STRING  # type: ignore
+
+
+def test_create_schema_for_pydantic_field() -> None:
+    class Model(BaseModel):
+        value: str = Field(title="title", description="description")
+
+    schemas: Dict[str, Schema] = {}
+    create_schema(
+        field=SignatureField.create(name="Model", field_type=Model),
+        generate_examples=False,
+        plugins=[],
+        schemas=schemas,
+    )
+    schema = schemas["Model"]
+
+    assert schema.properties["value"].description == "description"  # type: ignore
+    assert schema.properties["value"].title == "title"  # type: ignore

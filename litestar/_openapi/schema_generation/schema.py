@@ -550,7 +550,9 @@ def create_schema_for_pydantic_model(
         required=sorted([field.alias or field.name for field in field_type.__fields__.values() if field.required]),
         properties={
             (f.alias or f.name): create_schema(
-                field=SignatureField.create(field_type=field_type_hints[f.name], name=f.alias or f.name),
+                field=SignatureField.create(
+                    field_type=field_type_hints[f.name], name=f.alias or f.name, default_value=f.field_info
+                ),
                 generate_examples=generate_examples,
                 plugins=plugins,
                 schemas=schemas,
