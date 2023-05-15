@@ -35,15 +35,20 @@ class GUID(TypeDecorator):
     cache_ok = True
     python_type = type(uuid.UUID)
 
-    def __init__(self, binary: bool = True) -> None:
+    def __init__(self, length: int | None = None, binary: bool = True) -> None:
+        self.length = length
         self.binary = binary
+        if self.binary and self.length is None:
+            self.length = 16
+        elif not self.binary and self.length is None:
+            self.length = 32
 
     def load_dialect_impl(self, dialect: Dialect) -> Any:
         if dialect.name == "postgresql":
             return dialect.type_descriptor(PG_UUID())
         if self.binary:
-            return dialect.type_descriptor(BINARY(16))
-        return dialect.type_descriptor(CHAR(32))
+            return dialect.type_descriptor(BINARY(length=self.length))
+        return dialect.type_descriptor(CHAR(length=self.length))
 
     def process_bind_param(self, value: bytes | str | uuid.UUID | None, dialect: Dialect) -> bytes | str | None:
         if value is None:
@@ -75,13 +80,8 @@ class GUID(TypeDecorator):
         return cast("uuid.UUID | None", value)
 
 
-class JSON(_JSON):
-    """Platform-independent JSON type.
+JSON = _JSON().with_variant(PG_JSONB, "postgresql")
+"""Platform-independent JSON type.
 
     Uses JSONB type for postgres, otherwise uses the generic JSON data type.
-    """
-
-    def load_dialect_impl(self, dialect: Dialect) -> Any:
-        if dialect.name == "postgresql":
-            return dialect.type_descriptor(PG_JSONB())  # type: ignore[no-untyped-call]
-        return dialect.type_descriptor(_JSON())
+"""
