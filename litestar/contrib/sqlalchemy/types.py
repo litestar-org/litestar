@@ -35,19 +35,15 @@ class GUID(TypeDecorator):
     cache_ok = True
     python_type = type(uuid.UUID)
 
-    def __init__(self, length: int | None = None, binary: bool = True) -> None:
-        self.length = length
+    def __init__(self, *args: Any, binary: bool = True, **kwargs: Any) -> None:
         self.binary = binary
-        if self.binary and self.length is None:
-            self.length = 16
-        self.length = 32
 
     def load_dialect_impl(self, dialect: Dialect) -> Any:
         if dialect.name == "postgresql":
             return dialect.type_descriptor(PG_UUID())
         if self.binary:
-            return dialect.type_descriptor(BINARY(length=self.length))
-        return dialect.type_descriptor(CHAR(length=self.length))
+            return dialect.type_descriptor(BINARY(16))
+        return dialect.type_descriptor(CHAR(32))
 
     def process_bind_param(self, value: bytes | str | uuid.UUID | None, dialect: Dialect) -> bytes | str | None:
         if value is None:
