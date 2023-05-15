@@ -40,8 +40,7 @@ class GUID(TypeDecorator):
         self.binary = binary
         if self.binary and self.length is None:
             self.length = 16
-        elif not self.binary and self.length is None:
-            self.length = 32
+        self.length = 32
 
     def load_dialect_impl(self, dialect: Dialect) -> Any:
         if dialect.name == "postgresql":
