@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from litestar.contrib.repository.abc import FilterTypes
 from litestar.contrib.repository.filters import BeforeAfter, CollectionFilter, LimitOffset, OrderBy, SearchFilter
 
 if TYPE_CHECKING:
@@ -12,6 +13,7 @@ signature_namespace_values = {
     "LimitOffset": LimitOffset,
     "OrderBy": OrderBy,
     "SearchFilter": SearchFilter,
+    "FilterTypes": FilterTypes,
 }
 
 
