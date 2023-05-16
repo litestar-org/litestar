@@ -16,7 +16,7 @@ class Person:
     id: UUID
     name: str
     age: int
-    hashed_password: str = field(metadata=dto_field("write-only"))
+    hashed_password: bytes = field(metadata=dto_field("write-only"))
 
 
 def hash_password(password: str) -> bytes:

@@ -7,12 +7,13 @@ from typing import Optional
 import pytest
 from typing_extensions import Annotated
 
-from litestar import patch, post
+from litestar import Litestar, patch, post
 from litestar.datastructures import UploadFile
 from litestar.dto.factory import DTOConfig, DTOData, dto_field
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.dto.factory.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import Body
 from litestar.testing import create_test_client
 
@@ -221,3 +222,23 @@ def test_computed_field() -> None:
     with create_test_client(route_handlers=[handler], debug=True) as client:
         response = client.post("/", json={"baz": "hello"})
         assert response.json() == {"bar": "hello world"}
+
+
+def test_computed_field_incorrect_callable_return_type() -> None:
+    @dataclass
+    class Foo:
+        bar: str
+
+    def add_world(baz: str) -> bytes:
+        return baz.encode("utf-8") + b" world"
+
+    class WriteDTO(DataclassDTO[Foo]):
+        config = DTOConfig(computed_fields={"bar": add_world})
+
+    @post(dto=WriteDTO, return_dto=None, signature_namespace={"Foo": Foo})
+    def handler(data: Foo) -> Foo:
+        assert data.bar == "hello world"
+        return data
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Litestar(route_handlers=[handler])

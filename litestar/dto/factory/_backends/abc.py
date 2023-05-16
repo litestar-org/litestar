@@ -11,6 +11,7 @@ from msgspec import UNSET, UnsetType
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
 from litestar.dto.factory import DTOData
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.typing import ParsedType
 from litestar.utils.helpers import get_fully_qualified_class_name
 
@@ -128,79 +129,6 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             annotation = context.parsed_type.annotation
         self.annotation = build_annotation_for_backend(annotation, self.transfer_model_type)
 
-    def parse_model(
-        self,
-        model_type: Any,
-        exclude: AbstractSet[str],
-        nested_depth: int = 0,
-    ) -> FieldDefinitionsType:
-        """Reduce :attr:`model_type` to :class:`FieldDefinitionsType`.
-
-        .. important::
-            Implementations must respect the :attr:`config` object. For example:
-                - fields marked private must never be included in the field definitions.
-                - if a ``purpose`` is declared, then read-only fields must be taken into account.
-                - field renaming must be implemented.
-                - additional fields must be included, subject to ``purpose``.
-                - nested depth and nested recursion depth must be adhered to.
-
-        Returns:
-            Fields for data transfer.
-
-            Key is the name of the new field, and value is a tuple of type and default value pairs.
-
-            Add a new field called "new_field", that is a string, and required:
-            {"new_field": (str, ...)}
-
-            Add a new field called "new_field", that is a string, and not-required:
-            {"new_field": (str, "default")}
-
-            Add a new field called "new_field", that may be `None`:
-            {"new_field": (str | None, None)}
-        """
-        defined_fields = []
-        for field_definition in self.context.field_definition_generator(model_type):
-            if should_exclude_field(field_definition, exclude, self.context.dto_for):
-                continue
-
-            if self.context.config.partial:
-                field_definition = field_definition.copy_with(
-                    parsed_type=ParsedType(Union[field_definition.parsed_type.annotation, UnsetType]), default=UNSET
-                )
-
-            try:
-                transfer_type = self._create_transfer_type(
-                    field_definition.parsed_type,
-                    exclude,
-                    field_definition.name,
-                    field_definition.unique_name(),
-                    nested_depth,
-                )
-            except NestedDepthExceededError:
-                continue
-
-            if rename := self.context.config.rename_fields.get(field_definition.name):
-                serialization_name = rename
-            elif self.context.config.rename_strategy:
-                serialization_name = RenameStrategies(self.context.config.rename_strategy)(field_definition.name)
-            else:
-                serialization_name = field_definition.name
-
-            computed_field_info: ComputedFieldInfo | None = None
-            if compute_callable := self.context.config.computed_fields.get(field_definition.name):
-                computed_field_info = ComputedFieldInfo.from_fn(compute_callable)
-
-            transfer_field_definition = TransferFieldDefinition.from_field_definition(
-                field_definition=field_definition,
-                serialization_name=serialization_name,
-                transfer_type=transfer_type,
-                is_partial=self.context.config.partial,
-                computed_field_info=computed_field_info,
-            )
-
-            defined_fields.append(transfer_field_definition)
-        return tuple(defined_fields)
-
     @abstractmethod
     def create_transfer_model_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[BackendT]:
         """Create a model for data transfer.
@@ -306,6 +234,92 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         """Create a RequestBody model for the given RouteHandler or return None."""
         field = SignatureField.create(self.annotation)
         return create_schema(field=field, generate_examples=generate_examples, plugins=[], schemas=schemas)
+
+    def parse_model(self, model_type: Any, exclude: AbstractSet[str], nested_depth: int = 0) -> FieldDefinitionsType:
+        """Reduce :attr:`model_type` to :class:`FieldDefinitionsType`.
+
+        .. important::
+            Implementations must respect the :attr:`config` object. For example:
+                - fields marked private must never be included in the field definitions.
+                - if a ``purpose`` is declared, then read-only fields must be taken into account.
+                - field renaming must be implemented.
+                - additional fields must be included, subject to ``purpose``.
+                - nested depth and nested recursion depth must be adhered to.
+
+        Returns:
+            Fields for data transfer.
+
+            Key is the name of the new field, and value is a tuple of type and default value pairs.
+
+            Add a new field called "new_field", that is a string, and required:
+            {"new_field": (str, ...)}
+
+            Add a new field called "new_field", that is a string, and not-required:
+            {"new_field": (str, "default")}
+
+            Add a new field called "new_field", that may be `None`:
+            {"new_field": (str | None, None)}
+        """
+        defined_fields = []
+        for field_definition in self.context.field_definition_generator(model_type):
+            if should_exclude_field(field_definition, exclude, self.context.dto_for):
+                continue
+
+            field_definition = self._handle_field_definition_for_partial(field_definition)
+            serialization_name = self._determine_serialization_name(field_definition)
+            computed_field_info = self._determine_computed_field_info(field_definition)
+
+            try:
+                transfer_type = self._create_transfer_type(
+                    field_definition.parsed_type,
+                    exclude,
+                    field_definition.name,
+                    field_definition.unique_name(),
+                    nested_depth,
+                )
+            except NestedDepthExceededError:
+                continue
+
+            transfer_field_definition = TransferFieldDefinition.from_field_definition(
+                field_definition=field_definition,
+                serialization_name=serialization_name,
+                transfer_type=transfer_type,
+                is_partial=self.context.config.partial,
+                computed_field_info=computed_field_info,
+            )
+
+            defined_fields.append(transfer_field_definition)
+        return tuple(defined_fields)
+
+    def _handle_field_definition_for_partial(self, field_definition: FieldDefinition) -> FieldDefinition:
+        if self.context.config.partial:
+            field_definition = field_definition.copy_with(
+                parsed_type=ParsedType(Union[field_definition.parsed_type.annotation, UnsetType]), default=UNSET
+            )
+        return field_definition
+
+    def _determine_computed_field_info(self, field_definition: FieldDefinition) -> ComputedFieldInfo | None:
+        computed_field_info: ComputedFieldInfo | None = None
+        if compute_callable := self.context.config.computed_fields.get(field_definition.name):
+            computed_field_info = ComputedFieldInfo.from_fn(compute_callable)
+            if not computed_field_info.parsed_signature.return_type.is_subclass_of(
+                field_definition.parsed_type.annotation
+            ):
+                raise ImproperlyConfiguredException(
+                    f"Computed field {field_definition.name} has a return type that is not a subclass of the "
+                    f"field's type. Field type: {field_definition.parsed_type.annotation}, "
+                    f"computed field return type: {computed_field_info.parsed_signature.return_type.annotation}"
+                )
+        return computed_field_info
+
+    def _determine_serialization_name(self, field_definition: FieldDefinition) -> str:
+        if rename := self.context.config.rename_fields.get(field_definition.name):
+            serialization_name = rename
+        elif self.context.config.rename_strategy:
+            serialization_name = RenameStrategies(self.context.config.rename_strategy)(field_definition.name)
+        else:
+            serialization_name = field_definition.name
+        return serialization_name
 
     def _create_transfer_type(
         self, parsed_type: ParsedType, exclude: AbstractSet[str], field_name: str, unique_name: str, nested_depth: int
