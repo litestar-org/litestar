@@ -60,7 +60,7 @@ def fx_session(
     raw_ingredients: list[dict[str, Any]],
 ) -> Generator[Session, None, None]:
     session = sessionmaker(bind=engine)()
-    st.sync_seed_db(engine, raw_authors, raw_books, raw_stores, raw_ingredients)
+    st.seed_db(engine, raw_authors, raw_books, raw_stores, raw_ingredients)
     try:
         yield session
     finally:

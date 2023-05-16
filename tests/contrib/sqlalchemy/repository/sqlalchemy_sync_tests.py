@@ -41,8 +41,8 @@ def seed_db(
         raw_store["created"] = datetime.strptime(raw_store["created"], "%Y-%m-%dT%H:%M:%S")
         raw_store["updated"] = datetime.strptime(raw_store["updated"], "%Y-%m-%dT%H:%M:%S")
     with engine.begin() as conn:
-        base.orm_registry.metadata.drop_all()
-        base.orm_registry.metadata.create_all()
+        base.orm_registry.metadata.drop_all(conn)
+        base.orm_registry.metadata.create_all(conn)
         conn.execute(insert(Author).values(raw_authors))
         conn.execute(insert(Ingredient).values(raw_ingredients))
         conn.execute(insert(Store).values(raw_stores))
