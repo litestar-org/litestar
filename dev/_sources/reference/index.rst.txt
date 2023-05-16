@@ -39,3 +39,4 @@ API reference
     template
     testing
     types
+    typing
