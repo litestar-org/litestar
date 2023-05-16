@@ -217,7 +217,9 @@ markers = [
     "sqlalchemy_asyncmy: SQLAlchemy MySQL (asyncmy) Tests",
     "sqlalchemy_asyncpg: SQLAlchemy Postgres (asyncpg) Tests",
     "sqlalchemy_psycopg_async: SQLAlchemy Postgres (psycopg async) Tests",
-    "sqlalchemy_aiosqlite: SQLAlchemy SQLite (aiosqlite) Tests"
+    "sqlalchemy_aiosqlite: SQLAlchemy SQLite (aiosqlite) Tests",
+    "sqlalchemy_psycopg_sync: SQLAlchemy Postgres (psycopg sync) Tests",
+    "sqlalchemy_sqlite: SQLAlchemy SQLite (sqlite) Tests"
 ]
 
 [tool.pyright]
