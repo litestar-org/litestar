@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, TypeVar
 from pydantic import BaseModel, parse_obj_as
 
 from litestar.dto.factory._backends.abc import AbstractDTOBackend
+from litestar.dto.factory._backends.utils import gen_unique_name_id
 from litestar.serialization import decode_media_type
 
 from .utils import _create_model_for_field_definitions
@@ -25,7 +26,7 @@ class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):
     __slots__ = ()
 
     def create_transfer_model_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[BaseModel]:
-        fqn_uid: str = self._gen_unique_name_id(unique_name)
+        fqn_uid: str = gen_unique_name_id(unique_name)
         return _create_model_for_field_definitions(fqn_uid, field_definitions)
 
     def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> BaseModel | Collection[BaseModel]:

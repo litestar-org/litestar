@@ -3,7 +3,6 @@ back again, to bytes.
 """
 from __future__ import annotations
 
-import secrets
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Final, Generic, TypeVar, Union
 
@@ -18,6 +17,7 @@ from litestar.utils.helpers import get_fully_qualified_class_name
 from .types import (
     CollectionType,
     CompositeType,
+    ComputedFieldInfo,
     MappingType,
     NestedFieldInfo,
     SimpleType,
@@ -186,12 +186,18 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             else:
                 serialization_name = field_definition.name
 
+            computed_field_info: ComputedFieldInfo | None = None
+            if compute_callable := self.context.config.computed_fields.get(field_definition.name):
+                computed_field_info = ComputedFieldInfo.from_fn(compute_callable)
+
             transfer_field_definition = TransferFieldDefinition.from_field_definition(
                 field_definition=field_definition,
                 serialization_name=serialization_name,
                 transfer_type=transfer_type,
                 is_partial=self.context.config.partial,
+                computed_field_info=computed_field_info,
             )
+
             defined_fields.append(transfer_field_definition)
         return tuple(defined_fields)
 
@@ -408,11 +414,6 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             inner_types=inner_types,
             has_nested=any(_determine_has_nested(t) for t in inner_types),
         )
-
-    def _gen_unique_name_id(self, unique_name: str, size: int = 12) -> str:
-        # Generate a unique ID
-        # Convert the ID to a short alphanumeric string
-        return f"{unique_name}-{secrets.token_hex(8)}"
 
 
 def _filter_exclude(exclude: AbstractSet[str], field_name: str) -> AbstractSet[str]:

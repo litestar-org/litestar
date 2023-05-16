@@ -4,12 +4,14 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from litestar.dto.factory.types import FieldDefinition
+from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
     from typing import Any
 
     from typing_extensions import Self, TypeAlias
 
+    from litestar.types import AnyCallable
     from litestar.typing import ParsedType
 
 
@@ -21,6 +23,20 @@ class NestedFieldInfo:
 
     model: type[Any]
     field_definitions: FieldDefinitionsType
+
+
+@dataclass(frozen=True)
+class ComputedFieldInfo:
+    """Type for representing computed fields."""
+
+    __slots__ = ("callable", "parsed_signature")
+
+    callable: AnyCallable
+    parsed_signature: ParsedSignature
+
+    @classmethod
+    def from_fn(cls, fn: AnyCallable) -> ComputedFieldInfo:
+        return cls(fn, ParsedSignature.from_fn(fn, signature_namespace={}))
 
 
 @dataclass(frozen=True)
@@ -95,6 +111,7 @@ class TransferFieldDefinition(FieldDefinition):
         "is_partial",
         "serialization_name",
         "transfer_type",
+        "computed_field_info",
     )
 
     transfer_type: TransferType
@@ -103,10 +120,17 @@ class TransferFieldDefinition(FieldDefinition):
     """Name of the field as it should feature on the transfer model."""
     is_partial: bool
     """Whether the field is optional for transfer."""
+    computed_field_info: ComputedFieldInfo | None
+    """If the field should be computed, this is the callable and signature for the computation."""
 
     @classmethod
     def from_field_definition(
-        cls, field_definition: FieldDefinition, transfer_type: TransferType, serialization_name: str, is_partial: bool
+        cls,
+        field_definition: FieldDefinition,
+        transfer_type: TransferType,
+        serialization_name: str,
+        is_partial: bool,
+        computed_field_info: ComputedFieldInfo | None,
     ) -> Self:
         return cls(
             name=field_definition.name,
@@ -118,6 +142,7 @@ class TransferFieldDefinition(FieldDefinition):
             transfer_type=transfer_type,
             dto_field=field_definition.dto_field,
             is_partial=is_partial,
+            computed_field_info=computed_field_info,
         )
 
 

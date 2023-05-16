@@ -108,7 +108,7 @@ opentelemetry-sdk = "*"
 piccolo = "*"
 picologging = "*"
 pre-commit = "*"
-psycopg = "*"
+psycopg = { version = "*", extras = ["binary"] }
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"

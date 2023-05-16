@@ -200,3 +200,24 @@ def test_dto_openapi_model_name_collision() -> None:
             k.startswith("tests.dto.factory.test_integration.test_dto_openapi_model_name_collision.<locals>.Bar")
             for k in response.json()["components"]["schemas"]
         )
+
+
+def test_computed_field() -> None:
+    @dataclass
+    class Foo:
+        bar: str
+
+    def add_world(baz: str) -> str:
+        return f"{baz} world"
+
+    class WriteDTO(DataclassDTO[Foo]):
+        config = DTOConfig(computed_fields={"bar": add_world})
+
+    @post(dto=WriteDTO, return_dto=None, signature_namespace={"Foo": Foo})
+    def handler(data: Foo) -> Foo:
+        assert data.bar == "hello world"
+        return data
+
+    with create_test_client(route_handlers=[handler], debug=True) as client:
+        response = client.post("/", json={"baz": "hello"})
+        assert response.json() == {"bar": "hello world"}

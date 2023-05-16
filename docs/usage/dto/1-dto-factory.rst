@@ -195,3 +195,15 @@ to update the instance of ``Person`` before returning it.
 
 In our request, we set only the ``name`` property of the ``Person``, from ``"Peter"`` to ``"Peter Pan"`` and received
 the full object - with the modified name - back in the response.
+
+Computed Fields
+---------------
+
+Sometimes, a field that we store on our model is something that is calculated from other inputs. For example, we might
+have a ``Person`` model that has a ``hashed_password`` field. We want clients to be able to set the ``password`` field
+when creating a new ``Person``, but we don't want to store the plain text password in the database.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/computed_fields.py
+    :language: python
+    :emphasize-lines: 1
+    :linenos:

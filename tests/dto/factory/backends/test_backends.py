@@ -193,9 +193,10 @@ def test_backend_model_name_uniqueness(backend_type: type[AbstractDTOBackend], b
             serialization_name="a",
             transfer_type=transfer_type,
             is_partial=False,
+            computed_field_info=None,
         ),
     )
-    for i in range(100):
+    for _ in range(100):
         model_class = backend.create_transfer_model_type("some_module.SomeModel", fd)
         model_name = model_class.__name__
         assert model_name not in unique_names

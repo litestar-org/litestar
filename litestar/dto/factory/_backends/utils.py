@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import secrets
 from typing import TYPE_CHECKING, Collection, Mapping, TypeVar, cast
 
 from msgspec import UNSET
@@ -32,6 +33,7 @@ __all__ = (
     "create_transfer_model_type_annotation",
     "should_exclude_field",
     "transfer_data",
+    "gen_unique_name_id",
 )
 
 T = TypeVar("T")
@@ -72,7 +74,8 @@ def should_exclude_field(field_definition: FieldDefinition, exclude: AbstractSet
     excluded = field_name in exclude
     private = dto_field and dto_field.mark is Mark.PRIVATE
     read_only_for_write = dto_for == "data" and dto_field and dto_field.mark is Mark.READ_ONLY
-    return bool(excluded or private or read_only_for_write)
+    write_only_for_read = dto_for == "return" and dto_field and dto_field.mark is Mark.WRITE_ONLY
+    return bool(excluded or private or read_only_for_write or write_only_for_read)
 
 
 class RenameStrategies:
@@ -168,11 +171,22 @@ def transfer_instance_data(
         transfer_type = field_definition.transfer_type
         source_name = field_definition.serialization_name if dto_for == "data" else field_definition.name
         destination_name = field_definition.name if dto_for == "data" else field_definition.serialization_name
-        source_value = source_instance[source_name] if source_is_mapping else getattr(source_instance, source_name)
+        if dto_for == "data" and field_definition.computed_field_info:
+            args = [
+                get_source_value(source_instance, param.name, source_is_mapping)
+                for param in field_definition.computed_field_info.parsed_signature.parameters.values()
+            ]
+            unstructured_data[destination_name] = field_definition.computed_field_info.callable(*args)
+            continue
+        source_value = get_source_value(source_instance, source_name, source_is_mapping)
         if field_definition.is_partial and dto_for == "data" and filter_missing(source_value):
             continue
         unstructured_data[destination_name] = transfer_type_data(source_value, transfer_type, dto_for)
     return destination_type(**unstructured_data)
+
+
+def get_source_value(source_instance: Any, source_name: str, source_is_mapping: bool) -> Any:
+    return source_instance[source_name] if source_is_mapping else getattr(source_instance, source_name)
 
 
 def transfer_type_data(source_value: Any, transfer_type: TransferType, dto_for: ForType) -> Any:
@@ -271,3 +285,8 @@ def create_transfer_model_mapping_type(transfer_type: MappingType) -> Any:
     key_type = create_transfer_model_type_annotation(transfer_type.key_type)
     value_type = create_transfer_model_type_annotation(transfer_type.value_type)
     return transfer_type.parsed_type.safe_generic_origin[key_type, value_type]
+
+
+def gen_unique_name_id(unique_name: str, size: int = 8) -> str:
+    """Generate a unique ID based on a unique name and a random hex string."""
+    return f"{unique_name}-{secrets.token_hex(size)}"

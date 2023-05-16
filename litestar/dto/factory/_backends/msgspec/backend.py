@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, NewType, TypeVar
 from msgspec import Struct, from_builtins
 
 from litestar.dto.factory._backends.abc import AbstractDTOBackend
+from litestar.dto.factory._backends.utils import gen_unique_name_id
 from litestar.serialization import decode_media_type
 
 from .utils import _create_struct_for_field_definitions
@@ -26,7 +27,7 @@ class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
     __slots__ = ()
 
     def create_transfer_model_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
-        fqn_uid: str = self._gen_unique_name_id(unique_name)
+        fqn_uid: str = gen_unique_name_id(unique_name)
         return _create_struct_for_field_definitions(fqn_uid, field_definitions)
 
     def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> Struct | Collection[Struct]:

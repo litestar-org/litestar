@@ -20,6 +20,8 @@ class Mark(str, Enum):
 
     READ_ONLY = "read-only"
     """To mark a field that can be read, but not updated by clients."""
+    WRITE_ONLY = "write-only"
+    """To mark a field that can be updated, but not read by clients."""
     PRIVATE = "private"
     """To mark a field that can neither be read or updated by clients."""
 

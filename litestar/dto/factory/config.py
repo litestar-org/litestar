@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import AbstractSet
 
+    from litestar.types import AnyCallable
+
     from .types import RenameStrategy
 
 
@@ -38,3 +40,9 @@ class DTOConfig:
     """The maximum depth of nested items allowed for data transfer."""
     partial: bool = False
     """Allow transfer of partial data."""
+    computed_fields: dict[str, AnyCallable] = field(default_factory=dict)
+    """Callables to compute field values.
+
+    The callable's parameters and return type must be fully annotated, and the return type of the callable must match
+    the type of the field.
+    """
