@@ -15,8 +15,8 @@ class Person:
     age: int
 
 
-class WriteDTO(DataclassDTO[Person]):
-    """Don't allow client to set the id."""
+class PatchDTO(DataclassDTO[Person]):
+    """Don't allow client to set the id, and allow partial updates."""
 
     config = DTOConfig(exclude={"id"}, partial=True)
 
@@ -28,7 +28,7 @@ database = {
 }
 
 
-@patch("/person/{person_id:uuid}", dto=WriteDTO, return_dto=None, sync_to_thread=False)
+@patch("/person/{person_id:uuid}", dto=PatchDTO, return_dto=None, sync_to_thread=False)
 def update_person(person_id: UUID, data: DTOData[Person]) -> Person:
     """Create a person."""
     return data.update_instance(database.get(person_id))

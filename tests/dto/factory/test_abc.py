@@ -14,7 +14,7 @@ from litestar.dto.factory.exc import InvalidAnnotation
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.dto.interface import ConnectionContext, HandlerContext
 from litestar.enums import RequestEncodingType
-from litestar.utils.signature import ParsedType
+from litestar.typing import ParsedType
 
 from . import Model
 

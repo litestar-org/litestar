@@ -12,8 +12,8 @@ from msgspec import UNSET, UnsetType
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
 from litestar.dto.factory import DTOData
+from litestar.typing import ParsedType
 from litestar.utils.helpers import get_fully_qualified_class_name
-from litestar.utils.signature import ParsedType
 
 from .types import (
     CollectionType,

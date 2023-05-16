@@ -19,8 +19,7 @@ if TYPE_CHECKING:
     from sqlalchemy.orm import RelationshipProperty
     from typing_extensions import TypeAlias
 
-    from litestar.utils.signature import ParsedType
-
+    from litestar.typing import ParsedType
 
 __all__ = ("SQLAlchemyDTO", "DataT")
 

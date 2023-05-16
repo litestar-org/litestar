@@ -35,7 +35,7 @@ class GUID(TypeDecorator):
     cache_ok = True
     python_type = type(uuid.UUID)
 
-    def __init__(self, binary: bool = True) -> None:
+    def __init__(self, *args: Any, binary: bool = True, **kwargs: Any) -> None:
         self.binary = binary
 
     def load_dialect_impl(self, dialect: Dialect) -> Any:
@@ -75,13 +75,8 @@ class GUID(TypeDecorator):
         return cast("uuid.UUID | None", value)
 
 
-class JSON(_JSON):
-    """Platform-independent JSON type.
+JSON = _JSON().with_variant(PG_JSONB, "postgresql")
+"""Platform-independent JSON type.
 
     Uses JSONB type for postgres, otherwise uses the generic JSON data type.
-    """
-
-    def load_dialect_impl(self, dialect: Dialect) -> Any:
-        if dialect.name == "postgresql":
-            return dialect.type_descriptor(PG_JSONB())  # type: ignore[no-untyped-call]
-        return dialect.type_descriptor(_JSON())
+"""

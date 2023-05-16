@@ -16,7 +16,7 @@ from litestar.dto.factory.field import DTO_FIELD_META_KEY
 from litestar.dto.interface import ConnectionContext, HandlerContext
 from litestar.dto.types import ForType
 from litestar.serialization import encode_json
-from litestar.utils.signature import ParsedType
+from litestar.typing import ParsedType
 
 if TYPE_CHECKING:
     from collections.abc import Callable

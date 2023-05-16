@@ -37,8 +37,8 @@ Marking fields
 The :func:`dto_field <litestar.dto.factory.dto_field>` function can be used to mark model attributes with DTO-based
 configuration.
 
-Fields marked as `"private"` or `"read-only"` will not be parsed from client data into the user model, and `"private"`
-fields are never serialized into return data.
+Fields marked as ``"private"`` or ``"read-only"`` will not be parsed from client data into the user model, and
+``"private"`` fields are never serialized into return data.
 
 .. literalinclude:: /examples/data_transfer_objects/factory/marking_fields.py
     :caption: Marking fields
@@ -141,8 +141,11 @@ DTO Data
 Sometimes we need to be able to access the data that has been parsed and validated by the DTO, but not converted into
 an instance of our data model.
 
-In the following example, we create a DTO that doesn't allow clients to set the ``id`` field on the ``Person`` model and
-declare it on the handler.
+In the following example, we create a ``Person`` model, that is a :func:`dataclass <dataclasses.dataclass>` with 3
+required fields, ``id``, ``name``, and ``age``.
+
+We also create a DTO that doesn't allow clients to set the ``id`` field on the ``Person`` model and set it on the
+handler.
 
 .. literalinclude:: /examples/data_transfer_objects/factory/dto_data_problem_statement.py
     :language: python
@@ -183,7 +186,7 @@ attributes in the client payload, which requires some special handling internall
     :emphasize-lines: 7,21,32,34
     :linenos:
 
-The ``PatchDTO`` class is defined for the Person class. The ``config`` attribute of ``WriteDTO`` is set to exclude the
+The ``PatchDTO`` class is defined for the Person class. The ``config`` attribute of ``PatchDTO`` is set to exclude the
 id field, preventing clients from setting it when updating a person, and the ``partial`` attribute is set to ``True``,
 which allows the DTO to accept a subset of the model attributes.
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from litestar.utils.signature import ParsedType
+from litestar.typing import ParsedType
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar
@@ -15,6 +15,8 @@ T = TypeVar("T")
 
 
 class DTOData(Generic[T]):
+    """DTO validated data and utility methods."""
+
     __slots__ = ("_backend", "_data_as_builtins")
 
     parsed_type: ClassVar[ParsedType]
@@ -27,6 +29,11 @@ class DTOData(Generic[T]):
         return type(cls.__name__, (cls,), {"parsed_type": ParsedType(item)})
 
     def create_instance(self, **kwargs: Any) -> T:
+        """Create an instance of the DTO validated data.
+
+        Args:
+            **kwargs: Additional data to create the instance with. Takes precedence over DTO validated data.
+        """
         data = {**self._data_as_builtins, **kwargs}
         return self.parsed_type.annotation(**data)  # type:ignore[no-any-return]
 
@@ -43,4 +50,5 @@ class DTOData(Generic[T]):
         return instance
 
     def as_builtins(self) -> Any:
+        """Return the DTO validated data as builtins."""
         return self._data_as_builtins

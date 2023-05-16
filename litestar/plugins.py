@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from litestar.config.app import AppConfig
     from litestar.dto.interface import DTOInterface
     from litestar.openapi.spec import Schema
-    from litestar.utils.signature import ParsedType
+    from litestar.typing import ParsedType
 
 __all__ = ("SerializationPluginProtocol", "InitPluginProtocol", "OpenAPISchemaPluginProtocol", "PluginProtocol")
 
