@@ -267,9 +267,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
         """
         item = self._find_or_raise_not_found(self.get_id_attribute_value(data))
         self._update_audit_attributes(data, do_created=False)
-        for key, val in data.__dict__.items():
-            if key.startswith("_"):
-                continue
+        for key, val in model_items(data):
             setattr(item, key, val)
         return item
 
@@ -290,9 +288,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
         now = self._now()
         for item in items:
             self._update_audit_attributes(item, do_created=False, now=now)
-            for key, val in item.__dict__.items():
-                if key.startswith("_"):
-                    continue
+            for key, val in model_items(item):
                 setattr(item, key, val)
         return items
 
@@ -622,9 +618,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         """
         item = self._find_or_raise_not_found(self.get_id_attribute_value(data))
         self._update_audit_attributes(data, do_created=False)
-        for key, val in data.__dict__.items():
-            if key.startswith("_"):
-                continue
+        for key, val in model_items(data):
             setattr(item, key, val)
         return item
 
@@ -645,9 +639,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         now = self._now()
         for item in items:
             self._update_audit_attributes(item, do_created=False, now=now)
-            for key, val in item.__dict__.items():
-                if key.startswith("_"):
-                    continue
+            for key, val in model_items(item):
                 setattr(item, key, val)
         return items
 
@@ -734,3 +726,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
     def clear_collection(cls) -> None:
         """Empty the collection for repository type."""
         cls.collection = {}
+
+
+def model_items(model: ModelT) -> list[tuple[str, Any]]:
+    return [(k, v) for k, v in model.__dict__.items() if not k.startswith("_")]
