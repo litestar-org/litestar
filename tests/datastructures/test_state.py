@@ -1,4 +1,7 @@
-from typing import Any, Type
+from __future__ import annotations
+
+from copy import copy
+from typing import Any
 
 import pytest
 
@@ -7,7 +10,7 @@ from litestar.datastructures.state import ImmutableState
 
 
 @pytest.mark.parametrize("state_class", (ImmutableState, State))
-def test_state_immutable_mapping(state_class: Type[ImmutableState]) -> None:
+def test_state_immutable_mapping(state_class: type[ImmutableState]) -> None:
     state_dict = {"first": 1, "second": 2, "third": 3}
     state = state_class(state_dict, deep_copy=True)
     assert len(state) == 3
@@ -68,3 +71,17 @@ def test_state_copy() -> None:
     copy = state.copy()
     del state.key
     assert copy.key
+
+
+def test_state_copy_deep_copy_false() -> None:
+    state = State({}, deep_copy=False)
+    assert state.copy()._deep_copy is False
+
+
+def test_unpicklable_deep_copy_false() -> None:
+    # a module cannot be deep copied
+    import typing
+
+    state = ImmutableState({"module": typing}, deep_copy=False)
+    copy(state)
+    ImmutableState.validate(state)
