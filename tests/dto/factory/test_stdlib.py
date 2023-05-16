@@ -9,8 +9,8 @@ import pytest
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.dto.factory.types import FieldDefinition
 from litestar.types.empty import Empty
+from litestar.typing import ParsedType
 from litestar.utils.helpers import get_fully_qualified_class_name
-from litestar.utils.signature import ParsedType
 
 
 @dataclass

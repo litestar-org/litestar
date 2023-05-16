@@ -10,7 +10,7 @@ from litestar.plugins import SerializationPluginProtocol
 from . import _slots_base
 
 if TYPE_CHECKING:
-    from litestar.utils.signature import ParsedType
+    from litestar.typing import ParsedType
 
 
 class SQLAlchemySerializationPlugin(SerializationPluginProtocol, _slots_base.SlotsBase):

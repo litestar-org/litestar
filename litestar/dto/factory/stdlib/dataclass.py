@@ -14,8 +14,7 @@ if TYPE_CHECKING:
     from typing import ClassVar, Collection, Generator
 
     from litestar.types.protocols import DataclassProtocol
-    from litestar.utils.signature import ParsedType
-
+    from litestar.typing import ParsedType
 
 __all__ = ("DataclassDTO", "DataT")
 

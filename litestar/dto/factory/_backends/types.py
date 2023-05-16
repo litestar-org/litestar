@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self, TypeAlias
 
-    from litestar.utils.signature import ParsedType
+    from litestar.typing import ParsedType
 
 
 @dataclass(frozen=True)

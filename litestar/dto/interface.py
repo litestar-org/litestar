@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from litestar.openapi.spec import Reference
     from litestar.types import LitestarEncodableType
     from litestar.types.internal_types import AnyConnection
-    from litestar.utils.signature import ParsedType
+    from litestar.typing import ParsedType
 
     from .types import ForType
 

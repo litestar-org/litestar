@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, TypeVar
 from msgspec import Struct
 from typing_extensions import get_type_hints
 
-from litestar.utils.signature import ParsedType
+from litestar.typing import ParsedType
 
 from .config import DTOConfig
 

@@ -17,7 +17,7 @@ from litestar.dto.factory._backends.types import (
 )
 from litestar.dto.factory.types import FieldDefinition
 from litestar.types.empty import Empty
-from litestar.utils.signature import ParsedType
+from litestar.typing import ParsedType
 
 if TYPE_CHECKING:
     from typing import AbstractSet

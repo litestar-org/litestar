@@ -16,7 +16,7 @@ from litestar.dto.factory._backends.types import (
     UnionType,
 )
 from litestar.dto.factory._backends.utils import create_transfer_model_type_annotation, transfer_nested_union_type_data
-from litestar.utils.signature import ParsedType
+from litestar.typing import ParsedType
 
 
 @dataclass
