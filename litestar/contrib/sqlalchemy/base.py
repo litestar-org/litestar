@@ -86,7 +86,6 @@ class ModelProtocol(Protocol):
         ...
 
 
-@declarative_mixin
 class UUIDPrimaryKey:
     """UUID Primary Key Field Mixin."""
 
@@ -96,7 +95,6 @@ class UUIDPrimaryKey:
     """UUID Primary key column."""
 
 
-@declarative_mixin
 class BigIntPrimaryKey:
     """BigInt Primary Key Field Mixin."""
 
@@ -118,7 +116,6 @@ class AuditColumns:
     """Date/time of instance last update."""
 
 
-@declarative_mixin
 class CommonTableAttributes:
     """Common attributes for SQLALchemy tables."""
 

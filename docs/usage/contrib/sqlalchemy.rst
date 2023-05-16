@@ -12,11 +12,11 @@ Features
   UUID or Big Integer based primary-key,
   a  `sentinel column <https://docs.sqlalchemy.org/en/20/core/connections.html#configuring-sentinel-columns/>`_ and
   an optional version with audit columns.
-* Generic asynchronous repository for select, insert, update, and delete operations on SQLAlchemy models
+* Generic synchronous and asynchronous repositories for select, insert, update, and delete operations on SQLAlchemy models
 * Implements optimized methods for bulk inserts, updates, and deletes.
 * Integrated counts, pagination, sorting, filtering with ``LIKE``, ``IN``, and dates before and/or after.
-* Support for SQLite via `aiosqlite <https://aiosqlite.omnilib.dev/en/stable/>`_, Postgres
-  via `asyncpg <https://magicstack.github.io/asyncpg/current/>`_ or `psycopg3 (async) <https://www.psycopg.org/psycopg3/>`_, and
+* Support for SQLite via `aiosqlite <https://aiosqlite.omnilib.dev/en/stable/>`_ or `sqlite <https://docs.python.org/3/library/sqlite3.html>`_, Postgres
+  via `asyncpg <https://magicstack.github.io/asyncpg/current/>`_ or `psycopg3 (async or sync) <https://www.psycopg.org/psycopg3/>`_, and
   MySQL via `asyncmy <https://github.com/long2ice/asyncmy>`_.
 
 Basic Use
@@ -56,4 +56,10 @@ your controllers and function based routes.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :caption: sqlalchemy_async_repository.py
+    :language: python
+
+Alternately, you may use the ``SQLAlchemyAsyncRepository`` class for your synchronous database connection.
+
+.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_sync_repository.py
+    :caption: sqlalchemy_sync_repository.py
     :language: python
