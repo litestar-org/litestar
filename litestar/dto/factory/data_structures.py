@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from litestar.utils.signature import ParsedType
+from litestar.typing import ParsedType
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar

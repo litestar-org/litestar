@@ -16,10 +16,10 @@ from litestar.static_files import StaticFiles
 from litestar.types.asgi_types import Receive, Scope, Send
 from litestar.types.builtin_types import NoneType
 from litestar.types.empty import Empty
+from litestar.typing import ParsedType
 from litestar.utils.signature import (
     ParsedParameter,
     ParsedSignature,
-    ParsedType,
     get_fn_type_hints,
     infer_request_encoding_from_parameter,
 )

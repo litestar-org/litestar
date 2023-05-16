@@ -20,7 +20,7 @@ from litestar.exceptions import SerializationException
 from litestar.openapi.spec.reference import Reference
 from litestar.serialization import encode_json
 from litestar.types.empty import Empty
-from litestar.utils.signature import ParsedType
+from litestar.typing import ParsedType
 
 if TYPE_CHECKING:
     from typing import Any
