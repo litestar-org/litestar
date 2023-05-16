@@ -1,9 +1,8 @@
 """Unit tests for the SQLAlchemy Repository implementation."""
 from __future__ import annotations
 
-from asyncio import AbstractEventLoop, get_event_loop_policy
 from pathlib import Path
-from typing import Any, AsyncGenerator, Iterator
+from typing import Any, AsyncGenerator
 
 import pytest
 from sqlalchemy import NullPool
@@ -21,17 +20,6 @@ from tests.contrib.sqlalchemy.models import (
     StoreAsyncRepository,
 )
 from tests.contrib.sqlalchemy.repository import sqlalchemy_async_tests as st
-
-
-@pytest.mark.sqlalchemy_aiosqlite
-@pytest.fixture(scope="session")
-def event_loop() -> Iterator[AbstractEventLoop]:
-    """Need the event loop scoped to the session so that we can use it to check
-    containers are ready in session scoped containers fixture."""
-    policy = get_event_loop_policy()
-    loop = policy.new_event_loop()
-    yield loop
-    loop.close()
 
 
 @pytest.mark.sqlalchemy_aiosqlite
