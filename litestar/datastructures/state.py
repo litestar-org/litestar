@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from copy import copy, deepcopy
 from threading import RLock
-from typing import Any, Callable, Generator, Iterable, Iterator, Mapping, MutableMapping
+from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Iterator, Mapping, MutableMapping
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 __all__ = ("ImmutableState", "State")
 
@@ -13,7 +16,10 @@ class ImmutableState(Mapping[str, Any]):
     It can be accessed using dot notation while exposing dict like functionalities.
     """
 
-    __slots__ = ("_state",)
+    __slots__ = (
+        "_state",
+        "_deep_copy",
+    )
 
     _state: dict[str, Any]
 
@@ -56,13 +62,13 @@ class ImmutableState(Mapping[str, Any]):
                 assert "first" not in state
 
         """
-
         if isinstance(state, ImmutableState):
             state = state._state
 
         if not isinstance(state, dict) and isinstance(state, Iterable):
             state = dict(state)
 
+        super().__setattr__("_deep_copy", deep_copy)
         super().__setattr__("_state", deepcopy(state) if deep_copy else state)
 
     def __bool__(self) -> bool:
@@ -116,12 +122,12 @@ class ImmutableState(Mapping[str, Any]):
         except KeyError as e:
             raise AttributeError from e
 
-    def __copy__(self) -> ImmutableState:
+    def __copy__(self) -> Self:
         """Return a shallow copy of the given state object.
 
         Customizes how the builtin "copy" function will work.
         """
-        return self.__class__(deepcopy(self._state))
+        return self.__class__(self._state, deep_copy=self._deep_copy)
 
     def mutable_copy(self) -> State:
         """Return a mutable copy of the state object.
@@ -129,7 +135,7 @@ class ImmutableState(Mapping[str, Any]):
         Returns:
             A ``State``
         """
-        return State(self._state)
+        return State(self._state, deep_copy=self._deep_copy)
 
     def dict(self) -> dict[str, Any]:
         """Return a shallow copy of the wrapped dict.
@@ -147,7 +153,7 @@ class ImmutableState(Mapping[str, Any]):
         yield cls.validate
 
     @classmethod
-    def validate(cls, value: ImmutableState | dict[str, Any] | Iterable[tuple[str, Any]]) -> ImmutableState:  # type: ignore[valid-type]
+    def validate(cls, value: ImmutableState | dict[str, Any] | Iterable[tuple[str, Any]]) -> Self:  # type: ignore[valid-type]
         """Parse a value and instantiate state inside a SignatureModel. This allows us to use custom subclasses of
         state, as well as allows users to decide whether state is mutable or immutable.
 
@@ -157,7 +163,8 @@ class ImmutableState(Mapping[str, Any]):
         Returns:
             An ImmutableState instance
         """
-        return cls(value)
+        deep_copy = value._deep_copy if isinstance(value, ImmutableState) else False
+        return cls(value, deep_copy=deep_copy)
 
 
 class State(ImmutableState, MutableMapping[str, Any]):
@@ -289,13 +296,13 @@ class State(ImmutableState, MutableMapping[str, Any]):
         except KeyError as e:
             raise AttributeError from e
 
-    def copy(self) -> State:
+    def copy(self) -> Self:
         """Return a shallow copy of the state object.
 
         Returns:
             A ``State``
         """
-        return self.__class__(self.dict())
+        return self.__class__(self.dict(), deep_copy=self._deep_copy)
 
     def immutable_copy(self) -> ImmutableState:
         """Return a shallow copy of the state object, setting it to be frozen.
@@ -303,4 +310,4 @@ class State(ImmutableState, MutableMapping[str, Any]):
         Returns:
             A ``State``
         """
-        return ImmutableState(self)
+        return ImmutableState(self, deep_copy=self._deep_copy)
