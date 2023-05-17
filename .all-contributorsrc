@@ -966,6 +966,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "MatthewNewland",
+      "name": "MatthewNewland",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9618670?v=4",
+      "profile": "https://github.com/MatthewNewland",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
