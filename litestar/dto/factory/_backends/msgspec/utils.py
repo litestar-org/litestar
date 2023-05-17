@@ -26,7 +26,7 @@ def _create_msgspec_field(field_definition: FieldDefinition) -> MsgspecField | N
     if field_definition.default_factory is not None:
         return field(default_factory=field_definition.default_factory)
 
-    return None
+    return None  # type:ignore[no-any-return]
 
 
 def _create_struct_field_def(
