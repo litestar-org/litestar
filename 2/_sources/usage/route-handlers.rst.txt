@@ -8,10 +8,10 @@ For example:
 
 .. code-block:: python
 
-   from litestar import MediaType, get
+   from litestar import get
 
 
-   @get("/", media_type=MediaType.TEXT)
+   @get("/")
    def greet() -> str:
        return "hello world"
 
@@ -25,6 +25,10 @@ descriptor classes that record all the data necessary for the given function or 
 the function signature, which allows for injection of kwargs and dependencies, as well as data pertinent to OpenAPI
 spec generation.
 
+
+.. include:: /admonitions/sync-to-thread-info.rst
+
+
 Declaring path(s)
 -----------------
 
@@ -37,7 +41,7 @@ key word:
 
 
    @get(path="/some-path")
-   def my_route_handler() -> None:
+   async def my_route_handler() -> None:
        ...
 
 It can also be passed as an argument without the key-word:
@@ -48,7 +52,7 @@ It can also be passed as an argument without the key-word:
 
 
    @get("/some-path")
-   def my_route_handler() -> None:
+   async def my_route_handler() -> None:
        ...
 
 And the value for this argument can be either a string path, as in the above examples, or a list of string paths:
@@ -59,7 +63,7 @@ And the value for this argument can be either a string path, as in the above exa
 
 
    @get(["/some-path", "/some-other-path"])
-   def my_route_handler() -> None:
+   async def my_route_handler() -> None:
        ...
 
 This is particularly useful when you want to have optional :ref:`path parameters <usage/parameters:Path Parameters>`:
@@ -72,7 +76,7 @@ This is particularly useful when you want to have optional :ref:`path parameters
    @get(
        ["/some-path", "/some-path/{some_id:int}"],
    )
-   def my_route_handler(some_id: int = 1) -> None:
+   async def my_route_handler(some_id: int = 1) -> None:
        ...
 
 .. _handler-function-kwargs:
@@ -112,7 +116,7 @@ For example:
 
 
    @get(path="/")
-   def my_request_handler(
+   async def my_request_handler(
        state: State,
        request: Request,
        headers: Headers,
@@ -155,7 +159,7 @@ is aliased as the decorator called :func:`route <litestar.handlers.route>`:
 
 
    @route(path="/some-path", http_method=[HttpMethod.GET, HttpMethod.POST])
-   def my_endpoint() -> None:
+   async def my_endpoint() -> None:
        ...
 
 As mentioned above, ``route`` does is merely an alias for ``HTTPRouteHandler``\ , thus the below code is equivalent to the one
@@ -168,7 +172,7 @@ above:
 
 
    @HTTPRouteHandler(path="/some-path", http_method=[HttpMethod.GET, HttpMethod.POST])
-   def my_endpoint() -> None:
+   async def my_endpoint() -> None:
        ...
 
 HTTP route handlers kwargs
@@ -207,37 +211,37 @@ These are used exactly like ``route`` with the sole exception that you cannot co
 
 
    @get(path="/resources")
-   def list_resources() -> list[Resource]:
+   async def list_resources() -> list[Resource]:
        ...
 
 
    @post(path="/resources")
-   def create_resource(data: Resource) -> Resource:
+   async def create_resource(data: Resource) -> Resource:
        ...
 
 
    @get(path="/resources/{pk:int}")
-   def retrieve_resource(pk: int) -> Resource:
+   async def retrieve_resource(pk: int) -> Resource:
        ...
 
 
    @head(path="/resources/{pk:int}")
-   def retrieve_resource_head(pk: int) -> None:
+   async def retrieve_resource_head(pk: int) -> None:
        ...
 
 
    @put(path="/resources/{pk:int}")
-   def update_resource(data: Resource, pk: int) -> Resource:
+   async def update_resource(data: Resource, pk: int) -> Resource:
        ...
 
 
    @patch(path="/resources/{pk:int}")
-   def partially_update_resource(data: Partial[Resource], pk: int) -> Resource:
+   async def partially_update_resource(data: Partial[Resource], pk: int) -> Resource:
        ...
 
 
    @delete(path="/resources/{pk:int}")
-   def delete_resource(pk: int) -> None:
+   async def delete_resource(pk: int) -> None:
        ...
 
 Although these decorators are merely subclasses of :class:`HTTPRouteHandler <litestar.handlers.HTTPRouteHandler>`
@@ -250,29 +254,6 @@ should be distinguished by a unique ``operation_id`` and optimally also have a `
 
 As such, using the ``route`` decorator is discouraged. Instead, the preferred pattern is to share code using secondary
 class methods or by abstracting code to reusable functions.
-
-Using sync handler functions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-You can use both sync and async functions as the base for route handler functions, but which should you use? and when?
-
-If your route handler needs to perform an I/O operation (read or write data from or to a service / db etc.), the most
-performant solution within the scope of an ASGI application, including Litestar, is going to be by using an async
-solution for this purpose.
-
-The reason for this is that async code, if written correctly, is **non-blocking**. That is, async code can be paused and
-resumed, and it therefore does not interrupt the main event loop from executing (if written correctly). On the other
-hand, sync I/O handling is often **blocking**\ , and if you use such code in your function it can create performance
-issues.
-
-In this case you should use the ``sync_to_thread`` option. What this does, is tell Litestar to run the sync function in a
-separate async thread, where it can block but will not interrupt the main event loop's execution.
-
-The problem with this though is that this will slow down the execution of your sync code quite dramatically - by between
-%40-60%. So this is really quite far from performant. Thus, you should use this option **only** when your sync code
-performs blocking I/O operations. If your sync code simply performs simple tasks, non-expensive calculations, etc. you
-should not use the ``sync_to_thread`` option.
-
 
 
 Websocket route handlers

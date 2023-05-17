@@ -1052,7 +1052,11 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../topics/sync-vs-async.html">Sync vs. Async</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -1202,9 +1206,9 @@ information about the connection.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.dto.interface.DTOInterface.on_registration">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">on_registration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler_context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.dto.interface.HandlerContext" title="litestar.dto.interface.HandlerContext"><span class="pre">HandlerContext</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.dto.interface.DTOInterface.on_registration" title="Permalink to this definition">#</a></dt>
-<dd><p>Receive the <code class="docutils literal notranslate"><span class="pre">parsed_type</span></code> and <code class="docutils literal notranslate"><span class="pre">route_handler</span></code> that this DTO is configured to represent.</p>
-<p>At this point, if the DTO type does not support the annotated type of <code class="docutils literal notranslate"><span class="pre">parsed_type</span></code>, it should raise an
-<code class="docutils literal notranslate"><span class="pre">UnsupportedType</span></code> exception.</p>
+<dd><p>Receive information about the handler and application of the DTO.</p>
+<p>At this point, if the DTO type does not support the annotated type of <code class="docutils literal notranslate"><span class="pre">handler_context.parsed_type</span></code>, it should
+raise an <code class="docutils literal notranslate"><span class="pre">UnsupportedType</span></code> exception.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>handler_context</strong> – A <a class="reference internal" href="#litestar.dto.interface.HandlerContext" title="litestar.dto.interface.HandlerContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">HandlerContext</span></code></a> instance. Provides information about the

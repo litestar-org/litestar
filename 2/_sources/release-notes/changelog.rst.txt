@@ -3,8 +3,178 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.0.0alpha7
+    :date: 14.05.2023
+
+    .. change:: Warn about sync callables in route handlers and dependencies without an explicit ``sync_to_thread`` value
+        :type: feature
+        :pr: 1648, 1655
+
+        A warning will now be raised when a synchronous callable is being used in an
+        :class:`~.handlers.HTTPRouteHandler` or :class:`~.di.Provide`, without setting
+        ``sync_to_thread``. This is to ensure that synchronous callables are handled
+        properly, and to prevent accidentally using callables which might block the main
+        thread.
+
+        This warning can be turned off globally by setting the environment variable
+        ``LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD=0``.
+
+        .. seealso::
+            :doc:`/topics/sync-vs-async`
+
+
+    .. change:: Warn about ``sync_to_thread`` with async callables
+        :type: feature
+        :pr: 1664
+
+        A warning will be raised when ``sync_to_thread`` is being used in
+        :class:`~.handlers.HTTPRouteHandler` or :class:`~.di.Provide` with an
+        asynchronous callable, as this will have no effect.
+
+        This warning can be turned off globally by setting the environment variable
+        ``LITESTAR_WARN_SYNC_TO_THREAD_WITH_ASYNC=0``.
+
+
+    .. change:: WebSockets: Dependencies in listener hooks
+        :type: feature
+        :pr: 1647
+
+        Dependencies can now be used in the
+        :class:`~litestar.handlers.websocket_listener` hooks
+        ``on_accept``, ``on_disconnect`` and the ``connection_lifespan`` context
+        manager. The ``socket`` parameter is therefore also not mandatory anymore in
+        those callables.
+
+    .. change:: Declaring dependencies without ``Provide``
+        :type: feature
+        :pr: 1647
+
+        Dependencies can now be declared without using :class:`~litestar.di.Provide`.
+        The callables can be passed directly to the ``dependencies`` dictionary.
+
+
+    .. change:: Add ``DTOData`` to receive unstructured but validated DTO data
+        :type: feature
+        :pr: 1650
+
+        :class:`~litestar.dto.factory.DTOData` is a datastructure for interacting with
+        DTO validated data in its unstructured form.
+
+        This utility is to support the case where the amount of data that is available
+        from the client request is not complete enough to instantiate an instance of the
+        model that would otherwise be injected.
+
+
+    .. change:: Partial DTOs
+        :type: feature
+        :pr: 1651
+
+        Add a ``partial`` flag to :class:`~litestar.dto.factory.DTOConfig`, making all
+        DTO fields options. Subsequently, any unset values will be filtered when
+        extracting data from transfer models.
+
+        This allows for example to use a to handle PATCH requests more easily.
+
+
+    .. change:: SQLAlchemy repository: ``psycopg`` asyncio support
+        :type: feature
+        :pr: 1657
+
+        Async `psycopg <https://www.psycopg.org/>`_ is now officially supported and
+        tested for the SQLAlchemy repository.
+
+    .. change:: SQLAlchemy repository: ``BigIntPrimaryKey`` mixin
+        :type: feature
+        :pr: 1657
+
+        :class:`~litestar.contrib.sqlalchemy.base.BigIntPrimaryKey` mixin, providing a
+        ``BigInt`` primary key column, with a fallback to ``Integer`` for sqlite.
+
+    .. change:: SQLAlchemy repository: Store GUIDs as binary on databases that don't have a native GUID type
+        :type: feature
+        :pr: 1657
+
+        On databases without native support for GUIDs,
+        :class:`~litestar.contrib.sqlalchemy.types.GUID` will now fall back to
+        ``BINARY(16)``.
+
+    .. change:: Application lifespan context managers
+        :type: feature
+        :pr: 1635
+
+        A new ``lifespan`` argument has been added to :class:`~litestar.app.Litestar`,
+        accepting an asynchronous context manager, wrapping the lifespan of the
+        application. It will be entered with the startup phase and exited on shutdown,
+        providing functionality equal to the ``on_startup`` and ``on_shutdown`` hooks.
+
+    .. change:: Unify application lifespan hooks: Remove ``before_`` and ``after_``
+        :breaking:
+        :type: feature
+        :pr: 1663
+
+        The following application lifespan hooks have been removed:
+
+        - ``before_startup``
+        - ``after_startup``
+        - ``before_shutdown``
+        - ``after_shutdown``
+
+        The remaining hooks ``on_startup`` and ``on_shutdown`` will now receive as their
+        optional first argument the :class:`~litestar.app.Litestar` application instead
+        of the application's state.
+
+    .. change:: Trio-compatible event emitter
+        :type: feature
+        :pr: 1666
+
+        The default :class:`~litestar.events.emitter.SimpleEventEmitter` is now
+        compatible with `trio <https://trio.readthedocs.io/en/stable/>`_.
+
+
+    .. change:: OpenAPI: Support ``msgspec.Meta``
+        :type: feature
+        :pr: 1669
+
+        :class:`msgspec.Meta` is now fully supported for OpenAPI schema generation.
+
+    .. change:: OpenAPI: Support Pydantic ``FieldInfo``
+        :type: feature
+        :pr: 1670
+        :issue: 1541
+
+        Pydantic's ``FieldInfo`` (``regex``, ``gt``, ``title``, etc.) now have full
+        support for OpenAPI schema generation.
+
+    .. change:: OpenAPI: Fix name collision in DTO models
+        :type: bugfix
+        :pr: 1649
+        :issue: 1643
+
+        A bug was fixed that would lead to name collisions in the OpenAPI schema when
+        using DTOs with the same class name. DTOs now include a short 8 byte random
+        string in their generated name to prevent this.
+
+    .. change:: Fix validated attrs model being injected as a dictionary
+        :type: bugfix
+        :pr: 1668
+        :issue: 1643
+
+        A bug was fixed that would lead to an attrs model used to validate a route
+        handler's ``data`` not being injected itself but as a dictionary representation.
+
+
+    .. change:: Validate unknown media types
+        :breaking:
+        :type: bugfix
+        :pr: 1671
+        :issue: 1446
+
+        An unknown media type in places where Litestar can't infer the type from the
+        return annotation, an :exc:`ImproperlyConfiguredException` will now be raised.
+
+
 .. changelog:: 2.0.0alpha6
-    :date: 09.06.2023
+    :date: 09.05.2023
 
     .. change:: Relax typing of ``**kwargs`` in ``ASGIConnection.url_for``
         :type: bugfix

@@ -1052,7 +1052,11 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -1256,28 +1260,23 @@ had <code class="docutils literal notranslate"><span class="pre">**kwargs</span>
 </div>
 <section id="creating-event-emitters">
 <h3>Creating Event Emitters<a class="headerlink" href="#creating-event-emitters" title="Permalink to this heading">#</a></h3>
-<p>An “event emitter” is a class that inherits from <a class="reference internal" href="../reference/events.html#litestar.events.BaseEventEmitterBackend" title="litestar.events.BaseEventEmitterBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEventEmitterBackend</span></code></a>
-and implements its abstract methods:</p>
+<p>An “event emitter” is a class that inherits from
+<a class="reference internal" href="../reference/events.html#litestar.events.BaseEventEmitterBackend" title="litestar.events.BaseEventEmitterBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEventEmitterBackend</span></code></a>, which
+itself inherits from <a class="reference external" href="https://docs.python.org/3/library/contextlib.html#contextlib.AbstractAsyncContextManager" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextlib.AbstractAsyncContextManager</span></code></a>.</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../reference/events.html#litestar.events.BaseEventEmitterBackend.on_startup" title="litestar.events.BaseEventEmitterBackend.on_startup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_startup</span></code></a>: Called on application startup. This method
-allows for performing any required async setup.</p></li>
-<li><p><a class="reference internal" href="../reference/events.html#litestar.events.BaseEventEmitterBackend.on_shutdown" title="litestar.events.BaseEventEmitterBackend.on_shutdown"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_shutdown</span></code></a>: Called on application shutdown. This method
-allows for performing any required async teardown and cleanup.</p></li>
 <li><p><a class="reference internal" href="../reference/events.html#litestar.events.BaseEventEmitterBackend.emit" title="litestar.events.BaseEventEmitterBackend.emit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">emit</span></code></a>: This is the method that performs the actual emitting
 logic.</p></li>
 </ul>
-<p>By default Litestar uses the <a class="reference internal" href="../reference/events.html#litestar.events.SimpleEventEmitter" title="litestar.events.SimpleEventEmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleEventEmitter</span></code></a>, which offers an in-memory
-based async queue.</p>
+<p>Additionally, the abstract <code class="docutils literal notranslate"><span class="pre">__aenter__</span></code> and <code class="docutils literal notranslate"><span class="pre">__aexit__</span></code> methods from
+<a class="reference external" href="https://docs.python.org/3/library/contextlib.html#contextlib.AbstractAsyncContextManager" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextlib.AbstractAsyncContextManager</span></code></a> must be implemented, allowing the
+emitter to be used as an async context manager.</p>
+<p>By default Litestar uses the
+<a class="reference internal" href="../reference/events.html#litestar.events.SimpleEventEmitter" title="litestar.events.SimpleEventEmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleEventEmitter</span></code></a>, which offers an
+in-memory async queue.</p>
 <p>This solution works well if the system does not need to rely on complex behaviour, such as a retry
 mechanism, persistence, or scheduling/cron. For these more complex use cases, users should implement their own backend
 using either a DB/Key store that supports events (Redis, Postgres etc.), or a message broker, job queue or task queue
 technology.</p>
-<div class="admonition attention">
-<p class="admonition-title">Attention</p>
-<p>The <a class="reference internal" href="../reference/events.html#litestar.events.SimpleEventEmitter" title="litestar.events.SimpleEventEmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleEventEmitter</span></code></a> works only with <code class="docutils literal notranslate"><span class="pre">asyncio</span></code> due to the
-limitation of <code class="docutils literal notranslate"><span class="pre">trio</span></code> (intentionally) not supporting “worker tasks” - i.e. tasks that run in a detached state. If
-you want to use this functionality with <code class="docutils literal notranslate"><span class="pre">trio</span></code>, you will need to create a custom implementation for your use case.</p>
-</div>
 </section>
 </section>
 </section>

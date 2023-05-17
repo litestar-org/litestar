@@ -1050,7 +1050,11 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -1112,9 +1116,155 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.0.0alpha7">
+<h2>2.0.0alpha7<a class="headerlink" href="#2.0.0alpha7" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>14.05.2023<section id="2.0.0alpha7-feature">
+<h3>Features<a class="headerlink" href="#2.0.0alpha7-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Warn about sync callables in route handlers and dependencies without an explicit <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> value<a class="headerlink reference internal" href="#2.0.0alpha7-feature-0" id="2.0.0alpha7-feature-0">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A warning will now be raised when a synchronous callable is being used in an
+<a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a> or <a class="reference internal" href="../reference/di.html#litestar.di.Provide" title="litestar.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a>, without setting
+<code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code>. This is to ensure that synchronous callables are handled
+properly, and to prevent accidentally using callables which might block the main
+thread.</p>
+<p>This warning can be turned off globally by setting the environment variable
+<code class="docutils literal notranslate"><span class="pre">LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD=0</span></code>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../topics/sync-vs-async.html"><span class="doc">Sync vs. Async</span></a></p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1648,">litestar-org/litestar#1648,</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1655">litestar-org/litestar#1655</a></span></p>
+</div>
+</dd>
+<dt>Warn about <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> with async callables<a class="headerlink reference internal" href="#2.0.0alpha7-feature-1" id="2.0.0alpha7-feature-1">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A warning will be raised when <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> is being used in
+<a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a> or <a class="reference internal" href="../reference/di.html#litestar.di.Provide" title="litestar.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a> with an
+asynchronous callable, as this will have no effect.</p>
+<p>This warning can be turned off globally by setting the environment variable
+<code class="docutils literal notranslate"><span class="pre">LITESTAR_WARN_SYNC_TO_THREAD_WITH_ASYNC=0</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1664">litestar-org/litestar#1664</a></span></p>
+</div>
+</dd>
+<dt>WebSockets: Dependencies in listener hooks<a class="headerlink reference internal" href="#2.0.0alpha7-feature-2" id="2.0.0alpha7-feature-2">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Dependencies can now be used in the
+<a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-class docutils literal notranslate"><span class="pre">websocket_listener</span></code></a> hooks
+<code class="docutils literal notranslate"><span class="pre">on_accept</span></code>, <code class="docutils literal notranslate"><span class="pre">on_disconnect</span></code> and the <code class="docutils literal notranslate"><span class="pre">connection_lifespan</span></code> context
+manager. The <code class="docutils literal notranslate"><span class="pre">socket</span></code> parameter is therefore also not mandatory anymore in
+those callables.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1647">litestar-org/litestar#1647</a></span></p>
+</div>
+</dd>
+<dt>Declaring dependencies without <code class="docutils literal notranslate"><span class="pre">Provide</span></code><a class="headerlink reference internal" href="#2.0.0alpha7-feature-3" id="2.0.0alpha7-feature-3">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Dependencies can now be declared without using <a class="reference internal" href="../reference/di.html#litestar.di.Provide" title="litestar.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a>.
+The callables can be passed directly to the <code class="docutils literal notranslate"><span class="pre">dependencies</span></code> dictionary.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1647">litestar-org/litestar#1647</a></span></p>
+</div>
+</dd>
+<dt>Add <code class="docutils literal notranslate"><span class="pre">DTOData</span></code> to receive unstructured but validated DTO data<a class="headerlink reference internal" href="#2.0.0alpha7-feature-4" id="2.0.0alpha7-feature-4">#</a></dt><dd><div class="changelog-change docutils container">
+<p><a class="reference internal" href="../reference/dto/factory/index.html#litestar.dto.factory.DTOData" title="litestar.dto.factory.DTOData"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOData</span></code></a> is a datastructure for interacting with
+DTO validated data in its unstructured form.</p>
+<p>This utility is to support the case where the amount of data that is available
+from the client request is not complete enough to instantiate an instance of the
+model that would otherwise be injected.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1650">litestar-org/litestar#1650</a></span></p>
+</div>
+</dd>
+<dt>Partial DTOs<a class="headerlink reference internal" href="#2.0.0alpha7-feature-5" id="2.0.0alpha7-feature-5">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add a <code class="docutils literal notranslate"><span class="pre">partial</span></code> flag to <a class="reference internal" href="../reference/dto/factory/index.html#litestar.dto.factory.DTOConfig" title="litestar.dto.factory.DTOConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOConfig</span></code></a>, making all
+DTO fields options. Subsequently, any unset values will be filtered when
+extracting data from transfer models.</p>
+<p>This allows for example to use a to handle PATCH requests more easily.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1651">litestar-org/litestar#1651</a></span></p>
+</div>
+</dd>
+<dt>SQLAlchemy repository: <code class="docutils literal notranslate"><span class="pre">psycopg</span></code> asyncio support<a class="headerlink reference internal" href="#2.0.0alpha7-feature-6" id="2.0.0alpha7-feature-6">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Async <a class="reference external" href="https://www.psycopg.org/">psycopg</a> is now officially supported and
+tested for the SQLAlchemy repository.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1657">litestar-org/litestar#1657</a></span></p>
+</div>
+</dd>
+<dt>SQLAlchemy repository: <code class="docutils literal notranslate"><span class="pre">BigIntPrimaryKey</span></code> mixin<a class="headerlink reference internal" href="#2.0.0alpha7-feature-7" id="2.0.0alpha7-feature-7">#</a></dt><dd><div class="changelog-change docutils container">
+<p><a class="reference internal" href="../reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntPrimaryKey" title="litestar.contrib.sqlalchemy.base.BigIntPrimaryKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntPrimaryKey</span></code></a> mixin, providing a
+<code class="docutils literal notranslate"><span class="pre">BigInt</span></code> primary key column, with a fallback to <code class="docutils literal notranslate"><span class="pre">Integer</span></code> for sqlite.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1657">litestar-org/litestar#1657</a></span></p>
+</div>
+</dd>
+<dt>SQLAlchemy repository: Store GUIDs as binary on databases that don’t have a native GUID type<a class="headerlink reference internal" href="#2.0.0alpha7-feature-8" id="2.0.0alpha7-feature-8">#</a></dt><dd><div class="changelog-change docutils container">
+<p>On databases without native support for GUIDs,
+<a class="reference internal" href="../reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.GUID" title="litestar.contrib.sqlalchemy.types.GUID"><code class="xref py py-class docutils literal notranslate"><span class="pre">GUID</span></code></a> will now fall back to
+<code class="docutils literal notranslate"><span class="pre">BINARY(16)</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1657">litestar-org/litestar#1657</a></span></p>
+</div>
+</dd>
+<dt>Application lifespan context managers<a class="headerlink reference internal" href="#2.0.0alpha7-feature-9" id="2.0.0alpha7-feature-9">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A new <code class="docutils literal notranslate"><span class="pre">lifespan</span></code> argument has been added to <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a>,
+accepting an asynchronous context manager, wrapping the lifespan of the
+application. It will be entered with the startup phase and exited on shutdown,
+providing functionality equal to the <code class="docutils literal notranslate"><span class="pre">on_startup</span></code> and <code class="docutils literal notranslate"><span class="pre">on_shutdown</span></code> hooks.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1635">litestar-org/litestar#1635</a></span></p>
+</div>
+</dd>
+<dt>Unify application lifespan hooks: Remove <code class="docutils literal notranslate"><span class="pre">before_</span></code> and <code class="docutils literal notranslate"><span class="pre">after_</span></code><a class="headerlink reference internal" href="#2.0.0alpha7-feature-10" id="2.0.0alpha7-feature-10">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>The following application lifespan hooks have been removed:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">before_startup</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">after_startup</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">before_shutdown</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">after_shutdown</span></code></p></li>
+</ul>
+<p>The remaining hooks <code class="docutils literal notranslate"><span class="pre">on_startup</span></code> and <code class="docutils literal notranslate"><span class="pre">on_shutdown</span></code> will now receive as their
+optional first argument the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> application instead
+of the application’s state.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1663">litestar-org/litestar#1663</a></span></p>
+</div>
+</dd>
+<dt>Trio-compatible event emitter<a class="headerlink reference internal" href="#2.0.0alpha7-feature-11" id="2.0.0alpha7-feature-11">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The default <a class="reference internal" href="../reference/events.html#litestar.events.SimpleEventEmitter" title="litestar.events.emitter.SimpleEventEmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleEventEmitter</span></code></a> is now
+compatible with <a class="reference external" href="https://trio.readthedocs.io/en/stable/">trio</a>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1666">litestar-org/litestar#1666</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Support <code class="docutils literal notranslate"><span class="pre">msgspec.Meta</span></code><a class="headerlink reference internal" href="#2.0.0alpha7-feature-12" id="2.0.0alpha7-feature-12">#</a></dt><dd><div class="changelog-change docutils container">
+<p><a class="reference external" href="https://jcristharif.com/msgspec/api.html#msgspec.Meta" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Meta</span></code></a> is now fully supported for OpenAPI schema generation.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1669">litestar-org/litestar#1669</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Support Pydantic <code class="docutils literal notranslate"><span class="pre">FieldInfo</span></code><a class="headerlink reference internal" href="#2.0.0alpha7-feature-13" id="2.0.0alpha7-feature-13">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Pydantic’s <code class="docutils literal notranslate"><span class="pre">FieldInfo</span></code> (<code class="docutils literal notranslate"><span class="pre">regex</span></code>, <code class="docutils literal notranslate"><span class="pre">gt</span></code>, <code class="docutils literal notranslate"><span class="pre">title</span></code>, etc.) now have full
+support for OpenAPI schema generation.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1541">litestar-org/litestar#1541</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1670">litestar-org/litestar#1670</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.0.0alpha7-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha7-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>OpenAPI: Fix name collision in DTO models<a class="headerlink reference internal" href="#2.0.0alpha7-bugfix-14" id="2.0.0alpha7-bugfix-14">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A bug was fixed that would lead to name collisions in the OpenAPI schema when
+using DTOs with the same class name. DTOs now include a short 8 byte random
+string in their generated name to prevent this.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1643">litestar-org/litestar#1643</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1649">litestar-org/litestar#1649</a></span></p>
+</div>
+</dd>
+<dt>Fix validated attrs model being injected as a dictionary<a class="headerlink reference internal" href="#2.0.0alpha7-bugfix-15" id="2.0.0alpha7-bugfix-15">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A bug was fixed that would lead to an attrs model used to validate a route
+handler’s <code class="docutils literal notranslate"><span class="pre">data</span></code> not being injected itself but as a dictionary representation.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1643">litestar-org/litestar#1643</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1668">litestar-org/litestar#1668</a></span></p>
+</div>
+</dd>
+<dt>Validate unknown media types<a class="headerlink reference internal" href="#2.0.0alpha7-bugfix-16" id="2.0.0alpha7-bugfix-16">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>An unknown media type in places where Litestar can’t infer the type from the
+return annotation, an <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a> will now be raised.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1446">litestar-org/litestar#1446</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1671">litestar-org/litestar#1671</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.0.0alpha6">
 <h2>2.0.0alpha6<a class="headerlink" href="#2.0.0alpha6" title="Permalink to this heading">#</a></h2>
-<strong>Released: </strong>09.06.2023<section id="2.0.0alpha6-feature">
+<strong>Released: </strong>09.05.2023<section id="2.0.0alpha6-feature">
 <h3>Features<a class="headerlink" href="#2.0.0alpha6-feature" title="Permalink to this heading">#</a></h3>
 <dl>
 <dt>Add <code class="docutils literal notranslate"><span class="pre">connection_accept_handler</span></code> to <code class="docutils literal notranslate"><span class="pre">websocket_listener</span></code><a class="headerlink reference internal" href="#2.0.0alpha6-feature-2" id="2.0.0alpha6-feature-2">#</a></dt><dd><div class="changelog-change docutils container">
@@ -2145,6 +2295,11 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha7">2.0.0alpha7</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha7-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha7-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha6">2.0.0alpha6</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha6-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha6-bugfix">Bugfixes</a></li>

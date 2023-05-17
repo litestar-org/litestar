@@ -1052,7 +1052,11 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -1291,7 +1295,7 @@ exceptions that inherit from <code class="docutils literal notranslate"><span cl
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/validation-error
-validation<span class="w"> </span>error:<span class="w"> </span>Missing<span class="w"> </span>required<span class="w"> </span>parameter<span class="w"> </span>some_query_param<span class="w"> </span><span class="k">for</span><span class="w"> </span>url<span class="w"> </span>http://127.0.0.1:9998/validation-error
+validation<span class="w"> </span>error:<span class="w"> </span>Missing<span class="w"> </span>required<span class="w"> </span>parameter<span class="w"> </span>some_query_param<span class="w"> </span><span class="k">for</span><span class="w"> </span>url<span class="w"> </span>http://127.0.0.1:9997/validation-error
 &gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/server-error
 server<span class="w"> </span>error:<span class="w"> </span><span class="m">500</span>:<span class="w"> </span>Internal<span class="w"> </span>Server<span class="w"> </span>Error
 &gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/value-error

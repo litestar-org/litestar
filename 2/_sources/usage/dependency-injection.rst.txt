@@ -10,19 +10,19 @@ the application:
    from litestar.di import Provide
 
 
-   def bool_fn() -> bool:
+   async def bool_fn() -> bool:
        ...
 
 
-   def dict_fn() -> dict:
+   async def dict_fn() -> dict:
        ...
 
 
-   def list_fn() -> list:
+   async def list_fn() -> list:
        ...
 
 
-   def int_fn() -> int:
+   async def int_fn() -> int:
        ...
 
 
@@ -61,6 +61,11 @@ The above example illustrates how dependencies are declared on the different lay
 Dependencies can be either callables - sync or async functions, methods or class instances that implement the
 :meth:`object.__call__` method, or classes. These are in turn wrapped inside an instance of the
 :class:`Provide <.di.Provide>` class.
+
+
+.. include:: /admonitions/sync-to-thread-info.rst
+
+
 
 Pre-requisites and Scope
 ------------------------
