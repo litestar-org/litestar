@@ -21,12 +21,12 @@ T = TypeVar("T")
 
 def _create_msgspec_field(field_definition: FieldDefinition) -> MsgspecField | None:
     if field_definition.default is not Empty:
-        return field(default=field_definition.default)
+        return field(default=field_definition.default)  # type:ignore[no-any-return]
 
     if field_definition.default_factory is not None:
-        return field(default_factory=field_definition.default_factory)
+        return field(default_factory=field_definition.default_factory)  # type:ignore[no-any-return]
 
-    return None  # type:ignore[no-any-return]
+    return None 
 
 
 def _create_struct_field_def(
