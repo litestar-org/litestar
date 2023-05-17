@@ -20,13 +20,17 @@ T = TypeVar("T")
 
 
 def _create_msgspec_field(field_definition: FieldDefinition) -> MsgspecField | None:
+    kws: dict[str, Any] = {}
     if field_definition.default is not Empty:
-        return field(default=field_definition.default)  # type:ignore[no-any-return]
+        kws["default"] = field_definition.default
 
-    if field_definition.default_factory is not None:
-        return field(default_factory=field_definition.default_factory)  # type:ignore[no-any-return]
+    elif field_definition.default_factory is not None:
+        kws["default_factory"] = field_definition.default_factory
 
-    return None 
+    if not kws:
+        return None
+
+    return field(**kws)  # type:ignore[no-any-return]
 
 
 def _create_struct_field_def(
