@@ -24,7 +24,7 @@ def _create_msgspec_field(field_definition: FieldDefinition) -> MsgspecField | N
     if field_definition.default is not Empty:
         kws["default"] = field_definition.default
 
-    if field_definition.default_factory is not None:
+    elif field_definition.default_factory is not None:
         kws["default_factory"] = field_definition.default_factory
 
     if not kws:
