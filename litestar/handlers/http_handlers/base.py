@@ -417,14 +417,12 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 handler_return_type = before_request_handler.parsed_signature.return_type
                 if not handler_return_type.is_subclass_of((Empty, NoneType)):
                     return_annotation = handler_return_type.annotation
-            self._response_handler_mapping["response_type_handler"] = create_response_handler(
+            self._response_handler_mapping["response_type_handler"] = response_type_handler = create_response_handler(
                 cookies=cookies, after_request=after_request
             )
 
             if return_type.is_subclass_of(Response):
-                self._response_handler_mapping["default_handler"] = self._response_handler_mapping[
-                    "response_type_handler"
-                ]
+                self._response_handler_mapping["default_handler"] = response_type_handler
             elif return_type.is_subclass_of(ResponseContainer):
                 self._response_handler_mapping["default_handler"] = create_response_container_handler(
                     after_request=after_request,
