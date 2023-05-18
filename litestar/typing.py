@@ -134,7 +134,11 @@ class ParsedType:
             Whether the annotation is a subtype of the given type(s).
         """
         if self.origin:
+            if self.origin in UNION_TYPES:
+                return all(t.is_subclass_of(cl) for t in self.inner_types)
+
             return self.origin not in UNION_TYPES and issubclass(self.origin, cl)
+
         if self.annotation is AnyStr:
             return issubclass(str, cl) or issubclass(bytes, cl)
         return self.annotation is not Any and not self.is_type_var and issubclass(self.annotation, cl)
