@@ -25,6 +25,9 @@ def _convert_uvicorn_args(args: dict[str, Any]) -> list[str]:
         if isinstance(value, bool):
             if value:
                 process_args.append(f"--{arg}")
+        elif isinstance(value, tuple):
+            for item in value:
+                process_args.append(f"--{arg}={item}")
         else:
             process_args.append(f"--{arg}={value}")
 
@@ -59,12 +62,14 @@ def info_command(app: Litestar) -> None:
 )
 @option("--host", help="Server under this host", default="127.0.0.1", show_default=True)
 @option("--debug", help="Run app in debug mode", is_flag=True)
+@option("--reload-dir", help="Directories to watch for file changes", multiple=True)
 def run_command(
     reload: bool,
     port: int,
     web_concurrency: int,
     host: str,
     debug: bool,
+    reload_dir: tuple[str, ...],
     env: LitestarEnv,
     app: Litestar,
 ) -> None:
@@ -87,14 +92,20 @@ def run_command(
     # invoke uvicorn in a subprocess to be able to use the --reload flag. see
     # https://github.com/litestar-org/litestar/issues/1191 and https://github.com/encode/uvicorn/issues/1045
 
+    reload_dirs = env.reload_dirs or reload_dir
+
     process_args = {
-        "reload": env.reload or reload,
+        "reload": env.reload or reload or bool(reload_dirs),
         "host": env.host or host,
         "port": env.port or port,
         "workers": env.web_concurrency or web_concurrency,
         "factory": env.is_app_factory,
     }
-    subprocess.run(["uvicorn", env.app_path, *_convert_uvicorn_args(process_args)], check=True)  # noqa: S603 S607
+
+    if reload_dirs:
+        process_args["reload-dir"] = reload_dirs
+
+    subprocess.run(["uvicorn", env.app_path, *_convert_uvicorn_args(process_args)], check=True)  # noqa: S603 S607I
 
 
 @command(name="routes")
