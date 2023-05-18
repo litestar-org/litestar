@@ -107,7 +107,7 @@ Options
 +-------------------------------------+---------------------------+-----------------------------------------------------------------+
 | Flag                                | Environment variable      | Description                                                     |
 +========================+============+=========+=================+=================================================================+
-| ``-r``\ , ``--reload``              | ``LITESTAR_RELOAD``       |  Reload the application when files in its directory are changed |
+| ``-r``\ , ``--reload``              | ``LITESTAR_RELOAD``       | Reload the application when files in its directory are changed  |
 +-------------------------------------+---------------------------+-----------------------------------------------------------------+
 | ``-p``\ , ``--port``                | ``LITESTAR_PORT``         | Bind the the server to this port [default: 8000]                |
 +-------------------------------------+---------------------------+-----------------------------------------------------------------+
@@ -117,7 +117,24 @@ Options
 +-------------------------------------+---------------------------+-----------------------------------------------------------------+
 | ``--debug``                         | ``LITESTAR_DEBUG``        | Run the application in debug mode                               |
 +-------------------------------------+---------------------------+-----------------------------------------------------------------+
+| ``--reload-dir``                    | ``LITESTAR_RELOAD_DIRS``  | Specify directories to watch for reload.                        |
++-------------------------------------+---------------------------+-----------------------------------------------------------------+
 
+``--reload-dir``
+++++++++++++++++
+
+The ``--reload-dir`` flag can be used to specify directories to watch for changes. If specified, the ``--reload`` flag
+is implied. Multiple directories can be specified by passing the flag multiple times:
+
+.. code-block:: shell
+
+   litestar run --reload-dir=. --reload-dir=../other-library/src
+
+To set via environment variable, use a comma-separated list:
+
+.. code-block:: shell
+
+   LITESTAR_RELOAD_DIRS=.,../other-library/src
 
 info
 ^^^^

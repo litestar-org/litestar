@@ -1265,8 +1265,24 @@ deploy production applications</p>
 <td colspan="2"><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_DEBUG</span></code></p></td>
 <td><p>Run the application in debug mode</p></td>
 </tr>
+<tr class="row-odd"><td colspan="2"><p><code class="docutils literal notranslate"><span class="pre">--reload-dir</span></code></p></td>
+<td colspan="2"><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_RELOAD_DIRS</span></code></p></td>
+<td><p>Specify directories to watch for reload.</p></td>
+</tr>
 </tbody>
 </table>
+<section id="reload-dir">
+<h5><code class="docutils literal notranslate"><span class="pre">--reload-dir</span></code><a class="headerlink" href="#reload-dir" title="Permalink to this heading">#</a></h5>
+<p>The <code class="docutils literal notranslate"><span class="pre">--reload-dir</span></code> flag can be used to specify directories to watch for changes. If specified, the <code class="docutils literal notranslate"><span class="pre">--reload</span></code> flag
+is implied. Multiple directories can be specified by passing the flag multiple times:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>litestar<span class="w"> </span>run<span class="w"> </span>--reload-dir<span class="o">=</span>.<span class="w"> </span>--reload-dir<span class="o">=</span>../other-library/src
+</pre></div>
+</div>
+<p>To set via environment variable, use a comma-separated list:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">LITESTAR_RELOAD_DIRS</span><span class="o">=</span>.,../other-library/src
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 <section id="info">
@@ -1454,7 +1470,10 @@ This can be achieved by adding the special <code class="docutils literal notrans
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run">Run</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#cli-run-options">Options</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#cli-run-options">Options</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#reload-dir"><code class="docutils literal notranslate"><span class="pre">--reload-dir</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#info">info</a></li>
