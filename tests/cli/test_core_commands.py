@@ -32,6 +32,7 @@ def mock_subprocess_run(mocker: MockerFixture) -> MagicMock:
 @pytest.mark.parametrize("reload", [True, False, None])
 @pytest.mark.parametrize("web_concurrency", [2, None])
 @pytest.mark.parametrize("app_dir", ["custom_subfolder", None])
+@pytest.mark.parametrize("reload_dir", [[".", "../somewhere_else"], None])
 def test_run_command(
     mocker: MockerFixture,
     runner: CliRunner,
@@ -41,6 +42,7 @@ def test_run_command(
     host: Optional[str],
     web_concurrency: Optional[int],
     app_dir: Optional[str],
+    reload_dir: Optional[List[str]],
     custom_app_file: Optional[Path],
     create_app_file: CreateAppFileFixture,
     set_in_env: bool,
@@ -86,6 +88,13 @@ def test_run_command(
             args.extend(["--web-concurrency", str(web_concurrency)])
     else:
         web_concurrency = 1
+
+    if reload_dir is not None:
+        if set_in_env:
+            monkeypatch.setenv("LITESTAR_RELOAD_DIRS", ",".join(reload_dir))
+        else:
+            args.extend([f"--reload-dir={s}" for s in reload_dir])
+
     path = create_app_file(custom_app_file or "app.py", subdir=app_dir)
 
     result = runner.invoke(cli_command, args)
@@ -94,10 +103,12 @@ def test_run_command(
     assert result.exit_code == 0
 
     expected_args = ["uvicorn", f"{path.stem}:app", f"--host={host}", f"--port={port}"]
-    if reload:
+    if reload or reload_dir:
         expected_args.append("--reload")
     if web_concurrency:
         expected_args.append(f"--workers={web_concurrency}")
+    if reload_dir:
+        expected_args.extend([f"--reload-dir={s}" for s in reload_dir])
     mock_subprocess_run.assert_called_once()
     assert sorted(mock_subprocess_run.call_args_list[0].args[0]) == sorted(expected_args)
     mock_show_app_info.assert_called_once()
