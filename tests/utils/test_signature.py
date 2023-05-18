@@ -308,6 +308,7 @@ def test_parsed_type_is_subclass_of() -> None:
     assert ParsedType(List[int]).is_subclass_of(list) is True
     assert ParsedType(List[int]).is_subclass_of(int) is False
     assert ParsedType(Optional[int]).is_subclass_of(int) is False
+    assert ParsedType(Union[bool, int]).is_subclass_of(int) is True
 
 
 def test_parsed_type_has_inner_subclass_of() -> None:
