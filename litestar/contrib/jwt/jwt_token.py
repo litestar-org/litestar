@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import dataclasses
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
-from typing import cast
+from typing import Any
 
 from jose import JWSError, JWTError, jwt
 
@@ -42,6 +43,8 @@ class Token:
     """Audience - intended audience."""
     jti: str | None = field(default=None)
     """JWT ID - a unique identifier of the JWT between different issuers."""
+    _extras: dict[str, Any] | None = field(default=None)
+    """Extra fields that were found on the JWT token."""
 
     def __post_init__(self) -> None:
         if len(self.sub) < 1:
@@ -82,7 +85,12 @@ class Token:
             payload = jwt.decode(token=encoded_token, key=secret, algorithms=[algorithm], options={"verify_aud": False})
             exp = datetime.fromtimestamp(payload.pop("exp"), tz=timezone.utc)
             iat = datetime.fromtimestamp(payload.pop("iat"), tz=timezone.utc)
-            return Token(exp=exp, iat=iat, **payload)
+            field_names = {f.name for f in dataclasses.fields(Token)}
+            extra_fields = set(payload.keys()).difference(field_names)
+            extras = {}
+            for key in extra_fields:
+                extras[key] = payload.pop(key)
+            return Token(exp=exp, iat=iat, **payload, _extras=extras)
         except (KeyError, JWTError, ImproperlyConfiguredException) as e:
             raise NotAuthorizedException("Invalid token") from e
 
@@ -100,11 +108,8 @@ class Token:
             ImproperlyConfiguredException: If encoding fails.
         """
         try:
-            return cast(
-                "str",
-                jwt.encode(
-                    claims={k: v for k, v in asdict(self).items() if v is not None}, key=secret, algorithm=algorithm
-                ),
+            return jwt.encode(
+                claims={k: v for k, v in asdict(self).items() if v is not None}, key=secret, algorithm=algorithm
             )
         except (JWTError, JWSError) as e:
             raise ImproperlyConfiguredException("Failed to encode token") from e
