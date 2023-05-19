@@ -118,6 +118,7 @@ pytest_docker = "*"
 python-dateutil = "*"
 python-dotenv = "*"
 python-jose = "*"
+oracledb = "*"
 pytimeparse = "*"
 redis = "*"
 rich = "*"
@@ -219,7 +220,8 @@ markers = [
     "sqlalchemy_psycopg_async: SQLAlchemy Postgres (psycopg async) Tests",
     "sqlalchemy_aiosqlite: SQLAlchemy SQLite (aiosqlite) Tests",
     "sqlalchemy_psycopg_sync: SQLAlchemy Postgres (psycopg sync) Tests",
-    "sqlalchemy_sqlite: SQLAlchemy SQLite (sqlite) Tests"
+    "sqlalchemy_sqlite: SQLAlchemy SQLite (sqlite) Tests",
+    "sqlalchemy_oracledb: SQLAlchemy Oracle (oracledb) Tests"
 ]
 
 [tool.pyright]
