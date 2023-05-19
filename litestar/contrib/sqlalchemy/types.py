@@ -3,6 +3,8 @@ from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING, Any, cast
 
+from sqlalchemy.dialects.oracle import BLOB as ORA_BLOB
+from sqlalchemy.dialects.oracle import RAW as ORA_RAW
 from sqlalchemy.dialects.postgresql import JSONB as PG_JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.types import BINARY, CHAR, BigInteger, Integer, TypeDecorator
@@ -24,7 +26,7 @@ Uses Integer for sqlite since there is no
 class GUID(TypeDecorator):
     """Platform-independent GUID type.
 
-    Uses PostgreSQL's UUID type, otherwise uses
+    Uses PostgreSQL's UUID type, Oracle's RAW(16) type, otherwise uses
     BINARY(16) or CHAR(32), storing as stringified hex values.
 
     Will accept stringified UUIDs as a hexstring or an actual UUID
@@ -41,6 +43,8 @@ class GUID(TypeDecorator):
     def load_dialect_impl(self, dialect: Dialect) -> Any:
         if dialect.name == "postgresql":
             return dialect.type_descriptor(PG_UUID())
+        if dialect.name == "oracle":
+            return dialect.type_descriptor(ORA_RAW(16))
         if self.binary:
             return dialect.type_descriptor(BINARY(16))
         return dialect.type_descriptor(CHAR(32))
@@ -49,6 +53,8 @@ class GUID(TypeDecorator):
         if value is None:
             return value
         if dialect.name == "postgresql":
+            return str(value)
+        if dialect.name == "oracle":
             return str(value)
         value = self.to_uuid(value)
         if value is None:
@@ -75,8 +81,8 @@ class GUID(TypeDecorator):
         return cast("uuid.UUID | None", value)
 
 
-JSON = _JSON().with_variant(PG_JSONB, "postgresql")
+JSON = _JSON().with_variant(PG_JSONB, "postgresql").with_variant(ORA_BLOB, "oracle")
 """Platform-independent JSON type.
 
-    Uses JSONB type for postgres, otherwise uses the generic JSON data type.
+    Uses JSONB type for postgres, BLOB for Oracle, otherwise uses the generic JSON data type.
 """

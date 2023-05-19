@@ -44,6 +44,8 @@ def fx_engine(docker_ip: str) -> Engine:
             "host": docker_ip,
             "port": 1512,
             "service_name": "xepdb1",
+            "encoding": "UTF-8",
+            "nencoding": "UTF-8",
         },
         echo=True,
         poolclass=NullPool,
