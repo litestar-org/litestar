@@ -98,8 +98,6 @@ repos:
             types-python-dateutil,
             types-pyyaml,
             types-redis,
-            types-python-jose,
-            types-click,
             uvicorn,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
@@ -154,8 +152,6 @@ repos:
             types-freezegun,
             types-pyyaml,
             types-redis,
-            types-python-jose,
-            types-click,
             uvicorn,
           ]
   - repo: local
