@@ -107,7 +107,7 @@ jobs:
   docs_preview:
     needs:
       - validate
-    if: github.event_name == 'pull'
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       issues: write
