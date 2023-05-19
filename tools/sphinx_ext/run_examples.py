@@ -67,7 +67,7 @@ def run_app(path: Path) -> Generator[int, None, None]:
 
     proc = multiprocessing.Process(target=run)
     proc.start()
-    for _ in range(50):
+    for _ in range(100):
         try:
             httpx.get(f"http://127.0.0.1:{port}", timeout=0.1)
         except httpx.TransportError:
