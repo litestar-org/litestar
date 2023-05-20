@@ -23,13 +23,16 @@ from typing import (
     cast,
 )
 
+import anyio
 import asyncmy
 import asyncpg
+import oracledb
 import pytest
 from _pytest.fixtures import FixtureRequest
 from _pytest.nodes import Item
 from fakeredis.aioredis import FakeRedis
 from freezegun import freeze_time
+from oracledb.exceptions import DatabaseError, OperationalError
 from pytest_docker.plugin import Services
 from pytest_lazyfixture import lazy_fixture
 from redis.asyncio import Redis as AsyncRedis
@@ -50,6 +53,7 @@ from litestar.stores.file import FileStore
 from litestar.stores.memory import MemoryStore
 from litestar.stores.redis import RedisStore
 from litestar.testing import RequestFactory
+from litestar.utils.sync import AsyncCallable
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -477,6 +481,45 @@ async def postgres_service(docker_ip: str, docker_services: Services) -> None:  
         docker_services:
     """
     await wait_until_responsive(timeout=30.0, pause=0.1, check=postgres_responsive, host=docker_ip)
+
+
+def oracle_responsive(host: str) -> bool:
+    """
+    Args:
+        host: docker IP address.
+
+    Returns:
+        Boolean indicating if we can connect to the database.
+    """
+
+    try:
+        conn = oracledb.connect(
+            host=host,
+            port=1512,
+            user="app",
+            service_name="xepdb1",
+            password="super-secret",
+        )
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT 1 FROM dual")
+            resp = cursor.fetchone()
+        return bool(resp[0] == 1)
+    except (OperationalError, DatabaseError):  # pyright: ignore
+        return False
+
+
+@docker_service_registry.register("oracle")
+async def oracle_service(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
+    """Starts containers for required services, fixture waits until they are
+    responsive before returning.
+
+    Args:
+        docker_ip:
+        docker_services:
+    """
+    # oracle takes a while to mount and open initially.
+    await anyio.sleep(20)
+    await wait_until_responsive(timeout=30.0, pause=0.1, check=AsyncCallable(oracle_responsive), host=docker_ip)
 
 
 # the monkeypatch fixture does not work with session scoped dependencies
