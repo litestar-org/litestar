@@ -43,7 +43,7 @@ class Token:
     """Audience - intended audience."""
     jti: str | None = field(default=None)
     """JWT ID - a unique identifier of the JWT between different issuers."""
-    _extras: dict[str, Any] | None = field(default=None)
+    extras: dict[str, Any] = field(default={})
     """Extra fields that were found on the JWT token."""
 
     def __post_init__(self) -> None:
@@ -66,8 +66,8 @@ class Token:
         else:
             raise ImproperlyConfiguredException("iat must be a current or past time")
 
-    @staticmethod
-    def decode(encoded_token: str, secret: str | dict[str, str], algorithm: str) -> Token:
+    @classmethod
+    def decode(cls, encoded_token: str, secret: str | dict[str, str], algorithm: str) -> Token:
         """Decode a passed in token string and returns a Token instance.
 
         Args:
@@ -90,7 +90,7 @@ class Token:
             extras = {}
             for key in extra_fields:
                 extras[key] = payload.pop(key)
-            return Token(exp=exp, iat=iat, **payload, _extras=extras)
+            return cls(exp=exp, iat=iat, **payload, extras=extras)
         except (KeyError, JWTError, ImproperlyConfiguredException) as e:
             raise NotAuthorizedException("Invalid token") from e
 
