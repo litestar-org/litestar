@@ -8,6 +8,7 @@ from uuid import uuid4
 import pytest
 from hypothesis import given
 from hypothesis.strategies import datetimes
+from jose import jwt
 
 from litestar.contrib.jwt import Token
 from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
@@ -133,3 +134,28 @@ def test_sub_validation() -> None:
             iat=(datetime.now() - timedelta(seconds=30)),
             exp=(datetime.now() + timedelta(seconds=120)),
         )
+
+
+def test_extra_fields() -> None:
+    raw_token = {
+        "sub": secrets.token_hex(),
+        "iat": datetime.now(timezone.utc),
+        "azp": "extra value",
+        "email": "thetest@test.com",
+        "exp": (datetime.now(timezone.utc) + timedelta(seconds=30)),
+    }
+    token_secret = secrets.token_hex()
+    encoded_token = jwt.encode(claims=raw_token, key=token_secret, algorithm="HS256")
+    token = Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256")
+    assert "azp" in token.extras
+    assert "email" in token.extras
+
+    raw_token = {
+        "sub": secrets.token_hex(),
+        "iat": datetime.now(timezone.utc),
+        "exp": (datetime.now(timezone.utc) + timedelta(seconds=30)),
+    }
+    token_secret = secrets.token_hex()
+    encoded_token = jwt.encode(claims=raw_token, key=token_secret, algorithm="HS256")
+    token = Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256")
+    assert token.extras == {}
