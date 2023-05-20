@@ -43,9 +43,12 @@ def seed_db(
     with engine.begin() as conn:
         base.orm_registry.metadata.drop_all(conn)
         base.orm_registry.metadata.create_all(conn)
-        conn.execute(insert(Author).values(raw_authors))
-        conn.execute(insert(Ingredient).values(raw_ingredients))
-        conn.execute(insert(Store).values(raw_stores))
+        for author in raw_authors:
+            conn.execute(insert(Author).values(author))
+        for ingredient in raw_ingredients:
+            conn.execute(insert(Ingredient).values(ingredient))
+        for store in raw_stores:
+            conn.execute(insert(Store).values(store))
 
 
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorSyncRepository) -> None:
