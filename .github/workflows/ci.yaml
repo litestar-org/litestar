@@ -135,6 +135,8 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction --with docs
       - name: Build docs
+        env:
+          LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT: 1
         run: poetry run make docs
       - name: Deploy docs preview
         uses: JamesIves/github-pages-deploy-action@v4
