@@ -30,7 +30,7 @@ jobs:
       - name: Deploy docs preview
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: docs-preview/_build/html
+          folder: docs-preview/docs/_build/html
           token: ${{ secrets.DOCS_PREVIEW_DEPLOY_TOKEN }}
           repository-name: litestar-org/litestar-docs-preview
           clean: false
