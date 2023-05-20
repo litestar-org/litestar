@@ -167,3 +167,14 @@ def test_websocket_test_session_block_timeout(
     with pytest.raises(Empty):
         with create_test_client(handler, backend=anyio_backend) as client, client.websocket_connect("/") as ws:
             receive_method(ws, timeout=timeout, block=block)
+
+
+def test_websocket_accept_timeout(anyio_backend: AnyIOBackend) -> None:
+    @websocket()
+    async def handler(socket: WebSocket) -> None:
+        pass
+
+    with create_test_client(handler, backend=anyio_backend) as client, pytest.raises(Empty), client.websocket_connect(
+        "/"
+    ):
+        pass
