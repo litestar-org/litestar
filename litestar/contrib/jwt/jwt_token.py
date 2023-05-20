@@ -43,7 +43,7 @@ class Token:
     """Audience - intended audience."""
     jti: str | None = field(default=None)
     """JWT ID - a unique identifier of the JWT between different issuers."""
-    extras: dict[str, Any] = field(default={})
+    extras: dict[str, Any] = field(default_factory=dict)
     """Extra fields that were found on the JWT token."""
 
     def __post_init__(self) -> None:
