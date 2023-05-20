@@ -90,7 +90,7 @@ class Token:
             exp = datetime.fromtimestamp(payload.pop("exp"), tz=timezone.utc)
             iat = datetime.fromtimestamp(payload.pop("iat"), tz=timezone.utc)
             field_names = {f.name for f in dataclasses.fields(Token)}
-            extra_fields = set(payload.keys()).difference(field_names)
+            extra_fields = payload.keys() - field_names
             extras = payload.pop("extras", {})
             for key in extra_fields:
                 extras[key] = payload.pop(key)
