@@ -345,7 +345,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         """
         data_to_update: list[dict[str, Any]] = [v.to_dict() if isinstance(v, self.model_type) else v for v in data]  # type: ignore
         with wrap_sqlalchemy_exception():
-            if self.session.bind.dialect.update_executemany_returning:
+            if self.session.bind.dialect.update_executemany_returning and self.session.bind.dialect.name != "oracle":
                 instances = list(
                     await self.session.scalars(  # type: ignore
                         update(self.model_type).returning(self.model_type),
@@ -831,9 +831,13 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         """
         data_to_update: list[dict[str, Any]] = [v.to_dict() if isinstance(v, self.model_type) else v for v in data]  # type: ignore
         with wrap_sqlalchemy_exception():
-            if self.session.bind and self.session.bind.dialect.update_executemany_returning:
+            if (
+                self.session.bind
+                and self.session.bind.dialect.update_executemany_returning
+                and self.session.bind.dialect.name != "oracle"
+            ):
                 instances = list(
-                    self.session.execute(
+                    self.session.scalars(
                         update(self.model_type).returning(self.model_type),
                         data_to_update,  # pyright: ignore[reportGeneralTypeIssues]
                     )
