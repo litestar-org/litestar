@@ -302,3 +302,13 @@ def test_repo_upsert_method(author_repo: AuthorSyncRepository) -> None:
         author_repo (AuthorRepository): The author mock repository
     """
     st.test_repo_upsert_method(author_repo=author_repo)
+
+
+@pytest.mark.sqlalchemy_psycopg_sync
+def test_repo_filter_before_after(author_repo: AuthorSyncRepository) -> None:
+    """Test SQLALchemy BeforeAfter filter.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    st.test_repo_filter_before_after(author_repo=author_repo)

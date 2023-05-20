@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from litestar.contrib.repository.exceptions import RepositoryError
+from litestar.contrib.repository.filters import BeforeAfter
 from litestar.contrib.sqlalchemy import base
 from tests.contrib.sqlalchemy.models import (
     Author,
@@ -347,3 +348,22 @@ async def test_repo_upsert_method(author_repo: AuthorAsyncRepository) -> None:
     upsert2_insert_obj = await author_repo.upsert(Author(id=uuid4(), name="Another Author"))
     assert upsert2_insert_obj.id is not None
     assert upsert2_insert_obj.name == "Another Author"
+
+
+async def test_repo_filter_before_after(author_repo: AuthorAsyncRepository) -> None:
+    """Test SQLALchemy upsert with asyncpg.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    before_filter = BeforeAfter(
+        field_name="created", before=datetime.strptime("2023-05-01T00:00:00", "%Y-%m-%dT%H:%M:%S"), after=None
+    )
+    existing_obj = await author_repo.list(before_filter)
+    existing_obj[0].name = "Leo Tolstoy."
+
+    after_filter = BeforeAfter(
+        field_name="created", after=datetime.strptime("2023-03-01T00:00:00", "%Y-%m-%dT%H:%M:%S"), before=None
+    )
+    existing_obj = await author_repo.list(after_filter)
+    existing_obj[0].name = "Agatha Christie"

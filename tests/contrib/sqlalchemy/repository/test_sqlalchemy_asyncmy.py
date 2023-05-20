@@ -307,3 +307,13 @@ async def test_repo_upsert_method(author_repo: AuthorAsyncRepository) -> None:
         author_repo (AuthorRepository): The author mock repository
     """
     await st.test_repo_upsert_method(author_repo=author_repo)
+
+
+@pytest.mark.sqlalchemy_asyncmy
+async def test_repo_filter_before_after(author_repo: AuthorAsyncRepository) -> None:
+    """Test SQLALchemy BeforeAfter filter.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    await st.test_repo_filter_before_after(author_repo=author_repo)
