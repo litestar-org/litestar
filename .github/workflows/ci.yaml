@@ -104,14 +104,11 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
-  docs_preview:
+  build-docs:
     needs:
       - validate
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      pull-requests: write
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -138,14 +135,14 @@ jobs:
         env:
           LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT: 1
         run: poetry run make docs
-      - name: Deploy docs preview
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Save PR number
+        env:
+          PR_NUMBER: ${{ github.event.number }}
+        run: echo $PR_NUMBER > .pr_number
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
         with:
-          folder: docs/_build/html
-          token: ${{ secrets.DOCS_PREVIEW_DEPLOY_TOKEN }}
-          repository-name: litestar-org/litestar-docs-preview
-          clean: false
-          target-folder: ${{ github.event.number }}
-          branch: gh-pages
-      - name: Create PR comment
-        run: poetry run python tools/docs_preview_comments.py ${{ secrets.GITHUB_TOKEN }} --pr=${{ github.event.number }} --repo=litestar-org/litestar
+          name: docs-preview
+          path: |
+            docs/_build
+            .pr_number
