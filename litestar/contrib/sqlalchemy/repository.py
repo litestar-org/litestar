@@ -536,7 +536,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         if before is not None:
             statement = statement.where(field < before)
         if after is not None:
-            statement = statement.where(field > before)
+            statement = statement.where(field > after)
         return statement
 
     def _filter_select_by_kwargs(self, statement: SelectT, **kwargs: Any) -> SelectT:
@@ -1026,7 +1026,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         if before is not None:
             statement = statement.where(field < before)
         if after is not None:
-            statement = statement.where(field > before)
+            statement = statement.where(field > after)
         return statement
 
     def _filter_select_by_kwargs(self, statement: SelectT, **kwargs: Any) -> SelectT:
