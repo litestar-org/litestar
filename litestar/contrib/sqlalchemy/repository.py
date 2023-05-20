@@ -833,7 +833,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         with wrap_sqlalchemy_exception():
             if self.session.bind and self.session.bind.dialect.update_executemany_returning:
                 instances = list(
-                    self.session.scalars(
+                    self.session.execute(
                         update(self.model_type).returning(self.model_type),
                         data_to_update,  # pyright: ignore[reportGeneralTypeIssues]
                     )
