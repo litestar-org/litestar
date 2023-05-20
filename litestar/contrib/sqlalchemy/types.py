@@ -54,11 +54,11 @@ class GUID(TypeDecorator):
             return value
         if dialect.name == "postgresql":
             return str(value)
-        if dialect.name == "oracle":
-            return str(value)
         value = self.to_uuid(value)
         if value is None:
             return value
+        if dialect.name == "oracle":
+            return value.bytes
         return value.bytes if self.binary else value.hex
 
     def process_result_value(self, value: bytes | str | uuid.UUID | None, dialect: Dialect) -> uuid.UUID | None:
