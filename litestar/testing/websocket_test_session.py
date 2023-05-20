@@ -49,7 +49,7 @@ class WebSocketTestSession:
             event: WebSocketConnectEvent = {"type": "websocket.connect"}
             self.receive_queue.put(event)
 
-            message = self.receive()
+            message = self.receive(timeout=self.client.timeout.read)
             self.accepted_subprotocol = cast("str | None", message.get("subprotocol", None))
             self.extra_headers = cast("list[tuple[bytes, bytes]] | None", message.get("headers", None))
             return self
