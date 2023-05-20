@@ -147,8 +147,8 @@ def test_extra_fields() -> None:
     token_secret = secrets.token_hex()
     encoded_token = jwt.encode(claims=raw_token, key=token_secret, algorithm="HS256")
     token = Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256")
-    assert token._extras and "azp" in token._extras
-    assert token._extras and "email" in token._extras
+    assert "azp" in token.extras
+    assert "email" in token.extras
 
     raw_token = {
         "sub": secrets.token_hex(),
@@ -158,4 +158,4 @@ def test_extra_fields() -> None:
     token_secret = secrets.token_hex()
     encoded_token = jwt.encode(claims=raw_token, key=token_secret, algorithm="HS256")
     token = Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256")
-    assert token._extras is None or token._extras == {}
+    assert token.extras == {}
