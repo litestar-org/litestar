@@ -317,3 +317,33 @@ async def test_repo_filter_before_after(author_repo: AuthorAsyncRepository) -> N
         author_repo (AuthorRepository): The author mock repository
     """
     await st.test_repo_filter_before_after(author_repo=author_repo)
+
+
+@pytest.mark.sqlalchemy_asyncmy
+async def test_repo_filter_search(author_repo: AuthorAsyncRepository) -> None:
+    """Test SQLALchemy Search filter.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    await st.test_repo_filter_search(author_repo=author_repo)
+
+
+@pytest.mark.sqlalchemy_asyncmy
+async def test_repo_filter_order_by(author_repo: AuthorAsyncRepository) -> None:
+    """Test SQLALchemy Order By filter.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    await st.test_repo_filter_order_by(author_repo=author_repo)
+
+
+@pytest.mark.sqlalchemy_asyncmy
+async def test_repo_filter_collection(author_repo: AuthorAsyncRepository) -> None:
+    """Test SQLALchemy Collection filter.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    await st.test_repo_filter_collection(author_repo=author_repo)

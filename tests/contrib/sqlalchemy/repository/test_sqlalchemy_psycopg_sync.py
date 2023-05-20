@@ -312,3 +312,33 @@ def test_repo_filter_before_after(author_repo: AuthorSyncRepository) -> None:
         author_repo (AuthorRepository): The author mock repository
     """
     st.test_repo_filter_before_after(author_repo=author_repo)
+
+
+@pytest.mark.sqlalchemy_psycopg_sync
+def test_repo_filter_search(author_repo: AuthorSyncRepository) -> None:
+    """Test SQLALchemy Search filter.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    st.test_repo_filter_search(author_repo=author_repo)
+
+
+@pytest.mark.sqlalchemy_psycopg_sync
+def test_repo_filter_order_by(author_repo: AuthorSyncRepository) -> None:
+    """Test SQLALchemy Order By filter.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    st.test_repo_filter_order_by(author_repo=author_repo)
+
+
+@pytest.mark.sqlalchemy_psycopg_sync
+def test_repo_filter_collection(author_repo: AuthorSyncRepository) -> None:
+    """Test SQLALchemy Collection filter.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    st.test_repo_filter_collection(author_repo=author_repo)
