@@ -4,7 +4,7 @@ import dataclasses
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import Any, cast
-
+from typing_extensions import Self
 from jose import JWSError, JWTError, jwt
 
 from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
@@ -67,7 +67,7 @@ class Token:
             raise ImproperlyConfiguredException("iat must be a current or past time")
 
     @classmethod
-    def decode(cls, encoded_token: str, secret: str | dict[str, str], algorithm: str) -> Token:
+    def decode(cls, encoded_token: str, secret: str | dict[str, str], algorithm: str) -> Self:
         """Decode a passed in token string and returns a Token instance.
 
         Args:
