@@ -34,7 +34,11 @@ AVAILABLE_PORTS = list(range(9000, 9999))
 
 logger = logging.getLogger("sphinx")
 
-ignore_missing_output = os.getenv("_LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT", "") == "1"
+ignore_missing_output = os.getenv("LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT", "") == "1"
+
+
+class StartupError(RuntimeError):
+    pass
 
 
 def _load_app_from_path(path: Path) -> Litestar:
@@ -52,12 +56,12 @@ def run_app(path: Path) -> Generator[int, None, None]:
     The first ``Litestar`` instance found in the file will be used as target to run.
     """
     while AVAILABLE_PORTS:
-        port = AVAILABLE_PORTS.pop()
+        port = AVAILABLE_PORTS.pop(0)
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             if sock.connect_ex(("127.0.0.1", port)) != 0:
                 break
     else:
-        raise RuntimeError("Could not find an open port")
+        raise StartupError("Could not find an open port")
 
     app = _load_app_from_path(path)
 
@@ -67,18 +71,22 @@ def run_app(path: Path) -> Generator[int, None, None]:
 
     proc = multiprocessing.Process(target=run)
     proc.start()
-    for _ in range(100):
-        try:
-            httpx.get(f"http://127.0.0.1:{port}", timeout=0.1)
-        except httpx.TransportError:
-            time.sleep(0.1)
-        else:
-            break
+
     try:
+        for _ in range(100):
+            try:
+                httpx.get(f"http://127.0.0.1:{port}", timeout=0.1)
+                break
+            except httpx.TransportError:
+                time.sleep(0.1)
+        else:
+            raise StartupError(f"App {path} failed to come online")
+
         yield port
+
     finally:
         proc.kill()
-    AVAILABLE_PORTS.append(port)
+        AVAILABLE_PORTS.append(port)
 
 
 def extract_run_args(content: str) -> tuple[str, list[list[str]]]:
