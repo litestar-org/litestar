@@ -3,11 +3,15 @@ from __future__ import annotations
 import dataclasses
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
-from typing import Any, cast
-from typing_extensions import Self
+from typing import TYPE_CHECKING, Any, cast
+
 from jose import JWSError, JWTError, jwt
 
 from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
+
 
 __all__ = ("Token",)
 
