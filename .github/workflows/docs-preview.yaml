@@ -1,0 +1,48 @@
+name: Deploy documentation preview
+on:
+  workflow_run:
+    workflows: [Tests And Linting]
+    types: [completed]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pygithub
+
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: ci.yml
+          workflow_conclusion: success
+          run_id: ${{ github.event.id }}
+          path: docs-preview
+
+      - name: Set PR number
+        run: echo "PR_NUMBER=$(cat docs-preview/.pr_number)" >> $GITHUB_ENV
+
+      - name: Deploy docs preview
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs-preview/html
+          token: ${{ secrets.DOCS_PREVIEW_DEPLOY_TOKEN }}
+          repository-name: litestar-org/litestar-docs-preview
+          clean: false
+          target-folder: ${{ env.PR_NUMBER }}
+          branch: gh-pages
+
+      - name: Create PR comment
+        run: python tools/docs_preview_comments.py ${{ secrets.GITHUB_TOKEN }} --pr=${{ env.PR_NUMBER }} --repo=litestar-org/litestar
