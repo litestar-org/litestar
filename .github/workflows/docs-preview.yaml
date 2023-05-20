@@ -6,6 +6,7 @@ on:
 
 jobs:
   deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' &&  github.event.workflow_run.event == 'pull_request' }}
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -15,21 +16,13 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-
-      - name: Install dependencies
-        run: pip install pygithub
-
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
         with:
-          workflow: ci.yml
           workflow_conclusion: success
-          run_id: ${{ github.event.id }}
+          run_id: ${{ github.event.workflow_run.id }}
           path: docs-preview
+          name: docs-preview
 
       - name: Set PR number
         run: echo "PR_NUMBER=$(cat docs-preview/.pr_number)" >> $GITHUB_ENV
@@ -44,5 +37,35 @@ jobs:
           target-folder: ${{ env.PR_NUMBER }}
           branch: gh-pages
 
-      - name: Create PR comment
-        run: python tools/docs_preview_comments.py ${{ secrets.GITHUB_TOKEN }} --pr=${{ env.PR_NUMBER }} --repo=litestar-org/litestar
+      - uses: actions/github-script@v6
+        env:
+          PR_NUMBER: ${{ env.PR_NUMBER }}
+        with:
+          script: |
+            const issue_number = process.env.PR_NUMBER
+            const body = "Documentation preview will be available shortly at https://litestar-org.github.io/litestar-docs-preview/" + issue_number
+
+            const opts = github.rest.issues.listComments.endpoint.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue_number,
+            });
+
+            const comments = await github.paginate(opts)
+
+            for (const comment of comments) {
+              if (comment.user.id === 41898282 && comment.body === body) {
+                await github.rest.issues.deleteComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: comment.id
+                })
+              }
+            }
+
+            await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue_number,
+                  body: body,
+            })

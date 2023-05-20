@@ -104,7 +104,7 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
-  docs_preview:
+  build-docs:
     needs:
       - validate
     if: github.event_name == 'pull_request'
