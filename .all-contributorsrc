@@ -975,6 +975,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "vtarchon",
+      "name": "Tom Kuo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1598170?v=4",
+      "profile": "https://github.com/vtarchon",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
