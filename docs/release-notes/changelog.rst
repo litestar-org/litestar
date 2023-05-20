@@ -1025,8 +1025,6 @@
         - ``signature``
 
 
-
-
 .. changelog:: 2.0.0alpha1
 
     .. change:: Validation of controller route handler methods
@@ -1085,21 +1083,19 @@
         :type: feature
 
         A simple event bus system for Starlite, supporting synchronous and asynchronous listeners and emitters, providing a
-        similar interface to handlers. It currently features a simple in-memory, process-local backend. For the future,
-        backends that allow inter-process event dispatching are planned.
+        similar interface to handlers. It currently features a simple in-memory, process-local backend
 
     .. change:: Unified storage interfaces
         :type: feature
         :pr: 1184
         :breaking:
 
-        Storage backends for server-side sessions``starlite.cache.Cache``` have been unified and replaced
+        Storage backends for server-side sessions ``starlite.cache.Cache``` have been unified and replaced
         by the ``starlite.storages``, which implements generic asynchronous key/values stores backed
         by memory, the file system or redis.
 
         .. important::
             This is a breaking change and you need to change your session / cache configuration accordingly
-
 
 
     .. change:: Relaxed type annotations
