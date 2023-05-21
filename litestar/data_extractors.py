@@ -9,7 +9,14 @@ from litestar.connection.request import Request
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import HttpMethod, RequestEncodingType
 
-__all__ = ("ConnectionDataExtractor", "ExtractedRequestData", "ExtractedResponseData", "ResponseDataExtractor")
+__all__ = (
+    "ConnectionDataExtractor",
+    "ExtractedRequestData",
+    "ExtractedResponseData",
+    "ResponseDataExtractor",
+    "RequestExtractorField",
+    "ResponseExtractorField",
+)
 
 
 if TYPE_CHECKING:
