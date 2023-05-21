@@ -4,8 +4,8 @@
 
 <div align="center">
 
-![PyPI - License](https://img.shields.io/pypi/l/starlite?color=202235)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/starlite?color=202235)
+[![PyPI - License](https://img.shields.io/pypi/l/starlite?color=202235)](https://pypi.org/project/starlite/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/starlite?color=202235)](https://pypi.org/project/starlite/)
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
