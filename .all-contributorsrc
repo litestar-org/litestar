@@ -725,7 +725,12 @@
       "contributions": [
         "doc",
         "code",
-        "test"
+        "test",
+        "infra",
+        "ideas",
+        "maintenance",
+        "business",
+        "design"
       ]
     },
     {
