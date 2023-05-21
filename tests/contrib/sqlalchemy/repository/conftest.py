@@ -59,15 +59,15 @@ def fx_raw_authors() -> list[dict[str, Any]]:
             "id": UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"),
             "name": "Agatha Christie",
             "dob": "1890-09-15",
-            "created": "0001-01-01T00:00:00",
-            "updated": "0001-01-01T00:00:00",
+            "created": "2023-05-01T00:00:00",
+            "updated": "2023-05-11T00:00:00",
         },
         {
             "id": "5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2",
             "name": "Leo Tolstoy",
             "dob": "1828-09-09",
-            "created": "0001-01-01T00:00:00",
-            "updated": "0001-01-01T00:00:00",
+            "created": "2023-03-01T00:00:00",
+            "updated": "2023-05-15T00:00:00",
         },
     ]
 

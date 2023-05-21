@@ -18,6 +18,14 @@ services:
       MYSQL_DATABASE: db
       MYSQL_ROOT_HOST: "%"
       LANG: C.UTF-8
+  oracle:
+    image: gvenzl/oracle-xe:latest-faststart
+    ports:
+      - "1512:1521" # use a non-standard port here
+    environment:
+      ORACLE_PASSWORD: super-secret
+      APP_USER_PASSWORD: super-secret
+      APP_USER: app
   redis:
     image: redis
     ports:
