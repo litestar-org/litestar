@@ -19,7 +19,7 @@
 [![Blog](https://img.shields.io/badge/Litestar-Blog-202235)](https://blog.litestar.dev)
 
 <!-- prettier-ignore-start -->
-[![Medium](https://img.shields.io/badge/Announcing%20Starlite%20(Litestar)-202235?style=flat&logo=medium&logoColor=white)](https://itnext.io/introducing-starlite-3928adaa19ae)
+[![Medium](https://img.shields.io/badge/Announcing%20Starlite%20(Litestar)-202235?style=flat&logo=medium&logoColor=white)](https://blog.litestar.dev/introducing-starlite-3928adaa19ae)
 <!-- prettier-ignore-end -->
 
 </div>
