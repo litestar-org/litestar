@@ -314,8 +314,40 @@ by accessing the store directly as described in :doc:`stores </usage/stores>`
 DTOs
 ----
 
-TBD
+DTOs are now defined using the ``dto`` and ``return_dto`` arguments to handlers/controllers/routers and the application.
 
+A DTO is any type that conforms to the :class:`litestar.dto.interface.DTOInterface` protocol.
+
+Litestar provides a suite of factory types that implement the ``DTOInterface`` protocol and can be used to define DTOs:
+
+- :class:`litestar.dto.factory.stdlib.DataclassDTO`
+- :class:`litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO`
+- :class:`litestar.contrib.pydantic.PydanticDTO`
+- :class:`litestar.contrib.msgspec.MsgspecDTO`
+- :class:`litestar.contrib.piccolo.PiccoloDTO` (TODO)
+- :class:`litestar.contrib.tortoise.TortoiseDTO` (TODO)
+
+For example, to define a DTO from a dataclass:
+
+.. code-block:: python
+
+    from dataclasses import dataclass
+
+    from litestar import get
+    from litestar.dto.factory import DTOConfig
+    from litestar.dto.factory.stdlib import DataclassDTO
+
+    @dataclass
+    class MyType:
+        some_field: str
+        another_field: int
+
+    class MyDTO(DataclassDTO[MyType]):
+        config = DTOConfig(exclude={"another_field"})
+
+    @get(dto=MyDTO)
+    async def handler() -> MyType:
+        return MyType(some_field="some value", another_field=42)
 
 
 SQLAlchemy plugin
