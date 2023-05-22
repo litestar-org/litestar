@@ -24,7 +24,6 @@ if TYPE_CHECKING:
 __all__ = ("SQLAlchemyDTO", "DataT")
 
 DataT = TypeVar("DataT", bound="DeclarativeBase | Collection[DeclarativeBase]")
-AnyDeclarativeT = TypeVar("AnyDeclarativeT", bound="DeclarativeBase")
 ElementType: TypeAlias = "Column[Any] | RelationshipProperty[Any]"
 
 
