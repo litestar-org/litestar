@@ -4,31 +4,29 @@
 
 <div align="center">
 
-![PyPI - License](https://img.shields.io/pypi/l/starlite?color=blue)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/starlite)
-
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=coverage)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
-
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
+[![PyPI - License](https://img.shields.io/pypi/l/starlite?color=202235)](https://pypi.org/project/starlite/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/starlite?color=202235)](https://pypi.org/project/starlite/)
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-78-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-78-202235.svg?style=flat)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
-[![Reddit](https://img.shields.io/reddit/subreddit-subscribers/starlite?label=r%2FStarlite&logo=reddit)](https://reddit.com/r/starlite)
-[![Discord](https://img.shields.io/discord/919193495116337154?color=blue&label=chat%20on%20discord&logo=discord)](https://discord.gg/X3FJqy8d2j)
-[![Matrix](https://img.shields.io/badge/%5Bm%5D%20chat%20on%20Matrix-bridged-blue)](https://matrix.to/#/#starlitespace:matrix.org)
+[![Reddit](https://img.shields.io/reddit/subreddit-subscribers/litestarapi?label=r%2FLitestarAPI&logo=reddit&color=202235&logoColor=white)](https://reddit.com/r/litestarapi)
+[![Discord](https://img.shields.io/discord/919193495116337154?color=202235&label=chat%20on%20discord&logo=discord)](https://discord.gg/X3FJqy8d2j)
+[![Matrix](https://img.shields.io/badge/%5Bm%5D%20chat%20on%20Matrix-bridged-202235)](https://matrix.to/#/#starlitespace:matrix.org)
+[![Blog](https://img.shields.io/badge/Litestar-Blog-202235)](https://blog.litestar.dev)
 
-[![Medium](https://img.shields.io/badge/Medium-12100E?style=flat&logo=medium&logoColor=white)](https://itnext.io/introducing-starlite-3928adaa19ae)
+<!-- prettier-ignore-start -->
+[![Medium](https://img.shields.io/badge/Announcing%20Starlite%20(Litestar)-202235?style=flat&logo=medium&logoColor=white)](https://blog.litestar.dev/introducing-starlite-3928adaa19ae)
+<!-- prettier-ignore-end -->
 
 </div>
 
-# Starlite
+# Starlite → Litestar
+
+**[Starlite has been renamed to Litestar](https://litestar.dev/about/organization.html#litestar-and-starlite)**
 
 Starlite is a powerful, performant, flexible and opinionated ASGI framework,
 offering first class typing support and a full [Pydantic](https://github.com/samuelcolvin/pydantic)
