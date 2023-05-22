@@ -38,10 +38,11 @@ class PydanticDTO(AbstractDTOFactory[DataT], Generic[DataT]):
             dto_field: DTOField | None = model_field.field_info.extra.get(DTO_FIELD_META_KEY)
 
             def determine_default(_parsed_type: ParsedType, _model_field: ModelField) -> Any:
-                if _model_field.default_factory is not None:
-                    return Empty
-
-                if _model_field.default is None and not _parsed_type.is_optional:
+                if (
+                    _model_field.default is Ellipsis
+                    or _model_field.default_factory is not None
+                    or (_model_field.default is None and not _parsed_type.is_optional)
+                ):
                     return Empty
 
                 return _model_field.default
