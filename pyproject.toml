@@ -37,6 +37,14 @@ packages = [
     { include = "starlite" },
 ]
 
+[tool.poetry.urls]
+"Issue Tracker" = "https://github.com/litestar-org/litestar/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc"
+"Changelog" = "https://github.com/litestar-org/litestar/releases/"
+"Twitter" = "https://twitter.com/LitestarAPI"
+"Reddit" = "https://www.reddit.com/r/litestarapi"
+"Discord" = "https://discord.gg/MmcwxztmQb"
+"Blog" = "https://blog.litestar.dev"
+
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
 aiomcache = { version = "*", optional = true }
