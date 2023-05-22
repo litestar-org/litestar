@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     from litestar.typing import ParsedType
 
-__all__ = ("PydanticDTO", "DataT")
+__all__ = ("PydanticDTO",)
 
 DataT = TypeVar("DataT", bound="BaseModel | Collection[BaseModel]")
 

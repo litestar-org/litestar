@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
     from litestar.typing import ParsedType
 
-__all__ = ("MsgspecDTO", "DataT")
+__all__ = ("MsgspecDTO",)
 
 DataT = TypeVar("DataT", bound="Struct | Collection[Struct]")
 
