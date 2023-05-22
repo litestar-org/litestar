@@ -35,7 +35,6 @@ if TYPE_CHECKING:
     from litestar.types import TypeEncodersMap
 
 __all__ = (
-    "DEFAULT_TYPE_ENCODERS",
     "dec_hook",
     "decode_json",
     "decode_media_type",
