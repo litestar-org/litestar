@@ -21,14 +21,13 @@ if TYPE_CHECKING:
 
     from litestar.typing import ParsedType
 
-__all__ = ("SQLAlchemyDTO", "DataT")
+__all__ = ("SQLAlchemyDTO",)
 
-DataT = TypeVar("DataT", bound="DeclarativeBase | Collection[DeclarativeBase]")
-AnyDeclarativeT = TypeVar("AnyDeclarativeT", bound="DeclarativeBase")
+T = TypeVar("T", bound="DeclarativeBase | Collection[DeclarativeBase]")
 ElementType: TypeAlias = "Column[Any] | RelationshipProperty[Any]"
 
 
-class SQLAlchemyDTO(AbstractDTOFactory[DataT], Generic[DataT]):
+class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
     """Support for domain modelling with SQLAlchemy."""
 
     __slots__ = ()

@@ -29,10 +29,10 @@ if TYPE_CHECKING:
 
 __all__ = ["AbstractDTOFactory"]
 
-DataT = TypeVar("DataT")
+T = TypeVar("T")
 
 
-class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
+class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
     """Base class for DTO types."""
 
     __slots__ = ("connection_context",)
@@ -98,7 +98,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         backend = self._get_backend("data", self.connection_context.handler_id)
         return backend.populate_data_from_raw(raw, self.connection_context)
 
-    def data_to_encodable_type(self, data: DataT | Collection[DataT]) -> LitestarEncodableType:
+    def data_to_encodable_type(self, data: T | Collection[T]) -> LitestarEncodableType:
         backend = self._get_backend("return", self.connection_context.handler_id)
         return backend.encode_data(data, self.connection_context)
 

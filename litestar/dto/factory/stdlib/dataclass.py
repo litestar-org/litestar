@@ -16,13 +16,13 @@ if TYPE_CHECKING:
     from litestar.types.protocols import DataclassProtocol
     from litestar.typing import ParsedType
 
-__all__ = ("DataclassDTO", "DataT")
+__all__ = ("DataclassDTO", "T")
 
-DataT = TypeVar("DataT", bound="DataclassProtocol | Collection[DataclassProtocol]")
+T = TypeVar("T", bound="DataclassProtocol | Collection[DataclassProtocol]")
 AnyDataclass = TypeVar("AnyDataclass", bound="DataclassProtocol")
 
 
-class DataclassDTO(AbstractDTOFactory[DataT], Generic[DataT]):
+class DataclassDTO(AbstractDTOFactory[T], Generic[T]):
     """Support for domain modelling with dataclasses."""
 
     __slots__ = ()
