@@ -174,7 +174,7 @@ app instance itself. For example:
            ],
            security=[{"BearerToken": []}],
            components=Components(
-               securitySchemes={
+               security_schemes={
                    "BearerToken": SecurityScheme(
                        type="http",
                        scheme="bearer",
