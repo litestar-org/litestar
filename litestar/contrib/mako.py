@@ -70,7 +70,9 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
             directory: Direct path or list of directory paths from which to serve templates.
         """
         super().__init__(directory=directory)
-        self.engine = TemplateLookup(directories=directory if isinstance(directory, (list, tuple)) else [directory])
+        self.engine = TemplateLookup(
+            directories=directory if isinstance(directory, (list, tuple)) else [directory], default_filters=["h"]
+        )
         self._template_callables: list[tuple[str, Callable[[dict[str, Any]], Any]]] = []
         self.register_template_callable(key="url_for_static_asset", template_callable=url_for_static_asset)  # type: ignore
         self.register_template_callable(key="csrf_token", template_callable=csrf_token)  # type: ignore
