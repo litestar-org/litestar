@@ -1,12 +1,13 @@
 [tool.poetry]
 name = "litestar"
 version = "2.0.0alpha7"
-description = "Performant, light and flexible ASGI API Framework"
+description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 authors = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
     "Peter Schutt <peter.github@proton.me>",
     "Cody Fincher <cody.fincher@gmail.com>",
     "Janek Nouvertné <provinzkraut@posteo.de>",
+    "Jacob Coffee <jacob@z7x.org>",
 ]
 maintainers = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
@@ -16,7 +17,7 @@ maintainers = [
     "Jacob Coffee <jacob@z7x.org>",
 ]
 license = "MIT"
-readme = "README.md"
+readme = "docs/PYPI_README.md"
 homepage = "https://litestar.dev/"
 repository = "https://github.com/litestar-org/litestar"
 documentation = "https://docs.litestar.dev/"
@@ -50,6 +51,14 @@ classifiers = [
 ]
 include = ["CHANGELOG.rst"]
 packages = [{ include = "litestar" }]
+
+[tool.poetry.urls]
+"Issue Tracker" = "https://github.com/litestar-org/litestar/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc"
+"Changelog" = "https://github.com/litestar-org/litestar/releases/"
+"Twitter" = "https://twitter.com/LitestarAPI"
+"Reddit" = "https://www.reddit.com/r/litestarapi"
+"Discord" = "https://discord.gg/MmcwxztmQb"
+"Blog" = "https://blog.litestar.dev"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
