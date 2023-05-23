@@ -20,10 +20,10 @@ if TYPE_CHECKING:
 
 __all__ = ("PydanticDTO",)
 
-DataT = TypeVar("DataT", bound="BaseModel | Collection[BaseModel]")
+T = TypeVar("T", bound="BaseModel | Collection[BaseModel]")
 
 
-class PydanticDTO(AbstractDTOFactory[DataT], Generic[DataT]):
+class PydanticDTO(AbstractDTOFactory[T], Generic[T]):
     """Support for domain modelling with Pydantic."""
 
     __slots__ = ()

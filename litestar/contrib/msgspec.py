@@ -18,10 +18,10 @@ if TYPE_CHECKING:
 
 __all__ = ("MsgspecDTO",)
 
-DataT = TypeVar("DataT", bound="Struct | Collection[Struct]")
+T = TypeVar("T", bound="Struct | Collection[Struct]")
 
 
-class MsgspecDTO(AbstractDTOFactory[DataT], Generic[DataT]):
+class MsgspecDTO(AbstractDTOFactory[T], Generic[T]):
     """Support for domain modelling with Msgspec."""
 
     __slots__ = ()

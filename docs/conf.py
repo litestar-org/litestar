@@ -135,11 +135,11 @@ ignore_missing_refs = {
     "litestar.template": {"litestar.template.base.T_co"},
     "litestar.openapi.OpenAPIController.security": {"SecurityRequirement"},
     re.compile(r"litestar\.plugins.*"): re.compile(".*ModelT"),
-    re.compile(r"litestar\.contrib\.*"): re.compile(".*DataT"),
+    re.compile(r"litestar\.contrib\.*"): re.compile(".*T"),
     re.compile(r"litestar\.contrib\.sqlalchemy\.*"): re.compile(
         ".*(ConnectionT|EngineT|SessionT|SessionMakerT|SlotsBase)"
     ),
-    re.compile(r"litestar\.dto.*"): re.compile(".*DataT|.*ParsedType|Empty"),
+    re.compile(r"litestar\.dto.*"): re.compile(".*T|.*ParsedType|Empty"),
 }
 
 
