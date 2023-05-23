@@ -150,12 +150,7 @@ async def async_generator() -> AsyncGenerator[float, None]:
 
 @pytest.mark.parametrize(
     ("dep", "exp"),
-    [
-        (sync_callable, True),
-        (async_callable, False),
-        (sync_generator, True),
-        pytest.param(async_generator, False, marks=pytest.mark.xfail(reason="the bug")),
-    ],
+    [(sync_callable, True), (async_callable, False), (sync_generator, True), (async_generator, False)],
 )
 def test_dependency_has_async_callable(dep: Any, exp: bool) -> None:
     assert Provide(dep).has_sync_callable is exp

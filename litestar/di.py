@@ -49,8 +49,6 @@ class Provide:
             raise ImproperlyConfiguredException("Provider dependency must a callable value")
 
         self.dependency = Ref["AnyCallable"](dependency)
-        print(f"{isclass(dependency) = }")
-        print(f"{is_async_callable(dependency) = }")
         self.has_sync_callable = isclass(dependency) or not is_async_callable(dependency)
         if self.has_sync_callable and sync_to_thread is None:
             warn_implicit_sync_to_thread(dependency, stacklevel=3)

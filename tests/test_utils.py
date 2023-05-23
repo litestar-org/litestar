@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Callable
+from typing import AsyncGenerator, Callable
 
 import pytest
 
@@ -12,6 +12,10 @@ class AsyncTestCallable:
 
     async def method(self, param1: int, param2: int) -> None:
         ...
+
+
+async def async_generator() -> AsyncGenerator[int, None]:
+    yield 1
 
 
 class SyncTestCallable:
@@ -46,6 +50,7 @@ sync_callable = SyncTestCallable()
         (lambda: ..., False),
         (AsyncTestCallable, True),
         (SyncTestCallable, False),
+        (async_generator, True),
     ],
 )
 def test_is_async_callable(c: Callable[[int, int], None], exp: bool) -> None:
