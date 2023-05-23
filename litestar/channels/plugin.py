@@ -111,6 +111,7 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
         """Plugin hook. Set up a ``channels`` dependency, add route handlers and register application hooks"""
         app_config.dependencies["channels"] = Provide(lambda: self, use_cache=True, sync_to_thread=False)
         app_config.lifespan.append(self)
+        app_config.signature_namespace.update(ChannelsPlugin=ChannelsPlugin)
 
         if self._create_route_handlers:
             if self._arbitrary_channels_allowed:

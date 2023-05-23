@@ -69,6 +69,12 @@ def test_plugin_dependency(mock: MagicMock, memory_backend: MemoryChannelsBacken
     assert mock.call_args[0][0] is channels_plugin
 
 
+def test_plugin_dependency_signature_namespace(memory_backend: MemoryChannelsBackend) -> None:
+    channels_plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
+    app = Litestar(plugins=[channels_plugin])
+    assert app.signature_namespace["ChannelsPlugin"] is ChannelsPlugin
+
+
 @pytest.mark.flaky(reruns=5)
 async def test_pub_sub_wait_published(channels_backend: ChannelsBackend) -> None:
     async with ChannelsPlugin(backend=channels_backend, channels=["something"]) as plugin:
