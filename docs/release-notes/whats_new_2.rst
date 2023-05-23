@@ -81,3 +81,10 @@ Channels
     which can for example be used to broadcast messages via WebSockets and includes
     functionalities such as automatically generating WebSocket route handlers to
     broadcast messages
+
+
+Application lifespan context managers
+    A new ``lifespan`` argument has been added to :class:`~litestar.app.Litestar`,
+    accepting an asynchronous context manager, wrapping the lifespan of the application.
+    It will be entered with the startup phase and exited on shutdown, providing
+    functionality equal to the ``on_startup`` and ``on_shutdown`` hooks.

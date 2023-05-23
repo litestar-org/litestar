@@ -12,145 +12,135 @@ Changed module paths
 +====================================================+========================================================================+
 | **Datastructures**                                                                                                          |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.datastructures.UploadFile``             | ``litestar.upload_file.UploadFile``                                    |
+| ``starlite.BackgroundTask``                        | :class:`.background_tasks.BackgroundTask`                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.BackgroundTask``                        | ``litestar.background_tasks.BackgroundTask``                           |
-+----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.BackgroundTasks``                       | ``litestar.background_tasks.BackgroundTasks``                          |
+| ``starlite.BackgroundTasks``                       | :class:`.background_tasks.BackgroundTasks`                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Configuration**                                                                                                           |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AllowedHostsConfig``                    | ``litestar.config.allowed_hosts.AllowedHostsConfig``                   |
+| ``starlite.AllowedHostsConfig``                    | :class:`.config.allowed_hosts.AllowedHostsConfig`                      |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.BaseLoggingConfig``                     | ``litestar.logging.BaseLoggingConfig``                                 |
+| ``starlite.CacheConfig``                           | :class:`.config.response_cache.ResponseCacheConfig`                    |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.CacheConfig``                           | ``litestar.config.cache.CacheConfig``                                  |
+| ``starlite.CompressionConfig``                     | :class:`.config.compression.CompressionConfig`                         |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.CompressionConfig``                     | ``litestar.config.compression.CompressionConfig``                      |
+| ``starlite.CORSConfig``                            | :class:`.config.cors.CORSConfig`                                       |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.CORSConfig``                            | ``litestar.config.cors.CORSConfig``                                    |
+| ``starlite.CSRFConfig``                            | :class:`.config.csrf.CSRFConfig`                                       |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.CSRFConfig``                            | ``litestar.config.csrf.CSRFConfig``                                    |
+| ``starlite.OpenAPIConfig``                         | :class:`.openapi.OpenAPIConfig`                                        |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.LoggingConfig``                         | ``litestar.logging.LoggingConfig``                                     |
+| ``starlite.StaticFilesConfig``                     | :class:`.static_files.config.StaticFilesConfig`                        |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.StructLoggingConfig``                   | ``litestar.logging.StructLoggingConfig``                               |
+| ``starlite.TemplateConfig``                        | :class:`.template.TemplateConfig`                                      |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.OpenAPIConfig``                         | ``litestar.openapi.OpenAPIConfig``                                     |
+| ``starlite.BaseLoggingConfig``                     | :class:`.logging.config.BaseLoggingConfig`                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.StaticFilesConfig``                     | ``litestar.static_files.config.StaticFilesConfig``                     |
+| ``starlite.LoggingConfig``                         | :class:`.logging.config.LoggingConfig`                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.TemplateConfig``                        | ``litestar.template.TemplateConfig``                                   |
-+----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.config.cache.CacheConfig``              | `starlite.config.response_cache.ResponseCacheConfig``                  |
+| ``starlite.StructLoggingConfig``                   | :class:`.logging.config.StructLoggingConfig`                           |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Provide**                                                                                                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.datastructures.Provide``                | ``litestar.di.Provide``                                                |
+| ``starlite.datastructures.Provide``                | :class:`.di.Provide`                                                   |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Pagination**                                                                                                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AbstractAsyncClassicPaginator``         | ``litestar.utils.pagination.AbstractAsyncClassicPaginator``            |
+| ``starlite.AbstractAsyncClassicPaginator``         | :class:`.pagination.AbstractAsyncClassicPaginator`                     |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AbstractAsyncCursorPaginator``          | ``litestar.utils.pagination.AbstractAsyncCursorPaginator``             |
+| ``starlite.AbstractAsyncCursorPaginator``          | :class:`.pagination.AbstractAsyncCursorPaginator`                      |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AbstractAsyncOffsetPaginator``          | ``litestar.utils.pagination.AbstractAsyncOffsetPaginator``             |
+| ``starlite.AbstractAsyncOffsetPaginator``          | :class:`.pagination.AbstractAsyncOffsetPaginator`                      |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AbstractSyncClassicPaginator``          | ``litestar.utils.pagination.AbstractSyncClassicPaginator``             |
+| ``starlite.AbstractSyncClassicPaginator``          | :class:`.pagination.AbstractSyncClassicPaginator`                      |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AbstractSyncCursorPaginator``           | ``litestar.utils.pagination.AbstractSyncCursorPaginator``              |
+| ``starlite.AbstractSyncCursorPaginator``           | :class:`.pagination.AbstractSyncCursorPaginator`                       |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AbstractSyncOffsetPaginator``           | ``litestar.utils.pagination.AbstractSyncOffsetPaginator``              |
+| ``starlite.AbstractSyncOffsetPaginator``           | :class:`.pagination.AbstractSyncOffsetPaginator`                       |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.ClassicPagination``                     | ``litestar.utils.pagination.ClassicPagination``                        |
+| ``starlite.ClassicPagination``                     | :class:`.pagination.ClassicPagination`                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.CursorPagination``                      | ``litestar.utils.pagination.CursorPagination``                         |
+| ``starlite.CursorPagination``                      | :class:`.pagination.CursorPagination`                                  |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.OffsetPagination``                      | ``litestar.utils.pagination.OffsetPagination``                         |
+| ``starlite.OffsetPagination``                      | :class:`.pagination.OffsetPagination`                                  |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Response containers**                                                                                                     |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.File``                                  | ``litestar.response_containers.File``                                  |
+| ``starlite.File``                                  | :class:`.response_containers.File`                                     |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.Redirect``                              | ``litestar.response_containers.Redirect``                              |
+| ``starlite.Redirect``                              | :class:`.response_containers.Redirect`                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.ResponseContainer``                     | ``litestar.response_containers.ResponseContainer``                     |
+| ``starlite.ResponseContainer``                     | :class:`.response_containers.ResponseContainer`                        |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.Stream``                                | ``litestar.response_containers.Stream``                                |
+| ``starlite.Stream``                                | :class:`.response_containers.Stream`                                   |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.Template``                              | ``litestar.response_containers.Template``                              |
+| ``starlite.Template``                              | :class:`.response_containers.Template`                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Exceptions**                                                                                                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.HTTPException``                         | ``litestar.exceptions.HTTPException``                                  |
+| ``starlite.HTTPException``                         | :class:`.exceptions.HTTPException`                                     |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.ImproperlyConfiguredException``         | ``litestar.exceptions.ImproperlyConfiguredException``                  |
+| ``starlite.ImproperlyConfiguredException``         | :class:`.exceptions.ImproperlyConfiguredException`                     |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.InternalServerException``               | ``litestar.exceptions.InternalServerException``                        |
+| ``starlite.InternalServerException``               | :class:`.exceptions.InternalServerException`                           |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.MissingDependencyException``            | ``litestar.exceptions.MissingDependencyException``                     |
+| ``starlite.MissingDependencyException``            | :class:`.exceptions.MissingDependencyException`                        |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.NoRouteMatchFoundException``            | ``litestar.exceptions.NoRouteMatchFoundException``                     |
+| ``starlite.NoRouteMatchFoundException``            | :class:`.exceptions.NoRouteMatchFoundException`                        |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.NotAuthorizedException``                | ``litestar.exceptions.NotAuthorizedException``                         |
+| ``starlite.NotAuthorizedException``                | :class:`.exceptions.NotAuthorizedException`                            |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.NotFoundException``                     | ``litestar.exceptions.NotFoundException``                              |
+| ``starlite.NotFoundException``                     | :class:`.exceptions.NotFoundException`                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.PermissionDeniedException``             | ``litestar.exceptions.PermissionDeniedException``                      |
+| ``starlite.PermissionDeniedException``             | :class:`.exceptions.PermissionDeniedException`                         |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.ServiceUnavailableException``           | ``litestar.exceptions.ServiceUnavailableException``                    |
+| ``starlite.ServiceUnavailableException``           | :class:`.exceptions.ServiceUnavailableException`                       |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.StarliteException``                     | ``litestar.exceptions.StarliteException``                              |
+| ``starlite.StarliteException``                     | :class:`.exceptions.LitestarException`                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.TooManyRequestsException``              | ``litestar.exceptions.TooManyRequestsException``                       |
+| ``starlite.TooManyRequestsException``              | :class:`.exceptions.TooManyRequestsException`                          |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.ValidationException``                   | ``litestar.exceptions.ValidationException``                            |
+| ``starlite.ValidationException``                   | :class:`.exceptions.ValidationException`                               |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.WebSocketException``                    | ``litestar.exceptions.WebSocketException``                             |
+| ``starlite.WebSocketException``                    | :class:`.exceptions.WebSocketException`                                |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Testing**                                                                                                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.TestClient``                            | ``litestar.testing.TestClient``                                        |
+| ``starlite.TestClient``                            | :class:`.testing.TestClient`                                           |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AsyncTestClient``                       | ``litestar.testing.AsyncTestClient``                                   |
+| ``starlite.AsyncTestClient``                       | :class:`.testing.AsyncTestClient`                                      |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.create_test_client``                    | ``litestar.testing.create_test_client``                                |
-+----------------------------------------------------+------------------------------------------------------------------------+
-| **DTO**                                                                                                                     |
-+----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.DTOFactory``                            | ``litestar.dto.DTOFactory``                                            |
+| ``starlite.create_test_client``                    | :class:`.testing.create_test_client`                                   |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **OpenAPI**                                                                                                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.OpenAPIController``                     | ``litestar.openapi.controller.OpenAPIController``                      |
+| ``starlite.OpenAPIController``                     | :class:`.openapi.controller.OpenAPIController`                         |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.ResponseSpec``                          | ``litestar.openapi.datastructures.ResponseSpec``                       |
+| ``starlite.ResponseSpec``                          | :class:`.openapi.datastructures.ResponseSpec`                          |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Middleware**                                                                                                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AbstractAuthenticationMiddleware``      | ``litestar.middleware.authentication.AbstractAuthenticationMiddleware``|
+| ``starlite.AbstractAuthenticationMiddleware``      | :class:`.middleware.authentication.AbstractAuthenticationMiddleware`   |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AuthenticationResult``                  | ``litestar.middleware.authentication.AuthenticationResult``            |
+| ``starlite.AuthenticationResult``                  | :class:`.middleware.authentication.AuthenticationResult`               |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AbstractMiddleware``                    | ``litestar.middleware.AbstractMiddleware``                             |
+| ``starlite.AbstractMiddleware``                    | :class:`.middleware.AbstractMiddleware`                                |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.DefineMiddleware``                      | ``litestar.middleware.DefineMiddleware``                               |
+| ``starlite.DefineMiddleware``                      | :class:`.middleware.DefineMiddleware`                                  |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.MiddlewareProtocol``                    | ``litestar.middleware.MiddlewareProtocol``                             |
+| ``starlite.MiddlewareProtocol``                    | :class:`.middleware.MiddlewareProtocol`                                |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Security**                                                                                                                |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AbstractSecurityConfig``                | ``litestar.security.AbstractSecurityConfig``                           |
+| ``starlite.AbstractSecurityConfig``                | :class:`.security.AbstractSecurityConfig`                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Handlers**                                                                                                                |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.AbstractSecurityConfig``                | ``litestar.security.AbstractSecurityConfig``                           |
+| ``starlite.handlers.asgi``                         | :mod:`.handlers`                                                       |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.handlers.asgi``                         | ``litestar.handlers.asgi_handlers``                                    |
+| ``starlite.handlers.http``                         | :mod:`.handlers`                                                       |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.handlers.http``                         | ``litestar.handlers.http_handlers``                                    |
-+----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.handlers.websocket``                    | ``litestar.handlers.websocket_handlers``                               |
+| ``starlite.handlers.websocket``                    | :class:`.handlers`                                                     |
 +----------------------------------------------------+------------------------------------------------------------------------+
 
 
@@ -164,37 +154,35 @@ plain :class:`Mapping[str, str] <typing.Mapping>`. The typing of
 changed to be more strict and now only allows string values.
 
 
-.. tab-set::
 
-    .. tab-item:: 1.51
+.. code-block:: python
+    :caption: 1.51
 
-        .. code-block:: python
-
-            from starlite import ResponseHeader, get
+    from starlite import ResponseHeader, get
 
 
-            @get(response_headers={"my-header": ResponseHeader(value="header-value")})
-            async def handler() -> str:
-                ...
-
-    .. tab-item:: 2.x
-
-        .. code-block:: python
-
-            from litestar import ResponseHeader, get
+    @get(response_headers={"my-header": ResponseHeader(value="header-value")})
+    async def handler() -> str:
+        ...
 
 
-            @get(response_headers=[ResponseHeader(name="my-header", value="header-value")])
-            async def handler() -> str:
-                ...
+.. code-block:: python
+    :caption: 2.x
+
+    from litestar import ResponseHeader, get
 
 
-            # or
+    @get(response_headers=[ResponseHeader(name="my-header", value="header-value")])
+    async def handler() -> str:
+        ...
 
 
-            @get(response_headers={"my-header": "header-value"})
-            async def handler() -> str:
-                ...
+    # or
+
+
+    @get(response_headers={"my-header": "header-value"})
+    async def handler() -> str:
+        ...
 
 
 Response cookies
@@ -204,11 +192,28 @@ Response cookies might now also be set using a
 :class:`Mapping[str, str] <typing.Mapping>`, analogous to `Response headers`_.
 
 
+.. code-block:: python
+
+    @get("/", response_cookies=[Cookie(key="foo", value="bar")])
+    async def handler() -> None:
+        ...
+
+is equivalent to
+
+.. code-block:: python
+
+    @get("/", response_cookies={"foo": "bar"})
+    async def handler() -> None:
+        ...
+
+
 SQLAlchemy Plugin
 -----------------
 
 Support for SQLAlchemy 1 has been dropped and the new plugin will now support
 SQLAlchemy 2 only.
+
+TODO: Migration instructions
 
 .. seealso::
     :doc:`/usage/contrib/sqlalchemy`
@@ -253,7 +258,23 @@ Remove 2 argument ``before_send``
 ---------------------------------
 
 The 2 argument for of ``before_send`` hook handlers has been removed. Existing handlers
-should be changed to include an additional ``scope`` parameter
+should be changed to include an additional ``scope`` parameter.
+
+
+.. code-block:: python
+    :caption: 1.51
+
+    async def before_send(message: Message, state: State) -> None:
+        ...
+
+
+.. code-block:: python
+    :caption: 2.x
+
+    async def before_send(message: Message, state: State, scope: Scope) -> None:
+        ...
+
+
 
 .. seealso::
     :ref:`change:2.0.0alpha2-remove support for 2 argument form of`
@@ -267,26 +288,22 @@ The ``initial_state`` argument to :class:`~litestar.app.Litestar` has been repla
 with a ``state`` keyword argument, accepting an optional
 :class:`~litestar.datastructures.state.State` instance.
 
-.. seealso::
-    :ref:`change:2.0.0alpha2-replace`
 
 
 Existing code using this keyword argument will need to be changed from
 
 .. code-block:: python
+    :caption: 1.51
 
-    from starlite import Starlite
 
     app = Starlite(..., initial_state={"some": "key"})
 
 to
 
 .. code-block:: python
+    :caption: 2.x
 
-        from litestar import Litestar
-        from litestar.datastructures.state import State
-
-        app = Litestar(..., state=State({"some": "key"}))
+    app = Litestar(..., state=State({"some": "key"}))
 
 
 
@@ -314,18 +331,21 @@ by accessing the store directly as described in :doc:`stores </usage/stores>`
 DTOs
 ----
 
-DTOs are now defined using the ``dto`` and ``return_dto`` arguments to handlers/controllers/routers and the application.
+DTOs are now defined using the ``dto`` and ``return_dto`` arguments to
+handlers/controllers/routers and the application.
 
-A DTO is any type that conforms to the :class:`litestar.dto.interface.DTOInterface` protocol.
+A DTO is any type that conforms to the :class:`litestar.dto.interface.DTOInterface`
+protocol.
 
-Litestar provides a suite of factory types that implement the ``DTOInterface`` protocol and can be used to define DTOs:
+Litestar provides a suite of factory types that implement the ``DTOInterface`` protocol
+and can be used to define DTOs:
 
 - :class:`litestar.dto.factory.stdlib.DataclassDTO`
 - :class:`litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO`
 - :class:`litestar.contrib.pydantic.PydanticDTO`
 - :class:`litestar.contrib.msgspec.MsgspecDTO`
-- :class:`litestar.contrib.piccolo.PiccoloDTO` (TODO)
-- :class:`litestar.contrib.tortoise.TortoiseDTO` (TODO)
+- ``litestar.contrib.piccolo.PiccoloDTO`` (TODO)
+- ``litestar.contrib.tortoise.TortoiseDTO`` (TODO)
 
 For example, to define a DTO from a dataclass:
 
@@ -337,23 +357,25 @@ For example, to define a DTO from a dataclass:
     from litestar.dto.factory import DTOConfig
     from litestar.dto.factory.stdlib import DataclassDTO
 
+
     @dataclass
     class MyType:
         some_field: str
         another_field: int
 
+
     class MyDTO(DataclassDTO[MyType]):
         config = DTOConfig(exclude={"another_field"})
+
 
     @get(dto=MyDTO)
     async def handler() -> MyType:
         return MyType(some_field="some value", another_field=42)
 
 
-SQLAlchemy plugin
------------------
+.. seealso::
+    :doc:`/usage/dto/index`
 
-TBD
 
 
 
@@ -370,4 +392,92 @@ The following hooks have been removed:
 
 
 ``on_startup`` and ``on_shutdown`` now optionally receive the application instance as
-their first parameter.
+their first parameter. If your ``on_startup`` and ``on_shutdown`` hooks made use of the
+application state, they will now have to access it through the provided application
+instance.
+
+.. code-block:: python
+    :caption: 1.51
+
+    def on_startup(state: State) -> None:
+        print(state.something)
+
+
+.. code-block:: python
+    :caption: 2.x
+
+    def on_startup(app: Litestar) -> None:
+        print(app.state.something)
+
+
+Dependencies without ``Provide``
+--------------------------------
+
+Dependencies may now be declared without :class:`~litestar.di.Provide`, by passing the
+callable directly. This can be advantageous in places where the configuration options
+of :class:`~litestar.di.Provide` are not needed.
+
+.. code-block:: python
+
+    async def some_dependency() -> str:
+        ...
+
+
+    app = Litestar(dependencies={"some": Provide(some_dependency)})
+
+is equivalent to
+
+
+.. code-block:: python
+
+    async def some_dependency() -> str:
+        ...
+
+
+    app = Litestar(dependencies={"some": some_dependency})
+
+
+``sync_to_thread``
+------------------
+
+The ``sync_to_thread`` option can be use to run a synchronous callable provided to a
+route handler or :class:`~litestar.di.Provide` inside a thread pool. Since synchronous
+functions may block the main thread when not used with ``sync_to_thread=True``, a
+warning will be raised in these cases. If the synchronous function should not be run in
+a thread pool, passing ``sync_to_thread=False`` will also silence the warning.
+
+
+.. tip::
+    The warning can be disabled entirely by setting the environment variable
+    ``LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD=0``
+
+
+
+.. code-block:: python
+    :caption: 1.51
+
+    @get()
+    def handler() -> None:
+        ...
+
+
+
+.. code-block:: python
+    :caption: 2.x
+
+    @get(sync_to_thread=False)
+    def handler() -> None:
+        ...
+
+or
+
+.. code-block:: python
+    :caption: 2.x
+
+    @get(sync_to_thread=True)
+    def handler() -> None:
+        ...
+
+
+.. seealso::
+    :doc:`/topics/sync-vs-async`
