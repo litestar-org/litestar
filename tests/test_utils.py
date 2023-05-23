@@ -50,7 +50,7 @@ sync_callable = SyncTestCallable()
         (lambda: ..., False),
         (AsyncTestCallable, True),
         (SyncTestCallable, False),
-        (async_generator, True),
+        (async_generator, False),
     ],
 )
 def test_is_async_callable(c: Callable[[int, int], None], exp: bool) -> None:

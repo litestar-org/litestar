@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from inspect import isclass
+from inspect import isasyncgenfunction, isclass, isgeneratorfunction
 from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import ImproperlyConfiguredException
@@ -50,7 +50,11 @@ class Provide:
 
         self.dependency = Ref["AnyCallable"](dependency)
         self.has_sync_callable = isclass(dependency) or not is_async_callable(dependency)
-        if self.has_sync_callable and sync_to_thread is None:
+        if (
+            self.has_sync_callable
+            and sync_to_thread is None
+            and not (isgeneratorfunction(dependency) or isasyncgenfunction(dependency))
+        ):
             warn_implicit_sync_to_thread(dependency, stacklevel=3)
 
         if not self.has_sync_callable and sync_to_thread is not None:
