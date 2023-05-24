@@ -206,7 +206,19 @@ def create_response_handler(
         A handler function.
     """
 
-    async def handler(data: Response, **kwargs: Any) -> ASGIApp:
+    async def handler(
+        data: Response,
+        return_dto: type[DTOInterface] | None,
+        request: Request[Any, Any, Any],
+        **kwargs: Any,
+    ) -> ASGIApp:
+        if return_dto:
+            ctx = ConnectionContext.from_connection(request)
+            dto = return_dto(ctx)
+            _data = dto.bytes_to_data_type(data.body)
+            _bytes = dto.data_to_encodable_type(_data)
+            # create a new Response based on the original one?
+
         data.cookies = filter_cookies(frozenset(data.cookies), cookies)
         return await after_request(data) if after_request else data  # type: ignore
 

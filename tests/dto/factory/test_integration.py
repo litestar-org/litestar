@@ -14,6 +14,7 @@ from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.dto.factory.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
 from litestar.params import Body
+from litestar.response.base import Response
 from litestar.testing import create_test_client
 
 
@@ -200,3 +201,23 @@ def test_dto_openapi_model_name_collision() -> None:
             k.startswith("tests.dto.factory.test_integration.test_dto_openapi_model_name_collision.<locals>.Bar")
             for k in response.json()["components"]["schemas"]
         )
+
+
+def test_dto_with_explicit_Response_return() -> None:
+    @dataclass
+    class Foo:
+        bar: str
+
+    config = DTOConfig(rename_strategy="upper")
+    dto = DataclassDTO[Annotated[Foo, config]]
+
+    @post(dto=dto, return_dto=dto, signature_namespace={"Foo": Foo})
+    def handler(data: Foo) -> Response[Foo]:
+        # return data
+        return Response(data)
+
+    with create_test_client(route_handlers=[handler], debug=True) as client:
+        response = client.post("/", json={"BAR": "hello"})
+        assert response.json() == {"BAR": "hello"}
+
+    assert 0
