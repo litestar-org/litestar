@@ -990,6 +990,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "LeckerenSirupwaffeln",
+      "name": "LeckerenSirupwaffeln",
+      "avatar_url": "https://avatars.githubusercontent.com/u/83568015?v=4",
+      "profile": "https://github.com/LeckerenSirupwaffeln",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -998,5 +1007,6 @@
   "repoType": "github",
   "repoHost": "https://github.com",
   "skipCi": true,
-  "commitConvention": "angular"
+  "commitConvention": "angular",
+  "commitType": "docs"
 }
