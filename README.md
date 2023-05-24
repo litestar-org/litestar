@@ -20,7 +20,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-103-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-104-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -416,6 +416,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://hexcode.tech"><img src="https://avatars.githubusercontent.com/u/419606?v=4?s=100" width="100px;" alt="Phyo Arkar Lwin"/><br /><sub><b>Phyo Arkar Lwin</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=v3ss0n" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/MatthewNewland"><img src="https://avatars.githubusercontent.com/u/9618670?v=4?s=100" width="100px;" alt="MatthewNewland"/><br /><sub><b>MatthewNewland</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3AMatthewNewland" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/vtarchon"><img src="https://avatars.githubusercontent.com/u/1598170?v=4?s=100" width="100px;" alt="Tom Kuo"/><br /><sub><b>Tom Kuo</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3Avtarchon" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LeckerenSirupwaffeln"><img src="https://avatars.githubusercontent.com/u/83568015?v=4?s=100" width="100px;" alt="LeckerenSirupwaffeln"/><br /><sub><b>LeckerenSirupwaffeln</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3ALeckerenSirupwaffeln" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
