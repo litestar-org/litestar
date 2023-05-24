@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar.dto.interface import ConnectionContext, DTOInterface
 from litestar.enums import RequestEncodingType
+from litestar.response.base import Response
 from litestar.typing import ParsedType
 
 from ._backends import MsgspecDTOBackend, PydanticDTOBackend
@@ -135,6 +136,9 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
             parsed_type = handler_context.parsed_type.annotation.parsed_type
         else:
             parsed_type = handler_context.parsed_type
+
+        if parsed_type.is_subclass_of(Response):
+            parsed_type = parsed_type.inner_types[0]
 
         if parsed_type.is_collection:
             if len(parsed_type.inner_types) != 1:

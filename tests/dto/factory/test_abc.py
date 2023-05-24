@@ -14,6 +14,7 @@ from litestar.dto.factory.exc import InvalidAnnotation
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.dto.interface import ConnectionContext, HandlerContext
 from litestar.enums import RequestEncodingType
+from litestar.response.base import Response
 from litestar.typing import ParsedType
 
 from . import Model
@@ -140,6 +141,28 @@ def test_form_encoded_data_uses_pydantic_backend(request_encoding_type: RequestE
         )
     )
     assert isinstance(dto_type._handler_backend_map[("data", "handler")], PydanticDTOBackend)
+
+
+def test_generic_Response_with_matching_type_handler() -> None:
+    dto_type = DataclassDTO[Model]
+
+    with pytest.raises(InvalidAnnotation):
+        dto_type.on_registration(
+            HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Response[Model]))
+        )
+
+
+def test_raises_invalid_annotation_for_generic_Response_with_non_matching_type_handlers() -> None:
+    dto_type = DataclassDTO[Model]
+
+    @dataclass
+    class OtherModel:
+        a: int
+
+    with pytest.raises(InvalidAnnotation):
+        dto_type.on_registration(
+            HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Response[OtherModel]))
+        )
 
 
 def test_raises_invalid_annotation_for_non_homogenous_collection_types() -> None:
