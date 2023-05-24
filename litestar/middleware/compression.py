@@ -85,6 +85,7 @@ class CompressionFacade:
             self.buffer.write(self.compressor.process(body) + self.compressor.flush())  # type: ignore
         else:
             self.compressor.write(body)
+            self.compressor.flush()
 
     def close(self) -> None:
         """Close the compression stream.
