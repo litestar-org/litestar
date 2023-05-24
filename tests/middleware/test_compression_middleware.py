@@ -1,4 +1,5 @@
-from typing import AsyncIterator, Literal
+from typing import AsyncIterator, Callable, Literal
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -7,9 +8,11 @@ from litestar.config.compression import CompressionConfig
 from litestar.enums import CompressionEncoding
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import HTTPRouteHandler
+from litestar.middleware.compression import CompressionMiddleware
 from litestar.response_containers import Stream
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
+from litestar.types.asgi_types import ASGIApp, HTTPResponseBodyEvent, HTTPResponseStartEvent, Message, Scope
 
 BrotliMode = Literal["text", "generic", "font"]
 
@@ -164,3 +167,29 @@ def test_config_brotli_lgwin_validation(brotli_lgwin: int, should_raise: bool) -
             CompressionConfig(backend="brotli", brotli_gzip_fallback=False, brotli_lgwin=brotli_lgwin)
     else:
         CompressionConfig(backend="brotli", brotli_gzip_fallback=False, brotli_lgwin=brotli_lgwin)
+
+
+@pytest.mark.parametrize(
+    "backend, compression_encoding", (("brotli", CompressionEncoding.BROTLI), ("gzip", CompressionEncoding.GZIP))
+)
+async def test_compression_streaming_response_emitted_messages(
+    backend: Literal["gzip", "brotli"],
+    compression_encoding: Literal[CompressionEncoding.BROTLI, CompressionEncoding.GZIP],
+    create_scope: Callable[..., Scope],
+    mock_asgi_app: ASGIApp,
+) -> None:
+    mock = MagicMock()
+
+    async def fake_send(message: Message) -> None:
+        mock(message)
+
+    wrapped_send = CompressionMiddleware(
+        mock_asgi_app, CompressionConfig(backend=backend)
+    ).create_compression_send_wrapper(fake_send, compression_encoding, create_scope())
+
+    await wrapped_send(HTTPResponseStartEvent(type="http.response.start", status=200, headers={}))
+    # first body message always has compression headers (at least for gzip)
+    await wrapped_send(HTTPResponseBodyEvent(type="http.response.body", body=b"abc", more_body=True))
+    # second body message with more_body=True will be empty if zlib buffers output and is not flushed
+    await wrapped_send(HTTPResponseBodyEvent(type="http.response.body", body=b"abc", more_body=True))
+    assert mock.mock_calls[-1].args[0]["body"]

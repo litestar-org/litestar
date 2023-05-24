@@ -64,6 +64,7 @@ if TYPE_CHECKING:
     from litestar import Litestar
     from litestar.types import (
         AnyIOBackend,
+        ASGIApp,
         ASGIVersion,
         Receive,
         RouteHandlerType,
@@ -88,8 +89,12 @@ def anyio_backend(request: pytest.FixtureRequest) -> str:
     return request.param  # type: ignore[no-any-return]
 
 
-async def mock_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
-    pass
+@pytest.fixture()
+def mock_asgi_app() -> ASGIApp:
+    async def asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
+        ...
+
+    return asgi_app
 
 
 @pytest.fixture()
@@ -163,13 +168,13 @@ def session_backend_config_memory(memory_store: MemoryStore) -> ServerSideSessio
 
 
 @pytest.fixture
-def session_middleware(session_backend: BaseSessionBackend) -> SessionMiddleware[Any]:
+def session_middleware(session_backend: BaseSessionBackend, mock_asgi_app: ASGIApp) -> SessionMiddleware[Any]:
     return SessionMiddleware(app=mock_asgi_app, backend=session_backend)
 
 
 @pytest.fixture
 def cookie_session_middleware(
-    cookie_session_backend: ClientSideSessionBackend,
+    cookie_session_backend: ClientSideSessionBackend, mock_asgi_app: ASGIApp
 ) -> SessionMiddleware[ClientSideSessionBackend]:
     return SessionMiddleware(app=mock_asgi_app, backend=cookie_session_backend)
 

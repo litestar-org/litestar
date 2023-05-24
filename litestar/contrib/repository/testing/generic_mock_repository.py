@@ -728,5 +728,5 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         cls.collection = {}
 
 
-def model_items(model: ModelT) -> list[tuple[str, Any]]:
+def model_items(model: Any) -> list[tuple[str, Any]]:
     return [(k, v) for k, v in model.__dict__.items() if not k.startswith("_")]
