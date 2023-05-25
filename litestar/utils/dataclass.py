@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import Field, fields
+from dataclasses import Field, fields, is_dataclass
+from inspect import isclass
 from typing import TYPE_CHECKING
 
 from litestar.types import Empty
@@ -9,11 +10,30 @@ from litestar.types.protocols import DataclassProtocol
 if TYPE_CHECKING:
     from typing import AbstractSet, Any, Iterable
 
+    from typing_extensions import TypeGuard
+
+
 __all__ = (
     "extract_dataclass_fields",
     "extract_dataclass_items",
+    "is_dataclass_class",
     "simple_asdict",
 )
+
+
+def is_dataclass_class(annotation: Any) -> TypeGuard[type[DataclassProtocol]]:
+    """Wrap :func:`is_dataclass <dataclasses.is_dataclass>` in a :data:`typing.TypeGuard`.
+
+    Args:
+        annotation: tested to determine if instance or type of :class:`dataclasses.dataclass`.
+
+    Returns:
+        ``True`` if instance or type of ``dataclass``.
+    """
+    try:
+        return isclass(annotation) and is_dataclass(annotation)
+    except TypeError:  # pragma: no cover
+        return False
 
 
 def extract_dataclass_fields(
