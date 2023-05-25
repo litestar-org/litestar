@@ -325,4 +325,5 @@ def test_validation_error_exception_key(preferred_validation_backend: Literal["a
     with pytest.raises(ValidationException) as exc_info:
         model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), b={"a": {}})
 
+    assert isinstance(exc_info.value.extra, list)
     assert exc_info.value.extra[0]["key"] == "a.b"
