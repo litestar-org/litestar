@@ -48,6 +48,7 @@ class Response(Generic[T]):
         "status_code",
         "raw_headers",
         "_enc_hook",
+        "_content",
     )
 
     type_encoders: TypeEncodersMap | None = None
@@ -81,6 +82,7 @@ class Response(Generic[T]):
             is_head_response: Whether the response should send only the headers ("head" request) or also the content.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
         """
+        self._content = content
         self.background = background
         self.cookies: list[Cookie] = (
             [Cookie(key=key, value=value) for key, value in cookies.items()]
@@ -98,22 +100,27 @@ class Response(Generic[T]):
         )
         self.status_code = status_code
         self._enc_hook = self.get_serializer(type_encoders)
+        self.evaluate_content()
+        self.headers.setdefault(
+            "content-type",
+            f"{self.media_type}; charset={self.encoding}" if self.media_type.startswith("text/") else self.media_type,
+        )
+        self.raw_headers: list[tuple[bytes, bytes]] = []
 
-        if not self.status_allows_body or is_head_response:
-            if content:
+    def set_content(self, content: T) -> None:
+        self._content = content
+        self.evaluate_content()
+
+    def evaluate_content(self) -> None:
+        if not self.status_allows_body or self.is_head_response:
+            if self._content:
                 raise ImproperlyConfiguredException(
                     "response content is not supported for HEAD responses and responses with a status code "
                     "that does not allow content (304, 204, < 200)"
                 )
             self.body = b""
         else:
-            self.body = content if isinstance(content, bytes) else self.render(content)
-
-        self.headers.setdefault(
-            "content-type",
-            f"{self.media_type}; charset={self.encoding}" if self.media_type.startswith("text/") else self.media_type,
-        )
-        self.raw_headers: list[tuple[bytes, bytes]] = []
+            self.body = self._content if isinstance(self._content, bytes) else self.render(self._content)
 
     @classmethod
     def get_serializer(cls, type_encoders: TypeEncodersMap | None = None) -> Serializer:
