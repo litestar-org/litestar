@@ -1,12 +1,17 @@
 from __future__ import annotations
 
-from inspect import isasyncgenfunction, isclass, isgeneratorfunction
+from inspect import isclass
 from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
 from litestar.utils import Ref, is_async_callable
-from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
+from litestar.utils.predicates import is_sync_or_async_generator
+from litestar.utils.warnings import (
+    warn_implicit_sync_to_thread,
+    warn_sync_to_thread_with_async_callable,
+    warn_sync_to_thread_with_generator,
+)
 
 __all__ = ("Provide",)
 
@@ -50,15 +55,14 @@ class Provide:
 
         self.dependency = Ref["AnyCallable"](dependency)
         self.has_sync_callable = isclass(dependency) or not is_async_callable(dependency)
-        if (
-            self.has_sync_callable
-            and sync_to_thread is None
-            and not (isgeneratorfunction(dependency) or isasyncgenfunction(dependency))
-        ):
+        if self.has_sync_callable and sync_to_thread is None and not is_sync_or_async_generator(dependency):
             warn_implicit_sync_to_thread(dependency, stacklevel=3)
 
-        if not self.has_sync_callable and sync_to_thread is not None:
-            warn_sync_to_thread_with_async_callable(dependency, stacklevel=3)
+        if sync_to_thread is not None:
+            if is_sync_or_async_generator(dependency):
+                warn_sync_to_thread_with_generator(dependency, stacklevel=3)
+            elif not self.has_sync_callable:
+                warn_sync_to_thread_with_async_callable(dependency, stacklevel=3)  # pyright: ignore
 
         self.sync_to_thread = bool(sync_to_thread)
         self.use_cache = use_cache
