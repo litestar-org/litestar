@@ -68,7 +68,7 @@ def test_generator_dependency(
 ) -> None:
     dependency = request.getfixturevalue(dependency_fixture)
 
-    @get("/", dependencies={"dep": Provide(dependency, sync_to_thread=False)}, cache=cache)
+    @get("/", dependencies={"dep": Provide(dependency)}, cache=cache)
     def handler(dep: str) -> Dict[str, str]:
         return {"value": dep}
 
@@ -91,7 +91,7 @@ async def test_generator_dependency_websocket(
 ) -> None:
     dependency = request.getfixturevalue(dependency_fixture)
 
-    @websocket("/ws", dependencies={"dep": Provide(dependency, sync_to_thread=False)})
+    @websocket("/ws", dependencies={"dep": Provide(dependency)})
     async def ws_handler(socket: WebSocket, dep: str) -> None:
         await socket.accept()
         await socket.send_json({"value": dep})
@@ -114,7 +114,7 @@ def test_generator_dependency_handle_exception(
 ) -> None:
     dependency = request.getfixturevalue(dependency_fixture)
 
-    @get("/", dependencies={"dep": Provide(dependency, sync_to_thread=False)})
+    @get("/", dependencies={"dep": Provide(dependency)})
     def handler(dep: str) -> Dict[str, str]:
         raise ValueError("foo")
 
@@ -138,7 +138,7 @@ def test_generator_dependency_exception_during_cleanup(
     dependency = request.getfixturevalue(dependency_fixture)
     cleanup_mock.side_effect = Exception("foo")
 
-    @get("/", dependencies={"dep": Provide(dependency, sync_to_thread=False)})
+    @get("/", dependencies={"dep": Provide(dependency)})
     def handler(dep: str) -> Dict[str, str]:
         return {"value": dep}
 
@@ -170,7 +170,7 @@ def test_generator_dependency_nested(
     @get(
         "/",
         dependencies={
-            "generator_dep": Provide(dependency, sync_to_thread=False),
+            "generator_dep": Provide(dependency),
             "nested_one": Provide(nested_dependency_one, sync_to_thread=False),
             "nested_two": Provide(nested_dependency_two, sync_to_thread=False),
         },
@@ -208,8 +208,8 @@ def test_generator_dependency_nested_error_during_cleanup(
     @get(
         "/",
         dependencies={
-            "generator_dep": Provide(dependency, sync_to_thread=False),
-            "other": Provide(other_dependency, sync_to_thread=False),
+            "generator_dep": Provide(dependency),
+            "other": Provide(other_dependency),
         },
     )
     def handler(other: str) -> Dict[str, str]:
