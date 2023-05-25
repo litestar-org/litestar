@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Tuple, TypeVar, Union
+from typing import TYPE_CHECKING, List, Tuple, TypeVar, Union
 from unittest.mock import patch
 
 import pytest
@@ -143,13 +143,13 @@ def test_form_encoded_data_uses_pydantic_backend(request_encoding_type: RequestE
     assert isinstance(dto_type._handler_backend_map[("data", "handler")], PydanticDTOBackend)
 
 
-def test_generic_Response_with_matching_type_handler() -> None:
+@pytest.mark.parametrize("model_type", [Model, List[Model]])
+def test_generic_Response_with_matching_type_handler(model_type: Any) -> None:
     dto_type = DataclassDTO[Model]
 
-    with pytest.raises(InvalidAnnotation):
-        dto_type.on_registration(
-            HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Response[Model]))
-        )
+    dto_type.on_registration(
+        HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Response[model_type]))
+    )
 
 
 def test_raises_invalid_annotation_for_generic_Response_with_non_matching_type_handlers() -> None:
