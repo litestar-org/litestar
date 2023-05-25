@@ -1,11 +1,13 @@
-from typing import TYPE_CHECKING, Any, Iterable, List, Literal, Optional, Sequence
+from types import ModuleType
+from typing import Any, Callable, Iterable, List, Literal, Optional, Sequence, Set, Type
 from unittest.mock import MagicMock
 
 import pytest
 from pydantic import BaseModel
 
 from litestar import get
-from litestar._signature import create_signature_model
+from litestar._signature import SignatureModel, create_signature_model
+from litestar._signature.models.attrs_signature_model import AttrsSignatureModel
 from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 from litestar.params import Dependency, Parameter
@@ -14,9 +16,22 @@ from litestar.testing import RequestFactory, TestClient, create_test_client
 from litestar.types.helper_types import OptionalSequence
 from litestar.utils.signature import ParsedSignature
 
-if TYPE_CHECKING:
-    from types import ModuleType
-    from typing import Callable
+
+def create_signature_model_for_test(
+    fn: Callable,
+    dependency_name_set: Set[str],
+    preferred_validation_backend: Literal["attrs", "pydantic"],
+    parsed_signature: ParsedSignature,
+) -> Type[SignatureModel]:
+    model = create_signature_model(
+        fn=fn,
+        dependency_name_set=dependency_name_set,
+        preferred_validation_backend=preferred_validation_backend,
+        parsed_signature=parsed_signature,
+    )
+    if preferred_validation_backend == "attrs":
+        assert isinstance(model, AttrsSignatureModel)
+    return model
 
 
 @pytest.mark.parametrize("preferred_validation_backend", ("attrs", "pydantic"))
@@ -29,7 +44,7 @@ def test_parses_values_from_connection_kwargs_without_plugin(
     def fn(a: MyModel) -> None:
         pass
 
-    model = create_signature_model(
+    model = create_signature_model_for_test(
         fn=fn,
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
@@ -46,7 +61,7 @@ def test_parses_values_from_connection_kwargs_raises(
     def fn(a: int) -> None:
         pass
 
-    model = create_signature_model(
+    model = create_signature_model_for_test(
         fn=fn,
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
@@ -64,7 +79,7 @@ def test_create_function_signature_model_parameter_parsing(
     def my_fn(a: int, b: str, c: Optional[bytes], d: bytes = b"123", e: Optional[dict] = None) -> None:
         pass
 
-    model = create_signature_model(
+    model = create_signature_model_for_test(
         fn=my_fn.fn.value,
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
@@ -92,7 +107,7 @@ def test_create_signature_validation(preferred_validation_backend: Literal["attr
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        create_signature_model(
+        create_signature_model_for_test(
             fn=my_fn.fn.value,
             dependency_name_set=set(),
             preferred_validation_backend=preferred_validation_backend,
@@ -108,7 +123,7 @@ def test_create_function_signature_model_ignore_return_annotation(
     async def health_check() -> None:
         return None
 
-    signature_model_type = create_signature_model(
+    signature_model_type = create_signature_model_for_test(
         fn=health_check.fn.value,
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
@@ -199,7 +214,7 @@ def test_client_pydantic_backend_error_precedence_over_server_error() -> None:
     }
 
 
-def test_signature_model_resolves_forward_ref_annotations(create_module: "Callable[[str], ModuleType]") -> None:
+def test_signature_model_resolves_forward_ref_annotations(create_module: Callable[[str], ModuleType]) -> None:
     module = create_module(
         """
 from __future__ import annotations
@@ -244,7 +259,7 @@ def test_signature_field_is_non_string_iterable(preferred_validation_backend: Li
     def fn(a: Iterable[int], b: Optional[Iterable[int]]) -> None:
         pass
 
-    model = create_signature_model(
+    model = create_signature_model_for_test(
         fn=fn,
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
@@ -260,7 +275,7 @@ def test_signature_field_is_non_string_sequence(preferred_validation_backend: Li
     def fn(a: Sequence[int], b: OptionalSequence[int]) -> None:
         pass
 
-    model = create_signature_model(
+    model = create_signature_model_for_test(
         fn=fn,
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
@@ -284,3 +299,30 @@ def test_query_param_bool(query: str, expected: bool, signature_backend: Literal
         response = client.get(f"/?param={query}")
         assert response.status_code == HTTP_200_OK, response.json()
         mock.assert_called_once_with(expected)
+
+
+@pytest.mark.parametrize("preferred_validation_backend", ("attrs", "pydantic"))
+def test_validation_error_exception_key(preferred_validation_backend: Literal["attrs", "pydantic"]) -> None:
+    class ModelA(BaseModel):
+        b: int
+
+    class ModelB(BaseModel):
+        a: ModelA
+
+    def fn(b: ModelB) -> None:
+        pass
+
+    model = create_signature_model_for_test(
+        fn=fn,
+        dependency_name_set=set(),
+        preferred_validation_backend=preferred_validation_backend,
+        parsed_signature=ParsedSignature.from_fn(fn, {}),
+    )
+
+    if preferred_validation_backend == "attrs":
+        assert isinstance(model, AttrsSignatureModel)
+
+    with pytest.raises(ValidationException) as exc_info:
+        model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), b={"a": {}})
+
+    assert exc_info.value.extra[0]["key"] == "a.b"
