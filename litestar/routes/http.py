@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 
 class HTTPRoute(BaseRoute):
-    """An HTTP route, capable of handling multiple ``HTTPRouteHandler``s."""
+    """An HTTP route, capable of handling multiple ``HTTPRouteHandler``\\ s."""  # noqa: D301
 
     __slots__ = (
         "route_handler_map",
@@ -39,7 +39,7 @@ class HTTPRoute(BaseRoute):
 
         Args:
             path: The path for the route.
-            route_handlers: A list of :class:`HTTPRouteHandler <litestar.handlers.http_handlers.HTTPRouteHandler>`.
+            route_handlers: A list of :class:`~.handlers.HTTPRouteHandler`.
         """
         methods = list(chain.from_iterable([route_handler.http_methods for route_handler in route_handlers]))
         if "OPTIONS" not in methods:
@@ -214,7 +214,7 @@ class HTTPRoute(BaseRoute):
 
         Args:
             request: The :class:`Request <litestar.connection.Request>` instance
-            route_handler: The :class:`HTTPRouteHandler <litestar.handlers.http_handlers.HTTPRouteHandler>` instance
+            route_handler: The :class:`~.handlers.HTTPRouteHandler` instance
 
         Returns:
             A cached response instance, if existing.

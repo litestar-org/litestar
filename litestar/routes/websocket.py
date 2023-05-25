@@ -32,7 +32,7 @@ class WebSocketRoute(BaseRoute):
 
         Args:
             path: The path for the route.
-            route_handler: An instance of :class:`WebsocketRouteHandler <litestar.handlers.websocket_handlers.WebsocketRouteHandler>`.
+            route_handler: An instance of :class:`~.handlers.WebsocketRouteHandler`.
         """
         self.route_handler = route_handler
         self.handler_parameter_model: KwargsModel | None = None
