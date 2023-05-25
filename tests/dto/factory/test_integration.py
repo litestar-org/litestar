@@ -213,11 +213,8 @@ def test_dto_with_explicit_Response_return() -> None:
 
     @post(dto=dto, return_dto=dto, signature_namespace={"Foo": Foo})
     def handler(data: Foo) -> Response[Foo]:
-        # return data
         return Response(data)
 
     with create_test_client(route_handlers=[handler], debug=True) as client:
         response = client.post("/", json={"BAR": "hello"})
         assert response.json() == {"BAR": "hello"}
-
-    assert 0

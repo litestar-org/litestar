@@ -214,10 +214,9 @@ def create_response_handler(
     ) -> ASGIApp:
         if return_dto:
             ctx = ConnectionContext.from_connection(request)
-            dto = return_dto(ctx)
-            _data = dto.bytes_to_data_type(data.body)
-            _bytes = dto.data_to_encodable_type(_data)
-            # create a new Response based on the original one?
+            _return_dto = return_dto(ctx)
+            _bytes = _return_dto.data_to_encodable_type(data._content)
+            data.set_content(_bytes)
 
         data.cookies = filter_cookies(frozenset(data.cookies), cookies)
         return await after_request(data) if after_request else data  # type: ignore
