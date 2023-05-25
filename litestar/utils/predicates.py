@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections import defaultdict, deque
 from collections.abc import Iterable as CollectionsIterable
-from dataclasses import is_dataclass
 from inspect import isclass
 from typing import (
     TYPE_CHECKING,
@@ -31,7 +30,7 @@ from typing_extensions import (
     is_typeddict,
 )
 
-from litestar.types import DataclassProtocol, Empty
+from litestar.types import Empty
 from litestar.types.builtin_types import UNION_TYPES, NoneType
 from litestar.utils.typing import get_origin_or_inner_type
 
@@ -55,7 +54,6 @@ __all__ = (
     "is_attrs_class",
     "is_class_and_subclass",
     "is_class_var",
-    "is_dataclass_class",
     "is_generic",
     "is_mapping",
     "is_non_string_iterable",
@@ -214,21 +212,6 @@ def is_optional_union(annotation: Any) -> TypeGuard[Any | None]:
     return origin is Optional or (
         get_origin_or_inner_type(annotation) in UNION_TYPES and NoneType in get_args(annotation)
     )
-
-
-def is_dataclass_class(annotation: Any) -> TypeGuard[type[DataclassProtocol]]:
-    """Wrap :func:`is_dataclass <dataclasses.is_dataclass>` in a :data:`typing.TypeGuard`.
-
-    Args:
-        annotation: tested to determine if instance or type of :class:`dataclasses.dataclass`.
-
-    Returns:
-        ``True`` if instance or type of ``dataclass``.
-    """
-    try:
-        return isclass(annotation) and is_dataclass(annotation)
-    except TypeError:  # pragma: no cover
-        return False
 
 
 def is_typed_dict(annotation: Any) -> TypeGuard[TypedDictClass]:

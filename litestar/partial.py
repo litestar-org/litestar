@@ -17,10 +17,10 @@ from typing_extensions import TypeAlias, TypedDict
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.builtin_types import NoneType
+from litestar.utils.dataclass import is_dataclass_class
 from litestar.utils.predicates import (
     is_attrs_class,
     is_class_var,
-    is_dataclass_class,
     is_pydantic_model_class,
     is_struct_class,
     is_typed_dict,

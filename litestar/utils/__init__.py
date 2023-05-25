@@ -1,5 +1,6 @@
 from litestar.utils.deprecation import deprecated, warn_deprecation
 
+from .dataclass import is_dataclass_class, is_dataclass_instance
 from .helpers import Ref, get_enum_string_value, get_name
 from .path import join_paths, normalize_path
 from .predicates import (
@@ -7,7 +8,6 @@ from .predicates import (
     is_attrs_class,
     is_class_and_subclass,
     is_class_var,
-    is_dataclass_class,
     is_generic,
     is_mapping,
     is_non_string_iterable,
@@ -57,6 +57,7 @@ __all__ = (
     "is_class_and_subclass",
     "is_class_var",
     "is_dataclass_class",
+    "is_dataclass_instance",
     "is_generic",
     "is_mapping",
     "is_non_string_iterable",
