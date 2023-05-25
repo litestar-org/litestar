@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Optional
+from unittest.mock import MagicMock
 
 import pytest
 from typing_extensions import Annotated
@@ -137,6 +138,32 @@ def test_dto_data_injection() -> None:
     with create_test_client(route_handlers=[handler], debug=True) as client:
         response = client.post("/", json={"bar": "hello"})
         assert response.json() == {"bar": "hello"}
+
+
+@pytest.mark.xfail(reason="working on it")
+def test_dto_data_injection_with_nested_model() -> None:
+    @dataclass
+    class A:
+        bar: str
+        baz: str
+
+    @dataclass
+    class B:
+        foo: A
+
+    config = DTOConfig(exclude={"baz"})
+    dto = DataclassDTO[Annotated[B, config]]
+    mock = MagicMock()
+
+    @post(dto=dto, return_dto=None, signature_namespace={"B": B})
+    def handler(data: DTOData[B]) -> None:
+        assert isinstance(data, DTOData)
+        mock(data.as_builtins())
+
+    with create_test_client(route_handlers=[handler], debug=True) as client:
+        client.post("/", json={"foo": {"bar": "hello"}})
+
+    mock.assert_called_once_with({"foo": {"bar": "hello"}})
 
 
 def test_dto_data_with_url_encoded_form_data() -> None:
