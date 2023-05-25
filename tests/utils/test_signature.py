@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import inspect
+from dataclasses import dataclass
 from inspect import Parameter
 from typing import Any, List, Optional, TypeVar, Union
 
@@ -146,3 +147,22 @@ def test_infer_request_encoding_type_from_parameter(
 ) -> None:
     """Test infer_request_encoding_type_from_parameter."""
     assert infer_request_encoding_from_parameter(ParsedParameter("foo", default, ParsedType(annotation))) == expected
+
+
+def test_parsed_type_copy_with_dataclass_type() -> None:
+    """This is a regression test for an issue that manifested using `ParsedParameter.copy_with()`.
+
+    The actual issue was inside `utils.dataclass.simple_asdict()`, where `isinstance(value, DataclassProtocol)` would
+    return `True` for both dataclass types and instances. This caused `simple_asdict()` to recurse for the dataclass
+    type value, which was not correct.
+    """
+
+    @dataclass
+    class Foo:
+        bar: str
+
+    parsed_parameter = ParsedParameter(name="foo", default=Empty, parsed_type=ParsedType(Foo)).copy_with(
+        parsed_type=ParsedType(Union[Foo, None])
+    )
+
+    assert parsed_parameter.parsed_type == ParsedType(Union[Foo, None])

@@ -5,20 +5,33 @@ from inspect import isclass
 from typing import TYPE_CHECKING
 
 from litestar.types import Empty
-from litestar.types.protocols import DataclassProtocol
 
 if TYPE_CHECKING:
     from typing import AbstractSet, Any, Iterable
 
     from typing_extensions import TypeGuard
 
+    from litestar.types.protocols import DataclassProtocol
 
 __all__ = (
     "extract_dataclass_fields",
     "extract_dataclass_items",
     "is_dataclass_class",
+    "is_dataclass_instance",
     "simple_asdict",
 )
+
+
+def is_dataclass_instance(obj: Any) -> TypeGuard[DataclassProtocol]:
+    """Check if an object is a dataclass instance.
+
+    Args:
+        obj: An object to check.
+
+    Returns:
+        True if the object is a dataclass instance.
+    """
+    return hasattr(type(obj), "__dataclass_fields__")
 
 
 def is_dataclass_class(annotation: Any) -> TypeGuard[type[DataclassProtocol]]:
@@ -121,7 +134,7 @@ def simple_asdict(
     ret = {}
     for field in extract_dataclass_fields(obj, exclude_none, exclude_empty):
         value = getattr(obj, field.name)
-        if isinstance(value, DataclassProtocol) and convert_nested:
+        if is_dataclass_instance(value) and convert_nested:
             ret[field.name] = simple_asdict(value, exclude_none, exclude_empty)
         else:
             ret[field.name] = getattr(obj, field.name)
