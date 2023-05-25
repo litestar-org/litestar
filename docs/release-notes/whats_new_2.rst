@@ -1,19 +1,45 @@
+.. py:currentmodule:: litestar
+
+
 What's new in 2.0?
 ==================
 
-Overview of changes
+This document is an overview of the changes between version **1.51** and **2.0**.
+For a detailed list of all changes, including changes between versions leading up to the
+2.0 release, consult the :doc:`/release-notes/changelog`.
 
-TBD: Intro section
 
-
-
-.. py:currentmodule:: litestar
 
 Starlite -> Litestar
 --------------------
 
 One of the biggest changes in version 2 is the renaming of the project from *Starlite*
 to *Litestar*.
+
+The name "Starlite" was chosen as an homage to `Starlette <https://www.starlette.io/>`_,
+the ASGI framework and toolkit Starlite was initially based on. Over the course of its
+development, Starlite grew more independent and relied less on Starlette, up to the
+point were Starlette was officially removed as a dependency in November 2022, with the
+release of `v1.39.0 <https://github.com/starlite-api/starlite/releases/tag/v1.39.0>`_.
+
+After careful considerations, it was decided that with the release of 2.0, Starlite
+would be renamed to Litestar. There were many factors contributing to this decision, but
+it was mainly driven by concerns from within and outside the community about the
+possible confusion of the names *Starlette* and *Starlite* which (not incidentally) bea
+a lot of resemblance, which now had outlived its purpose.
+
+****
+
+Aside from the name, Litestar 2.0 is a direct successor of Starlite 1, and the regular
+release cycle will continue. It was determined that making the first release under the
+new name 2.0 and continue with the version numbers from Starlite would cause the least
+friction. Following that decision, the first release under the new name was
+`v2.0.0alpha3 <https://github.com/litestar-org/litestar/releases/tag/v2.0.0alpha3>`_,
+following the last alpha release of Starlite 2.0,
+`v2.0.0alpha2 <https://github.com/litestar-org/litestar/releases/tag/v2.0.0alpha2>`_.
+
+.. note::
+    The **1.51** release line is unaffected by this change
 
 
 Imports
@@ -215,8 +241,6 @@ plain :class:`Mapping[str, str] <typing.Mapping>`. The typing of
 :class:`ResponseHeader <.datastructures.response_header.ResponseHeader>` was also
 changed to be more strict and now only allows string values.
 
-
-
 .. code-block:: python
     :caption: 1.51
 
@@ -238,9 +262,7 @@ changed to be more strict and now only allows string values.
     async def handler() -> str:
         ...
 
-
     # or
-
 
     @get(response_headers={"my-header": "header-value"})
     async def handler() -> str:
@@ -252,7 +274,6 @@ Response cookies
 
 Response cookies might now also be set using a
 :class:`Mapping[str, str] <typing.Mapping>`, analogous to `Response headers`_.
-
 
 .. code-block:: python
 
@@ -289,7 +310,6 @@ Several Pydantic models used for configuration have been replaced with dataclass
 plain classes. If you relied on implicit data conversion from these models or subclassed
 them, you might need to adjust your code accordingly.
 
-
 .. seealso::
 
     :ref:`change:2.0.0alpha1-replace pydantic models with dataclasses`
@@ -313,7 +333,6 @@ cases:
 
 Plugins that made use of all features of the previous API should simply inherit from
 all three base classes.
-
 
 
 Remove 2 argument ``before_send``
@@ -350,13 +369,10 @@ The ``initial_state`` argument to :class:`~litestar.app.Litestar` has been repla
 with a ``state`` keyword argument, accepting an optional
 :class:`~litestar.datastructures.state.State` instance.
 
-
-
 Existing code using this keyword argument will need to be changed from
 
 .. code-block:: python
     :caption: 1.51
-
 
     app = Starlite(..., initial_state={"some": "key"})
 
@@ -366,7 +382,6 @@ to
     :caption: 2.x
 
     app = Litestar(..., state=State({"some": "key"}))
-
 
 
 Usage of the ``stores`` for caching and other integrations
@@ -439,8 +454,6 @@ For example, to define a DTO from a dataclass:
     :doc:`/usage/dto/index`
 
 
-
-
 Application lifespan hooks
 --------------------------
 
@@ -489,7 +502,6 @@ of :class:`~litestar.di.Provide` are not needed.
 
 is equivalent to
 
-
 .. code-block:: python
 
     async def some_dependency() -> str:
@@ -508,11 +520,9 @@ functions may block the main thread when not used with ``sync_to_thread=True``, 
 warning will be raised in these cases. If the synchronous function should not be run in
 a thread pool, passing ``sync_to_thread=False`` will also silence the warning.
 
-
 .. tip::
     The warning can be disabled entirely by setting the environment variable
     ``LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD=0``
-
 
 
 .. code-block:: python
@@ -521,7 +531,6 @@ a thread pool, passing ``sync_to_thread=False`` will also silence the warning.
     @get()
     def handler() -> None:
         ...
-
 
 
 .. code-block:: python
@@ -548,8 +557,8 @@ or
 HTMX
 ----
 
-
-Basic support for HTMX requests and responses.
+Basic support for HTMX requests and responses was added with the
+``litestar.contrib.htmx`` module.
 
 .. seealso::
 
@@ -560,8 +569,9 @@ Unified storage interfaces
 ---------------------------
 
 Storage backends for server-side sessions ``starlite.cache.Cache``` have been
-unified and replaced by the ``starlite.storages``, which implements generic
-asynchronous key/values stores backed by memory, the file system or redis.
+unified and replaced by the :class:`Stores <litestar.stores.base.Store>`, providing
+abstractions over asynchronous key/values stores backed by memory, the file system or
+redis.
 
 .. seealso::
 
@@ -593,6 +603,33 @@ Enhanced WebSocket support
 A new set of features for handling WebSockets, including automatic connection
 handling, (de)serialization of incoming and outgoing data analogous to route
 handlers, OOP based event dispatching, data iterators and more.
+
+.. literalinclude:: /examples/websockets/listener_class_based.py
+    :caption: Using a class based listener
+    :language: python
+
+.. literalinclude:: /examples/websockets/mode_send_text.py
+    :caption: Echo text
+    :language: python
+
+.. literalinclude:: /examples/websockets/sending_json_dataclass.py
+    :caption: Wrapping data in a dataclass
+    :language: python
+
+.. literalinclude:: /examples/websockets/with_dto.py
+    :language: python
+
+.. code-block:: python
+    :caption: Receiving JSON and sending it back as MessagePack
+
+    from litestar import websocket, WebSocket
+
+    @websocket("/")
+    async def handler(socket: WebSocket) -> None:
+        await socket.accept()
+        async for message in socket.iter_data(mode="text"):
+            await socket.send_msgpack(message)
+
 
 .. seealso::
     :ref:`change:2.0.0alpha3-enhanced websockets support`
@@ -630,10 +667,16 @@ dependencies to specify additional information about the fields
 Channels
 ---------
 
-:doc:`channels </usage/channels>` are a general purpose event streaming module,
+:mod:`litestar.channels` are a general purpose event streaming module,
 which can for example be used to broadcast messages via WebSockets and includes
 functionalities such as automatically generating WebSocket route handlers to
-broadcast messages
+broadcast messages.
+
+.. literalinclude:: /examples/channels/run_in_background.py
+    :language: python
+
+.. seealso::
+    :doc:`channels </usage/channels>`
 
 
 Application lifespan context managers
@@ -643,3 +686,7 @@ A new ``lifespan`` argument has been added to :class:`~litestar.app.Litestar`,
 accepting an asynchronous context manager, wrapping the lifespan of the application.
 It will be entered with the startup phase and exited on shutdown, providing
 functionality equal to the ``on_startup`` and ``on_shutdown`` hooks.
+
+
+.. literalinclude:: /examples/application_hooks/lifespan_manager.py
+    :language: python
