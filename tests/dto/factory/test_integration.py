@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional
-from unittest.mock import MagicMock
 
 import pytest
 from typing_extensions import Annotated
@@ -18,8 +17,8 @@ from litestar.params import Body
 from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
-    from typing import Callable
     from types import ModuleType
+    from typing import Callable
 
 
 def test_url_encoded_form_data() -> None:
@@ -144,7 +143,6 @@ def test_dto_data_injection() -> None:
         assert response.json() == {"bar": "hello"}
 
 
-@pytest.mark.xfail(reason="working on it")
 def test_dto_data_injection_with_nested_model(create_module: Callable[[str], ModuleType]) -> None:
     module = create_module(
         """
