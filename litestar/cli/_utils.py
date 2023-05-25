@@ -71,6 +71,9 @@ class LitestarEnv:
     web_concurrency: int | None = None
     is_app_factory: bool = False
 
+    def reload_app(self) -> LitestarEnv:
+        return LitestarEnv.from_env(self.app_path)
+
     @classmethod
     def from_env(cls, app_path: str | None) -> LitestarEnv:
         """Load environment variables.

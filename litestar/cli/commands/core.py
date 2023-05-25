@@ -2,11 +2,15 @@ from __future__ import annotations
 
 import inspect
 import multiprocessing
+import os
 import subprocess
-from typing import TYPE_CHECKING, Any
+import sys
+from contextlib import contextmanager
+from typing import TYPE_CHECKING, Any, Generator
 
 import click
-from click import command, option
+import uvicorn
+from click import command, option, pass_context
 from rich.tree import Tree
 
 from litestar.cli._utils import LitestarEnv, console, show_app_info
@@ -17,6 +21,21 @@ __all__ = ("info_command", "routes_command", "run_command")
 
 if TYPE_CHECKING:
     from litestar import Litestar
+
+
+@contextmanager
+def _set_env(**env: str) -> Generator[None, None, None]:
+    restore_values = {}
+
+    for key, value in env.items():
+        if key in os.environ:
+            restore_values[key] = os.getenv(key)
+        os.environ[key] = value
+
+    try:
+        yield
+    finally:
+        os.environ.update(restore_values)
 
 
 def _convert_uvicorn_args(args: dict[str, Any]) -> list[str]:
@@ -62,7 +81,9 @@ def info_command(app: Litestar) -> None:
 )
 @option("--host", help="Server under this host", default="127.0.0.1", show_default=True)
 @option("--debug", help="Run app in debug mode", is_flag=True)
+@option("--pdb", "use_pdb", help="Drop into PDB on an exception", is_flag=True)
 @option("--reload-dir", help="Directories to watch for file changes", multiple=True)
+@pass_context
 def run_command(
     reload: bool,
     port: int,
@@ -70,8 +91,9 @@ def run_command(
     host: str,
     debug: bool,
     reload_dir: tuple[str, ...],
-    env: LitestarEnv,
+    use_pdb: bool,
     app: Litestar,
+    env: LitestarEnv,
 ) -> None:
     """Run a Litestar app.
 
@@ -82,15 +104,16 @@ def run_command(
     instance.
     """
 
-    if debug or env.debug:
-        app.debug = True
-
-    show_app_info(app)
-
-    console.rule("[yellow]Starting server process", align="left")
-
     # invoke uvicorn in a subprocess to be able to use the --reload flag. see
     # https://github.com/litestar-org/litestar/issues/1191 and https://github.com/encode/uvicorn/issues/1045
+
+    temporary_environ = {}
+
+    if debug:
+        temporary_environ["LITESTAR_DEBUG"] = "1"
+
+    if use_pdb:
+        temporary_environ["LITESTAR_PDB"] = "1"
 
     reload_dirs = env.reload_dirs or reload_dir
 
@@ -105,7 +128,28 @@ def run_command(
     if reload_dirs:
         process_args["reload-dir"] = reload_dirs
 
-    subprocess.run(["uvicorn", env.app_path, *_convert_uvicorn_args(process_args)], check=True)  # noqa: S603 S607I
+    console.rule("[yellow]Starting server process", align="left")
+
+    show_app_info(app)
+
+    with _set_env(**temporary_environ):
+        if not reload or process_args["workers"] > 1:
+            uvicorn.run(
+                app=env.app_path,
+                host=process_args["host"],
+                port=process_args["port"],
+                factory=env.is_app_factory,
+            )
+        else:
+            if sys.gettrace() is not None:
+                console.print(
+                    "[yellow]Debugger detected. Breakpoints might not work correctly inside route handlers when running"
+                    " with the --reload or --workers options[/]"
+                )
+
+            subprocess.run(
+                [sys.executable, "-m", "uvicorn", env.app_path, *_convert_uvicorn_args(process_args)], check=True
+            )  # noqa: S603
 
 
 @command(name="routes")
