@@ -1,8 +1,6 @@
 from json import dumps
 from pathlib import Path
 
-from click import Path as ClickPath
-from click import group, option
 from jsbeautifier import Beautifier
 from yaml import dump as dump_yaml
 
@@ -12,6 +10,16 @@ from litestar._openapi.typescript_converter.converter import (
 )
 from litestar.cli._utils import LitestarCLIException, LitestarGroup
 
+try:
+    from rich_click import Path as ClickPath
+    from rich_click import group, option
+
+    rich_click_installed = True  # pragma: no cover
+except ImportError:
+    from click import Path as ClickPath
+    from click import group, option
+
+    rich_click_installed = False
 __all__ = ("generate_openapi_schema", "generate_typescript_specs", "schema_group")
 
 

@@ -10,14 +10,22 @@ from os import getenv
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Sequence, TypeVar, cast
 
-from click import ClickException, Command, Context, Group, pass_context, style
-from rich.console import Console
+from rich import get_console
 from rich.table import Table
 from typing_extensions import Concatenate, ParamSpec
 
 from litestar import Litestar, __version__
 from litestar.middleware import DefineMiddleware
 from litestar.utils import get_name
+
+try:
+    from rich_click import ClickException, Command, Context, Group, pass_context, style
+
+    rich_click_installed = True  # pragma: no cover
+except ImportError:
+    from click import ClickException, Command, Context, Group, pass_context, style
+
+    rich_click_installed = False
 
 __all__ = (
     "LoadedApp",
@@ -45,7 +53,7 @@ T = TypeVar("T")
 
 AUTODISCOVERY_FILE_NAMES = ["app", "application"]
 
-console = Console()
+console = get_console()
 
 
 class LitestarCLIException(ClickException):

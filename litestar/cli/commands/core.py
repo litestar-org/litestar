@@ -5,14 +5,22 @@ import multiprocessing
 import subprocess
 from typing import TYPE_CHECKING, Any
 
-import click
-from click import command, option
 from rich.tree import Tree
 
 from litestar.cli._utils import LitestarEnv, console, show_app_info
 from litestar.routes import HTTPRoute, WebSocketRoute
 from litestar.utils.helpers import unwrap_partial
 
+try:
+    import rich_click as click
+    from rich_click import command, option
+
+    rich_click_installed = True
+except ImportError:
+    import click  # type: ignore[no-redef]
+    from click import command, option
+
+    rich_click_installed = False
 __all__ = ("info_command", "routes_command", "run_command")
 
 if TYPE_CHECKING:
