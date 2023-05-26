@@ -49,7 +49,9 @@ Using the CLI
 
 .. important::
     Breakpoints inside route handlers might not work correctly when used in conjunction
-    with the ``--reload`` and ``--web-concurrency`` parameters
+    with the ``--reload`` and ``--web-concurrency`` parameters. If you want to use the
+    CLI while making use of these options, you can attach the debugger manually to the
+    running uvicorn process via ``Run`` > ``Attach to process``.
 
 
 Using uvicorn
