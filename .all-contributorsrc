@@ -490,7 +490,8 @@
         "test",
         "ideas",
         "example",
-        "bug"
+        "bug",
+        "design"
       ]
     },
     {
@@ -725,7 +726,12 @@
       "contributions": [
         "doc",
         "code",
-        "test"
+        "test",
+        "infra",
+        "ideas",
+        "maintenance",
+        "business",
+        "design"
       ]
     },
     {
@@ -966,6 +972,42 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "MatthewNewland",
+      "name": "MatthewNewland",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9618670?v=4",
+      "profile": "https://github.com/MatthewNewland",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "vtarchon",
+      "name": "Tom Kuo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1598170?v=4",
+      "profile": "https://github.com/vtarchon",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "LeckerenSirupwaffeln",
+      "name": "LeckerenSirupwaffeln",
+      "avatar_url": "https://avatars.githubusercontent.com/u/83568015?v=4",
+      "profile": "https://github.com/LeckerenSirupwaffeln",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "eldano1995",
+      "name": "Daniel González Fernández",
+      "avatar_url": "https://avatars.githubusercontent.com/u/24553679?v=4",
+      "profile": "https://github.com/eldano1995",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -974,5 +1016,6 @@
   "repoType": "github",
   "repoHost": "https://github.com",
   "skipCi": true,
-  "commitConvention": "angular"
+  "commitConvention": "angular",
+  "commitType": "docs"
 }

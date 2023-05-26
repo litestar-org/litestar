@@ -67,6 +67,7 @@ class LitestarEnv:
     host: str | None = None
     port: int | None = None
     reload: bool | None = None
+    reload_dirs: tuple[str, ...] | None = None
     web_concurrency: int | None = None
     is_app_factory: bool = False
 
@@ -97,6 +98,7 @@ class LitestarEnv:
 
         port = getenv("LITESTAR_PORT")
         web_concurrency = getenv("WEB_CONCURRENCY")
+        reload_dirs = tuple(s.strip() for s in getenv("LITESTAR_RELOAD_DIRS", "").split(",") if s) or None
 
         return cls(
             app_path=loaded_app.app_path,
@@ -105,6 +107,7 @@ class LitestarEnv:
             host=getenv("LITESTAR_HOST"),
             port=int(port) if port else None,
             reload=_bool_from_env("LITESTAR_RELOAD"),
+            reload_dirs=reload_dirs,
             web_concurrency=int(web_concurrency) if web_concurrency else None,
             is_app_factory=loaded_app.is_factory,
             cwd=cwd,

@@ -1,12 +1,17 @@
 from __future__ import annotations
 
+import dataclasses
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
-from typing import cast
+from typing import TYPE_CHECKING, Any, cast
 
 from jose import JWSError, JWTError, jwt
 
 from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
+
 
 __all__ = ("Token",)
 
@@ -42,6 +47,8 @@ class Token:
     """Audience - intended audience."""
     jti: str | None = field(default=None)
     """JWT ID - a unique identifier of the JWT between different issuers."""
+    extras: dict[str, Any] = field(default_factory=dict)
+    """Extra fields that were found on the JWT token."""
 
     def __post_init__(self) -> None:
         if len(self.sub) < 1:
@@ -63,8 +70,8 @@ class Token:
         else:
             raise ImproperlyConfiguredException("iat must be a current or past time")
 
-    @staticmethod
-    def decode(encoded_token: str, secret: str | dict[str, str], algorithm: str) -> Token:
+    @classmethod
+    def decode(cls, encoded_token: str, secret: str | dict[str, str], algorithm: str) -> Self:
         """Decode a passed in token string and returns a Token instance.
 
         Args:
@@ -82,7 +89,12 @@ class Token:
             payload = jwt.decode(token=encoded_token, key=secret, algorithms=[algorithm], options={"verify_aud": False})
             exp = datetime.fromtimestamp(payload.pop("exp"), tz=timezone.utc)
             iat = datetime.fromtimestamp(payload.pop("iat"), tz=timezone.utc)
-            return Token(exp=exp, iat=iat, **payload)
+            field_names = {f.name for f in dataclasses.fields(Token)}
+            extra_fields = payload.keys() - field_names
+            extras = payload.pop("extras", {})
+            for key in extra_fields:
+                extras[key] = payload.pop(key)
+            return cls(exp=exp, iat=iat, **payload, extras=extras)
         except (KeyError, JWTError, ImproperlyConfiguredException) as e:
             raise NotAuthorizedException("Invalid token") from e
 

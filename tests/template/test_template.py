@@ -51,6 +51,12 @@ def test_engine_passed_to_callback(template_dir: "Path") -> None:
 @pytest.mark.parametrize("engine", (JinjaTemplateEngine, MakoTemplateEngine))
 def test_engine_instance(engine: Type["TemplateEngineProtocol"], template_dir: "Path") -> None:
     engine_instance = engine(template_dir)
+    if isinstance(engine_instance, JinjaTemplateEngine):
+        assert engine_instance.engine.autoescape is True
+
+    if isinstance(engine_instance, MakoTemplateEngine):
+        assert engine_instance.engine.template_args["default_filters"] == ["h"]
+
     config = TemplateConfig(engine=engine_instance)
     assert config.engine_instance is engine_instance
 

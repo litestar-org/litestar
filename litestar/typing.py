@@ -124,8 +124,8 @@ class ParsedType:
     def is_subclass_of(self, cl: type[Any] | tuple[type[Any], ...]) -> bool:
         """Whether the annotation is a subclass of the given type.
 
-        Where ``self.annotation`` is a union type, this method will always return ``False``. While this is not
-        strictly correct, we intend on revisiting this once a concrete use-case is to hand.
+        Where ``self.annotation`` is a union type, this method will return ``True`` when all members of the union are
+        a subtype of ``cl``, otherwise, ``False``.
 
         Args:
             cl: The type to check, or tuple of types. Passed as 2nd argument to ``issubclass()``.
@@ -134,7 +134,11 @@ class ParsedType:
             Whether the annotation is a subtype of the given type(s).
         """
         if self.origin:
+            if self.origin in UNION_TYPES:
+                return all(t.is_subclass_of(cl) for t in self.inner_types)
+
             return self.origin not in UNION_TYPES and issubclass(self.origin, cl)
+
         if self.annotation is AnyStr:
             return issubclass(str, cl) or issubclass(bytes, cl)
         return self.annotation is not Any and not self.is_type_var and issubclass(self.annotation, cl)

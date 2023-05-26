@@ -8,6 +8,8 @@ contrib
     jinja
     jwt
     mako
+    msgspec
     opentelemetry
+    pydantic
     repository/index
     sqlalchemy/index

@@ -16,8 +16,8 @@ Features
 * Implements optimized methods for bulk inserts, updates, and deletes.
 * Integrated counts, pagination, sorting, filtering with ``LIKE``, ``IN``, and dates before and/or after.
 * Support for SQLite via `aiosqlite <https://aiosqlite.omnilib.dev/en/stable/>`_ or `sqlite <https://docs.python.org/3/library/sqlite3.html>`_, Postgres
-  via `asyncpg <https://magicstack.github.io/asyncpg/current/>`_ or `psycopg3 (async or sync) <https://www.psycopg.org/psycopg3/>`_, and
-  MySQL via `asyncmy <https://github.com/long2ice/asyncmy>`_.
+  via `asyncpg <https://magicstack.github.io/asyncpg/current/>`_ or `psycopg3 (async or sync) <https://www.psycopg.org/psycopg3/>`_, MySQL via
+  `asyncmy <https://github.com/long2ice/asyncmy>`_, and Oracle via `oracledb <https://oracle.github.io/python-oracledb/>`_.
 
 Basic Use
 ---------

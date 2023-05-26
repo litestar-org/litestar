@@ -171,13 +171,23 @@ def transfer_instance_data(
         source_value = source_instance[source_name] if source_is_mapping else getattr(source_instance, source_name)
         if field_definition.is_partial and dto_for == "data" and filter_missing(source_value):
             continue
-        unstructured_data[destination_name] = transfer_type_data(source_value, transfer_type, dto_for)
+        unstructured_data[destination_name] = transfer_type_data(
+            source_value, transfer_type, dto_for, nested_as_dict=destination_type is dict
+        )
     return destination_type(**unstructured_data)
 
 
-def transfer_type_data(source_value: Any, transfer_type: TransferType, dto_for: ForType) -> Any:
+def transfer_type_data(
+    source_value: Any, transfer_type: TransferType, dto_for: ForType, nested_as_dict: bool = False
+) -> Any:
     if isinstance(transfer_type, SimpleType) and transfer_type.nested_field_info:
-        dest_type = transfer_type.parsed_type.annotation if dto_for == "data" else transfer_type.nested_field_info.model
+        if nested_as_dict:
+            dest_type = dict
+        else:
+            dest_type = (
+                transfer_type.parsed_type.annotation if dto_for == "data" else transfer_type.nested_field_info.model
+            )
+
         return transfer_nested_simple_type_data(dest_type, transfer_type.nested_field_info, dto_for, source_value)
     if isinstance(transfer_type, UnionType) and transfer_type.has_nested:
         return transfer_nested_union_type_data(transfer_type, dto_for, source_value)

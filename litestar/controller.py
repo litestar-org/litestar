@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from copy import copy
-from typing import TYPE_CHECKING, Any, DefaultDict, Mapping, cast
+from typing import TYPE_CHECKING, Any, Mapping, cast
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.exceptions import ImproperlyConfiguredException
@@ -214,7 +214,7 @@ class Controller:
         Returns:
             None
         """
-        paths: DefaultDict[str, set[str]] = defaultdict(set)
+        paths: defaultdict[str, set[str]] = defaultdict(set)
 
         for route_handler in route_handlers:
             if isinstance(route_handler, HTTPRouteHandler):

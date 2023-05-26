@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import pytest
 from typing_extensions import Annotated
@@ -15,6 +15,10 @@ from litestar.dto.factory.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
 from litestar.params import Body
 from litestar.testing import create_test_client
+
+if TYPE_CHECKING:
+    from types import ModuleType
+    from typing import Callable
 
 
 def test_url_encoded_form_data() -> None:
@@ -137,6 +141,43 @@ def test_dto_data_injection() -> None:
     with create_test_client(route_handlers=[handler], debug=True) as client:
         response = client.post("/", json={"bar": "hello"})
         assert response.json() == {"bar": "hello"}
+
+
+def test_dto_data_injection_with_nested_model(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from dataclasses import dataclass
+from typing import Any, Dict
+
+from typing_extensions import Annotated
+
+from litestar import post
+from litestar.dto.factory import DTOConfig, DTOData
+from litestar.dto.factory.stdlib import DataclassDTO
+
+@dataclass
+class Foo:
+    bar: str
+    baz: str
+
+@dataclass
+class Bar:
+    foo: Foo
+
+config = DTOConfig(exclude={"foo.baz"})
+dto = DataclassDTO[Annotated[Bar, config]]
+
+@post(dto=dto, return_dto=None)
+def handler(data: DTOData[Bar]) -> Dict[str, Any]:
+    assert isinstance(data, DTOData)
+    return data.as_builtins()
+"""
+    )
+
+    with create_test_client(route_handlers=[module.handler], debug=True) as client:
+        resp = client.post("/", json={"foo": {"bar": "hello"}})
+        assert resp.status_code == 201
+        assert resp.json() == {"foo": {"bar": "hello"}}
 
 
 def test_dto_data_with_url_encoded_form_data() -> None:
