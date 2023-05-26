@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from copy import copy
-from typing import TYPE_CHECKING, Any, DefaultDict, Mapping, Sequence, cast
+from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.controller import Controller
@@ -269,7 +269,7 @@ class Router:
                 for path in value.paths
             }
 
-        handlers_map: DefaultDict[str, RouteHandlerMapItem] = defaultdict(dict)
+        handlers_map: defaultdict[str, RouteHandlerMapItem] = defaultdict(dict)
         for route_handler in value.get_route_handlers():
             for handler_path in route_handler.paths:
                 path = join_paths([value.path, handler_path]) if handler_path else value.path

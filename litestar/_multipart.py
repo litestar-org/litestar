@@ -27,7 +27,7 @@ from __future__ import annotations
 import re
 from collections import defaultdict
 from email.utils import decode_rfc2231
-from typing import Any, DefaultDict
+from typing import Any
 from urllib.parse import unquote
 
 from litestar.datastructures.upload_file import UploadFile
@@ -102,7 +102,7 @@ def parse_multipart_form(body: bytes, boundary: bytes, multipart_form_part_limit
         A dictionary of parsed results.
     """
 
-    fields: DefaultDict[str, list[Any]] = defaultdict(list)
+    fields: defaultdict[str, list[Any]] = defaultdict(list)
 
     for form_part in parse_body(body=body, boundary=boundary, multipart_form_part_limit=multipart_form_part_limit):
         file_name = None
