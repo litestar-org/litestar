@@ -185,12 +185,12 @@ def test_run_command_with_app_factory(
 
 @pytest.fixture()
 def unset_env() -> Generator[None, None, None]:
+    initial_env = {**os.environ}
     yield
-    for key in ["LITESTAR_DEBUG", "LITESTAR_PDB"]:
-        try:
-            del os.environ[key]
-        except KeyError:
-            continue
+    for key in os.environ.keys() - initial_env.keys():
+        del os.environ[key]
+
+    os.environ.update(initial_env)
 
 
 @pytest.mark.usefixtures("mock_uvicorn_run", "unset_env")
