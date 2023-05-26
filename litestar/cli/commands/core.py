@@ -86,9 +86,6 @@ def run_command(
     instance.
     """
 
-    # invoke uvicorn in a subprocess to be able to use the --reload flag. see
-    # https://github.com/litestar-org/litestar/issues/1191 and https://github.com/encode/uvicorn/issues/1045
-
     if debug:
         os.environ["LITESTAR_DEBUG"] = "1"
 
@@ -117,6 +114,8 @@ def run_command(
             factory=env.is_app_factory,
         )
     else:
+        # invoke uvicorn in a subprocess to be able to use the --reload flag. see
+        # https://github.com/litestar-org/litestar/issues/1191 and https://github.com/encode/uvicorn/issues/1045
         if sys.gettrace() is not None:
             console.print(
                 "[yellow]Debugger detected. Breakpoints might not work correctly inside route handlers when running"
