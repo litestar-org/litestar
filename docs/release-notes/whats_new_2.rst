@@ -262,7 +262,9 @@ changed to be more strict and now only allows string values.
     async def handler() -> str:
         ...
 
+
     # or
+
 
     @get(response_headers={"my-header": "header-value"})
     async def handler() -> str:
@@ -384,6 +386,36 @@ to
     app = Litestar(..., state=State({"some": "key"}))
 
 
+Stores
+------
+
+A new module, ``litestar.stores`` has been introduced, which replaces the previously
+used ``starlite.cache.Cache`` and server-side session storage backends.
+
+These stores provide a low-level, asynchronous interface for common key/value stores
+such as Redis and an in-memory implementation. They are currently used for server-side
+sessions, caching and rate limiting.
+
+Stores are integrated into the :class:`~app.Litestar` application object via the
+:class:`~.stores.registry.StoreRegistry`, which can be used to register and access
+stores as well as provide defaults.
+
+.. literalinclude:: /examples/stores/get_set.py
+    :language: python
+
+.. literalinclude:: /examples/stores/namespacing.py
+    :language: python
+    :caption: Using namespacing
+
+.. literalinclude:: /examples/stores/registry.py
+    :language: python
+    :caption: Using the registry
+
+.. seealso::
+
+    :doc:`/usage/stores`
+
+
 Usage of the ``stores`` for caching and other integrations
 -----------------------------------------------------------
 
@@ -449,6 +481,21 @@ For example, to define a DTO from a dataclass:
     async def handler() -> MyType:
         return MyType(some_field="some value", another_field=42)
 
+
+.. literalinclude:: /examples/data_transfer_objects/the_return_dto_parameter.py
+    :language: python
+
+.. literalinclude:: /examples/data_transfer_objects/factory/renaming_fields.py
+    :language: python
+    :caption: Renaming fields
+
+.. literalinclude:: /examples/data_transfer_objects/factory/excluding_fields.py
+    :language: python
+    :caption: Excluding fields
+
+.. literalinclude:: /examples/data_transfer_objects/factory/marking_fields.py
+    :language: python
+    :caption: Marking fields
 
 .. seealso::
     :doc:`/usage/dto/index`
@@ -565,25 +612,13 @@ Basic support for HTMX requests and responses was added with the
     :doc:`/usage/contrib/htmx`
 
 
-Unified storage interfaces
----------------------------
-
-Storage backends for server-side sessions ``starlite.cache.Cache``` have been
-unified and replaced by the :class:`Stores <litestar.stores.base.Store>`, providing
-abstractions over asynchronous key/values stores backed by memory, the file system or
-redis.
-
-.. seealso::
-
-    :doc:`/usage/stores`
-
-
 Event bus
 ---------
 
 A simple event bus system for Litestar, supporting synchronous and asynchronous
 listeners and emitters, providing a similar interface to handlers. It currently
-features a simple in-memory, process-local backend
+features a simple in-memory, process-local backend.
+
 
 .. seealso::
     :doc:`/usage/events`
@@ -623,6 +658,7 @@ handlers, OOP based event dispatching, data iterators and more.
     :caption: Receiving JSON and sending it back as MessagePack
 
     from litestar import websocket, WebSocket
+
 
     @websocket("/")
     async def handler(socket: WebSocket) -> None:
@@ -667,7 +703,7 @@ dependencies to specify additional information about the fields
 Channels
 ---------
 
-:mod:`litestar.channels` are a general purpose event streaming module,
+:doc:`/usage/channels` are a general purpose event streaming module,
 which can for example be used to broadcast messages via WebSockets and includes
 functionalities such as automatically generating WebSocket route handlers to
 broadcast messages.
