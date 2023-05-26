@@ -6,7 +6,6 @@ from msgspec import UNSET
 from typing_extensions import get_origin
 
 from litestar.dto.factory import Mark
-from litestar.types.empty import Empty
 
 from .types import (
     CollectionType,
@@ -209,18 +208,14 @@ def should_skip_transfer(
 
     We should skip transfer when:
     - the field is excluded and the DTO is for the return data.
-    - the DTO is for request data, and the field is not in the source instance, and the field has a default value.
+    - the DTO is for request data, and the field is not in the source instance.
 
     Args:
         dto_for: indicates whether the DTO is for the request body or response.
         field_definition: model field definition.
         source_has_value: indicates whether the source instance has a value for the field.
     """
-    return (dto_for == "return" and field_definition.is_excluded) or (
-        dto_for == "data"
-        and not source_has_value
-        and (field_definition.default is not Empty or field_definition.default_factory is not None)
-    )
+    return (dto_for == "return" and field_definition.is_excluded) or (dto_for == "data" and not source_has_value)
 
 
 def transfer_type_data(
