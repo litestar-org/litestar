@@ -5,7 +5,6 @@ import pytest
 from pytest import FixtureRequest
 
 from litestar import WebSocket, get, websocket
-from litestar.di import Provide
 from litestar.testing import create_test_client
 
 
@@ -68,7 +67,7 @@ def test_generator_dependency(
 ) -> None:
     dependency = request.getfixturevalue(dependency_fixture)
 
-    @get("/", dependencies={"dep": Provide(dependency, sync_to_thread=False)}, cache=cache)
+    @get("/", dependencies={"dep": dependency}, cache=cache)
     def handler(dep: str) -> Dict[str, str]:
         return {"value": dep}
 
@@ -91,7 +90,7 @@ async def test_generator_dependency_websocket(
 ) -> None:
     dependency = request.getfixturevalue(dependency_fixture)
 
-    @websocket("/ws", dependencies={"dep": Provide(dependency, sync_to_thread=False)})
+    @websocket("/ws", dependencies={"dep": dependency})
     async def ws_handler(socket: WebSocket, dep: str) -> None:
         await socket.accept()
         await socket.send_json({"value": dep})
@@ -114,7 +113,7 @@ def test_generator_dependency_handle_exception(
 ) -> None:
     dependency = request.getfixturevalue(dependency_fixture)
 
-    @get("/", dependencies={"dep": Provide(dependency, sync_to_thread=False)})
+    @get("/", dependencies={"dep": dependency})
     def handler(dep: str) -> Dict[str, str]:
         raise ValueError("foo")
 
@@ -138,7 +137,7 @@ def test_generator_dependency_exception_during_cleanup(
     dependency = request.getfixturevalue(dependency_fixture)
     cleanup_mock.side_effect = Exception("foo")
 
-    @get("/", dependencies={"dep": Provide(dependency, sync_to_thread=False)})
+    @get("/", dependencies={"dep": dependency})
     def handler(dep: str) -> Dict[str, str]:
         return {"value": dep}
 
@@ -170,9 +169,9 @@ def test_generator_dependency_nested(
     @get(
         "/",
         dependencies={
-            "generator_dep": Provide(dependency, sync_to_thread=False),
-            "nested_one": Provide(nested_dependency_one, sync_to_thread=False),
-            "nested_two": Provide(nested_dependency_two, sync_to_thread=False),
+            "generator_dep": dependency,
+            "nested_one": nested_dependency_one,
+            "nested_two": nested_dependency_two,
         },
     )
     def handler(nested_two: str) -> Dict[str, str]:
@@ -207,10 +206,7 @@ def test_generator_dependency_nested_error_during_cleanup(
 
     @get(
         "/",
-        dependencies={
-            "generator_dep": Provide(dependency, sync_to_thread=False),
-            "other": Provide(other_dependency, sync_to_thread=False),
-        },
+        dependencies={"generator_dep": dependency, "other": other_dependency},
     )
     def handler(other: str) -> Dict[str, str]:
         return {"value": other}
