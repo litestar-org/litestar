@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from litestar.types.empty import EmptyType
     from litestar.utils.signature import ParsedSignature
 
-__all__ = ("AsyncCallable", "AsyncIteratorWrapper", "as_async_callable_list", "async_partial", "is_async_callable")
+__all__ = ("AsyncCallable", "AsyncIteratorWrapper", "async_partial", "is_async_callable")
 
 
 P = ParamSpec("P")
@@ -100,20 +100,6 @@ class AsyncCallable(Generic[P, T]):
         from litestar.utils.signature import ParsedSignature
 
         self._parsed_signature = ParsedSignature.from_fn(self.ref.value, namespace)
-
-
-def as_async_callable_list(value: Callable | list[Callable]) -> list[AsyncCallable]:
-    """Wrap callables in ``AsyncCallable`` s.
-
-    Args:
-        value: A callable or list of callables.
-
-    Returns:
-        A list of AsyncCallable instances
-    """
-    if not isinstance(value, list):
-        return [AsyncCallable(value)]
-    return [AsyncCallable(v) for v in value]
 
 
 def async_partial(fn: Callable) -> Callable:

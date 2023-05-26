@@ -22,7 +22,6 @@ from litestar.types import ExceptionHandlersMap
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
 
-    from litestar.datastructures import State
     from litestar.types import Scope
     from litestar.types.callable_types import GetLogger
 
@@ -120,11 +119,12 @@ def test_exception_handler_middleware_calls_app_level_after_exception_hook() -> 
     def handler() -> None:
         raise RuntimeError()
 
-    async def after_exception_hook_handler(exc: Exception, scope: "Scope", state: "State") -> None:
+    async def after_exception_hook_handler(exc: Exception, scope: "Scope") -> None:
+        app = scope.get("app")
         assert isinstance(exc, RuntimeError)
-        assert scope["app"]
-        assert not state.called
-        state.called = True
+        assert app
+        assert not app.state.called
+        app.state.called = True
 
     with create_test_client(handler, after_exception=[after_exception_hook_handler]) as client:
         setattr(client.app.state, "called", False)

@@ -8,7 +8,6 @@ from litestar.status_codes import HTTP_400_BAD_REQUEST
 logger = logging.getLogger()
 
 if TYPE_CHECKING:
-    from litestar.datastructures import State
     from litestar.types import Scope
 
 
@@ -18,8 +17,9 @@ def my_handler() -> None:
     raise HTTPException(detail="bad request", status_code=HTTP_400_BAD_REQUEST)
 
 
-async def after_exception_handler(exc: Exception, scope: "Scope", state: "State") -> None:
+async def after_exception_handler(exc: Exception, scope: "Scope") -> None:
     """Hook function that will be invoked after each exception."""
+    state = scope["app"].state
     if not hasattr(state, "error_count"):
         state.error_count = 1
     else:
