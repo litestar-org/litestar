@@ -138,6 +138,8 @@ tortoise-orm = ">=0.17.0"
 trio = "*"
 uvicorn = "*"
 pytest-rerunfailures = "^11.1.2"
+duckdb-engine = "*"
+sqlalchemy-spanner = "*"
 
 [tool.poetry.group.docs]
 optional = true
@@ -230,7 +232,9 @@ markers = [
     "sqlalchemy_aiosqlite: SQLAlchemy SQLite (aiosqlite) Tests",
     "sqlalchemy_psycopg_sync: SQLAlchemy Postgres (psycopg sync) Tests",
     "sqlalchemy_sqlite: SQLAlchemy SQLite (sqlite) Tests",
-    "sqlalchemy_oracledb: SQLAlchemy Oracle (oracledb) Tests"
+    "sqlalchemy_oracledb: SQLAlchemy Oracle (oracledb) Tests",
+    "sqlalchemy_spanner: SQLAlchemy Google Cloud Spanner (sqlalchemy-spanner) Tests",
+    "sqlalchemy_duckdb: SQLAlchemy Duckdb (duckdb-engine) Tests",
 ]
 
 [tool.pyright]

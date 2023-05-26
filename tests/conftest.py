@@ -32,6 +32,7 @@ from _pytest.fixtures import FixtureRequest
 from _pytest.nodes import Item
 from fakeredis.aioredis import FakeRedis
 from freezegun import freeze_time
+from google.cloud import spanner
 from oracledb.exceptions import DatabaseError, OperationalError
 from pytest_docker.plugin import Services
 from pytest_lazyfixture import lazy_fixture
@@ -523,8 +524,54 @@ async def oracle_service(docker_ip: str, docker_services: Services) -> None:  # 
         docker_services:
     """
     # oracle takes a while to mount and open initially.
-    await anyio.sleep(20)
+    await anyio.sleep(15)
     await wait_until_responsive(timeout=30.0, pause=0.1, check=AsyncCallable(oracle_responsive), host=docker_ip)
+
+
+def spanner_responsive(host: str) -> bool:
+    """
+    Args:
+        host: docker IP address.
+
+    Returns:
+        Boolean indicating if we can connect to the database.
+    """
+
+    try:
+        os.environ["SPANNER_EMULATOR_HOST"] = "localhost:9010"
+        spanner_client = spanner.Client(project="test-project")
+        instance = spanner_client.instance("test-instance")
+        database = instance.database("test-database")
+        with database.snapshot() as snapshot:
+            resp = snapshot.execute_sql("SELECT 1")
+        return bool(resp[0] == 1)
+    except Exception:  # pyright: ignore
+        return False
+
+
+@docker_service_registry.register("spanner")
+async def spanner_service(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
+    """Starts containers for required services, fixture waits until they are
+    responsive before returning.
+
+    Args:
+        docker_ip:
+        docker_services:
+    """
+    await anyio.sleep(15)
+    os.environ["SPANNER_EMULATOR_HOST"] = "localhost:9010"
+    await wait_until_responsive(timeout=30.0, pause=0.1, check=AsyncCallable(spanner_responsive), host=docker_ip)
+
+
+@docker_service_registry.register("spanner_init")
+async def spanner_init_service(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
+    """Starts containers for required services, fixture waits until they are
+    responsive before returning.
+
+    Args:
+        docker_ip:
+        docker_services:
+    """
 
 
 # the monkeypatch fixture does not work with session scoped dependencies
