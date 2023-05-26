@@ -6,7 +6,7 @@ import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
 from litestar import Litestar
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
 
 
 def test_access_openapi_schema_raises_if_not_configured() -> None:
@@ -60,3 +60,8 @@ def test_set_env_flags(
     app = Litestar(**{app_attr: app_value})  # type: ignore[arg-type]
 
     assert getattr(app, app_attr) is expected_value
+
+
+def test_warn_pdb_on_exception() -> None:
+    with pytest.warns(LitestarWarning, match="Debugger"):
+        Litestar(pdb_on_exception=True)

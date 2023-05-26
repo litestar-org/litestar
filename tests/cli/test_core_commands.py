@@ -1,7 +1,7 @@
 import os
 import sys
 from pathlib import Path
-from typing import Callable, List, Optional
+from typing import Callable, Generator, List, Optional
 from unittest.mock import MagicMock
 
 import pytest
@@ -11,6 +11,7 @@ from pytest_mock import MockerFixture
 
 from litestar import __version__ as litestar_version
 from litestar.cli.main import litestar_group as cli_command
+from litestar.exceptions import LitestarWarning
 from tests.cli import (
     CREATE_APP_FILE_CONTENT,
     GENERIC_APP_FACTORY_FILE_CONTENT,
@@ -182,7 +183,17 @@ def test_run_command_with_app_factory(
     )
 
 
-@pytest.mark.usefixtures("mock_uvicorn_run")
+@pytest.fixture()
+def unset_env() -> Generator[None, None, None]:
+    yield
+    for key in ["LITESTAR_DEBUG", "LITESTAR_PDB"]:
+        try:
+            del os.environ[key]
+        except KeyError:
+            continue
+
+
+@pytest.mark.usefixtures("mock_uvicorn_run", "unset_env")
 def test_run_command_debug(
     app_file: Path, runner: CliRunner, monkeypatch: MonkeyPatch, create_app_file: CreateAppFileFixture
 ) -> None:
@@ -195,7 +206,7 @@ def test_run_command_debug(
     assert os.getenv("LITESTAR_DEBUG") == "1"
 
 
-@pytest.mark.usefixtures("mock_uvicorn_run")
+@pytest.mark.usefixtures("mock_uvicorn_run", "unset_env")
 def test_run_command_pdb(
     app_file: Path,
     runner: CliRunner,
@@ -205,7 +216,9 @@ def test_run_command_pdb(
     monkeypatch.delenv("LITESTAR_PDB", raising=False)
     path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)
     app_path = f"{path.stem}:create_app"
-    result = runner.invoke(cli_command, ["--app", app_path, "run", "--pdb"])
+
+    with pytest.warns(LitestarWarning):
+        result = runner.invoke(cli_command, ["--app", app_path, "run", "--pdb"])
 
     assert result.exit_code == 0
     assert os.getenv("LITESTAR_PDB") == "1"

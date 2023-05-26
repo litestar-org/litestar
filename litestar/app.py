@@ -43,6 +43,7 @@ from litestar.types import Empty
 from litestar.types.internal_types import PathParameterDefinition
 from litestar.utils import AsyncCallable, is_async_callable, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
+from litestar.utils.warnings import warn_pdb_on_exception
 
 if TYPE_CHECKING:
     from litestar.config.compression import CompressionConfig
@@ -391,6 +392,9 @@ class Litestar(Router):
         self.websocket_class = config.websocket_class or WebSocket
         self.debug = config.debug
         self.pdb_on_exception: bool = config.pdb_on_exception
+
+        if self.pdb_on_exception:
+            warn_pdb_on_exception()
 
         super().__init__(
             after_request=config.after_request,
