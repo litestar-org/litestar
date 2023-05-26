@@ -37,7 +37,7 @@ class DTOData(Generic[T]):
         data = dict(self._data_as_builtins)
         for k, v in kwargs.items():
             _set_nested_dict_value(data, k.split("__"), v)
-        return self.parsed_type.annotation(**data)
+        return self._backend.transfer_data_from_builtins(data)  # type:ignore[no-any-return]
 
     def update_instance(self, instance: T, **kwargs: Any) -> T:
         """Update an instance with the DTO validated data.
@@ -56,7 +56,7 @@ class DTOData(Generic[T]):
         return self._data_as_builtins
 
 
-def _set_nested_dict_value(d: dict, keys: tuple[str], value: Any) -> None:
+def _set_nested_dict_value(d: dict, keys: list[str], value: Any) -> None:
     if len(keys) == 1:
         d[keys[0]] = value
     else:
