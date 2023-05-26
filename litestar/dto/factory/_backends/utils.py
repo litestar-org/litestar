@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from litestar.dto.factory.types import FieldDefinition, RenameStrategy
     from litestar.dto.types import ForType
 
-    from .types import FieldDefinitionsType
+    from .types import FieldDefinitionsType, TransferFieldDefinition
 
 __all__ = (
     "RenameStrategies",
@@ -161,20 +161,65 @@ def transfer_instance_data(
     unstructured_data = {}
     source_is_mapping = isinstance(source_instance, Mapping)
 
+    if source_is_mapping:
+
+        def has(source: Any, key: str) -> bool:
+            return key in source
+
+        def get(source: Any, key: str) -> Any:
+            return source[key]
+
+    else:
+
+        def has(source: Any, key: str) -> bool:
+            return hasattr(source, key)
+
+        def get(source: Any, key: str) -> Any:
+            return getattr(source, key)
+
     def filter_missing(value: Any) -> bool:
         return value is UNSET
 
     for field_definition in field_definitions:
-        transfer_type = field_definition.transfer_type
         source_name = field_definition.serialization_name if dto_for == "data" else field_definition.name
+
+        if should_skip_transfer(dto_for, field_definition, has(source_instance, source_name)):
+            continue
+
+        transfer_type = field_definition.transfer_type
         destination_name = field_definition.name if dto_for == "data" else field_definition.serialization_name
-        source_value = source_instance[source_name] if source_is_mapping else getattr(source_instance, source_name)
+        source_value = get(source_instance, source_name)
+
         if field_definition.is_partial and dto_for == "data" and filter_missing(source_value):
             continue
+
         unstructured_data[destination_name] = transfer_type_data(
             source_value, transfer_type, dto_for, nested_as_dict=destination_type is dict
         )
     return destination_type(**unstructured_data)
+
+
+def should_skip_transfer(
+    dto_for: ForType,
+    field_definition: TransferFieldDefinition,
+    source_has_value: bool,
+) -> bool:
+    """Returns ``True`` where a field should be excluded from data transfer.
+
+    We should skip transfer when:
+    - the field is excluded and the DTO is for the return data.
+    - the DTO is for request data, and the field is not in the source instance, and the field has a default value.
+
+    Args:
+        dto_for: indicates whether the DTO is for the request body or response.
+        field_definition: model field definition.
+        source_has_value: indicates whether the source instance has a value for the field.
+    """
+    if (dto_for == "return" and field_definition.is_excluded) or (
+        dto_for == "data" and not source_has_value and (field_definition.default or field_definition.default_factory)
+    ):
+        return True
+    return False
 
 
 def transfer_type_data(
@@ -207,12 +252,7 @@ def transfer_nested_collection_type_data(
 def transfer_nested_simple_type_data(
     destination_type: type[Any], nested_field_info: NestedFieldInfo, dto_for: ForType, source_value: Any
 ) -> Any:
-    return transfer_instance_data(
-        destination_type,
-        source_value,
-        nested_field_info.field_definitions,
-        dto_for,
-    )
+    return transfer_instance_data(destination_type, source_value, nested_field_info.field_definitions, dto_for)
 
 
 def transfer_nested_union_type_data(transfer_type: UnionType, dto_for: ForType, source_value: Any) -> Any:

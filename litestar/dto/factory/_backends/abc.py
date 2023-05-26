@@ -5,14 +5,11 @@ from __future__ import annotations
 
 import secrets
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Final, Generic, TypeVar, Union
-
-from msgspec import UNSET, UnsetType
+from typing import TYPE_CHECKING, Final, Generic, TypeVar
 
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
 from litestar.dto.factory import DTOData
-from litestar.typing import ParsedType
 from litestar.utils.helpers import get_fully_qualified_class_name
 
 from .types import (
@@ -41,6 +38,7 @@ if TYPE_CHECKING:
     from litestar.dto.types import ForType
     from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
+    from litestar.typing import ParsedType
 
     from .types import FieldDefinitionsType
 
@@ -160,14 +158,6 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         """
         defined_fields = []
         for field_definition in self.context.field_definition_generator(model_type):
-            if should_exclude_field(field_definition, exclude, self.context.dto_for):
-                continue
-
-            if self.context.config.partial:
-                field_definition = field_definition.copy_with(
-                    parsed_type=ParsedType(Union[field_definition.parsed_type.annotation, UnsetType]), default=UNSET
-                )
-
             try:
                 transfer_type = self._create_transfer_type(
                     field_definition.parsed_type,
@@ -191,6 +181,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
                 serialization_name=serialization_name,
                 transfer_type=transfer_type,
                 is_partial=self.context.config.partial,
+                is_excluded=should_exclude_field(field_definition, exclude, self.context.dto_for),
             )
             defined_fields.append(transfer_field_definition)
         return tuple(defined_fields)
@@ -417,7 +408,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
 
 def _filter_exclude(exclude: AbstractSet[str], field_name: str) -> AbstractSet[str]:
     """Filter exclude set to only include exclusions for the given field name."""
-    return {split[1] for s in exclude if (split := s.split(".", 1))[0] == field_name}
+    return {split[1] for s in exclude if (split := s.split(".", 1))[0] == field_name and len(split) > 1}
 
 
 def _enumerate_name(name: str, index: int) -> str:

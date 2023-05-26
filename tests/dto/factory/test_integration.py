@@ -180,7 +180,6 @@ def handler(data: DTOData[Bar]) -> Dict[str, Any]:
         assert resp.json() == {"foo": {"bar": "hello"}}
 
 
-@pytest.mark.xfail(reason="working on it")
 def test_dto_data_create_instance_nested_kwargs(create_module: Callable[[str], ModuleType]) -> None:
     module = create_module(
         """
