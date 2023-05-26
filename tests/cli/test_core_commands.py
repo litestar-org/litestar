@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 from typing import Callable, List, Optional
 from unittest.mock import MagicMock
@@ -110,11 +111,11 @@ def test_run_command(
 
     result = runner.invoke(cli_command, args)
 
-    assert result.exception is None, result.stdout
+    assert result.exception is None
     assert result.exit_code == 0
 
-    if reload or reload_dir or web_concurrency:
-        expected_args = ["uvicorn", f"{path.stem}:app", f"--host={host}", f"--port={port}"]
+    if reload or reload_dir or web_concurrency > 1:
+        expected_args = [sys.executable, "-m", "uvicorn", f"{path.stem}:app", f"--host={host}", f"--port={port}"]
         if reload or reload_dir:
             expected_args.append("--reload")
         if web_concurrency:
@@ -125,9 +126,7 @@ def test_run_command(
         assert sorted(mock_subprocess_run.call_args_list[0].args[0]) == sorted(expected_args)
     else:
         mock_subprocess_run.assert_not_called()
-        mock_uvicorn_run.assert_called_once_with(
-            {"app": f"{path.stem}:app", "host": host, "port": port, "factory": False}
-        )
+        mock_uvicorn_run.assert_called_once_with(app=f"{path.stem}:app", host=host, port=port, factory=False)
 
     mock_show_app_info.assert_called_once()
 
@@ -183,9 +182,8 @@ def test_run_command_with_app_factory(
     )
 
 
-def test_run_command_debug(
-    app_file: Path, runner: CliRunner, mock_uvicorn_run: MagicMock, monkeypatch: MonkeyPatch, create_app_file
-) -> None:
+@pytest.mark.usefixtures("mock_uvicorn_run")
+def test_run_command_debug(app_file: Path, runner: CliRunner, monkeypatch: MonkeyPatch, create_app_file) -> None:
     monkeypatch.delenv("LITESTAR_DEBUG", raising=False)
     path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)
     app_path = f"{path.stem}:create_app"
@@ -195,8 +193,12 @@ def test_run_command_debug(
     assert os.getenv("LITESTAR_DEBUG") == "1"
 
 
+@pytest.mark.usefixtures("mock_uvicorn_run")
 def test_run_command_pdb(
-    app_file: Path, runner: CliRunner, mock_subprocess_run: MagicMock, monkeypatch: MonkeyPatch, create_app_file
+    app_file: Path,
+    runner: CliRunner,
+    monkeypatch: MonkeyPatch,
+    create_app_file,
 ) -> None:
     monkeypatch.delenv("LITESTAR_PDB", raising=False)
     path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)
