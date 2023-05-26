@@ -6,6 +6,7 @@ from msgspec import UNSET
 from typing_extensions import get_origin
 
 from litestar.dto.factory import Mark
+from litestar.types.empty import Empty
 
 from .types import (
     CollectionType,
@@ -215,11 +216,11 @@ def should_skip_transfer(
         field_definition: model field definition.
         source_has_value: indicates whether the source instance has a value for the field.
     """
-    if (dto_for == "return" and field_definition.is_excluded) or (
-        dto_for == "data" and not source_has_value and (field_definition.default or field_definition.default_factory)
-    ):
-        return True
-    return False
+    return (dto_for == "return" and field_definition.is_excluded) or (
+        dto_for == "data"
+        and not source_has_value
+        and (field_definition.default is not Empty or field_definition.default_factory is not None)
+    )
 
 
 def transfer_type_data(
