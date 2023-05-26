@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, AsyncGenerator, Dict, Generator, List, Optional
 
 import pytest
 
@@ -130,3 +130,27 @@ def test_nested_sequence_dependency() -> None:
         assert resp.json() == ["a", "b", "c"]
         resp = client.get("/obj", params={"seq": seq})
         assert resp.json() == ["a", "b", "c"]
+
+
+def sync_callable() -> float:
+    return 0.1
+
+
+async def async_callable() -> float:
+    return 0.1
+
+
+def sync_generator() -> Generator[float, None, None]:
+    yield 0.1
+
+
+async def async_generator() -> AsyncGenerator[float, None]:
+    yield 0.1
+
+
+@pytest.mark.parametrize(
+    ("dep", "exp"),
+    [(sync_callable, True), (async_callable, False), (sync_generator, True), (async_generator, True)],
+)
+def test_dependency_has_async_callable(dep: Any, exp: bool) -> None:
+    assert Provide(dep).has_sync_callable is exp

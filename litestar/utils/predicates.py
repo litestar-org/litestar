@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict, deque
 from collections.abc import Iterable as CollectionsIterable
-from dataclasses import is_dataclass
-from inspect import isclass
+from inspect import isasyncgenfunction, isclass, isgeneratorfunction
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -31,14 +30,13 @@ from typing_extensions import (
     is_typeddict,
 )
 
-from litestar.types import DataclassProtocol, Empty
+from litestar.types import Empty
 from litestar.types.builtin_types import UNION_TYPES, NoneType
 from litestar.utils.typing import get_origin_or_inner_type
 
 if TYPE_CHECKING:
-    from litestar.types.builtin_types import (
-        TypedDictClass,
-    )
+    from litestar.types.builtin_types import TypedDictClass
+    from litestar.types.callable_types import AnyGenerator
 
 try:
     import pydantic
@@ -55,7 +53,6 @@ __all__ = (
     "is_attrs_class",
     "is_class_and_subclass",
     "is_class_var",
-    "is_dataclass_class",
     "is_generic",
     "is_mapping",
     "is_non_string_iterable",
@@ -64,6 +61,7 @@ __all__ = (
     "is_pydantic_constrained_field",
     "is_pydantic_model_class",
     "is_pydantic_model_instance",
+    "is_sync_or_async_generator",
     "is_typed_dict",
     "is_union",
 )
@@ -216,21 +214,6 @@ def is_optional_union(annotation: Any) -> TypeGuard[Any | None]:
     )
 
 
-def is_dataclass_class(annotation: Any) -> TypeGuard[type[DataclassProtocol]]:
-    """Wrap :func:`is_dataclass <dataclasses.is_dataclass>` in a :data:`typing.TypeGuard`.
-
-    Args:
-        annotation: tested to determine if instance or type of :class:`dataclasses.dataclass`.
-
-    Returns:
-        ``True`` if instance or type of ``dataclass``.
-    """
-    try:
-        return isclass(annotation) and is_dataclass(annotation)
-    except TypeError:  # pragma: no cover
-        return False
-
-
 def is_typed_dict(annotation: Any) -> TypeGuard[TypedDictClass]:
     """Wrap :func:`typing.is_typeddict` in a :data:`typing.TypeGuard`.
 
@@ -350,3 +333,15 @@ def is_class_var(annotation: Any) -> bool:
     """
     annotation = get_origin_or_inner_type(annotation) or annotation
     return annotation is ClassVar
+
+
+def is_sync_or_async_generator(obj: Any) -> TypeGuard[AnyGenerator]:
+    """Check if the given annotation is a sync or async generator.
+
+    Args:
+        obj: type to be tested for sync or async generator.
+
+    Returns:
+        A boolean.
+    """
+    return isgeneratorfunction(obj) or isasyncgenfunction(obj)

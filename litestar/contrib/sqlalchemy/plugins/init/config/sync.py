@@ -14,13 +14,12 @@ if TYPE_CHECKING:
     from typing import Any, Callable
 
     from litestar import Litestar
-    from litestar.datastructures.state import State
     from litestar.types import BeforeMessageSendHookHandler, Message, Scope
 
 __all__ = ("SQLAlchemySyncConfig", "SyncSessionConfig")
 
 
-async def default_before_send_handler(message: Message, _: State, scope: Scope) -> None:
+async def default_before_send_handler(message: Message, scope: Scope) -> None:
     """Handle closing and cleaning up sessions before sending.
 
     Args:

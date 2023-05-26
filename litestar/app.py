@@ -40,12 +40,7 @@ from litestar.static_files.base import StaticFiles
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty
 from litestar.types.internal_types import PathParameterDefinition
-from litestar.utils import (
-    as_async_callable_list,
-    is_async_callable,
-    join_paths,
-    unique,
-)
+from litestar.utils import AsyncCallable, is_async_callable, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
 
 if TYPE_CHECKING:
@@ -362,9 +357,9 @@ class Litestar(Router):
         self.asgi_router = ASGIRouter(app=self)
 
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
-        self.after_exception = as_async_callable_list(config.after_exception)
+        self.after_exception = [AsyncCallable(h) for h in config.after_exception]
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
-        self.before_send = as_async_callable_list(config.before_send)
+        self.before_send = [AsyncCallable(h) for h in config.before_send]
         self.compression_config = config.compression_config
         self.cors_config = config.cors_config
         self.csrf_config = config.csrf_config
@@ -741,7 +736,7 @@ class Litestar(Router):
 
             async def wrapped_send(message: Message) -> None:
                 for hook in self.before_send:
-                    await hook(message, self.state, scope)
+                    await hook(message, scope)
                 await send(message)
 
             return wrapped_send

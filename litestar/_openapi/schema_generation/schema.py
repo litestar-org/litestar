@@ -48,9 +48,9 @@ from litestar.openapi.spec.schema import Schema, SchemaDataContainer
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.serialization import encode_json
 from litestar.types import DataclassProtocol, Empty, TypedDictClass
+from litestar.utils.dataclass import is_dataclass_class
 from litestar.utils.predicates import (
     is_attrs_class,
-    is_dataclass_class,
     is_optional_union,
     is_pydantic_constrained_field,
     is_pydantic_model_class,

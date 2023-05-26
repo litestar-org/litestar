@@ -2,7 +2,7 @@ import os
 import warnings
 
 from litestar.exceptions import LitestarWarning
-from litestar.types import AnyCallable
+from litestar.types import AnyCallable, AnyGenerator
 
 
 def warn_implicit_sync_to_thread(source: AnyCallable, stacklevel: int = 2) -> None:
@@ -29,6 +29,19 @@ def warn_sync_to_thread_with_async_callable(source: AnyCallable, stacklevel: int
         f"Use of an asynchronous callable {source} with sync_to_thread; sync_to_thread "
         "has no effect on async callable. You can disable this warning by setting "
         "LITESTAR_WARN_SYNC_TO_THREAD_WITH_ASYNC=0",
+        category=LitestarWarning,
+        stacklevel=stacklevel,
+    )
+
+
+def warn_sync_to_thread_with_generator(source: AnyGenerator, stacklevel: int = 2) -> None:
+    if os.getenv("LITESTAR_WARN_SYNC_TO_THREAD_WITH_GENERATOR") == "0":
+        return
+
+    warnings.warn(
+        f"Use of generator {source} with sync_to_thread; sync_to_thread has no effect "
+        "on generators. You can disable this warning by setting "
+        "LITESTAR_WARN_SYNC_TO_THREAD_WITH_GENERATOR=0",
         category=LitestarWarning,
         stacklevel=stacklevel,
     )
