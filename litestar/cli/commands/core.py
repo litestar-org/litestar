@@ -5,11 +5,11 @@ import multiprocessing
 import os
 import subprocess
 import sys
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import click
 import uvicorn
-from click import command, option
+from click import Context, command, option
 from rich.tree import Tree
 
 from litestar.cli._utils import LitestarEnv, console, show_app_info
@@ -75,8 +75,7 @@ def run_command(
     debug: bool,
     reload_dir: tuple[str, ...],
     use_pdb: bool,
-    app: Litestar,
-    env: LitestarEnv,
+    ctx: Context,
 ) -> None:
     """Run a Litestar app.
 
@@ -95,6 +94,9 @@ def run_command(
 
     if use_pdb:
         os.environ["LITESTAR_PDB"] = "1"
+
+    env = cast(LitestarEnv, ctx.obj())
+    app = env.app
 
     reload_dirs = env.reload_dirs or reload_dir
 

@@ -205,6 +205,10 @@ def _inject_args(func: Callable[P, T]) -> Callable[Concatenate[Context, P], T]:
                 kwargs["app"] = env.app
             if needs_env:
                 kwargs["env"] = env
+
+        if "ctx" in params:
+            kwargs["ctx"] = ctx
+
         return func(*args, **kwargs)
 
     return pass_context(wrapped)
