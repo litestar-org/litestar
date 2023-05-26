@@ -33,7 +33,10 @@ class PydanticDTO(AbstractDTOFactory[T], Generic[T]):
     @classmethod
     def generate_field_definitions(cls, model_type: type[BaseModel]) -> Generator[FieldDefinition, None, None]:
         for key, parsed_type in get_model_type_hints(model_type).items():
-            model_field = model_type.__fields__[key]
+            try:
+                model_field = model_type.__fields__[key]
+            except KeyError:
+                continue
 
             dto_field: DTOField | None = model_field.field_info.extra.get(DTO_FIELD_META_KEY)
 
