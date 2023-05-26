@@ -154,7 +154,7 @@ class ExceptionHandlerMiddleware:
                 self.handle_exception_logging(logger=logger, logging_config=litestar_app.logging_config, scope=scope)
 
             for hook in litestar_app.after_exception:
-                await hook(e, scope, litestar_app.state)
+                await hook(e, scope)
 
             if scope["type"] == ScopeType.HTTP:
                 await self.handle_request_exception(

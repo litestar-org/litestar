@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from litestar.handlers.http_handlers import HTTPRouteHandler
     from litestar.response.base import Response
     from litestar.types.protocols import Logger
+
 else:
     AppConfig = Any
     BaseRouteHandler = Any
@@ -34,7 +35,7 @@ else:
     HTTPRouteHandler = Any
 
 ExceptionT = TypeVar("ExceptionT", bound=Exception)
-AfterExceptionHookHandler = Callable[[Exception, Scope, State], SyncOrAsyncUnion[None]]
+AfterExceptionHookHandler = Callable[[Exception, Scope], SyncOrAsyncUnion[None]]
 AfterRequestHookHandler = Union[
     Callable[[ASGIApp], SyncOrAsyncUnion[ASGIApp]], Callable[[Response], SyncOrAsyncUnion[Response]]
 ]
@@ -42,7 +43,7 @@ AfterResponseHookHandler = Callable[[Request], SyncOrAsyncUnion[None]]
 AsyncAnyCallable = Callable[..., Awaitable[Any]]
 AnyCallable = Callable[..., Any]
 AnyGenerator = Union[Generator[Any, Any, Any], AsyncGenerator[Any, Any]]
-BeforeMessageSendHookHandler = Callable[[Message, State, Scope], SyncOrAsyncUnion[None]]
+BeforeMessageSendHookHandler = Callable[[Message, Scope], SyncOrAsyncUnion[None]]
 BeforeRequestHookHandler = Callable[[Request], Union[Any, Awaitable[Any]]]
 CacheKeyBuilder = Callable[[Request], str]
 ExceptionHandler = Callable[[Request, ExceptionT], Response]

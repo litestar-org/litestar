@@ -26,13 +26,7 @@ from .scope import (
     set_litestar_scope_state,
 )
 from .sequence import compact, find_index, unique
-from .sync import (
-    AsyncCallable,
-    AsyncIteratorWrapper,
-    as_async_callable_list,
-    async_partial,
-    is_async_callable,
-)
+from .sync import AsyncCallable, AsyncIteratorWrapper, async_partial, is_async_callable
 from .typing import annotation_is_iterable_of_type, get_origin_or_inner_type, make_non_optional_union
 
 __all__ = (
@@ -40,7 +34,6 @@ __all__ = (
     "AsyncIteratorWrapper",
     "Ref",
     "annotation_is_iterable_of_type",
-    "as_async_callable_list",
     "async_partial",
     "compact",
     "delete_litestar_scope_state",
