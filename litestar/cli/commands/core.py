@@ -100,26 +100,20 @@ def run_command(
 
     reload_dirs = env.reload_dirs or reload_dir
 
-    process_args = {
-        "reload": env.reload or reload or bool(reload_dirs),
-        "host": env.host or host,
-        "port": env.port or port,
-        "workers": env.web_concurrency or web_concurrency,
-        "factory": env.is_app_factory,
-    }
-
-    if reload_dirs:
-        process_args["reload-dir"] = reload_dirs
+    host = env.host or host
+    port = env.port or port
+    reload = env.reload or reload or bool(reload_dirs)
+    workers = env.web_concurrency or web_concurrency
 
     console.rule("[yellow]Starting server process", align="left")
 
     show_app_info(app)
 
-    if process_args["workers"] == 1 and not process_args["reload"]:
+    if workers == 1 and not reload:
         uvicorn.run(
             app=env.app_path,
-            host=process_args["host"],
-            port=process_args["port"],
+            host=env.host or host,
+            port=env.port or port,
             factory=env.is_app_factory,
         )
     else:
@@ -129,8 +123,14 @@ def run_command(
                 " with the --reload or --workers options[/]"
             )
 
+        process_args = {"reload": reload, "host": host, "port": port, "workers": workers, "factory": env.is_app_factory}
+
+        if reload_dirs:
+            process_args["reload-dir"] = reload_dirs
+
         subprocess.run(
-            [sys.executable, "-m", "uvicorn", env.app_path, *_convert_uvicorn_args(process_args)], check=True
+            [sys.executable, "-m", "uvicorn", env.app_path, *_convert_uvicorn_args(process_args)],  # noqa: S603
+            check=True,
         )
 
 

@@ -57,6 +57,6 @@ def test_set_env_flags(
     else:
         monkeypatch.delenv(env_name, raising=False)
 
-    app = Litestar(**{app_attr: app_value})
+    app = Litestar(**{app_attr: app_value})  # type: ignore[arg-type]
 
     assert getattr(app, app_attr) is expected_value

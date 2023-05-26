@@ -183,7 +183,9 @@ def test_run_command_with_app_factory(
 
 
 @pytest.mark.usefixtures("mock_uvicorn_run")
-def test_run_command_debug(app_file: Path, runner: CliRunner, monkeypatch: MonkeyPatch, create_app_file) -> None:
+def test_run_command_debug(
+    app_file: Path, runner: CliRunner, monkeypatch: MonkeyPatch, create_app_file: CreateAppFileFixture
+) -> None:
     monkeypatch.delenv("LITESTAR_DEBUG", raising=False)
     path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)
     app_path = f"{path.stem}:create_app"
@@ -198,7 +200,7 @@ def test_run_command_pdb(
     app_file: Path,
     runner: CliRunner,
     monkeypatch: MonkeyPatch,
-    create_app_file,
+    create_app_file: CreateAppFileFixture,
 ) -> None:
     monkeypatch.delenv("LITESTAR_PDB", raising=False)
     path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)

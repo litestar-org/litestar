@@ -390,7 +390,7 @@ class Litestar(Router):
         self.template_engine = config.template_config.engine_instance if config.template_config else None
         self.websocket_class = config.websocket_class or WebSocket
         self.debug = config.debug
-        self.pdb_on_exception = config.pdb_on_exception
+        self.pdb_on_exception: bool = config.pdb_on_exception
 
         super().__init__(
             after_request=config.after_request,
