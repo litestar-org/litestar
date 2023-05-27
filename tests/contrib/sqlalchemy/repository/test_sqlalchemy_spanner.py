@@ -6,7 +6,8 @@ from asyncio import AbstractEventLoop, get_event_loop_policy
 from typing import Any, Generator, Iterator
 
 import pytest
-from sqlalchemy import Engine, NullPool, create_engine
+from google.cloud import spanner
+from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from tests.contrib.sqlalchemy.models import (
@@ -53,9 +54,9 @@ def fx_engine(docker_ip: str) -> Engine:
         Async SQLAlchemy engine instance.
     """
     return create_engine(
-        "spanner:///projects/test-project/instances/test-instance/databases/test-database",
+        "spanner+spanner:///projects/test-project/instances/test-instance/databases/test-database",
         echo=True,
-        poolclass=NullPool,
+        connect_args={"client": spanner.Client(project="test-project")},
     )
 
 
