@@ -273,7 +273,8 @@ in Litestar.
 
 .. code-block:: python
 
-   from litestar import Litestar, StaticFilesConfig
+   from litestar import Litestar
+   from litestar.static_files import StaticFilesConfig
 
    app = Litestar(
        [], static_files_config=[StaticFilesConfig(path="/static", directories=["static"])]
@@ -315,8 +316,10 @@ In addition to Jinja, Litestar supports `Mako <https://www.makotemplates.org/>`_
 
         .. code-block:: python
 
-            from litestar import Litestar, get, TemplateConfig, Template
+            from litestar import Litestar, get
             from litestar.contrib.jinja import JinjaTemplateEngine
+            from litestar.response_containers import Template
+            from litestar.template.config import TemplateConfig
 
 
             @get("/hello/{name:str}")
@@ -363,7 +366,8 @@ Setting cookies and headers
 
         .. code-block:: python
 
-            from litestar import Litestar, get, ResponseHeader, Cookie, Response
+            from litestar import Litestar, get, Response
+            from litestar.datastructures import ResponseHeader, Cookie
 
 
             @get(
@@ -426,7 +430,8 @@ For redirects, instead of ``redirect`` use ``Redirect``:
 
         .. code-block:: python
 
-            from litestar import Litestar, get, Redirect
+            from litestar import Litestar, get
+            from litestar.response_containers import Redirect
 
 
             @get("/")
@@ -470,7 +475,8 @@ Instead of using the ``abort`` function, raise an ``HTTPException``:
 
         .. code-block:: python
 
-            from litestar import Litestar, get, HTTPException
+            from litestar import Litestar, get
+            from litestar.exceptions import HTTPException
 
 
             @get("/")
@@ -616,7 +622,8 @@ Error handling
 
         .. code-block:: python
 
-            from litestar import Litestar, HTTPException, Request, Response
+            from litestar import Litestar, Request, Response
+            from litestar.exceptions import HTTPException
 
 
             def handle_exception(request: Request, exception: Exception) -> Response:
