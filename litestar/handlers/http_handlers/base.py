@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, AnyStr, Mapping, cast
-
-from typing_extensions import TypedDict
+from typing import TYPE_CHECKING, AnyStr, Mapping, TypedDict, cast
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.datastructures.cookie import Cookie

@@ -7,11 +7,12 @@ from typing import (
     Literal,
     Optional,
     Protocol,
+    TypedDict,
     Union,
     overload,
 )
 
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import NotRequired
 
 __all__ = ("FileInfo", "FileSystemProtocol")
 
