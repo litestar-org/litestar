@@ -27,3 +27,4 @@ Usage
     exceptions
     contrib/index
     cli
+    debugging

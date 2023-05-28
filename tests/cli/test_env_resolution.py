@@ -23,6 +23,7 @@ def test_litestar_env_from_env_booleans(
     env_value: Optional[str],
     expected_value: bool,
 ) -> None:
+    monkeypatch.delenv(env_name, raising=False)
     if env_value is not None:
         monkeypatch.setenv(env_name, env_value)
 
