@@ -74,6 +74,8 @@ def test_create_string_constrained_field_schema(field_type: Any) -> None:
         assert schema.pattern == pattern.pattern if isinstance(pattern, Pattern) else pattern
     if field_type.to_lower:
         assert schema.description
+    if field_type.to_upper:
+        assert schema.description
 
 
 @pytest.mark.parametrize("field_type", constrained_numbers)

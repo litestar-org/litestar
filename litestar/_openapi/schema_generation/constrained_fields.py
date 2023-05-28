@@ -80,9 +80,7 @@ def create_string_constrained_field_schema(
 ) -> Schema:
     """Create Schema from Constrained Str/Bytes field."""
     schema = Schema(type=OpenAPIType.STRING)
-    if kwargs_model.content_encoding:
-        schema.content_encoding = kwargs_model.content_encoding
-    elif issubclass(field_type, bytes):
+    if issubclass(field_type, bytes):
         schema.content_encoding = "utf-8"
     if kwargs_model.min_length:
         schema.min_length = kwargs_model.min_length

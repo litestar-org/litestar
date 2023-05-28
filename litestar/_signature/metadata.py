@@ -31,36 +31,35 @@ def _parse_msgspec_meta(value: Any, model: type[T], is_sequence_container: bool)
 
 
 def _parse_pydantic_fieldinfo(value: Any, model: type[T], is_sequence_container: bool) -> T | None:
-    values: dict[str, Any] = {
-        k: v
-        for k, v in {
-            "gt": value.gt,
-            "ge": value.ge,
-            "lt": value.lt,
-            "le": value.le,
-            "multiple_of": value.multiple_of,
-            "min_length": value.min_length if not is_sequence_container else None,
-            "max_length": value.max_length if not is_sequence_container else None,
-            "description": value.description,
-            "examples": [Example(value=value.extra["example"])] if value.extra.get("example") else None,
-            "title": value.title,
-            # renamed in pydantic v2
-            "pattern": getattr(value, "regex", getattr(value, "pattern", None)),
-            # merged in pydantic v2
-            "min_items": getattr(value, "min_items", getattr(value, "min_length", None))
-            if is_sequence_container
-            else None,
-            "max_items": getattr(value, "max_items", getattr(value, "max_length", None))
-            if is_sequence_container
-            else None,
-            # removed in pydantic v2
-            "const": getattr(value, "const", None) is not None,
-        }.items()
-        if v is not None
-    }
-    if values:
-        return model(**values)
-    return None
+    return model(
+        **{
+            k: v
+            for k, v in {
+                "gt": value.gt,
+                "ge": value.ge,
+                "lt": value.lt,
+                "le": value.le,
+                "multiple_of": value.multiple_of,
+                "min_length": value.min_length if not is_sequence_container else None,
+                "max_length": value.max_length if not is_sequence_container else None,
+                "description": value.description,
+                "examples": [Example(value=value.extra["example"])] if value.extra.get("example") else None,
+                "title": value.title,
+                # renamed in pydantic v2
+                "pattern": getattr(value, "regex", getattr(value, "pattern", None)),
+                # merged in pydantic v2
+                "min_items": getattr(value, "min_items", getattr(value, "min_length", None))
+                if is_sequence_container
+                else None,
+                "max_items": getattr(value, "max_items", getattr(value, "max_length", None))
+                if is_sequence_container
+                else None,
+                # removed in pydantic v2
+                "const": getattr(value, "const", None) is not None,
+            }.items()
+            if v is not None
+        }
+    )
 
 
 def _parse_pydantic_constrained_field(value: Any, model: type[T], is_sequence_container: bool) -> T:
@@ -99,4 +98,4 @@ def _create_metadata_from_type(value: Any, model: type[T], field_type: Any) -> T
     if is_pydantic_constrained_field(field_type):
         return _parse_pydantic_constrained_field(value=value, model=model, is_sequence_container=is_sequence_container)
 
-    return None
+    return None  # pragma: no cover

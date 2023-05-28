@@ -42,14 +42,17 @@ constrained_numbers = [
 ]
 constrained_string = [
     constr(regex="^[a-zA-Z]$"),
+    constr(to_upper=True, min_length=1, regex="^[a-zA-Z]$"),
     constr(to_lower=True, min_length=1, regex="^[a-zA-Z]$"),
     constr(to_lower=True, min_length=10, regex="^[a-zA-Z]$"),
     constr(to_lower=True, min_length=10, max_length=100, regex="^[a-zA-Z]$"),
+    constr(min_length=1),
     constr(min_length=1),
     constr(min_length=10),
     constr(min_length=10, max_length=100),
     conbytes(to_lower=True, min_length=1),
     conbytes(to_lower=True, min_length=10),
+    conbytes(to_upper=True, min_length=10),
     conbytes(to_lower=True, min_length=10, max_length=100),
     conbytes(min_length=1),
     conbytes(min_length=10),
