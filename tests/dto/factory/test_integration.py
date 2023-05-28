@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Dict, Optional
 
 import pytest
 from typing_extensions import Annotated
@@ -18,7 +18,7 @@ from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
     from types import ModuleType
-    from typing import Callable
+    from typing import Any, Callable
 
 
 def test_url_encoded_form_data() -> None:
@@ -280,3 +280,25 @@ def test_dto_openapi_model_name_collision() -> None:
             k.startswith("tests.dto.factory.test_integration.test_dto_openapi_model_name_collision.<locals>.Bar")
             for k in response.json()["components"]["schemas"]
         )
+
+
+def test_url_encoded_form_data_patch_request() -> None:
+    @dataclass
+    class User:
+        name: str
+        age: int
+        read_only: str = field(default="read-only", metadata=dto_field("read-only"))
+
+    dto = DataclassDTO[Annotated[User, DTOConfig(partial=True)]]
+
+    @post(dto=dto, return_dto=None, signature_namespace={"User": User, "dict": Dict})
+    def handler(data: DTOData[User] = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict[str, Any]:
+        return data.as_builtins()  # type:ignore[no-any-return]
+
+    with create_test_client(route_handlers=[handler], debug=True) as client:
+        response = client.post(
+            "/",
+            content=b"name=John&read_only=whoops",
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+        assert response.json() == {"name": "John"}
