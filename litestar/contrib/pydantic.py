@@ -32,9 +32,10 @@ class PydanticDTO(AbstractDTOFactory[T], Generic[T]):
 
     @classmethod
     def generate_field_definitions(cls, model_type: type[BaseModel]) -> Generator[FieldDefinition, None, None]:
-        for key, parsed_type in get_model_type_hints(model_type).items():
+        model_parsed_types = get_model_type_hints(model_type)
+        for key, model_field in model_type.__fields__.items():
+            parsed_type = model_parsed_types[key]
             model_field = model_type.__fields__[key]
-
             dto_field: DTOField | None = model_field.field_info.extra.get(DTO_FIELD_META_KEY)
 
             def determine_default(_parsed_type: ParsedType, _model_field: ModelField) -> Any:
