@@ -47,8 +47,12 @@ def _parse_pydantic_fieldinfo(value: Any, model: type[T], is_sequence_container:
             # renamed in pydantic v2
             "pattern": getattr(value, "regex", getattr(value, "pattern", None)),
             # merged in pydantic v2
-            "min_items": getattr(value, "min_items", None) or value.min_length if is_sequence_container else None,
-            "max_items": getattr(value, "max_items", None) or value.max_length if is_sequence_container else None,
+            "min_items": getattr(value, "min_items", getattr(value, "min_length", None))
+            if is_sequence_container
+            else None,
+            "max_items": getattr(value, "max_items", getattr(value, "max_length", None))
+            if is_sequence_container
+            else None,
             # removed in pydantic v2
             "const": getattr(value, "const", None) is not None,
         }.items()
@@ -74,8 +78,12 @@ def _parse_pydantic_constrained_field(value: Any, model: type[T], is_sequence_co
                 "lower_case": getattr(value, "to_lower", None),
                 "upper_case": getattr(value, "to_upper", None),
                 "pattern": getattr(value, "regex", None),
-                "min_items": getattr(value, "min_items", None) or value.min_length if is_sequence_container else None,
-                "max_items": getattr(value, "max_items", None) or value.max_length if is_sequence_container else None,
+                "min_items": getattr(value, "min_items", getattr(value, "min_length", None))
+                if is_sequence_container
+                else None,
+                "max_items": getattr(value, "max_items", getattr(value, "max_length", None))
+                if is_sequence_container
+                else None,
             }.items()
             if v is not None
         }
@@ -85,10 +93,10 @@ def _parse_pydantic_constrained_field(value: Any, model: type[T], is_sequence_co
 def _create_metadata_from_type(value: Any, model: type[T], field_type: Any) -> T | None:
     is_sequence_container = is_non_string_sequence(field_type)
     if isinstance(value, Meta):
-        return _parse_msgspec_meta(value, model, is_sequence_container)
+        return _parse_msgspec_meta(value=value, model=model, is_sequence_container=is_sequence_container)
     if isinstance(value, FieldInfo):
-        return _parse_pydantic_fieldinfo(value, model, is_sequence_container)
+        return _parse_pydantic_fieldinfo(value=value, model=model, is_sequence_container=is_sequence_container)
     if is_pydantic_constrained_field(field_type):
-        return _parse_pydantic_constrained_field(value, model, is_sequence_container)
+        return _parse_pydantic_constrained_field(value=value, model=model, is_sequence_container=is_sequence_container)
 
     return None

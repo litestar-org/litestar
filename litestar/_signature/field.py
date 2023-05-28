@@ -17,9 +17,10 @@ from litestar.utils.predicates import (
     is_non_string_iterable,
     is_non_string_sequence,
     is_optional_union,
-    is_union, is_pydantic_constrained_field,
+    is_pydantic_constrained_field,
+    is_union,
 )
-from litestar.utils.typing import make_non_optional_union
+from litestar.utils.typing import make_non_optional_union, normalize_type_annotation
 
 __all__ = ("SignatureField",)
 
@@ -169,28 +170,33 @@ class SignatureField:
         Returns:
             SignatureField instance.
         """
-        if kwarg_model and default_value is Empty:
-            default_value = kwarg_model.default
+        if kwarg_model:
+            if default_value is Empty:
+                default_value = kwarg_model.default
 
-        elif (isinstance(default_value, FieldInfo) or is_pydantic_constrained_field(field_type)) and not kwarg_model:
+        elif isinstance(default_value, FieldInfo):
             kwarg_model = _create_metadata_from_type(
-                default_value, BodyKwarg if name == "data" else ParameterKwarg, field_type=field_type
+                value=default_value, model=BodyKwarg if name == "data" else ParameterKwarg, field_type=field_type
             )
+
+        # this is for pydantic v1 only
+        elif is_pydantic_constrained_field(field_type):
+            kwarg_model = _create_metadata_from_type(value=field_type, model=ParameterKwarg, field_type=field_type)
 
         origin = get_origin(field_type)
 
         if not children and origin and (type_args := get_args(field_type)):
             if origin is Annotated:
-                field_type = type_args[0]
+                field_type = normalize_type_annotation(type_args[0])
                 kwarg_model = kwarg_model or _create_metadata_from_type(
-                    type_args[1], BodyKwarg if name == "data" else ParameterKwarg, field_type=field_type
+                    value=type_args[1], model=BodyKwarg if name == "data" else ParameterKwarg, field_type=field_type
                 )
             else:
                 children = tuple(SignatureField.create(arg) for arg in type_args)
 
         return SignatureField(
             name=name,
-            field_type=field_type if field_type is not Empty else Any,
+            field_type=normalize_type_annotation(field_type) if field_type is not Empty else Any,
             default_value=default_value if default_value not in UNDEFINED_SENTINELS else Empty,
             children=children,
             kwarg_model=kwarg_model,

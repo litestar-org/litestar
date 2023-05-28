@@ -60,12 +60,12 @@ def test_openapi_json_not_allowed(person_controller: Type[Controller], pet_contr
         assert response.status_code == HTTP_404_NOT_FOUND
 
 
-def test_msgspec_schema_generation():
+def test_msgspec_schema_generation() -> None:
     class Lookup(msgspec.Struct):
         id: Annotated[
             str,
             msgspec.Meta(
-                min_length=16,
+                min_length=12,
                 max_length=16,
                 description="A unique identifier",
                 examples=["e4eaaaf2-d142-11e1-b3e4-080027620cdd"],
@@ -88,16 +88,18 @@ def test_msgspec_schema_generation():
         assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
             "description": "A unique identifier",
             "examples": [{"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}],
+            "maxLength": 16,
+            "minLength": 12,
             "type": "string",
         }
 
 
-def test_pydantic_schema_generation():
+def test_pydantic_schema_generation() -> None:
     class Lookup(BaseModel):
         id: Annotated[
             str,
             Field(
-                min_length=16,
+                min_length=12,
                 max_length=16,
                 description="A unique identifier",
                 example="e4eaaaf2-d142-11e1-b3e4-080027620cdd",
@@ -120,5 +122,7 @@ def test_pydantic_schema_generation():
         assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
             "description": "A unique identifier",
             "examples": [{"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}],
+            "maxLength": 16,
+            "minLength": 12,
             "type": "string",
         }

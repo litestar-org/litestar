@@ -1,17 +1,18 @@
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from re import Pattern
 from typing import TYPE_CHECKING, Any
 
 from _decimal import Decimal
+from polyfactory.utils.predicates import is_safe_subclass
 
 from litestar._openapi.schema_generation.utils import sort_schemas_and_references
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.schema import Schema
-from litestar.params import BodyKwarg, ParameterKwarg
 
 if TYPE_CHECKING:
+    from litestar.params import BodyKwarg, ParameterKwarg
     from litestar.plugins import OpenAPISchemaPluginProtocol
 
 if TYPE_CHECKING:
@@ -53,18 +54,23 @@ def create_date_constrained_field_schema(
     schema = Schema(
         type=OpenAPIType.STRING, format=OpenAPIFormat.DATE if issubclass(field_type, date) else OpenAPIFormat.DATE_TIME
     )
-    if kwargs_model.le is not None:
-        schema.maximum = float(datetime.combine(date.fromtimestamp(kwargs_model.le), datetime.min.time()).timestamp())
-    if kwargs_model.lt is not None:
-        schema.exclusive_maximum = float(
-            datetime.combine(date.fromtimestamp(kwargs_model.lt), datetime.min.time()).timestamp()
-        )
-    if kwargs_model.ge is not None:
-        schema.minimum = float(datetime.combine(date.fromtimestamp(kwargs_model.ge), datetime.min.time()).timestamp())
-    if kwargs_model.gt is not None:
-        schema.exclusive_minimum = float(
-            datetime.combine(date.fromtimestamp(kwargs_model.gt), datetime.min.time()).timestamp()
-        )
+    for kwargs_model_attr, schema_attr in [
+        ("le", "maximum"),
+        ("lt", "exclusive_maximum"),
+        ("ge", "minimum"),
+        ("gt", "exclusive_minimum"),
+    ]:
+        if attr := getattr(kwargs_model, kwargs_model_attr):
+            setattr(
+                schema,
+                schema_attr,
+                datetime.combine(
+                    datetime.fromtimestamp(attr, tz=timezone.utc) if isinstance(attr, (float, int)) else attr,
+                    datetime.min.time(),
+                    tzinfo=timezone.utc,
+                ).timestamp(),
+            )
+
     return schema
 
 
@@ -84,7 +90,7 @@ def create_string_constrained_field_schema(
         schema.max_length = kwargs_model.max_length
     if kwargs_model.pattern:
         schema.pattern = (
-            kwargs_model.pattern.pattern if isinstance(kwargs_model.pattern, Pattern) else kwargs_model.pattern
+            kwargs_model.pattern.pattern if isinstance(kwargs_model.pattern, Pattern) else kwargs_model.pattern  # type: ignore[attr-defined,unreachable]
         )
     if kwargs_model.lower_case:
         schema.description = "must be in lower case"
@@ -120,7 +126,7 @@ def create_collection_constrained_field_schema(
         schema.min_items = kwargs_model.min_items
     if kwargs_model.max_items:
         schema.max_items = kwargs_model.max_items
-    if issubclass(field_type, (set, frozenset)):
+    if any(is_safe_subclass(field_type, t) for t in (set, frozenset)):  # type: ignore[arg-type]
         schema.unique_items = True
     if children:
         items = [
@@ -135,7 +141,7 @@ def create_collection_constrained_field_schema(
         from litestar._signature.field import SignatureField
 
         schema.items = create_schema(
-            field=SignatureField.create(field_type=field_type.item_type, name=f"{field_type.__name__}Field"),
+            field=SignatureField.create(field_type=field_type.item_type, name=f"{field_type.__name__}Field"),  # type: ignore[union-attr]
             generate_examples=False,
             plugins=plugins,
             schemas=schemas,
@@ -164,11 +170,11 @@ def create_constrained_field_schema(
         A schema instance.
 
     """
-    if issubclass(field_type, (float, int, Decimal)):
+    if any(is_safe_subclass(field_type, t) for t in (int, float, Decimal)):
         return create_numerical_constrained_field_schema(field_type=field_type, kwargs_model=kwargs_model)
-    if issubclass(field_type, (str, bytes)):
+    if any(is_safe_subclass(field_type, t) for t in (str, bytes)):  # type: ignore[arg-type]
         return create_string_constrained_field_schema(field_type=field_type, kwargs_model=kwargs_model)
-    if issubclass(field_type, (date, datetime)):
+    if any(is_safe_subclass(field_type, t) for t in (date, datetime)):
         return create_date_constrained_field_schema(field_type=field_type, kwargs_model=kwargs_model)
     return create_collection_constrained_field_schema(
         field_type=field_type,

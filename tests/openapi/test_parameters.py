@@ -33,6 +33,7 @@ def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
         preferred_validation_backend=app.preferred_validation_backend,
         parsed_signature=route_handler.parsed_fn_signature,
     ).fields
+
     return create_parameter_for_handler(
         route_handler=route_handler,
         handler_fields=handler_fields,

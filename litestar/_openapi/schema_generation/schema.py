@@ -213,7 +213,7 @@ KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "min_length": "minLength",
     "max_items": "maxItems",
     "min_items": "minItems",
-    "regex": "pattern",
+    "pattern": "pattern",
     "title": "title",
     "description": "description",
     "examples": "examples",
@@ -867,7 +867,11 @@ def create_schema(
         isinstance(field.kwarg_model, (ParameterKwarg, BodyKwarg)) and field.kwarg_model.is_constrained
     ):
         result = create_constrained_field_schema(
-            field_type=field.field_type, children=field.children, plugins=plugins, schemas=schemas, kwargs_model=field.kwarg_model
+            field_type=field.field_type,
+            children=field.children,
+            plugins=plugins,
+            schemas=schemas,
+            kwargs_model=field.kwarg_model,  # type: ignore[arg-type]
         )
 
     elif field.children and not field.is_generic:
