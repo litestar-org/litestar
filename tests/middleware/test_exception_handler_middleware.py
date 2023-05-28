@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, Optional
 
 import pytest
 from _pytest.capture import CaptureFixture
+from pytest_mock import MockerFixture
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from structlog.testing import capture_logs
 
@@ -284,3 +285,19 @@ def handler_2(_: Any, __: Any) -> Any:
 )
 def test_get_exception_handler(mapping: ExceptionHandlersMap, exc: Exception, expected: Any) -> None:
     assert get_exception_handler(mapping, exc) == expected
+
+
+def test_pdb_on_exception(mocker: MockerFixture) -> None:
+    @get("/test")
+    def handler() -> None:
+        raise ValueError("Test debug exception")
+
+    mock_post_mortem = mocker.patch("litestar.middleware.exceptions.middleware.pdb.post_mortem")
+
+    app = Litestar([handler], pdb_on_exception=True)
+
+    with TestClient(app=app) as client:
+        response = client.get("/test")
+
+    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+    mock_post_mortem.assert_called_once()

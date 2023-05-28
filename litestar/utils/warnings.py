@@ -45,3 +45,7 @@ def warn_sync_to_thread_with_generator(source: AnyGenerator, stacklevel: int = 2
         category=LitestarWarning,
         stacklevel=stacklevel,
     )
+
+
+def warn_pdb_on_exception(stacklevel: int = 2) -> None:
+    warnings.warn("Python Debugger on exception enabled", category=LitestarWarning, stacklevel=stacklevel)
