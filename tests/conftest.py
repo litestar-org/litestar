@@ -32,8 +32,8 @@ from _pytest.fixtures import FixtureRequest
 from _pytest.nodes import Item
 from fakeredis.aioredis import FakeRedis
 from freezegun import freeze_time
-from google.auth.credentials import AnonymousCredentials
-from google.cloud import spanner
+from google.auth.credentials import AnonymousCredentials  # pyright: ignore
+from google.cloud import spanner  # pyright: ignore
 from oracledb.exceptions import DatabaseError, OperationalError
 from pytest_docker.plugin import Services
 from pytest_lazyfixture import lazy_fixture

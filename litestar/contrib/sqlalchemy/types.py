@@ -30,7 +30,10 @@ class GUID(TypeDecorator):
 
     impl = BINARY(16)
     cache_ok = True
-    python_type = uuid.UUID
+
+    @property
+    def python_type(self) -> type[uuid.UUID]:
+        return uuid.UUID
 
     def __init__(self, *args: Any, binary: bool = True, **kwargs: Any) -> None:
         self.binary = binary
@@ -87,7 +90,10 @@ class JSON(TypeDecorator):
 
     impl = _JSON
     cache_ok = True
-    python_type = dict
+
+    @property
+    def python_type(self) -> type[dict]:
+        return dict
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initialize JSON type"""
@@ -113,12 +119,9 @@ class JSON(TypeDecorator):
         return variant_mapping
 
     @util.preload_module("sqlalchemy.sql.schema")
-    def _set_table(self, column, table) -> None:
+    def _set_table(self, column: Any, table: Any) -> None:
         schema = util.preloaded.sql_schema
-        SchemaType._set_table(self, column, table)
-
-        if not self._should_create_constraint():
-            return
+        SchemaType._set_table(self, column, table)  # type: ignore[arg-type,no-untyped-call]
 
         variant_mapping = self._variant_mapping_for_set_table(column)
         sqltext = f"{column.name} is json (strict)"

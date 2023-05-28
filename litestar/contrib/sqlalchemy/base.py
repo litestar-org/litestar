@@ -100,14 +100,12 @@ class UUIDPrimaryKey:
 class BigIntPrimaryKey:
     """BigInt Primary Key Field Mixin."""
 
-    __tablename__: str
-
     @declared_attr
     def id(cls) -> Mapped[int]:
         """BigInt Primary key column."""
         return mapped_column(
             BigIntIdentity,
-            Sequence(f"{cls.__tablename__}_id_seq", optional=False),
+            Sequence(f"{cls.__tablename__}_id_seq", optional=False),  # type: ignore[attr-defined] # pyright: ignore
             primary_key=True,
         )
 

@@ -140,7 +140,7 @@ async def test_sets_created_updated_on_add() -> None:
     assert "created" not in vars(bigint_instance)
     assert "updated" not in vars(bigint_instance)
 
-    bigint_instance = GenericSyncMockRepository[BigIntModel]().add(bigint_instance)
+    bigint_instance = GenericSyncMockRepository[BigIntModel]().add(bigint_instance)  # type: ignore[type-var]
     assert "created" in vars(bigint_instance)
     assert "updated" in vars(bigint_instance)
 
@@ -183,7 +183,7 @@ async def test_does_not_set_created_updated() -> None:
     assert "updated" not in vars(uuid_instance)
 
     bigint_instance = BigIntModel()
-    bigint_repo = GenericSyncMockRepository[BigIntModel]()
+    bigint_repo = GenericSyncMockRepository[BigIntModel]()  # type: ignore[type-var]
     assert "created" not in vars(bigint_instance)
     assert "updated" not in vars(bigint_instance)
     bigint_instance = bigint_repo.add(bigint_instance)
@@ -216,7 +216,7 @@ async def test_add() -> None:
 
     bigint_instance = BigIntModel()
 
-    inserted_bigint_instance = GenericSyncMockRepository[BigIntModel]().add(bigint_instance)
+    inserted_bigint_instance = GenericSyncMockRepository[BigIntModel]().add(bigint_instance)  # type: ignore[type-var]
     assert inserted_bigint_instance == bigint_instance
 
 
@@ -239,7 +239,7 @@ async def test_add_many() -> None:
     bigint_instance = [BigIntModel(), BigIntModel()]
 
     inserted_uuid_instances = GenericSyncMockRepository[UUIDModel]().add_many(uuid_instances)
-    inserted_bigint_instance = GenericSyncMockRepository[BigIntModel]().add_many(bigint_instance)
+    inserted_bigint_instance = GenericSyncMockRepository[BigIntModel]().add_many(bigint_instance)  # type: ignore[type-var]
 
     assert len(uuid_instances) == len(inserted_uuid_instances)
     assert len(bigint_instance) == len(inserted_bigint_instance)
