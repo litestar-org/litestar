@@ -7,9 +7,7 @@ from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Literal, Mapping, Sequence, cast
-
-from typing_extensions import Self, TypedDict
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Literal, Mapping, Sequence, TypedDict, cast
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
@@ -44,6 +42,8 @@ from litestar.utils import AsyncCallable, is_async_callable, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
 
 if TYPE_CHECKING:
+    from typing_extensions import Self
+
     from litestar.config.compression import CompressionConfig
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig

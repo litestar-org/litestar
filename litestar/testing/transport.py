@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from io import BytesIO
 from types import GeneratorType
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Generic, TypedDict, TypeVar, Union, cast
 from urllib.parse import unquote
 
 from anyio import Event
 from httpx import ByteStream, Response
-from typing_extensions import TypedDict
 
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing.websocket_test_session import WebSocketTestSession
