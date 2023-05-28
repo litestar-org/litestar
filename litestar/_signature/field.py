@@ -3,10 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Literal
 
-from msgspec import Meta
 from pydantic.fields import FieldInfo
 from typing_extensions import Annotated, get_args, get_origin
 
+from litestar._signature.metadata import _create_metadata_from_type
 from litestar.constants import UNDEFINED_SENTINELS
 from litestar.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from litestar.types import Empty
@@ -17,53 +17,11 @@ from litestar.utils.predicates import (
     is_non_string_iterable,
     is_non_string_sequence,
     is_optional_union,
-    is_union,
+    is_union, is_pydantic_constrained_field,
 )
 from litestar.utils.typing import make_non_optional_union
 
 __all__ = ("SignatureField",)
-
-
-def _create_metadata_from_type(
-    value: Any, model: type[ParameterKwarg] | type[BodyKwarg], field_type: Any
-) -> ParameterKwarg | BodyKwarg | None:
-    if isinstance(value, Meta):
-        is_sequence_container = is_non_string_sequence(field_type)
-        return model(
-            gt=value.gt,
-            ge=value.ge,
-            lt=value.lt,
-            le=value.le,
-            multiple_of=value.multiple_of,
-            regex=value.pattern,
-            min_length=value.min_length if not is_sequence_container else None,
-            max_length=value.max_length if not is_sequence_container else None,
-            min_items=value.min_length if is_sequence_container else None,
-            max_items=value.max_length if is_sequence_container else None,
-        )
-    if isinstance(value, FieldInfo):
-        values: dict[str, Any] = {
-            k: v
-            for k, v in {
-                "gt": value.gt,
-                "ge": value.ge,
-                "lt": value.lt,
-                "le": value.le,
-                "multiple_of": value.multiple_of,
-                "regex": value.regex,
-                "min_length": value.min_length,
-                "max_length": value.max_length,
-                "min_items": value.min_items,
-                "max_items": value.max_items,
-                "description": value.description,
-                "title": value.title,
-                "const": value.const is not None,
-            }.items()
-            if v is not None
-        }
-        if values:
-            return model(**values)
-    return None
 
 
 @dataclass(unsafe_hash=True, frozen=True)
@@ -214,7 +172,7 @@ class SignatureField:
         if kwarg_model and default_value is Empty:
             default_value = kwarg_model.default
 
-        elif isinstance(default_value, FieldInfo) and not kwarg_model:
+        elif (isinstance(default_value, FieldInfo) or is_pydantic_constrained_field(field_type)) and not kwarg_model:
             kwarg_model = _create_metadata_from_type(
                 default_value, BodyKwarg if name == "data" else ParameterKwarg, field_type=field_type
             )

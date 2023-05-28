@@ -1,43 +1,21 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from re import Pattern
 from typing import TYPE_CHECKING, Any
 
+from _decimal import Decimal
+
 from litestar._openapi.schema_generation.utils import sort_schemas_and_references
-from litestar.exceptions import MissingDependencyException
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.schema import Schema
+from litestar.params import BodyKwarg, ParameterKwarg
 
 if TYPE_CHECKING:
     from litestar.plugins import OpenAPISchemaPluginProtocol
 
 if TYPE_CHECKING:
     from litestar._signature.field import SignatureField
-
-    try:
-        from pydantic import (
-            ConstrainedBytes,
-            ConstrainedDate,
-            ConstrainedDecimal,
-            ConstrainedFloat,
-            ConstrainedFrozenSet,
-            ConstrainedInt,
-            ConstrainedList,
-            ConstrainedSet,
-            ConstrainedStr,
-        )
-    except ImportError:
-        ConstrainedBytes = Any  # type: ignore
-        ConstrainedDate = Any  # type: ignore
-        ConstrainedDecimal = Any  # type: ignore
-        ConstrainedFloat = Any  # type: ignore
-        ConstrainedFrozenSet = Any  # type: ignore
-        ConstrainedInt = Any  # type: ignore
-        ConstrainedList = Any  # type: ignore
-        ConstrainedSet = Any  # type: ignore
-        ConstrainedStr = Any  # type: ignore
-
 
 __all__ = (
     "create_collection_constrained_field_schema",
@@ -49,78 +27,100 @@ __all__ = (
 
 
 def create_numerical_constrained_field_schema(
-    field_type: type[ConstrainedFloat] | type[ConstrainedInt] | type[ConstrainedDecimal],
+    field_type: type[int] | type[float] | type[Decimal],
+    kwargs_model: ParameterKwarg | BodyKwarg,
 ) -> Schema:
     """Create Schema from Constrained Int/Float/Decimal field."""
     schema = Schema(type=OpenAPIType.INTEGER if issubclass(field_type, int) else OpenAPIType.NUMBER)
-    if field_type.le is not None:
-        schema.maximum = float(field_type.le)
-    if field_type.lt is not None:
-        schema.exclusive_maximum = float(field_type.lt)
-    if field_type.ge is not None:
-        schema.minimum = float(field_type.ge)
-    if field_type.gt is not None:
-        schema.exclusive_minimum = float(field_type.gt)
-    if field_type.multiple_of is not None:
-        schema.multiple_of = float(field_type.multiple_of)
+    if kwargs_model.le is not None:
+        schema.maximum = float(kwargs_model.le)
+    if kwargs_model.lt is not None:
+        schema.exclusive_maximum = float(kwargs_model.lt)
+    if kwargs_model.ge is not None:
+        schema.minimum = float(kwargs_model.ge)
+    if kwargs_model.gt is not None:
+        schema.exclusive_minimum = float(kwargs_model.gt)
+    if kwargs_model.multiple_of is not None:
+        schema.multiple_of = float(kwargs_model.multiple_of)
     return schema
 
 
-def create_date_constrained_field_schema(field_type: type[ConstrainedDate]) -> Schema:
+def create_date_constrained_field_schema(
+    field_type: type[date] | type[datetime],
+    kwargs_model: ParameterKwarg | BodyKwarg,
+) -> Schema:
     """Create Schema from Constrained Date Field."""
-    schema = Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.DATE)
-    if field_type.le is not None:
-        schema.maximum = float(datetime.combine(field_type.le, datetime.min.time()).timestamp())
-    if field_type.lt is not None:
-        schema.exclusive_maximum = float(datetime.combine(field_type.lt, datetime.min.time()).timestamp())
-    if field_type.ge is not None:
-        schema.minimum = float(datetime.combine(field_type.ge, datetime.min.time()).timestamp())
-    if field_type.gt is not None:
-        schema.exclusive_minimum = float(datetime.combine(field_type.gt, datetime.min.time()).timestamp())
+    schema = Schema(
+        type=OpenAPIType.STRING, format=OpenAPIFormat.DATE if issubclass(field_type, date) else OpenAPIFormat.DATE_TIME
+    )
+    if kwargs_model.le is not None:
+        schema.maximum = float(datetime.combine(date.fromtimestamp(kwargs_model.le), datetime.min.time()).timestamp())
+    if kwargs_model.lt is not None:
+        schema.exclusive_maximum = float(
+            datetime.combine(date.fromtimestamp(kwargs_model.lt), datetime.min.time()).timestamp()
+        )
+    if kwargs_model.ge is not None:
+        schema.minimum = float(datetime.combine(date.fromtimestamp(kwargs_model.ge), datetime.min.time()).timestamp())
+    if kwargs_model.gt is not None:
+        schema.exclusive_minimum = float(
+            datetime.combine(date.fromtimestamp(kwargs_model.gt), datetime.min.time()).timestamp()
+        )
     return schema
 
 
-def create_string_constrained_field_schema(field_type: type[ConstrainedStr] | type[ConstrainedBytes]) -> Schema:
+def create_string_constrained_field_schema(
+    field_type: type[str] | type[bytes],
+    kwargs_model: ParameterKwarg | BodyKwarg,
+) -> Schema:
     """Create Schema from Constrained Str/Bytes field."""
     schema = Schema(type=OpenAPIType.STRING)
-    if field_type.min_length:
-        schema.min_length = field_type.min_length
-    if field_type.max_length:
-        schema.max_length = field_type.max_length
-    if hasattr(field_type, "regex") and isinstance(field_type.regex, Pattern):
-        schema.pattern = field_type.regex.pattern
-    if field_type.to_lower:
+    if kwargs_model.content_encoding:
+        schema.content_encoding = kwargs_model.content_encoding
+    elif issubclass(field_type, bytes):
+        schema.content_encoding = "utf-8"
+    if kwargs_model.min_length:
+        schema.min_length = kwargs_model.min_length
+    if kwargs_model.max_length:
+        schema.max_length = kwargs_model.max_length
+    if kwargs_model.pattern:
+        schema.pattern = (
+            kwargs_model.pattern.pattern if isinstance(kwargs_model.pattern, Pattern) else kwargs_model.pattern
+        )
+    if kwargs_model.lower_case:
         schema.description = "must be in lower case"
+    if kwargs_model.upper_case:
+        schema.description = "must be in upper case"
     return schema
 
 
 def create_collection_constrained_field_schema(
-    field_type: type[ConstrainedList] | type[ConstrainedSet] | type[ConstrainedFrozenSet],
     children: tuple[SignatureField, ...] | None,
+    field_type: type[list] | type[set] | type[frozenset] | type[tuple],
+    kwargs_model: ParameterKwarg | BodyKwarg,
     plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
 ) -> Schema:
     """Create Schema from Constrained List/Set field.
 
     Args:
-        field_type: A constrained field type.
         children: Any child fields.
+        field_type: A constrained field type.
+        kwargs_model:  A constrained field model.
         plugins: A list of plugins.
         schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
 
     Returns:
         A schema instance.
     """
-    import pydantic
 
     from litestar._openapi.schema_generation import create_schema
 
     schema = Schema(type=OpenAPIType.ARRAY)
-    if field_type.min_items:
-        schema.min_items = field_type.min_items
-    if field_type.max_items:
-        schema.max_items = field_type.max_items
-    if issubclass(field_type, (pydantic.ConstrainedSet, pydantic.ConstrainedFrozenSet)):
+    if kwargs_model.min_items:
+        schema.min_items = kwargs_model.min_items
+    if kwargs_model.max_items:
+        schema.max_items = kwargs_model.max_items
+    if issubclass(field_type, (set, frozenset)):
         schema.unique_items = True
     if children:
         items = [
@@ -144,16 +144,9 @@ def create_collection_constrained_field_schema(
 
 
 def create_constrained_field_schema(
-    field_type: type[ConstrainedBytes]
-    | type[ConstrainedDate]
-    | type[ConstrainedDecimal]
-    | type[ConstrainedFloat]
-    | type[ConstrainedFrozenSet]
-    | type[ConstrainedInt]
-    | type[ConstrainedList]
-    | type[ConstrainedSet]
-    | type[ConstrainedStr],
     children: tuple[SignatureField, ...] | None,
+    field_type: Any,
+    kwargs_model: ParameterKwarg | BodyKwarg,
     plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
 ) -> Schema:
@@ -161,8 +154,9 @@ def create_constrained_field_schema(
     Constrained*)
 
     Args:
-        field_type: A constrained field type.
         children: Any children.
+        field_type: A constrained field type.
+        kwargs_model:  A constrained field model.
         plugins: A list of plugins.
         schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
 
@@ -170,18 +164,16 @@ def create_constrained_field_schema(
         A schema instance.
 
     """
-
-    try:
-        import pydantic
-    except ImportError as e:
-        raise MissingDependencyException("pydantic") from e
-
-    if issubclass(field_type, (pydantic.ConstrainedFloat, pydantic.ConstrainedInt, pydantic.ConstrainedDecimal)):
-        return create_numerical_constrained_field_schema(field_type=field_type)
-    if issubclass(field_type, (pydantic.ConstrainedStr, pydantic.ConstrainedBytes)):
-        return create_string_constrained_field_schema(field_type=field_type)
-    if issubclass(field_type, pydantic.ConstrainedDate):
-        return create_date_constrained_field_schema(field_type=field_type)
+    if issubclass(field_type, (float, int, Decimal)):
+        return create_numerical_constrained_field_schema(field_type=field_type, kwargs_model=kwargs_model)
+    if issubclass(field_type, (str, bytes)):
+        return create_string_constrained_field_schema(field_type=field_type, kwargs_model=kwargs_model)
+    if issubclass(field_type, (date, datetime)):
+        return create_date_constrained_field_schema(field_type=field_type, kwargs_model=kwargs_model)
     return create_collection_constrained_field_schema(
-        field_type=field_type, children=tuple(children) if children else None, plugins=plugins, schemas=schemas
+        field_type=field_type,
+        children=tuple(children) if children else None,
+        plugins=plugins,
+        schemas=schemas,
+        kwargs_model=kwargs_model,
     )

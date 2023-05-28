@@ -63,7 +63,7 @@ def test_create_string_constrained_field_schema(field_type: Any) -> None:
     assert schema.min_length == field_type.min_length
     assert schema.max_length == field_type.max_length
     if getattr(field_type, "regex", None):
-        assert schema.pattern == field_type.regex.pattern
+        assert schema.pattern == field_type.pattern.pattern
     if field_type.to_lower:
         assert schema.description
 

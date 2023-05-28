@@ -37,7 +37,7 @@ def test_layered_parameters_injected_correctly() -> None:
         path="/router",
         route_handlers=[MyController],
         parameters={
-            "router1": Parameter(str, regex="^[a-zA-Z]$"),
+            "router1": Parameter(str, pattern="^[a-zA-Z]$"),
             "router2": Parameter(float, multiple_of=5.0, header="router3"),
         },
     )
@@ -75,7 +75,7 @@ def test_layered_parameters_validation(parameter: str) -> None:
         path="/router",
         route_handlers=[MyController],
         parameters={
-            "router1": Parameter(str, regex="^[a-zA-Z]$"),
+            "router1": Parameter(str, pattern="^[a-zA-Z]$"),
             "router2": Parameter(float, multiple_of=5.0, header="router3"),
         },
     )

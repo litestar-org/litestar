@@ -1,10 +1,13 @@
-from typing import Type
+from typing import Annotated, Type
 
+import msgspec
 import yaml
+from pydantic import BaseModel, Field
 
-from litestar import Controller
+from litestar import Controller, post
 from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.enums import OpenAPIMediaType
+from litestar.openapi import OpenAPIConfig
 from litestar.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from litestar.testing import create_test_client
 
@@ -55,3 +58,67 @@ def test_openapi_json_not_allowed(person_controller: Type[Controller], pet_contr
         assert openapi_schema.paths
         response = client.get("/schema/openapi.json")
         assert response.status_code == HTTP_404_NOT_FOUND
+
+
+def test_msgspec_schema_generation():
+    class Lookup(msgspec.Struct):
+        id: Annotated[
+            str,
+            msgspec.Meta(
+                min_length=16,
+                max_length=16,
+                description="A unique identifier",
+                examples=["e4eaaaf2-d142-11e1-b3e4-080027620cdd"],
+            ),
+        ]
+
+    @post("/example")
+    async def example_route() -> Lookup:
+        return Lookup(id="1234567812345678")
+
+    with create_test_client(
+        route_handlers=[example_route],
+        openapi_config=OpenAPIConfig(
+            title="Example API",
+            version="1.0.0",
+        ),
+    ) as client:
+        response = client.get("/schema/openapi.json")
+        assert response.status_code == HTTP_200_OK
+        assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
+            "description": "A unique identifier",
+            "examples": [{"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}],
+            "type": "string",
+        }
+
+
+def test_pydantic_schema_generation():
+    class Lookup(BaseModel):
+        id: Annotated[
+            str,
+            Field(
+                min_length=16,
+                max_length=16,
+                description="A unique identifier",
+                example="e4eaaaf2-d142-11e1-b3e4-080027620cdd",
+            ),
+        ]
+
+    @post("/example")
+    async def example_route() -> Lookup:
+        return Lookup(id="1234567812345678")
+
+    with create_test_client(
+        route_handlers=[example_route],
+        openapi_config=OpenAPIConfig(
+            title="Example API",
+            version="1.0.0",
+        ),
+    ) as client:
+        response = client.get("/schema/openapi.json")
+        assert response.status_code == HTTP_200_OK
+        assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
+            "description": "A unique identifier",
+            "examples": [{"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}],
+            "type": "string",
+        }

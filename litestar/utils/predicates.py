@@ -270,17 +270,7 @@ def is_attrs_class(annotation: Any) -> TypeGuard[type[attrs.AttrsInstance]]:  # 
 
 def is_pydantic_constrained_field(
     annotation: Any,
-) -> TypeGuard[
-    type[pydantic.ConstrainedBytes]  # pyright: ignore
-    | type[pydantic.ConstrainedDate]  # pyright: ignore
-    | type[pydantic.ConstrainedDecimal]  # pyright: ignore
-    | type[pydantic.ConstrainedFloat]  # pyright: ignore
-    | type[pydantic.ConstrainedFrozenSet]  # pyright: ignore
-    | type[pydantic.ConstrainedInt]  # pyright: ignore
-    | type[pydantic.ConstrainedList]  # pyright: ignore
-    | type[pydantic.ConstrainedSet]  # pyright: ignore
-    | type[pydantic.ConstrainedStr]  # pyright: ignore
-]:
+) -> Any:
     """Check if the given annotation is a constrained pydantic type.
 
     Args:
@@ -290,20 +280,32 @@ def is_pydantic_constrained_field(
         True if pydantic is installed and the type is a constrained type, otherwise False.
     """
     try:
-        import pydantic
+        # removed in pydantic v2
+        # so this will raise an ImportError - which is expected.
+        from pydantic import (
+            ConstrainedBytes,
+            ConstrainedDate,
+            ConstrainedDecimal,
+            ConstrainedFloat,
+            ConstrainedFrozenSet,
+            ConstrainedInt,
+            ConstrainedList,
+            ConstrainedSet,
+            ConstrainedStr,
+        )
 
         return any(
             is_class_and_subclass(annotation, constrained_type)
             for constrained_type in (
-                pydantic.ConstrainedBytes,
-                pydantic.ConstrainedDate,
-                pydantic.ConstrainedDecimal,
-                pydantic.ConstrainedFloat,
-                pydantic.ConstrainedFrozenSet,
-                pydantic.ConstrainedInt,
-                pydantic.ConstrainedList,
-                pydantic.ConstrainedSet,
-                pydantic.ConstrainedStr,
+                ConstrainedBytes,
+                ConstrainedDate,
+                ConstrainedDecimal,
+                ConstrainedFloat,
+                ConstrainedFrozenSet,
+                ConstrainedInt,
+                ConstrainedList,
+                ConstrainedSet,
+                ConstrainedStr,
             )
         )
     except ImportError:
