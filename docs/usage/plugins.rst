@@ -80,7 +80,7 @@ Example
 The following example shows the actual implementation of the ``SerializationPluginProtocol`` for
 `SQLAlchemy <https://www.sqlalchemy.org/>`_ models that is is provided in ``litestar.contrib.sqlalchemy``.
 
-.. literalinclude:: ../../../litestar/contrib/sqlalchemy/plugins/serialization.py
+.. literalinclude:: ../../litestar/contrib/sqlalchemy/plugins/serialization.py
    :language: python
    :caption: ``SerializationPluginProtocol`` implementation example
 

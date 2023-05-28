@@ -5,7 +5,7 @@ Litestar is a powerful, flexible, highly performant and opinionated ASGI framewo
 offering first class typing support and a full `Pydantic <https://github.com/pydantic/pydantic>`_
 integration.
 
-The Litestar framework supports :doc:`/usage/plugins/index`, ships
+The Litestar framework supports :doc:`/usage/plugins`, ships
 with :doc:`dependency injection </usage/dependency-injection>`, :doc:`security primitives </usage/security/index>`,
 :doc:`OpenAPI schema generation </usage/openapi>`, `MessagePack <https://msgpack.org/>`_,
 :doc:`middlewares </usage/middleware/index>` and much more.
@@ -42,7 +42,7 @@ Installation
     :doc:`Open Telemetry Instrumentation </usage/contrib/open-telemetry>`
         :code:`pip install litestar[openetelemetry]`
 
-    :doc:`SQLAlchemy </usage/plugins/sqlalchemy/index>`
+    :doc:`SQLAlchemy </usage/contrib/sqlalchemy/index>`
         :code:`pip install litestar[sqlalchemy]`
 
     :doc:`CLI </usage/cli>`

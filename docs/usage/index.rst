@@ -18,7 +18,7 @@ Usage
     security/index
     stores
     testing
-    plugins/index
+    plugins
     events
     openapi
     lifecycle-hooks

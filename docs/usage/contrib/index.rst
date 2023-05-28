@@ -6,4 +6,4 @@ Contrib
     open-telemetry
     jwt
     htmx
-    sqlalchemy
+    sqlalchemy/index
