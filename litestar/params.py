@@ -6,7 +6,14 @@ from typing import TYPE_CHECKING, Any, Hashable
 from litestar.enums import RequestEncodingType
 from litestar.types import Empty
 
-__all__ = ("Body", "BodyKwarg", "Dependency", "DependencyKwarg", "Parameter", "ParameterKwarg")
+__all__ = (
+    "Body",
+    "BodyKwarg",
+    "Dependency",
+    "DependencyKwarg",
+    "KwargDefinition",
+    "Parameter",
+)
 
 
 if TYPE_CHECKING:
