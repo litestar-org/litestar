@@ -77,9 +77,14 @@ Using the CLI
 *************
 
 
-1. Open the debugging configurations via ``Run`` > ``Open configurations``
-   .. image:: /images/debugging/vs-code-config.png
-2. Add the following configuration:
+1. Add a new debugging configuration via ``Run`` > ``Add configuration``
+    .. image:: /images/debugging/vs-code-add-config.png
+        :align: center
+2. From the ``Select a debug configuration`` dialog, select ``Module``
+    .. image:: /images/debugging/vs-code-select-config.png
+3. Enter ``litestar`` as the module name
+    .. image:: /images/debugging/vs-code-config-litestar.png
+4. In the opened JSON file, alter the configuration as follows:
     .. code-block:: json
 
         {
@@ -91,26 +96,33 @@ Using the CLI
             "args": ["run"]
         }
 
-3. Run your application via the debugger via ``Run`` > ``Start debugging``
+5. Run your application via the debugger via ``Run`` > ``Start debugging``
     .. image:: /images/debugging/vs-code-debug.png
+        :align: center
 
 
 Using uvicorn
 **************
 
-1. Open the debugging configurations via ``Run`` > ``Open configurations``
-    .. image:: /images/debugging/vs-code-config.png
-2. Add the following configuration:
+1. Add a new debugging configuration via ``Run`` > ``Add configuration``
+    .. image:: /images/debugging/vs-code-add-config.png
+        :align: center
+2. From the ``Select a debug configuration`` dialog, select ``Module``
+    .. image:: /images/debugging/vs-code-select-config.png
+3. Enter ``uvicorn`` as the module name
+    .. image:: /images/debugging/vs-code-config-litestar.png
+4. In the opened JSON file, alter the configuration as follows:
     .. code-block:: json
 
         {
-          "name": "Python: Litestar app",
-          "type": "python",
-          "request": "launch",
-          "module": "uvicorn",
-          "justMyCode": true,
-          "args": ["app:app"]
+            "name": "Python: Litestar app",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "justMyCode": true,
+            "args": ["app:app"]
         }
 
-3. Run your application via the debugger via ``Run`` > ``Start debugging``
+5. Run your application via the debugger via ``Run`` > ``Start debugging``
     .. image:: /images/debugging/vs-code-debug.png
+        :align: center
