@@ -1,8 +1,9 @@
-from typing import Annotated, Type
+from typing import Type
 
 import msgspec
 import yaml
 from pydantic import BaseModel, Field
+from typing_extensions import Annotated
 
 from litestar import Controller, post
 from litestar.app import DEFAULT_OPENAPI_CONFIG

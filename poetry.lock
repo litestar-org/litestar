@@ -2132,13 +2132,13 @@ files = [
 
 [[package]]
 name = "piccolo"
-version = "0.112.1"
+version = "0.113.0"
 description = "A fast, user friendly ORM and query builder which supports asyncio."
 optional = false
 python-versions = ">=3.7.0"
 files = [
-    {file = "piccolo-0.112.1-py3-none-any.whl", hash = "sha256:621391edf59608d897e51dad61843a423b8d0098f09b75ae6f0f07ba7923b6b3"},
-    {file = "piccolo-0.112.1.tar.gz", hash = "sha256:d001991a5b5e977d35c750fd5a5e188dac12affe860154412687fc3a63d4138c"},
+    {file = "piccolo-0.113.0-py3-none-any.whl", hash = "sha256:f5d7d6675d47b70678a6d447d06c8dc2af21e0c44704c3ade10f2f318e83bf7a"},
+    {file = "piccolo-0.113.0.tar.gz", hash = "sha256:c2504e8b68a3063293410950dc866869f32c5bf68188e6367c8e12d8b06f81bd"},
 ]
 
 [package.dependencies]
@@ -3096,13 +3096,13 @@ test = ["flake8", "mypy", "pytest"]
 
 [[package]]
 name = "sphinxcontrib-mermaid"
-version = "0.8.1"
+version = "0.9.2"
 description = "Mermaid diagrams in yours Sphinx powered docs"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "sphinxcontrib-mermaid-0.8.1.tar.gz", hash = "sha256:fa3e5325d4ba395336e6137d113f55026b1a03ccd115dc54113d1d871a580466"},
-    {file = "sphinxcontrib_mermaid-0.8.1-py3-none-any.whl", hash = "sha256:15491c24ec78cf1626b1e79e797a9ce87cb7959cf38f955eb72dd5512aeb6ce9"},
+    {file = "sphinxcontrib-mermaid-0.9.2.tar.gz", hash = "sha256:252ef13dd23164b28f16d8b0205cf184b9d8e2b714a302274d9f59eb708e77af"},
+    {file = "sphinxcontrib_mermaid-0.9.2-py3-none-any.whl", hash = "sha256:6795a72037ca55e65663d2a2c1a043d636dc3d30d418e56dd6087d1459d98a5d"},
 ]
 
 [[package]]
