@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 
 import pytest
-from _pytest.monkeypatch import MonkeyPatch
+from pytest import MonkeyPatch
 
 from litestar import Litestar
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
