@@ -23,6 +23,27 @@ def test_dto_data_usage_app() -> None:
         assert response.json() == {"id": ANY, "name": "John", "age": 30}
 
 
+def test_dto_data_nested_data_create_instance_app() -> None:
+    from docs.examples.data_transfer_objects.factory.providing_values_for_nested_data import app
+
+    with TestClient(app) as client:
+        response = client.post(
+            "/person",
+            json={
+                "name": "John",
+                "age": 30,
+                "address": {"street": "Fake Street"},
+            },
+        )
+        assert response.status_code == 201
+        assert response.json() == {
+            "id": 1,
+            "name": "John",
+            "age": 30,
+            "address": {"id": 2, "street": "Fake Street"},
+        }
+
+
 def test_patch_requests_app() -> None:
     from docs.examples.data_transfer_objects.factory.patch_requests import app
 

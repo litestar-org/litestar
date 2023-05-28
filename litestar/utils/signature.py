@@ -156,7 +156,7 @@ class ParsedParameter:
         Returns:
             ParsedParameter
         """
-        data = {**simple_asdict(self), **kwargs}
+        data = {**simple_asdict(self, convert_nested=False), **kwargs}
         return type(self)(**data)
 
 

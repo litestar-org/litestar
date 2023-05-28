@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import inspect
 import logging
+import os
 from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager
 from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Literal, Mapping, Sequence, cast
-
-from typing_extensions import Self, TypedDict
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Literal, Mapping, Sequence, TypedDict, cast
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
@@ -42,8 +41,11 @@ from litestar.types import Empty
 from litestar.types.internal_types import PathParameterDefinition
 from litestar.utils import AsyncCallable, is_async_callable, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
+from litestar.utils.warnings import warn_pdb_on_exception
 
 if TYPE_CHECKING:
+    from typing_extensions import Self
+
     from litestar.config.compression import CompressionConfig
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
@@ -154,6 +156,7 @@ class Litestar(Router):
         "stores",
         "template_engine",
         "websocket_class",
+        "pdb_on_exception",
     )
 
     def __init__(
@@ -171,7 +174,7 @@ class Litestar(Router):
         cors_config: CORSConfig | None = None,
         csrf_config: CSRFConfig | None = None,
         dto: type[DTOInterface] | None | EmptyType = Empty,
-        debug: bool = False,
+        debug: bool | None = None,
         dependencies: Dependencies | None = None,
         etag: ETag | None = None,
         event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
@@ -205,6 +208,7 @@ class Litestar(Router):
         type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
         lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
+        pdb_on_exception: bool | None = None,
     ) -> None:
         """Initialize a ``Litestar`` application.
 
@@ -261,6 +265,7 @@ class Litestar(Router):
                 :class:`ASGI Scope <.types.Scope>`.
             parameters: A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application
                 paths.
+            pdb_on_exception: Drop into the PDB when an exception occurs.
             plugins: Sequence of plugins.
             preferred_validation_backend: Validation backend to use, if multiple are installed.
             request_class: An optional subclass of :class:`Request <.connection.Request>` to use for http connections.
@@ -294,6 +299,12 @@ class Litestar(Router):
         if logging_config is Empty:
             logging_config = LoggingConfig()
 
+        if debug is None:
+            debug = os.getenv("LITESTAR_DEBUG", "0") == "1"
+
+        if pdb_on_exception is None:
+            pdb_on_exception = os.getenv("LITESTAR_PDB", "0") == "1"
+
         config = AppConfig(
             after_exception=list(after_exception or []),
             after_request=after_request,
@@ -322,6 +333,7 @@ class Litestar(Router):
             openapi_config=openapi_config,
             opt=dict(opt or {}),
             parameters=parameters or {},
+            pdb_on_exception=pdb_on_exception,
             plugins=list(plugins or []),
             preferred_validation_backend=preferred_validation_backend or "pydantic",
             request_class=request_class,
@@ -379,6 +391,10 @@ class Litestar(Router):
         self.template_engine = config.template_config.engine_instance if config.template_config else None
         self.websocket_class = config.websocket_class or WebSocket
         self.debug = config.debug
+        self.pdb_on_exception: bool = config.pdb_on_exception
+
+        if self.pdb_on_exception:
+            warn_pdb_on_exception()
 
         super().__init__(
             after_request=config.after_request,

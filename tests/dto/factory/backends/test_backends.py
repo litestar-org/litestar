@@ -193,6 +193,7 @@ def test_backend_model_name_uniqueness(backend_type: type[AbstractDTOBackend], b
             serialization_name="a",
             transfer_type=transfer_type,
             is_partial=False,
+            is_excluded=False,
         ),
     )
     for i in range(100):
@@ -283,18 +284,18 @@ dto_type = DataclassDTO[Model]
         model_type=module.Model,
     )
     parsed = MsgspecDTOBackend(context=ctx).parsed_field_definitions
-    assert not any(f.name == "a" for f in parsed)
-    assert parsed[0].name == "b"
-    b_transfer_type = parsed[0].transfer_type
+    assert next(f for f in parsed if f.name == "a").is_excluded
+    assert parsed[1].name == "b"
+    b_transfer_type = parsed[1].transfer_type
     assert isinstance(b_transfer_type, SimpleType)
     b_nested_info = b_transfer_type.nested_field_info
     assert b_nested_info is not None
-    assert not any(f.name == "c" for f in b_nested_info.field_definitions)
-    assert b_nested_info.field_definitions[0].name == "d"
-    b_d_transfer_type = b_nested_info.field_definitions[0].transfer_type
+    assert next(f for f in b_nested_info.field_definitions if f.name == "c").is_excluded
+    assert b_nested_info.field_definitions[1].name == "d"
+    b_d_transfer_type = b_nested_info.field_definitions[1].transfer_type
     assert isinstance(b_d_transfer_type, CollectionType)
     assert isinstance(b_d_transfer_type.inner_type, SimpleType)
     b_d_nested_info = b_d_transfer_type.inner_type.nested_field_info
     assert b_d_nested_info is not None
-    assert not any(f.name == "e" for f in b_d_nested_info.field_definitions)
-    assert b_d_nested_info.field_definitions[0].name == "f"
+    assert next(f for f in b_d_nested_info.field_definitions if f.name == "e").is_excluded
+    assert b_d_nested_info.field_definitions[1].name == "f"
