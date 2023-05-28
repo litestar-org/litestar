@@ -116,7 +116,7 @@ def test_repo_add_method(
         author_repo (AuthorSyncRepository): The author mock repository
     """
     exp_count = len(raw_authors_uuid) + 1
-    new_author = UUIDAuthor(name="Testing", dob=datetime.now())
+    new_author = UUIDAuthor(name="Testing", dob=datetime.now().date())
     obj = author_repo.add(new_author)
     count = author_repo.count()
     assert exp_count == count
@@ -134,7 +134,7 @@ def test_repo_add_many_method(raw_authors_uuid: list[dict[str, Any]], author_rep
     """
     exp_count = len(raw_authors_uuid) + 2
     objs = author_repo.add_many(
-        [UUIDAuthor(name="Testing 2", dob=datetime.now()), UUIDAuthor(name="Cody", dob=datetime.now())]
+        [UUIDAuthor(name="Testing 2", dob=datetime.now().date()), UUIDAuthor(name="Cody", dob=datetime.now().date())]
     )
     count = author_repo.count()
     assert exp_count == count

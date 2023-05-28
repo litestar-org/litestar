@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import uuid
+from base64 import b64decode
 from typing import TYPE_CHECKING, Any, cast
 
 from sqlalchemy import util
@@ -55,7 +56,7 @@ class GUID(TypeDecorator):
         value = self.to_uuid(value)
         if value is None:
             return value
-        if dialect.name == "oracle":
+        if dialect.name in {"oracle", "spanner+spanner"}:
             return value.bytes
         return value.bytes if self.binary else value.hex
 
@@ -64,6 +65,8 @@ class GUID(TypeDecorator):
             return value
         if isinstance(value, uuid.UUID):
             return value
+        if dialect.name == "spanner+spanner":
+            return uuid.UUID(bytes=b64decode(value))
         if self.binary:
             return uuid.UUID(bytes=cast("bytes", value))
         return uuid.UUID(hex=cast("str", value))
