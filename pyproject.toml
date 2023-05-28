@@ -224,6 +224,11 @@ asyncio_mode = "auto"
 filterwarnings = [
     "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:164",
     "ignore::DeprecationWarning:pkg_resources:2803",
+    "ignore::DeprecationWarning:google.rpc",
+    "ignore::DeprecationWarning:google.gcloud",
+    "ignore::DeprecationWarning:google.iam",
+    "ignore::DeprecationWarning:google",
+    "ignore::DeprecationWarning:sphinxcontrib",
 ]
 markers = [
     "sqlalchemy_asyncmy: SQLAlchemy MySQL (asyncmy) Tests",

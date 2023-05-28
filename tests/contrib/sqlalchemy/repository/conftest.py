@@ -51,8 +51,8 @@ def _patch_bases(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.setattr(base, "BigIntAuditBase", NewBigIntAuditBase)
 
 
-@pytest.fixture(name="raw_authors")
-def fx_raw_authors() -> list[dict[str, Any]]:
+@pytest.fixture(name="raw_authors_uuid")
+def fx_raw_authors_uuid() -> list[dict[str, Any]]:
     """Unstructured author representations."""
     return [
         {
@@ -72,21 +72,21 @@ def fx_raw_authors() -> list[dict[str, Any]]:
     ]
 
 
-@pytest.fixture(name="raw_books")
-def fx_raw_books(raw_authors: list[dict[str, Any]]) -> list[dict[str, Any]]:
+@pytest.fixture(name="raw_books_uuid")
+def fx_raw_books_uuid(raw_authors_uuid: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Unstructured book representations."""
     return [
         {
             "id": UUID("f34545b9-663c-4fce-915d-dd1ae9cea42a"),
             "title": "Murder on the Orient Express",
-            "author_id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
-            "author": raw_authors[0],
+            "author_id": raw_authors_uuid[0]["id"],
+            "author": raw_authors_uuid[0],
         },
     ]
 
 
-@pytest.fixture(name="raw_log_events")
-def fx_raw_log_events() -> list[dict[str, Any]]:
+@pytest.fixture(name="raw_log_events_uuid")
+def fx_raw_log_events_uuid() -> list[dict[str, Any]]:
     """Unstructured log events representations."""
     return [
         {
@@ -99,23 +99,47 @@ def fx_raw_log_events() -> list[dict[str, Any]]:
     ]
 
 
-@pytest.fixture(name="raw_ingredients")
-def fx_raw_ingredients() -> list[dict[str, Any]]:
-    """Unstructured ingredients representations."""
-    return [{"name": "Apple"}, {"name": "Orange"}]
-
-
-@pytest.fixture(name="raw_stores")
-def fx_raw_stores() -> list[dict[str, Any]]:
-    """Unstructured store representations."""
+@pytest.fixture(name="raw_authors_bigint")
+def fx_raw_authors_bigint() -> list[dict[str, Any]]:
+    """Unstructured author representations."""
     return [
         {
-            "store_name": "Super Market - Talladega, AL",
-            "created": "0001-01-01T00:00:00",
-            "updated": "0001-01-01T00:00:00",
+            "id": 2023,
+            "name": "Agatha Christie",
+            "dob": "1890-09-15",
+            "created": "2023-05-01T00:00:00",
+            "updated": "2023-05-11T00:00:00",
         },
         {
-            "store_name": "Corner Store - Moody, AL",
+            "id": 2024,
+            "name": "Leo Tolstoy",
+            "dob": "1828-09-09",
+            "created": "2023-03-01T00:00:00",
+            "updated": "2023-05-15T00:00:00",
+        },
+    ]
+
+
+@pytest.fixture(name="raw_books_bigint")
+def fx_raw_books_bigint(raw_authors_bigint: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Unstructured book representations."""
+    return [
+        {
+            "title": "Murder on the Orient Express",
+            "author_id": raw_authors_bigint[0]["id"],
+            "author": raw_authors_bigint[0],
+        },
+    ]
+
+
+@pytest.fixture(name="raw_log_events_bigint")
+def fx_raw_log_events_bigint() -> list[dict[str, Any]]:
+    """Unstructured log events representations."""
+    return [
+        {
+            "id": 2025,
+            "logged_at": "0001-01-01T00:00:00",
+            "payload": {"foo": "bar", "baz": datetime.now()},
             "created": "0001-01-01T00:00:00",
             "updated": "0001-01-01T00:00:00",
         },

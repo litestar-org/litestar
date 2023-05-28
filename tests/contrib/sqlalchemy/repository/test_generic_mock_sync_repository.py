@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from random import random
 from uuid import uuid4
 
 import pytest
@@ -12,65 +11,39 @@ from litestar.contrib.repository.testing.generic_mock_repository import (
     GenericSyncMockRepository,
 )
 from litestar.contrib.sqlalchemy import base
-from tests.contrib.sqlalchemy.models import Author, Book, Ingredient
+from tests.contrib.sqlalchemy.models_uuid import UUIDAuthor, UUIDBook
 
 
 @pytest.fixture(name="authors")
-def fx_authors() -> list[Author]:
+def fx_authors() -> list[UUIDAuthor]:
     """Collection of Author models."""
     return [
-        Author(id=uuid4(), name=name, dob=dob, created=datetime.min, updated=datetime.min)
+        UUIDAuthor(id=uuid4(), name=name, dob=dob, created=datetime.min, updated=datetime.min)
         for name, dob in [("Agatha Christie", date(1890, 9, 15)), ("Leo Tolstoy", date(1828, 9, 9))]
-    ]
-
-
-@pytest.fixture(name="ingredients")
-def fx_ingredients() -> list[Ingredient]:
-    """Collection of Author models."""
-    return [
-        Ingredient(id=int(random()), name=name) for name in ["Celery", "Carrot", "Potato", "Apple", "Pear", "Peach"]
     ]
 
 
 @pytest.fixture(name="author_repository_type")
 def fx_author_repository_type(
-    authors: list[Author], monkeypatch: pytest.MonkeyPatch
-) -> type[GenericSyncMockRepository[Author]]:
+    authors: list[UUIDAuthor], monkeypatch: pytest.MonkeyPatch
+) -> type[GenericSyncMockRepository[UUIDAuthor]]:
     """Mock Author repository, pre-seeded with collection data."""
-    repo = GenericSyncMockRepository[Author]
+    repo = GenericSyncMockRepository[UUIDAuthor]
     repo.seed_collection(authors)
     return repo
 
 
 @pytest.fixture(name="author_repository")
 def fx_author_repository(
-    author_repository_type: type[GenericSyncMockRepository[Author]],
-) -> GenericSyncMockRepository[Author]:
+    author_repository_type: type[GenericSyncMockRepository[UUIDAuthor]],
+) -> GenericSyncMockRepository[UUIDAuthor]:
     """Mock Author repository instance."""
     return author_repository_type()
 
 
-@pytest.fixture(name="ingredient_repository_type")
-def fx_ingredient_repository_type(
-    ingredients: list[Ingredient], monkeypatch: pytest.MonkeyPatch
-) -> type[GenericSyncMockRepository[Ingredient]]:
-    """Mock Author repository, pre-seeded with collection data."""
-    repo = GenericSyncMockRepository[Ingredient]
-    repo.seed_collection(ingredients)
-    return repo
-
-
-@pytest.fixture(name="ingredient_repository")
-def fx_ingredient_repository(
-    ingredient_repository_type: type[GenericSyncMockRepository[Author]],
-) -> GenericSyncMockRepository[Author]:
-    """Mock Author repository instance."""
-    return ingredient_repository_type()
-
-
 async def test_repo_raises_conflict_if_add_with_id(
-    authors: list[Author],
-    author_repository: GenericSyncMockRepository[Author],
+    authors: list[UUIDAuthor],
+    author_repository: GenericSyncMockRepository[UUIDAuthor],
 ) -> None:
     """Test mock repo raises conflict if add identified entity."""
     with pytest.raises(ConflictError):
@@ -78,8 +51,8 @@ async def test_repo_raises_conflict_if_add_with_id(
 
 
 async def test_repo_raises_conflict_if_add_many_with_id(
-    authors: list[Author],
-    author_repository: GenericSyncMockRepository[Author],
+    authors: list[UUIDAuthor],
+    author_repository: GenericSyncMockRepository[UUIDAuthor],
 ) -> None:
     """Test mock repo raises conflict if add identified entity."""
     with pytest.raises(ConflictError):
@@ -88,22 +61,22 @@ async def test_repo_raises_conflict_if_add_many_with_id(
 
 def test_generic_mock_repository_parametrization() -> None:
     """Test that the mock repository handles multiple types."""
-    author_repo = GenericSyncMockRepository[Author]
-    book_repo = GenericSyncMockRepository[Book]
-    assert author_repo.model_type is Author  # type:ignore[misc]
-    assert book_repo.model_type is Book  # type:ignore[misc]
+    author_repo = GenericSyncMockRepository[UUIDAuthor]
+    book_repo = GenericSyncMockRepository[UUIDBook]
+    assert author_repo.model_type is UUIDAuthor  # type:ignore[misc]
+    assert book_repo.model_type is UUIDBook  # type:ignore[misc]
 
 
 def test_generic_mock_repository_seed_collection(
-    author_repository_type: type[GenericSyncMockRepository[Author]],
+    author_repository_type: type[GenericSyncMockRepository[UUIDAuthor]],
 ) -> None:
     """Test seeding instances."""
-    author_repository_type.seed_collection([Author(id="abc")])
+    author_repository_type.seed_collection([UUIDAuthor(id="abc")])
     assert "abc" in author_repository_type.collection
 
 
 def test_generic_mock_repository_clear_collection(
-    author_repository_type: type[GenericSyncMockRepository[Author]],
+    author_repository_type: type[GenericSyncMockRepository[UUIDAuthor]],
 ) -> None:
     """Test clearing collection for type."""
     author_repository_type.clear_collection()
@@ -111,7 +84,7 @@ def test_generic_mock_repository_clear_collection(
 
 
 def test_generic_mock_repository_filter_collection_by_kwargs(
-    author_repository: GenericSyncMockRepository[Author],
+    author_repository: GenericSyncMockRepository[UUIDAuthor],
 ) -> None:
     """Test filtering the repository collection by kwargs."""
     collection = author_repository.filter_collection_by_kwargs(author_repository.collection, name="Leo Tolstoy")
@@ -120,7 +93,7 @@ def test_generic_mock_repository_filter_collection_by_kwargs(
 
 
 def test_generic_mock_repository_filter_collection_by_kwargs_and_semantics(
-    author_repository: GenericSyncMockRepository[Author],
+    author_repository: GenericSyncMockRepository[UUIDAuthor],
 ) -> None:
     """Test that filtering by kwargs has `AND` semantics when multiple kwargs,
     not `OR`."""
@@ -131,7 +104,7 @@ def test_generic_mock_repository_filter_collection_by_kwargs_and_semantics(
 
 
 def test_generic_mock_repository_raises_repository_exception_if_named_attribute_doesnt_exist(
-    author_repository: GenericSyncMockRepository[Author],
+    author_repository: GenericSyncMockRepository[UUIDAuthor],
 ) -> None:
     """Test that a repo exception is raised if a named attribute doesn't
     exist."""
@@ -172,7 +145,7 @@ async def test_sets_created_updated_on_add() -> None:
     assert "updated" in vars(bigint_instance)
 
 
-async def test_sets_updated_on_update(author_repository: GenericSyncMockRepository[Author]) -> None:
+async def test_sets_updated_on_update(author_repository: GenericSyncMockRepository[UUIDAuthor]) -> None:
     """Test that the repository updates the 'updated' timestamp if
     necessary."""
 

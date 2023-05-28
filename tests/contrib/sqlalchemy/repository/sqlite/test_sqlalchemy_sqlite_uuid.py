@@ -1,31 +1,19 @@
 """Unit tests for the SQLAlchemy Repository implementation for psycopg."""
 from __future__ import annotations
 
-import sys
 from asyncio import AbstractEventLoop, get_event_loop_policy
+from pathlib import Path
 from typing import Any, Generator, Iterator
 
 import pytest
-from google.cloud import spanner
-from sqlalchemy import Engine, create_engine
+from sqlalchemy import Engine, NullPool, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from tests.contrib.sqlalchemy.models import (
-    AuthorSyncRepository,
-    BookSyncRepository,
-    IngredientSyncRepository,
-    StoreSyncRepository,
-)
-from tests.contrib.sqlalchemy.repository import sqlalchemy_sync_tests as st
-
-pytestmark = [
-    pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
-    pytest.mark.usefixtures("spanner_service"),
-    pytest.mark.usefixtures("spanner_init_service"),
-]
+from tests.contrib.sqlalchemy.models_uuid import AuthorSyncRepository, BookSyncRepository
+from tests.contrib.sqlalchemy.repository import sqlalchemy_sync_uuid_tests as st
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 @pytest.fixture(scope="session")
 def event_loop() -> Iterator[AbstractEventLoop]:
     """Need the event loop scoped to the session so that we can use it to check
@@ -36,43 +24,34 @@ def event_loop() -> Iterator[AbstractEventLoop]:
     loop.close()
 
 
-@pytest.mark.sqlalchemy_spanner
-@pytest.fixture(autouse=True)
-def override_spanner_endpoint(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("SPANNER_EMULATOR_HOST", "localhost:9010")
-
-
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 @pytest.fixture(name="engine")
-def fx_engine(docker_ip: str) -> Engine:
-    """Postgresql instance for end-to-end testing.
-
-    Args:
-        docker_ip: IP address for TCP connection to Docker containers.
+def fx_engine(tmp_path: Path) -> Generator[Engine, None, None]:
+    """SQLite engine for end-to-end testing.
 
     Returns:
         Async SQLAlchemy engine instance.
     """
-    return create_engine(
-        "spanner+spanner:///projects/test-project/instances/test-instance/databases/test-database",
+    engine = create_engine(
+        f"sqlite:///{tmp_path}/test.db",
         echo=True,
-        connect_args={"client": spanner.Client(project="test-project")},
+        poolclass=NullPool,
     )
+    try:
+        yield engine
+    finally:
+        engine.dispose()
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 @pytest.fixture(
     name="session",
 )
 def fx_session(
-    engine: Engine,
-    raw_authors: list[dict[str, Any]],
-    raw_books: list[dict[str, Any]],
-    raw_stores: list[dict[str, Any]],
-    raw_ingredients: list[dict[str, Any]],
+    engine: Engine, raw_authors_uuid: list[dict[str, Any]], raw_books_uuid: list[dict[str, Any]]
 ) -> Generator[Session, None, None]:
     session = sessionmaker(bind=engine)()
-    st.seed_db(engine, raw_authors, raw_books, raw_stores, raw_ingredients)
+    st.seed_db(engine, raw_authors_uuid, raw_books_uuid)
     try:
         yield session
     finally:
@@ -80,29 +59,19 @@ def fx_session(
         session.close()
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 @pytest.fixture(name="author_repo")
 def fx_author_repo(session: Session) -> AuthorSyncRepository:
     return AuthorSyncRepository(session=session)
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 @pytest.fixture(name="book_repo")
 def fx_book_repo(session: Session) -> BookSyncRepository:
     return BookSyncRepository(session=session)
 
 
-@pytest.fixture(name="store_repo")
-def fx_store_repo(session: Session) -> StoreSyncRepository:
-    return StoreSyncRepository(session=session)
-
-
-@pytest.fixture(name="ingredient_repo")
-def fx_ingredient_repo(session: Session) -> IngredientSyncRepository:
-    return IngredientSyncRepository(session=session)
-
-
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy filter by kwargs with invalid column name.
 
@@ -112,100 +81,73 @@ def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorSyncR
     st.test_filter_by_kwargs_with_incorrect_attribute_name(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
-def test_repo_count_method(author_repo: AuthorSyncRepository, store_repo: StoreSyncRepository) -> None:
+@pytest.mark.sqlalchemy_sqlite
+def test_repo_count_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy count.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
     """
-    st.test_repo_count_method(author_repo=author_repo, store_repo=store_repo)
+    st.test_repo_count_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
-def test_repo_list_and_count_method(
-    raw_authors: list[dict[str, Any]],
-    author_repo: AuthorSyncRepository,
-    raw_stores: list[dict[str, Any]],
-    store_repo: StoreSyncRepository,
-) -> None:
+@pytest.mark.sqlalchemy_sqlite
+def test_repo_list_and_count_method(raw_authors_uuid: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy list with count.
 
     Args:
-        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_uuid (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
-        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
-        store_repo (StoreRepository): The store mock repository
     """
-    st.test_repo_list_and_count_method(
-        raw_authors=raw_authors, author_repo=author_repo, raw_stores=raw_stores, store_repo=store_repo
-    )
+    st.test_repo_list_and_count_method(raw_authors_uuid=raw_authors_uuid, author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 def test_repo_list_and_count_method_empty(book_repo: BookSyncRepository) -> None:
     """Test SQLALchemy list with count.
 
     Args:
-        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_uuid (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
     """
 
     st.test_repo_list_and_count_method_empty(book_repo=book_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
-def test_repo_list_method(
-    raw_authors: list[dict[str, Any]],
-    author_repo: AuthorSyncRepository,
-    raw_stores: list[dict[str, Any]],
-    store_repo: StoreSyncRepository,
-) -> None:
+@pytest.mark.sqlalchemy_sqlite
+def test_repo_list_method(raw_authors_uuid: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy list.
 
     Args:
-        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_uuid (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
-        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
-        store_repo (StoreRepository): The store mock repository
     """
-    st.test_repo_list_method(
-        raw_authors=raw_authors, author_repo=author_repo, raw_stores=raw_stores, store_repo=store_repo
-    )
+    st.test_repo_list_method(raw_authors_uuid=raw_authors_uuid, author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
-def test_repo_add_method(
-    raw_authors: list[dict[str, Any]],
-    author_repo: AuthorSyncRepository,
-    raw_stores: list[dict[str, Any]],
-    store_repo: StoreSyncRepository,
-) -> None:
+@pytest.mark.sqlalchemy_sqlite
+def test_repo_add_method(raw_authors_uuid: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy list.
 
     Args:
-        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_uuid (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
-        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
-        store_repo (StoreRepository): The store mock repository
     """
-    st.test_repo_add_method(
-        raw_authors=raw_authors, author_repo=author_repo, raw_stores=raw_stores, store_repo=store_repo
-    )
+    st.test_repo_add_method(raw_authors_uuid=raw_authors_uuid, author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
-def test_repo_add_many_method(raw_authors: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
+@pytest.mark.sqlalchemy_sqlite
+def test_repo_add_many_method(raw_authors_uuid: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Add Many.
 
     Args:
-        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_uuid (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
     """
-    st.test_repo_add_many_method(raw_authors=raw_authors, author_repo=author_repo)
+    st.test_repo_add_many_method(raw_authors_uuid=raw_authors_uuid, author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 def test_repo_update_many_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Update Many.
 
@@ -215,7 +157,7 @@ def test_repo_update_many_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_update_many_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 def test_repo_exists_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy exists.
 
@@ -225,7 +167,7 @@ def test_repo_exists_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_exists_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 def test_repo_update_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Update.
 
@@ -235,7 +177,7 @@ def test_repo_update_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_update_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 def test_repo_delete_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy delete.
 
@@ -245,7 +187,7 @@ def test_repo_delete_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_delete_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 def test_repo_delete_many_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy delete many.
 
@@ -255,7 +197,7 @@ def test_repo_delete_many_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_delete_many_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 def test_repo_get_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Get.
 
@@ -265,7 +207,7 @@ def test_repo_get_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_get_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 def test_repo_get_one_or_none_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Get One.
 
@@ -275,7 +217,7 @@ def test_repo_get_one_or_none_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_get_one_or_none_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 def test_repo_get_one_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Get One.
 
@@ -285,7 +227,7 @@ def test_repo_get_one_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_get_one_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 def test_repo_get_or_create_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Get or create.
 
@@ -295,7 +237,7 @@ def test_repo_get_or_create_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_get_or_create_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 def test_repo_get_or_create_match_filter(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Get or create with a match filter
 
@@ -305,7 +247,7 @@ def test_repo_get_or_create_match_filter(author_repo: AuthorSyncRepository) -> N
     st.test_repo_get_or_create_match_filter(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 def test_repo_upsert_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy upsert.
 
@@ -315,7 +257,7 @@ def test_repo_upsert_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_upsert_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 def test_repo_filter_before_after(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy BeforeAfter filter.
 
@@ -325,7 +267,7 @@ def test_repo_filter_before_after(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_filter_before_after(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 def test_repo_filter_search(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Search filter.
 
@@ -335,7 +277,7 @@ def test_repo_filter_search(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_filter_search(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 def test_repo_filter_order_by(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Order By filter.
 
@@ -345,7 +287,7 @@ def test_repo_filter_order_by(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_filter_order_by(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_spanner
+@pytest.mark.sqlalchemy_sqlite
 def test_repo_filter_collection(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Collection filter.
 

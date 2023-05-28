@@ -32,6 +32,7 @@ from _pytest.fixtures import FixtureRequest
 from _pytest.nodes import Item
 from fakeredis.aioredis import FakeRedis
 from freezegun import freeze_time
+from google.auth.credentials import AnonymousCredentials
 from google.cloud import spanner
 from oracledb.exceptions import DatabaseError, OperationalError
 from pytest_docker.plugin import Services
@@ -539,11 +540,20 @@ def spanner_responsive(host: str) -> bool:
 
     try:
         os.environ["SPANNER_EMULATOR_HOST"] = "localhost:9010"
-        spanner_client = spanner.Client(project="test-project")
+        os.environ["GOOGLE_CLOUD_PROJECT"] = "emulator-test-project"
+        spanner_client = spanner.Client(project="emulator-test-project", credentials=AnonymousCredentials())
         instance = spanner_client.instance("test-instance")
+        try:
+            instance.create()
+        except Exception:  # pyright: ignore
+            pass
         database = instance.database("test-database")
+        try:
+            database.create()
+        except Exception:  # pyright: ignore
+            pass
         with database.snapshot() as snapshot:
-            resp = snapshot.execute_sql("SELECT 1")
+            resp = list(snapshot.execute_sql("SELECT 1"))[0]
         return bool(resp[0] == 1)
     except Exception:  # pyright: ignore
         return False

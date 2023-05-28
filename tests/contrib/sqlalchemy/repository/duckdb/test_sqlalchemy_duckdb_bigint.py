@@ -9,13 +9,11 @@ import pytest
 from sqlalchemy import Engine, NullPool, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from tests.contrib.sqlalchemy.models import (
+from tests.contrib.sqlalchemy.models_bigint import (
     AuthorSyncRepository,
     BookSyncRepository,
-    IngredientSyncRepository,
-    StoreSyncRepository,
 )
-from tests.contrib.sqlalchemy.repository import sqlalchemy_sync_tests as st
+from tests.contrib.sqlalchemy.repository import sqlalchemy_sync_bigint_tests as st
 
 
 @pytest.mark.sqlalchemy_duckdb
@@ -38,7 +36,7 @@ def fx_engine(tmp_path: Path) -> Generator[Engine, None, None]:
         Async SQLAlchemy engine instance.
     """
     engine = create_engine(
-        "duckdb:///:memory:",
+        f"duckdb:///{tmp_path}/test.duck.db",
         echo=True,
         poolclass=NullPool,
     )
@@ -53,14 +51,10 @@ def fx_engine(tmp_path: Path) -> Generator[Engine, None, None]:
     name="session",
 )
 def fx_session(
-    engine: Engine,
-    raw_authors: list[dict[str, Any]],
-    raw_books: list[dict[str, Any]],
-    raw_stores: list[dict[str, Any]],
-    raw_ingredients: list[dict[str, Any]],
+    engine: Engine, raw_authors_bigint: list[dict[str, Any]], raw_books_bigint: list[dict[str, Any]]
 ) -> Generator[Session, None, None]:
     session = sessionmaker(bind=engine)()
-    st.seed_db(engine, raw_authors, raw_books, raw_stores, raw_ingredients)
+    st.seed_db(engine, raw_authors_bigint, raw_books_bigint)
     try:
         yield session
     finally:
@@ -80,16 +74,6 @@ def fx_book_repo(session: Session) -> BookSyncRepository:
     return BookSyncRepository(session=session)
 
 
-@pytest.fixture(name="store_repo")
-def fx_store_repo(session: Session) -> StoreSyncRepository:
-    return StoreSyncRepository(session=session)
-
-
-@pytest.fixture(name="ingredient_repo")
-def fx_ingredient_repo(session: Session) -> IngredientSyncRepository:
-    return IngredientSyncRepository(session=session)
-
-
 @pytest.mark.sqlalchemy_duckdb
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy filter by kwargs with invalid column name.
@@ -101,33 +85,26 @@ def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorSyncR
 
 
 @pytest.mark.sqlalchemy_duckdb
-def test_repo_count_method(author_repo: AuthorSyncRepository, store_repo: StoreSyncRepository) -> None:
+def test_repo_count_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy count.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
     """
-    st.test_repo_count_method(author_repo=author_repo, store_repo=store_repo)
+    st.test_repo_count_method(author_repo=author_repo)
 
 
 @pytest.mark.sqlalchemy_duckdb
 def test_repo_list_and_count_method(
-    raw_authors: list[dict[str, Any]],
-    author_repo: AuthorSyncRepository,
-    raw_stores: list[dict[str, Any]],
-    store_repo: StoreSyncRepository,
+    raw_authors_bigint: list[dict[str, Any]], author_repo: AuthorSyncRepository
 ) -> None:
     """Test SQLALchemy list with count.
 
     Args:
-        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_bigint (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
-        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
-        store_repo (StoreRepository): The store mock repository
     """
-    st.test_repo_list_and_count_method(
-        raw_authors=raw_authors, author_repo=author_repo, raw_stores=raw_stores, store_repo=store_repo
-    )
+    st.test_repo_list_and_count_method(raw_authors_bigint=raw_authors_bigint, author_repo=author_repo)
 
 
 @pytest.mark.sqlalchemy_duckdb
@@ -135,7 +112,7 @@ def test_repo_list_and_count_method_empty(book_repo: BookSyncRepository) -> None
     """Test SQLALchemy list with count.
 
     Args:
-        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_bigint (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
     """
 
@@ -143,54 +120,36 @@ def test_repo_list_and_count_method_empty(book_repo: BookSyncRepository) -> None
 
 
 @pytest.mark.sqlalchemy_duckdb
-def test_repo_list_method(
-    raw_authors: list[dict[str, Any]],
-    author_repo: AuthorSyncRepository,
-    raw_stores: list[dict[str, Any]],
-    store_repo: StoreSyncRepository,
-) -> None:
+def test_repo_list_method(raw_authors_bigint: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy list.
 
     Args:
-        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_bigint (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
-        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
-        store_repo (StoreRepository): The store mock repository
     """
-    st.test_repo_list_method(
-        raw_authors=raw_authors, author_repo=author_repo, raw_stores=raw_stores, store_repo=store_repo
-    )
+    st.test_repo_list_method(raw_authors_bigint=raw_authors_bigint, author_repo=author_repo)
 
 
 @pytest.mark.sqlalchemy_duckdb
-def test_repo_add_method(
-    raw_authors: list[dict[str, Any]],
-    author_repo: AuthorSyncRepository,
-    raw_stores: list[dict[str, Any]],
-    store_repo: StoreSyncRepository,
-) -> None:
+def test_repo_add_method(raw_authors_bigint: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy list.
 
     Args:
-        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_bigint (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
-        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
-        store_repo (StoreRepository): The store mock repository
     """
-    st.test_repo_add_method(
-        raw_authors=raw_authors, author_repo=author_repo, raw_stores=raw_stores, store_repo=store_repo
-    )
+    st.test_repo_add_method(raw_authors_bigint=raw_authors_bigint, author_repo=author_repo)
 
 
 @pytest.mark.sqlalchemy_duckdb
-def test_repo_add_many_method(raw_authors: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
+def test_repo_add_many_method(raw_authors_bigint: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Add Many.
 
     Args:
-        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_bigint (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorRepository): The author mock repository
     """
-    st.test_repo_add_many_method(raw_authors=raw_authors, author_repo=author_repo)
+    st.test_repo_add_many_method(raw_authors_bigint=raw_authors_bigint, author_repo=author_repo)
 
 
 @pytest.mark.sqlalchemy_duckdb

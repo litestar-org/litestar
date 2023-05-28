@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar, runtime_chec
 from uuid import UUID, uuid4
 
 from pydantic import AnyHttpUrl, AnyUrl, EmailStr
-from sqlalchemy import Identity, MetaData, String
+from sqlalchemy import MetaData, Sequence, String
 from sqlalchemy.event import listens_for
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -89,26 +89,32 @@ class ModelProtocol(Protocol):
 class UUIDPrimaryKey:
     """UUID Primary Key Field Mixin."""
 
-    __abstract__ = True
-
     id: Mapped[UUID] = mapped_column(default=uuid4, primary_key=True)  # pyright: ignore
     """UUID Primary key column."""
+
+    @declared_attr
+    def _sentinel(cls) -> Mapped[int]:
+        return orm_insert_sentinel()
 
 
 class BigIntPrimaryKey:
     """BigInt Primary Key Field Mixin."""
 
-    __abstract__ = True
+    __tablename__: str
 
-    id: Mapped[int] = mapped_column(BigIntIdentity, Identity(always=True), primary_key=True)  # pyright: ignore
-    """BigInt Primary key column."""
+    @declared_attr
+    def id(cls) -> Mapped[int]:
+        """BigInt Primary key column."""
+        return mapped_column(
+            BigIntIdentity,
+            Sequence(f"{cls.__tablename__}_id_seq", optional=False),
+            primary_key=True,
+        )
 
 
 @declarative_mixin
 class AuditColumns:
     """Created/Updated At Fields Mixin."""
-
-    __abstract__ = True
 
     created: Mapped[datetime] = mapped_column(default=datetime.now)  # pyright: ignore
     """Date/time of instance creation."""
@@ -119,7 +125,6 @@ class AuditColumns:
 class CommonTableAttributes:
     """Common attributes for SQLALchemy tables."""
 
-    __abstract__ = True
     __name__: ClassVar[str]
     __table__: FromClause
 
@@ -138,10 +143,6 @@ class CommonTableAttributes:
         """
         exclude = exclude.union("_sentinel") if exclude else {"_sentinel"}
         return {field.name: getattr(self, field.name) for field in self.__table__.columns if field.name not in exclude}
-
-    @declared_attr
-    def _sentinel(cls) -> Mapped[int]:
-        return orm_insert_sentinel()
 
 
 def create_registry() -> registry:

@@ -85,7 +85,7 @@ def test_sqlalchemy_sentinel(monkeypatch: MonkeyPatch) -> None:
 
     assert isinstance(AnotherModel._sentinel, MappedColumn)
     assert isinstance(TheTestModel._sentinel, MappedColumn)
-    assert isinstance(TheBigIntModel._sentinel, MappedColumn)
+    assert not hasattr(TheBigIntModel, "_sentinel")
     model1, model2, model3 = AnotherModel(), TheTestModel(), TheBigIntModel()
     assert "created" not in model1.to_dict(exclude={"created"}).keys()
     assert "_sentinel" not in model1.to_dict().keys()
