@@ -9,6 +9,8 @@ and from raw bytes.
 The following factories are currently available:
 
 - :class:`DataclassDTO <litestar.dto.factory.stdlib.DataclassDTO>`
+- :class:`MsgspecDTO <litestar.contrib.msgspec.MsgspecDTO>`
+- :class:`PydanticDTO <litestar.contrib.pydantic.PydanticDTO>`
 - :class:`SQLAlchemyDTO <litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO>`
 
 Using DTO Factories
@@ -173,6 +175,33 @@ and have used that to create our ``Person`` instance, after augmenting the clien
 value.
 
 Consult the :class:`Reference Docs <litestar.dto.factory.DTOData>` for more information on the methods available.
+
+.. _dto-create-instance-nested-data:
+
+Providing values for nested data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To augment data used to instantiate our model instances, we can provide keyword arguments to the
+:meth:`create_instance() <litestar.dto.factory.DTOData.create_instance>` method.
+
+Sometimes we need to provide values for nested data, for example, when creating a new instance of a model that has a
+nested model with excluded fields.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/providing_values_for_nested_data.py
+    :language: python
+    :emphasize-lines: 10,11,12,13,21,29,35
+    :linenos:
+
+The double-underscore syntax ``address__id`` passed as a keyword argument to the
+:meth:`create_instance() <litestar.dto.factory.DTOData.create_instance>` method call is used to specify a value for a
+nested attribute. In this case, it's used to provide a value for the ``id`` attribute of the ``Address`` instance nested
+within the ``Person`` instance.
+
+This is a common convention in Python for dealing with nested structures. The double underscore can be interpreted as
+"traverse through", so ``address__id`` means "traverse through address to get to id".
+
+In the context of this script, ``create_instance(id=1, address__id=2)`` is saying "create a new ``Person`` instance from
+the client data given an id of ``1``, and supplement the client address data with an id of ``2``".
 
 DTO Factory and PATCH requests
 ------------------------------

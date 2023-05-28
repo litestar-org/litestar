@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Dict, Optional
 
 import pytest
 from typing_extensions import Annotated
@@ -18,7 +18,7 @@ from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
     from types import ModuleType
-    from typing import Callable
+    from typing import Any, Callable
 
 
 def test_url_encoded_form_data() -> None:
@@ -180,6 +180,45 @@ def handler(data: DTOData[Bar]) -> Dict[str, Any]:
         assert resp.json() == {"foo": {"bar": "hello"}}
 
 
+def test_dto_data_create_instance_nested_kwargs(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from dataclasses import dataclass
+from typing import Any, Dict
+
+from typing_extensions import Annotated
+
+from litestar import post
+from litestar.dto.factory import DTOConfig, DTOData
+from litestar.dto.factory.stdlib import DataclassDTO
+
+@dataclass
+class Foo:
+    bar: str
+    baz: str
+
+@dataclass
+class Bar:
+    foo: Foo
+
+config = DTOConfig(exclude={"foo.baz"})
+dto = DataclassDTO[Annotated[Bar, config]]
+
+@post(dto=dto, return_dto=None)
+def handler(data: DTOData[Bar]) -> Dict[str, Any]:
+    assert isinstance(data, DTOData)
+    res = data.create_instance(foo__baz="world")
+    assert res.foo.baz == "world"
+    return res
+"""
+    )
+
+    with create_test_client(route_handlers=[module.handler], debug=True) as client:
+        resp = client.post("/", json={"foo": {"bar": "hello"}})
+        assert resp.status_code == 201
+        assert resp.json() == {"foo": {"bar": "hello", "baz": "world"}}
+
+
 def test_dto_data_with_url_encoded_form_data() -> None:
     @dataclass
     class User:
@@ -241,3 +280,25 @@ def test_dto_openapi_model_name_collision() -> None:
             k.startswith("tests.dto.factory.test_integration.test_dto_openapi_model_name_collision.<locals>.Bar")
             for k in response.json()["components"]["schemas"]
         )
+
+
+def test_url_encoded_form_data_patch_request() -> None:
+    @dataclass
+    class User:
+        name: str
+        age: int
+        read_only: str = field(default="read-only", metadata=dto_field("read-only"))
+
+    dto = DataclassDTO[Annotated[User, DTOConfig(partial=True)]]
+
+    @post(dto=dto, return_dto=None, signature_namespace={"User": User, "dict": Dict})
+    def handler(data: DTOData[User] = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict[str, Any]:
+        return data.as_builtins()  # type:ignore[no-any-return]
+
+    with create_test_client(route_handlers=[handler], debug=True) as client:
+        response = client.post(
+            "/",
+            content=b"name=John&read_only=whoops",
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+        assert response.json() == {"name": "John"}
