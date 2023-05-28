@@ -28,5 +28,12 @@ And our app is back to a working state:
 .. image:: images/dto_data.png
     :align: center
 
+.. tip::
+    To provide values for nested attributes you can use the "double-underscore" syntax as a keyword argument to the
+    :meth:`create_instance() <litestar.dto.factory.DTOData.create_instance>` method. For example, ``address__id=1`` will
+    set the ``id`` attribute of the ``address`` attribute of the created instance.
+
+    See :ref:`dto-create-instance-nested-data` for more information.
+
 The :class:`DTOData <litestar.dto.factory.DTOData>` type has some other useful methods, and we'll take a look at those
 in the next section: :ref:`updating`.
