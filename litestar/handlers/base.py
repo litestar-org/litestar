@@ -10,8 +10,9 @@ from litestar.di import Provide
 from litestar.dto.interface import HandlerContext
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Dependencies, Empty, ExceptionHandlersMap, Guard, Middleware, TypeEncodersMap
-from litestar.utils import AsyncCallable, Ref, async_partial, get_name, is_async_callable, normalize_path
+from litestar.utils import AsyncCallable, Ref, async_partial, get_name, normalize_path
 from litestar.utils.helpers import unwrap_partial
+from litestar.utils.predicates import is_async_callable
 from litestar.utils.signature import ParsedSignature, infer_request_encoding_from_parameter
 
 if TYPE_CHECKING:

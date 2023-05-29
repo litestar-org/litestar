@@ -3,7 +3,7 @@ from typing import AsyncGenerator, Callable
 
 import pytest
 
-from litestar.utils import is_async_callable
+from litestar.utils.predicates import is_async_callable
 
 
 class AsyncTestCallable:

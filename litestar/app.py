@@ -39,8 +39,9 @@ from litestar.static_files.base import StaticFiles
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty
 from litestar.types.internal_types import PathParameterDefinition
-from litestar.utils import AsyncCallable, is_async_callable, join_paths, unique
+from litestar.utils import AsyncCallable, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
+from litestar.utils.predicates import is_async_callable
 from litestar.utils.warnings import warn_pdb_on_exception
 
 if TYPE_CHECKING:

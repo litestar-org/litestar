@@ -8,9 +8,11 @@ from litestar.types import DataclassProtocol, Empty, EmptyType
 from litestar.utils.dataclass import (
     extract_dataclass_fields,
     extract_dataclass_items,
+    simple_asdict,
+)
+from litestar.utils.predicates import (
     is_dataclass_class,
     is_dataclass_instance,
-    simple_asdict,
 )
 
 
