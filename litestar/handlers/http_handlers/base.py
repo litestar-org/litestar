@@ -43,7 +43,8 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.types.builtin_types import NoneType
-from litestar.utils import AsyncCallable, async_partial, is_async_callable
+from litestar.utils import AsyncCallable, async_partial
+from litestar.utils.predicates import is_async_callable
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
 if TYPE_CHECKING:
