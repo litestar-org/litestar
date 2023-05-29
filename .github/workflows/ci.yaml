@@ -26,7 +26,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .mypy_cache
-          key: v1-mypy-cache-${{ runner.os }}-${{ inputs.python-version }}
+          key: mypy-cache-1|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Execute Pre-Commit
         run: pre-commit run --show-diff-on-failure --color=always --all-files
 
