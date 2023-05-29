@@ -155,6 +155,27 @@ sphinxcontrib-mermaid = ">=0.8.1,<1"
 litestar-sphinx-theme = { git = "https://github.com/litestar-org/litestar-sphinx-theme.git" }
 uvicorn = "*"
 
+[tool.poetry.group.lint]
+optional = true
+
+[tool.poetry.group.lint.dependencies]
+asyncpg-stubs = "*"
+black = "*"
+blacken-docs = "*"
+mypy = "*"
+pylint = "*"
+pylint-pydantic = "*"
+pyright = "*"
+ruff = '*'
+slotscheck = "*"
+types-click = "*"
+types-freezegun = "*"
+types-python-jose = "*"
+types-pyyaml = "*"
+types-redis = "*"
+types-beautifulsoup4 = "*"
+types-python-dateutil = "*"
+
 [tool.poetry.extras]
 attrs = ["attrs", "cattrs", "python-dateutil", "pytimeparse"]
 brotli = ["brotli"]
@@ -203,6 +224,7 @@ include = '\.pyi?$'
 
 [tool.codespell]
 ignore-words-list = "selectin"
+skip = 'poetry.lock'
 
 [tool.coverage.run]
 omit = ["*/tests/*", "litestar/contrib/sqlalchemy_1/*"]
