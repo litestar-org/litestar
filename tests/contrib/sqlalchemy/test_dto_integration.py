@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from types import ModuleType
 from typing import Any, Callable, Dict, List, Tuple
 
 import pytest
@@ -134,3 +135,61 @@ def test_fields_alias_generator_sqlalchemy(
 
         response_callback = client.post("/", json=json_data)
         assert response_callback.json() == json_data
+
+
+def test_dto_with_association_proxy(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from __future__ import annotations
+
+from typing import Final, List
+
+from sqlalchemy import Column
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import Table
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
+from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.ext.associationproxy import AssociationProxy
+
+from litestar import get
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.dto.factory import dto_field
+
+class Base(DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "user"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    kw: Mapped[List[Keyword]] = relationship(secondary=lambda: user_keyword_table, info=dto_field("private"))
+    # proxy the 'keyword' attribute from the 'kw' relationship
+    keywords: AssociationProxy[List[str]] = association_proxy("kw", "keyword")
+
+class Keyword(Base):
+    __tablename__ = "keyword"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    keyword: Mapped[str] = mapped_column(String(64))
+
+user_keyword_table: Final[Table] = Table(
+    "user_keyword",
+    Base.metadata,
+    Column("user_id", Integer, ForeignKey("user.id"), primary_key=True),
+    Column("keyword_id", Integer, ForeignKey("keyword.id"), primary_key=True),
+)
+
+dto = SQLAlchemyDTO[User]
+
+@get("/", return_dto=dto)
+def get_handler() -> User:
+    return User(id=1, kw=[Keyword(keyword="bar"), Keyword(keyword="baz")])
+"""
+    )
+
+    with create_test_client(route_handlers=[module.get_handler], debug=True) as client:
+        response = client.get("/")
+        assert response.json() == {"id": 1, "keywords": ["bar", "baz"]}

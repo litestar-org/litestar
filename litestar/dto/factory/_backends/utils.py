@@ -232,10 +232,12 @@ def transfer_type_data(
         return transfer_nested_simple_type_data(dest_type, transfer_type.nested_field_info, dto_for, source_value)
     if isinstance(transfer_type, UnionType) and transfer_type.has_nested:
         return transfer_nested_union_type_data(transfer_type, dto_for, source_value)
-    if isinstance(transfer_type, CollectionType) and transfer_type.has_nested:
-        return transfer_nested_collection_type_data(
-            transfer_type.parsed_type.origin, transfer_type, dto_for, source_value
-        )
+    if isinstance(transfer_type, CollectionType):
+        if transfer_type.has_nested:
+            return transfer_nested_collection_type_data(
+                transfer_type.parsed_type.origin, transfer_type, dto_for, source_value
+            )
+        return transfer_type.parsed_type.origin(source_value)
     return source_value
 
 
