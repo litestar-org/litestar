@@ -35,9 +35,7 @@ jobs:
       coverage: ${{ matrix.python-version == '3.11' }}
 
   test-platform-compat:
-    if: github.event_name == 'push'
     strategy:
-      fail-fast: true
       matrix:
         os: ["macos-latest", "windows-latest"]
     uses: ./.github/workflows/test.yaml
