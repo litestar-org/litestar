@@ -105,6 +105,11 @@ wrapper_type_set = {Annotated, Required, NotRequired}
 """Types that always contain a wrapped type annotation as their first arg."""
 
 
+def normalize_type_annotation(annotation: Any) -> Any:
+    """Normalize a type annotation to a standard form."""
+    return types_mapping.get(annotation, annotation)
+
+
 def annotation_is_iterable_of_type(
     annotation: Any,
     type_value: type[T],

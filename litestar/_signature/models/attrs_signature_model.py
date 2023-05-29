@@ -279,7 +279,7 @@ def _create_validators(
         (kwargs_model.max_length, attrs.validators.max_len),
         (kwargs_model.min_items, attrs.validators.min_len),
         (kwargs_model.max_items, attrs.validators.max_len),
-        (kwargs_model.regex, partial(attrs.validators.matches_re, flags=0)),
+        (kwargs_model.pattern, partial(attrs.validators.matches_re, flags=0)),
     ]:
         if value is not None:
             validators.append(validator(value))  # type: ignore

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import sys
 from secrets import token_hex
 from typing import cast
 from unittest.mock import AsyncMock, MagicMock
@@ -19,7 +20,10 @@ from litestar.types.asgi_types import WebSocketMode
 
 from .util import get_from_stream
 
-pytestmark = [pytest.mark.usefixtures("redis_service")]
+pytestmark = [
+    pytest.mark.usefixtures("redis_service"),
+    pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
+]
 
 
 @pytest.fixture

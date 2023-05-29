@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Mapping, Sequence
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.base import BaseRouteHandler
 from litestar.types.builtin_types import NoneType
-from litestar.utils import is_async_callable
+from litestar.utils.predicates import is_async_callable
 
 __all__ = ("ASGIRouteHandler", "asgi")
 

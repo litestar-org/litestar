@@ -20,7 +20,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-106-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-107-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -421,6 +421,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/01EK98"><img src="https://avatars.githubusercontent.com/u/101988390?v=4?s=100" width="100px;" alt="01EK98"/><br /><sub><b>01EK98</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=01EK98" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/sarbor"><img src="https://avatars.githubusercontent.com/u/15257226?v=4?s=100" width="100px;" alt="Sarbo Roy"/><br /><sub><b>Sarbo Roy</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=sarbor" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

@@ -75,6 +75,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
             if model_field.sub_fields
             else None
         )
+
         default_value = (
             model_field.field_info.default if model_field.field_info.default not in UNDEFINED_SENTINELS else Empty
         )
@@ -84,11 +85,12 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         )
         if kwarg_model:
             default_value = kwarg_model.default
+
         elif isinstance(default_value, (ParameterKwarg, DependencyKwarg, BodyKwarg)):
             kwarg_model = default_value
             default_value = default_value.default
 
-        return SignatureField(
+        return SignatureField.create(
             children=children,
             default_value=default_value,
             extra=model_field.field_info.extra or {},

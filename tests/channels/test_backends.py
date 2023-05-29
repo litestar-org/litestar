@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import sys
 from datetime import timedelta
 from typing import AsyncGenerator, cast
 
@@ -13,7 +14,10 @@ from litestar.channels.backends.memory import MemoryChannelsBackend
 from litestar.channels.backends.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
 from litestar.utils.compat import async_next
 
-pytestmark = [pytest.mark.usefixtures("redis_service")]
+pytestmark = [
+    pytest.mark.usefixtures("redis_service"),
+    pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
+]
 
 
 @pytest.fixture(
