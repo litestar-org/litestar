@@ -6,3 +6,4 @@ Tutorials
 
     todo-app/index
     dto-tutorial/index
+    sqlalchemy/index

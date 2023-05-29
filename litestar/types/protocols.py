@@ -1,6 +1,12 @@
-from typing import Any, ClassVar, Dict, Protocol, runtime_checkable
+from __future__ import annotations
 
-__all__ = ("DataclassProtocol", "Logger")
+from typing import Any, ClassVar, Collection, Iterable, Protocol, TypeVar, runtime_checkable
+
+__all__ = (
+    "DataclassProtocol",
+    "InstantiableCollection",
+    "Logger",
+)
 
 
 class Logger(Protocol):  # pragma: no cover
@@ -94,4 +100,15 @@ class Logger(Protocol):  # pragma: no cover
 class DataclassProtocol(Protocol):
     """Protocol for instance checking dataclasses"""
 
-    __dataclass_fields__: ClassVar[Dict[str, Any]]
+    __dataclass_fields__: ClassVar[dict[str, Any]]
+
+
+T_co = TypeVar("T_co", covariant=True)
+
+
+@runtime_checkable
+class InstantiableCollection(Collection[T_co], Protocol[T_co]):
+    """A protocol for instantiable collection types."""
+
+    def __init__(self, iterable: Iterable[T_co] = ..., /) -> None:
+        ...

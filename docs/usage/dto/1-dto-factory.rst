@@ -33,6 +33,8 @@ ever be set once, and defined internally.
 
 Let's explore how we can configure DTOs to manage scenarios like these.
 
+.. _dto-marking-fields:
+
 Marking fields
 --------------
 

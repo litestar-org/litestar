@@ -1,29 +1,19 @@
-SQLAlchemy Plugins
-==================
+Plugins
+-------
 
-We here at Litestar love the SQLAlchemy project. It has stood the test of time, is well documented, has a large
-community, and first-class maintainers. For all of these reasons, is a great choice for any Python project that needs to
-work with a relational database, and we are proud to support it.
+Litestar has a plugin system that allows you to extend the functionality of the application. Plugins are passed to the
+application at startup and can pre-configure the application to manage resources, add routes, and more.
 
-Litestar comes with built-in support for `SQLAlchemy <https://docs.sqlalchemy.org/>`_ via
-a suite of :class:`Plugins <.contrib.sqlalchemy.plugins>`.
+A suite of plugins is available in :doc:`contrib.sqlalchemy.plugins </reference/contrib/sqlalchemy/plugins>` to support
+using Litestar with SQLAlchemy, these include:
 
-Features
---------
+- :class:`litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin`: Full SQLAlchemy support
+- :class:`litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin`: Application tooling
+- :class:`litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin`: Serialization support
 
-* Managed `sessions <https://docs.sqlalchemy.org/en/20/orm/session.html>`_ (sync and async) including dependency injection
-* Managed `engine <https://docs.sqlalchemy.org/en/20/core/engines.html>`_ (sync and async) including dependency injection
-* Typed configuration objects
-* Support for deserializing into, and serializing from, SQLAlchemy models.
-
+Each of the plugins is discussed in detail in the following sections.
 
 .. toctree::
-    :titlesonly:
-    :hidden:
-
-    0-getting-started
-    1-data-modelling
-    2-plugin-configuration
-    3-defining-routes
-    4-configuring-the-application
-    5-recap
+    sqlalchemy_plugin
+    sqlalchemy_init_plugin
+    sqlalchemy_serialization_plugin
