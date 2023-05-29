@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from sqlalchemy import Column, inspect, orm, sql
 from sqlalchemy.ext.associationproxy import AssociationProxy, AssociationProxyExtensionType
+from sqlalchemy.ext.hybrid import HybridExtensionType, hybrid_property
 from sqlalchemy.orm import (
     ColumnProperty,
     DeclarativeBase,
@@ -21,6 +22,7 @@ from litestar.dto.factory.types import FieldDefinition
 from litestar.dto.factory.utils import get_model_type_hints
 from litestar.types.empty import Empty
 from litestar.utils.helpers import get_fully_qualified_class_name
+from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Collection, Generator
@@ -48,10 +50,10 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
     @classmethod
     def handle_orm_descriptor(
         cls,
-        extension_type: NotExtension | AssociationProxyExtensionType,
+        extension_type: NotExtension | AssociationProxyExtensionType | HybridExtensionType,
         orm_descriptor: InspectionAttr,
         key: str,
-        parsed_type: ParsedType,
+        model_type_hints: dict[str, ParsedType],
         model_name: str,
     ) -> FieldDefinition:
         raise NotImplementedError(f"Unsupported extension type: {extension_type}")
@@ -63,7 +65,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
         extension_type: NotExtension,
         key: str,
         orm_descriptor: InspectionAttr,
-        parsed_type: ParsedType,
+        model_type_hints: dict[str, ParsedType],
         model_name: str,
     ) -> FieldDefinition:
         if not isinstance(orm_descriptor, QueryableAttribute):
@@ -81,7 +83,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
 
         default, default_factory = _detect_defaults(elem)
 
-        if parsed_type.origin is Mapped:
+        if (parsed_type := model_type_hints[key]).origin is Mapped:
             (parsed_type,) = parsed_type.inner_types
         else:
             raise NotImplementedError(f"Expected 'Mapped' origin, got: '{parsed_type.origin}'")
@@ -102,13 +104,13 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
         extension_type: AssociationProxyExtensionType,
         key: str,
         orm_descriptor: InspectionAttr,
-        parsed_type: ParsedType,
+        model_type_hints: dict[str, ParsedType],
         model_name: str,
     ) -> FieldDefinition:
         if not isinstance(orm_descriptor, AssociationProxy):
             raise NotImplementedError(f"Unexpected descriptor type '{orm_descriptor}' for '{extension_type}'")
 
-        if parsed_type.origin is AssociationProxy:
+        if (parsed_type := model_type_hints[key]).origin is AssociationProxy:
             (parsed_type,) = parsed_type.inner_types
         else:
             raise NotImplementedError(f"Expected 'AssociationProxy' origin, got: '{parsed_type.origin}'")
@@ -117,6 +119,30 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
             name=key,
             default=Empty,
             parsed_type=parsed_type,
+            default_factory=None,
+            dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.READ_ONLY)),
+            unique_model_name=model_name,
+        )
+
+    @handle_orm_descriptor.register(HybridExtensionType)
+    @classmethod
+    def _(
+        cls,
+        extension_type: HybridExtensionType,
+        key: str,
+        orm_descriptor: InspectionAttr,
+        model_type_hints: dict[str, ParsedType],
+        model_name: str,
+    ) -> FieldDefinition:
+        if not isinstance(orm_descriptor, hybrid_property):
+            raise NotImplementedError(f"Unexpected descriptor type '{orm_descriptor}' for '{extension_type}'")
+
+        getter_sig = ParsedSignature.from_fn(orm_descriptor.fget, {})
+
+        return FieldDefinition(
+            name=key,
+            default=Empty,
+            parsed_type=getter_sig.return_type,
             default_factory=None,
             dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.READ_ONLY)),
             unique_model_name=model_name,
@@ -133,9 +159,9 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
         model_name = get_fully_qualified_class_name(model_type)
 
         for key, orm_descriptor in mapper.all_orm_descriptors.items():
-            parsed_type = model_type_hints[key]
-
-            yield cls.handle_orm_descriptor(orm_descriptor.extension_type, key, orm_descriptor, parsed_type, model_name)
+            yield cls.handle_orm_descriptor(
+                orm_descriptor.extension_type, key, orm_descriptor, model_type_hints, model_name
+            )
 
     @classmethod
     def detect_nested_field(cls, parsed_type: ParsedType) -> bool:

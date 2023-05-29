@@ -193,3 +193,43 @@ def get_handler() -> User:
     with create_test_client(route_handlers=[module.get_handler], debug=True) as client:
         response = client.get("/")
         assert response.json() == {"id": 1, "keywords": ["bar", "baz"]}
+
+
+def test_dto_with_hybrid_property(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from __future__ import annotations
+
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+
+from litestar import get
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+
+class Base(DeclarativeBase):
+    pass
+
+class Interval(Base):
+    __tablename__ = 'interval'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    start: Mapped[int]
+    end: Mapped[int]
+
+    @hybrid_property
+    def length(self) -> int:
+        return self.end - self.start
+
+dto = SQLAlchemyDTO[Interval]
+
+@get("/", return_dto=dto)
+def get_handler() -> Interval:
+    return Interval(id=1, start=1, end=3)
+"""
+    )
+
+    with create_test_client(route_handlers=[module.get_handler], debug=True) as client:
+        response = client.get("/")
+        assert response.json() == {"id": 1, "start": 1, "end": 3, "length": 2}
