@@ -379,7 +379,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         """
         if self.session.bind.dialect.name in {"spanner"}:
             return await self._list_and_count_basic(*filters, **kwargs)
-        return await self._list_and_count_basic(*filters, **kwargs)
+        return await self._list_and_count_window(*filters, **kwargs)
 
     async def _list_and_count_window(
         self,
@@ -918,7 +918,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         """
         if self.session.bind and self.session.bind.dialect.name in {"spanner+spanner"}:
             return self._list_and_count_basic(*filters, **kwargs)
-        return self._list_and_count_basic(*filters, **kwargs)
+        return self._list_and_count_window(*filters, **kwargs)
 
     def _list_and_count_window(
         self,

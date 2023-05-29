@@ -47,7 +47,7 @@ name = "alembic"
 version = "1.11.1"
 description = "A database migration tool for SQLAlchemy."
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "alembic-1.11.1-py3-none-any.whl", hash = "sha256:dc871798a601fab38332e38d6ddb38d5e734f60034baeb8e2db5b642fccd8ab8"},
@@ -2849,14 +2849,14 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "polyfactory"
-version = "2.1.2"
+version = "2.2.0"
 description = "Mock data generation factories"
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "polyfactory-2.1.2-py3-none-any.whl", hash = "sha256:d9ad95eee24d4624ab17274d1f5ac39f5dcea9f8f9350b5e064e68005fe7dad8"},
-    {file = "polyfactory-2.1.2.tar.gz", hash = "sha256:c934654082c811ea458f8a63e68d79201c2f4cda2228684cf479b2e8539353a3"},
+    {file = "polyfactory-2.2.0-py3-none-any.whl", hash = "sha256:b227f54ccd495426911e65f29bd0f53dc5904f4ae72d72325cf2c81c35afc35e"},
+    {file = "polyfactory-2.2.0.tar.gz", hash = "sha256:7886e30568c1834c0b74f83ac5b19d4777ff09d2c9ab9d10303a9ef62c275aa3"},
 ]
 
 [package.dependencies]
@@ -2865,6 +2865,7 @@ typing-extensions = "*"
 
 [package.extras]
 beanie = ["beanie[beanie]", "pydantic[beanie,odmantic,pydantic]"]
+msgspec = ["msgspec[msgspec]"]
 odmantic = ["odmantic[odmantic]", "pydantic[beanie,odmantic,pydantic]"]
 pydantic = ["pydantic[beanie,odmantic,pydantic]"]
 
@@ -3255,6 +3256,25 @@ files = [
     {file = "pypika-tortoise-0.1.6.tar.gz", hash = "sha256:d802868f479a708e3263724c7b5719a26ad79399b2a70cea065f4a4cadbebf36"},
     {file = "pypika_tortoise-0.1.6-py3-none-any.whl", hash = "sha256:2d68bbb7e377673743cff42aa1059f3a80228d411fbcae591e4465e173109fd8"},
 ]
+
+[[package]]
+name = "pyright"
+version = "1.1.310"
+description = "Command line wrapper for pyright"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pyright-1.1.310-py3-none-any.whl", hash = "sha256:55995ac76bf56cb7a44193b7b1ffafc573abab1f1dbc9f62d327f2a1768b3bda"},
+    {file = "pyright-1.1.310.tar.gz", hash = "sha256:9e95335a678db2717eaa0c867d61f9399e916289f4a9f47d993e0df74e7d7391"},
+]
+
+[package.dependencies]
+nodeenv = ">=1.6.0"
+
+[package.extras]
+all = ["twine (>=3.4.1)"]
+dev = ["twine (>=3.4.1)"]
 
 [[package]]
 name = "pytest"
@@ -4012,10 +4032,8 @@ description = "SQLAlchemy dialect integrated into Cloud Spanner database"
 category = "dev"
 optional = false
 python-versions = "*"
-files = [
-    {file = "sqlalchemy-spanner-1.6.1.tar.gz", hash = "sha256:61b26ce26aeb887fe85332641c91c4eaaafe00dd97f28b9026760a8a5d3aae72"},
-    {file = "sqlalchemy_spanner-1.6.1-py3-none-any.whl", hash = "sha256:38f0713f1fdea992ff67716649fae0a5838a41168938f5076545428f01669a7b"},
-]
+files = []
+develop = false
 
 [package.dependencies]
 alembic = "*"
@@ -4024,6 +4042,12 @@ sqlalchemy = ">=1.1.13"
 
 [package.extras]
 tracing = ["opentelemetry-api (>=1.1.0)", "opentelemetry-instrumentation (>=0.20b0)", "opentelemetry-sdk (>=1.1.0)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/cofin/python-spanner-sqlalchemy.git"
+reference = "sequence-fix"
+resolved_reference = "6f38714d8d8b1eea36b18c7e6010757639e79f24"
 
 [[package]]
 name = "sqlparse"
@@ -4701,4 +4725,4 @@ tortoise-orm = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "345962c68794b458968b2792c07f11b79bddfd007d2cb1e390f11c8a14116cce"
+content-hash = "519c883e5155cd51778de0c1d01d52053f272bff7d3d2e752882a5c4ae80a6c7"

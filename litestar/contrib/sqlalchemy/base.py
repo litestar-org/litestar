@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar, runtime_chec
 from uuid import UUID, uuid4
 
 from pydantic import AnyHttpUrl, AnyUrl, EmailStr
-from sqlalchemy import MetaData, Sequence, String
+from sqlalchemy import DateTime, MetaData, Sequence, String
 from sqlalchemy.event import listens_for
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -148,7 +148,14 @@ def create_registry() -> registry:
     meta = MetaData(naming_convention=convention)
     return registry(
         metadata=meta,
-        type_annotation_map={UUID: GUID, EmailStr: String, AnyUrl: String, AnyHttpUrl: String, dict: JSON},
+        type_annotation_map={
+            UUID: GUID,
+            EmailStr: String,
+            AnyUrl: String,
+            AnyHttpUrl: String,
+            dict: JSON,
+            datetime: DateTime,
+        },
     )
 
 

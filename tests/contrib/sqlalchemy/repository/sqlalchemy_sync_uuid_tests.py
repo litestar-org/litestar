@@ -33,6 +33,7 @@ def seed_db(
     with engine.begin() as conn:
         base.orm_registry.metadata.drop_all(conn)
         base.orm_registry.metadata.create_all(conn)
+    with engine.begin() as conn:
         for author in raw_authors_uuid:
             conn.execute(insert(UUIDAuthor).values(author))
 
