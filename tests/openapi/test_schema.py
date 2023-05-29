@@ -54,7 +54,7 @@ def test_process_schema_result() -> None:
         max_items=1,
         min_length=1,
         max_length=1,
-        regex="^[a-z]$",
+        pattern="^[a-z]$",
     )
     schemas: Dict[str, Schema] = {}
     schema = Schema()
@@ -251,7 +251,7 @@ class Foo(TypedDict):
 
 def test_create_schema_from_msgspec_annotated_type() -> None:
     class Lookup(msgspec.Struct):
-        id: Annotated[str, msgspec.Meta(max_length=16)]
+        id: Annotated[str, msgspec.Meta(max_length=16, examples=["example"], description="description", title="title")]
 
     schemas: Dict[str, Schema] = {}
     create_schema(
@@ -262,11 +262,15 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
     )
     schema = schemas["Lookup"]
     assert schema.properties["id"].type == OpenAPIType.STRING  # type: ignore
+    assert schema.properties["id"].examples == [Example(value="example")]  # type: ignore
+    assert schema.properties["id"].description == "description"  # type: ignore
+    assert schema.properties["id"].title == "title"  # type: ignore
+    assert schema.properties["id"].max_length == 16  # type: ignore
 
 
 def test_create_schema_for_pydantic_field() -> None:
     class Model(BaseModel):
-        value: str = Field(title="title", description="description")
+        value: str = Field(title="title", description="description", example="example", max_length=16)
 
     schemas: Dict[str, Schema] = {}
     create_schema(
@@ -279,3 +283,4 @@ def test_create_schema_for_pydantic_field() -> None:
 
     assert schema.properties["value"].description == "description"  # type: ignore
     assert schema.properties["value"].title == "title"  # type: ignore
+    assert schema.properties["value"].examples == [Example(value="example")]  # type: ignore

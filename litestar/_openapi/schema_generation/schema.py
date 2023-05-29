@@ -42,10 +42,11 @@ from litestar._signature.field import SignatureField
 from litestar.constants import UNDEFINED_SENTINELS
 from litestar.datastructures import UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.openapi.spec import Reference
+from litestar.openapi.spec import Example, Reference
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.schema import Schema, SchemaDataContainer
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
+from litestar.params import BodyKwarg, ParameterKwarg
 from litestar.serialization import encode_json
 from litestar.types import DataclassProtocol, Empty, TypedDictClass
 from litestar.utils.predicates import (
@@ -212,7 +213,7 @@ KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "min_length": "minLength",
     "max_items": "maxItems",
     "min_items": "minItems",
-    "regex": "pattern",
+    "pattern": "pattern",
     "title": "title",
     "description": "description",
     "examples": "examples",
@@ -546,6 +547,12 @@ def create_schema_for_pydantic_model(
     """
 
     field_type_hints = get_type_hints(field_type)
+    model_config = getattr(field_type, "__config__", getattr(field_type, "model_config", Empty))
+    title = getattr(model_config, "title", None) if not isinstance(model_config, dict) else model_config.get("title")
+    example = (
+        getattr(model_config, "example", None) if not isinstance(model_config, dict) else model_config.get("example")
+    )
+
     return Schema(
         required=sorted([field.alias or field.name for field in field_type.__fields__.values() if field.required]),
         properties={
@@ -560,7 +567,8 @@ def create_schema_for_pydantic_model(
             for f in field_type.__fields__.values()
         },
         type=OpenAPIType.OBJECT,
-        title=_get_type_schema_name(field_type),
+        title=title or _get_type_schema_name(field_type),
+        examples=[Example(example)] if example else None,
     )
 
 
@@ -855,9 +863,15 @@ def create_schema(
             plugin=plugins_for_annotation[0],
         )
 
-    elif is_pydantic_constrained_field(field.field_type):
+    elif is_pydantic_constrained_field(field.field_type) or (
+        isinstance(field.kwarg_model, (ParameterKwarg, BodyKwarg)) and field.kwarg_model.is_constrained
+    ):
         result = create_constrained_field_schema(
-            field_type=field.field_type, children=field.children, plugins=plugins, schemas=schemas
+            field_type=field.field_type,
+            children=field.children,
+            plugins=plugins,
+            schemas=schemas,
+            kwargs_model=field.kwarg_model,  # type: ignore[arg-type]
         )
 
     elif field.children and not field.is_generic:
