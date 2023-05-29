@@ -251,8 +251,7 @@ from litestar.exceptions import NotAuthorizedException
 
 
 async def is_authorized(connection: ASGIConnection, handler: BaseRouteHandler) -> None:
-    # validate authorization
-    # if not authorized, raise NotAuthorizedException
+    # validate authorization, if not authorized, raise NotAuthorizedException.
     raise NotAuthorizedException()
 
 
