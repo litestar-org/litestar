@@ -21,6 +21,12 @@ jobs:
         with:
           path: ~/.cache/pre-commit/
           key: pre-commit-4|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+      - name: Load mypy cache dir
+        id: mypy-cache
+        uses: actions/cache@v3
+        with:
+          path: .mypy_cache
+          key: v1-mypy-cache-${{ runner.os }}-${{ inputs.python-version }}
       - name: Execute Pre-Commit
         run: pre-commit run --show-diff-on-failure --color=always --all-files
 

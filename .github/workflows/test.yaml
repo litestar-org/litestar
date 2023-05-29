@@ -51,6 +51,12 @@ jobs:
           key: cache-${{ runner.os }}-${{ inputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
         run: poetry install --no-interaction
+      - name: Load cached 'pytest_cache'
+        id: pytest-cache
+        uses: actions/cache@v3
+        with:
+          path: .pytest_cache
+          key: v1-pytest-cache-${{ runner.os }}-${{ inputs.python-version }}
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
       - name: Test
