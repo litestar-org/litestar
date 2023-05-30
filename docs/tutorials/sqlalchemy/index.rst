@@ -1,29 +1,35 @@
-SQLAlchemy Plugins
+Improving the TODO app with SQLAlchemy
+--------------------------------------
+
+.. admonition:: Who is this tutorial for?
+    :class: info
+
+    This tutorial is aimed at developers who are already familiar with Litestar's core concepts such as route
+    handlers and dependency injection.
+
+    If you are new to Litestar, it is recommended to first follow the
+    `Developing a basic TODO application <../todo-app>`_ tutorial.
+
+Install SQLAlchemy
 ==================
 
-We here at Litestar love the SQLAlchemy project. It has stood the test of time, is well documented, has a large
-community, and first-class maintainers. For all of these reasons, is a great choice for any Python project that needs to
-work with a relational database, and we are proud to support it.
+To follow this tutorial, you will need SQLAlchemy installed. You can install it with ``pip install sqlalchemy``, or let
+Litestar install it for you by installing the ``sqlalchemy`` extra (e.g., ``pip install litestar[standard,sqlalchemy]``).
 
-Litestar comes with built-in support for `SQLAlchemy <https://docs.sqlalchemy.org/>`_ via
-a suite of :class:`Plugins <.contrib.sqlalchemy.plugins>`.
+What's in this tutorial?
+========================
 
-Features
---------
+This tutorial builds on the `TODO app tutorial <../todo-app>`_ by adding a database backend using
+`SQLAlchemy <https://www.sqlalchemy.org/>`_.
 
-* Managed `sessions <https://docs.sqlalchemy.org/en/20/orm/session.html>`_ (sync and async) including dependency injection
-* Managed `engine <https://docs.sqlalchemy.org/en/20/core/engines.html>`_ (sync and async) including dependency injection
-* Typed configuration objects
-* Support for deserializing into, and serializing from, SQLAlchemy models.
+We start by comparing a refactor of the TODO app that leverages SQLAlchemy for data persistence to the TODO app from the
+`TODO app tutorial <../todo-app>`_.
 
+We will then gradually improve on the design of our app by utilising more of Litestar's features, such as dependency
+injection, lifespan management, plugins, and Data Transfer Objects.
 
 .. toctree::
     :titlesonly:
     :hidden:
 
-    0-getting-started
-    1-data-modelling
-    2-plugin-configuration
-    3-defining-routes
-    4-configuring-the-application
-    5-recap
+    0-introduction

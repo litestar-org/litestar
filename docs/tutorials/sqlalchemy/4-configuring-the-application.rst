@@ -1,2 +1,0 @@
-Configuring the Application
-===========================
