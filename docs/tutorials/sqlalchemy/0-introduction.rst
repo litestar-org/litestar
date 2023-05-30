@@ -1,21 +1,21 @@
 Introduction
 ------------
 
-Here is a full script that shows how you can use SQLAlchemy with Litestar. In this app, we interacting with SQLAlchemy
-in the manner described by the
+We start with a full script that shows how you can use SQLAlchemy with Litestar. In this app, we interact with
+SQLAlchemy in the manner described by the
 `SQLAlchemy documentation <https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#synopsis-orm>`_, and so if you
 are looking for more information about any of the SQLAlchemy code, this will be a great place to start.
 
-Beyond that, we use a couple of Litestar features that we haven't looked at yet:
+You'll notice that we use a couple of Litestar features that you may not have encountered yet:
 
-1. Management and injection of application state
-2. Lifespan context managers
+1. Management and injection of :ref:`application state <application-state>`
+2. Use of a :ref:`Lifespan context manager <lifespan-context-managers>`
 
 And we will continue to learn about other Litestar features as we work through the tutorial, such as:
 
 1. Dependency injection
-2. Data Transfer Objects
-3. Plugins
+2. Plugins
+3. Data Transfer Objects
 
 The full app
 ============

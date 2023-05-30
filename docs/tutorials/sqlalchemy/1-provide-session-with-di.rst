@@ -2,7 +2,7 @@ Providing the session with DI
 -----------------------------
 
 In our original script, we had to repeat the logic to construct a session instance for every request type. This is not
-very DRY.
+very `DRY <https://en.wikipedia.org/wiki/Don%27t_repeat_yourself>`_.
 
 In this section, we'll use dependency injection to centralize the session creation logic and make it available to all
 handlers.
@@ -15,7 +15,7 @@ handlers.
 In the first script, the database session is created within each HTTP route handler function. However, in this script
 we use dependency injection to decouple creation of the session from the route handlers.
 
-This script introduces a new async generator function called ``provide_session()`` that creates a new SQLAlchemy
+This script introduces a new async generator function called ``provide_transaction()`` that creates a new SQLAlchemy
 session, begins a transaction, and handles any integrity errors that might raise from within the transaction.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
@@ -44,7 +44,7 @@ This is automatically provided by Litestar's dependency injection system at runt
 One final improvement in this script is exception handling. In the previous version, a
 :class:`litestar.exceptions.ClientException` is raised inside the ``add_item()`` handler if there's an integrity error
 raised during the insertion of the new to-do item. In our latest revision, we've been able to centralize this handling
-to occur inside the ``provide_session()`` function.
+to occur inside the ``provide_transaction()`` function.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
     :language: python

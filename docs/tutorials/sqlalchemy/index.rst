@@ -22,11 +22,14 @@ What's in this tutorial?
 This tutorial builds on the `TODO app tutorial <../todo-app>`_ by adding a database backend using
 `SQLAlchemy <https://www.sqlalchemy.org/>`_.
 
-We start by comparing a refactor of the TODO app that leverages SQLAlchemy for data persistence to the TODO app from the
+We start by comparing a refactored TODO app that leverages SQLAlchemy for data persistence to the TODO app from the
 `TODO app tutorial <../todo-app>`_.
 
 We will then gradually improve on the design of our app by utilising more of Litestar's features, such as dependency
 injection, lifespan management, plugins, and Data Transfer Objects.
+
+Contents
+========
 
 .. toctree::
     :titlesonly:

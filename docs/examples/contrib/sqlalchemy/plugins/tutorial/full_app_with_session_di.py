@@ -42,7 +42,7 @@ async def db_connection(app: Litestar) -> AsyncGenerator[None, None]:
 sessionmaker = async_sessionmaker(expire_on_commit=False)
 
 
-async def provide_session(state: State) -> AsyncGenerator[AsyncSession, None]:
+async def provide_transaction(state: State) -> AsyncGenerator[AsyncSession, None]:
     async with sessionmaker(bind=state.engine) as session:
         try:
             async with session.begin():
@@ -77,20 +77,20 @@ async def get_todo_list(done: Optional[bool], session: AsyncSession) -> List[Tod
 
 
 @get("/")
-async def get_list(db_session: AsyncSession, done: Optional[bool] = None) -> TodoCollectionType:
-    return [serialize_todo(todo) for todo in await get_todo_list(done, db_session)]
+async def get_list(transaction: AsyncSession, done: Optional[bool] = None) -> TodoCollectionType:
+    return [serialize_todo(todo) for todo in await get_todo_list(done, transaction)]
 
 
 @post("/")
-async def add_item(data: TodoType, db_session: AsyncSession) -> TodoType:
+async def add_item(data: TodoType, transaction: AsyncSession) -> TodoType:
     new_todo = TodoItem(title=data["title"], done=data["done"])
-    db_session.add(new_todo)
+    transaction.add(new_todo)
     return serialize_todo(new_todo)
 
 
 @put("/{item_title:str}")
-async def update_item(item_title: str, data: TodoType, db_session: AsyncSession) -> TodoType:
-    todo_item = await get_todo_by_title(item_title, db_session)
+async def update_item(item_title: str, data: TodoType, transaction: AsyncSession) -> TodoType:
+    todo_item = await get_todo_by_title(item_title, transaction)
     todo_item.title = data["title"]
     todo_item.done = data["done"]
     return serialize_todo(todo_item)
@@ -98,7 +98,6 @@ async def update_item(item_title: str, data: TodoType, db_session: AsyncSession)
 
 app = Litestar(
     [get_list, add_item, update_item],
-    dependencies={"db_session": provide_session},
+    dependencies={"transaction": provide_transaction},
     lifespan=[db_connection],
-    debug=True,
 )

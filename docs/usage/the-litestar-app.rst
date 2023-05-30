@@ -67,6 +67,7 @@ establish the connection, and another to close it, and then pass them to the Lit
     :caption: Startup and Shutdown
     :language: python
 
+.. _lifespan-context-managers:
 
 Lifespan context managers
 -------------------------
@@ -81,7 +82,7 @@ connection, around.
     :language: python
     :caption: Handling a database connection
 
-
+.. _application-state:
 
 Using Application State
 -----------------------

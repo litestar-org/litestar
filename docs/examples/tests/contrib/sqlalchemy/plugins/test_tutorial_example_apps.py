@@ -6,6 +6,9 @@ import pytest
 from docs.examples.contrib.sqlalchemy.plugins.tutorial.full_app_no_plugins import (
     app as no_plugins_app,
 )
+from docs.examples.contrib.sqlalchemy.plugins.tutorial.full_app_with_init_plugin import (
+    app as with_init_plugin_app,
+)
 from docs.examples.contrib.sqlalchemy.plugins.tutorial.full_app_with_serialization_plugin import (
     app as with_serialization_plugin_app,
 )
@@ -32,7 +35,9 @@ async def _clean_db() -> AsyncGenerator[None, None]:
         await conn.run_sync(Base.metadata.drop_all)
 
 
-@pytest.mark.parametrize("app", [with_session_di_app, no_plugins_app, with_serialization_plugin_app])
+@pytest.mark.parametrize(
+    "app", [with_session_di_app, no_plugins_app, with_serialization_plugin_app, with_init_plugin_app]
+)
 def test_no_plugins_full_app(app: Litestar) -> None:
     TODO = {"title": "Start writing TODO list", "done": True}
     TODO_LIST = [TODO]

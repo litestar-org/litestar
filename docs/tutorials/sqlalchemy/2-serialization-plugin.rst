@@ -16,7 +16,7 @@ We've simply imported the plugin and added it to our app's plugins list, and now
 SQLAlchemy data models directly to and from our handler.
 
 We've also been able to remove the ``TodoType`` and ``TodoCollectionType`` aliases, and the ``serialize_todo()``
-function, making implementation even more concise.
+function, making the implementation even more concise.
 
 Compare handlers before and after Serialization Plugin
 ======================================================
@@ -45,7 +45,7 @@ Next steps
 ==========
 
 In our application, we've had to build a bit of scaffolding to integrate SQLAlchemy with our application. We've had to
-define the ``db_connection()`` lifespan context manager, and the ``provide_session()`` dependency provider.
+define the ``db_connection()`` lifespan context manager, and the ``provide_transaction()`` dependency provider.
 
 Next we'll look at how the :class:`SQLAlchemyInitPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin>` can
 help us.
