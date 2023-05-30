@@ -70,6 +70,28 @@ and rollback upon failure.
             :language: python
             :linenos:
 
+Configuring the plugins
+#######################
+
+Both the :class:`SQLAlchemyAsyncConfig <litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig>` and the
+:class:`SQLAlchemySyncConfig <litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig>` have an ``engine_config``
+attribute that is used to configure the engine. The ``engine_config`` attribute is an instance of
+:class:`EngineConfig <litestar.contrib.sqlalchemy.plugins.EngineConfig>` and exposes all of the configuration options
+available to the SQLAlchemy engine.
+
+The :class:`SQLAlchemyAsyncConfig <litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig>` class and the
+:class:`SQLAlchemySyncConfig <litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig>` class also have a
+``session_config`` attribute that is used to configure the session. This is either an instance of
+:class:`AsyncSessionConfig <litestar.contrib.sqlalchemy.plugins.AsyncSessionConfig>` or
+:class:`SyncSessionConfig <litestar.contrib.sqlalchemy.plugins.SyncSessionConfig>` depending on the type of config
+object. These classes expose all of the configuration options available to the SQLAlchemy session.
+
+Finally, the :class:`SQLAlchemyAsyncConfig <litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig>` class and the
+:class:`SQLAlchemySyncConfig <litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig>` class expose configuration
+options to control their behavior.
+
+Consult the reference documentation for more information.
+
 Example
 =======
 
