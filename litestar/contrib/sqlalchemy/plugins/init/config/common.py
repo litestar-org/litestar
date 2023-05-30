@@ -185,12 +185,14 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
 
         engine_config = self.engine_config_dict
         try:
-            return self.create_engine_callable(self.connection_string, **engine_config)
+            self.engine_instance = self.create_engine_callable(self.connection_string, **engine_config)
         except ValueError:
             # likely due to a dialect that doesn't support json type
             del engine_config["json_deserializer"]
             del engine_config["json_serializer"]
-            return self.create_engine_callable(self.connection_string, **engine_config)
+            self.engine_instance = self.create_engine_callable(self.connection_string, **engine_config)
+
+        return self.engine_instance
 
     def create_session_maker(self) -> Callable[[], SessionT]:
         """Get a session maker. If none exists yet, create one.

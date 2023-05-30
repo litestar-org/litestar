@@ -8,8 +8,7 @@ Data Transfer Object Tutorial
     Data Transfer Objects (DTOs). It is assumed that you are already familiar with
     Litestar and fundamental concepts such as route handlers. If not, it is recommended
     to first follow the
-    `Developing a basic TODO application <tutorials/todo-app/3-assembling-the-app.html#final-application>`_
-    tutorial.
+    `Developing a basic TODO application <../todo-app>`_ tutorial.
 
 In this tutorial, we will walk through the process of modelling a simple data structure, and demonstrate how Litestar's
 DTO factories can be used to help us build flexible applications. Lets get started!

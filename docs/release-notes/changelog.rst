@@ -602,7 +602,7 @@
         providing support for managed synchronous and asynchronous sessions.
 
         .. seealso::
-            :doc:`/usage/plugins/sqlalchemy/index`
+            :doc:`/usage/contrib/sqlalchemy/index`
 
     .. change:: Attrs signature modelling
         :type: feature

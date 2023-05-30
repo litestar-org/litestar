@@ -236,7 +236,11 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             return self.dto_data_type(
                 backend=self,
                 data_as_builtins=transfer_data(
-                    dict, self.parse_builtins(builtins, connection_context), self.parsed_field_definitions, "data"
+                    dict,
+                    self.parse_builtins(builtins, connection_context),
+                    self.parsed_field_definitions,
+                    "data",
+                    self.context.parsed_type,
                 ),
             )
         return self.transfer_data_from_builtins(self.parse_builtins(builtins, connection_context))
@@ -250,7 +254,9 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         Returns:
             Instance or collection of ``model_type`` instances.
         """
-        return transfer_data(self.context.model_type, builtins, self.parsed_field_definitions, "data")
+        return transfer_data(
+            self.context.model_type, builtins, self.parsed_field_definitions, "data", self.context.parsed_type
+        )
 
     def populate_data_from_raw(self, raw: bytes, connection_context: ConnectionContext) -> Any:
         """Parse raw bytes into instance of `model_type`.
@@ -266,11 +272,19 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             return self.dto_data_type(
                 backend=self,
                 data_as_builtins=transfer_data(
-                    dict, self.parse_raw(raw, connection_context), self.parsed_field_definitions, "data"
+                    dict,
+                    self.parse_raw(raw, connection_context),
+                    self.parsed_field_definitions,
+                    "data",
+                    self.context.parsed_type,
                 ),
             )
         return transfer_data(
-            self.context.model_type, self.parse_raw(raw, connection_context), self.parsed_field_definitions, "data"
+            self.context.model_type,
+            self.parse_raw(raw, connection_context),
+            self.parsed_field_definitions,
+            "data",
+            self.context.parsed_type,
         )
 
     def encode_data(self, data: Any, connection_context: ConnectionContext) -> LitestarEncodableType:
@@ -284,7 +298,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             Encoded data.
         """
         return transfer_data(
-            self.transfer_model_type, data, self.parsed_field_definitions, "return"  # type: ignore[arg-type]
+            self.transfer_model_type, data, self.parsed_field_definitions, "return", self.context.parsed_type  # type: ignore[arg-type]
         )
 
     def create_openapi_schema(self, generate_examples: bool, schemas: dict[str, Schema]) -> Reference | Schema:
