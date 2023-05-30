@@ -189,5 +189,5 @@ in-memory async queue.
 
 This solution works well if the system does not need to rely on complex behaviour, such as a retry
 mechanism, persistence, or scheduling/cron. For these more complex use cases, users should implement their own backend
-using either a DB/Key store that supports events (Redis, Postgres etc.), or a message broker, job queue or task queue
+using either a DB/Key store that supports events (Redis, Postgres, etc.), or a message broker, job queue, or task queue
 technology.
