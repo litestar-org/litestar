@@ -10,7 +10,7 @@ handlers.
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
     :language: python
     :linenos:
-    :emphasize-lines: 46-57,82-83,87-89,94-95,103
+    :emphasize-lines: 45-56,81-82,86-88,93-94,102
 
 In the first script, the database session is created within each HTTP route handler function. However, in this script
 we use dependency injection to decouple creation of the session from the route handlers.
@@ -28,7 +28,7 @@ That function is declared as a dependency to the Litestar application, using the
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
     :language: python
     :linenos:
-    :lines: 99-105
+    :lines: 99-104
     :emphasize-lines: 3
 
 In the route handlers, the database session is injected by declaring the ``db_session`` name as a function argument.

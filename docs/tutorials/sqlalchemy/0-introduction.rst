@@ -53,7 +53,7 @@ of it when we are done. This context manager is added to the applicaton's ``life
     /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
-    :lines: 29-41,100
+    :lines: 29-41,99
 
 Application state
 +++++++++++++++++
@@ -84,14 +84,15 @@ Serialization
 Now that we are using SQLAlchemy models, Litestar cannot automatically handle (de)serialization of our data. We have
 to convert the SQLAlchemy models to a type that Litestar can serialize. This example introduces two type aliases,
 ``TodoType`` and ``TodoCollectionType`` to help us represent this data at the boundaries of our handlers. It also
-introduces the ``serialize_todo()`` to help us convert our data to and from the ``TodoItem`` type.
+introduces the ``serialize_todo()`` to help us convert our data from the ``TodoItem`` type to a type that is
+serializable by Litestar.
 
 .. literalinclude::
     /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
     :lines: 2-3,14-16,45-48,89-98
-    :emphasize-lines: 3,4,7,8,12,18
+    :emphasize-lines: 3,4,6,7,11,17
 
 Behavior
 ++++++++

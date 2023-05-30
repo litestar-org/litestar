@@ -33,3 +33,4 @@ injection, lifespan management, plugins, and Data Transfer Objects.
 
     0-introduction
     1-provide-session-with-di
+    2-serialization-plugin
