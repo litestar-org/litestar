@@ -68,7 +68,7 @@ nested models.
     :emphasize-lines: 6,10,31,32,35
     :linenos:
 
-Examining the output of the above POST request, we can see that the user's ID, the ID of the user's address field and
+Examining the output of the above POST request, we can see that the user's ID, the ID of the user's address field, and
 the user's street address are excluded from the serialized response.
 
 Renaming fields
@@ -93,7 +93,7 @@ Fields can also be renamed using a renaming strategy that will be applied to all
 
 Fields that are directly renamed using `rename_fields` mapping will be excluded from `rename_strategy`.
 
-The rename strategy either accepts one of the pre-defined strategies: "camel", "pascal", "upper", "lower" or it can be provided a callback that accepts the field name as an argument and should return a string.
+The rename strategy either accepts one of the pre-defined strategies: "camel", "pascal", "upper", "lower", or it can be provided a callback that accepts the field name as an argument and should return a string.
 
 Type checking
 -------------

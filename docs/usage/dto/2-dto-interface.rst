@@ -65,7 +65,7 @@ This method is called when generating the OpenAPI schema for the handler. It sho
 This class method is called for each handler that the DTO type is registered upon. It receives an instance of
 :class:`HandlerContext <litestar.dto.interface.HandlerContext>` which contains information about the handler and the
 DTOs application including whether the DTO is being applied to "data" or "return" type of the handler, the type
-annotation, the handler ID and request encoding for the handler.
+annotation, the handler ID, and request encoding for the handler.
 
 DTO implementations should use the type annotation information to confirm that the DTO is being applied to a supported
 type.
