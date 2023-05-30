@@ -3,18 +3,13 @@ from __future__ import annotations
 from typing import AsyncGenerator
 
 import pytest
-from docs.examples.contrib.sqlalchemy.plugins.tutorial.full_app_no_plugins import (
-    app as no_plugins_app,
-)
-from docs.examples.contrib.sqlalchemy.plugins.tutorial.full_app_with_init_plugin import (
-    app as with_init_plugin_app,
-)
+from docs.examples.contrib.sqlalchemy.plugins.tutorial.full_app_no_plugins import app as no_plugins_app
+from docs.examples.contrib.sqlalchemy.plugins.tutorial.full_app_with_init_plugin import app as with_init_plugin_app
+from docs.examples.contrib.sqlalchemy.plugins.tutorial.full_app_with_plugin import app as with_plugin_app
 from docs.examples.contrib.sqlalchemy.plugins.tutorial.full_app_with_serialization_plugin import (
     app as with_serialization_plugin_app,
 )
-from docs.examples.contrib.sqlalchemy.plugins.tutorial.full_app_with_session_di import (
-    app as with_session_di_app,
-)
+from docs.examples.contrib.sqlalchemy.plugins.tutorial.full_app_with_session_di import app as with_session_di_app
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from litestar import Litestar
@@ -36,7 +31,7 @@ async def _clean_db() -> AsyncGenerator[None, None]:
 
 
 @pytest.mark.parametrize(
-    "app", [with_session_di_app, no_plugins_app, with_serialization_plugin_app, with_init_plugin_app]
+    "app", [with_session_di_app, no_plugins_app, with_serialization_plugin_app, with_init_plugin_app, with_plugin_app]
 )
 def test_no_plugins_full_app(app: Litestar) -> None:
     TODO = {"title": "Start writing TODO list", "done": True}

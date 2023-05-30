@@ -26,7 +26,7 @@ We start by comparing a refactored TODO app that leverages SQLAlchemy for data p
 `TODO app tutorial <../todo-app>`_.
 
 We will then gradually improve on the design of our app by utilising more of Litestar's features, such as dependency
-injection, lifespan management, plugins, and Data Transfer Objects.
+injection, and plugins.
 
 Contents
 ========
@@ -37,3 +37,5 @@ Contents
     0-introduction
     1-provide-session-with-di
     2-serialization-plugin
+    3-init-plugin
+    4-final-touches-and-recap

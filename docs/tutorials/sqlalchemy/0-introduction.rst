@@ -15,7 +15,6 @@ And we will continue to learn about other Litestar features as we work through t
 
 1. Dependency injection
 2. Plugins
-3. Data Transfer Objects
 
 The full app
 ============
@@ -58,8 +57,8 @@ of it when we are done. This context manager is added to the applicaton's ``life
 Application state
 +++++++++++++++++
 
-We see two examples of access and use of application state in this example. The first is in the ``db_connection()``
-context manager, where we use the ``app.state`` object to store the engine.
+We see two examples of access and use of application state. The first is in the ``db_connection()`` context manager,
+where we use the ``app.state`` object to store the engine.
 
 .. literalinclude::
     /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
