@@ -3,8 +3,15 @@ from __future__ import annotations
 from typing import AsyncGenerator
 
 import pytest
+from docs.examples.contrib.sqlalchemy.plugins.tutorial.full_app_no_plugins import (
+    app as no_plugins_app,
+)
+from docs.examples.contrib.sqlalchemy.plugins.tutorial.full_app_with_session_di import (
+    app as with_session_di_app,
+)
 from sqlalchemy.ext.asyncio import create_async_engine
 
+from litestar import Litestar
 from litestar.testing import TestClient
 
 
@@ -22,11 +29,8 @@ async def _clean_db() -> AsyncGenerator[None, None]:
         await conn.run_sync(Base.metadata.drop_all)
 
 
-def test_no_plugins_full_app() -> None:
-    from docs.examples.contrib.sqlalchemy.plugins.tutorial.full_app_no_plugins import (
-        app,
-    )
-
+@pytest.mark.parametrize("app", [with_session_di_app, no_plugins_app])
+def test_no_plugins_full_app(app: Litestar) -> None:
     TODO = {"title": "Start writing TODO list", "done": True}
     TODO_LIST = [TODO]
 

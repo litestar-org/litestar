@@ -105,7 +105,5 @@ Next steps
 
 Lets start cleaning this app up a little.
 
-One of the niceties that we've lost in this example is being able to receive and return data to/from our handlers as
-instances of our data model. In the original TODO application, we modelled with Python dataclasses which are natively
-supported for (de)serialization by Litestar. In the next section, we will look at how we can get this functionality
-back!
+One of the standout issues is that we repeat the logic to create a database session in every handler. This is
+something that we can fix with dependency injection.

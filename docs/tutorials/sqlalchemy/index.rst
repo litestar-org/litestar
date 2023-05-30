@@ -30,6 +30,6 @@ injection, lifespan management, plugins, and Data Transfer Objects.
 
 .. toctree::
     :titlesonly:
-    :hidden:
 
     0-introduction
+    1-provide-session-with-di
