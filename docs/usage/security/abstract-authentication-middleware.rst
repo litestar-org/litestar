@@ -40,7 +40,7 @@ Example: Implementing a JWTAuthenticationMiddleware
 
 Since the above is quite hard to grasp in the abstract, lets see an example.
 
-We start off by creating a user model. It can be implemented using pydantic, and ODM, ORM etc. For the sake of the
+We start off by creating a user model. It can be implemented using pydantic, and ODM, ORM, etc. For the sake of the
 example here lets say it's a pydantic model:
 
 .. code-block:: python
