@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from typing import Any, AsyncGenerator, Dict, List, Optional
+from typing import AsyncGenerator, List, Optional
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, NoResultFound
@@ -7,12 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, get, post, put
+from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
 from litestar.datastructures import State
 from litestar.exceptions import ClientException, NotFoundException
 from litestar.status_codes import HTTP_409_CONFLICT
-
-TodoType = Dict[str, Any]
-TodoCollectionType = List[TodoType]
 
 
 class Base(DeclarativeBase):
@@ -42,8 +40,16 @@ async def db_connection(app: Litestar) -> AsyncGenerator[None, None]:
 sessionmaker = async_sessionmaker(expire_on_commit=False)
 
 
-def serialize_todo(todo: TodoItem) -> TodoType:
-    return {"title": todo.title, "done": todo.done}
+async def provide_session(state: State) -> AsyncGenerator[AsyncSession, None]:
+    async with sessionmaker(bind=state.engine) as session:
+        try:
+            async with session.begin():
+                yield session
+        except IntegrityError as exc:
+            raise ClientException(
+                status_code=HTTP_409_CONFLICT,
+                detail=str(exc),
+            )
 
 
 async def get_todo_by_title(todo_name, session: AsyncSession) -> TodoItem:
@@ -65,35 +71,28 @@ async def get_todo_list(done: Optional[bool], session: AsyncSession) -> List[Tod
 
 
 @get("/")
-async def get_list(state: State, done: Optional[bool] = None) -> TodoCollectionType:
-    async with sessionmaker(bind=state.engine) as session:
-        return [serialize_todo(todo) for todo in await get_todo_list(done, session)]
+async def get_list(db_session: AsyncSession, done: Optional[bool] = None) -> List[TodoItem]:
+    return get_todo_list(done, db_session)
 
 
 @post("/")
-async def add_item(data: TodoType, state: State) -> TodoType:
-    new_todo = TodoItem(title=data["title"], done=data["done"])
-    async with sessionmaker(bind=state.engine) as session:
-        try:
-            async with session.begin():
-                session.add(new_todo)
-        except IntegrityError:
-            raise ClientException(
-                status_code=HTTP_409_CONFLICT,
-                detail=f"TODO {new_todo.title!r} already exists",
-            )
-
-    return serialize_todo(new_todo)
+async def add_item(data: TodoItem, db_session: AsyncSession) -> TodoItem:
+    db_session.add(data)
+    return data
 
 
 @put("/{item_title:str}")
-async def update_item(item_title: str, data: TodoType, state: State) -> TodoType:
-    async with sessionmaker(bind=state.engine) as session:
-        async with session.begin():
-            todo_item = await get_todo_by_title(item_title, session)
-            todo_item.title = data["title"]
-            todo_item.done = data["done"]
-    return serialize_todo(todo_item)
+async def update_item(item_title: str, data: TodoItem, db_session: AsyncSession) -> TodoItem:
+    todo_item = await get_todo_by_title(item_title, db_session)
+    todo_item.title = data.title
+    todo_item.done = data.done
+    return todo_item
 
 
-app = Litestar([get_list, add_item, update_item], lifespan=[db_connection])
+app = Litestar(
+    [get_list, add_item, update_item],
+    dependencies={"db_session": provide_session},
+    lifespan=[db_connection],
+    plugins=[SQLAlchemySerializationPlugin()],
+    debug=True,
+)

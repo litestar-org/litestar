@@ -22,8 +22,7 @@ class Base(DeclarativeBase):
 class TodoItem(Base):
     __tablename__ = "todo_items"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(unique=True)
+    title: Mapped[str] = mapped_column(primary_key=True)
     done: Mapped[bool]
 
 
