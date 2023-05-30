@@ -5,5 +5,5 @@ Tutorials
     :hidden:
 
     todo-app/index
-    dto-tutorial/index
     sqlalchemy/index
+    dto-tutorial/index
