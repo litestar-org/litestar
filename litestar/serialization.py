@@ -135,9 +135,7 @@ def dec_hook(type_: Any, value: Any) -> Any:  # pragma: no cover
     """
     if issubclass(type_, BaseModel):
         return type_.parse_obj(value)
-    if issubclass(type_, (Path, PurePath)):
-        return type_(value)
-    raise TypeError(f"Unsupported type: {type(value)!r}")
+    return type_(value)
 
 
 _msgspec_json_encoder = msgspec.json.Encoder(enc_hook=default_serializer)
