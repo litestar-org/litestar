@@ -15,7 +15,7 @@ Configuration Exceptions
 
 For missing extra dependencies, Litestar will raise either
 :class:`MissingDependencyException <litestar.exceptions.MissingDependencyException>`. For example, if you try to use the
-:doc:`SQLAlchemyPlugin </usage/plugins/sqlalchemy/index>` without having SQLAlchemy installed, this will be raised when you
+:doc:`SQLAlchemyPlugin </usage/contrib/sqlalchemy/plugins/index>` without having SQLAlchemy installed, this will be raised when you
 start the application.
 
 For other configuration issues, Litestar will raise
