@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import TYPE_CHECKING, Dict, Optional, Sequence
 
 import pytest
 from typing_extensions import Annotated
@@ -302,3 +302,18 @@ def test_url_encoded_form_data_patch_request() -> None:
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
         assert response.json() == {"name": "John"}
+
+
+def test_dto_with_generic_sequence_annotations() -> None:
+    @dataclass
+    class User:
+        name: str
+        age: int
+
+    @post(dto=DataclassDTO[User], signature_namespace={"User": User})
+    def handler(data: Sequence[User]) -> Sequence[User]:
+        return data
+
+    with create_test_client(route_handlers=[handler], debug=True) as client:
+        response = client.post("/", json=[{"name": "John", "age": 42}])
+        assert response.json() == [{"name": "John", "age": 42}]
