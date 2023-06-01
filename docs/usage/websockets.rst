@@ -4,7 +4,7 @@ WebSockets
 
 Handling WebSocket in an application often involves dealing with low level constructs
 such as the socket itself, setting up a loop and listening for incoming data, handling
-exceptions and parsing incoming and serializing outgoing data. In addition to the
+exceptions, and parsing incoming and serializing outgoing data. In addition to the
 low-level :class:`websocket route handler <.handlers.websocket>`, Litestar offers two
 high level interfaces:
 
@@ -48,7 +48,7 @@ Receiving data
 
 Data can be received in listener via the ``data`` parameter. The data passed to this
 will be converted / parsed according to the given type annotation and supports
-:class:`str`, :class:`bytes` or arbitrary :class:`dict`\ s / or :class:`list`\ s in the
+:class:`str`, :class:`bytes`, or arbitrary :class:`dict`\ s / or :class:`list`\ s in the
 form of JSON.
 
 .. tab-set::
@@ -83,7 +83,7 @@ Similar to receiving data, type annotations configure how the data is being hand
 Values are are not :class:`str` or :class:`bytes` are assumed to be JSON encodable and
 will be serialized accordingly before being sent. This serialization is available for
 all data types currently supported by Litestar (
-:doc:`dataclasses <python:library/dataclasses>`\ es, :class:`TypedDict <typing.TypedDict>`,
+:doc:`dataclasses <python:library/dataclasses>`\ , :class:`TypedDict <typing.TypedDict>`,
 :class:`NamedTuple <typing.NamedTuple>`,  :class:`msgspec.Struct`, etc.).
 
 

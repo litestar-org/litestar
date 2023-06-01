@@ -27,7 +27,7 @@ Registering Routes
 -------------------
 
 At the root of every Litestar application there is an instance of the :class:`Litestar <litestar.app.Litestar>` class,
-on which the root level controllers, routers and route handler functions are registered using the ``route_handlers`` kwarg:
+on which the root level controllers, routers, and route handler functions are registered using the ``route_handlers`` kwarg:
 
 .. code-block:: python
 
@@ -92,8 +92,8 @@ by the Litestar app instance:
    app.register(sub_path_handler)
 
 Since the app instance is attached to all instances of :class:`ASGIConnection <.connection.base.ASGIConnection>`,
-:class:`Request <.connection.request.Request>` and :class:`WebSocket <.connection.websocket.WebSocket>` objects, you can in
-effect call the :meth:`register <.router.Router.register>` method inside route handler functions, middlewares and even
+:class:`Request <.connection.request.Request>`, and :class:`WebSocket <.connection.websocket.WebSocket>` objects, you can in
+effect call the :meth:`register <.router.Router.register>` method inside route handler functions, middlewares, and even
 injected dependencies. For example:
 
 .. code-block:: python
@@ -126,7 +126,7 @@ Routers
 -------
 
 Routers are instances of :class:`litestar.router.Router <.router.Router>`, which is the base class for the
-:class:`Litestar app <.app.Litestar>` itself. A router can register Controllers, route handler functions and other routers,
+:class:`Litestar app <.app.Litestar>` itself. A router can register Controllers, route handler functions, and other routers,
 similarly to the Litestar constructor:
 
 .. code-block:: python
@@ -233,7 +233,7 @@ what is passed to the router is not a class instance but rather the class itself
 the controller, which ensures encapsulation.
 
 Therefore, in the above example, three different instances of ``MyController`` will be created, each mounted on a
-different sub-path, e.g. ``/internal/controller``\ , ``/partner/controller`` and ``/consumer/controller``.
+different sub-path, e.g. ``/internal/controller``\ , ``/partner/controller``, and ``/consumer/controller``.
 
 Registering standalone route handlers multiple times
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -258,7 +258,7 @@ You can also register standalone route handlers multiple times:
 
 When the handler function is registered, it's actually copied. Thus, each router has its own unique instance of
 the route handler. Path behaviour is identical to that of controllers above, namely, the route handler
-function will be accessible in the following paths: ``/internal/handler`` , ``/partner/handler`` and ``/consumer/handler``.
+function will be accessible in the following paths: ``/internal/handler`` , ``/partner/handler``, and ``/consumer/handler``.
 
 .. attention::
 
@@ -278,8 +278,8 @@ requests addressed to a given path.
     :language: python
 
 
-The handler function will receive all requests with an url that begins with ``/some/sub-path`` , e.g. ``/some/sub-path`` and
-``/some/sub-path/abc`` and ``/some/sub-path/123/another/sub-path`` etc.
+The handler function will receive all requests with an url that begins with ``/some/sub-path`` , e.g. ``/some/sub-path``,
+``/some/sub-path/abc``, ``/some/sub-path/123/another/sub-path``, etc.
 
 .. admonition:: Technical Details
     :class: info

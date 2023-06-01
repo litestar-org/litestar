@@ -240,7 +240,7 @@ Dependency overrides
 While FastAPI includes a mechanism to override dependencies on an existing application object,
 Litestar promotes architectural solutions to the issue this is aimed to solve. Therefore, overriding
 dependencies in Litestar is strictly supported at definition time, i.e. when you’re defining
-handlers, controllers, routers and applications. Dependency overrides are fundamentally
+handlers, controllers, routers, and applications. Dependency overrides are fundamentally
 the same idea as mocking and should be approached with the same caution and used sparingly
 instead of being the default.
 

@@ -8,7 +8,7 @@ In general, Litestar will raise two types of exceptions:
 
 - Exceptions that arise during application init, which fall
 - Exceptions that are raised as part of the normal application flow, i.e.
-  exceptions in route handlers, dependencies and middleware, that should be serialized in some fashion.
+  exceptions in route handlers, dependencies, and middleware, that should be serialized in some fashion.
 
 Configuration Exceptions
 ------------------------
@@ -102,7 +102,7 @@ Exception handling layers
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Since Litestar allows users to define both exception handlers and middlewares in a layered fashion, i.e. on individual
-route handlers, controllers, routers or the app layer, multiple layers of exception handlers are required to ensure that
+route handlers, controllers, routers, or the app layer, multiple layers of exception handlers are required to ensure that
 exceptions are handled correctly:
 
 

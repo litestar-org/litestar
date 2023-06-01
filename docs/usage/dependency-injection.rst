@@ -58,7 +58,7 @@ the application:
 
 The above example illustrates how dependencies are declared on the different layers of the application.
 
-Dependencies can be either callables - sync or async functions, methods or class instances that implement the
+Dependencies can be either callables - sync or async functions, methods, or class instances that implement the
 :meth:`object.__call__` method, or classes. These are in turn wrapped inside an instance of the
 :class:`Provide <.di.Provide>` class.
 
@@ -284,7 +284,7 @@ it in ``Provide``:
 .. attention::
 
     If :class:`Provide.use_cache <.di.Provide>` is ``True``, the return value of the function will be memoized the first
-    time it is called and then will be used. There is no sophisticated comparison of kwargs, LRU implementation etc., so
+    time it is called and then will be used. There is no sophisticated comparison of kwargs, LRU implementation, etc., so
     you should be careful when you choose to use this option. Note that dependencies will only be called once per
     request, even with ``Provide.use_cache`` set to ``False``.
 

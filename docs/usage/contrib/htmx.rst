@@ -53,13 +53,13 @@ an :class:`HTMXTemplate <litestar.contrib.htmx.response.HTMXTemplate>` response:
             trigger_event="showMessage",  # trigger event name
             params={"alert": "Confirm your Choice."},  # parameter to pass to the event
             after="receive"  #  when to trigger event,
-            # possible values 'receive', 'settle' and 'swap'
+            # possible values 'receive', 'settle', and 'swap'
         )
 
 .. note::
     - Return type is litestar's ``Template`` and not ``HTMXTemplate``.
-    - ``trigger_event``, ``params`` and ``after parameters`` are linked to one another.
-    - If you are triggering an event then ``after`` is required and it must be one of ``receive``, ``settle`` or ``swap``.
+    - ``trigger_event``, ``params``, and ``after parameters`` are linked to one another.
+    - If you are triggering an event then ``after`` is required and it must be one of ``receive``, ``settle``, or ``swap``.
 
 HTMX provides two types of responses - one that doesn't allow changes to the DOM and one that does.
 Litestar supports both of these:
@@ -99,7 +99,7 @@ Use :class:`ClientRefresh  <litestar.contrib.htmx.response.ClientRefresh>` to fo
 
 Use :class:`HXLocation <litestar.contrib.htmx.response.HXLocation>` to redirect to a new location without page reload.
 
-- Note: this class provides the ability to change ``target``, ``swapping`` method, the sent ``values`` and the ``headers``.)
+- Note: this class provides the ability to change ``target``, ``swapping`` method, the sent ``values``, and the ``headers``.)
 
 .. code-block:: python
 
@@ -167,5 +167,5 @@ Use :class:`TriggerEvent <litestar.contrib.htmx.response.TriggerEvent>` to carry
             content="Success!",
             name="showMessage",
             params={"attr": "value"},
-            after="receive",  # possible values 'receive', 'settle' and 'swap'
+            after="receive",  # possible values 'receive', 'settle', and 'swap'
         )

@@ -52,7 +52,7 @@ It can be any callable accepting a :class:`Request <.connection.Request>` as its
 and does not return any value.
 
 This hook is meant for data post-processing, transmission of data to third party
-services, gathering of metrics etc.
+services, gathering of metrics, etc.
 
 .. literalinclude:: /examples/lifecycle_hooks/after_response.py
     :language: python

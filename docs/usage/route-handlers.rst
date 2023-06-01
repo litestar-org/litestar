@@ -89,7 +89,7 @@ kwargs are inspected by Litestar and then injected into the request handler.
 
 The following sources can be accessed using annotated function kwargs:
 
-- :ref:`path, query, header and cookie parameters <usage/parameters:the parameter function>`
+- :ref:`path, query, header, and cookie parameters <usage/parameters:the parameter function>`
 - :doc:`/usage/request-data`
 - :doc:`injected dependencies </usage/dependency-injection>`
 
@@ -245,10 +245,10 @@ These are used exactly like ``route`` with the sole exception that you cannot co
        ...
 
 Although these decorators are merely subclasses of :class:`HTTPRouteHandler <litestar.handlers.HTTPRouteHandler>`
-that pre-set the ``http_method``, using *get*, *patch*, *put*, *delete* or *post* instead of *route* makes the
+that pre-set the ``http_method``, using *get*, *patch*, *put*, *delete*, or *post* instead of *route* makes the
 code clearer and simpler.
 
-Furthermore, in the OpenAPI specification each unique combination of http verb (e.g. "GET", "POST" etc.) and path is
+Furthermore, in the OpenAPI specification each unique combination of http verb (e.g. "GET", "POST", etc.) and path is
 regarded as a distinct `operation <https://spec.openapis.org/oas/latest.html#operation-object>`_\ , and each operation
 should be distinguished by a unique ``operation_id`` and optimally also have a ``summary`` and ``description`` sections.
 
@@ -263,7 +263,7 @@ A WebSocket connection can be handled with a :func:`websocket <litestar.handlers
 
 .. note::
     The websocket handler is a low level approach, requiring to handle the socket directly,
-    and dealing with keeping it open, exceptions, client disconnects and content negotiation.
+    and dealing with keeping it open, exceptions, client disconnects, and content negotiation.
 
     For a more high level approach to handling WebSockets, see :doc:`/usage/websockets`
 

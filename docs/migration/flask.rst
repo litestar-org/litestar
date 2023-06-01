@@ -13,7 +13,7 @@ The async support in Flask is limited to individual endpoints.
 What this means is that while you can use ``async def`` to define endpoints in Flask,
 **they will not run concurrently** - requests will still be processed one at a time.
 Flask handles asynchronous endpoints by creating an event loop for each request, run the
-endpoint function in it and then return its result.
+endpoint function in it, and then return its result.
 
 ASGI on the other hand does the exact opposite; It runs everything in a central event loop.
 Litestar then adds support for synchronous functions by running them in a non-blocking way
@@ -259,7 +259,7 @@ Request methods
 
 ..  seealso::
 
-    To learn more about requests,, check out these chapters in the documentation
+    To learn more about requests, check out these chapters in the documentation
 
     * :doc:`/usage/request-data`
     * :doc:`/reference/connection`
