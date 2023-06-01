@@ -1,37 +1,22 @@
+from dataclasses import dataclass
 from types import ModuleType
-from typing import Any, Callable, Iterable, List, Literal, Optional, Sequence, Set, Type
+from typing import Any, Callable, Iterable, List, Literal, Optional, Sequence
 from unittest.mock import MagicMock
 
 import pytest
+from attr import define
 from pydantic import BaseModel
+from typing_extensions import TypedDict
 
-from litestar import get
-from litestar._signature import SignatureModel, create_signature_model
-from litestar._signature.models.attrs_signature_model import AttrsSignatureModel
+from litestar import get, post
+from litestar._signature import create_signature_model
 from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 from litestar.params import Dependency, Parameter
-from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_500_INTERNAL_SERVER_ERROR
+from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import RequestFactory, TestClient, create_test_client
 from litestar.types.helper_types import OptionalSequence
 from litestar.utils.signature import ParsedSignature
-
-
-def create_signature_model_for_test(
-    fn: Callable,
-    dependency_name_set: Set[str],
-    preferred_validation_backend: Literal["attrs", "pydantic"],
-    parsed_signature: ParsedSignature,
-) -> Type[SignatureModel]:
-    model = create_signature_model(
-        fn=fn,
-        dependency_name_set=dependency_name_set,
-        preferred_validation_backend=preferred_validation_backend,
-        parsed_signature=parsed_signature,
-    )
-    if preferred_validation_backend == "attrs":
-        assert isinstance(model, AttrsSignatureModel)
-    return model
 
 
 @pytest.mark.parametrize("preferred_validation_backend", ("attrs", "pydantic"))
@@ -44,7 +29,7 @@ def test_parses_values_from_connection_kwargs_without_plugin(
     def fn(a: MyModel) -> None:
         pass
 
-    model = create_signature_model_for_test(
+    model = create_signature_model(
         fn=fn,
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
@@ -61,7 +46,7 @@ def test_parses_values_from_connection_kwargs_raises(
     def fn(a: int) -> None:
         pass
 
-    model = create_signature_model_for_test(
+    model = create_signature_model(
         fn=fn,
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
@@ -79,7 +64,7 @@ def test_create_function_signature_model_parameter_parsing(
     def my_fn(a: int, b: str, c: Optional[bytes], d: bytes = b"123", e: Optional[dict] = None) -> None:
         pass
 
-    model = create_signature_model_for_test(
+    model = create_signature_model(
         fn=my_fn.fn.value,
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
@@ -107,7 +92,7 @@ def test_create_signature_validation(preferred_validation_backend: Literal["attr
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        create_signature_model_for_test(
+        create_signature_model(
             fn=my_fn.fn.value,
             dependency_name_set=set(),
             preferred_validation_backend=preferred_validation_backend,
@@ -123,7 +108,7 @@ def test_create_function_signature_model_ignore_return_annotation(
     async def health_check() -> None:
         return None
 
-    signature_model_type = create_signature_model_for_test(
+    signature_model_type = create_signature_model(
         fn=health_check.fn.value,
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
@@ -169,7 +154,12 @@ def test_dependency_validation_failure_raises_500(
 
 @pytest.mark.parametrize(
     "preferred_validation_backend, error_extra",
-    (("attrs", [{"key": "param", "message": "invalid literal for int() with base 10: 'thirteen'"}]),),
+    (
+        (
+            "attrs",
+            [{"key": "param", "message": "invalid literal for int() with base 10: 'thirteen'", "source": "query"}],
+        ),
+    ),
 )
 def test_validation_failure_raises_400(
     preferred_validation_backend: Literal["attrs", "pydantic"], error_extra: Any
@@ -209,7 +199,7 @@ def test_client_pydantic_backend_error_precedence_over_server_error() -> None:
 
     assert response.json() == {
         "detail": "Validation failed for GET http://testserver.local/?param=thirteen",
-        "extra": [{"key": "param", "message": "value is not a valid integer"}],
+        "extra": [{"key": "param", "message": "value is not a valid integer", "source": "query"}],
         "status_code": 400,
     }
 
@@ -259,7 +249,7 @@ def test_signature_field_is_non_string_iterable(preferred_validation_backend: Li
     def fn(a: Iterable[int], b: Optional[Iterable[int]]) -> None:
         pass
 
-    model = create_signature_model_for_test(
+    model = create_signature_model(
         fn=fn,
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
@@ -275,7 +265,7 @@ def test_signature_field_is_non_string_sequence(preferred_validation_backend: Li
     def fn(a: Sequence[int], b: OptionalSequence[int]) -> None:
         pass
 
-    model = create_signature_model_for_test(
+    model = create_signature_model(
         fn=fn,
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
@@ -303,27 +293,225 @@ def test_query_param_bool(query: str, expected: bool, signature_backend: Literal
 
 @pytest.mark.parametrize("preferred_validation_backend", ("attrs", "pydantic"))
 def test_validation_error_exception_key(preferred_validation_backend: Literal["attrs", "pydantic"]) -> None:
-    class ModelA(BaseModel):
-        b: int
+    class OtherChild(BaseModel):
+        val: List[int]
 
-    class ModelB(BaseModel):
-        a: ModelA
+    class Child(BaseModel):
+        val: int
+        other_val: int
 
-    def fn(b: ModelB) -> None:
+    class Parent(BaseModel):
+        child: Child
+        other_child: OtherChild
+
+    def fn(model: Parent) -> None:
         pass
 
-    model = create_signature_model_for_test(
+    model = create_signature_model(
         fn=fn,
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
         parsed_signature=ParsedSignature.from_fn(fn, {}),
     )
 
-    if preferred_validation_backend == "attrs":
-        assert isinstance(model, AttrsSignatureModel)
-
     with pytest.raises(ValidationException) as exc_info:
-        model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), b={"a": {}})
+        model.parse_values_from_connection_kwargs(
+            connection=RequestFactory().get(), model={"child": {}, "other_child": {}}
+        )
 
     assert isinstance(exc_info.value.extra, list)
-    assert exc_info.value.extra[0]["key"] == "a.b"
+    assert exc_info.value.extra[0]["key"] == "model.child.val"
+    assert exc_info.value.extra[1]["key"] == "model.child.other_val"
+    assert exc_info.value.extra[2]["key"] == "model.other_child.val"
+
+
+def test_invalid_input_pydantic() -> None:
+    class OtherChild(BaseModel):
+        val: List[int]
+
+    class Child(BaseModel):
+        val: int
+        other_val: int
+
+    class Parent(BaseModel):
+        child: Child
+        other_child: OtherChild
+
+    @post("/")
+    def test(
+        data: Parent,
+        int_param: int,
+        length_param: str = Parameter(min_length=2),
+        int_header: int = Parameter(header="X-SOME-INT"),
+        int_cookie: int = Parameter(cookie="int-cookie"),
+    ) -> None:
+        ...
+
+    with create_test_client(route_handlers=[test]) as client:
+        response = client.post(
+            "/",
+            json={"child": {"val": "a", "other_val": "b"}, "other_child": {"val": [1, "c"]}},
+            params={"int_param": "param", "length_param": "d"},
+            headers={"X-SOME-INT": "header"},
+            cookies={"int-cookie": "cookie"},
+        )
+
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+        data = response.json()
+
+        assert data
+        assert data["extra"] == [
+            {"key": "child.val", "message": "value is not a valid integer", "source": "body"},
+            {"key": "child.other_val", "message": "value is not a valid integer", "source": "body"},
+            {"key": "other_child.val.1", "message": "value is not a valid integer", "source": "body"},
+            {"key": "int_param", "message": "value is not a valid integer", "source": "query"},
+            {"key": "length_param", "message": "ensure this value has at least 2 characters", "source": "query"},
+            {"key": "int_header", "message": "value is not a valid integer", "source": "header"},
+            {"key": "int_cookie", "message": "value is not a valid integer", "source": "cookie"},
+        ]
+
+
+def test_invalid_input_attrs() -> None:
+    @define
+    class OtherChild:
+        val: List[int]
+
+    @define
+    class Child:
+        val: int
+        other_val: int
+
+    @define
+    class Parent:
+        child: Child
+        other_child: OtherChild
+
+    @post("/")
+    def test(
+        data: Parent,
+        int_param: int,
+        int_header: int = Parameter(header="X-SOME-INT"),
+        int_cookie: int = Parameter(cookie="int-cookie"),
+    ) -> None:
+        ...
+
+    with create_test_client(route_handlers=[test]) as client:
+        response = client.post(
+            "/",
+            json={"child": {"val": "a", "other_val": "b"}, "other_child": {"val": [1, "c"]}},
+            params={"int_param": "param"},
+            headers={"X-SOME-INT": "header"},
+            cookies={"int-cookie": "cookie"},
+        )
+
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+        data = response.json()
+
+        assert data
+        assert data["extra"] == [
+            {"key": "child.val", "message": "invalid literal for int() with base 10: 'a'", "source": "body"},
+            {"key": "child.other_val", "message": "invalid literal for int() with base 10: 'b'", "source": "body"},
+            {"key": "other_child.val.1", "message": "invalid literal for int() with base 10: 'c'", "source": "body"},
+            {"key": "int_param", "message": "invalid literal for int() with base 10: 'param'", "source": "query"},
+            {"key": "int_header", "message": "invalid literal for int() with base 10: 'header'", "source": "header"},
+            {"key": "int_cookie", "message": "invalid literal for int() with base 10: 'cookie'", "source": "cookie"},
+        ]
+
+
+def test_invalid_input_dataclass() -> None:
+    @dataclass
+    class OtherChild:
+        val: List[int]
+
+    @dataclass
+    class Child:
+        val: int
+        other_val: int
+
+    @dataclass
+    class Parent:
+        child: Child
+        other_child: OtherChild
+
+    @post("/")
+    def test(
+        data: Parent,
+        int_param: int,
+        length_param: str = Parameter(min_length=2),
+        int_header: int = Parameter(header="X-SOME-INT"),
+        int_cookie: int = Parameter(cookie="int-cookie"),
+    ) -> None:
+        ...
+
+    with create_test_client(route_handlers=[test]) as client:
+        response = client.post(
+            "/",
+            json={"child": {"val": "a", "other_val": "b"}, "other_child": {"val": [1, "c"]}},
+            params={"int_param": "param", "length_param": "d"},
+            headers={"X-SOME-INT": "header"},
+            cookies={"int-cookie": "cookie"},
+        )
+
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+        data = response.json()
+
+        assert data
+        assert data["extra"] == [
+            {"key": "child.val", "message": "value is not a valid integer", "source": "body"},
+            {"key": "child.other_val", "message": "value is not a valid integer", "source": "body"},
+            {"key": "other_child.val.1", "message": "value is not a valid integer", "source": "body"},
+            {"key": "int_param", "message": "value is not a valid integer", "source": "query"},
+            {"key": "length_param", "message": "ensure this value has at least 2 characters", "source": "query"},
+            {"key": "int_header", "message": "value is not a valid integer", "source": "header"},
+            {"key": "int_cookie", "message": "value is not a valid integer", "source": "cookie"},
+        ]
+
+
+def test_invalid_input_typed_dict() -> None:
+    class OtherChild(TypedDict):
+        val: List[int]
+
+    class Child(TypedDict):
+        val: int
+        other_val: int
+
+    class Parent(TypedDict):
+        child: Child
+        other_child: OtherChild
+
+    @post("/")
+    def test(
+        data: Parent,
+        int_param: int,
+        length_param: str = Parameter(min_length=2),
+        int_header: int = Parameter(header="X-SOME-INT"),
+        int_cookie: int = Parameter(cookie="int-cookie"),
+    ) -> None:
+        ...
+
+    with create_test_client(route_handlers=[test]) as client:
+        response = client.post(
+            "/",
+            json={"child": {"val": "a", "other_val": "b"}, "other_child": {"val": [1, "c"]}},
+            params={"int_param": "param", "length_param": "d"},
+            headers={"X-SOME-INT": "header"},
+            cookies={"int-cookie": "cookie"},
+        )
+
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+        data = response.json()
+
+        assert data
+        assert data["extra"] == [
+            {"key": "child.val", "message": "value is not a valid integer", "source": "body"},
+            {"key": "child.other_val", "message": "value is not a valid integer", "source": "body"},
+            {"key": "other_child.val.1", "message": "value is not a valid integer", "source": "body"},
+            {"key": "int_param", "message": "value is not a valid integer", "source": "query"},
+            {"key": "length_param", "message": "ensure this value has at least 2 characters", "source": "query"},
+            {"key": "int_header", "message": "value is not a valid integer", "source": "header"},
+            {"key": "int_cookie", "message": "value is not a valid integer", "source": "cookie"},
+        ]
