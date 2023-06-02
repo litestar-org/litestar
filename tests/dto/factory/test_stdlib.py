@@ -6,6 +6,7 @@ from typing import ClassVar, List
 
 import pytest
 
+from litestar.dto.factory import DTOField
 from litestar.dto.factory.data_structures import FieldDefinition
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.types.empty import Empty
@@ -35,8 +36,8 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
             parsed_type=ParsedType(int),
             default=Empty,
             default_factory=None,
-            dto_field=None,
             unique_model_name=fqdn,
+            dto_field=DTOField(),
             dto_for=None,
         ),
         FieldDefinition(
@@ -44,8 +45,8 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
             parsed_type=ParsedType(str),
             default="b",
             default_factory=None,
-            dto_field=None,
             unique_model_name=fqdn,
+            dto_field=DTOField(),
             dto_for=None,
         ),
         FieldDefinition(
@@ -53,8 +54,8 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
             parsed_type=ParsedType(list[int]),
             default=Empty,
             default_factory=list,
-            dto_field=None,
             unique_model_name=fqdn,
+            dto_field=DTOField(),
             dto_for=None,
         ),
     ]
@@ -68,8 +69,8 @@ def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> 
             parsed_type=ParsedType(int),
             default=Empty,
             default_factory=None,
-            dto_field=None,
             unique_model_name=fqdn,
+            dto_field=DTOField(),
             dto_for=None,
         ),
         FieldDefinition(
@@ -77,8 +78,8 @@ def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> 
             parsed_type=ParsedType(str),
             default="b",
             default_factory=None,
-            dto_field=None,
             unique_model_name=fqdn,
+            dto_field=DTOField(),
             dto_for=None,
         ),
         FieldDefinition(
@@ -87,7 +88,7 @@ def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> 
             default=Empty,
             default_factory=list,
             unique_model_name=fqdn,
-            dto_field=None,
+            dto_field=DTOField(),
             dto_for=None,
         ),
     ]

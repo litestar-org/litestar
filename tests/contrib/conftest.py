@@ -28,7 +28,7 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]
             parsed_type=ParsedType(int),
             unique_model_name=ANY,
             default_factory=Empty,
-            dto_field=None,
+            dto_field=DTOField(),
             dto_for=None,
         ),
         FieldDefinition(
@@ -46,7 +46,7 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]
             parsed_type=ParsedType(int),
             unique_model_name=ANY,
             default_factory=Empty,
-            dto_field=None,
+            dto_field=DTOField(),
             dto_for=None,
         ),
         FieldDefinition(
@@ -55,7 +55,7 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]
             parsed_type=ParsedType(int),
             unique_model_name=ANY,
             default_factory=Empty,
-            dto_field=None,
+            dto_field=DTOField(),
             dto_for=None,
         ),
         FieldDefinition(
@@ -64,7 +64,7 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]
             parsed_type=ParsedType(int),
             unique_model_name=ANY,
             default_factory=int_factory,
-            dto_field=None,
+            dto_field=DTOField(),
             dto_for=None,
         ),
     ]
