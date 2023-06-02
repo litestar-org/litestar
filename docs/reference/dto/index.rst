@@ -5,5 +5,4 @@ dto
     :titlesonly:
 
     interface
-    exceptions
     factory/index
