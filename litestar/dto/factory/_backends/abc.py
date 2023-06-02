@@ -26,6 +26,7 @@ from .utils import (
     RenameStrategies,
     build_annotation_for_backend,
     should_exclude_field,
+    should_ignore_field,
     transfer_data,
 )
 
@@ -158,6 +159,9 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         """
         defined_fields = []
         for field_definition in self.context.field_definition_generator(model_type):
+            if should_ignore_field(field_definition, self.context.dto_for):
+                continue
+
             try:
                 transfer_type = self._create_transfer_type(
                     field_definition.parsed_type,

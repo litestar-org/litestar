@@ -127,6 +127,7 @@ class TransferFieldDefinition(FieldDefinition):
             dto_field=field_definition.dto_field,
             is_partial=is_partial,
             is_excluded=is_excluded,
+            dto_for=field_definition.dto_for,
         )
 
 

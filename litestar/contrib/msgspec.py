@@ -51,6 +51,7 @@ class MsgspecDTO(AbstractDTOFactory[T], Generic[T]):
                 default_factory=default_or_empty(msgspec_field.default_factory),
                 dto_field=dto_field,
                 unique_model_name=get_fully_qualified_class_name(model_type),
+                dto_for=None,
             )
 
             yield field_def
