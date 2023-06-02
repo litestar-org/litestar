@@ -19,4 +19,5 @@ repository modules can make working with databases a breeze. Lets get started!
 
     01-modeling-and-features
     02-repository-introduction
-    03-repository-crud-example
+    03-repository-controller
+    04-repository-other

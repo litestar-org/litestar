@@ -28,12 +28,14 @@ Let's declare a new ``Book`` model using the :class:`UUIDAuditBase <litestar.con
 
     If you have a requirement to use integer based primary keys, identical implementations for the base model and base audit model available at :class:`BigIntBase <litestar.contrib.sqlalchemy.base.BigIntAuditBase>` and :class:`BigIntAuditBase <litestar.contrib.sqlalchemy.base.UUIDAuditBase>` respectively.
 
+    This sequence based integer primary key is supported on all backends except for Spanner.  Using monotonically changing primary keys is considered an anti-pattern in Spanner and leads to performance problems.
+
 By using the built in base declarative models, you also inherit a few additional configurations that make working with your data easier:
 
 - Synchronous and Asynchronous implementations tested with many popular database engines.  Currently 6 databases engines have been tested for support:  Postgres, SQLite, MySQL, DuckDB, Oracle, and Spanner
 - Automatic table name inference from model name.  A model named ``EventLog`` translates to the the database table ``event_log``
 - Custom :class:`GUID <litestar.contrib.sqlalchemy.types.GUID>` database that implements a native UUID in supported engines or a ``Binary(16)`` as a fallback.
-- A :class:`BigIntIdentity <litestar.contrib.sqlalchemy.types.BigIntIdentity>` that reverts to an ``Integer`` for unsupported variants.
+- A special `BigInteger` variant `BigIntIdentity <litestar.contrib.sqlalchemy.types.BigIntIdentity>` that reverts to an ``Integer`` for unsupported variants.
 - A custom :class:`JSON <litestar.contrib.sqlalchemy.types.JSON>` that uses native ``JSONB`` where supported and ``Binary`` or ``Blob`` as a fallback.
 
 
