@@ -22,7 +22,8 @@ from .types import (
 if TYPE_CHECKING:
     from typing import AbstractSet, Any, Iterable
 
-    from litestar.dto.factory.types import FieldDefinition, RenameStrategy
+    from litestar.dto.factory.data_structures import FieldDefinition
+    from litestar.dto.factory.types import RenameStrategy
     from litestar.dto.types import ForType
     from litestar.typing import ParsedType
 

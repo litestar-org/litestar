@@ -4,8 +4,8 @@ from dataclasses import MISSING, fields
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar.dto.factory.abc import AbstractDTOFactory
+from litestar.dto.factory.data_structures import FieldDefinition
 from litestar.dto.factory.field import DTO_FIELD_META_KEY
-from litestar.dto.factory.types import FieldDefinition
 from litestar.dto.factory.utils import get_model_type_hints
 from litestar.types.empty import Empty
 from litestar.utils.helpers import get_fully_qualified_class_name
