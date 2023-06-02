@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from ._backends import AbstractDTOBackend
     from .types import FieldDefinition
 
-__all__ = ["AbstractDTOFactory"]
+__all__ = ("AbstractDTOFactory",)
 
 T = TypeVar("T")
 

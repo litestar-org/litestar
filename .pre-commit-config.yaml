@@ -41,6 +41,7 @@ repos:
     hooks:
       - id: ensure-dunder-all
         exclude: "test*|examples*|tools"
+        args: ["--use-tuple"]
   - repo: https://github.com/ariebovenberg/slotscheck
     rev: v0.16.5
     hooks:
