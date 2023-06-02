@@ -233,3 +233,100 @@ def get_handler() -> Interval:
     with create_test_client(route_handlers=[module.get_handler], debug=True) as client:
         response = client.get("/")
         assert response.json() == {"id": 1, "start": 1, "end": 3, "length": 2}
+
+
+def test_dto_with_hybrid_property_expression(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from __future__ import annotations
+
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.sql import SQLColumnExpression
+
+from litestar import get
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+
+class Base(DeclarativeBase):
+    pass
+
+class Interval(Base):
+    __tablename__ = 'interval'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    start: Mapped[int]
+    end: Mapped[int]
+
+    @hybrid_property
+    def length(self) -> int:
+        return self.end - self.start
+
+    @length.inplace.expression
+    def _length_expression(cls) -> SQLColumnExpression[int]:
+        return cls.end - cls.start
+
+dto = SQLAlchemyDTO[Interval]
+
+@get("/", return_dto=dto)
+def get_handler() -> Interval:
+    return Interval(id=1, start=1, end=3)
+"""
+    )
+
+    with create_test_client(route_handlers=[module.get_handler], debug=True) as client:
+        response = client.get("/")
+        assert response.json() == {"id": 1, "start": 1, "end": 3, "length": 2}
+
+
+def test_dto_with_hybrid_property_setter(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from __future__ import annotations
+
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.sql import SQLColumnExpression
+
+from litestar import post
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.dto.factory import dto_field
+
+class Base(DeclarativeBase):
+    pass
+
+class Circle(Base):
+    __tablename__ = 'circle'
+
+    id: Mapped[int] = mapped_column(primary_key=True, info=dto_field("read-only"))
+    diameter: Mapped[float] = mapped_column(info=dto_field("private"))
+
+    @hybrid_property
+    def radius(self) -> float:
+        return self.diameter / 2
+
+    @radius.inplace.setter
+    def _radius_setter(self, value: float) -> None:
+        # for example only
+        self.diameter = value * 2
+
+dto = SQLAlchemyDTO[Circle]
+
+DIAMETER: float = 0
+
+@post("/", dto=dto, sync_to_thread=False)
+def get_handler(data: Circle) -> Circle:
+    global DIAMETER
+    DIAMETER = data.diameter
+    data.id = 1
+    return data
+"""
+    )
+
+    with create_test_client(route_handlers=[module.get_handler], debug=True) as client:
+        response = client.post("/", json={"radius": 5})
+        assert response.json() == {"id": 1, "radius": 5}
+        assert module.DIAMETER == 10

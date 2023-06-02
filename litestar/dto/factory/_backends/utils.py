@@ -73,8 +73,9 @@ def should_exclude_field(field_definition: FieldDefinition, exclude: AbstractSet
     dto_field = field_definition.dto_field
     excluded = field_name in exclude
     private = dto_field and dto_field.mark is Mark.PRIVATE
-    read_only_for_write = dto_for == "data" and dto_field and dto_field.mark is Mark.READ_ONLY
-    return bool(excluded or private or read_only_for_write)
+    read_only_for_data = dto_for == "data" and dto_field and dto_field.mark is Mark.READ_ONLY
+    write_only_for_return = dto_for == "return" and dto_field and dto_field.mark is Mark.WRITE_ONLY
+    return bool(excluded or private or read_only_for_data or write_only_for_return)
 
 
 class RenameStrategies:

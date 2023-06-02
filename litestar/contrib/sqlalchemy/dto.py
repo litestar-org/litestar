@@ -55,7 +55,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
         key: str,
         model_type_hints: dict[str, ParsedType],
         model_name: str,
-    ) -> FieldDefinition:
+    ) -> list[FieldDefinition]:
         raise NotImplementedError(f"Unsupported extension type: {extension_type}")
 
     @handle_orm_descriptor.register(NotExtension)
@@ -67,7 +67,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
         orm_descriptor: InspectionAttr,
         model_type_hints: dict[str, ParsedType],
         model_name: str,
-    ) -> FieldDefinition:
+    ) -> list[FieldDefinition]:
         if not isinstance(orm_descriptor, QueryableAttribute):
             raise NotImplementedError(f"Unexpected descriptor type for '{extension_type}': '{orm_descriptor}'")
 
@@ -88,14 +88,16 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
         else:
             raise NotImplementedError(f"Expected 'Mapped' origin, got: '{parsed_type.origin}'")
 
-        return FieldDefinition(
-            name=key,
-            default=default,
-            parsed_type=parsed_type,
-            default_factory=default_factory,
-            dto_field=elem.info.get(DTO_FIELD_META_KEY),
-            unique_model_name=model_name,
-        )
+        return [
+            FieldDefinition(
+                name=key,
+                default=default,
+                parsed_type=parsed_type,
+                default_factory=default_factory,
+                dto_field=elem.info.get(DTO_FIELD_META_KEY),
+                unique_model_name=model_name,
+            )
+        ]
 
     @handle_orm_descriptor.register(AssociationProxyExtensionType)
     @classmethod
@@ -106,7 +108,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
         orm_descriptor: InspectionAttr,
         model_type_hints: dict[str, ParsedType],
         model_name: str,
-    ) -> FieldDefinition:
+    ) -> list[FieldDefinition]:
         if not isinstance(orm_descriptor, AssociationProxy):
             raise NotImplementedError(f"Unexpected descriptor type '{orm_descriptor}' for '{extension_type}'")
 
@@ -115,14 +117,16 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
         else:
             raise NotImplementedError(f"Expected 'AssociationProxy' origin, got: '{parsed_type.origin}'")
 
-        return FieldDefinition(
-            name=key,
-            default=Empty,
-            parsed_type=parsed_type,
-            default_factory=None,
-            dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.READ_ONLY)),
-            unique_model_name=model_name,
-        )
+        return [
+            FieldDefinition(
+                name=key,
+                default=Empty,
+                parsed_type=parsed_type,
+                default_factory=None,
+                dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.READ_ONLY)),
+                unique_model_name=model_name,
+            )
+        ]
 
     @handle_orm_descriptor.register(HybridExtensionType)
     @classmethod
@@ -133,20 +137,37 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
         orm_descriptor: InspectionAttr,
         model_type_hints: dict[str, ParsedType],
         model_name: str,
-    ) -> FieldDefinition:
+    ) -> list[FieldDefinition]:
         if not isinstance(orm_descriptor, hybrid_property):
             raise NotImplementedError(f"Unexpected descriptor type '{orm_descriptor}' for '{extension_type}'")
 
         getter_sig = ParsedSignature.from_fn(orm_descriptor.fget, {})
 
-        return FieldDefinition(
-            name=key,
-            default=Empty,
-            parsed_type=getter_sig.return_type,
-            default_factory=None,
-            dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.READ_ONLY)),
-            unique_model_name=model_name,
-        )
+        field_defs = [
+            FieldDefinition(
+                name=orm_descriptor.__name__,
+                default=Empty,
+                parsed_type=getter_sig.return_type,
+                default_factory=None,
+                dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.READ_ONLY)),
+                unique_model_name=model_name,
+            )
+        ]
+
+        if orm_descriptor.fset is not None:
+            setter_sig = ParsedSignature.from_fn(orm_descriptor.fset, {})
+            field_defs.append(
+                FieldDefinition(
+                    name=orm_descriptor.__name__,
+                    default=Empty,
+                    parsed_type=next(iter(setter_sig.parameters.values())).parsed_type,
+                    default_factory=None,
+                    dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.WRITE_ONLY)),
+                    unique_model_name=model_name,
+                )
+            )
+
+        return field_defs
 
     @classmethod
     def generate_field_definitions(cls, model_type: type[DeclarativeBase]) -> Generator[FieldDefinition, None, None]:
@@ -158,8 +179,16 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
         model_type_hints = get_model_type_hints(model_type, namespace=namespace)
         model_name = get_fully_qualified_class_name(model_type)
 
+        # the same hybrid property descriptor can be included in `all_orm_descriptors` multiple times, once
+        # for each method name it is bound to. We only need to see it once, so track views of it here.
+        seen_hybrid_descriptors: set[hybrid_property] = set()
         for key, orm_descriptor in mapper.all_orm_descriptors.items():
-            yield cls.handle_orm_descriptor(
+            if isinstance(orm_descriptor, hybrid_property):
+                if orm_descriptor in seen_hybrid_descriptors:
+                    continue
+                seen_hybrid_descriptors.add(orm_descriptor)
+
+            yield from cls.handle_orm_descriptor(
                 orm_descriptor.extension_type, key, orm_descriptor, model_type_hints, model_name
             )
 
