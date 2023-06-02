@@ -104,7 +104,7 @@ repos:
             uvicorn,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.310
+    rev: v1.1.311
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs|_openapi"
