@@ -69,7 +69,7 @@ class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
         slug = self._slugify(value_to_slugify)
         if await self._is_slug_unique(slug):
             return slug
-        # generate a random 4 digit alpha-numeric string to make the slug unique and avoid another DB lookup.
+        # generate a random 4 digit alphanumeric string to make the slug unique and avoid another DB lookup.
         random_string = "".join(random.choices(string.ascii_lowercase + string.digits, k=4))
         return f"{slug}-{random_string}"
 
