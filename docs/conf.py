@@ -185,12 +185,12 @@ html_theme_options = {
         "About": {
             "Litestar Organization": {
                 "description": "Details about the Litestar organization",
-                "link": "about/organization",
+                "link": "https://litestar.dev/about/organization",
                 "icon": "org",
             },
             "Releases": {
                 "description": "Details about the Litestar release process",
-                "link": "about/litestar-releases",
+                "link": "https://litestar.dev/about/litestar-releases",
                 "icon": "releases",
             },
         },
