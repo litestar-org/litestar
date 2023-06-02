@@ -95,6 +95,7 @@ importlib-resources = { version="^5.12.0", python = "<3.9" }
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
+alembic = "*"
 asyncmy = "*"
 asyncpg = "*"
 attrs = "*"
