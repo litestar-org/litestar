@@ -140,7 +140,7 @@ trio = "*"
 uvicorn = "*"
 pytest-rerunfailures = "^11.1.2"
 duckdb-engine = "*"
-sqlalchemy-spanner = { git = "https://github.com/cofin/python-spanner-sqlalchemy.git", branch="sequence-fix" }
+sqlalchemy-spanner = "*"
 
 [tool.poetry.group.docs]
 optional = true
