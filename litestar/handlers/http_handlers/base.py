@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, AnyStr, Mapping, cast
-
-from typing_extensions import TypedDict
+from typing import TYPE_CHECKING, AnyStr, Mapping, TypedDict, cast
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.datastructures.cookie import Cookie
@@ -45,7 +43,8 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.types.builtin_types import NoneType
-from litestar.utils import AsyncCallable, async_partial, is_async_callable
+from litestar.utils import AsyncCallable, async_partial
+from litestar.utils.predicates import is_async_callable
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
 if TYPE_CHECKING:

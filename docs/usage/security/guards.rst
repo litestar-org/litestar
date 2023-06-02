@@ -88,7 +88,7 @@ Thus, only an admin user would be able to send a post request to the ``create_us
 Guard scopes
 ------------
 
-Guards can be declared on all levels of the app - the Litestar instance, routers, controllers and individual route
+Guards can be declared on all levels of the app - the Litestar instance, routers, controllers, and individual route
 handlers:
 
 .. code-block:: python

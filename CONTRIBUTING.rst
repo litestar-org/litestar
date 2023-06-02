@@ -60,7 +60,7 @@ Guidelines for writing code
 
 - If you are adding or modifying existing code, ensure that it's fully tested. 100% test coverage is mandatory, and will
   be checked on the PR using `SonarCloud <https://www.sonarsource.com/products/sonarcloud/>`_
-- All functions, methods, classes and attributes should be documented with a docstring. We use the
+- All functions, methods, classes, and attributes should be documented with a docstring. We use the
   `Google docstring style <https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html>`_. If you come
   across a function or method that doesn't conform to this standard, please update it as you go
 - When adding a new public interface, it has to be  included in the reference documentation located in
@@ -111,9 +111,10 @@ Writing and editing docs
 ++++++++++++++++++++++++
 
 We welcome contributions that enhance / improve the content of the docs. Feel free to add examples, clarify text,
-restructure the docs etc., but make sure to follow these guidelines:
+restructure the docs, etc., but make sure to follow these guidelines:
 
 - Write text in idiomatic english, using simple language
+- Opt for `Oxford commas <https://en.wikipedia.org/wiki/Serial_comma>`_ when listing a series of terms
 - Keep examples simple and self contained
 - Provide links where applicable
 - Use `intersphinx <https://www.sphinx-doc.org/en/master/lib/usage/extensions/intersphinx.html>`_ wherever possible when

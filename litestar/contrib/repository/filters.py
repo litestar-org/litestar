@@ -8,7 +8,13 @@ from typing import Generic, Literal, TypeVar
 
 T = TypeVar("T")
 
-__all__ = ["BeforeAfter", "CollectionFilter", "LimitOffset", "OrderBy", "SearchFilter"]
+__all__ = (
+    "BeforeAfter",
+    "CollectionFilter",
+    "LimitOffset",
+    "OrderBy",
+    "SearchFilter",
+)
 
 
 @dataclass

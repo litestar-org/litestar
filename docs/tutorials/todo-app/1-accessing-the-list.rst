@@ -53,7 +53,7 @@ knows how to turn these dataclasses into JSON and will do so for you automatical
 .. tip::
     In addition to dataclasses, Litestar supports many more types such as
     :class:`TypedDict <typing.TypedDict>`, :class:`NamedTuple <typing.NamedTuple>`,
-    `Pydantic models <https://docs.pydantic.dev/usage/models/>`_ or
+    `Pydantic models <https://docs.pydantic.dev/usage/models/>`_, or
     `attrs classes <https://www.attrs.org/en/stable/>`_
 
 

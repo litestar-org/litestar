@@ -1,11 +1,11 @@
 import dataclasses
-from typing import Any, ClassVar, Optional, get_type_hints
+from typing import Any, ClassVar, Optional, TypedDict, get_type_hints
 
 import pydantic
 import pytest
 from msgspec.inspect import type_info
 from pydantic import BaseModel
-from typing_extensions import TypedDict, get_args
+from typing_extensions import get_args
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.partial import Partial

@@ -2,12 +2,11 @@ from dataclasses import dataclass
 from http import HTTPStatus
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Callable, Dict, Type
+from typing import Any, Callable, Dict, Type, TypedDict
 from unittest.mock import MagicMock
 
 import pytest
 from pydantic import BaseModel
-from typing_extensions import TypedDict
 
 from litestar import Controller, Litestar, MediaType, Response, get, post
 from litestar._openapi.responses import (

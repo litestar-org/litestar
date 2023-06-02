@@ -55,7 +55,7 @@ Utilizing channels involves a few moving parts, of which the most important ones
     plugin
         The :class:`ChannelsPlugin <.plugin.ChannelsPlugin>`, a central instance
         managing :term:`subscribers <subscriber>`, reading messages from the
-        :term:`backend`, putting them in the appropriate :term:`event stream` and
+        :term:`backend`, putting them in the appropriate :term:`event stream`, and
         publishing data to the backend
 
 
@@ -104,7 +104,7 @@ The ``ChannelsPlugin``
 
 The :class:`ChannelsPlugin` acts as the central entity for managing channels and
 subscribers. It's used to publish messages, control how data is stored, and manage
-subscribers, route handlers and configuration.
+subscribers, route handlers, and configuration.
 
 
 .. tip::

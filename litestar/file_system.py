@@ -8,7 +8,7 @@ from anyio.to_thread import run_sync
 
 from litestar.exceptions import InternalServerException, NotAuthorizedException
 from litestar.types.file_types import FileSystemProtocol
-from litestar.utils.sync import is_async_callable
+from litestar.utils.predicates import is_async_callable
 
 __all__ = ("BaseLocalFileSystem", "FileSystemAdapter")
 

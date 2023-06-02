@@ -19,7 +19,6 @@ jobs:
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
-          version: 1.4.0
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
@@ -44,8 +43,6 @@ jobs:
           python-version: "3.11"
       - name: Install Poetry
         uses: snok/install-poetry@v1
-        with:
-          version: 1.4.0
       - name: Install dependencies
         run: poetry install --no-interaction --no-root --no-dev
       - name: publish

@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Protocol, TypeVar, runtime_checkable
-
-from typing_extensions import TypedDict
+from typing import TYPE_CHECKING, Any, Callable, Protocol, TypedDict, TypeVar, runtime_checkable
 
 __all__ = (
     "TemplateContext",

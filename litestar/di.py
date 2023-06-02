@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
-from litestar.utils import Ref, is_async_callable
-from litestar.utils.predicates import is_sync_or_async_generator
+from litestar.utils import Ref
+from litestar.utils.predicates import is_async_callable, is_sync_or_async_generator
 from litestar.utils.warnings import (
     warn_implicit_sync_to_thread,
     warn_sync_to_thread_with_async_callable,

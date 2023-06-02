@@ -11,6 +11,7 @@ from litestar.dto.factory.types import FieldDefinition
 from litestar.typing import ParsedType
 
 if TYPE_CHECKING:
+    from types import ModuleType
     from typing import Callable
 
 
@@ -42,3 +43,30 @@ def test_detect_nested_field() -> None:
 
     assert PydanticDTO.detect_nested_field(ParsedType(TestModel)) is True
     assert PydanticDTO.detect_nested_field(ParsedType(NotModel)) is False
+
+
+def test_generate_field_definitions_from_beanie_models(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from typing import Optional
+
+import pymongo
+from pydantic import BaseModel
+
+from beanie import Document
+
+
+class Category(BaseModel):
+    name: str
+    description: str
+
+
+class Product(Document):  # This is the model
+    name: str
+    description: Optional[str] = None
+    price: float
+    category: Category
+"""
+    )
+    field_names = [field.name for field in PydanticDTO.generate_field_definitions(module.Product)]
+    assert field_names == ["id", "revision_id", "name", "description", "price", "category"]

@@ -210,6 +210,10 @@ def _inject_args(func: Callable[P, T]) -> Callable[Concatenate[Context, P], T]:
                 kwargs["app"] = env.app
             if needs_env:
                 kwargs["env"] = env
+
+        if "ctx" in params:
+            kwargs["ctx"] = ctx
+
         return func(*args, **kwargs)
 
     return pass_context(wrapped)
@@ -316,6 +320,7 @@ def show_app_info(app: Litestar) -> None:  # pragma: no cover
 
     table.add_row("Litestar version", f"{__version__.major}.{__version__.minor}.{__version__.patch}")
     table.add_row("Debug mode", _format_is_enabled(app.debug))
+    table.add_row("Python Debugger on exception", _format_is_enabled(app.pdb_on_exception))
     table.add_row("CORS", _format_is_enabled(app.cors_config))
     table.add_row("CSRF", _format_is_enabled(app.csrf_config))
     if app.allowed_hosts:

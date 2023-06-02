@@ -6,6 +6,7 @@ from msgspec import UNSET
 from typing_extensions import get_origin
 
 from litestar.dto.factory import Mark
+from litestar.types.protocols import InstantiableCollection
 
 from .types import (
     CollectionType,
@@ -23,8 +24,9 @@ if TYPE_CHECKING:
 
     from litestar.dto.factory.types import FieldDefinition, RenameStrategy
     from litestar.dto.types import ForType
+    from litestar.typing import ParsedType
 
-    from .types import FieldDefinitionsType
+    from .types import FieldDefinitionsType, TransferFieldDefinition
 
 __all__ = (
     "RenameStrategies",
@@ -123,8 +125,9 @@ def transfer_data(
     destination_type: type[T],
     source_data: Any | Collection[Any],
     field_definitions: FieldDefinitionsType,
-    dto_for: ForType = "data",
-) -> T | Collection[T]:
+    dto_for: ForType,
+    parsed_type: ParsedType,
+) -> T | InstantiableCollection[T]:
     """Create instance or iterable of instances of ``destination_type``.
 
     Args:
@@ -132,13 +135,18 @@ def transfer_data(
         source_data: data that has been parsed and validated via the backend.
         field_definitions: model field definitions.
         dto_for: indicates whether the DTO is for the request body or response.
+        parsed_type: the parsed type that represents the handler annotation for which the DTO is being applied.
 
     Returns:
         Data parsed into ``destination_type``.
     """
-    if not isinstance(source_data, Mapping) and isinstance(source_data, Collection):
-        return type(source_data)(
-            transfer_data(destination_type, item, field_definitions, dto_for)  # type:ignore[call-arg]
+    if not parsed_type.is_subclass_of(str) and not parsed_type.is_mapping and parsed_type.is_collection:
+        origin = parsed_type.instantiable_origin
+        if not issubclass(origin, InstantiableCollection):  # pragma: no cover
+            raise RuntimeError(f"Unexpected origin type '{parsed_type.instantiable_origin}', expected collection type")
+
+        return origin(  # type:ignore[no-any-return]
+            transfer_data(destination_type, item, field_definitions, dto_for, parsed_type.inner_types[0])
             for item in source_data
         )
     return transfer_instance_data(destination_type, source_data, field_definitions, dto_for)
@@ -161,20 +169,61 @@ def transfer_instance_data(
     unstructured_data = {}
     source_is_mapping = isinstance(source_instance, Mapping)
 
+    if source_is_mapping:
+
+        def has(source: Any, key: str) -> bool:
+            return key in source
+
+        def get(source: Any, key: str) -> Any:
+            return source[key]
+
+    else:
+
+        def has(source: Any, key: str) -> bool:
+            return hasattr(source, key)
+
+        def get(source: Any, key: str) -> Any:
+            return getattr(source, key)
+
     def filter_missing(value: Any) -> bool:
         return value is UNSET
 
     for field_definition in field_definitions:
-        transfer_type = field_definition.transfer_type
         source_name = field_definition.serialization_name if dto_for == "data" else field_definition.name
+
+        if should_skip_transfer(dto_for, field_definition, has(source_instance, source_name)):
+            continue
+
+        transfer_type = field_definition.transfer_type
         destination_name = field_definition.name if dto_for == "data" else field_definition.serialization_name
-        source_value = source_instance[source_name] if source_is_mapping else getattr(source_instance, source_name)
+        source_value = get(source_instance, source_name)
+
         if field_definition.is_partial and dto_for == "data" and filter_missing(source_value):
             continue
+
         unstructured_data[destination_name] = transfer_type_data(
             source_value, transfer_type, dto_for, nested_as_dict=destination_type is dict
         )
     return destination_type(**unstructured_data)
+
+
+def should_skip_transfer(
+    dto_for: ForType,
+    field_definition: TransferFieldDefinition,
+    source_has_value: bool,
+) -> bool:
+    """Returns ``True`` where a field should be excluded from data transfer.
+
+    We should skip transfer when:
+    - the field is excluded and the DTO is for the return data.
+    - the DTO is for request data, and the field is not in the source instance.
+
+    Args:
+        dto_for: indicates whether the DTO is for the request body or response.
+        field_definition: model field definition.
+        source_has_value: indicates whether the source instance has a value for the field.
+    """
+    return (dto_for == "return" and field_definition.is_excluded) or (dto_for == "data" and not source_has_value)
 
 
 def transfer_type_data(
@@ -191,10 +240,12 @@ def transfer_type_data(
         return transfer_nested_simple_type_data(dest_type, transfer_type.nested_field_info, dto_for, source_value)
     if isinstance(transfer_type, UnionType) and transfer_type.has_nested:
         return transfer_nested_union_type_data(transfer_type, dto_for, source_value)
-    if isinstance(transfer_type, CollectionType) and transfer_type.has_nested:
-        return transfer_nested_collection_type_data(
-            transfer_type.parsed_type.origin, transfer_type, dto_for, source_value
-        )
+    if isinstance(transfer_type, CollectionType):
+        if transfer_type.has_nested:
+            return transfer_nested_collection_type_data(
+                transfer_type.parsed_type.origin, transfer_type, dto_for, source_value
+            )
+        return transfer_type.parsed_type.origin(source_value)
     return source_value
 
 
@@ -207,12 +258,7 @@ def transfer_nested_collection_type_data(
 def transfer_nested_simple_type_data(
     destination_type: type[Any], nested_field_info: NestedFieldInfo, dto_for: ForType, source_value: Any
 ) -> Any:
-    return transfer_instance_data(
-        destination_type,
-        source_value,
-        nested_field_info.field_definitions,
-        dto_for,
-    )
+    return transfer_instance_data(destination_type, source_value, nested_field_info.field_definitions, dto_for)
 
 
 def transfer_nested_union_type_data(transfer_type: UnionType, dto_for: ForType, source_value: Any) -> Any:

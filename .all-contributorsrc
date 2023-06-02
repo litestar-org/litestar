@@ -1017,6 +1017,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "sarbor",
+      "name": "Sarbo Roy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15257226?v=4",
+      "profile": "https://github.com/sarbor",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

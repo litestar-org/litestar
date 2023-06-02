@@ -32,7 +32,7 @@ router = Router(
     path="/router",
     route_handlers=[MyController],
     parameters={
-        "router_param": Parameter(str, regex="^[a-zA-Z]$", header="MyHeader", required=False),
+        "router_param": Parameter(str, pattern="^[a-zA-Z]$", header="MyHeader", required=False),
     },
 )
 

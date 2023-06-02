@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, cast
 from sqlalchemy import Connection, Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from litestar.constants import HTTP_RESPONSE_START
 from litestar.utils import delete_litestar_scope_state, get_litestar_scope_state
 
 from .common import SESSION_SCOPE_KEY, SESSION_TERMINUS_ASGI_EVENTS, GenericSessionConfig, GenericSQLAlchemyConfig
@@ -15,11 +16,17 @@ if TYPE_CHECKING:
 
     from litestar import Litestar
     from litestar.types import BeforeMessageSendHookHandler, Message, Scope
+    from litestar.types.asgi_types import HTTPResponseStartEvent
 
-__all__ = ("SQLAlchemySyncConfig", "SyncSessionConfig")
+__all__ = (
+    "SQLAlchemySyncConfig",
+    "SyncSessionConfig",
+    "default_before_send_handler",
+    "autocommit_before_send_handler",
+)
 
 
-async def default_before_send_handler(message: Message, scope: Scope) -> None:
+def default_before_send_handler(message: Message, scope: Scope) -> None:
     """Handle closing and cleaning up sessions before sending.
 
     Args:
@@ -34,6 +41,29 @@ async def default_before_send_handler(message: Message, scope: Scope) -> None:
     if session and message["type"] in SESSION_TERMINUS_ASGI_EVENTS:
         session.close()
         delete_litestar_scope_state(scope, SESSION_SCOPE_KEY)
+
+
+def autocommit_before_send_handler(message: Message, scope: Scope) -> None:
+    """Handle commit/rollback, closing and cleaning up sessions before sending.
+
+    Args:
+        message: ASGI-``Message``
+        scope: An ASGI-``Scope``
+
+    Returns:
+        None
+    """
+    session = cast("Session | None", get_litestar_scope_state(scope, SESSION_SCOPE_KEY))
+    try:
+        if session is not None and message["type"] == HTTP_RESPONSE_START:
+            if 200 <= cast("HTTPResponseStartEvent", message)["status"] < 300:
+                session.commit()
+            else:
+                session.rollback()
+    finally:
+        if session and message["type"] in SESSION_TERMINUS_ASGI_EVENTS:
+            session.close()
+            delete_litestar_scope_state(scope, SESSION_SCOPE_KEY)
 
 
 class SyncSessionConfig(GenericSessionConfig[Connection, Engine, Session]):

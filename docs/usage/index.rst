@@ -18,7 +18,7 @@ Usage
     security/index
     stores
     testing
-    plugins/index
+    plugins
     events
     openapi
     lifecycle-hooks
@@ -27,3 +27,4 @@ Usage
     exceptions
     contrib/index
     cli
+    debugging

@@ -268,7 +268,7 @@ Registering template callables
 The  :class:`TemplateEngineProtocol <litestar.template.base.TemplateEngineProtocol>` specifies the method
 ``register_template_callable`` that allows defining a custom callable on a template engine. This method is implemented
 for the two built in engines, and it can be used to register callables that will be injected into the template. The callable
-should expect one argument - the context dictionary. It can be any callable - a function, method or class that defines
+should expect one argument - the context dictionary. It can be any callable - a function, method, or class that defines
 the call method. For example:
 
 .. tab-set::
