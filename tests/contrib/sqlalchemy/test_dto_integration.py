@@ -310,7 +310,6 @@ class Circle(Base):
 
     @radius.inplace.setter
     def _radius_setter(self, value: float) -> None:
-        # for example only
         self.diameter = value * 2
 
 dto = SQLAlchemyDTO[Circle]
