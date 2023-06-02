@@ -2,18 +2,17 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime
+from datetime import date, datetime
 from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar, runtime_checkable
 from uuid import UUID, uuid4
 
 from pydantic import AnyHttpUrl, AnyUrl, EmailStr
-from sqlalchemy import DateTime, MetaData, Sequence, String
+from sqlalchemy import Date, DateTime, MetaData, Sequence, String
 from sqlalchemy.event import listens_for
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
     Session,
-    declarative_mixin,
     declared_attr,
     mapped_column,
     orm_insert_sentinel,
@@ -110,7 +109,6 @@ class BigIntPrimaryKey:
         )
 
 
-@declarative_mixin
 class AuditColumns:
     """Created/Updated At Fields Mixin."""
 
@@ -155,6 +153,7 @@ def create_registry() -> registry:
             AnyHttpUrl: String,
             dict: JSON,
             datetime: DateTime,
+            date: Date,
         },
     )
 

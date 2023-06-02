@@ -263,9 +263,11 @@ def test_repo_get_or_create_match_filter(author_repo: AuthorSyncRepository) -> N
         author_repo (AuthorSyncRepository): The author mock repository
     """
     now = datetime.now()
-    existing_obj, existing_created = author_repo.get_or_create(match_fields="name", name="Agatha Christie", dob=now)
+    existing_obj, existing_created = author_repo.get_or_create(
+        match_fields="name", name="Agatha Christie", dob=now.date()
+    )
     assert existing_obj.id == 2023
-    assert existing_obj.dob == now
+    assert existing_obj.dob == now.date()
     assert existing_created is False
 
 

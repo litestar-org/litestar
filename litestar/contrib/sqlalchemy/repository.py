@@ -278,8 +278,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                 field = getattr(existing, field_name, None)
                 if field and field != new_field_value:
                     setattr(existing, field_name, new_field_value)
-            if existing in self.session.dirty:
-                return (await self.update(existing)), False
+            return (await self.update(existing)), False
         return existing, False
 
     async def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
@@ -316,13 +315,8 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             NotFoundError: If no instance found with same identifier as `data`.
         """
         with wrap_sqlalchemy_exception():
-            item_id = self.get_id_attribute_value(data)
-            # this will raise for not found, and will put the item in the session
-            await self.get(item_id)
-            # this will merge the inbound data to the instance we just put in the session
-            instance = await self._attach_to_session(data, strategy="merge")
+            instance = await self._attach_to_session(data)
             await self.session.flush()
-            await self.session.refresh(instance)
             self.session.expunge(instance)
             return instance
 
@@ -482,7 +476,6 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         with wrap_sqlalchemy_exception():
             instance = await self._attach_to_session(data, strategy="merge")
             await self.session.flush()
-            await self.session.refresh(instance)
             self.session.expunge(instance)
             return instance
 
@@ -813,8 +806,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                 field = getattr(existing, field_name, None)
                 if field and field != new_field_value:
                     setattr(existing, field_name, new_field_value)
-            if existing in self.session.dirty:
-                return (self.update(existing)), False
+            return (self.update(existing)), False
         return existing, False
 
     def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
@@ -851,13 +843,8 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             NotFoundError: If no instance found with same identifier as `data`.
         """
         with wrap_sqlalchemy_exception():
-            item_id = self.get_id_attribute_value(data)
-            # this will raise for not found, and will put the item in the session
-            self.get(item_id)
-            # this will merge the inbound data to the instance we just put in the session
-            instance = self._attach_to_session(data, strategy="merge")
+            instance = self._attach_to_session(data)
             self.session.flush()
-            self.session.refresh(instance)
             self.session.expunge(instance)
             return instance
 
@@ -1023,7 +1010,6 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         with wrap_sqlalchemy_exception():
             instance = self._attach_to_session(data, strategy="merge")
             self.session.flush()
-            self.session.refresh(instance)
             self.session.expunge(instance)
             return instance
 

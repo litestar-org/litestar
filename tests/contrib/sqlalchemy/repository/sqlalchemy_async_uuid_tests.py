@@ -276,10 +276,10 @@ async def test_repo_get_or_create_match_filter(author_repo: AuthorAsyncRepositor
     """
     now = datetime.now()
     existing_obj, existing_created = await author_repo.get_or_create(
-        match_fields="name", name="Agatha Christie", dob=now
+        match_fields="name", name="Agatha Christie", dob=now.date()
     )
     assert existing_obj.id == UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")
-    assert existing_obj.dob == now
+    assert existing_obj.dob == now.date()
     assert existing_created is False
 
 

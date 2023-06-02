@@ -265,10 +265,10 @@ async def test_repo_get_or_create_match_filter(author_repo: AuthorAsyncRepositor
     """
     now = datetime.now()
     existing_obj, existing_created = await author_repo.get_or_create(
-        match_fields="name", name="Agatha Christie", dob=now
+        match_fields="name", name="Agatha Christie", dob=now.date()
     )
     assert existing_obj.id == 2023
-    assert existing_obj.dob == now
+    assert existing_obj.dob == now.date()
     assert existing_created is False
 
 
