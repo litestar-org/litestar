@@ -4,13 +4,11 @@ import uuid
 from base64 import b64decode
 from typing import TYPE_CHECKING, Any, cast
 
-from sqlalchemy import util
 from sqlalchemy.dialects.oracle import BLOB as ORA_BLOB
 from sqlalchemy.dialects.oracle import RAW as ORA_RAW
 from sqlalchemy.dialects.postgresql import JSONB as PG_JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.sql.base import _NONE_NAME
-from sqlalchemy.types import BINARY, CHAR, BigInteger, Integer, SchemaType, TypeDecorator
+from sqlalchemy.types import BINARY, CHAR, BigInteger, Integer, TypeDecorator
 from sqlalchemy.types import JSON as _JSON
 
 if TYPE_CHECKING:
@@ -107,33 +105,3 @@ class JSON(TypeDecorator):
         if dialect.name == "oracle":
             return dialect.type_descriptor(ORA_BLOB())
         return dialect.type_descriptor(_JSON())
-
-    def _should_create_constraint(self, compiler: Any, **kw: Any) -> bool:
-        if compiler.dialect.name == "oracle":
-            return True
-        return False
-
-    def _variant_mapping_for_set_table(self, column: Any) -> dict | None:
-        if column.type._variant_mapping:
-            variant_mapping = dict(column.type._variant_mapping)
-            variant_mapping["_default"] = column.type
-        else:
-            variant_mapping = None
-        return variant_mapping
-
-    @util.preload_module("sqlalchemy.sql.schema")
-    def _set_table(self, column: Any, table: Any) -> None:
-        schema = util.preloaded.sql_schema
-        SchemaType._set_table(self, column, table)  # type: ignore[arg-type,no-untyped-call]
-
-        variant_mapping = self._variant_mapping_for_set_table(column)
-        sqltext = f"{column.name} is json (strict)"
-        _e = schema.CheckConstraint(
-            sqltext,
-            name=_NONE_NAME if self.name is None else self.name,
-            _create_rule=util.portable_instancemethod(  # type: ignore
-                self._should_create_constraint,
-                {"variant_mapping": variant_mapping},
-            ),
-            _type_bound=True,
-        )
