@@ -35,7 +35,6 @@ The above example used the asynchronous repository implementation, but we offer 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_sync_repository.py
     :language: python
     :caption: app.py
-    :emphasize-lines:
     :linenos:
 
 You now have a feature complete CRUD service that includes pagination!  In the next section, we'll see how we can extend the built in repository to add additional functionality.
