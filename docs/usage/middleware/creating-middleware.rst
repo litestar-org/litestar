@@ -90,7 +90,7 @@ specifies:
 Responding using the MiddlewareProtocol
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Once a middleware finishes doing whatever its doing, it should pass ``scope``, ``receive`` and ``send`` to an ASGI app
+Once a middleware finishes doing whatever its doing, it should pass ``scope``, ``receive``, and ``send`` to an ASGI app
 and await it. This is what's happening in the above example with: ``await self.app(scope, receive, send)``. Let's
 explore another example - redirecting the request to a different url from a middleware:
 
@@ -203,7 +203,7 @@ create middleware:
 
            await self.app(scope, receive, send_wrapper)
 
-The three class variables defined in the above example ``scopes``, ``exclude`` and ``exclude_opt_key`` can be used to
+The three class variables defined in the above example ``scopes``, ``exclude``, and ``exclude_opt_key`` can be used to
 fine-tune for which routes and request types the middleware is called:
 
 

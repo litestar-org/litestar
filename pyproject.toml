@@ -385,6 +385,7 @@ known-first-party = ["litestar", "tests", "examples"]
     "TRY",
 ]
 "docs/examples/application_hooks/before_send_hook.py" = ["UP006"]
+"docs/examples/contrib/sqlalchemy/plugins/**/*.*" = ["UP006"]
 "docs/examples/tests/**/*.*" = [
     "A",
     "ARG",

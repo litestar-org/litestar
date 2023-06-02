@@ -6,6 +6,7 @@ from msgspec import UNSET
 from typing_extensions import get_origin
 
 from litestar.dto.factory import Mark
+from litestar.types.protocols import InstantiableCollection
 
 from .types import (
     CollectionType,
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
 
     from litestar.dto.factory.types import FieldDefinition, RenameStrategy
     from litestar.dto.types import ForType
+    from litestar.typing import ParsedType
 
     from .types import FieldDefinitionsType, TransferFieldDefinition
 
@@ -123,8 +125,9 @@ def transfer_data(
     destination_type: type[T],
     source_data: Any | Collection[Any],
     field_definitions: FieldDefinitionsType,
-    dto_for: ForType = "data",
-) -> T | Collection[T]:
+    dto_for: ForType,
+    parsed_type: ParsedType,
+) -> T | InstantiableCollection[T]:
     """Create instance or iterable of instances of ``destination_type``.
 
     Args:
@@ -132,13 +135,18 @@ def transfer_data(
         source_data: data that has been parsed and validated via the backend.
         field_definitions: model field definitions.
         dto_for: indicates whether the DTO is for the request body or response.
+        parsed_type: the parsed type that represents the handler annotation for which the DTO is being applied.
 
     Returns:
         Data parsed into ``destination_type``.
     """
-    if not isinstance(source_data, Mapping) and isinstance(source_data, Collection):
-        return type(source_data)(
-            transfer_data(destination_type, item, field_definitions, dto_for)  # type:ignore[call-arg]
+    if not parsed_type.is_subclass_of(str) and not parsed_type.is_mapping and parsed_type.is_collection:
+        origin = parsed_type.instantiable_origin
+        if not issubclass(origin, InstantiableCollection):  # pragma: no cover
+            raise RuntimeError(f"Unexpected origin type '{parsed_type.instantiable_origin}', expected collection type")
+
+        return origin(  # type:ignore[no-any-return]
+            transfer_data(destination_type, item, field_definitions, dto_for, parsed_type.inner_types[0])
             for item in source_data
         )
     return transfer_instance_data(destination_type, source_data, field_definitions, dto_for)

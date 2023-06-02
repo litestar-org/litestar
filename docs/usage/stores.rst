@@ -124,7 +124,7 @@ This means that :meth:`get <.base.Store.get>` will return bytes even when a stri
 :meth:`set <.base.Store.set>`.
 
 The reason for this limitation is simple: Different backends used to store the data offer vastly different encoding,
-storage and (de)serialization capacities. Since stores are designed to be interchangeable, this means settling for a
+storage, and (de)serialization capacities. Since stores are designed to be interchangeable, this means settling for a
 common denominator, a type that all backends will support. :class:`bytes` meet these requirements and make it possible
 to store a very wide variety of data.
 
