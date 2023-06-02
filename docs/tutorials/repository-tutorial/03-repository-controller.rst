@@ -28,7 +28,7 @@ We'll declare the ``AuthorController`` to have 5 exposed routes for interacting 
     :emphasize-lines: 110-183
     :linenos:
 
-TODO: We use the pagination filter in the list detail endpoint.  make a not about the other
+TODO: We use the pagination filter in the list detail endpoint.  make a Note about the other stuff?
 
 The above example used the asynchronous repository implementation, but we offer feature parity between the synchronous and async implementations.  Here's the synchronous version of this sample example:
 
