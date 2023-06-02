@@ -16,6 +16,7 @@ from litestar.dto.factory._backends.types import (
     UnionType,
 )
 from litestar.dto.factory.types import FieldDefinition
+from litestar.dto.types import ForType
 from litestar.types.empty import Empty
 from litestar.typing import ParsedType
 
@@ -48,33 +49,37 @@ def fx_data_model(data_model_type: type[Model]) -> Model:
     return data_model_type(a=1, b="2")
 
 
+@pytest.fixture(name="field_definitions")
+def fx_field_definitions(data_model_type: type[Model]) -> list[FieldDefinition]:
+    return [
+        FieldDefinition(
+            name="a",
+            default=Empty,
+            parsed_type=ParsedType(int),
+            default_factory=None,
+            dto_field=None,
+            unique_model_name="some_module.SomeModel",
+            dto_for=None,
+        ),
+        FieldDefinition(
+            name="b",
+            default=Empty,
+            parsed_type=ParsedType(str),
+            default_factory=None,
+            dto_field=None,
+            unique_model_name="some_module.SomeModel",
+            dto_for=None,
+        ),
+    ]
+
+
 @pytest.fixture(name="context")
-def fx_context(data_model_type: type[Model]) -> BackendContext:
+def fx_context(data_model_type: type[Model], field_definitions: list[FieldDefinition]) -> BackendContext:
     return BackendContext(
         dto_config=DTOConfig(),
         dto_for="data",
         parsed_type=ParsedType(data_model_type),
-        field_definition_generator=lambda anything: (
-            f
-            for f in [
-                FieldDefinition(
-                    name="a",
-                    default=Empty,
-                    parsed_type=ParsedType(int),
-                    default_factory=None,
-                    dto_field=None,
-                    unique_model_name="some_module.SomeModel",
-                ),
-                FieldDefinition(
-                    name="b",
-                    default=Empty,
-                    parsed_type=ParsedType(str),
-                    default_factory=None,
-                    dto_field=None,
-                    unique_model_name="some_module.SomeModel",
-                ),
-            ]
-        ),
+        field_definition_generator=lambda _: (f for f in field_definitions),
         is_nested_field_predicate=lambda parsed_type: parsed_type.is_subclass_of((Model, Model2)),
         model_type=data_model_type,
     )
@@ -248,3 +253,16 @@ def test_create_collection_type_nested_union(backend: AbstractDTOBackend) -> Non
     for inner_type in inner_types:
         assert isinstance(inner_type, SimpleType)
         assert bool(inner_type.nested_field_info) is True
+
+
+@pytest.mark.parametrize("dto_for", ["data", "return"])
+def test_parse_model_respects_field_definition_dto_for(
+    dto_for: ForType, backend: AbstractDTOBackend, field_definitions: list[FieldDefinition]
+) -> None:
+    object.__setattr__(field_definitions[0], "dto_for", "data")
+    object.__setattr__(field_definitions[1], "dto_for", "return")
+    backend.context.dto_for = dto_for  # type:ignore[misc]
+    backend.context.field_definition_generator = lambda _: (f for f in field_definitions)  # type:ignore[misc]
+    transfer_field_defs = backend.parse_model(None, exclude=set())
+    assert len(transfer_field_defs) == 1
+    assert transfer_field_defs[0].dto_for == dto_for

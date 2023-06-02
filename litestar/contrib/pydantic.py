@@ -55,6 +55,7 @@ class PydanticDTO(AbstractDTOFactory[T], Generic[T]):
                 default_factory=model_field.default_factory or Empty,
                 dto_field=dto_field,
                 unique_model_name=get_fully_qualified_class_name(model_type),
+                dto_for=None,
             )
 
             yield field_def

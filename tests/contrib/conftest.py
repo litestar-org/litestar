@@ -29,6 +29,7 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]
             unique_model_name=ANY,
             default_factory=Empty,
             dto_field=None,
+            dto_for=None,
         ),
         FieldDefinition(
             name="b",
@@ -37,6 +38,7 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]
             unique_model_name=ANY,
             default_factory=Empty,
             dto_field=DTOField(mark="read-only"),
+            dto_for=None,
         ),
         FieldDefinition(
             name="c",
@@ -45,6 +47,7 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]
             unique_model_name=ANY,
             default_factory=Empty,
             dto_field=None,
+            dto_for=None,
         ),
         FieldDefinition(
             name="d",
@@ -53,6 +56,7 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]
             unique_model_name=ANY,
             default_factory=Empty,
             dto_field=None,
+            dto_for=None,
         ),
         FieldDefinition(
             name="e",
@@ -61,5 +65,6 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]
             unique_model_name=ANY,
             default_factory=int_factory,
             dto_field=None,
+            dto_for=None,
         ),
     ]

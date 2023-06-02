@@ -96,6 +96,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                 default_factory=default_factory,
                 dto_field=elem.info.get(DTO_FIELD_META_KEY),
                 unique_model_name=model_name,
+                dto_for=None,
             )
         ]
 
@@ -125,6 +126,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                 default_factory=None,
                 dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.READ_ONLY)),
                 unique_model_name=model_name,
+                dto_for=None,
             )
         ]
 
@@ -151,6 +153,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                 default_factory=None,
                 dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.READ_ONLY)),
                 unique_model_name=model_name,
+                dto_for="return",
             )
         ]
 
@@ -164,6 +167,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                     default_factory=None,
                     dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.WRITE_ONLY)),
                     unique_model_name=model_name,
+                    dto_for="data",
                 )
             )
 

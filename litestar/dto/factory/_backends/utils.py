@@ -33,6 +33,7 @@ __all__ = (
     "build_annotation_for_backend",
     "create_transfer_model_type_annotation",
     "should_exclude_field",
+    "should_ignore_field",
     "transfer_data",
 )
 
@@ -76,6 +77,21 @@ def should_exclude_field(field_definition: FieldDefinition, exclude: AbstractSet
     read_only_for_data = dto_for == "data" and dto_field and dto_field.mark is Mark.READ_ONLY
     write_only_for_return = dto_for == "return" and dto_field and dto_field.mark is Mark.WRITE_ONLY
     return bool(excluded or private or read_only_for_data or write_only_for_return)
+
+
+def should_ignore_field(field_definition: FieldDefinition, dto_for: ForType) -> bool:
+    """Returns ``True`` where a field should be ignored.
+
+    An ignored field is different to an excluded one in that we do not produce a
+    ``TransferFieldDefinition`` for it at all.
+
+    This allows ``AbstractDTOFactory`` concrete types to generate multiple field definitions
+    for the same field name, each for a different transfer direction.
+
+    One example of this is the :class:`sqlalchemy.ext.hybrid.hybrid_property` which, might have
+    a different type accepted by its setter method, than is returned by its getter method.
+    """
+    return field_definition.dto_for is not None and field_definition.dto_for != dto_for
 
 
 class RenameStrategies:
