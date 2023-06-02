@@ -12,7 +12,7 @@ SQLAlchemy Repository Tutorial
 
 In this tutorial, we will walk through the process of modelling a simple database relationships, and demonstrate how Litestar's
 repository modules can make working with databases a breeze. Lets get started!
- 
+
 
 .. toctree::
     :hidden:
@@ -20,4 +20,3 @@ repository modules can make working with databases a breeze. Lets get started!
     01-modeling-and-features
     02-repository-introduction
     03-repository-crud-example
-
