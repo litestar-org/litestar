@@ -42,14 +42,6 @@ class SlugKey:
 class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
     """Extends the repository to include slug model features.."""
 
-    async def get_by_slug(
-        self,
-        slug: str,
-        **kwargs: Any,
-    ) -> ModelT | None:
-        """Select record by slug value."""
-        return await self.get_one_or_none(slug=slug)
-
     async def get_available_slug(
         self,
         value_to_slugify: str,

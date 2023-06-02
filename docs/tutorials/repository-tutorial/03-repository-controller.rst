@@ -1,44 +1,41 @@
-Interacting with repositories
------------------------------
-Now that we've covered the modelling basics, we are able to create our first repository class.  The repository classes includes all of the standard CRUD operations as well as a few advanced features such as pagination, filtering and bulk operations.
+Controllers and Repositories
+----------------------------
+We've been working our way up the stack, starting with the database models, and now we are ready to use the repository in an actual route.  Let's see how we can use this in a controller.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 14,70,71,72,73
+    :emphasize-lines: 76,77,78
     :linenos:
 
-Here we import the :class:`SQLAlchemyAsyncRepository <litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository>` class and create an ``AuthorRepository`` repository class.  This is all that's required to include all of the integrated repository features.
-
-Next, we'll set up the dependency injection required for our repository.
+Here are creating a simple function that returns an instance of ``AuthorRepository``.  This function will be used to inject a repository instance into our controller routes.
+Note that we are only passing in the database session in this example with no other parameters.
+By default, the repository does not add any additional query options into your base statement.  However, you can easily override this by passing your own statement.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 14,70,71,72,73
+    :emphasize-lines: 82,83,84
     :linenos:
 
-TODO: Finally, we declare our ``AuthorController``.
+Here, we have added a ``selectinload`` option to ensure the necessary relationships are loaded with a `SELECT .. IN ...` loading pattern.
+
+We'll declare the ``AuthorController`` to have 5 exposed routes for interacting with the model.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 14,70,71,72,73
+    :emphasize-lines: 110-183
     :linenos:
 
-TODO: Some notes about the controller here...
-
-.. note::
-
-    The ``list_and_count`` method is designed to be as efficient as possible.  Where possible, a windowed count function is used for paginated data.  This allows a single query to return the paginated data as well as the total count of records.  For databases that do not have support for the necessary analytic window functions, 2 queries are issued.  The first is for the paginated data and the second is the total count of records.
-
+TODO: We use the pagination filter in the list detail endpoint.  make a not about the other
 
 The above example used the asynchronous repository implementation, but we offer feature parity between the synchronous and async implementations.  Here's the synchronous version of this sample example:
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_sync_repository.py
     :language: python
     :caption: app.py
-    :emphasize-lines:  
+    :emphasize-lines:
     :linenos:
 
 You now have a feature complete CRUD service that includes pagination!  In the next section, we'll see how we can extend the built in repository to add additional functionality.
