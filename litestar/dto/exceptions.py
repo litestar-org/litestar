@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from litestar.exceptions import ImproperlyConfiguredException
 
-__all__ = ["DTOException", "UnsupportedType"]
+__all__ = ("DTOException", "UnsupportedType")
 
 
 class DTOException(ImproperlyConfiguredException):
