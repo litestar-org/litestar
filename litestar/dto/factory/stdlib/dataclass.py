@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar.dto.factory.abc import AbstractDTOFactory
 from litestar.dto.factory.data_structures import FieldDefinition
-from litestar.dto.factory.field import DTO_FIELD_META_KEY
+from litestar.dto.factory.field import DTO_FIELD_META_KEY, DTOField
 from litestar.dto.factory.utils import get_model_type_hints
 from litestar.types.empty import Empty
 from litestar.utils.helpers import get_fully_qualified_class_name
@@ -45,7 +45,7 @@ class DataclassDTO(AbstractDTOFactory[T], Generic[T]):
                 parsed_type=parsed_type,
                 default=default,
                 default_factory=default_factory,
-                dto_field=dc_field.metadata.get(DTO_FIELD_META_KEY),
+                dto_field=dc_field.metadata.get(DTO_FIELD_META_KEY, DTOField()),
                 unique_model_name=get_fully_qualified_class_name(model_type),
                 dto_for=None,
             )

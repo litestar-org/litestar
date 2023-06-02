@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Final, Generic, TypeVar
 
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
-from litestar.dto.factory import DTOData
+from litestar.dto.factory import DTOData, Mark
 from litestar.utils.helpers import get_fully_qualified_class_name
 
 from .types import (
@@ -161,6 +161,13 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         for field_definition in self.context.field_definition_generator(model_type):
             if should_ignore_field(field_definition, self.context.dto_for):
                 continue
+
+            if (
+                self.context.config.underscore_fields_private
+                and field_definition.name.startswith("_")
+                and field_definition.dto_field.mark is None
+            ):
+                field_definition.dto_field.mark = Mark.PRIVATE
 
             try:
                 transfer_type = self._create_transfer_type(

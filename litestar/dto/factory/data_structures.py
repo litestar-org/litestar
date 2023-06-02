@@ -84,7 +84,7 @@ class FieldDefinition(ParsedParameter):
     """Unique identifier of model that owns the field."""
     default_factory: Callable[[], Any] | None
     """Default factory of the field."""
-    dto_field: DTOField | None
+    dto_field: DTOField
     """DTO field configuration."""
     dto_for: ForType | None
     """Direction of transfer for field.

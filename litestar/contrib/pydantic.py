@@ -36,7 +36,7 @@ class PydanticDTO(AbstractDTOFactory[T], Generic[T]):
         for key, model_field in model_type.__fields__.items():
             parsed_type = model_parsed_types[key]
             model_field = model_type.__fields__[key]
-            dto_field: DTOField | None = model_field.field_info.extra.get(DTO_FIELD_META_KEY)
+            dto_field = model_field.field_info.extra.get(DTO_FIELD_META_KEY, DTOField())
 
             def determine_default(_parsed_type: ParsedType, _model_field: ModelField) -> Any:
                 if (
