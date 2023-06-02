@@ -1,5 +1,5 @@
-Interacting with repositories
------------------------------
+Database Modeling and Integrated Features
+-----------------------------------------
 In this section we will cover a basic introduction into the repository features.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
