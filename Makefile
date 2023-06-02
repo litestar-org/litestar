@@ -38,7 +38,7 @@ test-sqlalchemy-spanner:
 	pytest tests -m='sqlalchemy_spanner'
 
 test:
-	pytest tests -m='not sqlalchemy_asyncmy and not sqlalchemy_asyncpg and not sqlalchemy_psycopg_async and not sqlalchemy_psycopg_sync and not sqlalchemy_oracledband not sqlalchemy_spanner and not sqlalchemy_duckdb'
+	pytest tests -m='not sqlalchemy_asyncmy and not sqlalchemy_asyncpg and not sqlalchemy_psycopg_async and not sqlalchemy_psycopg_sync and not sqlalchemy_oracledb and not sqlalchemy_spanner and not sqlalchemy_duckdb'
 
 test-all: test test-sqlalchemy-asyncpg test-sqlalchemy-asyncmy test-sqlalchemy_psycopg_async test-sqlalchemy_psycopg_sync test-sqlalchemy_oracledb test-sqlalchemy-duckdb test-sqlalchemy-spanner test-examples
 
