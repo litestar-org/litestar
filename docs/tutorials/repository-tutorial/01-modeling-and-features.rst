@@ -1,6 +1,6 @@
-Database Modeling and Integrated Features
------------------------------------------
-In this section we will cover a basic introduction into the repository features.
+Introduction to Database Modeling and Repository Features
+---------------------------------------------------------
+In this tutorial, we will cover the integrated repository features in Litestar 2.0, starting with database modeling using the included SQLAlchemy declarative model helpers. These are a series of classes and mixins that incorporate commonly used functions/column types to make working with models easier.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :language: python
@@ -8,11 +8,10 @@ In this section we will cover a basic introduction into the repository features.
     :emphasize-lines: 9, 8,19,20
     :linenos:
 
-We are going to begin with a simple data modelling exercise using the included SQLAlchemy declarative model helpers.  The helpers, included as a set of model classes and mixins allow you to quickly enable common functionalities on your models.
+We'll begin by modelling the entities and relationships between authors and books.  We'll start by creating the ``Author`` table, utilizing the :class:`UUIDBase <litestar.contrib.sqlalchemy.base.UUIDBase>` class. To keep things simple, our first model will encompass only three fields: `id`, `name`, and `dob`.
 
-Let's start by declaring a new model named ``Author`` using the :class:`UUIDBase <litestar.contrib.sqlalchemy.base.UUIDBase>` class.  We'll keep this first model limited to 3 fields: ``id``, ``name``, ``dob``.  This is all we need to create the ``author`` table.
-
-We'll continue by adding a simple ``Book`` relationship to the ``Author`` model.  We want to allow each author record to have zero to many book records.  To achieve this, we want to make sure each ``book`` record contains the ``author_id`` as a link.
+The books entity is not considered a "strong" entity and therefore always requires an author to be created.  We need to configure our SQLAlchemy classes so that it is aware of this relationship.
+We will extend the ``Author`` model by incorporating a ``Book`` relationship. This would allow each ``Author`` record to possess multiple ``Book`` records. By configuring it this way, SQLAlchemy will automatically include the necessary foreign key constraints when using the `author_id` field in each ``Book`` record.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :language: python
@@ -20,23 +19,23 @@ We'll continue by adding a simple ``Book`` relationship to the ``Author`` model.
     :emphasize-lines: 9, 21,26,27,28,29
     :linenos:
 
-We'll use one additional feature when creating this new model - the automatically timestamped audit model.  This allows us to track when the record was inserted and lasted updated.
+To demonstrate some of the other included helper classes, we will take advantage of the automatically timestamped audit model feature. This lets us record the time when each record was created and last updated.
 
-Let's declare a new ``Book`` model using the :class:`UUIDAuditBase <litestar.contrib.sqlalchemy.base.UUIDAuditBase>` class.  Notice that the only change is the base class we inherit from.  This one change automatically adds the timestamp columns (``created`` and ``updated``) to the ``book`` table when deployed!
+To implement this, we will define a new ``Book`` model via the :class:`UUIDAuditBase <litestar.contrib.sqlalchemy.base.UUIDAuditBase>` class. Observe that the only modification here is the parent class from which we inherit. This minor change endows the `book` table with automatic timestamp columns (`created` and `updated`) upon deployment!
 
 .. note::
 
-    If you have a requirement to use integer based primary keys, identical implementations for the base model and base audit model available at :class:`BigIntBase <litestar.contrib.sqlalchemy.base.BigIntAuditBase>` and :class:`BigIntAuditBase <litestar.contrib.sqlalchemy.base.UUIDAuditBase>` respectively.
+    If your application requires integer-based primary keys, an equivalent base model and base audit model implementations can be found at :class:`BigIntBase <litestar.contrib.sqlalchemy.base.BigIntAuditBase>` and :class:`BigIntAuditBase <litestar.contrib.sqlalchemy.base.UUIDAuditBase>` respectively.
 
-    This sequence based integer primary key is supported on all backends except for Spanner.  Using monotonically changing primary keys is considered an anti-pattern in Spanner and leads to performance problems.
+    *Spanner Only* Using monotonically changing primary keys is considered an anti-pattern in Spanner and leads to performance problems.
+    Additionally, Spanner does not currently include an idiom comparable to the ``Sequence`` object.  This means the ``BigIntBase`` and ``BigIntAuditBase`` are not currently supported for Spanner.
 
-By using the built in base declarative models, you also inherit a few additional configurations that make working with your data easier:
+By using the built-in base declarative models, you gain some additional features that address common features and pain points when working with SQLAlchemy:
 
-- Synchronous and Asynchronous implementations tested with many popular database engines.  Currently 6 databases engines have been tested for support:  Postgres, SQLite, MySQL, DuckDB, Oracle, and Spanner
-- Automatic table name inference from model name.  A model named ``EventLog`` translates to the the database table ``event_log``
-- Custom :class:`GUID <litestar.contrib.sqlalchemy.types.GUID>` database that implements a native UUID in supported engines or a ``Binary(16)`` as a fallback.
-- A special `BigInteger` variant `BigIntIdentity <litestar.contrib.sqlalchemy.types.BigIntIdentity>` that reverts to an ``Integer`` for unsupported variants.
-- A custom :class:`JSON <litestar.contrib.sqlalchemy.types.JSON>` that uses native ``JSONB`` where supported and ``Binary`` or ``Blob`` as a fallback.
+- Synchronous and Asynchronous repository implementations have been tried and tested with various popular database engines. As of now, six database engines are supported: Postgres, SQLite, MySQL, DuckDB, Oracle, and Spanner.
+- Automatic table name deduction from model name. For instance, a model named `EventLog` would correspond to the `event_log` database table.
+- A :class:`GUID <litestar.contrib.sqlalchemy.types.GUID>` database type that establishes a native UUID in supported engines or a `Binary(16)` as a fallback.
+- A `BigInteger` variant `BigIntIdentity <litestar.contrib.sqlalchemy.types.BigIntIdentity>` that reverts to an `Integer` for unsupported variants.
+- A custom :class:`JSON <litestar.contrib.sqlalchemy.types.JSON>` type that uses native `JSONB` where possible and `Binary` or `Blob` as an alternative.
 
-
-That's the basics!  Let's expand on this an introduce the repository class.
+Let's build on this as we look at the repository classes.
