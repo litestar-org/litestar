@@ -25,14 +25,13 @@ __all__ = ("litestar_group",)
 if rich_click_installed:
     rich_click_patch()  # pyright: ignore[reportUnboundVariable]
     click.rich_click.USE_RICH_MARKUP = True  # pyright: ignore[reportGeneralTypeIssues]
+    click.rich_click.USE_MARKDOWN = False  # pyright: ignore[reportGeneralTypeIssues]
     click.rich_click.SHOW_ARGUMENTS = True  # pyright: ignore[reportGeneralTypeIssues]
     click.rich_click.GROUP_ARGUMENTS_OPTIONS = True  # pyright: ignore[reportGeneralTypeIssues]
     click.rich_click.SHOW_ARGUMENTS = True  # pyright: ignore[reportGeneralTypeIssues]
     click.rich_click.GROUP_ARGUMENTS_OPTIONS = True  # pyright: ignore[reportGeneralTypeIssues]
     click.rich_click.STYLE_ERRORS_SUGGESTION = "magenta italic"  # pyright: ignore[reportGeneralTypeIssues]
-    click.rich_click.ERRORS_SUGGESTION = (  # pyright: ignore[reportGeneralTypeIssues]
-        "Try running the '--help' flag for more information."
-    )
+    click.rich_click.ERRORS_SUGGESTION = ""  # pyright: ignore[reportGeneralTypeIssues]
     click.rich_click.ERRORS_EPILOGUE = ""  # pyright: ignore[reportGeneralTypeIssues]
     click.rich_click.MAX_WIDTH = 100  # pyright: ignore[reportGeneralTypeIssues]
     click.rich_click.SHOW_METAVARS_COLUMN = True  # pyright: ignore[reportGeneralTypeIssues]

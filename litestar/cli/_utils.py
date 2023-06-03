@@ -19,13 +19,13 @@ from litestar.middleware import DefineMiddleware
 from litestar.utils import get_name
 
 try:
-    from rich_click import ClickException, Context, pass_context, style
+    from rich_click import ClickException, Context, pass_context
     from rich_click.rich_command import RichCommand as Command
     from rich_click.rich_group import RichGroup as Group
 
     rich_click_installed = True  # pragma: no cover
 except ImportError:
-    from click import ClickException, Command, Context, Group, pass_context, style  # type: ignore[assignment]
+    from click import ClickException, Command, Context, Group, pass_context  # type: ignore[assignment]
 
     rich_click_installed = False
 
@@ -63,7 +63,7 @@ class LitestarCLIException(ClickException):
 
     def __init__(self, message: str) -> None:
         """Initialize exception and style error message."""
-        super().__init__(style(message, fg="red"))
+        super().__init__(message)
 
 
 @dataclass
