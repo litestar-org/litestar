@@ -18,19 +18,19 @@ else:
         from rich_click import Path as ClickPath
         from rich_click.cli import patch as rich_click_patch
 
-        rich_click_patch()  # pyright: ignore[reportUnboundVariable]
-        click.rich_click.USE_RICH_MARKUP = True  # pyright: ignore[reportGeneralTypeIssues]
-        click.rich_click.USE_MARKDOWN = False  # pyright: ignore[reportGeneralTypeIssues]
-        click.rich_click.SHOW_ARGUMENTS = True  # pyright: ignore[reportGeneralTypeIssues]
-        click.rich_click.GROUP_ARGUMENTS_OPTIONS = True  # pyright: ignore[reportGeneralTypeIssues]
-        click.rich_click.SHOW_ARGUMENTS = True  # pyright: ignore[reportGeneralTypeIssues]
-        click.rich_click.GROUP_ARGUMENTS_OPTIONS = True  # pyright: ignore[reportGeneralTypeIssues]
-        click.rich_click.STYLE_ERRORS_SUGGESTION = "magenta italic"  # pyright: ignore[reportGeneralTypeIssues]
-        click.rich_click.ERRORS_SUGGESTION = ""  # pyright: ignore[reportGeneralTypeIssues]
-        click.rich_click.ERRORS_EPILOGUE = ""  # pyright: ignore[reportGeneralTypeIssues]
-        click.rich_click.MAX_WIDTH = 100  # pyright: ignore[reportGeneralTypeIssues]
-        click.rich_click.SHOW_METAVARS_COLUMN = True  # pyright: ignore[reportGeneralTypeIssues]
-        click.rich_click.APPEND_METAVARS_HELP = True  # pyright: ignore[reportGeneralTypeIssues]
+        rich_click_patch()
+        click.rich_click.USE_RICH_MARKUP = True
+        click.rich_click.USE_MARKDOWN = False
+        click.rich_click.SHOW_ARGUMENTS = True
+        click.rich_click.GROUP_ARGUMENTS_OPTIONS = True
+        click.rich_click.SHOW_ARGUMENTS = True
+        click.rich_click.GROUP_ARGUMENTS_OPTIONS = True
+        click.rich_click.STYLE_ERRORS_SUGGESTION = "magenta italic"
+        click.rich_click.ERRORS_SUGGESTION = ""
+        click.rich_click.ERRORS_EPILOGUE = ""
+        click.rich_click.MAX_WIDTH = 100
+        click.rich_click.SHOW_METAVARS_COLUMN = True
+        click.rich_click.APPEND_METAVARS_HELP = True
     except ImportError:
         import click
         from click import Context, group, option, pass_context
