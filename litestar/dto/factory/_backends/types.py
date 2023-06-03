@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from litestar.dto.factory.types import FieldDefinition
+from litestar.dto.factory.data_structures import FieldDefinition
 
 if TYPE_CHECKING:
     from typing import Any
@@ -92,10 +92,15 @@ class MappingType(CompositeType):
 @dataclass(frozen=True)
 class TransferFieldDefinition(FieldDefinition):
     __slots__ = (
+        "default_factory",
+        "dto_field",
+        "dto_for",
+        "unique_model_name",
         "is_excluded",
         "is_partial",
         "serialization_name",
         "transfer_type",
+        "unique_name",
     )
 
     transfer_type: TransferType

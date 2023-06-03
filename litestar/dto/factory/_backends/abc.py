@@ -34,7 +34,7 @@ if TYPE_CHECKING:
     from typing import AbstractSet, Any, Callable, Generator
 
     from litestar.dto.factory import DTOConfig
-    from litestar.dto.factory.types import FieldDefinition
+    from litestar.dto.factory.data_structures import FieldDefinition
     from litestar.dto.interface import ConnectionContext
     from litestar.dto.types import ForType
     from litestar.openapi.spec import Reference, Schema

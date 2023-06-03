@@ -10,7 +10,7 @@ from litestar.typing import ParsedType
 from ._backends import MsgspecDTOBackend, PydanticDTOBackend
 from ._backends.abc import BackendContext
 from .config import DTOConfig
-from .data_structures import DTOData
+from .data_structures import DTOData, FieldDefinition
 from .exc import InvalidAnnotation
 from .utils import parse_configs_from_annotation
 
@@ -25,7 +25,6 @@ if TYPE_CHECKING:
     from litestar.types.serialization import LitestarEncodableType
 
     from ._backends import AbstractDTOBackend
-    from .types import FieldDefinition
 
 __all__ = ("AbstractDTOFactory",)
 

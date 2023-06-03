@@ -6,7 +6,7 @@ from unittest.mock import ANY
 import pytest
 
 from litestar.dto.factory import DTOField
-from litestar.dto.factory.types import FieldDefinition
+from litestar.dto.factory.data_structures import FieldDefinition
 from litestar.types.empty import Empty
 from litestar.typing import ParsedType
 
