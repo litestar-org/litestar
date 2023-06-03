@@ -47,7 +47,7 @@ name = "alembic"
 version = "1.11.1"
 description = "A database migration tool for SQLAlchemy."
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "alembic-1.11.1-py3-none-any.whl", hash = "sha256:dc871798a601fab38332e38d6ddb38d5e734f60034baeb8e2db5b642fccd8ab8"},
@@ -4740,7 +4740,7 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [extras]
 attrs = ["attrs", "cattrs", "python-dateutil", "pytimeparse"]
 brotli = ["brotli"]
-cli = ["click", "jsbeautifier", "rich", "uvicorn"]
+cli = ["click", "jsbeautifier", "rich", "rich-click", "uvicorn"]
 cryptography = ["cryptography"]
 full = ["alembic", "attrs", "brotli", "cattrs", "click", "cryptography", "jinja2", "jsbeautifier", "opentelemetry-instrumentation-asgi", "python-jose", "pytimeparse", "redis", "rich", "sqlalchemy", "structlog", "uvicorn"]
 jinja = ["jinja2"]
@@ -4748,7 +4748,6 @@ jwt = ["cryptography", "python-jose"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 redis = ["redis"]
-rich-click = ["rich-click"]
 sqlalchemy = ["alembic", "sqlalchemy"]
 standard = ["click", "jinja2", "jsbeautifier", "rich", "rich-click", "uvicorn"]
 structlog = ["structlog"]
@@ -4757,4 +4756,4 @@ tortoise-orm = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "18234eadf59ff8b2772c355a6f5a070ae94ef74de43ed3bd24f05752addc6d41"
+content-hash = "1b1e9de7e78657aea2026ad77f3f003887220dccc6f2ad15dee70c70a818a8f9"

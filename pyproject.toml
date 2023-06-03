@@ -215,7 +215,7 @@ full = [
 ]
 
 [tool.poetry.scripts]
-litestar = { callable = "litestar:__main__", extras = ["cli"] }
+litestar = { callable = "litestar.__main__:run_cli", extras = ["cli"] }
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
