@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import uuid
+from base64 import b64decode
 from typing import TYPE_CHECKING, Any, cast
 
 from sqlalchemy.dialects.oracle import BLOB as ORA_BLOB
@@ -14,13 +15,6 @@ if TYPE_CHECKING:
     from sqlalchemy.engine import Dialect
 
 BigIntIdentity = BigInteger().with_variant(Integer, "sqlite")
-"""Platform-independent BigInteger Primary Key.
-
-User a Big Integer on engines that support it.
-
-Uses Integer for sqlite since there is no
-
-"""
 
 
 class GUID(TypeDecorator):
@@ -35,13 +29,16 @@ class GUID(TypeDecorator):
 
     impl = BINARY(16)
     cache_ok = True
-    python_type = type(uuid.UUID)
+
+    @property
+    def python_type(self) -> type[uuid.UUID]:
+        return uuid.UUID
 
     def __init__(self, *args: Any, binary: bool = True, **kwargs: Any) -> None:
         self.binary = binary
 
     def load_dialect_impl(self, dialect: Dialect) -> Any:
-        if dialect.name == "postgresql":
+        if dialect.name in {"postgresql", "duckdb"}:
             return dialect.type_descriptor(PG_UUID())
         if dialect.name == "oracle":
             return dialect.type_descriptor(ORA_RAW(16))
@@ -52,12 +49,12 @@ class GUID(TypeDecorator):
     def process_bind_param(self, value: bytes | str | uuid.UUID | None, dialect: Dialect) -> bytes | str | None:
         if value is None:
             return value
-        if dialect.name == "postgresql":
+        if dialect.name in {"postgresql", "duckdb"}:
             return str(value)
         value = self.to_uuid(value)
         if value is None:
             return value
-        if dialect.name == "oracle":
+        if dialect.name in {"oracle", "spanner+spanner"}:
             return value.bytes
         return value.bytes if self.binary else value.hex
 
@@ -66,6 +63,8 @@ class GUID(TypeDecorator):
             return value
         if isinstance(value, uuid.UUID):
             return value
+        if dialect.name == "spanner+spanner":
+            return uuid.UUID(bytes=b64decode(value))
         if self.binary:
             return uuid.UUID(bytes=cast("bytes", value))
         return uuid.UUID(hex=cast("str", value))
@@ -81,8 +80,28 @@ class GUID(TypeDecorator):
         return cast("uuid.UUID | None", value)
 
 
-JSON = _JSON().with_variant(PG_JSONB, "postgresql").with_variant(ORA_BLOB, "oracle")
-"""Platform-independent JSON type.
+class JSON(TypeDecorator):
+    """Platform-independent JSON type.
 
     Uses JSONB type for postgres, BLOB for Oracle, otherwise uses the generic JSON data type.
-"""
+
+    JSON = _JSON().with_variant(PG_JSONB, "postgresql").with_variant(ORA_BLOB, "oracle")
+
+    """
+
+    impl = _JSON
+    cache_ok = True
+
+    @property
+    def python_type(self) -> type[dict]:
+        return dict
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Initialize JSON type"""
+
+    def load_dialect_impl(self, dialect: Dialect) -> Any:
+        if dialect.name == "postgresql":
+            return dialect.type_descriptor(PG_JSONB())  # type: ignore
+        if dialect.name == "oracle":
+            return dialect.type_descriptor(ORA_BLOB())
+        return dialect.type_descriptor(_JSON())
