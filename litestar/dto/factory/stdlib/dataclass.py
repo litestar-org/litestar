@@ -47,6 +47,7 @@ class DataclassDTO(AbstractDTOFactory[T], Generic[T]):
                 default_factory=default_factory,
                 dto_field=dc_field.metadata.get(DTO_FIELD_META_KEY),
                 unique_model_name=get_fully_qualified_class_name(model_type),
+                dto_for=None,
             )
 
             yield field_def

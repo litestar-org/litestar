@@ -194,6 +194,7 @@ def test_backend_model_name_uniqueness(backend_type: type[AbstractDTOBackend], b
             transfer_type=transfer_type,
             is_partial=False,
             is_excluded=False,
+            dto_for=None,
         ),
     )
     for i in range(100):
