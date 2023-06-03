@@ -97,6 +97,7 @@ importlib-resources = { version="^5.12.0", python = "<3.9" }
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
 rich-click = "*"
+alembic = "*"
 asyncmy = "*"
 asyncpg = "*"
 attrs = "*"
@@ -141,6 +142,8 @@ tortoise-orm = ">=0.17.0"
 trio = "*"
 uvicorn = "*"
 pytest-rerunfailures = "^11.1.2"
+duckdb-engine = "*"
+sqlalchemy-spanner = "*"
 
 [tool.poetry.group.docs]
 optional = true
@@ -245,6 +248,11 @@ asyncio_mode = "auto"
 filterwarnings = [
     "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:164",
     "ignore::DeprecationWarning:pkg_resources:2803",
+    "ignore::DeprecationWarning:google.rpc",
+    "ignore::DeprecationWarning:google.gcloud",
+    "ignore::DeprecationWarning:google.iam",
+    "ignore::DeprecationWarning:google",
+    "ignore::DeprecationWarning:sphinxcontrib",
 ]
 markers = [
     "sqlalchemy_asyncmy: SQLAlchemy MySQL (asyncmy) Tests",
@@ -253,7 +261,9 @@ markers = [
     "sqlalchemy_aiosqlite: SQLAlchemy SQLite (aiosqlite) Tests",
     "sqlalchemy_psycopg_sync: SQLAlchemy Postgres (psycopg sync) Tests",
     "sqlalchemy_sqlite: SQLAlchemy SQLite (sqlite) Tests",
-    "sqlalchemy_oracledb: SQLAlchemy Oracle (oracledb) Tests"
+    "sqlalchemy_oracledb: SQLAlchemy Oracle (oracledb) Tests",
+    "sqlalchemy_spanner: SQLAlchemy Google Cloud Spanner (sqlalchemy-spanner) Tests",
+    "sqlalchemy_duckdb: SQLAlchemy Duckdb (duckdb-engine) Tests",
 ]
 
 [tool.pyright]

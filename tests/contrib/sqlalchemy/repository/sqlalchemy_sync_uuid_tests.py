@@ -11,22 +11,13 @@ from sqlalchemy import Engine, insert
 from litestar.contrib.repository.exceptions import RepositoryError
 from litestar.contrib.repository.filters import BeforeAfter, CollectionFilter, OrderBy, SearchFilter
 from litestar.contrib.sqlalchemy import base
-from tests.contrib.sqlalchemy.models import (
-    Author,
-    AuthorSyncRepository,
-    BookSyncRepository,
-    Ingredient,
-    Store,
-    StoreSyncRepository,
-)
+from tests.contrib.sqlalchemy.models_uuid import AuthorSyncRepository, BookSyncRepository, UUIDAuthor
 
 
 def seed_db(
     engine: Engine,
-    raw_authors: list[dict[str, Any]],
-    raw_books: list[dict[str, Any]],
-    raw_stores: list[dict[str, Any]],
-    raw_ingredients: list[dict[str, Any]],
+    raw_authors_uuid: list[dict[str, Any]],
+    raw_books_uuid: list[dict[str, Any]],
 ) -> None:
     """Populate test database with sample data.
 
@@ -34,22 +25,17 @@ def seed_db(
         engine: The SQLAlchemy engine instance.
     """
     # convert date/time strings to dt objects.
-    for raw_author in raw_authors:
-        raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d")
+    for raw_author in raw_authors_uuid:
+        raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d").date()
         raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
         raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
-    for raw_store in raw_stores:
-        raw_store["created"] = datetime.strptime(raw_store["created"], "%Y-%m-%dT%H:%M:%S")
-        raw_store["updated"] = datetime.strptime(raw_store["updated"], "%Y-%m-%dT%H:%M:%S")
+
     with engine.begin() as conn:
         base.orm_registry.metadata.drop_all(conn)
         base.orm_registry.metadata.create_all(conn)
-        for author in raw_authors:
-            conn.execute(insert(Author).values(author))
-        for ingredient in raw_ingredients:
-            conn.execute(insert(Ingredient).values(ingredient))
-        for store in raw_stores:
-            conn.execute(insert(Store).values(store))
+    with engine.begin() as conn:
+        for author in raw_authors_uuid:
+            conn.execute(insert(UUIDAuthor).values(author))
 
 
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorSyncRepository) -> None:
@@ -62,48 +48,39 @@ def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorSyncR
         author_repo.filter_collection_by_kwargs(author_repo.statement, whoops="silly me")
 
 
-def test_repo_count_method(author_repo: AuthorSyncRepository, store_repo: StoreSyncRepository) -> None:
+def test_repo_count_method(
+    author_repo: AuthorSyncRepository,
+) -> None:
     """Test SQLALchemy count.
 
     Args:
         author_repo (AuthorSyncRepository): The author mock repository
     """
     assert author_repo.count() == 2
-    assert store_repo.count() == 2
 
 
 def test_repo_list_and_count_method(
-    raw_authors: list[dict[str, Any]],
+    raw_authors_uuid: list[dict[str, Any]],
     author_repo: AuthorSyncRepository,
-    raw_stores: list[dict[str, Any]],
-    store_repo: StoreSyncRepository,
 ) -> None:
     """Test SQLALchemy list with count in asyncpg.
 
     Args:
-        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_uuid (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorSyncRepository): The author mock repository
-        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
-        store_repo (StoreRepository): The store mock repository
     """
-    exp_count = len(raw_authors)
+    exp_count = len(raw_authors_uuid)
     collection, count = author_repo.list_and_count()
     assert exp_count == count
     assert isinstance(collection, list)
     assert len(collection) == exp_count
-
-    exp_count2 = len(raw_stores)
-    collection2, count2 = store_repo.list_and_count()
-    assert exp_count2 == count2
-    assert isinstance(collection2, list)
-    assert len(collection2) == exp_count2
 
 
 def test_repo_list_and_count_method_empty(book_repo: BookSyncRepository) -> None:
     """Test SQLALchemy list with count in asyncpg.
 
     Args:
-        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_uuid (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorSyncRepository): The author mock repository
     """
 
@@ -114,73 +91,52 @@ def test_repo_list_and_count_method_empty(book_repo: BookSyncRepository) -> None
 
 
 def test_repo_list_method(
-    raw_authors: list[dict[str, Any]],
+    raw_authors_uuid: list[dict[str, Any]],
     author_repo: AuthorSyncRepository,
-    raw_stores: list[dict[str, Any]],
-    store_repo: StoreSyncRepository,
 ) -> None:
     """Test SQLALchemy list.
 
     Args:
-        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_uuid (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorSyncRepository): The author mock repository
-        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
-        store_repo (StoreRepository): The store mock repository
     """
-    exp_count = len(raw_authors)
+    exp_count = len(raw_authors_uuid)
     collection = author_repo.list()
     assert isinstance(collection, list)
     assert len(collection) == exp_count
 
-    exp_count2 = len(raw_stores)
-    collection2 = store_repo.list()
-    assert isinstance(collection2, list)
-    assert len(collection2) == exp_count2
-
 
 def test_repo_add_method(
-    raw_authors: list[dict[str, Any]],
+    raw_authors_uuid: list[dict[str, Any]],
     author_repo: AuthorSyncRepository,
-    raw_stores: list[dict[str, Any]],
-    store_repo: StoreSyncRepository,
 ) -> None:
     """Test SQLALchemy Add.
 
     Args:
-        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_uuid (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorSyncRepository): The author mock repository
-        raw_stores (list[dict[str, Any]]): list of stores pre-seeded into the mock repository
-        store_repo (StoreRepository): The store mock repository
     """
-    exp_count = len(raw_authors) + 1
-    new_author = Author(name="Testing", dob=datetime.now())
+    exp_count = len(raw_authors_uuid) + 1
+    new_author = UUIDAuthor(name="Testing", dob=datetime.now().date())
     obj = author_repo.add(new_author)
     count = author_repo.count()
     assert exp_count == count
-    assert isinstance(obj, Author)
+    assert isinstance(obj, UUIDAuthor)
     assert new_author.name == obj.name
     assert obj.id is not None
 
-    exp_count2 = len(raw_stores) + 1
-    new_store = Store(store_name="Flea Market (Like a Mini Mall) - Montgomery, AL")
-    obj2 = store_repo.add(new_store)
-    count2 = store_repo.count()
-    assert exp_count2 == count2
-    assert isinstance(obj2, Store)
-    assert new_store.store_name == obj2.store_name
-    assert obj2.id is not None
-    assert obj2.id > 0
 
-
-def test_repo_add_many_method(raw_authors: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
+def test_repo_add_many_method(raw_authors_uuid: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Add Many.
 
     Args:
-        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_uuid (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorSyncRepository): The author mock repository
     """
-    exp_count = len(raw_authors) + 2
-    objs = author_repo.add_many([Author(name="Testing 2", dob=datetime.now()), Author(name="Cody", dob=datetime.now())])
+    exp_count = len(raw_authors_uuid) + 2
+    objs = author_repo.add_many(
+        [UUIDAuthor(name="Testing 2", dob=datetime.now().date()), UUIDAuthor(name="Cody", dob=datetime.now().date())]
+    )
     count = author_repo.count()
     assert exp_count == count
     assert isinstance(objs, list)
@@ -245,7 +201,7 @@ def test_repo_delete_many_method(author_repo: AuthorSyncRepository) -> None:
     data_to_insert = []
     for chunk in range(0, 1000):
         data_to_insert.append(
-            Author(
+            UUIDAuthor(
                 name="author name %d" % chunk,
             )
         )
@@ -318,9 +274,11 @@ def test_repo_get_or_create_match_filter(author_repo: AuthorSyncRepository) -> N
         author_repo (AuthorSyncRepository): The author mock repository
     """
     now = datetime.now()
-    existing_obj, existing_created = author_repo.get_or_create(match_fields="name", name="Agatha Christie", dob=now)
+    existing_obj, existing_created = author_repo.get_or_create(
+        match_fields="name", name="Agatha Christie", dob=now.date()
+    )
     assert existing_obj.id == UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")
-    assert existing_obj.dob == now
+    assert existing_obj.dob == now.date()
     assert existing_created is False
 
 
@@ -336,18 +294,18 @@ def test_repo_upsert_method(author_repo: AuthorSyncRepository) -> None:
     assert upsert_update_obj.id == UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")
     assert upsert_update_obj.name == "Agatha C."
 
-    upsert_insert_obj = author_repo.upsert(Author(name="An Author"))
+    upsert_insert_obj = author_repo.upsert(UUIDAuthor(name="An Author"))
     assert upsert_insert_obj.id is not None
     assert upsert_insert_obj.name == "An Author"
 
     # ensures that it still works even if the ID is added before insert
-    upsert2_insert_obj = author_repo.upsert(Author(id=uuid4(), name="Another Author"))
+    upsert2_insert_obj = author_repo.upsert(UUIDAuthor(id=uuid4(), name="Another Author"))
     assert upsert2_insert_obj.id is not None
     assert upsert2_insert_obj.name == "Another Author"
 
 
 def test_repo_filter_before_after(author_repo: AuthorSyncRepository) -> None:
-    """Test SQLALchemy upsert.
+    """Test SQLALchemy before after filter.
 
     Args:
         author_repo (AuthorSyncRepository): The author mock repository
@@ -366,7 +324,7 @@ def test_repo_filter_before_after(author_repo: AuthorSyncRepository) -> None:
 
 
 def test_repo_filter_search(author_repo: AuthorSyncRepository) -> None:
-    """Test SQLALchemy upsert.
+    """Test SQLALchemy search filter.
 
     Args:
         author_repo (AuthorSyncRepository): The author mock repository
@@ -387,7 +345,7 @@ def test_repo_filter_search(author_repo: AuthorSyncRepository) -> None:
 
 
 def test_repo_filter_order_by(author_repo: AuthorSyncRepository) -> None:
-    """Test SQLALchemy upsert.
+    """Test SQLALchemy order by filter.
 
     Args:
         author_repo (AuthorSyncRepository): The author mock repository
@@ -400,7 +358,7 @@ def test_repo_filter_order_by(author_repo: AuthorSyncRepository) -> None:
 
 
 def test_repo_filter_collection(author_repo: AuthorSyncRepository) -> None:
-    """Test SQLALchemy upsert.
+    """Test SQLALchemy collection filter.
 
     Args:
         author_repo (AuthorSyncRepository): The author mock repository

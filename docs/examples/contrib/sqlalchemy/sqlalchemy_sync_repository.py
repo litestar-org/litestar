@@ -195,10 +195,10 @@ sqlalchemy_config = SQLAlchemySyncConfig(
 sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 
 
-async def on_startup() -> None:
+def on_startup() -> None:
     """Initializes the database."""
-    async with sqlalchemy_config.create_engine().begin() as conn:
-        await conn.run_sync(UUIDBase.metadata.create_all)
+    with sqlalchemy_config.create_engine().begin() as conn:
+        UUIDBase.metadata.create_all(conn)
 
 
 app = Litestar(

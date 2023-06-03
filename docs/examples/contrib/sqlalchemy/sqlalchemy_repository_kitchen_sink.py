@@ -1,16 +1,11 @@
 from datetime import date
-from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import ForeignKey, select
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from litestar import Litestar, get
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
-
-if TYPE_CHECKING:
-    from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
+from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig
 
 
 # the SQLAlchemy base includes a declarative model for you to use in your models.
@@ -30,25 +25,12 @@ class Book(UUIDAuditBase):
 
 
 sqlalchemy_config = SQLAlchemyAsyncConfig(
-    connection_string="sqlite+aiosqlite:///test.sqlite", session_dependency_key="db_session"
-)  # Create 'async_session' dependency.
-sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
+    connection_string="sqlite+aiosqlite:///test.sqlite",
+    session_dependency_key="db_session",
+)
 
 
 async def on_startup() -> None:
     """Initializes the database."""
     async with sqlalchemy_config.create_engine().begin() as conn:
         await conn.run_sync(UUIDBase.metadata.create_all)
-
-
-@get(path="/authors")
-async def get_authors(db_session: "AsyncSession", db_engine: "AsyncEngine") -> list[Author]:
-    """Interact with SQLAlchemy engine and session."""
-    return list(await db_session.scalars(select(Author)))
-
-
-app = Litestar(
-    route_handlers=[get_authors],
-    on_startup=[on_startup],
-    plugins=[SQLAlchemyInitPlugin(config=sqlalchemy_config)],
-)

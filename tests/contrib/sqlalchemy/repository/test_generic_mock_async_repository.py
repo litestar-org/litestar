@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from random import random
 from uuid import uuid4
 
 import pytest
@@ -12,65 +11,39 @@ from litestar.contrib.repository.testing.generic_mock_repository import (
     GenericAsyncMockRepository,
 )
 from litestar.contrib.sqlalchemy import base
-from tests.contrib.sqlalchemy.models import Author, Book, Ingredient
+from tests.contrib.sqlalchemy.models_uuid import UUIDAuthor, UUIDBook
 
 
 @pytest.fixture(name="authors")
-def fx_authors() -> list[Author]:
+def fx_authors() -> list[UUIDAuthor]:
     """Collection of Author models."""
     return [
-        Author(id=uuid4(), name=name, dob=dob, created=datetime.min, updated=datetime.min)
+        UUIDAuthor(id=uuid4(), name=name, dob=dob, created=datetime.min, updated=datetime.min)
         for name, dob in [("Agatha Christie", date(1890, 9, 15)), ("Leo Tolstoy", date(1828, 9, 9))]
-    ]
-
-
-@pytest.fixture(name="ingredients")
-def fx_ingredients() -> list[Ingredient]:
-    """Collection of Author models."""
-    return [
-        Ingredient(id=int(random()), name=name) for name in ["Celery", "Carrot", "Potato", "Apple", "Pear", "Peach"]
     ]
 
 
 @pytest.fixture(name="author_repository_type")
 def fx_author_repository_type(
-    authors: list[Author], monkeypatch: pytest.MonkeyPatch
-) -> type[GenericAsyncMockRepository[Author]]:
+    authors: list[UUIDAuthor], monkeypatch: pytest.MonkeyPatch
+) -> type[GenericAsyncMockRepository[UUIDAuthor]]:
     """Mock Author repository, pre-seeded with collection data."""
-    repo = GenericAsyncMockRepository[Author]
+    repo = GenericAsyncMockRepository[UUIDAuthor]
     repo.seed_collection(authors)
     return repo
 
 
 @pytest.fixture(name="author_repository")
 def fx_author_repository(
-    author_repository_type: type[GenericAsyncMockRepository[Author]],
-) -> GenericAsyncMockRepository[Author]:
+    author_repository_type: type[GenericAsyncMockRepository[UUIDAuthor]],
+) -> GenericAsyncMockRepository[UUIDAuthor]:
     """Mock Author repository instance."""
     return author_repository_type()
 
 
-@pytest.fixture(name="ingredient_repository_type")
-def fx_ingredient_repository_type(
-    ingredients: list[Ingredient], monkeypatch: pytest.MonkeyPatch
-) -> type[GenericAsyncMockRepository[Ingredient]]:
-    """Mock Author repository, pre-seeded with collection data."""
-    repo = GenericAsyncMockRepository[Ingredient]
-    repo.seed_collection(ingredients)
-    return repo
-
-
-@pytest.fixture(name="ingredient_repository")
-def fx_ingredient_repository(
-    ingredient_repository_type: type[GenericAsyncMockRepository[Author]],
-) -> GenericAsyncMockRepository[Author]:
-    """Mock Author repository instance."""
-    return ingredient_repository_type()
-
-
 async def test_repo_raises_conflict_if_add_with_id(
-    authors: list[Author],
-    author_repository: GenericAsyncMockRepository[Author],
+    authors: list[UUIDAuthor],
+    author_repository: GenericAsyncMockRepository[UUIDAuthor],
 ) -> None:
     """Test mock repo raises conflict if add identified entity."""
     with pytest.raises(ConflictError):
@@ -78,8 +51,8 @@ async def test_repo_raises_conflict_if_add_with_id(
 
 
 async def test_repo_raises_conflict_if_add_many_with_id(
-    authors: list[Author],
-    author_repository: GenericAsyncMockRepository[Author],
+    authors: list[UUIDAuthor],
+    author_repository: GenericAsyncMockRepository[UUIDAuthor],
 ) -> None:
     """Test mock repo raises conflict if add identified entity."""
     with pytest.raises(ConflictError):
@@ -88,22 +61,22 @@ async def test_repo_raises_conflict_if_add_many_with_id(
 
 def test_generic_mock_repository_parametrization() -> None:
     """Test that the mock repository handles multiple types."""
-    author_repo = GenericAsyncMockRepository[Author]
-    book_repo = GenericAsyncMockRepository[Book]
-    assert author_repo.model_type is Author  # type:ignore[misc]
-    assert book_repo.model_type is Book  # type:ignore[misc]
+    author_repo = GenericAsyncMockRepository[UUIDAuthor]
+    book_repo = GenericAsyncMockRepository[UUIDBook]
+    assert author_repo.model_type is UUIDAuthor  # type:ignore[misc]
+    assert book_repo.model_type is UUIDBook  # type:ignore[misc]
 
 
 def test_generic_mock_repository_seed_collection(
-    author_repository_type: type[GenericAsyncMockRepository[Author]],
+    author_repository_type: type[GenericAsyncMockRepository[UUIDAuthor]],
 ) -> None:
     """Test seeding instances."""
-    author_repository_type.seed_collection([Author(id="abc")])
+    author_repository_type.seed_collection([UUIDAuthor(id="abc")])
     assert "abc" in author_repository_type.collection
 
 
 def test_generic_mock_repository_clear_collection(
-    author_repository_type: type[GenericAsyncMockRepository[Author]],
+    author_repository_type: type[GenericAsyncMockRepository[UUIDAuthor]],
 ) -> None:
     """Test clearing collection for type."""
     author_repository_type.clear_collection()
@@ -111,7 +84,7 @@ def test_generic_mock_repository_clear_collection(
 
 
 def test_generic_mock_repository_filter_collection_by_kwargs(
-    author_repository: GenericAsyncMockRepository[Author],
+    author_repository: GenericAsyncMockRepository[UUIDAuthor],
 ) -> None:
     """Test filtering the repository collection by kwargs."""
     collection = author_repository.filter_collection_by_kwargs(author_repository.collection, name="Leo Tolstoy")
@@ -120,7 +93,7 @@ def test_generic_mock_repository_filter_collection_by_kwargs(
 
 
 def test_generic_mock_repository_filter_collection_by_kwargs_and_semantics(
-    author_repository: GenericAsyncMockRepository[Author],
+    author_repository: GenericAsyncMockRepository[UUIDAuthor],
 ) -> None:
     """Test that filtering by kwargs has `AND` semantics when multiple kwargs,
     not `OR`."""
@@ -131,7 +104,7 @@ def test_generic_mock_repository_filter_collection_by_kwargs_and_semantics(
 
 
 def test_generic_mock_repository_raises_repository_exception_if_named_attribute_doesnt_exist(
-    author_repository: GenericAsyncMockRepository[Author],
+    author_repository: GenericAsyncMockRepository[UUIDAuthor],
 ) -> None:
     """Test that a repo exception is raised if a named attribute doesn't
     exist."""
@@ -167,12 +140,12 @@ async def test_sets_created_updated_on_add() -> None:
     assert "created" not in vars(bigint_instance)
     assert "updated" not in vars(bigint_instance)
 
-    bigint_instance = await GenericAsyncMockRepository[BigIntModel]().add(bigint_instance)
+    bigint_instance = await GenericAsyncMockRepository[BigIntModel]().add(bigint_instance)  # type: ignore[type-var]
     assert "created" in vars(bigint_instance)
     assert "updated" in vars(bigint_instance)
 
 
-async def test_sets_updated_on_update(author_repository: GenericAsyncMockRepository[Author]) -> None:
+async def test_sets_updated_on_update(author_repository: GenericAsyncMockRepository[UUIDAuthor]) -> None:
     """Test that the repository updates the 'updated' timestamp if
     necessary."""
 
@@ -210,7 +183,7 @@ async def test_does_not_set_created_updated() -> None:
     assert "updated" not in vars(uuid_instance)
 
     bigint_instance = BigIntModel()
-    bigint_repo = GenericAsyncMockRepository[BigIntModel]()
+    bigint_repo = GenericAsyncMockRepository[BigIntModel]()  # type: ignore[type-var]
     assert "created" not in vars(bigint_instance)
     assert "updated" not in vars(bigint_instance)
     bigint_instance = await bigint_repo.add(bigint_instance)
@@ -243,7 +216,7 @@ async def test_add() -> None:
 
     bigint_instance = BigIntModel()
 
-    inserted_bigint_instance = await GenericAsyncMockRepository[BigIntModel]().add(bigint_instance)
+    inserted_bigint_instance = await GenericAsyncMockRepository[BigIntModel]().add(bigint_instance)  # type: ignore[type-var]
     assert inserted_bigint_instance == bigint_instance
 
 
@@ -266,7 +239,7 @@ async def test_add_many() -> None:
     bigint_instance = [BigIntModel(), BigIntModel()]
 
     inserted_uuid_instances = await GenericAsyncMockRepository[UUIDModel]().add_many(uuid_instances)
-    inserted_bigint_instance = await GenericAsyncMockRepository[BigIntModel]().add_many(bigint_instance)
+    inserted_bigint_instance = await GenericAsyncMockRepository[BigIntModel]().add_many(bigint_instance)  # type: ignore[type-var]
 
     assert len(uuid_instances) == len(inserted_uuid_instances)
     assert len(bigint_instance) == len(inserted_bigint_instance)
