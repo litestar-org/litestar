@@ -41,6 +41,8 @@ def mock_show_app_info(mocker: MockerFixture) -> MagicMock:
 @pytest.mark.parametrize("custom_app_file", [Path("my_app.py"), None])
 @pytest.mark.parametrize("host", ["0.0.0.0", None])
 @pytest.mark.parametrize("port", [8081, None])
+@pytest.mark.parametrize("uds", ["/run/uvicorn/litestar_test.sock", None])
+@pytest.mark.parametrize("fd", [0, None])
 @pytest.mark.parametrize("reload", [True, False, None])
 @pytest.mark.parametrize("web_concurrency", [2, None])
 @pytest.mark.parametrize("app_dir", ["custom_subfolder", None])
@@ -52,6 +54,8 @@ def test_run_command(
     reload: Optional[bool],
     port: Optional[int],
     host: Optional[str],
+    fd: Optional[int],
+    uds: Optional[str],
     web_concurrency: Optional[int],
     app_dir: Optional[str],
     reload_dir: Optional[List[str]],
@@ -93,7 +97,20 @@ def test_run_command(
             args.extend(["--host", host])
     else:
         host = "127.0.0.1"
-
+    if fd:
+        if set_in_env:
+            monkeypatch.setenv("LITESTAR_FD", str(port))
+        else:
+            args.extend(["--fd", str(fd)])
+    else:
+        fd = None
+    if uds:
+        if set_in_env:
+            monkeypatch.setenv("LITESTAR_UDS", host)
+        else:
+            args.extend(["--uds", uds])
+    else:
+        uds = None
     if web_concurrency is not None:
         if set_in_env:
             monkeypatch.setenv("WEB_CONCURRENCY", str(web_concurrency))
