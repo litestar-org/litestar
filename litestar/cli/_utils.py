@@ -18,16 +18,17 @@ from litestar import Litestar, __version__
 from litestar.middleware import DefineMiddleware
 from litestar.utils import get_name
 
-try:
-    from rich_click import ClickException, Context, pass_context
-    from rich_click.rich_command import RichCommand as Command
-    from rich_click.rich_group import RichGroup as Group
+if TYPE_CHECKING:
+    from click import ClickException, Command, Context, Group, pass_context
+else:
+    try:  # pragma: no cover
+        from rich_click import ClickException, Context, pass_context
+        from rich_click.rich_command import RichCommand as Command
+        from rich_click.rich_group import RichGroup as Group
 
-    rich_click_installed = True  # pragma: no cover
-except ImportError:
-    from click import ClickException, Command, Context, Group, pass_context  # type: ignore[assignment]
+    except ImportError:  # pragma: no cover
+        from click import ClickException, Command, Context, Group, pass_context
 
-    rich_click_installed = False
 
 __all__ = (
     "LoadedApp",
@@ -139,7 +140,7 @@ class LoadedApp:
     is_factory: bool
 
 
-class LitestarGroup(Group):  # pyright: ignore[reportGeneralTypeIssues]
+class LitestarGroup(Group):
     """:class:`click.Group` subclass that automatically injects ``app`` and ``env` kwargs into commands that request it.
 
     Use this as the ``cls`` for :class:`click.Group` if you're extending the internal CLI with a group. For ``command``s
@@ -153,10 +154,10 @@ class LitestarGroup(Group):  # pyright: ignore[reportGeneralTypeIssues]
         **attrs: Any,
     ):
         """Init ``LitestarGroup``"""
-        self.group_class = LitestarGroup  # type: ignore[assignment]
-        super().__init__(name=name, commands=commands, **attrs)  # type: ignore[arg-type]
+        self.group_class = LitestarGroup
+        super().__init__(name=name, commands=commands, **attrs)
 
-    def add_command(self, cmd: Command, name: str | None = None) -> None:  # type: ignore[override]
+    def add_command(self, cmd: Command, name: str | None = None) -> None:
         """Add command.
 
         If necessary, inject ``app`` and ``env`` kwargs
@@ -165,7 +166,7 @@ class LitestarGroup(Group):  # pyright: ignore[reportGeneralTypeIssues]
             cmd.callback = _inject_args(cmd.callback)
         super().add_command(cmd)
 
-    def command(self, *args: Any, **kwargs: Any) -> Callable[[AnyCallable], Command] | Command:  # type: ignore[override]
+    def command(self, *args: Any, **kwargs: Any) -> Callable[[AnyCallable], Command] | Command:  # type: ignore
         # For some reason, even when copying the overloads + signature from click 1:1, mypy goes haywire
         """Add a function as a command.
 
@@ -230,7 +231,7 @@ def _inject_args(func: Callable[P, T]) -> Callable[Concatenate[Context, P], T]:
 def _wrap_commands(commands: Iterable[Command]) -> None:
     for command in commands:
         if isinstance(command, Group):
-            _wrap_commands(command.commands.values())  # type: ignore[arg-type]
+            _wrap_commands(command.commands.values())
         elif command.callback:
             command.callback = _inject_args(command.callback)
 

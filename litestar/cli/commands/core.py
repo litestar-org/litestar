@@ -14,16 +14,17 @@ from litestar.cli._utils import LitestarEnv, console, show_app_info
 from litestar.routes import HTTPRoute, WebSocketRoute
 from litestar.utils.helpers import unwrap_partial
 
-try:
-    import rich_click as click
-    from rich_click import Context, command, option
-
-    rich_click_installed = True
-except ImportError:
-    import click  # type: ignore[no-redef]
+if TYPE_CHECKING:
+    import click
     from click import Context, command, option
+else:
+    try:
+        import rich_click as click
+        from rich_click import Context, command, option
+    except ImportError:
+        import click
+        from click import Context, command, option
 
-    rich_click_installed = False
 __all__ = ("info_command", "routes_command", "run_command")
 
 if TYPE_CHECKING:
@@ -48,6 +49,7 @@ def _convert_uvicorn_args(args: dict[str, Any]) -> list[str]:
 @command(name="version")
 @option("-s", "--short", help="Exclude release level and serial information", is_flag=True, default=False)
 def version_command(short: bool) -> None:
+    """Show the currently installed Litestar version."""
     from litestar import __version__
 
     click.echo(__version__.formatted(short=short))
