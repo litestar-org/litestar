@@ -6,8 +6,8 @@ from typing import ClassVar, List
 
 import pytest
 
+from litestar.dto.factory.data_structures import FieldDefinition
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
-from litestar.dto.factory.types import FieldDefinition
 from litestar.types.empty import Empty
 from litestar.typing import ParsedType
 from litestar.utils.helpers import get_fully_qualified_class_name

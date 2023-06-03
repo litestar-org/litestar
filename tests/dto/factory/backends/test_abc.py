@@ -15,7 +15,7 @@ from litestar.dto.factory._backends.types import (
     TupleType,
     UnionType,
 )
-from litestar.dto.factory.types import FieldDefinition
+from litestar.dto.factory.data_structures import FieldDefinition
 from litestar.dto.types import ForType
 from litestar.types.empty import Empty
 from litestar.typing import ParsedType

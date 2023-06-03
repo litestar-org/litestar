@@ -7,7 +7,7 @@ from typing_extensions import Annotated
 
 from litestar.contrib.pydantic import PydanticDTO
 from litestar.dto.factory import dto_field
-from litestar.dto.factory.types import FieldDefinition
+from litestar.dto.factory.data_structures import FieldDefinition
 from litestar.typing import ParsedType
 
 if TYPE_CHECKING:
