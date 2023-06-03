@@ -3855,18 +3855,6 @@ files = [
 types-html5lib = "*"
 
 [[package]]
-name = "types-click"
-version = "7.1.8"
-description = "Typing stubs for click"
-category = "dev"
-optional = false
-python-versions = "*"
-files = [
-    {file = "types-click-7.1.8.tar.gz", hash = "sha256:b6604968be6401dc516311ca50708a0a28baa7a0cb840efd7412f0dbbff4e092"},
-    {file = "types_click-7.1.8-py3-none-any.whl", hash = "sha256:8cb030a669e2e927461be9827375f83c16b8178c365852c060a34e24871e7e81"},
-]
-
-[[package]]
 name = "types-freezegun"
 version = "1.1.10"
 description = "Typing stubs for freezegun"
@@ -4333,6 +4321,7 @@ jwt = ["cryptography", "python-jose"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 redis = ["redis"]
+rich-click = ["rich-click"]
 sqlalchemy = ["alembic", "sqlalchemy"]
 standard = ["click", "jinja2", "jsbeautifier", "rich", "rich-click", "uvicorn"]
 structlog = ["structlog"]
@@ -4341,4 +4330,4 @@ tortoise-orm = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "cc3b1de23291513b0a680e679ba80f912e25f8275f3f29920c03fd607b3a614b"
+content-hash = "bc033e0e3e8f42c9dcb5056311eacd9920cc85e728107d3f4631ab6556c8a024"

@@ -7,10 +7,7 @@ import subprocess
 import sys
 from typing import TYPE_CHECKING, Any, cast
 
-
-import click
 import uvicorn
-from click import Context, command, option
 from rich.tree import Tree
 
 from litestar.cli._utils import LitestarEnv, console, show_app_info
@@ -19,12 +16,12 @@ from litestar.utils.helpers import unwrap_partial
 
 try:
     import rich_click as click
-    from rich_click import command, option
+    from rich_click import Context, command, option
 
     rich_click_installed = True
 except ImportError:
     import click  # type: ignore[no-redef]
-    from click import command, option
+    from click import Context, command, option
 
     rich_click_installed = False
 __all__ = ("info_command", "routes_command", "run_command")
@@ -75,6 +72,8 @@ def info_command(app: Litestar) -> None:
     default=1,
 )
 @option("--host", help="Server under this host", default="127.0.0.1", show_default=True)
+@option("--fd", help="Bind the a socket from this file descriptor.", type=int, default=None, show_default=False)
+@option("--uds", help="Bind to a UNIX domain socket.  ", default=None, show_default=False)
 @option("--debug", help="Run app in debug mode", is_flag=True)
 @option("--pdb", "use_pdb", help="Drop into PDB on an exception", is_flag=True)
 @option("--reload-dir", help="Directories to watch for file changes", multiple=True)
@@ -83,6 +82,8 @@ def run_command(
     port: int,
     web_concurrency: int,
     host: str,
+    fd: int,
+    uds: str,
     debug: bool,
     reload_dir: tuple[str, ...],
     use_pdb: bool,
@@ -110,6 +111,8 @@ def run_command(
 
     host = env.host or host
     port = env.port or port
+    fd = env.fd or fd
+    uds = env.uds or uds
     reload = env.reload or reload or bool(reload_dirs)
     workers = env.web_concurrency or web_concurrency
 
@@ -120,8 +123,10 @@ def run_command(
     if workers == 1 and not reload:
         uvicorn.run(
             app=env.app_path,
-            host=env.host or host,
-            port=env.port or port,
+            host=host,
+            port=port,
+            fd=fd,
+            uds=uds,
             factory=env.is_app_factory,
         )
     else:
@@ -133,7 +138,15 @@ def run_command(
                 " with the --reload or --workers options[/]"
             )
 
-        process_args = {"reload": reload, "host": host, "port": port, "workers": workers, "factory": env.is_app_factory}
+        process_args = {
+            "reload": reload,
+            "host": host,
+            "port": port,
+            "fd": fd,
+            "uds": uds,
+            "workers": workers,
+            "factory": env.is_app_factory,
+        }
 
         if reload_dirs:
             process_args["reload-dir"] = reload_dirs

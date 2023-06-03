@@ -14,7 +14,7 @@ try:
 
     rich_click_installed = True
 except ImportError:
-    import click
+    import click  # type: ignore[no-redef]
     from click import Context, group, option, pass_context
     from click import Path as ClickPath
 
@@ -23,18 +23,20 @@ except ImportError:
 __all__ = ("litestar_group",)
 
 if rich_click_installed:
-    rich_click_patch()
-    click.rich_click.USE_RICH_MARKUP = True
-    click.rich_click.SHOW_ARGUMENTS = True
-    click.rich_click.GROUP_ARGUMENTS_OPTIONS = True
-    click.rich_click.SHOW_ARGUMENTS = True
-    click.rich_click.GROUP_ARGUMENTS_OPTIONS = True
-    click.rich_click.STYLE_ERRORS_SUGGESTION = "magenta italic"
-    click.rich_click.ERRORS_SUGGESTION = "Try running the '--help' flag for more information."
-    click.rich_click.ERRORS_EPILOGUE = ""
-    click.rich_click.MAX_WIDTH = 100
-    click.rich_click.SHOW_METAVARS_COLUMN = True
-    click.rich_click.APPEND_METAVARS_HELP = True
+    rich_click_patch()  # pyright: ignore[reportUnboundVariable]
+    click.rich_click.USE_RICH_MARKUP = True  # pyright: ignore[reportGeneralTypeIssues]
+    click.rich_click.SHOW_ARGUMENTS = True  # pyright: ignore[reportGeneralTypeIssues]
+    click.rich_click.GROUP_ARGUMENTS_OPTIONS = True  # pyright: ignore[reportGeneralTypeIssues]
+    click.rich_click.SHOW_ARGUMENTS = True  # pyright: ignore[reportGeneralTypeIssues]
+    click.rich_click.GROUP_ARGUMENTS_OPTIONS = True  # pyright: ignore[reportGeneralTypeIssues]
+    click.rich_click.STYLE_ERRORS_SUGGESTION = "magenta italic"  # pyright: ignore[reportGeneralTypeIssues]
+    click.rich_click.ERRORS_SUGGESTION = (  # pyright: ignore[reportGeneralTypeIssues]
+        "Try running the '--help' flag for more information."
+    )
+    click.rich_click.ERRORS_EPILOGUE = ""  # pyright: ignore[reportGeneralTypeIssues]
+    click.rich_click.MAX_WIDTH = 100  # pyright: ignore[reportGeneralTypeIssues]
+    click.rich_click.SHOW_METAVARS_COLUMN = True  # pyright: ignore[reportGeneralTypeIssues]
+    click.rich_click.APPEND_METAVARS_HELP = True  # pyright: ignore[reportGeneralTypeIssues]
 
 
 @group(cls=LitestarExtensionGroup)

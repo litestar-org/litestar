@@ -170,7 +170,6 @@ pylint-pydantic = "*"
 pyright = "*"
 ruff = '*'
 slotscheck = "*"
-types-click = "*"
 types-freezegun = "*"
 types-python-jose = "*"
 types-pyyaml = "*"
@@ -181,7 +180,7 @@ types-python-dateutil = "*"
 [tool.poetry.extras]
 attrs = ["attrs", "cattrs", "python-dateutil", "pytimeparse"]
 brotli = ["brotli"]
-cli = ["click", "rich", "jsbeautifier", "uvicorn"]
+cli = ["click", "rich", "rich-click", "jsbeautifier", "uvicorn"]
 cryptography = ["cryptography"]
 jinja = ["jinja2"]
 jwt = ["python-jose", "cryptography"]
@@ -192,7 +191,6 @@ sqlalchemy = ["sqlalchemy", "alembic"]
 standard = ["click", "jinja2", "jsbeautifier", "rich", "uvicorn", "rich-click"]
 structlog = ["structlog"]
 tortoise-orm = ["tortoise-orm"]
-
 full = [
     "alembic",
     "attrs",

@@ -19,11 +19,13 @@ from litestar.middleware import DefineMiddleware
 from litestar.utils import get_name
 
 try:
-    from rich_click import ClickException, Command, Context, Group, pass_context, style
+    from rich_click import ClickException, Context, pass_context, style
+    from rich_click.rich_command import RichCommand as Command
+    from rich_click.rich_group import RichGroup as Group
 
     rich_click_installed = True  # pragma: no cover
 except ImportError:
-    from click import ClickException, Command, Context, Group, pass_context, style
+    from click import ClickException, Command, Context, Group, pass_context, style  # type: ignore[assignment]
 
     rich_click_installed = False
 
@@ -74,6 +76,8 @@ class LitestarEnv:
     cwd: Path
     host: str | None = None
     port: int | None = None
+    fd: int | None = None
+    uds: str | None = None
     reload: bool | None = None
     reload_dirs: tuple[str, ...] | None = None
     web_concurrency: int | None = None
@@ -106,6 +110,8 @@ class LitestarEnv:
 
         port = getenv("LITESTAR_PORT")
         web_concurrency = getenv("WEB_CONCURRENCY")
+        uds = getenv("LITESTAR_UDS")
+        fd = getenv("LITESTAR_FD")
         reload_dirs = tuple(s.strip() for s in getenv("LITESTAR_RELOAD_DIRS", "").split(",") if s) or None
 
         return cls(
@@ -114,6 +120,8 @@ class LitestarEnv:
             debug=_bool_from_env("LITESTAR_DEBUG"),
             host=getenv("LITESTAR_HOST"),
             port=int(port) if port else None,
+            uds=uds,
+            fd=int(fd) if fd else None,
             reload=_bool_from_env("LITESTAR_RELOAD"),
             reload_dirs=reload_dirs,
             web_concurrency=int(web_concurrency) if web_concurrency else None,
@@ -131,7 +139,7 @@ class LoadedApp:
     is_factory: bool
 
 
-class LitestarGroup(Group):
+class LitestarGroup(Group):  # pyright: ignore[reportGeneralTypeIssues]
     """:class:`click.Group` subclass that automatically injects ``app`` and ``env` kwargs into commands that request it.
 
     Use this as the ``cls`` for :class:`click.Group` if you're extending the internal CLI with a group. For ``command``s
@@ -145,10 +153,10 @@ class LitestarGroup(Group):
         **attrs: Any,
     ):
         """Init ``LitestarGroup``"""
-        self.group_class = LitestarGroup
-        super().__init__(name=name, commands=commands, **attrs)
+        self.group_class = LitestarGroup  # type: ignore[assignment]
+        super().__init__(name=name, commands=commands, **attrs)  # type: ignore[arg-type]
 
-    def add_command(self, cmd: Command, name: str | None = None) -> None:
+    def add_command(self, cmd: Command, name: str | None = None) -> None:  # type: ignore[override]
         """Add command.
 
         If necessary, inject ``app`` and ``env`` kwargs
@@ -222,7 +230,7 @@ def _inject_args(func: Callable[P, T]) -> Callable[Concatenate[Context, P], T]:
 def _wrap_commands(commands: Iterable[Command]) -> None:
     for command in commands:
         if isinstance(command, Group):
-            _wrap_commands(command.commands.values())
+            _wrap_commands(command.commands.values())  # type: ignore[arg-type]
         elif command.callback:
             command.callback = _inject_args(command.callback)
 
