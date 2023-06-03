@@ -12,38 +12,42 @@ Here we import the :class:`SQLAlchemyAsyncRepository <litestar.contrib.sqlalchem
 
 Lets look at these changes in more detail. What functionality are we gaining?
 
-Selecting Data
---------------
-- get
-- get_one
-- get_one_or_none
-- list
-- list_and_count
-
-Creating Data
---------------
-- get_or_create (with advanced ``upsert`` option)
-- create
-- create_many
-
-
-Updating Data
---------------
-- update
-- update_many
-- upsert
-
-
-Deleting Data
---------------
-- remove
-- remove_many
++---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+|      Function       |    Category    |                                                                                                                 Description                                                                                                                 |
++=====================+================+=============================================================================================================================================================================================================================================+
+| ``get``             | Selecting Data | Select a single record by primary key. Raising an exception when no record is found.                                                                                                                                                        |
++---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``get_one``         | Selecting Data | Select a single record specified by the ``kwargs`` parameters. An exception is raised when no record is found.                                                                                                                              |
++---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``get_one_or_none`` | Selecting Data | Select a single record specified by the ``kwargs`` parameters. Returns ``None`` when no record is found.                                                                                                                                    |
++---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``list``            | Selecting Data | Select a list of records specified by the ``kwargs`` parameters. Optionally it can be filtered by the included ``FilterTypes`` args.                                                                                                        |
++---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``list_and_count``  | Selecting Data | Select a list of records specified by the ``kwargs`` parameters. Optionally it can be filtered by the included ``FilterTypes`` args. Results are returned as a 2 value tuple that includes the rows selected and the total count of records |
++---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``get_or_create``   | Creating Data  | Get a record specified by the the ``kwargs`` parameters.  If no record is found, one is created with the given values.  There's an optional attribute to filter on a subset of the supplied parameters and to merge updates.                |
++---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``create``          | Creating Data  | Create a new record in the database.                                                                                                                                                                                                        |
++---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``create_many``     | Creating Data  | Create one or more rows in the database.                                                                                                                                                                                                    |
++---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``update``          | Updating Data  | Update an existing record in the database.                                                                                                                                                                                                  |
++---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``update_many``     | Updating Data  | Update one or more rows in the database.                                                                                                                                                                                                    |
++---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``upsert``          | Updating Data  | A single operation that updates or inserts a record based whether or not the primary key value on the model object is populated.                                                                                                            |
++---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``remove``          | Removing Data  | Remove a single record from the database.                                                                                                                                                                                                   |
++---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``remove_many``     | Removing Data  | Remove one or more records from the database.                                                                                                                                                                                               |
++---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
 .. note::
 
-    Bulk operations with a returning clause are not supported for all database engines.  The repository operations will automatically detect the support from the SQL Alchemy driver, so no additional interaction is required to enable this.
+    - All three of the bulk DML operations will leverage dialect specific enhancements to be as efficient as possible.  In addition to using efficient bulk inserts binds, the repository will optionally leverage the multi-row ``RETURNING`` support where possible.
+    The repository will automatically detect this support from the SQL Alchemy driver, so no additional interaction is required to enable this.
 
-    SQL engines generally have a limit to the number of elements that can be appended into an `IN` clause.  The repository operations will automatically break lists that exceed this limit into multiple queries that are concatenated together before return.  You do not need to account for this in your own code.
+    - SQL engines generally have a limit to the number of elements that can be appended into an `IN` clause.  The repository operations will automatically break lists that exceed this limit into multiple queries that are concatenated together before return.  You do not need to account for this in your own code.
 
 Now that we have demonstrated how to interact with the repository objects outside of a Litestar application, let's use dependency injection to add this functionality to a Controller!
