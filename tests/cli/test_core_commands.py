@@ -141,7 +141,9 @@ def test_run_command(
         if reload_dir:
             expected_args.extend([f"--reload-dir={s}" for s in reload_dir])
         mock_subprocess_run.assert_called_once()
-        assert sorted(mock_subprocess_run.call_args_list[0].args[0]) == sorted(expected_args)
+        assert sorted([arg for arg in mock_subprocess_run.call_args_list[0].args[0] if arg is not None]) == sorted(
+            expected_args
+        )
     else:
         mock_subprocess_run.assert_not_called()
         mock_uvicorn_run.assert_called_once_with(app=f"{path.stem}:app", host=host, port=port, factory=False)
@@ -175,10 +177,7 @@ def test_run_command_with_autodiscover_app_factory(
     assert result.exit_code == 0
 
     mock_uvicorn_run.assert_called_once_with(
-        app=f"{path.stem}:{factory_name}",
-        host="127.0.0.1",
-        port=8000,
-        factory=True,
+        app=f"{path.stem}:{factory_name}", host="127.0.0.1", port=8000, factory=True, uds=None, fd=None
     )
 
 
@@ -193,10 +192,7 @@ def test_run_command_with_app_factory(
     assert result.exit_code == 0
 
     mock_uvicorn_run.assert_called_once_with(
-        app=str(app_path),
-        host="127.0.0.1",
-        port=8000,
-        factory=True,
+        app=str(app_path), host="127.0.0.1", port=8000, factory=True, uds=None, fd=None
     )
 
 
