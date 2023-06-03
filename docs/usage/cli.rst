@@ -23,6 +23,13 @@ extra:
 After installing any of these two, the ``litestar`` command will be available as the entrypoint
 to the CLI.
 
+.. note::
+   Litestar includes the ``click``, ``rich``, and ``rich-click`` packages when you install the CLI.
+   We recommend using ``rich-click`` for the best experience, but it is considered an optional dependency.
+
+   If you would like to use the CLI without the included ``rich-click`` dependency,
+   simply install ``click`` and ``rich`` in your project instead of using one of the built in Litestar extras flag.
+
 Autodiscovery
 -------------
 
