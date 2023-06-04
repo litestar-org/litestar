@@ -20,7 +20,8 @@ from litestar.utils import get_name
 
 rich_click_installed = False
 try:
-    import rich_click
+    import rich_click  # noqa: F401
+
     rich_click_installed = True
 except ImportError:
     pass
@@ -29,7 +30,7 @@ if TYPE_CHECKING or not rich_click_installed:
     from click import ClickException, Command, Context, Group, pass_context
 else:
     from rich_click import ClickException, Context, pass_context
-    from rich_click.rich_command import RichCommand as Command
+    from rich_click.rich_command import RichCommand as Command  # noqa: TCH002
     from rich_click.rich_group import RichGroup as Group
 
 
@@ -158,7 +159,7 @@ class LitestarGroup(Group):
     ):
         """Init ``LitestarGroup``"""
         self.group_class = LitestarGroup
-        super().__init__(name=name, commands=commands, **attrs)
+        super().__init__(name=name, commands=commands, **attrs)  # type: ignore[arg-type]
 
     def add_command(self, cmd: Command, name: str | None = None) -> None:
         """Add command.
