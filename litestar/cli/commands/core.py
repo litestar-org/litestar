@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any, cast
 import uvicorn
 from rich.tree import Tree
 
-from litestar.cli._utils import LitestarEnv, console, RICH_CLICK_INSTALLED, show_app_info
+from litestar.cli._utils import RICH_CLICK_INSTALLED, LitestarEnv, console, show_app_info
 from litestar.routes import HTTPRoute, WebSocketRoute
 from litestar.utils.helpers import unwrap_partial
 

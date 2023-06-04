@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ._utils import LitestarEnv, LitestarExtensionGroup, RICH_CLICK_INSTALLED
+from ._utils import RICH_CLICK_INSTALLED, LitestarEnv, LitestarExtensionGroup
 from .commands import core, schema, sessions
 
 if TYPE_CHECKING or not RICH_CLICK_INSTALLED:

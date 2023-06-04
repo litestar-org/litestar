@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from rich.prompt import Confirm
 
 from litestar import Litestar
-from litestar.cli._utils import LitestarCLIException, LitestarGroup, console, RICH_CLICK_INSTALLED
+from litestar.cli._utils import RICH_CLICK_INSTALLED, LitestarCLIException, LitestarGroup, console
 from litestar.middleware import DefineMiddleware
 from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.server_side import ServerSideSessionBackend

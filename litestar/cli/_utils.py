@@ -35,7 +35,7 @@ else:
 
 
 __all__ = (
- "RICH_CLICK_INSTALLED",
+    "RICH_CLICK_INSTALLED",
     "LoadedApp",
     "LitestarCLIException",
     "LitestarEnv",

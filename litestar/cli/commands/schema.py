@@ -9,7 +9,7 @@ from litestar import Litestar
 from litestar._openapi.typescript_converter.converter import (
     convert_openapi_to_typescript,
 )
-from litestar.cli._utils import LitestarCLIException, LitestarGroup, RICH_CLICK_INSTALLED
+from litestar.cli._utils import RICH_CLICK_INSTALLED, LitestarCLIException, LitestarGroup
 
 if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
     from click import Path as ClickPath
