@@ -159,7 +159,7 @@ class LitestarGroup(Group):
     ):
         """Init ``LitestarGroup``"""
         self.group_class = LitestarGroup
-        super().__init__(name=name, commands=commands, **attrs)  # type: ignore[arg-type]
+        super().__init__(name=name, commands=commands, **attrs)
 
     def add_command(self, cmd: Command, name: str | None = None) -> None:
         """Add command.
@@ -170,7 +170,7 @@ class LitestarGroup(Group):
             cmd.callback = _inject_args(cmd.callback)
         super().add_command(cmd)
 
-    def command(self, *args: Any, **kwargs: Any) -> Callable[[AnyCallable], Command] | Command:
+    def command(self, *args: Any, **kwargs: Any) -> Callable[[AnyCallable], Command] | Command:  # type: ignore[override]
         # For some reason, even when copying the overloads + signature from click 1:1, mypy goes haywire
         """Add a function as a command.
 
