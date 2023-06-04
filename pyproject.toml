@@ -87,6 +87,7 @@ pytimeparse = { version = "*", optional = true }
 pyyaml = "*"
 redis = { version = ">=4.4.4,!=4.5.0,!=4.5.1,!=4.5.2,!=4.5.3,!=4.5.5", optional = true, extras = ["hiredis"] }
 rich = { version = ">=13.0.0", optional = true }
+rich-click = { version = "*", optional = true }
 sqlalchemy = { version = ">=2.0.12", optional = true }
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
@@ -95,6 +96,7 @@ importlib-resources = { version="^5.12.0", python = "<3.9" }
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
+rich-click = "*"
 alembic = "*"
 asyncmy = "*"
 asyncpg = "*"
@@ -171,7 +173,6 @@ pylint-pydantic = "*"
 pyright = "*"
 ruff = '*'
 slotscheck = "*"
-types-click = "*"
 types-freezegun = "*"
 types-python-jose = "*"
 types-pyyaml = "*"
@@ -182,7 +183,7 @@ types-python-dateutil = "*"
 [tool.poetry.extras]
 attrs = ["attrs", "cattrs", "python-dateutil", "pytimeparse"]
 brotli = ["brotli"]
-cli = ["click", "rich", "jsbeautifier", "uvicorn"]
+cli = ["click", "rich", "rich-click", "jsbeautifier", "uvicorn"]
 cryptography = ["cryptography"]
 jinja = ["jinja2"]
 jwt = ["python-jose", "cryptography"]
@@ -190,10 +191,9 @@ opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 redis = ["redis"]
 sqlalchemy = ["sqlalchemy", "alembic"]
-standard = ["click", "jinja2", "jsbeautifier", "rich", "uvicorn"]
+standard = ["click", "jinja2", "jsbeautifier", "rich", "uvicorn", "rich-click"]
 structlog = ["structlog"]
 tortoise-orm = ["tortoise-orm"]
-
 full = [
     "alembic",
     "attrs",
@@ -215,7 +215,7 @@ full = [
 ]
 
 [tool.poetry.scripts]
-litestar = { callable = "litestar:__main__", extras = ["cli"] }
+litestar = { callable = "litestar.__main__:run_cli", extras = ["cli"] }
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

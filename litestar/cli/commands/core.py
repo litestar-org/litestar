@@ -7,14 +7,20 @@ import subprocess
 import sys
 from typing import TYPE_CHECKING, Any, cast
 
-import click
 import uvicorn
-from click import Context, command, option
 from rich.tree import Tree
 
-from litestar.cli._utils import LitestarEnv, console, show_app_info
+from litestar.cli._utils import RICH_CLICK_INSTALLED, LitestarEnv, console, show_app_info
 from litestar.routes import HTTPRoute, WebSocketRoute
 from litestar.utils.helpers import unwrap_partial
+
+if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
+    import click
+    from click import Context, command, option
+else:
+    import rich_click as click
+    from rich_click import Context, command, option
+
 
 __all__ = ("info_command", "routes_command", "run_command")
 
@@ -40,6 +46,7 @@ def _convert_uvicorn_args(args: dict[str, Any]) -> list[str]:
 @command(name="version")
 @option("-s", "--short", help="Exclude release level and serial information", is_flag=True, default=False)
 def version_command(short: bool) -> None:
+    """Show the currently installed Litestar version."""
     from litestar import __version__
 
     click.echo(__version__.formatted(short=short))
@@ -64,6 +71,15 @@ def info_command(app: Litestar) -> None:
     default=1,
 )
 @option("--host", help="Server under this host", default="127.0.0.1", show_default=True)
+@option(
+    "--fd",
+    "--file-descriptor",
+    help="Bind to a socket from this file descriptor.",
+    type=int,
+    default=None,
+    show_default=True,
+)
+@option("--uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
 @option("--debug", help="Run app in debug mode", is_flag=True)
 @option("--pdb", "use_pdb", help="Drop into PDB on an exception", is_flag=True)
 @option("--reload-dir", help="Directories to watch for file changes", multiple=True)
@@ -72,6 +88,8 @@ def run_command(
     port: int,
     web_concurrency: int,
     host: str,
+    fd: int | None,
+    uds: str | None,
     debug: bool,
     reload_dir: tuple[str, ...],
     use_pdb: bool,
@@ -98,7 +116,9 @@ def run_command(
     reload_dirs = env.reload_dirs or reload_dir
 
     host = env.host or host
-    port = env.port or port
+    port = env.port if env.port is not None else port
+    fd = env.fd if env.fd is not None else fd
+    uds = env.uds or uds
     reload = env.reload or reload or bool(reload_dirs)
     workers = env.web_concurrency or web_concurrency
 
@@ -109,8 +129,10 @@ def run_command(
     if workers == 1 and not reload:
         uvicorn.run(
             app=env.app_path,
-            host=env.host or host,
-            port=env.port or port,
+            host=host,
+            port=port,
+            fd=fd,
+            uds=uds,
             factory=env.is_app_factory,
         )
     else:
@@ -122,8 +144,17 @@ def run_command(
                 " with the --reload or --workers options[/]"
             )
 
-        process_args = {"reload": reload, "host": host, "port": port, "workers": workers, "factory": env.is_app_factory}
-
+        process_args = {
+            "reload": reload,
+            "host": host,
+            "port": port,
+            "workers": workers,
+            "factory": env.is_app_factory,
+        }
+        if fd is not None:
+            process_args["fd"] = fd
+        if uds is not None:
+            process_args["uds"] = uds
         if reload_dirs:
             process_args["reload-dir"] = reload_dirs
 

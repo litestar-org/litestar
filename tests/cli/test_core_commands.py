@@ -41,6 +41,8 @@ def mock_show_app_info(mocker: MockerFixture) -> MagicMock:
 @pytest.mark.parametrize("custom_app_file", [Path("my_app.py"), None])
 @pytest.mark.parametrize("host", ["0.0.0.0", None])
 @pytest.mark.parametrize("port", [8081, None])
+@pytest.mark.parametrize("uds", ["/run/uvicorn/litestar_test.sock", None])
+@pytest.mark.parametrize("fd", [0, None])
 @pytest.mark.parametrize("reload", [True, False, None])
 @pytest.mark.parametrize("web_concurrency", [2, None])
 @pytest.mark.parametrize("app_dir", ["custom_subfolder", None])
@@ -52,6 +54,8 @@ def test_run_command(
     reload: Optional[bool],
     port: Optional[int],
     host: Optional[str],
+    fd: Optional[int],
+    uds: Optional[str],
     web_concurrency: Optional[int],
     app_dir: Optional[str],
     reload_dir: Optional[List[str]],
@@ -94,6 +98,22 @@ def test_run_command(
     else:
         host = "127.0.0.1"
 
+    if uds:
+        if set_in_env:
+            monkeypatch.setenv("LITESTAR_UNIX_DOMAIN_SOCKET", uds)
+        else:
+            args.extend(["--uds", uds])
+    else:
+        uds = None
+
+    if fd:
+        if set_in_env:
+            monkeypatch.setenv("LITESTAR_FILE_DESCRIPTOR", str(fd))
+        else:
+            args.extend(["--fd", str(fd)])
+    else:
+        fd = None
+
     if web_concurrency is not None:
         if set_in_env:
             monkeypatch.setenv("WEB_CONCURRENCY", str(web_concurrency))
@@ -116,7 +136,18 @@ def test_run_command(
     assert result.exit_code == 0
 
     if reload or reload_dir or web_concurrency > 1:
-        expected_args = [sys.executable, "-m", "uvicorn", f"{path.stem}:app", f"--host={host}", f"--port={port}"]
+        expected_args = [
+            sys.executable,
+            "-m",
+            "uvicorn",
+            f"{path.stem}:app",
+            f"--host={host}",
+            f"--port={port}",
+        ]
+        if fd is not None:
+            expected_args.append(f"--fd={fd}")
+        if uds is not None:
+            expected_args.append(f"--uds={uds}")
         if reload or reload_dir:
             expected_args.append("--reload")
         if web_concurrency:
@@ -127,7 +158,9 @@ def test_run_command(
         assert sorted(mock_subprocess_run.call_args_list[0].args[0]) == sorted(expected_args)
     else:
         mock_subprocess_run.assert_not_called()
-        mock_uvicorn_run.assert_called_once_with(app=f"{path.stem}:app", host=host, port=port, factory=False)
+        mock_uvicorn_run.assert_called_once_with(
+            app=f"{path.stem}:app", host=host, port=port, uds=uds, fd=fd, factory=False
+        )
 
     mock_show_app_info.assert_called_once()
 
@@ -158,10 +191,7 @@ def test_run_command_with_autodiscover_app_factory(
     assert result.exit_code == 0
 
     mock_uvicorn_run.assert_called_once_with(
-        app=f"{path.stem}:{factory_name}",
-        host="127.0.0.1",
-        port=8000,
-        factory=True,
+        app=f"{path.stem}:{factory_name}", host="127.0.0.1", port=8000, factory=True, uds=None, fd=None
     )
 
 
@@ -176,10 +206,7 @@ def test_run_command_with_app_factory(
     assert result.exit_code == 0
 
     mock_uvicorn_run.assert_called_once_with(
-        app=str(app_path),
-        host="127.0.0.1",
-        port=8000,
-        factory=True,
+        app=str(app_path), host="127.0.0.1", port=8000, factory=True, uds=None, fd=None
     )
 
 

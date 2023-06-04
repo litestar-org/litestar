@@ -3,7 +3,10 @@ import sys
 from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 
-from click import group
+try:
+    from rich_click import group
+except ImportError:
+    from click import group
 
 import litestar.cli._utils
 import litestar.cli.main
