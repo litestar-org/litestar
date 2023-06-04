@@ -315,6 +315,10 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             NotFoundError: If no instance found with same identifier as `data`.
         """
         with wrap_sqlalchemy_exception():
+            item_id = self.get_id_attribute_value(data)
+            # this will raise for not found, and will put the item in the session
+            await self.get(item_id)
+            # this will merge the inbound data to the instance we just put in the session
             instance = await self._attach_to_session(data)
             await self.session.flush()
             self.session.expunge(instance)
@@ -843,6 +847,10 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             NotFoundError: If no instance found with same identifier as `data`.
         """
         with wrap_sqlalchemy_exception():
+            item_id = self.get_id_attribute_value(data)
+            # this will raise for not found, and will put the item in the session
+            self.get(item_id)
+            # this will merge the inbound data to the instance we just put in the session
             instance = self._attach_to_session(data)
             self.session.flush()
             self.session.expunge(instance)
