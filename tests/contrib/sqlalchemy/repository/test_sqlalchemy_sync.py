@@ -434,7 +434,7 @@ def test_sqlalchemy_repo_update(mock_repo: SQLAlchemySyncRepository, monkeypatch
     mock_repo.session.add.return_value = mock_instance
     instance = mock_repo.update(mock_instance)
     assert instance is mock_instance
-    mock_repo.session.add.assert_called_once_with(mock_instance)
+    mock_repo.session.merge.assert_called_once_with(mock_instance)
     mock_repo.session.flush.assert_called_once()
     mock_repo.session.expunge.assert_called_once_with(mock_instance)
     mock_repo.session.commit.assert_not_called()
