@@ -18,7 +18,7 @@ from litestar import Litestar, __version__
 from litestar.middleware import DefineMiddleware
 from litestar.utils import get_name
 
-rich_click_installed = False
+RICH_CLICK_INSTALLED = False
 try:
     import rich_click  # noqa: F401
 
@@ -26,7 +26,7 @@ try:
 except ImportError:
     pass
 
-if TYPE_CHECKING or not rich_click_installed:
+if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
     from click import ClickException, Command, Context, Group, pass_context
 else:
     from rich_click import ClickException, Context, pass_context
