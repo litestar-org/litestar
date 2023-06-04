@@ -4,11 +4,12 @@ import uuid
 from base64 import b64decode
 from typing import TYPE_CHECKING, Any, cast
 
+from sqlalchemy import text, util
 from sqlalchemy.dialects.oracle import BLOB as ORA_BLOB
 from sqlalchemy.dialects.oracle import RAW as ORA_RAW
 from sqlalchemy.dialects.postgresql import JSONB as PG_JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.types import BINARY, CHAR, BigInteger, Integer, TypeDecorator
+from sqlalchemy.types import BINARY, CHAR, BigInteger, Integer, SchemaType, TypeDecorator
 from sqlalchemy.types import JSON as _JSON
 
 if TYPE_CHECKING:
@@ -80,7 +81,7 @@ class GUID(TypeDecorator):
         return cast("uuid.UUID | None", value)
 
 
-class JSON(TypeDecorator):
+class JSON(TypeDecorator, SchemaType):  # type: ignore
     """Platform-independent JSON type.
 
     Uses JSONB type for postgres, BLOB for Oracle, otherwise uses the generic JSON data type.
@@ -98,6 +99,8 @@ class JSON(TypeDecorator):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initialize JSON type"""
+        self.name = kwargs.pop("name", None)
+        self.oracle_strict = kwargs.pop("oracle_strict", True)
 
     def load_dialect_impl(self, dialect: Dialect) -> Any:
         if dialect.name == "postgresql":
@@ -105,3 +108,31 @@ class JSON(TypeDecorator):
         if dialect.name == "oracle":
             return dialect.type_descriptor(ORA_BLOB())
         return dialect.type_descriptor(_JSON())
+
+    def _should_create_constraint(self, compiler: Any, **kw: Any) -> bool:
+        return bool(compiler.dialect.name == "oracle")
+
+    def _variant_mapping_for_set_table(self, column: Any) -> dict | None:
+        if column.type._variant_mapping:
+            variant_mapping = dict(column.type._variant_mapping)
+            variant_mapping["_default"] = column.type
+        else:
+            variant_mapping = None
+        return variant_mapping
+
+    @util.preload_module("sqlalchemy.sql.schema")
+    def _set_table(self, column: Any, table: Any) -> None:
+        schema = util.preloaded.sql_schema
+        variant_mapping = self._variant_mapping_for_set_table(column)
+        constraint_options = "(strict)" if self.oracle_strict else ""
+        sqltext = text(f"{column.name} is json {constraint_options}")
+        e = schema.CheckConstraint(
+            sqltext,
+            name=f"{column.name}_is_json",
+            _create_rule=util.portable_instancemethod(  # type: ignore[no-untyped-call]
+                self._should_create_constraint,
+                {"variant_mapping": variant_mapping},
+            ),
+            _type_bound=True,
+        )
+        table.append_constraint(e)
