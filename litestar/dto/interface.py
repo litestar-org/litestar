@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from litestar.openapi.spec import Reference
+    from litestar.response import Response
     from litestar.types import LitestarEncodableType
     from litestar.types.internal_types import AnyConnection
     from litestar.typing import ParsedType
@@ -76,7 +77,7 @@ class DTOInterface(Protocol):
         self.connection_context = connection_context
 
     @abstractmethod
-    def data_to_encodable_type(self, data: Any) -> bytes | LitestarEncodableType:
+    def data_to_encodable_type(self, data: Any) -> bytes | LitestarEncodableType | Response:
         """Encode data to a type supported by litestar serialization.
 
         Can return either bytes or a type that Litestar can return to bytes.

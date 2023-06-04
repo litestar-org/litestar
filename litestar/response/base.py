@@ -37,8 +37,8 @@ class Response(Generic[T]):
 
     __slots__ = (
         "background",
-        "body",
         "cookies",
+        "content",
         "encoding",
         "headers",
         "is_head_response",
@@ -48,6 +48,7 @@ class Response(Generic[T]):
         "status_code",
         "raw_headers",
         "_enc_hook",
+        "_body",
     )
 
     type_encoders: TypeEncodersMap | None = None
@@ -99,15 +100,17 @@ class Response(Generic[T]):
         self.status_code = status_code
         self._enc_hook = self.get_serializer(type_encoders)
 
+        self._body: bytes | None = None
         if not self.status_allows_body or is_head_response:
             if content:
                 raise ImproperlyConfiguredException(
                     "response content is not supported for HEAD responses and responses with a status code "
                     "that does not allow content (304, 204, < 200)"
                 )
-            self.body = b""
+            self.content = content
+            self._body = b""
         else:
-            self.body = content if isinstance(content, bytes) else self.render(content)
+            self.content = content
 
         self.headers.setdefault(
             "content-type",
@@ -255,6 +258,31 @@ class Response(Generic[T]):
             raise ImproperlyConfiguredException(f"unsupported media_type {self.media_type} for content {content!r}")
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
+
+    @property
+    def body(self) -> bytes:
+        """The response body.
+
+        Generated from ``self.content`` and cached on first access.
+
+        Returns:
+            The response body as bytes.
+        """
+        if self._body is None:
+            self._body = self.content if isinstance(self.content, bytes) else self.render(self.content)
+        return self._body
+
+    @body.setter
+    def body(self, value: bytes) -> None:
+        """Set the response body.
+
+        Args:
+            value: The response body as bytes.
+
+        Returns:
+            None
+        """
+        self._body = value
 
     @property
     def content_length(self) -> int:

@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Final, Generic, TypeVar
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
 from litestar.dto.factory import DTOData, Mark
+from litestar.response import Response
 from litestar.utils.helpers import get_fully_qualified_class_name
 
 from .types import (
@@ -119,7 +120,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         self.dto_data_type: type[DTOData] | None = None
         if context.parsed_type.is_subclass_of(DTOData):
             self.dto_data_type = context.parsed_type.annotation
-            annotation = self.dto_data_type.parsed_type.annotation
+            annotation = self.context.parsed_type.inner_types[0].annotation
         else:
             annotation = context.parsed_type.annotation
         self.annotation = build_annotation_for_backend(annotation, self.transfer_model_type)
@@ -279,7 +280,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             self.context.parsed_type,
         )
 
-    def encode_data(self, data: Any, connection_context: ConnectionContext) -> LitestarEncodableType:
+    def encode_data(self, data: Any, connection_context: ConnectionContext) -> LitestarEncodableType | Response:
         """Encode data into a ``LitestarEncodableType``.
 
         Args:
@@ -289,6 +290,15 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         Returns:
             Encoded data.
         """
+        if isinstance(data, Response):
+            data.content = transfer_data(
+                self.transfer_model_type,
+                data.content,
+                self.parsed_field_definitions,
+                "return",
+                self.context.parsed_type,
+            )
+            return data
         return transfer_data(
             self.transfer_model_type, data, self.parsed_field_definitions, "return", self.context.parsed_type  # type: ignore[arg-type]
         )

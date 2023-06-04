@@ -87,7 +87,7 @@ def test_response_validation_of_unknown_media_types(
 ) -> None:
     if should_raise:
         with pytest.raises(ImproperlyConfiguredException):
-            Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK)
+            Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK).body
     else:
         response = Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK)
         assert response.body == (content.encode("utf-8") if not isinstance(content, bytes) else content)

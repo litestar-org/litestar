@@ -10,9 +10,8 @@ from litestar.typing import ParsedType
 from ._backends import MsgspecDTOBackend, PydanticDTOBackend
 from ._backends.abc import BackendContext
 from .config import DTOConfig
-from .data_structures import DTOData, FieldDefinition
 from .exc import InvalidAnnotation
-from .utils import parse_configs_from_annotation
+from .utils import parse_configs_from_annotation, resolve_model_type
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Collection, Generator
@@ -22,9 +21,11 @@ if TYPE_CHECKING:
     from litestar.dto.interface import HandlerContext
     from litestar.dto.types import ForType
     from litestar.openapi.spec import Reference, Schema
+    from litestar.response import Response
     from litestar.types.serialization import LitestarEncodableType
 
     from ._backends import AbstractDTOBackend
+    from .data_structures import FieldDefinition
 
 __all__ = ("AbstractDTOFactory",)
 
@@ -97,7 +98,7 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
         backend = self._get_backend("data", self.connection_context.handler_id)
         return backend.populate_data_from_raw(raw, self.connection_context)
 
-    def data_to_encodable_type(self, data: T | Collection[T]) -> LitestarEncodableType:
+    def data_to_encodable_type(self, data: T | Collection[T]) -> LitestarEncodableType | Response:
         backend = self._get_backend("return", self.connection_context.handler_id)
         return backend.encode_data(data, self.connection_context)
 
@@ -130,18 +131,7 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
             handler_context: A :class:`HandlerContext <.HandlerContext>` instance. Provides information about the
                 handler and application of the DTO.
         """
-        if handler_context.parsed_type.is_subclass_of(DTOData):
-            parsed_type = handler_context.parsed_type.annotation.parsed_type
-        else:
-            parsed_type = handler_context.parsed_type
-
-        if parsed_type.is_collection:
-            if len(parsed_type.inner_types) != 1:
-                raise InvalidAnnotation("AbstractDTOFactory only supports homogeneous collection types")
-            handler_type = parsed_type.inner_types[0]
-        else:
-            handler_type = parsed_type
-
+        handler_type = resolve_model_type(handler_context.parsed_type)
         if not handler_type.is_subclass_of(cls.model_type):
             raise InvalidAnnotation(
                 f"DTO narrowed with '{cls.model_type}', handler type is '{handler_context.parsed_type.annotation}'"

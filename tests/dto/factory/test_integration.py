@@ -8,13 +8,15 @@ from unittest.mock import MagicMock
 import pytest
 from typing_extensions import Annotated
 
-from litestar import patch, post
+from litestar import Litestar, patch, post
 from litestar.datastructures import UploadFile
 from litestar.dto.factory import DTOConfig, DTOData, dto_field
+from litestar.dto.factory.exc import InvalidAnnotation
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.dto.factory.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
 from litestar.params import Body
+from litestar.response import Response
 from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
@@ -358,3 +360,39 @@ def test_dto_private_fields_disabled() -> None:
         response = client.post("/", json={"bar": "hello", "_baz": 42})
         assert response.status_code == 201
         assert response.json() == {"bar": "hello", "_baz": 42}
+
+
+def test_dto_handle_response_type() -> None:
+    @dataclass
+    class Foo:
+        bar: str
+        baz: str = "world"
+
+    dto = DataclassDTO[Annotated[Foo, DTOConfig(exclude={"baz"})]]
+
+    @post(dto=dto, signature_namespace={"Foo": Foo})
+    def handler(data: Foo) -> Response[Foo]:
+        return Response(data, status_code=201)
+
+    with create_test_client(route_handlers=[handler], debug=True) as client:
+        response = client.post("/", json={"bar": "hello"})
+        assert response.status_code == 201
+        assert response.json() == {"bar": "hello"}
+
+
+def test_dto_handle_response_type_invalid_type() -> None:
+    @dataclass
+    class Foo:
+        bar: str
+        baz: str = "world"
+
+    @dataclass
+    class Bar:
+        bar: str
+
+    @post(dto=DataclassDTO[Foo], signature_namespace={"Foo": Foo, "Bar": Bar})
+    def handler(data: Foo) -> Response[Bar]:
+        return Response(Bar(bar="bar"), status_code=201)
+
+    with pytest.raises(InvalidAnnotation):
+        Litestar(route_handlers=[handler])
