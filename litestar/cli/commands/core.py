@@ -74,7 +74,7 @@ def info_command(app: Litestar) -> None:
 @option(
     "--fd",
     "--file-descriptor",
-    help="Bind the a socket from this file descriptor.",
+    help="Bind to a socket from this file descriptor.",
     type=int,
     default=None,
     show_default=True,
