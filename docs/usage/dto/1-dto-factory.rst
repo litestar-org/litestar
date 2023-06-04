@@ -226,3 +226,22 @@ to update the instance of ``Person`` before returning it.
 
 In our request, we set only the ``name`` property of the ``Person``, from ``"Peter"`` to ``"Peter Pan"`` and received
 the full object - with the modified name - back in the response.
+
+Implicit Private Fields
+-----------------------
+
+Fields that are named with a leading underscore are considered "private" by default. This means that they will not be
+parsed from client data, and will not be serialized into return data.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/leading_underscore_private.py
+    :language: python
+    :linenos:
+
+This can be overridden by setting the
+:attr:`DTOConfig.leading_underscore_private <litestar.dto.factory.DTOConfig.underscore_fields_private>` attribute to
+``False``.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/leading_underscore_private_override.py
+    :language: python
+    :linenos:
+    :emphasize-lines: 14,15
