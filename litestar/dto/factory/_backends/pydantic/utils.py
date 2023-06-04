@@ -6,7 +6,7 @@ from msgspec import UNSET, UnsetType
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
 
-from litestar.dto.factory._backends.utils import create_transfer_model_type_annotation
+from litestar.dto.factory._backends.utils.transfer import create_transfer_model_type_annotation
 from litestar.types import Empty
 
 if TYPE_CHECKING:

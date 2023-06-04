@@ -22,13 +22,10 @@ from .types import (
     TupleType,
     UnionType,
 )
-from .utils import (
-    RenameStrategies,
-    build_annotation_for_backend,
-    should_exclude_field,
-    should_ignore_field,
-    transfer_data,
-)
+from .utils.predicates import should_exclude_field, should_ignore_field, should_mark_private
+from .utils.renaming import determine_serialization_name
+from .utils.transfer import transfer_data
+from .utils.typing import build_annotation_for_backend
 
 if TYPE_CHECKING:
     from typing import AbstractSet, Any, Callable, Generator
@@ -127,12 +124,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             annotation = context.parsed_type.annotation
         self.annotation = build_annotation_for_backend(annotation, self.transfer_model_type)
 
-    def parse_model(
-        self,
-        model_type: Any,
-        exclude: AbstractSet[str],
-        nested_depth: int = 0,
-    ) -> FieldDefinitionsType:
+    def parse_model(self, model_type: Any, exclude: AbstractSet[str], nested_depth: int = 0) -> FieldDefinitionsType:
         """Reduce :attr:`model_type` to :class:`FieldDefinitionsType`.
 
         .. important::
@@ -162,11 +154,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             if should_ignore_field(field_definition, self.context.dto_for):
                 continue
 
-            if (
-                self.context.config.underscore_fields_private
-                and field_definition.name.startswith("_")
-                and field_definition.dto_field.mark is None
-            ):
+            if should_mark_private(field_definition, self.context.config.underscore_fields_private):
                 field_definition.dto_field.mark = Mark.PRIVATE
 
             try:
@@ -180,16 +168,9 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             except NestedDepthExceededError:
                 continue
 
-            if rename := self.context.config.rename_fields.get(field_definition.name):
-                serialization_name = rename
-            elif self.context.config.rename_strategy:
-                serialization_name = RenameStrategies(self.context.config.rename_strategy)(field_definition.name)
-            else:
-                serialization_name = field_definition.name
-
             transfer_field_definition = TransferFieldDefinition.from_field_definition(
                 field_definition=field_definition,
-                serialization_name=serialization_name,
+                serialization_name=determine_serialization_name(self.context.config, field_definition),
                 transfer_type=transfer_type,
                 is_partial=self.context.config.partial,
                 is_excluded=should_exclude_field(field_definition, exclude, self.context.dto_for),
