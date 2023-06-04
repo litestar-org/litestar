@@ -15,7 +15,10 @@ from litestar.dto.factory._backends.types import (
     TupleType,
     UnionType,
 )
-from litestar.dto.factory._backends.utils import create_transfer_model_type_annotation, transfer_nested_union_type_data
+from litestar.dto.factory._backends.utils.transfer import (
+    create_transfer_model_type_annotation,
+    transfer_nested_union_type_data,
+)
 from litestar.typing import ParsedType
 
 
