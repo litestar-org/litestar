@@ -100,7 +100,7 @@ def test_run_command(
 
     if uds:
         if set_in_env:
-            monkeypatch.setenv("LITESTAR_UDS", uds)
+            monkeypatch.setenv("LITESTAR_UNIX_DOMAIN_SOCKET", uds)
         else:
             args.extend(["--uds", uds])
     else:
@@ -108,7 +108,7 @@ def test_run_command(
 
     if fd:
         if set_in_env:
-            monkeypatch.setenv("LITESTAR_FD", str(fd))
+            monkeypatch.setenv("LITESTAR_FILE_DESCRIPTOR", str(fd))
         else:
             args.extend(["--fd", str(fd)])
     else:

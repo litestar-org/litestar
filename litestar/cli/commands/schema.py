@@ -9,18 +9,15 @@ from litestar import Litestar
 from litestar._openapi.typescript_converter.converter import (
     convert_openapi_to_typescript,
 )
-from litestar.cli._utils import LitestarCLIException, LitestarGroup
+from litestar.cli._utils import LitestarCLIException, LitestarGroup, rich_click_installed
 
-if TYPE_CHECKING:
+if TYPE_CHECKING or not rich_click_installed:
     from click import Path as ClickPath
     from click import group, option
 else:
-    try:
-        from rich_click import Path as ClickPath
-        from rich_click import group, option
-    except ImportError:
-        from click import Path as ClickPath
-        from click import group, option
+    from rich_click import Path as ClickPath
+    from rich_click import group, option
+
 
 __all__ = ("generate_openapi_schema", "generate_typescript_specs", "schema_group")
 

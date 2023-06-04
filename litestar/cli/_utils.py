@@ -115,8 +115,8 @@ class LitestarEnv:
 
         port = getenv("LITESTAR_PORT")
         web_concurrency = getenv("WEB_CONCURRENCY")
-        uds = getenv("LITESTAR_UDS")
-        fd = getenv("LITESTAR_FD")
+        uds = getenv("LITESTAR_UNIX_DOMAIN_SOCKET")
+        fd = getenv("LITESTAR_FILE_DESCRIPTOR")
         reload_dirs = tuple(s.strip() for s in getenv("LITESTAR_RELOAD_DIRS", "").split(",") if s) or None
 
         return cls(
@@ -170,7 +170,7 @@ class LitestarGroup(Group):
             cmd.callback = _inject_args(cmd.callback)
         super().add_command(cmd)
 
-    def command(self, *args: Any, **kwargs: Any) -> Callable[[AnyCallable], Command] | Command:  # type: ignore
+    def command(self, *args: Any, **kwargs: Any) -> Callable[[AnyCallable], Command] | Command:
         # For some reason, even when copying the overloads + signature from click 1:1, mypy goes haywire
         """Add a function as a command.
 

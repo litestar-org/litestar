@@ -3,19 +3,17 @@ from typing import TYPE_CHECKING
 from rich.prompt import Confirm
 
 from litestar import Litestar
-from litestar.cli._utils import LitestarCLIException, LitestarGroup, console
+from litestar.cli._utils import LitestarCLIException, LitestarGroup, console, rich_click_installed
 from litestar.middleware import DefineMiddleware
 from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.server_side import ServerSideSessionBackend
 from litestar.utils import is_class_and_subclass
 
-if TYPE_CHECKING:
+if TYPE_CHECKING or not rich_click_installed:
     from click import argument, group
 else:
-    try:
-        from rich_click import argument, group
-    except ImportError:
-        from click import argument, group
+    from rich_click import argument, group
+
 
 __all__ = ("clear_sessions_command", "delete_session_command", "get_session_backend", "sessions_group")
 

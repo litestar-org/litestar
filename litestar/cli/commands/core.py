@@ -10,20 +10,17 @@ from typing import TYPE_CHECKING, Any, cast
 import uvicorn
 from rich.tree import Tree
 
-from litestar.cli._utils import LitestarEnv, console, show_app_info
+from litestar.cli._utils import LitestarEnv, console, rich_click_installed, show_app_info
 from litestar.routes import HTTPRoute, WebSocketRoute
 from litestar.utils.helpers import unwrap_partial
 
-if TYPE_CHECKING:
+if TYPE_CHECKING or not rich_click_installed:
     import click
     from click import Context, command, option
 else:
-    try:
-        import rich_click as click
-        from rich_click import Context, command, option
-    except ImportError:
-        import click
-        from click import Context, command, option
+    import rich_click as click
+    from rich_click import Context, command, option
+
 
 __all__ = ("info_command", "routes_command", "run_command")
 
@@ -74,8 +71,15 @@ def info_command(app: Litestar) -> None:
     default=1,
 )
 @option("--host", help="Server under this host", default="127.0.0.1", show_default=True)
-@option("--fd", help="Bind the a socket from this file descriptor.", type=int, default=None, show_default=True)
-@option("--uds", help="Bind to a UNIX domain socket.", default=None, show_default=True)
+@option(
+    "--fd",
+    "--file-descriptor",
+    help="Bind the a socket from this file descriptor.",
+    type=int,
+    default=None,
+    show_default=True,
+)
+@option("--uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
 @option("--debug", help="Run app in debug mode", is_flag=True)
 @option("--pdb", "use_pdb", help="Drop into PDB on an exception", is_flag=True)
 @option("--reload-dir", help="Directories to watch for file changes", multiple=True)
