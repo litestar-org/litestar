@@ -10,11 +10,11 @@ from typing import TYPE_CHECKING, Any, cast
 import uvicorn
 from rich.tree import Tree
 
-from litestar.cli._utils import LitestarEnv, console, rich_click_installed, show_app_info
+from litestar.cli._utils import LitestarEnv, console, RICH_CLICK_INSTALLED, show_app_info
 from litestar.routes import HTTPRoute, WebSocketRoute
 from litestar.utils.helpers import unwrap_partial
 
-if TYPE_CHECKING or not rich_click_installed:
+if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
     import click
     from click import Context, command, option
 else:

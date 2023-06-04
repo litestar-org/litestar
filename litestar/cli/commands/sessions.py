@@ -3,13 +3,13 @@ from typing import TYPE_CHECKING
 from rich.prompt import Confirm
 
 from litestar import Litestar
-from litestar.cli._utils import LitestarCLIException, LitestarGroup, console, rich_click_installed
+from litestar.cli._utils import LitestarCLIException, LitestarGroup, console, RICH_CLICK_INSTALLED
 from litestar.middleware import DefineMiddleware
 from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.server_side import ServerSideSessionBackend
 from litestar.utils import is_class_and_subclass
 
-if TYPE_CHECKING or not rich_click_installed:
+if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
     from click import argument, group
 else:
     from rich_click import argument, group

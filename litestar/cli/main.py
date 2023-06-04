@@ -4,10 +4,10 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ._utils import LitestarEnv, LitestarExtensionGroup, rich_click_installed
+from ._utils import LitestarEnv, LitestarExtensionGroup, RICH_CLICK_INSTALLED
 from .commands import core, schema, sessions
 
-if TYPE_CHECKING or not rich_click_installed:
+if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
     import click
     from click import Context, group, option, pass_context
     from click import Path as ClickPath
