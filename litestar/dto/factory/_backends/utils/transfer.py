@@ -1,16 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Collection, Mapping, TypeVar, cast
+from typing import TYPE_CHECKING, Mapping, TypeVar
 
 from msgspec import UNSET
-from typing_extensions import get_origin
 
-from litestar.dto.factory import Mark
-from litestar.types.protocols import InstantiableCollection
-
-from .types import (
+from litestar.dto.factory._backends.types import (
     CollectionType,
     CompositeType,
+    FieldDefinitionsType,
     MappingType,
     NestedFieldInfo,
     SimpleType,
@@ -18,143 +15,19 @@ from .types import (
     TupleType,
     UnionType,
 )
+from litestar.types.protocols import InstantiableCollection
+
+from .predicates import should_skip_transfer
 
 if TYPE_CHECKING:
-    from typing import AbstractSet, Any, Iterable
+    from typing import Any, Collection
 
-    from litestar.dto.factory.data_structures import FieldDefinition
-    from litestar.dto.factory.types import RenameStrategy
     from litestar.dto.types import ForType
     from litestar.typing import ParsedType
 
-    from .types import FieldDefinitionsType, TransferFieldDefinition
-
-__all__ = (
-    "RenameStrategies",
-    "build_annotation_for_backend",
-    "create_transfer_model_type_annotation",
-    "should_exclude_field",
-    "should_ignore_field",
-    "should_mark_private",
-    "transfer_data",
-)
-
 T = TypeVar("T")
 
-
-def build_annotation_for_backend(annotation: Any, model: type[T]) -> type[T] | type[Iterable[T]]:
-    """A helper to re-build a generic outer type with new inner type.
-
-    Args:
-        annotation: The original annotation on the handler signature
-        model: The data container type
-
-    Returns:
-        Annotation with new inner type if applicable.
-    """
-    origin = get_origin(annotation)
-    if not origin:
-        return model
-    try:
-        return origin[model]  # type:ignore[no-any-return]
-    except TypeError:  # pragma: no cover
-        return annotation.copy_with((model,))  # type:ignore[no-any-return]
-
-
-def should_mark_private(field_definition: FieldDefinition, underscore_fields_private: bool) -> bool:
-    """Returns ``True`` where a field should be marked as private.
-
-    Fields should be marked as private when:
-    - the ``underscore_fields_private`` flag is set.
-    - the field is not already marked.
-    - the field name is prefixed with an underscore
-
-    Args:
-        field_definition: defined DTO field
-        underscore_fields_private: whether fields prefixed with an underscore should be marked as private.
-    """
-    return (
-        underscore_fields_private and field_definition.dto_field.mark is None and field_definition.name.startswith("_")
-    )
-
-
-def should_exclude_field(field_definition: FieldDefinition, exclude: AbstractSet[str], dto_for: ForType) -> bool:
-    """Returns ``True`` where a field should be excluded from data transfer.
-
-    Args:
-        field_definition: defined DTO field
-        exclude: names of fields to exclude
-        dto_for: indicates whether the DTO is for the request body or response.
-
-    Returns:
-        ``True`` if the field should not be included in any data transfer.
-    """
-    field_name = field_definition.name
-    dto_field = field_definition.dto_field
-    excluded = field_name in exclude
-    private = dto_field and dto_field.mark is Mark.PRIVATE
-    read_only_for_data = dto_for == "data" and dto_field and dto_field.mark is Mark.READ_ONLY
-    write_only_for_return = dto_for == "return" and dto_field and dto_field.mark is Mark.WRITE_ONLY
-    return bool(excluded or private or read_only_for_data or write_only_for_return)
-
-
-def should_ignore_field(field_definition: FieldDefinition, dto_for: ForType) -> bool:
-    """Returns ``True`` where a field should be ignored.
-
-    An ignored field is different to an excluded one in that we do not produce a
-    ``TransferFieldDefinition`` for it at all.
-
-    This allows ``AbstractDTOFactory`` concrete types to generate multiple field definitions
-    for the same field name, each for a different transfer direction.
-
-    One example of this is the :class:`sqlalchemy.ext.hybrid.hybrid_property` which, might have
-    a different type accepted by its setter method, than is returned by its getter method.
-    """
-    return field_definition.dto_for is not None and field_definition.dto_for != dto_for
-
-
-class RenameStrategies:
-    """Useful renaming strategies than be used with :class:`DTOConfig`"""
-
-    def __init__(self, renaming_strategy: RenameStrategy) -> None:
-        self.renaming_strategy = renaming_strategy
-
-    def __call__(self, field_name: str) -> str:
-        if not isinstance(self.renaming_strategy, str):
-            return self.renaming_strategy(field_name)
-
-        return cast(str, getattr(self, self.renaming_strategy)(field_name))
-
-    @staticmethod
-    def upper(field_name: str) -> str:
-        return field_name.upper()
-
-    @staticmethod
-    def lower(field_name: str) -> str:
-        return field_name.lower()
-
-    @staticmethod
-    def camel(field_name: str) -> str:
-        return RenameStrategies._camelize(field_name)
-
-    @staticmethod
-    def pascal(field_name: str) -> str:
-        return RenameStrategies._camelize(field_name, capitalize_first_letter=True)
-
-    @staticmethod
-    def _camelize(string: str, capitalize_first_letter: bool = False) -> str:
-        """Convert a string to camel case.
-
-        Args:
-            string (str): The string to convert
-            capitalize_first_letter (bool): Default is False, a True value will convert to PascalCase
-        Returns:
-            str: The string converted to camel case or Pascal case
-        """
-        return "".join(
-            word if index == 0 and not capitalize_first_letter else word.capitalize()
-            for index, word in enumerate(string.split("_"))
-        )
+__all__ = ("transfer_data",)
 
 
 def transfer_data(
@@ -241,25 +114,6 @@ def transfer_instance_data(
             source_value, transfer_type, dto_for, nested_as_dict=destination_type is dict
         )
     return destination_type(**unstructured_data)
-
-
-def should_skip_transfer(
-    dto_for: ForType,
-    field_definition: TransferFieldDefinition,
-    source_has_value: bool,
-) -> bool:
-    """Returns ``True`` where a field should be excluded from data transfer.
-
-    We should skip transfer when:
-    - the field is excluded and the DTO is for the return data.
-    - the DTO is for request data, and the field is not in the source instance.
-
-    Args:
-        dto_for: indicates whether the DTO is for the request body or response.
-        field_definition: model field definition.
-        source_has_value: indicates whether the source instance has a value for the field.
-    """
-    return (dto_for == "return" and field_definition.is_excluded) or (dto_for == "data" and not source_has_value)
 
 
 def transfer_type_data(
