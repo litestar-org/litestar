@@ -18,16 +18,19 @@ from litestar import Litestar, __version__
 from litestar.middleware import DefineMiddleware
 from litestar.utils import get_name
 
-if TYPE_CHECKING:
+rich_click_installed = False
+try:
+    import rich_click
+    rich_click_installed = True
+except ImportError:
+    pass
+
+if TYPE_CHECKING or not rich_click_installed:
     from click import ClickException, Command, Context, Group, pass_context
 else:
-    try:  # pragma: no cover
-        from rich_click import ClickException, Context, pass_context
-        from rich_click.rich_command import RichCommand as Command
-        from rich_click.rich_group import RichGroup as Group
-
-    except ImportError:  # pragma: no cover
-        from click import ClickException, Command, Context, Group, pass_context
+    from rich_click import ClickException, Context, pass_context
+    from rich_click.rich_command import RichCommand as Command
+    from rich_click.rich_group import RichGroup as Group
 
 
 __all__ = (
