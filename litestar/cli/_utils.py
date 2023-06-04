@@ -10,8 +10,7 @@ from os import getenv
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Sequence, TypeVar, cast
 
-from click import ClickException, Command, Context, Group, pass_context, style
-from rich.console import Console
+from rich import get_console
 from rich.table import Table
 from typing_extensions import Concatenate, ParamSpec
 
@@ -19,7 +18,24 @@ from litestar import Litestar, __version__
 from litestar.middleware import DefineMiddleware
 from litestar.utils import get_name
 
+RICH_CLICK_INSTALLED = False
+try:
+    import rich_click  # noqa: F401
+
+    RICH_CLICK_INSTALLED = True
+except ImportError:
+    pass
+
+if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
+    from click import ClickException, Command, Context, Group, pass_context
+else:
+    from rich_click import ClickException, Context, pass_context
+    from rich_click.rich_command import RichCommand as Command  # noqa: TCH002
+    from rich_click.rich_group import RichGroup as Group
+
+
 __all__ = (
+    "RICH_CLICK_INSTALLED",
     "LoadedApp",
     "LitestarCLIException",
     "LitestarEnv",
@@ -45,7 +61,7 @@ T = TypeVar("T")
 
 AUTODISCOVERY_FILE_NAMES = ["app", "application"]
 
-console = Console()
+console = get_console()
 
 
 class LitestarCLIException(ClickException):
@@ -53,7 +69,7 @@ class LitestarCLIException(ClickException):
 
     def __init__(self, message: str) -> None:
         """Initialize exception and style error message."""
-        super().__init__(style(message, fg="red"))
+        super().__init__(message)
 
 
 @dataclass
@@ -66,6 +82,8 @@ class LitestarEnv:
     cwd: Path
     host: str | None = None
     port: int | None = None
+    fd: int | None = None
+    uds: str | None = None
     reload: bool | None = None
     reload_dirs: tuple[str, ...] | None = None
     web_concurrency: int | None = None
@@ -98,6 +116,8 @@ class LitestarEnv:
 
         port = getenv("LITESTAR_PORT")
         web_concurrency = getenv("WEB_CONCURRENCY")
+        uds = getenv("LITESTAR_UNIX_DOMAIN_SOCKET")
+        fd = getenv("LITESTAR_FILE_DESCRIPTOR")
         reload_dirs = tuple(s.strip() for s in getenv("LITESTAR_RELOAD_DIRS", "").split(",") if s) or None
 
         return cls(
@@ -106,6 +126,8 @@ class LitestarEnv:
             debug=_bool_from_env("LITESTAR_DEBUG"),
             host=getenv("LITESTAR_HOST"),
             port=int(port) if port else None,
+            uds=uds,
+            fd=int(fd) if fd else None,
             reload=_bool_from_env("LITESTAR_RELOAD"),
             reload_dirs=reload_dirs,
             web_concurrency=int(web_concurrency) if web_concurrency else None,
