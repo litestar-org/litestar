@@ -72,7 +72,7 @@ async def get_todo_list(done: Optional[bool], session: AsyncSession) -> List[Tod
 
 @get("/")
 async def get_list(transaction: AsyncSession, done: Optional[bool] = None) -> List[TodoItem]:
-    return get_todo_list(done, transaction)
+    return await get_todo_list(done, transaction)
 
 
 @post("/")
@@ -94,4 +94,5 @@ app = Litestar(
     dependencies={"transaction": provide_transaction},
     lifespan=[db_connection],
     plugins=[SQLAlchemySerializationPlugin()],
+    debug=True,
 )
