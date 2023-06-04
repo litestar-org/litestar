@@ -254,12 +254,33 @@ async def test_sqlalchemy_repo_get_or_create_member_existing(
     result_mock = MagicMock()
     result_mock.scalar_one_or_none = MagicMock(return_value=mock_instance)
     execute_mock = AsyncMock(return_value=result_mock)
+    attach_to_session_mock = AsyncMock(return_value=mock_instance)
     monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    monkeypatch.setattr(mock_repo, "_attach_to_session", attach_to_session_mock)
     instance, created = await mock_repo.get_or_create(id="instance-id")
     assert instance is mock_instance
     assert created is False
     mock_repo.session.expunge.assert_called_with(mock_instance)
-    mock_repo.session.add.assert_called_once()
+    mock_repo.session.merge.assert_not_called()
+
+
+async def test_sqlalchemy_repo_get_or_create_member_existing_upsert(
+    mock_repo: SQLAlchemyAsyncRepository, monkeypatch: MonkeyPatch
+) -> None:
+    """Test expected method calls for member get or create operation (existing)."""
+    mock_instance = MagicMock()
+    result_mock = MagicMock()
+    result_mock.scalar_one_or_none = MagicMock(return_value=mock_instance)
+    execute_mock = AsyncMock(return_value=result_mock)
+    attach_to_session_mock = AsyncMock(return_value=mock_instance)
+    monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    monkeypatch.setattr(mock_repo, "_attach_to_session", attach_to_session_mock)
+    instance, created = await mock_repo.get_or_create(id="instance-id", upsert=True, an_extra_attribute="yep")
+    assert instance is mock_instance
+    assert created is False
+    mock_repo.session.expunge.assert_called_with(mock_instance)
+    mock_repo._attach_to_session.assert_called_once()
+    mock_repo.session.flush.assert_called_once()
 
 
 async def test_sqlalchemy_repo_get_or_create_member_existing_no_upsert(

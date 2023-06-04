@@ -278,7 +278,9 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                 field = getattr(existing, field_name, None)
                 if field and field != new_field_value:
                     setattr(existing, field_name, new_field_value)
-            return (await self.update(existing)), False
+            existing = await self._attach_to_session(existing, strategy="merge")
+            await self.session.flush()
+            self.session.expunge(existing)
         return existing, False
 
     async def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
@@ -810,7 +812,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                 field = getattr(existing, field_name, None)
                 if field and field != new_field_value:
                     setattr(existing, field_name, new_field_value)
-            return (self.update(existing)), False
+            existing = self._attach_to_session(existing, strategy="merge")
+            self.session.flush()
+            self.session.expunge(existing)
         return existing, False
 
     def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
