@@ -22,7 +22,7 @@ RICH_CLICK_INSTALLED = False
 try:
     import rich_click  # noqa: F401
 
-    rich_click_installed = True
+    RICH_CLICK_INSTALLED = True
 except ImportError:
     pass
 
