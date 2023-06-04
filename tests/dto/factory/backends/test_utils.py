@@ -6,6 +6,7 @@ from typing import Dict, List, Tuple, Union
 import pytest
 from msgspec import Struct
 
+from litestar.dto.factory import DTOField
 from litestar.dto.factory._backends.types import (
     CollectionType,
     CompositeType,
@@ -15,10 +16,12 @@ from litestar.dto.factory._backends.types import (
     TupleType,
     UnionType,
 )
+from litestar.dto.factory._backends.utils.predicates import should_mark_private
 from litestar.dto.factory._backends.utils.transfer import (
     create_transfer_model_type_annotation,
     transfer_nested_union_type_data,
 )
+from litestar.dto.factory.data_structures import FieldDefinition
 from litestar.typing import ParsedType
 
 
@@ -149,3 +152,99 @@ def test_create_transfer_model_type_annotation_unexpected_transfer_type() -> Non
     transfer_type = CompositeType(parsed_type=ParsedType(Union[str, int]), has_nested=False)
     with pytest.raises(RuntimeError):
         create_transfer_model_type_annotation(transfer_type=transfer_type)
+
+
+def test_should_mark_private_underscore_fields_private_true() -> None:
+    assert (
+        should_mark_private(
+            FieldDefinition(
+                name="a",
+                parsed_type=ParsedType(int),
+                unique_model_name="A",
+                default=1,
+                default_factory=None,
+                dto_field=DTOField(),
+                dto_for=None,
+            ),
+            True,
+        )
+        is False
+    )
+    assert (
+        should_mark_private(
+            FieldDefinition(
+                name="_a",
+                parsed_type=ParsedType(int),
+                unique_model_name="A",
+                default=1,
+                default_factory=None,
+                dto_field=DTOField(),
+                dto_for=None,
+            ),
+            True,
+        )
+        is True
+    )
+    assert (
+        should_mark_private(
+            FieldDefinition(
+                name="_a",
+                parsed_type=ParsedType(int),
+                unique_model_name="A",
+                default=1,
+                default_factory=None,
+                dto_field=DTOField(mark="read-only"),
+                dto_for=None,
+            ),
+            True,
+        )
+        is False
+    )
+
+
+def test_should_mark_private_underscore_fields_private_false() -> None:
+    assert (
+        should_mark_private(
+            FieldDefinition(
+                name="a",
+                parsed_type=ParsedType(int),
+                unique_model_name="A",
+                default=1,
+                default_factory=None,
+                dto_field=DTOField(),
+                dto_for=None,
+            ),
+            False,
+        )
+        is False
+    )
+    assert (
+        should_mark_private(
+            FieldDefinition(
+                name="_a",
+                parsed_type=ParsedType(int),
+                unique_model_name="A",
+                default=1,
+                default_factory=None,
+                dto_field=DTOField(),
+                dto_for=None,
+            ),
+            False,
+        )
+        is False
+    )
+    assert (
+        should_mark_private(
+            FieldDefinition(
+                name="_a",
+                parsed_type=ParsedType(int),
+                unique_model_name="A",
+                default=1,
+                default_factory=None,
+                dto_field=DTOField(mark="read-only"),
+                dto_for=None,
+            ),
+            False,
+        )
+        is False
+    )
