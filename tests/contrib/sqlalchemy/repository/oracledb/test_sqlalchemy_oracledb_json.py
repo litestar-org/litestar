@@ -7,6 +7,7 @@ import sys
 import pytest
 from sqlalchemy import Engine, NullPool, create_engine
 from sqlalchemy.dialects import oracle
+from sqlalchemy.schema import CreateTable
 
 from tests.contrib.sqlalchemy.models_uuid import (
     UUIDEventLog,
@@ -47,7 +48,9 @@ def fx_engine(docker_ip: str) -> Engine:
     )
 
 
-@pytest.mark.xfail
 def test_json_constraint_generation(engine: Engine) -> None:
-    _ddl = UUIDEventLog.__table__.compile(engine, dialect=oracle.dialect())  # type: ignore
-    assert "BLOB" in str(_ddl)
+    ddl = str(CreateTable(UUIDEventLog.__table__).compile(engine, dialect=oracle.dialect()))  # type: ignore
+    assert "BLOB" in ddl.upper()
+    assert "JSON" in ddl.upper()
+    with engine.begin() as conn:
+        UUIDEventLog.metadata.create_all(conn)
