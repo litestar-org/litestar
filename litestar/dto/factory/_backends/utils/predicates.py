@@ -57,6 +57,11 @@ def should_ignore_field(field_definition: FieldDefinition, dto_for: ForType) -> 
 def should_mark_private(field_definition: FieldDefinition, underscore_fields_private: bool) -> bool:
     """Returns ``True`` where a field should be marked as private.
 
+    Fields should be marked as private when:
+    - the ``underscore_fields_private`` flag is set.
+    - the field is not already marked.
+    - the field name is prefixed with an underscore
+
     Args:
         field_definition: defined DTO field
         underscore_fields_private: whether fields prefixed with an underscore should be marked as private.
