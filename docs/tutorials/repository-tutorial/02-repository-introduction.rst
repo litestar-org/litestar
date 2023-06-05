@@ -113,7 +113,7 @@ Here's what we're going to cover:
 
 Let's begin by looking at our code example:
 
-.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk.py
+.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
     :caption: app.py
     :emphasize-lines: 2-3,5-7,9-10,12-13,15-16,18-20,22-24,26-27,29-33,35-37,39-41,43-45,47-52,54-56,58-60,62-63,65-68,70-71
