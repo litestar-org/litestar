@@ -70,7 +70,7 @@ def run_script() -> None:
         db_session.commit()
         console.print(f"Created {len(objs)} new objects.")
 
-        # 2) Select paginated data that included total row count.
+        # 2) Select paginated data and total row count.
         created_objs, total_objs = repo.list_and_count(LimitOffset(limit=10, offset=0))
         console.print(f"Selected {len(created_objs)} records out of a total of {total_objs}.")
 
