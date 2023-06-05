@@ -26,6 +26,7 @@ from pydantic import (
 )
 from pydantic.color import Color
 from pydantic.json import decimal_encoder
+from uuid import UUID
 
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
@@ -84,6 +85,7 @@ DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     IPv6Address: str,
     IPv6Interface: str,
     IPv6Network: str,
+    UUID: str,
     # pydantic compatibility
     deque: list,
     Decimal: decimal_encoder,
