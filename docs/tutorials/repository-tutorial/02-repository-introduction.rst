@@ -97,4 +97,27 @@ The repository simplifies data manipulation, allowing us to create, update, or r
     :linenos:
 
 
+Working with Bulk Data Operations
+---------------------------------
+In this section, we delve into the powerful capabilities of the repository classes for handling bulk data operations. Our example illustrates how we can efficiently manage large amounts of data in our database. Specifically, we'll use a JSON file containing information about US states and their abbreviations. 
+
+Here's what we're going to cover:
+
+1. **Fixture Data Loading**: We will introduce a method for loading fixture data. Fixture data is sample data that populates your database and helps test the behavior of your application under realistic conditions.  This pattern can be extended and adjusted to meet your needs.
+
+2. **Bulk Insert**: We'll use our fixture data to demonstrate a bulk insert operation. This operation allows you to add multiple records to your database in a single transaction, improving performance when working with larger data sets.
+
+3. **Bulk Delete**: We'll also demonstrate how to perform a bulk delete operation. Just as with the bulk insert, deleting multiple records with the batch record methods is more efficient than executing row-by-row.
+
+4. **Paginated Data Selection**: Finally, we will explore how to select multiple records with pagination. This functionality is useful for handling large amounts of data by breaking the data into manageable 'pages' or subsets.  ``LimitOffset`` is one of several filter types you can use with the repository.
+
+Let's begin by looking at our code example:
+
+.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk.py
+    :language: python
+    :caption: app.py
+    :emphasize-lines: 2-3,5-7,9-10,12-13,15-16,18-20,22-24,26-27,29-33,35-37,39-41,43-45,47-52,54-56,58-60,62-63,65-68,70-71
+    :linenos:
+
+
 Now that we have demonstrated how to interact with the repository objects outside of a Litestar application, let's use dependency injection to add this functionality to a Controller!
