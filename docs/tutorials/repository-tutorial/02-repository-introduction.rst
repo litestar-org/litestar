@@ -99,7 +99,7 @@ The repository simplifies data manipulation, allowing us to create, update, or r
 
 Working with Bulk Data Operations
 ---------------------------------
-In this section, we delve into the powerful capabilities of the repository classes for handling bulk data operations. Our example illustrates how we can efficiently manage large amounts of data in our database. Specifically, we'll use a JSON file containing information about US states and their abbreviations. 
+In this section, we delve into the powerful capabilities of the repository classes for handling bulk data operations. Our example illustrates how we can efficiently manage large amounts of data in our database. Specifically, we'll use a JSON file containing information about US states and their abbreviations.
 
 Here's what we're going to cover:
 
@@ -120,4 +120,4 @@ Let's begin by looking at our code example:
     :linenos:
 
 
-Now that we have demonstrated how to interact with the repository objects outside of a Litestar application, let's use dependency injection to add this functionality to a Controller!
+Now that we have demonstrated how to interact with the repository objects outside of a Litestar application, our next example will use dependency injection to add this functionality to a Controller!
