@@ -30,7 +30,7 @@ To implement this, we will define a new ``Book`` model via the :class:`UUIDAudit
     *Spanner Only*: Using monotonically changing primary keys is considered an anti-pattern in Spanner and leads to performance problems.
     Additionally, Spanner does not currently include an idiom comparable to the ``Sequence`` object.  This means the ``BigIntBase`` and ``BigIntAuditBase`` are not currently supported for Spanner.
 
-By using the built-in base declarative models, you gain some additional features that address common features and pain points when working with SQLAlchemy:
+Additional features provided by the built-in base models include:
 
 - Synchronous and Asynchronous repository implementations have been tried and tested with various popular database engines. As of now, six database engines are supported: Postgres, SQLite, MySQL, DuckDB, Oracle, and Spanner.
 - Automatic table name deduction from model name. For instance, a model named `EventLog` would correspond to the `event_log` database table.
