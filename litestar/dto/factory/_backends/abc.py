@@ -290,7 +290,11 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             Encoded data.
         """
         return transfer_data(
-            self.transfer_model_type, data, self.parsed_field_definitions, "return", self.context.parsed_type  # type: ignore[arg-type]
+            destination_type=self.transfer_model_type,  # type: ignore[arg-type]
+            source_data=data,
+            field_definitions=self.parsed_field_definitions,
+            dto_for="return",
+            parsed_type=self.context.parsed_type,
         )
 
     def create_openapi_schema(self, generate_examples: bool, schemas: dict[str, Schema]) -> Reference | Schema:
