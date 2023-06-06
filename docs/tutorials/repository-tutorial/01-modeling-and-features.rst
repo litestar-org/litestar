@@ -1,6 +1,6 @@
 Introduction to Database Modeling and Repository Features
 ---------------------------------------------------------
-In this tutorial, we will cover the integrated repository features in Litestar 2.0, starting with database modeling using the included SQLAlchemy declarative model helpers. These are a series of classes and mixins that incorporate commonly used functions/column types to make working with models easier.
+In this tutorial, we will cover the integrated repository features in Litestar, starting with database modeling using the included SQLAlchemy declarative model helpers. These are a series of classes and mixins that incorporate commonly used functions/column types to make working with models easier.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :language: python
