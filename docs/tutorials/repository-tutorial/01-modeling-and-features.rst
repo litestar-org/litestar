@@ -33,7 +33,7 @@ To implement this, we will define a new ``Book`` model via the :class:`UUIDAudit
 Additional features provided by the built-in base models include:
 
 - Synchronous and Asynchronous repository implementations have been tried and tested with various popular database engines. As of now, six database engines are supported: Postgres, SQLite, MySQL, DuckDB, Oracle, and Spanner.
-- Automatic table name deduction from model name. For instance, a model named `EventLog` would correspond to the `event_log` database table.
+- Automatic table name deduction from model name. For instance, a model named ``EventLog`` would correspond to the ``event_log`` database table.
 - A :class:`GUID <litestar.contrib.sqlalchemy.types.GUID>` database type that establishes a native UUID in supported engines or a ``Binary(16)`` as a fallback.
 - A ``BigInteger`` variant :class:`BigIntIdentity <litestar.contrib.sqlalchemy.types.BigIntIdentity>` that reverts to an ``Integer`` for unsupported variants.
 - A custom :class:`JSON <litestar.contrib.sqlalchemy.types.JSON>` type that uses native ``JSONB`` where possible and ``Binary`` or ``Blob`` as an alternative.
