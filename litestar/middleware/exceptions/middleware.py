@@ -15,7 +15,7 @@ from litestar.middleware.cors import CORSMiddleware
 from litestar.middleware.exceptions._debug_response import create_debug_response
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
-__all__ = ("ExceptionHandlerMiddleware",)
+__all__ = ("ExceptionHandlerMiddleware", "ExceptionResponseContent", "create_exception_response")
 
 
 if TYPE_CHECKING:
