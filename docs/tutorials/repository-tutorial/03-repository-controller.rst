@@ -13,7 +13,7 @@ Note that we are only passing in the database session in this example with no ot
 
 Because we'll be using the SQLAlchemy plugin in Litestar, The database session is automatically configured as a dependency
 
-By default, the repository doesn't add any additional query options to your base statement. However, Litestar provides the flexibility to override this, allowing you to pass your own statement, as illustrated below:
+By default, the repository doesn't add any additional query options to your base statement, but provides the flexibility to override it, allowing you to pass your own statement:
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :language: python
@@ -23,7 +23,7 @@ By default, the repository doesn't add any additional query options to your base
 
 In this instance, we enhance the repository function by adding a ``selectinload`` option. This option configures the specified relationship to load via `SELECT .. IN ...` loading pattern, optimizing the query execution.
 
-Next, we define the ``AuthorController``. This controller exposes five routes for interacting with the Author model:
+Next, we define the ``AuthorController``. This controller exposes five routes for interacting with the ``Author`` model:
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :language: python
@@ -31,7 +31,7 @@ Next, we define the ``AuthorController``. This controller exposes five routes fo
     :emphasize-lines: 110-183
     :linenos:
 
-In our list detail endpoint, we use the pagination filter for limiting the amount of data returned. This built-in feature of Litestar's repository enables you to retrieve large datasets in smaller, more manageable chunks.
+In our list detail endpoint, we use the pagination filter for limiting the amount of data returned, allowing to retrieve large datasets in smaller, more manageable chunks.
 
 In the above examples, we've used the asynchronous repository implementation. However, Litestar also supports synchronous database drivers with an identical implementation.  Here's a corresponding synchronous version of the previous example:
 
