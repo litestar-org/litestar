@@ -37,8 +37,7 @@ Before we jump in to the code, let's take a look at the available functions avai
 
 .. note::
 
-    - All three of the bulk DML operations will leverage dialect specific enhancements to be as efficient as possible.  In addition to using efficient bulk inserts binds, the repository will optionally leverage the multi-row ``RETURNING`` support where possible.
-    The repository will automatically detect this support from the SQL Alchemy driver, so no additional interaction is required to enable this.
+    - All three of the bulk DML operations will leverage dialect specific enhancements to be as efficient as possible.  In addition to using efficient bulk inserts binds, the repository will optionally leverage the multi-row ``RETURNING`` support where possible.  The repository will automatically detect this support from the SQL Alchemy driver, so no additional interaction is required to enable this.
 
     - SQL engines generally have a limit to the number of elements that can be appended into an `IN` clause.  The repository operations will automatically break lists that exceed this limit into multiple queries that are concatenated together before return.  You do not need to account for this in your own code.
 
