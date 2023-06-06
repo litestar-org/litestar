@@ -45,15 +45,17 @@ Before we jump in to the code, let's take a look at the available functions avai
 
 In the following examples, we'll cover a few ways that you can use the repository within your applications.
 
-.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
-    :language: python
-    :caption: app.py
-    :emphasize-lines: 25-18
-    :linenos:
+
+Model Repository
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Here we import the :class:`SQLAlchemyAsyncRepository <litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository>` class and create an ``AuthorRepository`` repository class.  This is all that's required to include all of the integrated repository features.
 
-
+.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
+    :language: python
+    :caption: app.py
+    :emphasize-lines: 25-28
+    :linenos:
 
 Repository Context Manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -61,9 +63,10 @@ Repository Context Manager
 Since we'll be using the repository outside of a Litestar application in this script, we'll make a simple context manager to automatically handle the creation (and cleanup) of our Author repository.
 
 The ``repository_factory`` method will do the following for us:
-- Automatically create a new DB session from the SQLAlchemy configuration.
-- Rollback session when any exception occurs
-- Automatically commit after function call completes.
+    - Automatically create a new DB session from the SQLAlchemy configuration.
+    - Rollback session when any exception occurs
+    - Automatically commit after function call completes.
+
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
     :language: python
