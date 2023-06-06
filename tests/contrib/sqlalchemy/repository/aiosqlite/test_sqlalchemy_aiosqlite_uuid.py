@@ -44,10 +44,13 @@ async def fx_engine(tmp_path: Path) -> AsyncGenerator[AsyncEngine, None]:
     name="session",
 )
 async def fx_session(
-    engine: AsyncEngine, raw_authors_uuid: list[dict[str, Any]], raw_books_uuid: list[dict[str, Any]]
+    engine: AsyncEngine,
+    raw_authors_uuid: list[dict[str, Any]],
+    raw_books_uuid: list[dict[str, Any]],
+    raw_rules_uuid: list[dict[str, Any]],
 ) -> AsyncGenerator[AsyncSession, None]:
     session = async_sessionmaker(bind=engine)()
-    await st.seed_db(engine, raw_authors_uuid, raw_books_uuid)
+    await st.seed_db(engine, raw_authors_uuid, raw_books_uuid, raw_rules_uuid)
     try:
         yield session
     finally:

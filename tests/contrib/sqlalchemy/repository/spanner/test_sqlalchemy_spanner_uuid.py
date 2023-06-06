@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from tests.contrib.sqlalchemy.models_uuid import (
     AuthorSyncRepository,
     BookSyncRepository,
+    RuleSyncRepository,
     UUIDAuthor,
 )
 from tests.contrib.sqlalchemy.repository import sqlalchemy_sync_uuid_tests as st
@@ -60,12 +61,18 @@ def fx_engine(docker_ip: str) -> Engine:
     name="session",
 )
 def fx_session(
-    engine: Engine, raw_authors_uuid: list[dict[str, Any]], raw_books_uuid: list[dict[str, Any]]
+    engine: Engine,
+    raw_authors_uuid: list[dict[str, Any]],
+    raw_books_uuid: list[dict[str, Any]],
+    raw_rules_uuid: list[dict[str, Any]],
 ) -> Generator[Session, None, None]:
     for raw_author in raw_authors_uuid:
         raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d").date()
         raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
         raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
+    for raw_rule in raw_rules_uuid:
+        raw_rule["created"] = datetime.strptime(raw_rule["created"], "%Y-%m-%dT%H:%M:%S")
+        raw_rule["updated"] = datetime.strptime(raw_rule["updated"], "%Y-%m-%dT%H:%M:%S")
     with engine.begin() as txn:
         objs = []
         for tbl in UUIDAuthor.registry.metadata.sorted_tables:
@@ -75,9 +82,12 @@ def fx_session(
 
     session = sessionmaker(bind=engine)()
     try:
-        repo = AuthorSyncRepository(session=session)
+        author_repo = AuthorSyncRepository(session=session)
         for author in raw_authors_uuid:
-            _ = repo.get_or_create("name", **author)
+            _ = author_repo.get_or_create("name", **author)
+        rule_repo = RuleSyncRepository(session=session)
+        for rule in raw_rules_uuid:
+            _ = rule_repo.get_or_create("name", **rule)
         yield session
     finally:
         session.rollback()

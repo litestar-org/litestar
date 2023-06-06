@@ -57,10 +57,13 @@ async def fx_engine(docker_ip: str) -> AsyncEngine:
     name="session",
 )
 async def fx_session(
-    engine: AsyncEngine, raw_authors_bigint: list[dict[str, Any]], raw_books_bigint: list[dict[str, Any]]
+    engine: AsyncEngine,
+    raw_authors_bigint: list[dict[str, Any]],
+    raw_books_bigint: list[dict[str, Any]],
+    raw_rules_bigint: list[dict[str, Any]],
 ) -> AsyncGenerator[AsyncSession, None]:
     session = async_sessionmaker(bind=engine)()
-    await st.seed_db(engine, raw_authors_bigint, raw_books_bigint)
+    await st.seed_db(engine, raw_authors_bigint, raw_books_bigint, raw_rules_bigint)
     try:
         yield session
     finally:

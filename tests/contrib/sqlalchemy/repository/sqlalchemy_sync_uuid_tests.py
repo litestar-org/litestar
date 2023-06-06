@@ -11,13 +11,14 @@ from sqlalchemy import Engine, insert
 from litestar.contrib.repository.exceptions import RepositoryError
 from litestar.contrib.repository.filters import BeforeAfter, CollectionFilter, OrderBy, SearchFilter
 from litestar.contrib.sqlalchemy import base
-from tests.contrib.sqlalchemy.models_uuid import AuthorSyncRepository, BookSyncRepository, UUIDAuthor
+from tests.contrib.sqlalchemy.models_uuid import AuthorSyncRepository, BookSyncRepository, UUIDAuthor, UUIDRule
 
 
 def seed_db(
     engine: Engine,
     raw_authors_uuid: list[dict[str, Any]],
     raw_books_uuid: list[dict[str, Any]],
+    raw_rules_uuid: list[dict[str, Any]],
 ) -> None:
     """Populate test database with sample data.
 
@@ -29,6 +30,9 @@ def seed_db(
         raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d").date()
         raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
         raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
+    for raw_author in raw_rules_uuid:
+        raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
+        raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
 
     with engine.begin() as conn:
         base.orm_registry.metadata.drop_all(conn)
@@ -36,6 +40,8 @@ def seed_db(
     with engine.begin() as conn:
         for author in raw_authors_uuid:
             conn.execute(insert(UUIDAuthor).values(author))
+        for rule in raw_rules_uuid:
+            conn.execute(insert(UUIDRule).values(rule))
 
 
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorSyncRepository) -> None:

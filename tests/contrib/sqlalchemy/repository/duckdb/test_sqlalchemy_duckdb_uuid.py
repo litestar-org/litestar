@@ -51,10 +51,13 @@ def fx_engine(tmp_path: Path) -> Generator[Engine, None, None]:
     name="session",
 )
 def fx_session(
-    engine: Engine, raw_authors_uuid: list[dict[str, Any]], raw_books_uuid: list[dict[str, Any]]
+    engine: Engine,
+    raw_authors_uuid: list[dict[str, Any]],
+    raw_books_uuid: list[dict[str, Any]],
+    raw_rules_uuid: list[dict[str, Any]],
 ) -> Generator[Session, None, None]:
     session = sessionmaker(bind=engine)()
-    st.seed_db(engine, raw_authors_uuid, raw_books_uuid)
+    st.seed_db(engine, raw_authors_uuid, raw_books_uuid, raw_rules_uuid)
     try:
         yield session
     finally:

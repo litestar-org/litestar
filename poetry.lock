@@ -1783,14 +1783,14 @@ socks = ["socksio (>=1.0.0,<2.0.0)"]
 
 [[package]]
 name = "hypothesis"
-version = "6.75.9"
+version = "6.76.0"
 description = "A library for property-based testing"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "hypothesis-6.75.9-py3-none-any.whl", hash = "sha256:a971fe32c916ac7a210e2d6a66b33f841a76ec81c7d4146a2a25ae0141d14967"},
-    {file = "hypothesis-6.75.9.tar.gz", hash = "sha256:d006279cbfaef990ac60273fc598a5052a10ae40ea30b7860ade0a767a2e6fc2"},
+    {file = "hypothesis-6.76.0-py3-none-any.whl", hash = "sha256:034f73dd485933b0f4c319d7c3c58230492fdd7b16e821d67d150a78138adb93"},
+    {file = "hypothesis-6.76.0.tar.gz", hash = "sha256:526657eb3e4f2076b0383f722b2e6a92fd15d1d42db532decae8c41b14cab801"},
 ]
 
 [package.dependencies]
@@ -2058,7 +2058,7 @@ sphinx-design = "^0.3.0"
 type = "git"
 url = "https://github.com/litestar-org/litestar-sphinx-theme.git"
 reference = "HEAD"
-resolved_reference = "0681d86330ab8a84219e83368648bda4f6dde5b3"
+resolved_reference = "9ac8319c705c1bae0a4dc29ea0bf2a305a389895"
 
 [[package]]
 name = "livereload"
@@ -2768,14 +2768,14 @@ files = [
 
 [[package]]
 name = "piccolo"
-version = "0.113.0"
+version = "0.114.0"
 description = "A fast, user friendly ORM and query builder which supports asyncio."
 category = "dev"
 optional = false
 python-versions = ">=3.7.0"
 files = [
-    {file = "piccolo-0.113.0-py3-none-any.whl", hash = "sha256:f5d7d6675d47b70678a6d447d06c8dc2af21e0c44704c3ade10f2f318e83bf7a"},
-    {file = "piccolo-0.113.0.tar.gz", hash = "sha256:c2504e8b68a3063293410950dc866869f32c5bf68188e6367c8e12d8b06f81bd"},
+    {file = "piccolo-0.114.0-py3-none-any.whl", hash = "sha256:c86e944f13927c03ace01a7c1553007b4cb0ce9a60e8c6b4b977ba1af45fcd25"},
+    {file = "piccolo-0.114.0.tar.gz", hash = "sha256:c6463d3802a32cf067444a1988bcfeb8cf9a9db393f8708ca58bdceceee28e83"},
 ]
 
 [package.dependencies]

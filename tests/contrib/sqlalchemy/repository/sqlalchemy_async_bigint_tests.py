@@ -11,13 +11,14 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from litestar.contrib.repository.exceptions import RepositoryError
 from litestar.contrib.repository.filters import BeforeAfter, CollectionFilter, OrderBy, SearchFilter
 from litestar.contrib.sqlalchemy import base
-from tests.contrib.sqlalchemy.models_bigint import AuthorAsyncRepository, BigIntAuthor, BookAsyncRepository
+from tests.contrib.sqlalchemy.models_bigint import AuthorAsyncRepository, BigIntAuthor, BigIntRule, BookAsyncRepository
 
 
 async def seed_db(
     engine: AsyncEngine,
     raw_authors_bigint: list[dict[str, Any]],
     raw_books_bigint: list[dict[str, Any]],
+    raw_rules_bigint: list[dict[str, Any]],
 ) -> None:
     """Populate test database with sample data.
 
@@ -29,10 +30,15 @@ async def seed_db(
         raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d").date()
         raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
         raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
+    for raw_author in raw_rules_bigint:
+        raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
+        raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
+
     async with engine.begin() as conn:
         await conn.run_sync(base.orm_registry.metadata.drop_all)
         await conn.run_sync(base.orm_registry.metadata.create_all)
         await conn.execute(insert(BigIntAuthor).values(raw_authors_bigint))
+        await conn.execute(insert(BigIntRule).values(raw_rules_bigint))
 
 
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorAsyncRepository) -> None:
