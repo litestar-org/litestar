@@ -4,8 +4,8 @@ from dataclasses import MISSING, fields
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar.dto.factory.abc import AbstractDTOFactory
+from litestar.dto.factory.data_structures import FieldDefinition
 from litestar.dto.factory.field import DTO_FIELD_META_KEY
-from litestar.dto.factory.types import FieldDefinition
 from litestar.dto.factory.utils import get_model_type_hints
 from litestar.types.empty import Empty
 from litestar.utils.helpers import get_fully_qualified_class_name
@@ -16,13 +16,13 @@ if TYPE_CHECKING:
     from litestar.types.protocols import DataclassProtocol
     from litestar.typing import ParsedType
 
-__all__ = ("DataclassDTO", "DataT")
+__all__ = ("DataclassDTO", "T")
 
-DataT = TypeVar("DataT", bound="DataclassProtocol | Collection[DataclassProtocol]")
+T = TypeVar("T", bound="DataclassProtocol | Collection[DataclassProtocol]")
 AnyDataclass = TypeVar("AnyDataclass", bound="DataclassProtocol")
 
 
-class DataclassDTO(AbstractDTOFactory[DataT], Generic[DataT]):
+class DataclassDTO(AbstractDTOFactory[T], Generic[T]):
     """Support for domain modelling with dataclasses."""
 
     __slots__ = ()
@@ -47,6 +47,7 @@ class DataclassDTO(AbstractDTOFactory[DataT], Generic[DataT]):
                 default_factory=default_factory,
                 dto_field=dc_field.metadata.get(DTO_FIELD_META_KEY),
                 unique_model_name=get_fully_qualified_class_name(model_type),
+                dto_for=None,
             )
 
             yield field_def

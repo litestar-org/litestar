@@ -13,7 +13,7 @@ The async support in Flask is limited to individual endpoints.
 What this means is that while you can use ``async def`` to define endpoints in Flask,
 **they will not run concurrently** - requests will still be processed one at a time.
 Flask handles asynchronous endpoints by creating an event loop for each request, run the
-endpoint function in it and then return its result.
+endpoint function in it, and then return its result.
 
 ASGI on the other hand does the exact opposite; It runs everything in a central event loop.
 Litestar then adds support for synchronous functions by running them in a non-blocking way
@@ -259,7 +259,7 @@ Request methods
 
 ..  seealso::
 
-    To learn more about requests,, check out these chapters in the documentation
+    To learn more about requests, check out these chapters in the documentation
 
     * :doc:`/usage/request-data`
     * :doc:`/reference/connection`
@@ -273,7 +273,8 @@ in Litestar.
 
 .. code-block:: python
 
-   from litestar import Litestar, StaticFilesConfig
+   from litestar import Litestar
+   from litestar.static_files import StaticFilesConfig
 
    app = Litestar(
        [], static_files_config=[StaticFilesConfig(path="/static", directories=["static"])]
@@ -315,8 +316,10 @@ In addition to Jinja, Litestar supports `Mako <https://www.makotemplates.org/>`_
 
         .. code-block:: python
 
-            from litestar import Litestar, get, TemplateConfig, Template
+            from litestar import Litestar, get
             from litestar.contrib.jinja import JinjaTemplateEngine
+            from litestar.response_containers import Template
+            from litestar.template.config import TemplateConfig
 
 
             @get("/hello/{name:str}")
@@ -363,7 +366,8 @@ Setting cookies and headers
 
         .. code-block:: python
 
-            from litestar import Litestar, get, ResponseHeader, Cookie, Response
+            from litestar import Litestar, get, Response
+            from litestar.datastructures import ResponseHeader, Cookie
 
 
             @get(
@@ -426,7 +430,8 @@ For redirects, instead of ``redirect`` use ``Redirect``:
 
         .. code-block:: python
 
-            from litestar import Litestar, get, Redirect
+            from litestar import Litestar, get
+            from litestar.response_containers import Redirect
 
 
             @get("/")
@@ -470,7 +475,8 @@ Instead of using the ``abort`` function, raise an ``HTTPException``:
 
         .. code-block:: python
 
-            from litestar import Litestar, get, HTTPException
+            from litestar import Litestar, get
+            from litestar.exceptions import HTTPException
 
 
             @get("/")
@@ -616,7 +622,8 @@ Error handling
 
         .. code-block:: python
 
-            from litestar import Litestar, HTTPException, Request, Response
+            from litestar import Litestar, Request, Response
+            from litestar.exceptions import HTTPException
 
 
             def handle_exception(request: Request, exception: Exception) -> Response:

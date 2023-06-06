@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from asyncio import iscoroutinefunction
 from functools import partial
 from inspect import getfullargspec, ismethod
 from typing import (
@@ -17,37 +16,22 @@ from typing import (
 )
 
 from anyio.to_thread import run_sync
-from typing_extensions import ParamSpec, TypeGuard
+from typing_extensions import ParamSpec
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
 from litestar.utils.helpers import Ref
+from litestar.utils.predicates import is_async_callable
 
 if TYPE_CHECKING:
     from litestar.types.empty import EmptyType
     from litestar.utils.signature import ParsedSignature
 
-__all__ = ("AsyncCallable", "AsyncIteratorWrapper", "as_async_callable_list", "async_partial", "is_async_callable")
+__all__ = ("AsyncCallable", "AsyncIteratorWrapper", "async_partial", "is_async_callable")
 
 
 P = ParamSpec("P")
 T = TypeVar("T")
-
-
-def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[T]]]:
-    """Extend :func:`asyncio.iscoroutinefunction` to additionally detect async :func:`functools.partial` objects and
-    class instances with ``async def __call__()`` defined.
-
-    Args:
-        value: Any
-
-    Returns:
-        Bool determining if type of ``value`` is an awaitable.
-    """
-    while isinstance(value, partial):
-        value = value.func  # type: ignore[unreachable]
-
-    return iscoroutinefunction(value) or (callable(value) and iscoroutinefunction(value.__call__))  # type: ignore[operator]
 
 
 class AsyncCallable(Generic[P, T]):
@@ -98,20 +82,6 @@ class AsyncCallable(Generic[P, T]):
         from litestar.utils.signature import ParsedSignature
 
         self._parsed_signature = ParsedSignature.from_fn(self.ref.value, namespace)
-
-
-def as_async_callable_list(value: Callable | list[Callable]) -> list[AsyncCallable]:
-    """Wrap callables in ``AsyncCallable`` s.
-
-    Args:
-        value: A callable or list of callables.
-
-    Returns:
-        A list of AsyncCallable instances
-    """
-    if not isinstance(value, list):
-        return [AsyncCallable(value)]
-    return [AsyncCallable(v) for v in value]
 
 
 def async_partial(fn: Callable) -> Callable:

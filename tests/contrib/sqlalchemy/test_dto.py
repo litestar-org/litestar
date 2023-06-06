@@ -10,7 +10,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, declared_attr, mapped_column
 from typing_extensions import Annotated
 
-from litestar.contrib.sqlalchemy.dto import DataT, SQLAlchemyDTO
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig, DTOField, Mark
 from litestar.dto.factory.field import DTO_FIELD_META_KEY
 from litestar.dto.interface import ConnectionContext, HandlerContext
@@ -64,6 +64,7 @@ def fx_connection_context() -> ConnectionContext:
 
 
 T = TypeVar("T")
+DataT = TypeVar("DataT", bound=DeclarativeBase)
 
 
 async def get_model_from_dto(

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, Callable, Coroutine, DefaultDict, cast
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, cast
 
 from litestar._multipart import parse_multipart_form
 from litestar._parsers import (
@@ -90,7 +90,7 @@ def create_connection_value_extractor(
 @lru_cache(1024)
 def create_query_default_dict(
     parsed_query: tuple[tuple[str, str], ...], sequence_query_parameter_names: tuple[str, ...]
-) -> DefaultDict[str, list[str] | str]:
+) -> defaultdict[str, list[str] | str]:
     """Transform a list of tuples into a default dict. Ensures non-list values are not wrapped in a list.
 
     Args:
@@ -100,7 +100,7 @@ def create_query_default_dict(
     Returns:
         A default dict
     """
-    output: DefaultDict[str, list[str] | str] = defaultdict(list)
+    output: defaultdict[str, list[str] | str] = defaultdict(list)
 
     for k, v in parsed_query:
         if k in sequence_query_parameter_names:

@@ -18,7 +18,7 @@ on:
 jobs:
   test:
     runs-on: ${{ inputs.os }}
-    timeout-minutes: 10
+    timeout-minutes: 20
     defaults:
       run:
         shell: bash
@@ -32,7 +32,6 @@ jobs:
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
-          version: 1.4.0
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true

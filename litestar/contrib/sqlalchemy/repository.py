@@ -278,8 +278,9 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                 field = getattr(existing, field_name, None)
                 if field and field != new_field_value:
                     setattr(existing, field_name, new_field_value)
-            if existing in self.session.dirty:
-                return (await self.update(existing)), False
+            existing = await self._attach_to_session(existing, strategy="merge")
+            await self.session.flush()
+            self.session.expunge(existing)
         return existing, False
 
     async def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
@@ -322,7 +323,6 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             # this will merge the inbound data to the instance we just put in the session
             instance = await self._attach_to_session(data, strategy="merge")
             await self.session.flush()
-            await self.session.refresh(instance)
             self.session.expunge(instance)
             return instance
 
@@ -377,6 +377,24 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         Returns:
             Count of records returned by query, ignoring pagination.
         """
+        if self.session.bind.dialect.name in {"spanner"}:
+            return await self._list_and_count_basic(*filters, **kwargs)
+        return await self._list_and_count_window(*filters, **kwargs)
+
+    async def _list_and_count_window(
+        self,
+        *filters: FilterTypes,
+        **kwargs: Any,
+    ) -> tuple[list[ModelT], int]:
+        """List records with total count.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            Count of records returned by query using an analytical window function, ignoring pagination.
+        """
         statement = kwargs.pop("statement", self.statement)
         statement = statement.add_columns(over(sql_func.count(self.get_id_attribute_value(self.model_type))))
         statement = self._apply_filters(*filters, statement=statement)
@@ -390,6 +408,37 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                 instances.append(instance)
                 if i == 0:
                     count = count_value
+            return instances, count
+
+    async def _list_and_count_basic(
+        self,
+        *filters: FilterTypes,
+        **kwargs: Any,
+    ) -> tuple[list[ModelT], int]:
+        """List records with total count.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            Count of records returned by query using 2 queries, ignoring pagination.
+        """
+        statement = kwargs.pop("statement", self.statement)
+        statement = self._apply_filters(*filters, statement=statement)
+        statement = self._filter_select_by_kwargs(statement, **kwargs)
+        count_statement = statement.with_only_columns(
+            sql_func.count(self.get_id_attribute_value(self.model_type)),
+            maintain_column_froms=True,
+        ).order_by(None)
+        with wrap_sqlalchemy_exception():
+            count_result = await self.session.execute(count_statement)
+            count = count_result.scalar_one()
+            result = await self._execute(statement)
+            instances: list[ModelT] = []
+            for (instance,) in result:
+                self.session.expunge(instance)
+                instances.append(instance)
             return instances, count
 
     async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[ModelT]:
@@ -433,7 +482,6 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         with wrap_sqlalchemy_exception():
             instance = await self._attach_to_session(data, strategy="merge")
             await self.session.flush()
-            await self.session.refresh(instance)
             self.session.expunge(instance)
             return instance
 
@@ -764,8 +812,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                 field = getattr(existing, field_name, None)
                 if field and field != new_field_value:
                     setattr(existing, field_name, new_field_value)
-            if existing in self.session.dirty:
-                return (self.update(existing)), False
+            existing = self._attach_to_session(existing, strategy="merge")
+            self.session.flush()
+            self.session.expunge(existing)
         return existing, False
 
     def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
@@ -808,7 +857,6 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             # this will merge the inbound data to the instance we just put in the session
             instance = self._attach_to_session(data, strategy="merge")
             self.session.flush()
-            self.session.refresh(instance)
             self.session.expunge(instance)
             return instance
 
@@ -867,6 +915,25 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Returns:
             Count of records returned by query, ignoring pagination.
         """
+        if self.session.bind and self.session.bind.dialect.name in {"spanner+spanner"}:
+            return self._list_and_count_basic(*filters, **kwargs)
+        return self._list_and_count_window(*filters, **kwargs)
+
+    def _list_and_count_window(
+        self,
+        *filters: FilterTypes,
+        **kwargs: Any,
+    ) -> tuple[list[ModelT], int]:
+        """List records with total count.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            Count of records returned by query using an analytical window function, ignoring pagination.
+        """
+
         statement = kwargs.pop("statement", self.statement)
         statement = statement.add_columns(over(sql_func.count(self.get_id_attribute_value(self.model_type))))
         statement = self._apply_filters(*filters, statement=statement)
@@ -880,6 +947,38 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                 instances.append(instance)
                 if i == 0:
                     count = count_value
+            return instances, count
+
+    def _list_and_count_basic(
+        self,
+        *filters: FilterTypes,
+        **kwargs: Any,
+    ) -> tuple[list[ModelT], int]:
+        """List records with total count.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            Count of records returned by query using 2 queries, ignoring pagination.
+        """
+
+        statement = kwargs.pop("statement", self.statement)
+        statement = self._apply_filters(*filters, statement=statement)
+        statement = self._filter_select_by_kwargs(statement, **kwargs)
+        count_statement = statement.with_only_columns(
+            sql_func.count(self.get_id_attribute_value(self.model_type)),
+            maintain_column_froms=True,
+        ).order_by(None)
+        with wrap_sqlalchemy_exception():
+            count_result = self.session.execute(count_statement)
+            count = count_result.scalar_one()
+            result = self._execute(statement)
+            instances: list[ModelT] = []
+            for (instance,) in result:
+                self.session.expunge(instance)
+                instances.append(instance)
             return instances, count
 
     def list(self, *filters: FilterTypes, **kwargs: Any) -> list[ModelT]:
@@ -923,7 +1022,6 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         with wrap_sqlalchemy_exception():
             instance = self._attach_to_session(data, strategy="merge")
             self.session.flush()
-            self.session.refresh(instance)
             self.session.expunge(instance)
             return instance
 

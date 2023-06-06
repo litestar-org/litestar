@@ -14,7 +14,7 @@ syntax ``{param_name:param_type}`` :
 
 In the above there are two components:
 
-1. The path parameter is defined in the ``@get`` decorator, which declares both the parameter's name ``user_id``) and type ``int``.
+1. The path parameter is defined in the ``@get`` decorator, which declares both the parameter's name (``user_id``) and type (``int``).
 2. The decorated function ``get_user`` defines a parameter with the same name as the parameter defined in the ``path`` kwarg.
 
 The correlation of parameter name ensures that the value of the path parameter will be injected into the function when
@@ -70,7 +70,7 @@ so using the `the parameter function`_:
 
 
 In the above example, :func:`Parameter <.params.Parameter>` is used to restrict the value of ``version`` to a range
-between 1 and 10, and then set the ``title``, ``description``, ``examples`` and ``externalDocs`` sections of the
+between 1 and 10, and then set the ``title``, ``description``, ``examples``, and ``externalDocs`` sections of the
 OpenAPI schema.
 
 

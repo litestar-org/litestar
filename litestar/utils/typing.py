@@ -33,6 +33,7 @@ __all__ = (
     "annotation_is_iterable_of_type",
     "get_origin_or_inner_type",
     "get_safe_generic_origin",
+    "instantiable_type_mapping",
     "make_non_optional_union",
     "unwrap_annotation",
 )
@@ -48,7 +49,7 @@ tuple_types_regex = re.compile(
     )
 )
 
-types_mapping = {
+instantiable_type_mapping = {
     AbstractSet: set,
     DefaultDict: defaultdict,
     Deque: deque,
@@ -62,6 +63,19 @@ types_mapping = {
     Sequence: list,
     Set: set,
     Tuple: tuple,
+    abc.Mapping: dict,
+    abc.MutableMapping: dict,
+    abc.MutableSequence: list,
+    abc.MutableSet: set,
+    abc.Sequence: list,
+    abc.Set: set,
+    defaultdict: defaultdict,
+    deque: deque,
+    dict: dict,
+    frozenset: frozenset,
+    list: list,
+    set: set,
+    tuple: tuple,
 }
 
 _safe_generic_origin_map = {
@@ -103,6 +117,11 @@ This is necessary because occasionally we want to rebuild a generic outer type w
 
 wrapper_type_set = {Annotated, Required, NotRequired}
 """Types that always contain a wrapped type annotation as their first arg."""
+
+
+def normalize_type_annotation(annotation: Any) -> Any:
+    """Normalize a type annotation to a standard form."""
+    return instantiable_type_mapping.get(annotation, annotation)
 
 
 def annotation_is_iterable_of_type(
@@ -203,7 +222,7 @@ def get_origin_or_inner_type(annotation: Any) -> Any:
         # we need to recursively call here 'get_origin_or_inner_type' because we might be dealing with a generic type alias
         # e.g. Annotated[dict[str, list[int]]
         origin = get_origin_or_inner_type(inner)
-    return types_mapping.get(origin, origin)
+    return instantiable_type_mapping.get(origin, origin)
 
 
 def get_safe_generic_origin(origin_type: Any) -> Any:

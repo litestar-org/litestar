@@ -10,7 +10,7 @@ from litestar.typing import ParsedType
 from ._backends import MsgspecDTOBackend, PydanticDTOBackend
 from ._backends.abc import BackendContext
 from .config import DTOConfig
-from .data_structures import DTOData
+from .data_structures import DTOData, FieldDefinition
 from .exc import InvalidAnnotation
 from .utils import parse_configs_from_annotation
 
@@ -25,14 +25,13 @@ if TYPE_CHECKING:
     from litestar.types.serialization import LitestarEncodableType
 
     from ._backends import AbstractDTOBackend
-    from .types import FieldDefinition
 
-__all__ = ["AbstractDTOFactory"]
+__all__ = ("AbstractDTOFactory",)
 
-DataT = TypeVar("DataT")
+T = TypeVar("T")
 
 
-class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
+class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
     """Base class for DTO types."""
 
     __slots__ = ("connection_context",)
@@ -98,7 +97,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         backend = self._get_backend("data", self.connection_context.handler_id)
         return backend.populate_data_from_raw(raw, self.connection_context)
 
-    def data_to_encodable_type(self, data: DataT | Collection[DataT]) -> LitestarEncodableType:
+    def data_to_encodable_type(self, data: T | Collection[T]) -> LitestarEncodableType:
         backend = self._get_backend("return", self.connection_context.handler_id)
         return backend.encode_data(data, self.connection_context)
 

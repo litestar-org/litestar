@@ -65,8 +65,7 @@ class SerializationPluginProtocol(Protocol):
 
     __slots__ = ()
 
-    @staticmethod
-    def supports_type(parsed_type: ParsedType) -> bool:
+    def supports_type(self, parsed_type: ParsedType) -> bool:
         """Given a value of indeterminate type, determine if this value is supported by the plugin.
 
         Args:

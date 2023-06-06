@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+from asyncio import iscoroutinefunction
 from collections import defaultdict, deque
 from collections.abc import Iterable as CollectionsIterable
 from dataclasses import is_dataclass
-from inspect import isclass
+from functools import partial
+from inspect import isasyncgenfunction, isclass, isgeneratorfunction
 from typing import (
     TYPE_CHECKING,
     Any,
+    Awaitable,
+    Callable,
     ClassVar,
     DefaultDict,
     Deque,
@@ -31,14 +35,15 @@ from typing_extensions import (
     is_typeddict,
 )
 
-from litestar.types import DataclassProtocol, Empty
+from litestar.types import Empty
 from litestar.types.builtin_types import UNION_TYPES, NoneType
 from litestar.utils.typing import get_origin_or_inner_type
 
 if TYPE_CHECKING:
-    from litestar.types.builtin_types import (
-        TypedDictClass,
-    )
+    from litestar.types.builtin_types import TypedDictClass
+    from litestar.types.callable_types import AnyGenerator
+    from litestar.types.protocols import DataclassProtocol
+
 
 try:
     import pydantic
@@ -51,11 +56,13 @@ except ImportError:  # pragma: no cover
     attrs = Empty  # type: ignore
 
 __all__ = (
+    "is_async_callable",
     "is_any",
     "is_attrs_class",
     "is_class_and_subclass",
     "is_class_var",
     "is_dataclass_class",
+    "is_dataclass_instance",
     "is_generic",
     "is_mapping",
     "is_non_string_iterable",
@@ -64,12 +71,58 @@ __all__ = (
     "is_pydantic_constrained_field",
     "is_pydantic_model_class",
     "is_pydantic_model_instance",
+    "is_sync_or_async_generator",
     "is_typed_dict",
     "is_union",
 )
 
 P = ParamSpec("P")
 T = TypeVar("T")
+
+
+def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[T]]]:
+    """Extend :func:`asyncio.iscoroutinefunction` to additionally detect async :func:`functools.partial` objects and
+    class instances with ``async def __call__()`` defined.
+
+    Args:
+        value: Any
+
+    Returns:
+        Bool determining if type of ``value`` is an awaitable.
+    """
+    while isinstance(value, partial):
+        value = value.func  # type: ignore[unreachable]
+
+    return iscoroutinefunction(value) or (
+        callable(value) and iscoroutinefunction(value.__call__)  #  type: ignore[operator]
+    )
+
+
+def is_dataclass_instance(obj: Any) -> TypeGuard[DataclassProtocol]:
+    """Check if an object is a dataclass instance.
+
+    Args:
+        obj: An object to check.
+
+    Returns:
+        True if the object is a dataclass instance.
+    """
+    return hasattr(type(obj), "__dataclass_fields__")
+
+
+def is_dataclass_class(annotation: Any) -> TypeGuard[type[DataclassProtocol]]:
+    """Wrap :func:`is_dataclass <dataclasses.is_dataclass>` in a :data:`typing.TypeGuard`.
+
+    Args:
+        annotation: tested to determine if instance or type of :class:`dataclasses.dataclass`.
+
+    Returns:
+        ``True`` if instance or type of ``dataclass``.
+    """
+    try:
+        return isclass(annotation) and is_dataclass(annotation)
+    except TypeError:  # pragma: no cover
+        return False
 
 
 def is_class_and_subclass(annotation: Any, t_type: type[T]) -> TypeGuard[type[T]]:
@@ -216,21 +269,6 @@ def is_optional_union(annotation: Any) -> TypeGuard[Any | None]:
     )
 
 
-def is_dataclass_class(annotation: Any) -> TypeGuard[type[DataclassProtocol]]:
-    """Wrap :func:`is_dataclass <dataclasses.is_dataclass>` in a :data:`typing.TypeGuard`.
-
-    Args:
-        annotation: tested to determine if instance or type of :class:`dataclasses.dataclass`.
-
-    Returns:
-        ``True`` if instance or type of ``dataclass``.
-    """
-    try:
-        return isclass(annotation) and is_dataclass(annotation)
-    except TypeError:  # pragma: no cover
-        return False
-
-
 def is_typed_dict(annotation: Any) -> TypeGuard[TypedDictClass]:
     """Wrap :func:`typing.is_typeddict` in a :data:`typing.TypeGuard`.
 
@@ -287,17 +325,7 @@ def is_attrs_class(annotation: Any) -> TypeGuard[type[attrs.AttrsInstance]]:  # 
 
 def is_pydantic_constrained_field(
     annotation: Any,
-) -> TypeGuard[
-    type[pydantic.ConstrainedBytes]  # pyright: ignore
-    | type[pydantic.ConstrainedDate]  # pyright: ignore
-    | type[pydantic.ConstrainedDecimal]  # pyright: ignore
-    | type[pydantic.ConstrainedFloat]  # pyright: ignore
-    | type[pydantic.ConstrainedFrozenSet]  # pyright: ignore
-    | type[pydantic.ConstrainedInt]  # pyright: ignore
-    | type[pydantic.ConstrainedList]  # pyright: ignore
-    | type[pydantic.ConstrainedSet]  # pyright: ignore
-    | type[pydantic.ConstrainedStr]  # pyright: ignore
-]:
+) -> Any:
     """Check if the given annotation is a constrained pydantic type.
 
     Args:
@@ -307,20 +335,32 @@ def is_pydantic_constrained_field(
         True if pydantic is installed and the type is a constrained type, otherwise False.
     """
     try:
-        import pydantic
+        # removed in pydantic v2
+        # so this will raise an ImportError - which is expected.
+        from pydantic import (
+            ConstrainedBytes,
+            ConstrainedDate,
+            ConstrainedDecimal,
+            ConstrainedFloat,
+            ConstrainedFrozenSet,
+            ConstrainedInt,
+            ConstrainedList,
+            ConstrainedSet,
+            ConstrainedStr,
+        )
 
         return any(
             is_class_and_subclass(annotation, constrained_type)
             for constrained_type in (
-                pydantic.ConstrainedBytes,
-                pydantic.ConstrainedDate,
-                pydantic.ConstrainedDecimal,
-                pydantic.ConstrainedFloat,
-                pydantic.ConstrainedFrozenSet,
-                pydantic.ConstrainedInt,
-                pydantic.ConstrainedList,
-                pydantic.ConstrainedSet,
-                pydantic.ConstrainedStr,
+                ConstrainedBytes,
+                ConstrainedDate,
+                ConstrainedDecimal,
+                ConstrainedFloat,
+                ConstrainedFrozenSet,
+                ConstrainedInt,
+                ConstrainedList,
+                ConstrainedSet,
+                ConstrainedStr,
             )
         )
     except ImportError:
@@ -350,3 +390,15 @@ def is_class_var(annotation: Any) -> bool:
     """
     annotation = get_origin_or_inner_type(annotation) or annotation
     return annotation is ClassVar
+
+
+def is_sync_or_async_generator(obj: Any) -> TypeGuard[AnyGenerator]:
+    """Check if the given annotation is a sync or async generator.
+
+    Args:
+        obj: type to be tested for sync or async generator.
+
+    Returns:
+        A boolean.
+    """
+    return isgeneratorfunction(obj) or isasyncgenfunction(obj)

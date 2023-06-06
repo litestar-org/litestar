@@ -214,7 +214,7 @@ example will work perfectly fine:
 .. attention::
 
     In the case of the builtin :class:`TemplateResponse <litestar.response.TemplateResponse>`,
-    :class:`FileResponse <litestar.response.FileResponse>`, :class:`StreamingResponse <litestar.response.StreamingResponse>` and
+    :class:`FileResponse <litestar.response.FileResponse>`, :class:`StreamingResponse <litestar.response.StreamingResponse>`, and
     :class:`RedirectResponse <litestar.response.RedirectResponse>` you should use the response "response containers", otherwise
     OpenAPI documentation will not be generated correctly. For more details see the respective documentation sections:
 
@@ -257,7 +257,7 @@ What is an ASGI Application?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 An ASGI application in this context is any async callable (function, class method or simply a class that implements
-that special :meth:`object.__call__` dunder method) that accepts the three ASGI arguments: ``scope``, ``receive`` and
+that special :meth:`object.__call__` dunder method) that accepts the three ASGI arguments: ``scope``, ``receive``, and
 ``send``.
 
 For example, all the following examples are ASGI applications:
@@ -332,7 +332,7 @@ Response Headers
 ----------------
 
 Litestar allows you to define response headers by using the ``response_headers`` kwarg. This kwarg is
-available on all layers of the app - individual route handlers, controllers, routers and the app
+available on all layers of the app - individual route handlers, controllers, routers, and the app
 itself:
 
 .. literalinclude:: /examples/responses/response_headers_1.py
@@ -418,7 +418,7 @@ Specific Headers Implementation
 
 Litestar has a dedicated implementation for a few headers that are commonly used. These headers can be set separately
 with dedicated keyword arguments or as class attributes on all layers of the app (individual route handlers, controllers,
-routers and the app itself). Each layer overrides the layer above it - thus, the headers defined for a specific route
+routers, and the app itself). Each layer overrides the layer above it - thus, the headers defined for a specific route
 handler will override those defined on its router, which will in turn override those defined on the app level.
 
 These header implementations allow easy creating, serialization and parsing according to the associated header
@@ -438,7 +438,7 @@ Here is a simple example that shows how to use it:
 
 
 In this example we have a ``cache-control`` with ``max-age`` of 1 month for the whole app, a ``max-age`` of
-1 day for all routes within ``MyController`` and ``no-store`` for one specific route ``get_server_time``. Here are the cache
+1 day for all routes within ``MyController``, and ``no-store`` for one specific route ``get_server_time``. Here are the cache
 control values that will be returned from each endpoint:
 
 
@@ -469,7 +469,7 @@ Response Cookies
 ----------------
 
 Litestar allows you to define response cookies by using the ``response_cookies`` kwarg. This kwarg is
-available on all layers of the app - individual route handlers, controllers, routers and the app
+available on all layers of the app - individual route handlers, controllers, routers, and the app
 itself:
 
 .. literalinclude:: /examples/responses/response_cookies_1.py
@@ -725,7 +725,7 @@ kwarg. This kwarg accepts either an instance of :class:`BackgroundTask <.backgro
 or an instance of :class:`BackgroundTasks <.background_tasks.BackgroundTasks>`, which wraps an iterable of
 :class:`BackgroundTask <.background_tasks.BackgroundTask>` instances.
 
-A background task is a sync or async callable (function, method or class that implements the :meth:`object.__call__`
+A background task is a sync or async callable (function, method, or class that implements the :meth:`object.__call__`
 dunder method) that will be called after the response finishes sending the data.
 
 Thus, in the following example the passed in background task will be executed after the response sends:
@@ -838,7 +838,7 @@ kwargs>`
     :language: python
 
 
-See :ref:`SQLAlchemy plugin <usage/plugins/sqlalchemy/index:SQLAlchemy Plugins>` for sqlalchemy integration.
+See :ref:`SQLAlchemy plugin <usage/contrib/sqlalchemy/plugins/index:Plugins>` for sqlalchemy integration.
 
 Cursor Pagination
 +++++++++++++++++

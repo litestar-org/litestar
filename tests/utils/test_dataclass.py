@@ -4,8 +4,16 @@ from dataclasses import dataclass
 
 import pytest
 
-from litestar.types import Empty, EmptyType
-from litestar.utils.dataclass import extract_dataclass_fields, extract_dataclass_items, simple_asdict
+from litestar.types import DataclassProtocol, Empty, EmptyType
+from litestar.utils.dataclass import (
+    extract_dataclass_fields,
+    extract_dataclass_items,
+    simple_asdict,
+)
+from litestar.utils.predicates import (
+    is_dataclass_class,
+    is_dataclass_instance,
+)
 
 
 def test_extract_dataclass_fields_exclude_none() -> None:
@@ -141,3 +149,42 @@ def test_simple_asdict_does_not_recurse_into_collections() -> None:
     foo = Foo()
 
     assert simple_asdict(Bar(foo=[foo])) == {"foo": [foo]}
+
+
+def test_isinstance_with_dataclass_protocol_returns_true_for_both_types_and_instances() -> None:
+    """Test to demonstrate that dataclass types return True for isinstance checks against DataclassProtocol."""
+
+    @dataclass
+    class Foo:
+        """A Foo model."""
+
+        bar: str = "bar"
+
+    assert isinstance(Foo(), DataclassProtocol)
+    assert isinstance(Foo, DataclassProtocol)
+
+
+def test_is_dataclass_instance() -> None:
+    """is_dataclass_instance() should return True for instances and False for types."""
+
+    @dataclass
+    class Foo:
+        """A Foo model."""
+
+        bar: str = "bar"
+
+    assert not is_dataclass_instance(Foo)
+    assert is_dataclass_instance(Foo())
+
+
+def test_is_dataclass_class() -> None:
+    """is_dataclass_class() should return True for types and False for instances."""
+
+    @dataclass
+    class Foo:
+        """A Foo model."""
+
+        bar: str = "bar"
+
+    assert is_dataclass_class(Foo)
+    assert not is_dataclass_class(Foo())

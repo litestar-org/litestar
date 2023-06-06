@@ -29,12 +29,6 @@ class Book(UUIDAuditBase):
     author: Mapped[Author] = relationship(lazy="joined", innerjoin=True, viewonly=True)
 
 
-@get(path="/sqlalchemy-app")
-async def async_sqlalchemy_init(db_session: "AsyncSession", db_engine: "AsyncEngine") -> list[Author]:
-    """Interact with SQLAlchemy engine and session."""
-    return await db_session.scalars(select(Author))
-
-
 sqlalchemy_config = SQLAlchemyAsyncConfig(
     connection_string="sqlite+aiosqlite:///test.sqlite", session_dependency_key="db_session"
 )  # Create 'async_session' dependency.
@@ -47,8 +41,14 @@ async def on_startup() -> None:
         await conn.run_sync(UUIDBase.metadata.create_all)
 
 
+@get(path="/authors")
+async def get_authors(db_session: "AsyncSession", db_engine: "AsyncEngine") -> list[Author]:
+    """Interact with SQLAlchemy engine and session."""
+    return list(await db_session.scalars(select(Author)))
+
+
 app = Litestar(
-    route_handlers=[async_sqlalchemy_init],
+    route_handlers=[get_authors],
     on_startup=[on_startup],
     plugins=[SQLAlchemyInitPlugin(config=sqlalchemy_config)],
 )

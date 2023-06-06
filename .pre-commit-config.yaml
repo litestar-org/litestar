@@ -8,11 +8,12 @@ repos:
       - id: check-case-conflict
       - id: check-toml
       - id: debug-statements
+        exclude: "litestar/middleware/exceptions/middleware.py"
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.267"
+    rev: "v0.0.270"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -40,6 +41,7 @@ repos:
     hooks:
       - id: ensure-dunder-all
         exclude: "test*|examples*|tools"
+        args: ["--use-tuple"]
   - repo: https://github.com/ariebovenberg/slotscheck
     rev: v0.16.5
     hooks:
@@ -90,10 +92,12 @@ repos:
             pytimeparse,
             pyyaml,
             rich,
+            rich-click,
             sqlalchemy>=2.0.12,
             starlette,
             structlog,
             tortoise-orm,
+            asyncpg_stubs,
             types-beautifulsoup4,
             types-freezegun,
             types-python-dateutil,
@@ -102,7 +106,7 @@ repos:
             uvicorn,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.308
+    rev: v1.1.311
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs|_openapi"
@@ -146,12 +150,15 @@ repos:
             pytimeparse,
             pyyaml,
             rich,
+            rich-click,
             sqlalchemy>=2.0.12,
             starlette,
             structlog,
             tortoise-orm,
+            asyncpg_stubs,
             types-beautifulsoup4,
             types-freezegun,
+            types-python-dateutil,
             types-pyyaml,
             types-redis,
             uvicorn,

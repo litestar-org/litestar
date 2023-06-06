@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Mapping
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
 from litestar.types.builtin_types import NoneType
-from litestar.utils import is_async_callable
+from litestar.utils.predicates import is_async_callable
 
 if TYPE_CHECKING:
     from litestar.types import Dependencies, ExceptionHandler, Guard, Middleware

@@ -5,14 +5,11 @@ from __future__ import annotations
 
 import secrets
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Final, Generic, TypeVar, Union
-
-from msgspec import UNSET, UnsetType
+from typing import TYPE_CHECKING, Final, Generic, TypeVar
 
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
 from litestar.dto.factory import DTOData
-from litestar.typing import ParsedType
 from litestar.utils.helpers import get_fully_qualified_class_name
 
 from .types import (
@@ -29,6 +26,7 @@ from .utils import (
     RenameStrategies,
     build_annotation_for_backend,
     should_exclude_field,
+    should_ignore_field,
     transfer_data,
 )
 
@@ -36,11 +34,12 @@ if TYPE_CHECKING:
     from typing import AbstractSet, Any, Callable, Generator
 
     from litestar.dto.factory import DTOConfig
-    from litestar.dto.factory.types import FieldDefinition
+    from litestar.dto.factory.data_structures import FieldDefinition
     from litestar.dto.interface import ConnectionContext
     from litestar.dto.types import ForType
     from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
+    from litestar.typing import ParsedType
 
     from .types import FieldDefinitionsType
 
@@ -160,13 +159,8 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         """
         defined_fields = []
         for field_definition in self.context.field_definition_generator(model_type):
-            if should_exclude_field(field_definition, exclude, self.context.dto_for):
+            if should_ignore_field(field_definition, self.context.dto_for):
                 continue
-
-            if self.context.config.partial:
-                field_definition = field_definition.copy_with(
-                    parsed_type=ParsedType(Union[field_definition.parsed_type.annotation, UnsetType]), default=UNSET
-                )
 
             try:
                 transfer_type = self._create_transfer_type(
@@ -191,6 +185,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
                 serialization_name=serialization_name,
                 transfer_type=transfer_type,
                 is_partial=self.context.config.partial,
+                is_excluded=should_exclude_field(field_definition, exclude, self.context.dto_for),
             )
             defined_fields.append(transfer_field_definition)
         return tuple(defined_fields)
@@ -245,7 +240,11 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             return self.dto_data_type(
                 backend=self,
                 data_as_builtins=transfer_data(
-                    dict, self.parse_builtins(builtins, connection_context), self.parsed_field_definitions, "data"
+                    dict,
+                    self.parse_builtins(builtins, connection_context),
+                    self.parsed_field_definitions,
+                    "data",
+                    self.context.parsed_type,
                 ),
             )
         return self.transfer_data_from_builtins(self.parse_builtins(builtins, connection_context))
@@ -259,7 +258,9 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         Returns:
             Instance or collection of ``model_type`` instances.
         """
-        return transfer_data(self.context.model_type, builtins, self.parsed_field_definitions, "data")
+        return transfer_data(
+            self.context.model_type, builtins, self.parsed_field_definitions, "data", self.context.parsed_type
+        )
 
     def populate_data_from_raw(self, raw: bytes, connection_context: ConnectionContext) -> Any:
         """Parse raw bytes into instance of `model_type`.
@@ -275,11 +276,19 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             return self.dto_data_type(
                 backend=self,
                 data_as_builtins=transfer_data(
-                    dict, self.parse_raw(raw, connection_context), self.parsed_field_definitions, "data"
+                    dict,
+                    self.parse_raw(raw, connection_context),
+                    self.parsed_field_definitions,
+                    "data",
+                    self.context.parsed_type,
                 ),
             )
         return transfer_data(
-            self.context.model_type, self.parse_raw(raw, connection_context), self.parsed_field_definitions, "data"
+            self.context.model_type,
+            self.parse_raw(raw, connection_context),
+            self.parsed_field_definitions,
+            "data",
+            self.context.parsed_type,
         )
 
     def encode_data(self, data: Any, connection_context: ConnectionContext) -> LitestarEncodableType:
@@ -293,7 +302,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             Encoded data.
         """
         return transfer_data(
-            self.transfer_model_type, data, self.parsed_field_definitions, "return"  # type: ignore[arg-type]
+            self.transfer_model_type, data, self.parsed_field_definitions, "return", self.context.parsed_type  # type: ignore[arg-type]
         )
 
     def create_openapi_schema(self, generate_examples: bool, schemas: dict[str, Schema]) -> Reference | Schema:
@@ -417,7 +426,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
 
 def _filter_exclude(exclude: AbstractSet[str], field_name: str) -> AbstractSet[str]:
     """Filter exclude set to only include exclusions for the given field name."""
-    return {split[1] for s in exclude if (split := s.split(".", 1))[0] == field_name}
+    return {split[1] for s in exclude if (split := s.split(".", 1))[0] == field_name and len(split) > 1}
 
 
 def _enumerate_name(name: str, index: int) -> str:

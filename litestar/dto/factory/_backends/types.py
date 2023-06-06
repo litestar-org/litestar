@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from litestar.dto.factory.types import FieldDefinition
+from litestar.dto.factory.data_structures import FieldDefinition
 
 if TYPE_CHECKING:
     from typing import Any
@@ -92,9 +92,15 @@ class MappingType(CompositeType):
 @dataclass(frozen=True)
 class TransferFieldDefinition(FieldDefinition):
     __slots__ = (
+        "default_factory",
+        "dto_field",
+        "dto_for",
+        "unique_model_name",
+        "is_excluded",
         "is_partial",
         "serialization_name",
         "transfer_type",
+        "unique_name",
     )
 
     transfer_type: TransferType
@@ -103,10 +109,17 @@ class TransferFieldDefinition(FieldDefinition):
     """Name of the field as it should feature on the transfer model."""
     is_partial: bool
     """Whether the field is optional for transfer."""
+    is_excluded: bool
+    """Whether the field should be excluded from transfer."""
 
     @classmethod
     def from_field_definition(
-        cls, field_definition: FieldDefinition, transfer_type: TransferType, serialization_name: str, is_partial: bool
+        cls,
+        field_definition: FieldDefinition,
+        transfer_type: TransferType,
+        serialization_name: str,
+        is_partial: bool,
+        is_excluded: bool,
     ) -> Self:
         return cls(
             name=field_definition.name,
@@ -118,6 +131,8 @@ class TransferFieldDefinition(FieldDefinition):
             transfer_type=transfer_type,
             dto_field=field_definition.dto_field,
             is_partial=is_partial,
+            is_excluded=is_excluded,
+            dto_for=field_definition.dto_for,
         )
 
 

@@ -139,7 +139,7 @@ You can also modify the generated schema for the route handler using the followi
    def retrieve_item(pk: int) -> Item:
        ...
 
-You can also specify ``security`` and ``tags`` on higher level of the application, e.g. on a controller, router or the
+You can also specify ``security`` and ``tags`` on higher level of the application, e.g. on a controller, router, or the
 app instance itself. For example:
 
 .. code-block:: python
@@ -174,7 +174,7 @@ app instance itself. For example:
            ],
            security=[{"BearerToken": []}],
            components=Components(
-               securitySchemes={
+               security_schemes={
                    "BearerToken": SecurityScheme(
                        type="http",
                        scheme="bearer",
@@ -282,7 +282,7 @@ Accessing the OpenAPI schema in code
 ------------------------------------
 
 The OpenAPI schema is generated during the :class:`Litestar <litestar.app.Litestar>` app's init method. Once init is finished,
-its accessible as ``app.openapi_schema``. As such you can always access it inside route handlers, dependencies etc. by
+its accessible as ``app.openapi_schema``. As such you can always access it inside route handlers, dependencies, etc. by
 access the request instance:
 
 .. code-block:: python

@@ -1,12 +1,13 @@
 [tool.poetry]
 name = "litestar"
 version = "2.0.0alpha7"
-description = "Performant, light and flexible ASGI API Framework"
+description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 authors = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
     "Peter Schutt <peter.github@proton.me>",
     "Cody Fincher <cody.fincher@gmail.com>",
     "Janek Nouvertné <provinzkraut@posteo.de>",
+    "Jacob Coffee <jacob@z7x.org>",
 ]
 maintainers = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
@@ -16,7 +17,7 @@ maintainers = [
     "Jacob Coffee <jacob@z7x.org>",
 ]
 license = "MIT"
-readme = "README.md"
+readme = "docs/PYPI_README.md"
 homepage = "https://litestar.dev/"
 repository = "https://github.com/litestar-org/litestar"
 documentation = "https://docs.litestar.dev/"
@@ -51,6 +52,14 @@ classifiers = [
 include = ["CHANGELOG.rst"]
 packages = [{ include = "litestar" }]
 
+[tool.poetry.urls]
+"Issue Tracker" = "https://github.com/litestar-org/litestar/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc"
+"Changelog" = "https://github.com/litestar-org/litestar/releases/"
+"Twitter" = "https://twitter.com/LitestarAPI"
+"Reddit" = "https://www.reddit.com/r/litestarapi"
+"Discord" = "https://discord.gg/MmcwxztmQb"
+"Blog" = "https://blog.litestar.dev"
+
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
 alembic = { version = "*", optional = true }
@@ -78,6 +87,7 @@ pytimeparse = { version = "*", optional = true }
 pyyaml = "*"
 redis = { version = ">=4.4.4,!=4.5.0,!=4.5.1,!=4.5.2,!=4.5.3,!=4.5.5", optional = true, extras = ["hiredis"] }
 rich = { version = ">=13.0.0", optional = true }
+rich-click = { version = "*", optional = true }
 sqlalchemy = { version = ">=2.0.12", optional = true }
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
@@ -86,9 +96,12 @@ importlib-resources = { version="^5.12.0", python = "<3.9" }
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
+rich-click = "*"
+alembic = "*"
 asyncmy = "*"
 asyncpg = "*"
 attrs = "*"
+beanie = "*"
 beautifulsoup4 = "*"
 brotli = "*"
 cattrs = "*"
@@ -129,6 +142,8 @@ tortoise-orm = ">=0.17.0"
 trio = "*"
 uvicorn = "*"
 pytest-rerunfailures = "^11.1.2"
+duckdb-engine = "*"
+sqlalchemy-spanner = "*"
 
 [tool.poetry.group.docs]
 optional = true
@@ -145,10 +160,30 @@ sphinxcontrib-mermaid = ">=0.8.1,<1"
 litestar-sphinx-theme = { git = "https://github.com/litestar-org/litestar-sphinx-theme.git" }
 uvicorn = "*"
 
+[tool.poetry.group.lint]
+optional = true
+
+[tool.poetry.group.lint.dependencies]
+asyncpg-stubs = "*"
+black = "*"
+blacken-docs = "*"
+mypy = "*"
+pylint = "*"
+pylint-pydantic = "*"
+pyright = "*"
+ruff = '*'
+slotscheck = "*"
+types-freezegun = "*"
+types-python-jose = "*"
+types-pyyaml = "*"
+types-redis = "*"
+types-beautifulsoup4 = "*"
+types-python-dateutil = "*"
+
 [tool.poetry.extras]
 attrs = ["attrs", "cattrs", "python-dateutil", "pytimeparse"]
 brotli = ["brotli"]
-cli = ["click", "rich", "jsbeautifier", "uvicorn"]
+cli = ["click", "rich", "rich-click", "jsbeautifier", "uvicorn"]
 cryptography = ["cryptography"]
 jinja = ["jinja2"]
 jwt = ["python-jose", "cryptography"]
@@ -156,10 +191,9 @@ opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 redis = ["redis"]
 sqlalchemy = ["sqlalchemy", "alembic"]
-standard = ["click", "jinja2", "jsbeautifier", "rich", "uvicorn"]
+standard = ["click", "jinja2", "jsbeautifier", "rich", "uvicorn", "rich-click"]
 structlog = ["structlog"]
 tortoise-orm = ["tortoise-orm"]
-
 full = [
     "alembic",
     "attrs",
@@ -181,7 +215,7 @@ full = [
 ]
 
 [tool.poetry.scripts]
-litestar = { callable = "litestar:__main__", extras = ["cli"] }
+litestar = { callable = "litestar.__main__:run_cli", extras = ["cli"] }
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -193,6 +227,7 @@ include = '\.pyi?$'
 
 [tool.codespell]
 ignore-words-list = "selectin"
+skip = 'poetry.lock'
 
 [tool.coverage.run]
 omit = ["*/tests/*", "litestar/contrib/sqlalchemy_1/*"]
@@ -212,7 +247,12 @@ addopts = "--ignore=examples"
 asyncio_mode = "auto"
 filterwarnings = [
     "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:164",
-    "ignore::DeprecationWarning:pkg_resources:2803",
+    "ignore::DeprecationWarning:pkg_resources.*",
+    "ignore::DeprecationWarning:google.rpc",
+    "ignore::DeprecationWarning:google.gcloud",
+    "ignore::DeprecationWarning:google.iam",
+    "ignore::DeprecationWarning:google",
+    "ignore::DeprecationWarning:sphinxcontrib",
 ]
 markers = [
     "sqlalchemy_asyncmy: SQLAlchemy MySQL (asyncmy) Tests",
@@ -221,7 +261,9 @@ markers = [
     "sqlalchemy_aiosqlite: SQLAlchemy SQLite (aiosqlite) Tests",
     "sqlalchemy_psycopg_sync: SQLAlchemy Postgres (psycopg sync) Tests",
     "sqlalchemy_sqlite: SQLAlchemy SQLite (sqlite) Tests",
-    "sqlalchemy_oracledb: SQLAlchemy Oracle (oracledb) Tests"
+    "sqlalchemy_oracledb: SQLAlchemy Oracle (oracledb) Tests",
+    "sqlalchemy_spanner: SQLAlchemy Google Cloud Spanner (sqlalchemy-spanner) Tests",
+    "sqlalchemy_duckdb: SQLAlchemy Duckdb (duckdb-engine) Tests",
 ]
 
 [tool.pyright]
@@ -344,6 +386,7 @@ known-first-party = ["litestar", "tests", "examples"]
     "TRY",
 ]
 "docs/examples/application_hooks/before_send_hook.py" = ["UP006"]
+"docs/examples/contrib/sqlalchemy/plugins/**/*.*" = ["UP006"]
 "docs/examples/tests/**/*.*" = [
     "A",
     "ARG",

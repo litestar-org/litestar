@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import sys
 from secrets import token_hex
 from typing import cast
 from unittest.mock import AsyncMock, MagicMock
@@ -19,7 +20,10 @@ from litestar.types.asgi_types import WebSocketMode
 
 from .util import get_from_stream
 
-pytestmark = [pytest.mark.usefixtures("redis_service")]
+pytestmark = [
+    pytest.mark.usefixtures("redis_service"),
+    pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
+]
 
 
 @pytest.fixture
@@ -67,6 +71,12 @@ def test_plugin_dependency(mock: MagicMock, memory_backend: MemoryChannelsBacken
 
     assert mock.call_count == 1
     assert mock.call_args[0][0] is channels_plugin
+
+
+def test_plugin_dependency_signature_namespace(memory_backend: MemoryChannelsBackend) -> None:
+    channels_plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
+    app = Litestar(plugins=[channels_plugin])
+    assert app.signature_namespace["ChannelsPlugin"] is ChannelsPlugin
 
 
 @pytest.mark.flaky(reruns=5)

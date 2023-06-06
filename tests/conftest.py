@@ -32,6 +32,8 @@ from _pytest.fixtures import FixtureRequest
 from _pytest.nodes import Item
 from fakeredis.aioredis import FakeRedis
 from freezegun import freeze_time
+from google.auth.credentials import AnonymousCredentials  # pyright: ignore
+from google.cloud import spanner  # pyright: ignore
 from oracledb.exceptions import DatabaseError, OperationalError
 from pytest_docker.plugin import Services
 from pytest_lazyfixture import lazy_fixture
@@ -64,6 +66,7 @@ if TYPE_CHECKING:
     from litestar import Litestar
     from litestar.types import (
         AnyIOBackend,
+        ASGIApp,
         ASGIVersion,
         Receive,
         RouteHandlerType,
@@ -88,8 +91,12 @@ def anyio_backend(request: pytest.FixtureRequest) -> str:
     return request.param  # type: ignore[no-any-return]
 
 
-async def mock_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
-    pass
+@pytest.fixture()
+def mock_asgi_app() -> ASGIApp:
+    async def asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
+        ...
+
+    return asgi_app
 
 
 @pytest.fixture()
@@ -163,13 +170,13 @@ def session_backend_config_memory(memory_store: MemoryStore) -> ServerSideSessio
 
 
 @pytest.fixture
-def session_middleware(session_backend: BaseSessionBackend) -> SessionMiddleware[Any]:
+def session_middleware(session_backend: BaseSessionBackend, mock_asgi_app: ASGIApp) -> SessionMiddleware[Any]:
     return SessionMiddleware(app=mock_asgi_app, backend=session_backend)
 
 
 @pytest.fixture
 def cookie_session_middleware(
-    cookie_session_backend: ClientSideSessionBackend,
+    cookie_session_backend: ClientSideSessionBackend, mock_asgi_app: ASGIApp
 ) -> SessionMiddleware[ClientSideSessionBackend]:
     return SessionMiddleware(app=mock_asgi_app, backend=cookie_session_backend)
 
@@ -518,8 +525,63 @@ async def oracle_service(docker_ip: str, docker_services: Services) -> None:  # 
         docker_services:
     """
     # oracle takes a while to mount and open initially.
-    await anyio.sleep(20)
+    await anyio.sleep(15)
     await wait_until_responsive(timeout=30.0, pause=0.1, check=AsyncCallable(oracle_responsive), host=docker_ip)
+
+
+def spanner_responsive(host: str) -> bool:
+    """
+    Args:
+        host: docker IP address.
+
+    Returns:
+        Boolean indicating if we can connect to the database.
+    """
+
+    try:
+        os.environ["SPANNER_EMULATOR_HOST"] = "localhost:9010"
+        os.environ["GOOGLE_CLOUD_PROJECT"] = "emulator-test-project"
+        spanner_client = spanner.Client(project="emulator-test-project", credentials=AnonymousCredentials())
+        instance = spanner_client.instance("test-instance")
+        try:
+            instance.create()
+        except Exception:  # pyright: ignore
+            pass
+        database = instance.database("test-database")
+        try:
+            database.create()
+        except Exception:  # pyright: ignore
+            pass
+        with database.snapshot() as snapshot:
+            resp = list(snapshot.execute_sql("SELECT 1"))[0]
+        return bool(resp[0] == 1)
+    except Exception:  # pyright: ignore
+        return False
+
+
+@docker_service_registry.register("spanner")
+async def spanner_service(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
+    """Starts containers for required services, fixture waits until they are
+    responsive before returning.
+
+    Args:
+        docker_ip:
+        docker_services:
+    """
+    await anyio.sleep(15)
+    os.environ["SPANNER_EMULATOR_HOST"] = "localhost:9010"
+    await wait_until_responsive(timeout=30.0, pause=0.1, check=AsyncCallable(spanner_responsive), host=docker_ip)
+
+
+@docker_service_registry.register("spanner_init")
+async def spanner_init_service(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
+    """Starts containers for required services, fixture waits until they are
+    responsive before returning.
+
+    Args:
+        docker_ip:
+        docker_services:
+    """
 
 
 # the monkeypatch fixture does not work with session scoped dependencies

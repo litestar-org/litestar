@@ -6,7 +6,7 @@ from typing import Any, AnyStr, Collection, ForwardRef, Mapping, TypeVar, Union
 from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin
 
 from litestar.types.builtin_types import UNION_TYPES, NoneType
-from litestar.utils.typing import get_safe_generic_origin, unwrap_annotation
+from litestar.utils.typing import get_safe_generic_origin, instantiable_type_mapping, unwrap_annotation
 
 __all__ = ("ParsedType",)
 
@@ -21,6 +21,7 @@ class ParsedType:
         "origin",
         "args",
         "metadata",
+        "instantiable_origin",
         "is_annotated",
         "is_required",
         "is_not_required",
@@ -38,6 +39,8 @@ class ParsedType:
     """The result of calling ``get_args(annotation)`` after unwrapping Annotated, e.g. (int,)."""
     metadata: tuple[Any, ...]
     """Any metadata associated with the annotation via ``Annotated``."""
+    instantiable_origin: Any
+    """An equivalent type to ``origin`` that can be safely instantiated. E.g., ``Sequence`` -> ``list``."""
     is_annotated: bool
     """Whether the annotation included ``Annotated`` or not."""
     is_required: bool
@@ -71,6 +74,7 @@ class ParsedType:
         object.__setattr__(self, "origin", origin)
         object.__setattr__(self, "args", args)
         object.__setattr__(self, "metadata", metadata)
+        object.__setattr__(self, "instantiable_origin", instantiable_type_mapping.get(origin, origin))
         object.__setattr__(self, "is_annotated", Annotated in wrappers)
         object.__setattr__(self, "is_required", Required in wrappers)
         object.__setattr__(self, "is_not_required", NotRequired in wrappers)

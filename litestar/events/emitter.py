@@ -5,7 +5,7 @@ import sys
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from contextlib import AsyncExitStack
-from typing import TYPE_CHECKING, Any, DefaultDict, Sequence
+from typing import TYPE_CHECKING, Any, Sequence
 
 if sys.version_info < (3, 9):
     from typing import AsyncContextManager
@@ -32,7 +32,7 @@ class BaseEventEmitterBackend(AsyncContextManager["BaseEventEmitterBackend"], AB
 
     __slots__ = ("listeners",)
 
-    listeners: DefaultDict[str, set[EventListener]]
+    listeners: defaultdict[str, set[EventListener]]
 
     def __init__(self, listeners: Sequence[EventListener]):
         """Create an event emitter instance.

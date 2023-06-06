@@ -4,10 +4,12 @@ from dataclasses import Field, fields
 from typing import TYPE_CHECKING
 
 from litestar.types import Empty
-from litestar.types.protocols import DataclassProtocol
+from litestar.utils.predicates import is_dataclass_instance
 
 if TYPE_CHECKING:
     from typing import AbstractSet, Any, Iterable
+
+    from litestar.types.protocols import DataclassProtocol
 
 __all__ = (
     "extract_dataclass_fields",
@@ -101,7 +103,7 @@ def simple_asdict(
     ret = {}
     for field in extract_dataclass_fields(obj, exclude_none, exclude_empty):
         value = getattr(obj, field.name)
-        if isinstance(value, DataclassProtocol) and convert_nested:
+        if is_dataclass_instance(value) and convert_nested:
             ret[field.name] = simple_asdict(value, exclude_none, exclude_empty)
         else:
             ret[field.name] = getattr(obj, field.name)

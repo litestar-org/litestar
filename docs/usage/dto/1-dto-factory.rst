@@ -9,6 +9,8 @@ and from raw bytes.
 The following factories are currently available:
 
 - :class:`DataclassDTO <litestar.dto.factory.stdlib.DataclassDTO>`
+- :class:`MsgspecDTO <litestar.contrib.msgspec.MsgspecDTO>`
+- :class:`PydanticDTO <litestar.contrib.pydantic.PydanticDTO>`
 - :class:`SQLAlchemyDTO <litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO>`
 
 Using DTO Factories
@@ -30,6 +32,8 @@ response from the handler. Secondly, the user is able to set the ``created_at`` 
 ever be set once, and defined internally.
 
 Let's explore how we can configure DTOs to manage scenarios like these.
+
+.. _dto-marking-fields:
 
 Marking fields
 --------------
@@ -66,7 +70,7 @@ nested models.
     :emphasize-lines: 6,10,31,32,35
     :linenos:
 
-Examining the output of the above POST request, we can see that the user's ID, the ID of the user's address field and
+Examining the output of the above POST request, we can see that the user's ID, the ID of the user's address field, and
 the user's street address are excluded from the serialized response.
 
 Renaming fields
@@ -91,7 +95,7 @@ Fields can also be renamed using a renaming strategy that will be applied to all
 
 Fields that are directly renamed using `rename_fields` mapping will be excluded from `rename_strategy`.
 
-The rename strategy either accepts one of the pre-defined strategies: "camel", "pascal", "upper", "lower" or it can be provided a callback that accepts the field name as an argument and should return a string.
+The rename strategy either accepts one of the pre-defined strategies: "camel", "pascal", "upper", "lower", or it can be provided a callback that accepts the field name as an argument and should return a string.
 
 Type checking
 -------------
@@ -173,6 +177,33 @@ and have used that to create our ``Person`` instance, after augmenting the clien
 value.
 
 Consult the :class:`Reference Docs <litestar.dto.factory.DTOData>` for more information on the methods available.
+
+.. _dto-create-instance-nested-data:
+
+Providing values for nested data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To augment data used to instantiate our model instances, we can provide keyword arguments to the
+:meth:`create_instance() <litestar.dto.factory.DTOData.create_instance>` method.
+
+Sometimes we need to provide values for nested data, for example, when creating a new instance of a model that has a
+nested model with excluded fields.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/providing_values_for_nested_data.py
+    :language: python
+    :emphasize-lines: 10,11,12,13,21,29,35
+    :linenos:
+
+The double-underscore syntax ``address__id`` passed as a keyword argument to the
+:meth:`create_instance() <litestar.dto.factory.DTOData.create_instance>` method call is used to specify a value for a
+nested attribute. In this case, it's used to provide a value for the ``id`` attribute of the ``Address`` instance nested
+within the ``Person`` instance.
+
+This is a common convention in Python for dealing with nested structures. The double underscore can be interpreted as
+"traverse through", so ``address__id`` means "traverse through address to get to id".
+
+In the context of this script, ``create_instance(id=1, address__id=2)`` is saying "create a new ``Person`` instance from
+the client data given an id of ``1``, and supplement the client address data with an id of ``2``".
 
 DTO Factory and PATCH requests
 ------------------------------

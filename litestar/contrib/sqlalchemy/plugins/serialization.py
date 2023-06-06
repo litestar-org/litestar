@@ -19,8 +19,7 @@ class SQLAlchemySerializationPlugin(SerializationPluginProtocol, _slots_base.Slo
     def __init__(self) -> None:
         self._type_dto_map: dict[type[DeclarativeBase], type[SQLAlchemyDTO]] = {}
 
-    @staticmethod
-    def supports_type(parsed_type: ParsedType) -> bool:
+    def supports_type(self, parsed_type: ParsedType) -> bool:
         return (
             parsed_type.is_collection and parsed_type.has_inner_subclass_of(DeclarativeBase)
         ) or parsed_type.is_subclass_of(DeclarativeBase)

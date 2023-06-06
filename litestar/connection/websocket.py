@@ -179,7 +179,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
     def iter_data(self, mode: Literal["binary"]) -> AsyncGenerator[bytes, None]:
         ...
 
-    async def iter_data(self, mode: WebSocketMode) -> AsyncGenerator[str | bytes, None]:
+    async def iter_data(self, mode: WebSocketMode = "text") -> AsyncGenerator[str | bytes, None]:
         """Continuously receive data and yield it
 
         Args:
@@ -231,7 +231,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
         data = await self.receive_data(mode="binary")
         return decode_msgpack(data)
 
-    async def iter_json(self, mode: WebSocketMode) -> AsyncGenerator[Any, None]:
+    async def iter_json(self, mode: WebSocketMode = "text") -> AsyncGenerator[Any, None]:
         """Continuously receive data and yield it, decoding it as JSON in the process.
 
         Args:

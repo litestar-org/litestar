@@ -11,7 +11,6 @@ from litestar.testing import create_test_client
 if TYPE_CHECKING:
     from typing import Dict
 
-    from litestar.datastructures import State
     from litestar.types import Message, Scope
 
 
@@ -20,10 +19,10 @@ def test_before_send() -> None:
     def handler() -> Dict[str, str]:
         return {"key": "value"}
 
-    async def before_send_hook_handler(message: Message, state: State, scope: Scope) -> None:
+    async def before_send_hook_handler(message: Message, scope: Scope) -> None:
         if message["type"] == "http.response.start":
             headers = MutableScopeHeaders(message)
-            headers.add("My Header", state.message)
+            headers.add("My Header", scope["app"].state.message)
 
     def on_startup(app: Litestar) -> None:
         app.state.message = "value injected during send"

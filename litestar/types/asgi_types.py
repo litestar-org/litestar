@@ -40,10 +40,9 @@ from typing import (
     Literal,
     Optional,
     Tuple,
+    TypedDict,
     Union,
 )
-
-from typing_extensions import TypedDict
 
 from litestar.enums import ScopeType
 

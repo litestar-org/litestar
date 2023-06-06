@@ -6,8 +6,8 @@ from typing import ClassVar, List
 
 import pytest
 
+from litestar.dto.factory.data_structures import FieldDefinition
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
-from litestar.dto.factory.types import FieldDefinition
 from litestar.types.empty import Empty
 from litestar.typing import ParsedType
 from litestar.utils.helpers import get_fully_qualified_class_name
@@ -37,6 +37,7 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
             default_factory=None,
             dto_field=None,
             unique_model_name=fqdn,
+            dto_for=None,
         ),
         FieldDefinition(
             name="b",
@@ -45,6 +46,7 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
             default_factory=None,
             dto_field=None,
             unique_model_name=fqdn,
+            dto_for=None,
         ),
         FieldDefinition(
             name="c",
@@ -53,6 +55,7 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
             default_factory=list,
             dto_field=None,
             unique_model_name=fqdn,
+            dto_for=None,
         ),
     ]
 
@@ -67,6 +70,7 @@ def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> 
             default_factory=None,
             dto_field=None,
             unique_model_name=fqdn,
+            dto_for=None,
         ),
         FieldDefinition(
             name="b",
@@ -75,6 +79,7 @@ def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> 
             default_factory=None,
             dto_field=None,
             unique_model_name=fqdn,
+            dto_for=None,
         ),
         FieldDefinition(
             name="c",
@@ -83,6 +88,7 @@ def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> 
             default_factory=list,
             unique_model_name=fqdn,
             dto_field=None,
+            dto_for=None,
         ),
     ]
 

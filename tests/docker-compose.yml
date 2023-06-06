@@ -30,3 +30,22 @@ services:
     image: redis
     ports:
       - "6397:6379" # use a non-standard port here
+  spanner:
+    image: gcr.io/cloud-spanner-emulator/emulator:latest
+    ports:
+      - "9010:9010"
+  # Init (Create Instance)
+  spanner_init:
+    image: gcr.io/google.com/cloudsdktool/cloud-sdk:332.0.0-slim
+    command: >
+      bash -c 'gcloud config configurations create emulator &&
+              gcloud config set auth/disable_credentials true &&
+              gcloud config set project $${PROJECT_ID} &&
+              gcloud config set auth/disable_credentials true &&
+              gcloud spanner instances create $${INSTANCE_NAME} --config=emulator-config --description=Emulator --nodes=1'
+    environment:
+      PROJECT_ID: emulator-test-project
+      INSTANCE_NAME: test-instance
+      DATABASE_NAME: test-database
+    depends_on:
+      - spanner

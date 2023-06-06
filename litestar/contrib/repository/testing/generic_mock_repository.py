@@ -391,7 +391,11 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
     _model_has_updated: bool
 
     def __init__(
-        self, id_factory: Callable[[], Any] = uuid4, tz: tzinfo = timezone.utc, allow_ids_on_add: bool = False, **_: Any
+        self,
+        id_factory: Callable[[], Any] = uuid4,
+        tz: tzinfo = timezone.utc,
+        allow_ids_on_add: bool = False,
+        **_: Any,
     ) -> None:
         super().__init__()
         self._id_factory = id_factory
@@ -728,5 +732,5 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         cls.collection = {}
 
 
-def model_items(model: ModelT) -> list[tuple[str, Any]]:
+def model_items(model: Any) -> list[tuple[str, Any]]:
     return [(k, v) for k, v in model.__dict__.items() if not k.startswith("_")]

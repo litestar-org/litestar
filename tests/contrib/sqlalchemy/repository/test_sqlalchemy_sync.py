@@ -85,7 +85,7 @@ def test_sqlalchemy_sentinel(monkeypatch: MonkeyPatch) -> None:
 
     assert isinstance(AnotherModel._sentinel, MappedColumn)
     assert isinstance(TheTestModel._sentinel, MappedColumn)
-    assert isinstance(TheBigIntModel._sentinel, MappedColumn)
+    assert not hasattr(TheBigIntModel, "_sentinel")
     model1, model2, model3 = AnotherModel(), TheTestModel(), TheBigIntModel()
     assert "created" not in model1.to_dict(exclude={"created"}).keys()
     assert "_sentinel" not in model1.to_dict().keys()
@@ -252,7 +252,45 @@ def test_sqlalchemy_repo_get_or_create_member_existing(
     result_mock.scalar_one_or_none = MagicMock(return_value=mock_instance)
     execute_mock = MagicMock(return_value=result_mock)
     monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    attach_to_session_mock = MagicMock(return_value=mock_instance)
+    monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    monkeypatch.setattr(mock_repo, "_attach_to_session", attach_to_session_mock)
     instance, created = mock_repo.get_or_create(id="instance-id")
+    assert instance is mock_instance
+    assert created is False
+    mock_repo.session.expunge.assert_called_with(mock_instance)
+    mock_repo.session.merge.assert_not_called()
+
+
+def test_sqlalchemy_repo_get_or_create_member_existing_upsert(
+    mock_repo: SQLAlchemySyncRepository, monkeypatch: MonkeyPatch
+) -> None:
+    """Test expected method calls for member get or create operation (existing)."""
+    mock_instance = MagicMock()
+    result_mock = MagicMock()
+    result_mock.scalar_one_or_none = MagicMock(return_value=mock_instance)
+    execute_mock = MagicMock(return_value=result_mock)
+    attach_to_session_mock = MagicMock(return_value=mock_instance)
+    monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    monkeypatch.setattr(mock_repo, "_attach_to_session", attach_to_session_mock)
+    instance, created = mock_repo.get_or_create(id="instance-id", upsert=True, an_extra_attribute="yep")
+    assert instance is mock_instance
+    assert created is False
+    mock_repo.session.expunge.assert_called_with(mock_instance)
+    mock_repo._attach_to_session.assert_called_once()
+    mock_repo.session.flush.assert_called_once()
+
+
+def test_sqlalchemy_repo_get_or_create_member_existing_no_upsert(
+    mock_repo: SQLAlchemySyncRepository, monkeypatch: MonkeyPatch
+) -> None:
+    """Test expected method calls for member get or create operation (existing)."""
+    mock_instance = MagicMock()
+    result_mock = MagicMock()
+    result_mock.scalar_one_or_none = MagicMock(return_value=mock_instance)
+    execute_mock = MagicMock(return_value=result_mock)
+    monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    instance, created = mock_repo.get_or_create(id="instance-id", upsert=False, an_extra_attribute="yep")
     assert instance is mock_instance
     assert created is False
     mock_repo.session.expunge.assert_called_once_with(mock_instance)
@@ -270,7 +308,7 @@ def test_sqlalchemy_repo_get_or_create_member_created(
     instance, created = mock_repo.get_or_create(id="new-id")
     assert instance is not None
     assert created is True
-    mock_repo.session.expunge.assert_called_once_with(instance)
+    mock_repo.session.expunge.assert_called_with(instance)
     mock_repo.session.add.assert_called_once_with(instance)
 
 
@@ -319,8 +357,9 @@ def test_sqlalchemy_repo_list_and_count(mock_repo: SQLAlchemySyncRepository, mon
     """Test expected method calls for list operation."""
     mock_instances = [MagicMock(), MagicMock()]
     mock_count = len(mock_instances)
-    execute_mock = MagicMock(return_value=iter([(mock, mock_count) for mock in mock_instances]))
-    monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    execute_mock = MagicMock(return_value=(mock_instances, mock_count))
+    monkeypatch.setattr(mock_repo, "_list_and_count_window", execute_mock)
+    monkeypatch.setattr(mock_repo, "_list_and_count_basic", execute_mock)
     instances, instance_count = mock_repo.list_and_count()
     assert instances == mock_instances
     assert instance_count == mock_count
@@ -419,7 +458,6 @@ def test_sqlalchemy_repo_update(mock_repo: SQLAlchemySyncRepository, monkeypatch
     assert instance is mock_instance
     mock_repo.session.merge.assert_called_once_with(mock_instance)
     mock_repo.session.flush.assert_called_once()
-    mock_repo.session.refresh.assert_called_once_with(mock_instance)
     mock_repo.session.expunge.assert_called_once_with(mock_instance)
     mock_repo.session.commit.assert_not_called()
 
@@ -432,7 +470,6 @@ def test_sqlalchemy_repo_upsert(mock_repo: SQLAlchemySyncRepository) -> None:
     assert instance is mock_instance
     mock_repo.session.merge.assert_called_once_with(mock_instance)
     mock_repo.session.flush.assert_called_once()
-    mock_repo.session.refresh.assert_called_once_with(mock_instance)
     mock_repo.session.expunge.assert_called_once_with(mock_instance)
     mock_repo.session.commit.assert_not_called()
 

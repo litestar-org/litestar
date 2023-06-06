@@ -33,6 +33,7 @@ def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
         preferred_validation_backend=app.preferred_validation_backend,
         parsed_signature=route_handler.parsed_fn_signature,
     ).fields
+
     return create_parameter_for_handler(
         route_handler=route_handler,
         handler_fields=handler_fields,
@@ -245,7 +246,7 @@ def test_layered_parameters() -> None:
         path="/router",
         route_handlers=[MyController],
         parameters={
-            "router1": Parameter(str, regex="^[a-zA-Z]$"),
+            "router1": Parameter(str, pattern="^[a-zA-Z]$"),
             "router2": Parameter(float, multiple_of=5.0, header="router3"),
         },
     )

@@ -9,7 +9,7 @@ At the root of every Litestar application is an instance of the :class:`Litestar
 class. Typically, this code will be placed in a file called ``main.py`` at the project's root directory.
 
 Creating an app is straightforward – the only required arg is a list
-of :class:`Controllers <.controller.Controller>`, :class:`Routers <.router.Router>`
+of :class:`Controllers <.controller.Controller>`, :class:`Routers <.router.Router>`,
 or :class:`Route handlers <.handlers.BaseRouteHandler>`:
 
 .. literalinclude:: /examples/hello_world.py
@@ -17,7 +17,7 @@ or :class:`Route handlers <.handlers.BaseRouteHandler>`:
     :language: python
 
 
-The app instance is the root level of the app - it has the base path of ``/`` and all root level Controllers, Routers
+The app instance is the root level of the app - it has the base path of ``/`` and all root level Controllers, Routers,
 and Route Handlers should be registered on it.
 
 .. seealso::
@@ -46,9 +46,9 @@ setting the ``preferred_validation_backend`` kwarg to ``pydantic``:
 Startup and Shutdown
 --------------------
 
-You can pass a list of callables - either sync or async functions, methods or class instances - to the ``on_startup``
+You can pass a list of callables - either sync or async functions, methods, or class instances - to the ``on_startup``
 / ``on_shutdown`` kwargs of the :class:`Litestar <litestar.app.Litestar>` instance. Those will be called in
-order, once the ASGI server (uvicorn, hypercorn etc.) emits the respective event.
+order, once the ASGI server (uvicorn, hypercorn, etc.) emits the respective event.
 
 .. mermaid::
 
@@ -67,6 +67,7 @@ establish the connection, and another to close it, and then pass them to the Lit
     :caption: Startup and Shutdown
     :language: python
 
+.. _lifespan-context-managers:
 
 Lifespan context managers
 -------------------------
@@ -81,7 +82,7 @@ connection, around.
     :language: python
     :caption: Handling a database connection
 
-
+.. _application-state:
 
 Using Application State
 -----------------------
@@ -97,7 +98,7 @@ via the :class:`app.state <.app.Litestar>` attribute. As such it can be accessed
 It's important to understand in this context that the application instance is injected into the ASGI ``scope`` mapping for
 each connection (i.e. request or websocket connection) as ``scope["app"].state``. This makes the application accessible
 wherever the scope mapping is available, e.g. in middleware, on :class:`Request <.connection.request.Request>` and
-:class:`Websocket <.connection.websocket.WebSocket>` instances (accessible as ``request.app`` / ``socket.app``) and many
+:class:`Websocket <.connection.websocket.WebSocket>` instances (accessible as ``request.app`` / ``socket.app``), and many
 other places.
 
 Therefore, state offers an easy way to share contextual data between disparate parts of the application, as seen below:
@@ -106,6 +107,7 @@ Therefore, state offers an easy way to share contextual data between disparate p
     :caption: Using Application State
     :language: python
 
+.. _Initializing Application State:
 
 Initializing Application State
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -247,7 +249,7 @@ The :class:`StaticFilesConfig <.static_files.StaticFilesConfig>` class accepts a
 which can be any class adhering to the Litestar :class:`FileSystemProtocol <litestar.types.FileSystemProtocol>`.
 
 This protocol is similar to the file systems defined by `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_,
-which cover all major cloud providers and a wide range of other use cases (e.g. HTTP based file service, ``ftp`` etc.).
+which cover all major cloud providers and a wide range of other use cases (e.g. HTTP based file service, ``ftp``, etc.).
 
 In order to use any file system, simply use `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_ or one of
 the libraries based upon it, or provide a custom implementation adhering to the
@@ -327,7 +329,7 @@ Application Hooks
 
 Litestar includes several application level hooks that allow users to run their own sync or async callables. While you
 are free to use these hooks as you see fit, the design intention behind them is to allow for easy instrumentation for
-observability (monitoring, tracing, logging etc.).
+observability (monitoring, tracing, logging, etc.).
 
 .. note::
 
@@ -339,7 +341,7 @@ After Exception
 ^^^^^^^^^^^^^^^
 
 The ``after_exception`` hook takes a :class:`sync or async callable <litestar.types.AfterExceptionHookHandler>` that is called with
-three arguments: the ``exception`` that occurred, the ASGI ``scope`` of the request or websocket connection and the
+three arguments: the ``exception`` that occurred, the ASGI ``scope`` of the request or websocket connection, and the
 application ``state``.
 
 .. literalinclude:: /examples/application_hooks/after_exception_hook.py

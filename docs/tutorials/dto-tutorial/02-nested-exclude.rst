@@ -11,7 +11,7 @@ To demonstrate, let's adjust our script to add an ``Address`` model, that is rel
    :linenos:
    :emphasize-lines: 10,11,12,13,14,22,26,33,34
 
-The ``Address`` model has three attributes, ``street``, ``city`` and ``country`` and we've added an ``address``
+The ``Address`` model has three attributes, ``street``, ``city``, and ``country``, and we've added an ``address``
 attribute to the ``Person`` model.
 
 The ``ReadDTO`` class has been updated to exclude the ``street`` attribute of the nested ``Address`` model using the

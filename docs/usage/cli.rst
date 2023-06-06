@@ -23,6 +23,13 @@ extra:
 After installing any of these two, the ``litestar`` command will be available as the entrypoint
 to the CLI.
 
+.. note::
+   Litestar includes the ``click``, ``rich``, and ``rich-click`` packages when you install the CLI.
+   We recommend using ``rich-click`` for the best experience, but it is considered an optional dependency.
+
+   If you would like to use the CLI without the included ``rich-click`` dependency,
+   simply install ``click`` and ``rich`` in your project instead of using one of the built in Litestar extras flag.
+
 Autodiscovery
 -------------
 
@@ -104,21 +111,28 @@ The ``run`` command runs a Litestar application using `uvicorn <https://www.uvic
 Options
 ~~~~~~~
 
-+-------------------------------------+---------------------------+-----------------------------------------------------------------+
-| Flag                                | Environment variable      | Description                                                     |
-+========================+============+=========+=================+=================================================================+
-| ``-r``\ , ``--reload``              | ``LITESTAR_RELOAD``       | Reload the application when files in its directory are changed  |
-+-------------------------------------+---------------------------+-----------------------------------------------------------------+
-| ``-p``\ , ``--port``                | ``LITESTAR_PORT``         | Bind the the server to this port [default: 8000]                |
-+-------------------------------------+---------------------------+-----------------------------------------------------------------+
-| ``-wc``\ , ``--web-concurrency``    | ``WEB_CONCURRENCY``       | The number of concurrent web workers to start [default: 1]      |
-+-------------------------------------+---------------------------+-----------------------------------------------------------------+
-| ``--host``                          | ``LITESTAR_HOST``         | Bind the server to this host [default: 127.0.0.1]               |
-+-------------------------------------+---------------------------+-----------------------------------------------------------------+
-| ``--debug``                         | ``LITESTAR_DEBUG``        | Run the application in debug mode                               |
-+-------------------------------------+---------------------------+-----------------------------------------------------------------+
-| ``--reload-dir``                    | ``LITESTAR_RELOAD_DIRS``  | Specify directories to watch for reload.                        |
-+-------------------------------------+---------------------------+-----------------------------------------------------------------+
++---------------------------------------+---------------------------------+----------------------------------------------------------------+
+|                 Flag                  |      Environment variable       |                          Description                           |
++=======================================+=================================+================================================================+
+| ``-r``\ , ``--reload``                | ``LITESTAR_RELOAD``             | Reload the application when files in its directory are changed |
++---------------------------------------+---------------------------------+----------------------------------------------------------------+
+| ``--reload-dir``                      | ``LITESTAR_RELOAD_DIRS``        | Specify directories to watch for reload.                       |
++---------------------------------------+---------------------------------+----------------------------------------------------------------+
+| ``-p``\ , ``--port``                  | ``LITESTAR_PORT``               | Bind the the server to this port [default: 8000]               |
++---------------------------------------+---------------------------------+----------------------------------------------------------------+
+| ``-wc``\ , ``--web-concurrency``      | ``WEB_CONCURRENCY``             | The number of concurrent web workers to start [default: 1]     |
++---------------------------------------+---------------------------------+----------------------------------------------------------------+
+| ``--host``                            | ``LITESTAR_HOST``               | Bind the server to this host [default: 127.0.0.1]              |
++---------------------------------------+---------------------------------+----------------------------------------------------------------+
+| ``--fd``\ , ``--file-descriptor``     | ``LITESTAR_FILE_DESCRIPTOR``    | Bind to a socket from this file descriptor.                    |
++---------------------------------------+---------------------------------+----------------------------------------------------------------+
+| ``--uds``\ , ``--unix-domain-socket`` | ``LITESTAR_UNIX_DOMAIN_SOCKET`` | Bind to a UNIX domain socket.                                  |
++---------------------------------------+---------------------------------+----------------------------------------------------------------+
+| ``--debug``                           | ``LITESTAR_DEBUG``              | Run the application in debug mode                              |
++---------------------------------------+---------------------------------+----------------------------------------------------------------+
+| ``--pdb``                             | ``LITESTAR_PDB``                | Drop into the Python debugger when an exception occurs         |
++---------------------------------------+---------------------------------+----------------------------------------------------------------+
+
 
 ``--reload-dir``
 ++++++++++++++++

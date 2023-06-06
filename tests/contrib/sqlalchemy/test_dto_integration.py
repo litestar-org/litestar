@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from types import ModuleType
 from typing import Any, Callable, Dict, List, Tuple
 
 import pytest
@@ -134,3 +135,197 @@ def test_fields_alias_generator_sqlalchemy(
 
         response_callback = client.post("/", json=json_data)
         assert response_callback.json() == json_data
+
+
+def test_dto_with_association_proxy(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from __future__ import annotations
+
+from typing import Final, List
+
+from sqlalchemy import Column
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import Table
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
+from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.ext.associationproxy import AssociationProxy
+
+from litestar import get
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.dto.factory import dto_field
+
+class Base(DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "user"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    kw: Mapped[List[Keyword]] = relationship(secondary=lambda: user_keyword_table, info=dto_field("private"))
+    # proxy the 'keyword' attribute from the 'kw' relationship
+    keywords: AssociationProxy[List[str]] = association_proxy("kw", "keyword")
+
+class Keyword(Base):
+    __tablename__ = "keyword"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    keyword: Mapped[str] = mapped_column(String(64))
+
+user_keyword_table: Final[Table] = Table(
+    "user_keyword",
+    Base.metadata,
+    Column("user_id", Integer, ForeignKey("user.id"), primary_key=True),
+    Column("keyword_id", Integer, ForeignKey("keyword.id"), primary_key=True),
+)
+
+dto = SQLAlchemyDTO[User]
+
+@get("/", return_dto=dto)
+def get_handler() -> User:
+    return User(id=1, kw=[Keyword(keyword="bar"), Keyword(keyword="baz")])
+"""
+    )
+
+    with create_test_client(route_handlers=[module.get_handler], debug=True) as client:
+        response = client.get("/")
+        assert response.json() == {"id": 1, "keywords": ["bar", "baz"]}
+
+
+def test_dto_with_hybrid_property(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from __future__ import annotations
+
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+
+from litestar import get
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+
+class Base(DeclarativeBase):
+    pass
+
+class Interval(Base):
+    __tablename__ = 'interval'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    start: Mapped[int]
+    end: Mapped[int]
+
+    @hybrid_property
+    def length(self) -> int:
+        return self.end - self.start
+
+dto = SQLAlchemyDTO[Interval]
+
+@get("/", return_dto=dto)
+def get_handler() -> Interval:
+    return Interval(id=1, start=1, end=3)
+"""
+    )
+
+    with create_test_client(route_handlers=[module.get_handler], debug=True) as client:
+        response = client.get("/")
+        assert response.json() == {"id": 1, "start": 1, "end": 3, "length": 2}
+
+
+def test_dto_with_hybrid_property_expression(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from __future__ import annotations
+
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.sql import SQLColumnExpression
+
+from litestar import get
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+
+class Base(DeclarativeBase):
+    pass
+
+class Interval(Base):
+    __tablename__ = 'interval'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    start: Mapped[int]
+    end: Mapped[int]
+
+    @hybrid_property
+    def length(self) -> int:
+        return self.end - self.start
+
+    @length.inplace.expression
+    def _length_expression(cls) -> SQLColumnExpression[int]:
+        return cls.end - cls.start
+
+dto = SQLAlchemyDTO[Interval]
+
+@get("/", return_dto=dto)
+def get_handler() -> Interval:
+    return Interval(id=1, start=1, end=3)
+"""
+    )
+
+    with create_test_client(route_handlers=[module.get_handler], debug=True) as client:
+        response = client.get("/")
+        assert response.json() == {"id": 1, "start": 1, "end": 3, "length": 2}
+
+
+def test_dto_with_hybrid_property_setter(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from __future__ import annotations
+
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.sql import SQLColumnExpression
+
+from litestar import post
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.dto.factory import dto_field
+
+class Base(DeclarativeBase):
+    pass
+
+class Circle(Base):
+    __tablename__ = 'circle'
+
+    id: Mapped[int] = mapped_column(primary_key=True, info=dto_field("read-only"))
+    diameter: Mapped[float] = mapped_column(info=dto_field("private"))
+
+    @hybrid_property
+    def radius(self) -> float:
+        return self.diameter / 2
+
+    @radius.inplace.setter
+    def _radius_setter(self, value: float) -> None:
+        self.diameter = value * 2
+
+dto = SQLAlchemyDTO[Circle]
+
+DIAMETER: float = 0
+
+@post("/", dto=dto, sync_to_thread=False)
+def get_handler(data: Circle) -> Circle:
+    global DIAMETER
+    DIAMETER = data.diameter
+    data.id = 1
+    return data
+"""
+    )
+
+    with create_test_client(route_handlers=[module.get_handler], debug=True) as client:
+        response = client.post("/", json={"radius": 5})
+        assert response.json() == {"id": 1, "radius": 5}
+        assert module.DIAMETER == 10

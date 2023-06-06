@@ -2,16 +2,25 @@ from __future__ import annotations
 
 import inspect
 import multiprocessing
+import os
 import subprocess
-from typing import TYPE_CHECKING, Any
+import sys
+from typing import TYPE_CHECKING, Any, cast
 
-import click
-from click import command, option
+import uvicorn
 from rich.tree import Tree
 
-from litestar.cli._utils import LitestarEnv, console, show_app_info
+from litestar.cli._utils import RICH_CLICK_INSTALLED, LitestarEnv, console, show_app_info
 from litestar.routes import HTTPRoute, WebSocketRoute
 from litestar.utils.helpers import unwrap_partial
+
+if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
+    import click
+    from click import Context, command, option
+else:
+    import rich_click as click
+    from rich_click import Context, command, option
+
 
 __all__ = ("info_command", "routes_command", "run_command")
 
@@ -37,6 +46,7 @@ def _convert_uvicorn_args(args: dict[str, Any]) -> list[str]:
 @command(name="version")
 @option("-s", "--short", help="Exclude release level and serial information", is_flag=True, default=False)
 def version_command(short: bool) -> None:
+    """Show the currently installed Litestar version."""
     from litestar import __version__
 
     click.echo(__version__.formatted(short=short))
@@ -61,17 +71,29 @@ def info_command(app: Litestar) -> None:
     default=1,
 )
 @option("--host", help="Server under this host", default="127.0.0.1", show_default=True)
+@option(
+    "--fd",
+    "--file-descriptor",
+    help="Bind to a socket from this file descriptor.",
+    type=int,
+    default=None,
+    show_default=True,
+)
+@option("--uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
 @option("--debug", help="Run app in debug mode", is_flag=True)
+@option("--pdb", "use_pdb", help="Drop into PDB on an exception", is_flag=True)
 @option("--reload-dir", help="Directories to watch for file changes", multiple=True)
 def run_command(
     reload: bool,
     port: int,
     web_concurrency: int,
     host: str,
+    fd: int | None,
+    uds: str | None,
     debug: bool,
     reload_dir: tuple[str, ...],
-    env: LitestarEnv,
-    app: Litestar,
+    use_pdb: bool,
+    ctx: Context,
 ) -> None:
     """Run a Litestar app.
 
@@ -82,30 +104,64 @@ def run_command(
     instance.
     """
 
-    if debug or env.debug:
-        app.debug = True
+    if debug:
+        os.environ["LITESTAR_DEBUG"] = "1"
 
-    show_app_info(app)
+    if use_pdb:
+        os.environ["LITESTAR_PDB"] = "1"
 
-    console.rule("[yellow]Starting server process", align="left")
-
-    # invoke uvicorn in a subprocess to be able to use the --reload flag. see
-    # https://github.com/litestar-org/litestar/issues/1191 and https://github.com/encode/uvicorn/issues/1045
+    env = cast(LitestarEnv, ctx.obj())
+    app = env.app
 
     reload_dirs = env.reload_dirs or reload_dir
 
-    process_args = {
-        "reload": env.reload or reload or bool(reload_dirs),
-        "host": env.host or host,
-        "port": env.port or port,
-        "workers": env.web_concurrency or web_concurrency,
-        "factory": env.is_app_factory,
-    }
+    host = env.host or host
+    port = env.port if env.port is not None else port
+    fd = env.fd if env.fd is not None else fd
+    uds = env.uds or uds
+    reload = env.reload or reload or bool(reload_dirs)
+    workers = env.web_concurrency or web_concurrency
 
-    if reload_dirs:
-        process_args["reload-dir"] = reload_dirs
+    console.rule("[yellow]Starting server process", align="left")
 
-    subprocess.run(["uvicorn", env.app_path, *_convert_uvicorn_args(process_args)], check=True)  # noqa: S603 S607I
+    show_app_info(app)
+
+    if workers == 1 and not reload:
+        uvicorn.run(
+            app=env.app_path,
+            host=host,
+            port=port,
+            fd=fd,
+            uds=uds,
+            factory=env.is_app_factory,
+        )
+    else:
+        # invoke uvicorn in a subprocess to be able to use the --reload flag. see
+        # https://github.com/litestar-org/litestar/issues/1191 and https://github.com/encode/uvicorn/issues/1045
+        if sys.gettrace() is not None:
+            console.print(
+                "[yellow]Debugger detected. Breakpoints might not work correctly inside route handlers when running"
+                " with the --reload or --workers options[/]"
+            )
+
+        process_args = {
+            "reload": reload,
+            "host": host,
+            "port": port,
+            "workers": workers,
+            "factory": env.is_app_factory,
+        }
+        if fd is not None:
+            process_args["fd"] = fd
+        if uds is not None:
+            process_args["uds"] = uds
+        if reload_dirs:
+            process_args["reload-dir"] = reload_dirs
+
+        subprocess.run(
+            [sys.executable, "-m", "uvicorn", env.app_path, *_convert_uvicorn_args(process_args)],  # noqa: S603
+            check=True,
+        )
 
 
 @command(name="routes")

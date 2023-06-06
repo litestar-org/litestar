@@ -6,7 +6,14 @@ from typing import TYPE_CHECKING, Any, Hashable
 from litestar.enums import RequestEncodingType
 from litestar.types import Empty
 
-__all__ = ("Body", "BodyKwarg", "Dependency", "DependencyKwarg", "Parameter", "ParameterKwarg")
+__all__ = (
+    "Body",
+    "BodyKwarg",
+    "Dependency",
+    "DependencyKwarg",
+    "KwargDefinition",
+    "Parameter",
+)
 
 
 if TYPE_CHECKING:
@@ -17,17 +24,9 @@ if TYPE_CHECKING:
 
 
 @dataclass(frozen=True)
-class ParameterKwarg:
-    """Data container representing a parameter."""
+class KwargDefinition:
+    """Data container representing a constrained kwarg."""
 
-    value_type: Any = field(default=Empty)
-    """The field value - `Empty` by default."""
-    header: str | None = field(default=None)
-    """The header parameter key - required for header parameters."""
-    cookie: str | None = field(default=None)
-    """The cookie parameter key - required for cookie parameters."""
-    query: str | None = field(default=None)
-    """The query parameter key for this parameter."""
     examples: list[Example] | None = field(default=None)
     """A list of Example models."""
     external_docs: ExternalDocumentation | None = field(default=None)
@@ -36,11 +35,6 @@ class ParameterKwarg:
     """The content encoding of the value.
 
     Applicable on to string values. See OpenAPI 3.1 for details.
-    """
-    required: bool | None = field(default=None)
-    """A boolean flag dictating whether this parameter is required.
-
-    If set to False, None values will be allowed. Defaults to True.
     """
     default: Any = field(default=Empty)
     """A default value.
@@ -102,10 +96,55 @@ class ParameterKwarg:
 
     Equivalent to maxLength in the OpenAPI specification.
     """
-    regex: str | None = field(default=None)
+    pattern: str | None = field(default=None)
     """A string representing a regex against which the given string will be matched.
 
     Equivalent to pattern in the OpenAPI specification.
+    """
+    lower_case: bool | None = field(default=None)
+    """Constrict a string value to be lower case."""
+    upper_case: bool | None = field(default=None)
+    """Constrict a string value to be upper case."""
+
+    @property
+    def is_constrained(self) -> bool:
+        """Return True if any of the constraints are set."""
+        return any(
+            attr if attr and attr is not Empty else False  # type: ignore[comparison-overlap]
+            for attr in (
+                self.gt,
+                self.ge,
+                self.lt,
+                self.le,
+                self.multiple_of,
+                self.min_items,
+                self.max_items,
+                self.min_length,
+                self.max_length,
+                self.pattern,
+                self.const,
+                self.lower_case,
+                self.upper_case,
+            )
+        )
+
+
+@dataclass(frozen=True)
+class ParameterKwarg(KwargDefinition):
+    """Data container representing a parameter."""
+
+    value_type: Any = field(default=Empty)
+    """The field value - `Empty` by default."""
+    header: str | None = field(default=None)
+    """The header parameter key - required for header parameters."""
+    cookie: str | None = field(default=None)
+    """The cookie parameter key - required for cookie parameters."""
+    query: str | None = field(default=None)
+    """The query parameter key for this parameter."""
+    required: bool | None = field(default=None)
+    """A boolean flag dictating whether this parameter is required.
+
+    If set to False, None values will be allowed. Defaults to True.
     """
 
     def __hash__(self) -> int:  # pragma: no cover
@@ -120,70 +159,67 @@ class ParameterKwarg:
 def Parameter(
     value_type: Any = Empty,
     *,
-    header: str | None = None,
+    const: bool | None = None,
+    content_encoding: str | None = None,
     cookie: str | None = None,
-    query: str | None = None,
+    default: Any = Empty,
+    description: str | None = None,
     examples: list[Example] | None = None,
     external_docs: ExternalDocumentation | None = None,
-    content_encoding: str | None = None,
-    required: bool | None = None,
-    default: Any = Empty,
-    title: str | None = None,
-    description: str | None = None,
-    const: bool | None = None,
-    gt: float | None = None,
     ge: float | None = None,
-    lt: float | None = None,
+    gt: float | None = None,
+    header: str | None = None,
     le: float | None = None,
-    multiple_of: float | None = None,
-    min_items: int | None = None,
+    lt: float | None = None,
     max_items: int | None = None,
-    min_length: int | None = None,
     max_length: int | None = None,
-    regex: str | None = None,
+    min_items: int | None = None,
+    min_length: int | None = None,
+    multiple_of: float | None = None,
+    pattern: str | None = None,
+    query: str | None = None,
+    required: bool | None = None,
+    title: str | None = None,
 ) -> Any:
     """Create an extended parameter kwarg definition.
 
     Args:
         value_type: `Empty` by default.
-        header: The header parameter key - required for header parameters.
+        const: A boolean flag dictating whether this parameter is a constant. If True, the value passed to the parameter
+            must equal its default value. This also causes the OpenAPI const field
+            to be populated with the default value.
+        content_encoding: The content encoding of the value.
+            Applicable on to string values. See OpenAPI 3.1 for details.
         cookie: The cookie parameter key - required for cookie parameters.
-        query: The query parameter key for this parameter.
-        examples: A list of Example models.
-        external_docs: A url pointing at external documentation for the given
-            parameter.
-        content_encoding: The content encoding of the value. Applicable on to string values. See
-            OpenAPI 3.1 for details.
-        required: A boolean flag dictating whether this parameter is required. If set to False, None
-            values will be allowed. Defaults to True.
         default: A default value. If const is true, this value is required.
-        title: String value used in the title section of the OpenAPI schema for the given
-            parameter.
-        description: String value used in the description section of the OpenAPI schema for the
-            given parameter.
-        const: A boolean flag dictating whether this parameter is a constant. If True, the value passed
-            to the parameter must equal its default value. This also causes the OpenAPI const field to be populated with
-            the default value.
-        gt: Constrict value to be greater than a given float or int. Equivalent to
-            exclusiveMinimum in the OpenAPI specification.
-        ge: Constrict value to be greater or equal to a given float or int. Equivalent to
-            minimum in the OpenAPI specification.
-        lt: Constrict value to be less than a given float or int. Equivalent to
-            exclusiveMaximum in the OpenAPI specification.
-        le: Constrict value to be less or equal to a given float or int. Equivalent to maximum
-            in the OpenAPI specification.
-        multiple_of: Constrict value to a multiple of a given float or int. Equivalent to
-            multipleOf in the OpenAPI specification.
-        min_items: Constrict a set or a list to have a minimum number of items. Equivalent to
-            minItems in the OpenAPI specification.
-        max_items: Constrict a set or a list to have a maximum number of items. Equivalent to
-            maxItems in the OpenAPI specification.
-        min_length: Constrict a string or bytes value to have a minimum length. Equivalent to
-            minLength in the OpenAPI specification.
-        max_length: Constrict a string or bytes value to have a maximum length. Equivalent to
-            maxLength in the OpenAPI specification.
-        regex: A string representing a regex against which the given string will be matched.
+        description: String value used in the description section of the OpenAPI schema for the given parameter.
+        examples: A list of Example models.
+        external_docs: A url pointing at external documentation for the given parameter.
+        ge: Constrict value to be greater or equal to a given float or int.
+            Equivalent to minimum in the OpenAPI specification.
+        gt: Constrict value to be greater than a given float or int.
+            Equivalent to exclusiveMinimum in the OpenAPI specification.
+        header: The header parameter key - required for header parameters.
+        le: Constrict value to be less or equal to a given float or int.
+            Equivalent to maximum in the OpenAPI specification.
+        lt: Constrict value to be less than a given float or int.
+            Equivalent to exclusiveMaximum in the OpenAPI specification.
+        max_items: Constrict a set or a list to have a maximum number of items.
+            Equivalent to maxItems in the OpenAPI specification.
+        max_length: Constrict a string or bytes value to have a maximum length.
+            Equivalent to maxLength in the OpenAPI specification.
+        min_items: Constrict a set or a list to have a minimum number of items. ֿ
+            Equivalent to minItems in the OpenAPI specification.
+        min_length: Constrict a string or bytes value to have a minimum length.
+            Equivalent to minLength in the OpenAPI specification.
+        multiple_of: Constrict value to a multiple of a given float or int.
+            Equivalent to multipleOf in the OpenAPI specification.
+        pattern: A string representing a regex against which the given string will be matched.
             Equivalent to pattern in the OpenAPI specification.
+        query: The query parameter key for this parameter.
+        required: A boolean flag dictating whether this parameter is required.
+            If set to False, None values will be allowed. Defaults to True.
+        title: String value used in the title section of the OpenAPI schema for the given parameter.
     """
     return ParameterKwarg(
         value_type=value_type,
@@ -207,90 +243,17 @@ def Parameter(
         max_items=max_items,
         min_length=min_length,
         max_length=max_length,
-        regex=regex,
+        pattern=pattern,
     )
 
 
 @dataclass(frozen=True)
-class BodyKwarg:
+class BodyKwarg(KwargDefinition):
     """Data container representing a request body."""
 
     media_type: str | RequestEncodingType = field(default=RequestEncodingType.JSON)
     """Media-Type of the body."""
-    examples: list[Example] | None = field(default=None)
-    """A list of Example models."""
-    external_docs: ExternalDocumentation | None = field(default=None)
-    """A url pointing at external documentation for the given parameter."""
-    content_encoding: str | None = field(default=None)
-    """The content encoding of the value.
 
-    Applicable on to string values. See OpenAPI 3.1 for details.
-    """
-    default: Any = field(default=Empty)
-    """A default value.
-
-    If const is true, this value is required.
-    """
-    title: str | None = field(default=None)
-    """String value used in the title section of the OpenAPI schema for the given parameter."""
-    description: str | None = field(default=None)
-    """String value used in the description section of the OpenAPI schema for the given parameter."""
-    const: bool | None = field(default=None)
-    """A boolean flag dictating whether this parameter is a constant.
-
-    If True, the value passed to the parameter must equal its default value. This also causes the OpenAPI const field to
-    be populated with the default value.
-    """
-    gt: float | None = field(default=None)
-    """Constrict value to be greater than a given float or int.
-
-    Equivalent to exclusiveMinimum in the OpenAPI specification.
-    """
-    ge: float | None = field(default=None)
-    """Constrict value to be greater or equal to a given float or int.
-
-    Equivalent to minimum in the OpenAPI specification.
-    """
-    lt: float | None = field(default=None)
-    """Constrict value to be less than a given float or int.
-
-    Equivalent to exclusiveMaximum in the OpenAPI specification.
-    """
-    le: float | None = field(default=None)
-    """Constrict value to be less or equal to a given float or int.
-
-    Equivalent to maximum in the OpenAPI specification.
-    """
-    multiple_of: float | None = field(default=None)
-    """Constrict value to a multiple of a given float or int.
-
-    Equivalent to multipleOf in the OpenAPI specification.
-    """
-    min_items: int | None = field(default=None)
-    """Constrict a set or a list to have a minimum number of items.
-
-    Equivalent to minItems in the OpenAPI specification.
-    """
-    max_items: int | None = field(default=None)
-    """Constrict a set or a list to have a maximum number of items.
-
-    Equivalent to maxItems in the OpenAPI specification.
-    """
-    min_length: int | None = field(default=None)
-    """Constrict a string or bytes value to have a minimum length.
-
-    Equivalent to minLength in the OpenAPI specification.
-    """
-    max_length: int | None = field(default=None)
-    """Constrict a string or bytes value to have a maximum length.
-
-    Equivalent to maxLength in the OpenAPI specification.
-    """
-    regex: str | None = field(default=None)
-    """A string representing a regex against which the given string will be matched.
-
-    Equivalent to pattern in the OpenAPI specification.
-    """
     multipart_form_part_limit: int | None = field(default=None)
     """The maximal number of allowed parts in a multipart/formdata request. This limit is intended to protect from DoS attacks."""
 
@@ -305,65 +268,62 @@ class BodyKwarg:
 
 def Body(
     *,
-    media_type: str | RequestEncodingType = RequestEncodingType.JSON,
-    examples: list[Example] | None = None,
-    external_docs: ExternalDocumentation | None = None,
+    const: bool | None = None,
     content_encoding: str | None = None,
     default: Any = Empty,
-    title: str | None = None,
     description: str | None = None,
-    const: bool | None = None,
-    gt: float | None = None,
+    examples: list[Example] | None = None,
+    external_docs: ExternalDocumentation | None = None,
     ge: float | None = None,
-    lt: float | None = None,
+    gt: float | None = None,
     le: float | None = None,
-    multiple_of: float | None = None,
-    min_items: int | None = None,
+    lt: float | None = None,
     max_items: int | None = None,
-    min_length: int | None = None,
     max_length: int | None = None,
-    regex: str | None = None,
+    media_type: str | RequestEncodingType = RequestEncodingType.JSON,
+    min_items: int | None = None,
+    min_length: int | None = None,
     multipart_form_part_limit: int | None = None,
+    multiple_of: float | None = None,
+    pattern: str | None = None,
+    title: str | None = None,
 ) -> Any:
     """Create an extended request body kwarg definition.
 
     Args:
-        media_type: Defaults to RequestEncodingType.JSON.
-        examples: A list of Example models.
-        external_docs: A url pointing at external documentation for the given
-            parameter.
-        content_encoding: The content encoding of the value. Applicable on to string values. See
-            OpenAPI 3.1 for details.
+        const: A boolean flag dictating whether this parameter is a constant. If True, the value passed to the parameter
+            must equal its default value. This also causes the OpenAPI const field to be
+            populated with the default value.
+        content_encoding: The content encoding of the value. Applicable on to string values.
+            See OpenAPI 3.1 for details.
         default: A default value. If const is true, this value is required.
-        title: String value used in the title section of the OpenAPI schema for the given
-            parameter.
-        description: String value used in the description section of the OpenAPI schema for the
-            given parameter.
-        const: A boolean flag dictating whether this parameter is a constant. If True, the value passed
-            to the parameter must equal its default value. This also causes the OpenAPI const field to be populated with
-            the default value.
-        gt: Constrict value to be greater than a given float or int. Equivalent to
-            exclusiveMinimum in the OpenAPI specification.
-        ge: Constrict value to be greater or equal to a given float or int. Equivalent to
-            minimum in the OpenAPI specification.
-        lt: Constrict value to be less than a given float or int. Equivalent to
-            exclusiveMaximum in the OpenAPI specification.
-        le: Constrict value to be less or equal to a given float or int. Equivalent to maximum
-            in the OpenAPI specification.
-        multiple_of: Constrict value to a multiple of a given float or int. Equivalent to
-            multipleOf in the OpenAPI specification.
-        min_items: Constrict a set or a list to have a minimum number of items. Equivalent to
-            minItems in the OpenAPI specification.
-        max_items: Constrict a set or a list to have a maximum number of items. Equivalent to
-            maxItems in the OpenAPI specification.
-        min_length: Constrict a string or bytes value to have a minimum length. Equivalent to
-            minLength in the OpenAPI specification.
-        max_length: Constrict a string or bytes value to have a maximum length. Equivalent to
-            maxLength in the OpenAPI specification.
-        regex: A string representing a regex against which the given string will be matched.
-            Equivalent to pattern in the OpenAPI specification.
+        description: String value used in the description section of the OpenAPI schema for the given parameter.
+        examples: A list of Example models.
+        external_docs: A url pointing at external documentation for the given parameter.
+        ge: Constrict value to be greater or equal to a given float or int.
+            Equivalent to minimum in the OpenAPI specification.
+        gt: Constrict value to be greater than a given float or int.
+            Equivalent to exclusiveMinimum in the OpenAPI specification.
+        le: Constrict value to be less or equal to a given float or int.
+            Equivalent to maximum in the OpenAPI specification.
+        lt: Constrict value to be less than a given float or int.
+            Equivalent to exclusiveMaximum in the OpenAPI specification.
+        max_items: Constrict a set or a list to have a maximum number of items.
+            Equivalent to maxItems in the OpenAPI specification.
+        max_length: Constrict a string or bytes value to have a maximum length.
+            Equivalent to maxLength in the OpenAPI specification.
+        media_type: Defaults to RequestEncodingType.JSON.
+        min_items: Constrict a set or a list to have a minimum number of items.
+            Equivalent to minItems in the OpenAPI specification.
+        min_length: Constrict a string or bytes value to have a minimum length.
+            Equivalent to minLength in the OpenAPI specification.
         multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request.
             This limit is intended to protect from DoS attacks.
+        multiple_of: Constrict value to a multiple of a given float or int.
+            Equivalent to multipleOf in the OpenAPI specification.
+        pattern: A string representing a regex against which the given string will be matched.
+            Equivalent to pattern in the OpenAPI specification.
+        title: String value used in the title section of the OpenAPI schema for the given parameter.
     """
     return BodyKwarg(
         media_type=media_type,
@@ -383,7 +343,7 @@ def Body(
         max_items=max_items,
         min_length=min_length,
         max_length=max_length,
-        regex=regex,
+        pattern=pattern,
         multipart_form_part_limit=multipart_form_part_limit,
     )
 

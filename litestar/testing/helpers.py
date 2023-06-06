@@ -89,6 +89,7 @@ def create_test_client(
     lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
     preferred_validation_backend: Literal["pydantic", "attrs"] | None = None,
     raise_server_exceptions: bool = True,
+    pdb_on_exception: bool | None = None,
     request_class: type[Request] | None = None,
     response_cache_config: ResponseCacheConfig | None = None,
     response_class: ResponseType | None = None,
@@ -195,6 +196,7 @@ def create_test_client(
             :class:`ASGI Scope <.types.Scope>`.
         parameters: A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application
             paths.
+        pdb_on_exception: Drop into the PDB when an exception occurs.
         plugins: Sequence of plugins.
         preferred_validation_backend: Validation backend to use, if multiple are installed.
         request_class: An optional subclass of :class:`Request <.connection.Request>` to use for http connections.
@@ -261,6 +263,7 @@ def create_test_client(
         openapi_config=openapi_config,
         opt=opt,
         parameters=parameters,
+        pdb_on_exception=pdb_on_exception,
         plugins=plugins,
         preferred_validation_backend=preferred_validation_backend,
         request_class=request_class,
@@ -326,6 +329,7 @@ def create_async_test_client(
     openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
     opt: Mapping[str, Any] | None = None,
     parameters: ParametersMap | None = None,
+    pdb_on_exception: bool | None = None,
     plugins: OptionalSequence[PluginProtocol] = None,
     preferred_validation_backend: Literal["pydantic", "attrs"] | None = None,
     raise_server_exceptions: bool = True,
@@ -434,6 +438,7 @@ def create_async_test_client(
             :class:`ASGI Scope <.types.Scope>`.
         parameters: A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application
             paths.
+        pdb_on_exception: Drop into the PDB when an exception occurs.
         plugins: Sequence of plugins.
         preferred_validation_backend: Validation backend to use, if multiple are installed.
         request_class: An optional subclass of :class:`Request <.connection.Request>` to use for http connections.
@@ -500,6 +505,7 @@ def create_async_test_client(
         openapi_config=openapi_config,
         opt=opt,
         parameters=parameters,
+        pdb_on_exception=pdb_on_exception,
         plugins=plugins,
         preferred_validation_backend=preferred_validation_backend,
         request_class=request_class,
