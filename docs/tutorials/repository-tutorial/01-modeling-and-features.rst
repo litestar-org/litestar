@@ -11,7 +11,7 @@ In this tutorial, we will cover the integrated repository features in Litestar, 
 We'll begin by modelling the entities and relationships between authors and books.  We'll start by creating the ``Author`` table, utilizing the :class:`UUIDBase <litestar.contrib.sqlalchemy.base.UUIDBase>` class. To keep things simple, our first model will encompass only three fields: ``id``, ``name``, and ``dob``.
 
 The books entity is not considered a "strong" entity and therefore always requires an author to be created.  We need to configure our SQLAlchemy classes so that it is aware of this relationship.
-We will extend the ``Author`` model by incorporating a ``Book`` relationship. This would allow each ``Author`` record to possess multiple ``Book`` records. By configuring it this way, SQLAlchemy will automatically include the necessary foreign key constraints when using the `author_id` field in each ``Book`` record.
+We will extend the ``Author`` model by incorporating a ``Book`` relationship. This would allow each ``Author`` record to possess multiple ``Book`` records. By configuring it this way, SQLAlchemy will automatically include the necessary foreign key constraints when using the ``author_id`` field in each ``Book`` record.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :language: python
@@ -19,7 +19,7 @@ We will extend the ``Author`` model by incorporating a ``Book`` relationship. Th
     :emphasize-lines: 9, 21,26,27,28,29
     :linenos:
 
-To demonstrate some of the other included helper classes, we will take advantage of the automatically timestamped audit model feature. This lets us record the time when each record was created and last updated.
+By using the audit model, we can automatically record the time a record was created and last updated.
 
 To implement this, we will define a new ``Book`` model via the :class:`UUIDAuditBase <litestar.contrib.sqlalchemy.base.UUIDAuditBase>` class. Observe that the only modification here is the parent class from which we inherit. This minor change endows the `book` table with automatic timestamp columns (`created` and `updated`) upon deployment!
 
@@ -27,7 +27,7 @@ To implement this, we will define a new ``Book`` model via the :class:`UUIDAudit
 
     If your application requires integer-based primary keys, an equivalent base model and base audit model implementations can be found at :class:`BigIntBase <litestar.contrib.sqlalchemy.base.BigIntAuditBase>` and :class:`BigIntAuditBase <litestar.contrib.sqlalchemy.base.UUIDAuditBase>` respectively.
 
-    *Spanner Only* Using monotonically changing primary keys is considered an anti-pattern in Spanner and leads to performance problems.
+    *Spanner Only*: Using monotonically changing primary keys is considered an anti-pattern in Spanner and leads to performance problems.
     Additionally, Spanner does not currently include an idiom comparable to the ``Sequence`` object.  This means the ``BigIntBase`` and ``BigIntAuditBase`` are not currently supported for Spanner.
 
 By using the built-in base declarative models, you gain some additional features that address common features and pain points when working with SQLAlchemy:
