@@ -2,15 +2,7 @@ Interacting with repositories
 -----------------------------
 Now that we've covered the modelling basics, we are able to create our first repository class.  The repository classes includes all of the standard CRUD operations as well as a few advanced features such as pagination, filtering and bulk operations.
 
-.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
-    :language: python
-    :caption: app.py
-    :emphasize-lines: 25-18
-    :linenos:
-
-Here we import the :class:`SQLAlchemyAsyncRepository <litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository>` class and create an ``AuthorRepository`` repository class.  This is all that's required to include all of the integrated repository features.
-
-Lets look at these changes in more detail. What functionality are we gaining?
+Before we jump in to the code, let's take a look at the available functions available in the the synchronous and asynchronous repositories.
 
 +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |      Function       |    Category    |                                                                                                                 Description                                                                                                                 |
@@ -50,6 +42,19 @@ Lets look at these changes in more detail. What functionality are we gaining?
 
     - SQL engines generally have a limit to the number of elements that can be appended into an `IN` clause.  The repository operations will automatically break lists that exceed this limit into multiple queries that are concatenated together before return.  You do not need to account for this in your own code.
 
+
+In the following examples, we'll cover a few ways that you can use the repository within your applications.
+
+.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
+    :language: python
+    :caption: app.py
+    :emphasize-lines: 25-18
+    :linenos:
+
+Here we import the :class:`SQLAlchemyAsyncRepository <litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository>` class and create an ``AuthorRepository`` repository class.  This is all that's required to include all of the integrated repository features.
+
+
+
 Repository Context Manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -70,7 +75,7 @@ The ``repository_factory`` method will do the following for us:
 Creating, Updating and Removing Data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The repository simplifies data manipulation, allowing us to create, update, or remove entries.
+To illustrate a few ways you can manipulate data in your database, we'll go through the various CRUD operations:
 
 - Creating Data: Here's a simple insert operation to populate our new Author table.
 
@@ -80,7 +85,7 @@ The repository simplifies data manipulation, allowing us to create, update, or r
     :emphasize-lines: 50-54
     :linenos:
 
-- Updating Data: The ``update`` and ``update_many`` methods facilitate record modifications. Below is a simple update demonstration.
+- Updating Data: The ``update`` method will ensure any updates made to the model object are executed on the database.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
     :language: python
@@ -88,7 +93,7 @@ The repository simplifies data manipulation, allowing us to create, update, or r
     :emphasize-lines: 57-61
     :linenos:
 
-- Removing Data: The ``remove`` and ``remove_many`` methods manage record deletion.
+- Removing Data: The ``remove`` method accepts the primary key of the row you want to delete.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
     :language: python
@@ -96,28 +101,63 @@ The repository simplifies data manipulation, allowing us to create, update, or r
     :emphasize-lines: 64-68
     :linenos:
 
+Now that we've seen how to do single-row operations, let's look at the bulk methods we can use.
+
 
 Working with Bulk Data Operations
 ---------------------------------
-In this section, we delve into the powerful capabilities of the repository classes for handling bulk data operations. Our example illustrates how we can efficiently manage large amounts of data in our database. Specifically, we'll use a JSON file containing information about US states and their abbreviations.
+In this section, we delve into the powerful capabilities of the repository classes for handling bulk data operations. Our example illustrates how we can efficiently manage data in our database. Specifically, we'll use a JSON file containing information about US states and their abbreviations.
 
 Here's what we're going to cover:
 
 1. **Fixture Data Loading**: We will introduce a method for loading fixture data. Fixture data is sample data that populates your database and helps test the behavior of your application under realistic conditions.  This pattern can be extended and adjusted to meet your needs.
 
+.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
+    :language: python
+    :caption: app.py
+    :emphasize-lines: 37-55
+    :linenos:
+
+You can review the JSON source file here:
+
+.. literalinclude:: /examples/contrib/sqlalchemy/us_state_lookup.json
+    :language: json
+    :caption: us_state_lookup.json
+
+
 2. **Bulk Insert**: We'll use our fixture data to demonstrate a bulk insert operation. This operation allows you to add multiple records to your database in a single transaction, improving performance when working with larger data sets.
-
-3. **Bulk Delete**: We'll also demonstrate how to perform a bulk delete operation. Just as with the bulk insert, deleting multiple records with the batch record methods is more efficient than executing row-by-row.
-
-4. **Paginated Data Selection**: Finally, we will explore how to select multiple records with pagination. This functionality is useful for handling large amounts of data by breaking the data into manageable 'pages' or subsets.  ``LimitOffset`` is one of several filter types you can use with the repository.
-
-Let's begin by looking at our code example:
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 2-3,5-7,9-10,12-13,15-16,18-20,22-24,26-27,29-33,35-37,39-41,43-45,47-52,54-56,58-60,62-63,65-68,70-71
+    :emphasize-lines: 68-69
     :linenos:
 
+
+3. **Paginated Data Selection**: Next, let's explore how to select multiple records with pagination. This functionality is useful for handling large amounts of data by breaking the data into manageable 'pages' or subsets.  ``LimitOffset`` is one of several filter types you can use with the repository.
+
+.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
+    :language: python
+    :caption: app.py
+    :emphasize-lines: 74-75
+    :linenos:
+
+
+4. **Bulk Delete**: Here we demonstrate how to perform a bulk delete operation. Just as with the bulk insert, deleting multiple records with the batch record methods is more efficient than executing row-by-row.
+
+ .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
+    :language: python
+    :caption: app.py
+    :emphasize-lines: 77-79
+    :linenos:
+
+5. **Counts**: Finally, We'll demonstrate how to count the number of records remaining in the database.
+
+
+.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
+    :language: python
+    :caption: app.py
+    :emphasize-lines: 81-83
+    :linenos:
 
 Now that we have demonstrated how to interact with the repository objects outside of a Litestar application, our next example will use dependency injection to add this functionality to a Controller!
