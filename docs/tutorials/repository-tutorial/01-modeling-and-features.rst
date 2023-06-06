@@ -8,7 +8,7 @@ In this tutorial, we will cover the integrated repository features in Litestar 2
     :emphasize-lines: 9, 8,19,20
     :linenos:
 
-We'll begin by modelling the entities and relationships between authors and books.  We'll start by creating the ``Author`` table, utilizing the :class:`UUIDBase <litestar.contrib.sqlalchemy.base.UUIDBase>` class. To keep things simple, our first model will encompass only three fields: `id`, `name`, and `dob`.
+We'll begin by modelling the entities and relationships between authors and books.  We'll start by creating the ``Author`` table, utilizing the :class:`UUIDBase <litestar.contrib.sqlalchemy.base.UUIDBase>` class. To keep things simple, our first model will encompass only three fields: ``id``, ``name``, and ``dob``.
 
 The books entity is not considered a "strong" entity and therefore always requires an author to be created.  We need to configure our SQLAlchemy classes so that it is aware of this relationship.
 We will extend the ``Author`` model by incorporating a ``Book`` relationship. This would allow each ``Author`` record to possess multiple ``Book`` records. By configuring it this way, SQLAlchemy will automatically include the necessary foreign key constraints when using the `author_id` field in each ``Book`` record.
