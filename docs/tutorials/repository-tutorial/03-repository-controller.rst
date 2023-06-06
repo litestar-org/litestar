@@ -11,7 +11,7 @@ Note that we are only passing in the database session in this example with no ot
     :emphasize-lines: 76,77,78
     :linenos:
 
-Because we'll be using the SQLAlchemy plugin in Litestar, The database session is automatically configured as a dependency
+Because we'll be using the SQLAlchemy plugin in Litestar, the session is automatically configured as a dependency
 
 By default, the repository doesn't add any additional query options to your base statement, but provides the flexibility to override it, allowing you to pass your own statement:
 
