@@ -82,7 +82,7 @@ def fx_book_repo(session: Session) -> BookSyncRepository:
     return BookSyncRepository(session=session)
 
 
-@pytest.mark.sqlalchemy_oracle
+@pytest.mark.sqlalchemy_oracledb
 @pytest.fixture(name="rule_repo")
 def fx_rule_repo(session: Session) -> RuleSyncRepository:
     return RuleSyncRepository(session=session)
@@ -313,7 +313,7 @@ def test_repo_filter_collection(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_filter_collection(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_oracle
+@pytest.mark.sqlalchemy_oracledb
 def test_repo_json_methods(
     raw_rules_uuid: list[dict[str, Any]],
     rule_repo: RuleSyncRepository,
