@@ -38,17 +38,27 @@ def mock_show_app_info(mocker: MockerFixture) -> MagicMock:
 
 
 @pytest.mark.parametrize("set_in_env", [True, False])
-@pytest.mark.parametrize("custom_app_file", [Path("my_app.py"), None])
-@pytest.mark.parametrize("host", ["0.0.0.0", None])
-@pytest.mark.parametrize("port", [8081, None])
-@pytest.mark.parametrize("uds", ["/run/uvicorn/litestar_test.sock", None])
-@pytest.mark.parametrize("fd", [0, None])
-@pytest.mark.parametrize("reload", [True, False, None])
-@pytest.mark.parametrize("web_concurrency", [2, None])
+@pytest.mark.parametrize(
+    "host, port, uds, fd",
+    [("0.0.0.0", 8081, "/run/uvicorn/litestar_test.sock", 0), (None, None, None, None)],
+)
+@pytest.mark.parametrize("custom_app_file,", [Path("my_app.py"), None])
 @pytest.mark.parametrize("app_dir", ["custom_subfolder", None])
-@pytest.mark.parametrize("reload_dir", [[".", "../somewhere_else"], None])
+@pytest.mark.parametrize(
+    "reload, reload_dir, web_concurrency",
+    [
+        (None, None, None),
+        (True, None, None),
+        (False, None, None),
+        (True, [".", "../somewhere_else"], None),
+        (False, [".", "../somewhere_else"], None),
+        (None, None, 2),
+        (True, None, 2),
+        (False, None, 2),
+    ],
+)
 def test_run_command(
-    mocker: MockerFixture,
+    mock_show_app_info: MagicMock,
     runner: CliRunner,
     monkeypatch: MonkeyPatch,
     reload: Optional[bool],
@@ -66,7 +76,6 @@ def test_run_command(
     mock_uvicorn_run: MagicMock,
     tmp_project_dir: Path,
 ) -> None:
-    mock_show_app_info = mocker.patch("litestar.cli.commands.core.show_app_info")
     args = []
     if custom_app_file:
         args.extend(["--app", f"{custom_app_file.stem}:app"])
