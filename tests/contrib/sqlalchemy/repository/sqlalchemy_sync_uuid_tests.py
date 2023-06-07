@@ -11,7 +11,13 @@ from sqlalchemy import Engine, insert
 from litestar.contrib.repository.exceptions import RepositoryError
 from litestar.contrib.repository.filters import BeforeAfter, CollectionFilter, OrderBy, SearchFilter
 from litestar.contrib.sqlalchemy import base
-from tests.contrib.sqlalchemy.models_uuid import AuthorSyncRepository, BookSyncRepository, UUIDAuthor, UUIDRule
+from tests.contrib.sqlalchemy.models_uuid import (
+    AuthorSyncRepository,
+    BookSyncRepository,
+    RuleSyncRepository,
+    UUIDAuthor,
+    UUIDRule,
+)
 
 
 def seed_db(
@@ -379,3 +385,24 @@ def test_repo_filter_collection(author_repo: AuthorSyncRepository) -> None:
         CollectionFilter(field_name="id", values=[UUID("5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2")])
     )
     assert existing_obj[0].name == "Leo Tolstoy"
+
+
+def test_repo_json_methods(
+    raw_rules_uuid: list[dict[str, Any]],
+    rule_repo: RuleSyncRepository,
+) -> None:
+    """Test SQLALchemy JSON.
+
+    Args:
+        raw_rules_uuid (list[dict[str, Any]]): list of rules pre-seeded into the mock repository
+        rules_repo (AuthorSyncRepository): The rules mock repository
+    """
+    exp_count = len(raw_rules_uuid) + 1
+    new_rule = UUIDRule(name="Testing", config={"an": "object"})
+    obj = rule_repo.add(new_rule)
+    count = rule_repo.count()
+    assert exp_count == count
+    assert isinstance(obj, UUIDRule)
+    assert new_rule.name == obj.name
+    assert new_rule.config == obj.config
+    assert obj.id is not None

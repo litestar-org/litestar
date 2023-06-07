@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import (
 from tests.contrib.sqlalchemy.models_bigint import (
     AuthorAsyncRepository,
     BookAsyncRepository,
+    RuleAsyncRepository,
 )
 from tests.contrib.sqlalchemy.repository import sqlalchemy_async_bigint_tests as st
 
@@ -68,6 +69,12 @@ def fx_author_repo(session: AsyncSession) -> AuthorAsyncRepository:
 @pytest.fixture(name="book_repo")
 def fx_book_repo(session: AsyncSession) -> BookAsyncRepository:
     return BookAsyncRepository(session=session)
+
+
+@pytest.mark.sqlalchemy_aiosqlite
+@pytest.fixture(name="rule_repo")
+def fx_rule_repo(session: AsyncSession) -> RuleAsyncRepository:
+    return RuleAsyncRepository(session=session)
 
 
 @pytest.mark.sqlalchemy_aiosqlite
@@ -300,3 +307,17 @@ async def test_repo_filter_collection(author_repo: AuthorAsyncRepository) -> Non
         author_repo (AuthorRepository): The author mock repository
     """
     await st.test_repo_filter_collection(author_repo=author_repo)
+
+
+@pytest.mark.sqlalchemy_aiosqlite
+async def test_repo_json_methods(
+    raw_rules_bigint: list[dict[str, Any]],
+    rule_repo: RuleAsyncRepository,
+) -> None:
+    """Test SQLALchemy Collection filter.
+
+    Args:
+        raw_rules_bigint (list[dict[str, Any]]): list of rules pre-seeded into the mock repository
+        rule_repo (AuthorAsyncRepository): The rules mock repository
+    """
+    await st.test_repo_json_methods(raw_rules_bigint=raw_rules_bigint, rule_repo=rule_repo)

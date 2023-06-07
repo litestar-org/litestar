@@ -114,7 +114,7 @@ def fx_raw_rules_uuid() -> list[dict[str, Any]]:
         {
             "id": "f34545b9-663c-4fce-915d-dd1ae9cea34b",
             "name": "Secondary loading rule.",
-            "config": json.dumps({"url": "https://litestar.dev", "bar": "foo", "setting_123": 4}),
+            "config": {"url": "https://litestar.dev", "bar": "foo", "setting_123": 4},
             "created": "2023-02-01T00:00:00",
             "updated": "2023-02-01T00:00:00",
         },
@@ -182,7 +182,7 @@ def fx_raw_rules_bigint() -> list[dict[str, Any]]:
         {
             "id": 2024,
             "name": "Secondary loading rule.",
-            "config": json.dumps({"url": "https://litestar.dev", "bar": "foo", "setting_123": 4}),
+            "config": {"url": "https://litestar.dev", "bar": "foo", "setting_123": 4},
             "created": "2023-02-01T00:00:00",
             "updated": "2023-02-01T00:00:00",
         },

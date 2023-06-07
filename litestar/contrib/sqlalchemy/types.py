@@ -9,8 +9,10 @@ from sqlalchemy.dialects.oracle import BLOB as ORA_BLOB
 from sqlalchemy.dialects.oracle import RAW as ORA_RAW
 from sqlalchemy.dialects.postgresql import JSONB as PG_JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.types import BINARY, CHAR, BigInteger, Integer, SchemaType, TypeDecorator
+from sqlalchemy.types import BINARY, CHAR, BigInteger, Integer, SchemaType, TypeDecorator, TypeEngine
 from sqlalchemy.types import JSON as _JSON
+
+from litestar.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
     from sqlalchemy.engine import Dialect
@@ -102,12 +104,29 @@ class JSON(TypeDecorator, SchemaType):  # type: ignore
         self.name = kwargs.pop("name", None)
         self.oracle_strict = kwargs.pop("oracle_strict", True)
 
-    def load_dialect_impl(self, dialect: Dialect) -> Any:
+    def coerce_compared_value(self, op: Any, value: Any) -> Any:
+        return self.impl.coerce_compared_value(op=op, value=value)  # type: ignore[call-arg]
+
+    def load_dialect_impl(self, dialect: Dialect) -> TypeEngine[Any]:
         if dialect.name == "postgresql":
             return dialect.type_descriptor(PG_JSONB())  # type: ignore
         if dialect.name == "oracle":
             return dialect.type_descriptor(ORA_BLOB())
         return dialect.type_descriptor(_JSON())
+
+    def process_bind_param(self, value: Any, dialect: Dialect) -> Any | None:
+        if value is None or (dialect.name == "postgresql" and dialect.driver == "psycopg"):
+            return value
+        if dialect.name == "oracle":
+            return encode_json(value)
+        return self.impl.bind_processor(dialect=dialect)(value)  # type: ignore
+
+    def process_result_value(self, value: bytes | None, dialect: Dialect) -> Any | None:
+        if value is None:
+            return value
+        if dialect.name == "oracle":
+            return decode_json(value)
+        return self.impl.result_processor(dialect=dialect, coltype=self.get_dbapi_type(dialect.dbapi))(value)  # type: ignore
 
     def _should_create_constraint(self, compiler: Any, **kw: Any) -> bool:
         return bool(compiler.dialect.name == "oracle")

@@ -10,7 +10,13 @@ from sqlalchemy import Engine, insert
 from litestar.contrib.repository.exceptions import RepositoryError
 from litestar.contrib.repository.filters import BeforeAfter, CollectionFilter, OrderBy, SearchFilter
 from litestar.contrib.sqlalchemy import base
-from tests.contrib.sqlalchemy.models_bigint import AuthorSyncRepository, BigIntAuthor, BigIntRule, BookSyncRepository
+from tests.contrib.sqlalchemy.models_bigint import (
+    AuthorSyncRepository,
+    BigIntAuthor,
+    BigIntRule,
+    BookSyncRepository,
+    RuleSyncRepository,
+)
 
 
 def seed_db(
@@ -364,3 +370,24 @@ def test_repo_filter_collection(author_repo: AuthorSyncRepository) -> None:
 
     existing_obj = author_repo.list(CollectionFilter(field_name="id", values=[2024]))
     assert existing_obj[0].name == "Leo Tolstoy"
+
+
+def test_repo_json_methods(
+    raw_rules_bigint: list[dict[str, Any]],
+    rule_repo: RuleSyncRepository,
+) -> None:
+    """Test SQLALchemy JSON.
+
+    Args:
+        raw_rules_bigint (list[dict[str, Any]]): list of rules pre-seeded into the mock repository
+        rule_repo (AuthorSyncRepository): The rules mock repository
+    """
+    exp_count = len(raw_rules_bigint) + 1
+    new_rule = BigIntRule(name="Testing", config={"an": "object"})
+    obj = rule_repo.add(new_rule)
+    count = rule_repo.count()
+    assert exp_count == count
+    assert isinstance(obj, BigIntRule)
+    assert new_rule.name == obj.name
+    assert new_rule.config == obj.config
+    assert obj.id is not None
