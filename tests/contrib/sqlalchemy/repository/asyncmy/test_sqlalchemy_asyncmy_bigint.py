@@ -75,11 +75,12 @@ def fx_author_repo(session: AsyncSession) -> AuthorAsyncRepository:
 def fx_book_repo(session: AsyncSession) -> BookAsyncRepository:
     return BookAsyncRepository(session=session)
 
-  
+
 @pytest.fixture(name="rule_repo")
 def fx_rule_repo(session: AsyncSession) -> RuleAsyncRepository:
     return RuleAsyncRepository(session=session)
- 
+
+
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy filter by kwargs with invalid column name.
 
@@ -287,7 +288,7 @@ async def test_repo_filter_collection(author_repo: AuthorAsyncRepository) -> Non
     """
     await st.test_repo_filter_collection(author_repo=author_repo)
 
- 
+
 async def test_repo_json_methods(
     raw_rules_bigint: list[dict[str, Any]],
     rule_repo: RuleAsyncRepository,

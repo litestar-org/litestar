@@ -12,13 +12,12 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
- 
+
 from tests.contrib.sqlalchemy.models_bigint import (
     AuthorAsyncRepository,
     BookAsyncRepository,
     RuleAsyncRepository,
 )
- 
 from tests.contrib.sqlalchemy.repository import sqlalchemy_async_bigint_tests as st
 
 pytestmark = pytest.mark.sqlalchemy_aiosqlite
@@ -69,7 +68,7 @@ def fx_author_repo(session: AsyncSession) -> AuthorAsyncRepository:
 def fx_book_repo(session: AsyncSession) -> BookAsyncRepository:
     return BookAsyncRepository(session=session)
 
-  
+
 @pytest.fixture(name="rule_repo")
 def fx_rule_repo(session: AsyncSession) -> RuleAsyncRepository:
     return RuleAsyncRepository(session=session)
@@ -284,7 +283,7 @@ async def test_repo_filter_collection(author_repo: AuthorAsyncRepository) -> Non
     """
     await st.test_repo_filter_collection(author_repo=author_repo)
 
- 
+
 async def test_repo_json_methods(
     raw_rules_bigint: list[dict[str, Any]],
     rule_repo: RuleAsyncRepository,

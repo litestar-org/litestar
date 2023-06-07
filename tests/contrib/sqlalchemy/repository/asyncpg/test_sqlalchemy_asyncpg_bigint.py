@@ -81,7 +81,7 @@ def fx_author_repo(session: AsyncSession) -> AuthorAsyncRepository:
 def fx_book_repo(session: AsyncSession) -> BookAsyncRepository:
     return BookAsyncRepository(session=session)
 
- 
+
 @pytest.fixture(name="rule_repo")
 def fx_rule_repo(session: AsyncSession) -> RuleAsyncRepository:
     return RuleAsyncRepository(session=session)

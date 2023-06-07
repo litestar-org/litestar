@@ -64,12 +64,11 @@ def fx_book_repo(session: Session) -> BookSyncRepository:
     return BookSyncRepository(session=session)
 
 
- 
 @pytest.fixture(name="rule_repo")
 def fx_rule_repo(session: Session) -> RuleSyncRepository:
     return RuleSyncRepository(session=session)
 
- 
+
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy filter by kwargs with invalid column name.
 
@@ -275,7 +274,8 @@ def test_repo_filter_collection(author_repo: AuthorSyncRepository) -> None:
         author_repo (AuthorRepository): The author mock repository
     """
     st.test_repo_filter_collection(author_repo=author_repo)
- 
+
+
 def test_repo_json_methods(
     raw_rules_bigint: list[dict[str, Any]],
     rule_repo: RuleSyncRepository,

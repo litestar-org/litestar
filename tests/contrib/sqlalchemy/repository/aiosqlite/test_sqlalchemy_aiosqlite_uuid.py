@@ -12,12 +12,12 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
- 
+
 from tests.contrib.sqlalchemy.models_uuid import (
     AuthorAsyncRepository,
     BookAsyncRepository,
     RuleAsyncRepository,
-) 
+)
 from tests.contrib.sqlalchemy.repository import sqlalchemy_async_uuid_tests as st
 
 pytestmark = pytest.mark.sqlalchemy_aiosqlite
@@ -68,12 +68,12 @@ def fx_author_repo(session: AsyncSession) -> AuthorAsyncRepository:
 def fx_book_repo(session: AsyncSession) -> BookAsyncRepository:
     return BookAsyncRepository(session=session)
 
-  
+
 @pytest.fixture(name="rule_repo")
 def fx_rule_repo(session: AsyncSession) -> RuleAsyncRepository:
     return RuleAsyncRepository(session=session)
 
- 
+
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy filter by kwargs with invalid column name.
 
@@ -288,7 +288,8 @@ async def test_repo_filter_collection(author_repo: AuthorAsyncRepository) -> Non
         author_repo (AuthorRepository): The author mock repository
     """
     await st.test_repo_filter_collection(author_repo=author_repo)
- 
+
+
 async def test_repo_json_methods(
     raw_rules_uuid: list[dict[str, Any]],
     rule_repo: RuleAsyncRepository,
