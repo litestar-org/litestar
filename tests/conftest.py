@@ -371,7 +371,7 @@ class DockerServiceRegistry:
     def run_command(self, *args: str) -> None:
         subprocess.run([*self._base_command, *args], check=True, capture_output=True)
 
-    def start(
+    async def start(
         self,
         name: str,
         *,
@@ -384,14 +384,15 @@ class DockerServiceRegistry:
             self.run_command("up", "-d", name)
             self._running_services.add(name)
 
-            asyncio.run(
-                wait_until_responsive(
-                    check=AsyncCallable(check),
-                    timeout=timeout,
-                    pause=pause,
-                    host=self.docker_ip,
-                    **kwargs,
-                )
+            # asyncio.run(
+            #     wait_until_responsive(
+            #         **kwargs,
+            await wait_until_responsive(
+                check=AsyncCallable(check),
+                timeout=timeout,
+                pause=pause,
+                host=self.docker_ip,
+                **kwargs,
             )
 
     def stop(self, name: str) -> None:
@@ -424,8 +425,8 @@ async def redis_responsive(host: str) -> bool:
 
 
 @pytest.fixture()
-def redis_service(docker_services: DockerServiceRegistry) -> None:  # pylint: disable=unused-argument
-    docker_services.start("redis", check=redis_responsive)
+async def redis_service(docker_services: DockerServiceRegistry) -> None:  # pylint: disable=unused-argument
+    await docker_services.start("redis", check=redis_responsive)
 
 
 async def mysql_responsive(host: str) -> bool:
@@ -446,8 +447,8 @@ async def mysql_responsive(host: str) -> bool:
 
 
 @pytest.fixture()
-def mysql_service(docker_services: DockerServiceRegistry) -> None:
-    docker_services.start("mysql", check=mysql_responsive)
+async def mysql_service(docker_services: DockerServiceRegistry) -> None:
+    await docker_services.start("mysql", check=mysql_responsive)
 
 
 async def postgres_responsive(host: str) -> bool:
@@ -465,8 +466,8 @@ async def postgres_responsive(host: str) -> bool:
 
 
 @pytest.fixture()
-def postgres_service(docker_services: DockerServiceRegistry) -> None:
-    docker_services.start("postgres", check=postgres_responsive)
+async def postgres_service(docker_services: DockerServiceRegistry) -> None:
+    await docker_services.start("postgres", check=postgres_responsive)
 
 
 def oracle_responsive(host: str) -> bool:
@@ -487,8 +488,8 @@ def oracle_responsive(host: str) -> bool:
 
 
 @pytest.fixture()
-def oracle_service(docker_services: DockerServiceRegistry) -> None:
-    docker_services.start("oracle", check=AsyncCallable(oracle_responsive), timeout=60)
+async def oracle_service(docker_services: DockerServiceRegistry) -> None:
+    await docker_services.start("oracle", check=AsyncCallable(oracle_responsive), timeout=60)
 
 
 def spanner_responsive(host: str) -> bool:
@@ -514,6 +515,6 @@ def spanner_responsive(host: str) -> bool:
 
 
 @pytest.fixture()
-def spanner_service(docker_services: DockerServiceRegistry) -> None:
+async def spanner_service(docker_services: DockerServiceRegistry) -> None:
     os.environ["SPANNER_EMULATOR_HOST"] = "localhost:9010"
-    docker_services.start("spanner", timeout=60, check=AsyncCallable(spanner_responsive))
+    await docker_services.start("spanner", timeout=60, check=AsyncCallable(spanner_responsive))
