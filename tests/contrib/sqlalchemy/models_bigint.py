@@ -36,7 +36,7 @@ class BigIntRule(BigIntAuditBase):
     """The rule domain object."""
 
     name: Mapped[str] = mapped_column(String(length=250))  # pyright: ignore
-    config: Mapped[dict] = mapped_column(default={})  # pyright: ignore
+    config: Mapped[dict] = mapped_column(default=lambda: {})  # pyright: ignore
 
 
 class RuleAsyncRepository(SQLAlchemyAsyncRepository[BigIntRule]):

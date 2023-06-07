@@ -1,6 +1,7 @@
 """Unit tests for the SQLAlchemy Repository implementation for psycopg."""
 from __future__ import annotations
 
+import json
 import os
 import sys
 from datetime import datetime
@@ -23,7 +24,7 @@ pytestmark = [
     pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
     pytest.mark.usefixtures("spanner_service"),
     pytest.mark.sqlalchemy_integration,
-    pytest.mark.sqlalchemy_psycopg_sync,
+    pytest.mark.sqlalchemy_spanner,
 ]
 
 
@@ -57,6 +58,13 @@ def fx_session(
         raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
         raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
     for raw_rule in raw_rules_uuid:
+        # spanner is a bit particular one bind variables here.
+        raw_rule["config"] = (
+            raw_rule["config"]
+            if isinstance(raw_rule.get("config", None), str | bytes | None)
+            else json.dumps(raw_rule.get("config", None))
+        )
+
         raw_rule["created"] = datetime.strptime(raw_rule["created"], "%Y-%m-%dT%H:%M:%S")
         raw_rule["updated"] = datetime.strptime(raw_rule["updated"], "%Y-%m-%dT%H:%M:%S")
     with engine.begin() as txn:
@@ -305,6 +313,10 @@ def test_repo_filter_collection(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_filter_collection(author_repo=author_repo)
 
 
+# there's an emulator bug that causes this one to fail.
+# The current google tests disable JSON tests when using the emulator.
+# https://github.com/googleapis/python-spanner-sqlalchemy/blob/main/test/test_suite_20.py#L2853
+@pytest.mark.xfail
 def test_repo_json_methods(
     raw_rules_uuid: list[dict[str, Any]],
     rule_repo: RuleSyncRepository,
