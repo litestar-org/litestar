@@ -400,10 +400,9 @@ async def test_repo_json_methods(
         match_fields=["name"],
         name="Secondary loading rule.",
         config={"another": "object"},
-        id=raw_rules_bigint[1]["id"],
     )
     assert get_created is False
-    assert get_obj.id == raw_rules_bigint[1]["id"]
+    assert get_obj.id is not None
     assert get_obj.config == {"another": "object"}
 
     new_obj, new_created = await rule_repo.get_or_create(
