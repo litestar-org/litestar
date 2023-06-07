@@ -386,19 +386,6 @@ class Response(Generic[T]):
         """
         return _render(content, self.media_type, self._enc_hook, self.encoding)
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """ASGI callable of the ``Response``.
-
-        Args:
-            scope: The ASGI connection scope.
-            receive: The ASGI receive function.
-            send: The ASGI send function.
-
-        Returns:
-            None
-        """
-        await self.to_asgi_response()(scope, receive, send)
-
     def to_asgi_response(self) -> ASGIResponse:
         """Create an ASGIResponse from a Response instance.
 

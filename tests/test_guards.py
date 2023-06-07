@@ -49,7 +49,7 @@ def test_guards_with_http_handler() -> None:
 def test_guards_with_asgi_handler() -> None:
     @asgi(path="/secret", guards=[local_guard])
     async def my_asgi_handler(scope: Scope, receive: Receive, send: Send) -> None:
-        response = Response(content={"hello": "world"})
+        response = Response(content={"hello": "world"}).to_asgi_response()
         await response(scope=scope, receive=receive, send=send)
 
     with create_test_client(guards=[app_guard], route_handlers=[my_asgi_handler]) as client:

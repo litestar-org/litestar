@@ -15,17 +15,17 @@ if TYPE_CHECKING:
 def test_supports_mounting() -> None:
     @asgi("/base/sub/path", is_mount=True)
     async def asgi_handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        response = Response(scope["path"], media_type=MediaType.TEXT)
+        response = Response(scope["path"], media_type=MediaType.TEXT).to_asgi_response()
         await response(scope, receive, send)
 
     @asgi("/sub/path", is_mount=True)
     async def asgi_handler_mount_path(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        response = Response(scope["path"], media_type=MediaType.TEXT)
+        response = Response(scope["path"], media_type=MediaType.TEXT).to_asgi_response()
         await response(scope, receive, send)
 
     @asgi("/not/mount")
     async def asgi_handler_not_mounted_path(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        response = Response(scope["path"], media_type=MediaType.TEXT)
+        response = Response(scope["path"], media_type=MediaType.TEXT).to_asgi_response()
         await response(scope, receive, send)
 
     with create_test_client(
@@ -55,7 +55,7 @@ def test_supports_mounting() -> None:
 def test_supports_sub_routes_below_asgi_handlers() -> None:
     @asgi("/base/sub/path")
     async def asgi_handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        response = Response(scope["path"], media_type=MediaType.TEXT)
+        response = Response(scope["path"], media_type=MediaType.TEXT).to_asgi_response()
         await response(scope, receive, send)
 
     @get("/base/sub/path/abc")
@@ -68,7 +68,7 @@ def test_supports_sub_routes_below_asgi_handlers() -> None:
 def test_does_not_support_asgi_handlers_on_same_level_as_regular_handlers() -> None:
     @asgi("/base/sub/path")
     async def asgi_handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        response = Response(scope["path"], media_type=MediaType.TEXT)
+        response = Response(scope["path"], media_type=MediaType.TEXT).to_asgi_response()
         await response(scope, receive, send)
 
     @get("/base/sub/path")
@@ -82,7 +82,7 @@ def test_does_not_support_asgi_handlers_on_same_level_as_regular_handlers() -> N
 def test_does_not_support_asgi_handlers_on_same_level_as_websockets() -> None:
     @asgi("/base/sub/path")
     async def asgi_handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        response = Response(scope["path"], media_type=MediaType.TEXT)
+        response = Response(scope["path"], media_type=MediaType.TEXT).to_asgi_response()
         await response(scope, receive, send)
 
     @websocket("/base/sub/path")

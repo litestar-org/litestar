@@ -74,9 +74,8 @@ class AllowedHostsMiddleware(AbstractMiddleware):
             if self.redirect_domains is not None and self.redirect_domains.fullmatch(host):
                 url = URL.from_scope(scope)
                 redirect_url = url.with_replacements(netloc="www." + url.netloc)
-                await RedirectResponse(url=str(redirect_url))(scope, receive, send)
+                await RedirectResponse(url=str(redirect_url)).to_asgi_response()(scope, receive, send)
                 return
 
-        await Response(content={"message": "invalid host header"}, status_code=HTTP_400_BAD_REQUEST)(
-            scope, receive, send
-        )
+        response = Response(content={"message": "invalid host header"}, status_code=HTTP_400_BAD_REQUEST)
+        await response.to_asgi_response()(scope, receive, send)

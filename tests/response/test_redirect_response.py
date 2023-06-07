@@ -20,9 +20,9 @@ if TYPE_CHECKING:
 def test_redirect_response() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         if scope["path"] == "/":
-            response = Response("hello, world", media_type="text/plain")
+            response = Response("hello, world", media_type="text/plain").to_asgi_response()
         else:
-            response = RedirectResponse("/")
+            response = RedirectResponse("/").to_asgi_response()
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -34,9 +34,9 @@ def test_redirect_response() -> None:
 def test_quoting_redirect_response() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         if scope["path"] == "/test/":
-            response = Response("hello, world", media_type="text/plain")
+            response = Response("hello, world", media_type="text/plain").to_asgi_response()
         else:
-            response = RedirectResponse(url="/test/")
+            response = RedirectResponse(url="/test/").to_asgi_response()
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -48,9 +48,9 @@ def test_quoting_redirect_response() -> None:
 def test_redirect_response_content_length_header() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         if scope["path"] == "/":
-            response = Response("hello", media_type="text/plain")  # pragma: nocover
+            response = Response("hello", media_type="text/plain").to_asgi_response()
         else:
-            response = RedirectResponse("/")
+            response = RedirectResponse("/").to_asgi_response()
         await response(scope, receive, send)
 
     client: TestClient = TestClient(app)
@@ -61,15 +61,15 @@ def test_redirect_response_content_length_header() -> None:
 
 def test_redirect_response_status_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        RedirectResponse("/", status_code=HTTP_200_OK)  # type: ignore
+        RedirectResponse("/", status_code=HTTP_200_OK).to_asgi_response()  # type:ignore[arg-type]
 
 
 def test_redirect_response_html_media_type() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         if scope["path"] == "/":
-            response = Response("hello")
+            response = Response("hello").to_asgi_response()
         else:
-            response = RedirectResponse("/", media_type="text/html")
+            response = RedirectResponse("/", media_type="text/html").to_asgi_response()
         await response(scope, receive, send)
 
     client: TestClient = TestClient(app)
@@ -80,4 +80,4 @@ def test_redirect_response_html_media_type() -> None:
 
 def test_redirect_response_media_type_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        RedirectResponse("/", status_code=HTTP_307_TEMPORARY_REDIRECT, media_type="application/json")
+        RedirectResponse("/", status_code=HTTP_307_TEMPORARY_REDIRECT, media_type="application/json").to_asgi_response()

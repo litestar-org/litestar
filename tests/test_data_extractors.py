@@ -101,7 +101,7 @@ async def test_response_data_extractor() -> None:
     async def send(message: "Any") -> None:
         messages.append(message)
 
-    await response({}, empty_receive, send)  # type: ignore[arg-type]
+    await response.to_asgi_response()({}, empty_receive, send)  # type: ignore[arg-type]
 
     assert len(messages) == 2
     extracted_data = extractor(messages)  # type: ignore
