@@ -122,7 +122,7 @@ class JSON(TypeDecorator, SchemaType):  # type: ignore
         return self.impl.bind_processor(dialect=dialect)(value)  # type: ignore
 
     def process_result_value(self, value: bytes | None, dialect: Dialect) -> Any | None:
-        if value is None:
+        if value is None or dialect.name == "postgresql":
             return value
         if dialect.name == "oracle":
             return decode_json(value)

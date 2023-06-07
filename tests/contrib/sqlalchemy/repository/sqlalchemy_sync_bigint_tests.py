@@ -391,3 +391,18 @@ def test_repo_json_methods(
     assert new_rule.name == obj.name
     assert new_rule.config == obj.config
     assert obj.id is not None
+    obj.config = {"the": "update"}
+    updated = rule_repo.update(obj)
+    assert obj.config == updated.config
+
+    get_obj, get_created = rule_repo.get_or_create(
+        match_fields=["name"], name="Secondary loading rule.", config={"another": "object"}
+    )
+    assert get_created is False
+    assert get_obj.id == raw_rules_bigint[1]["id"]
+    assert get_obj.config == {"another": "object"}
+
+    new_obj, new_created = rule_repo.get_or_create(match_fields=["name"], name="New rule.", config={"new": "object"})
+    assert new_created is True
+    assert new_obj.id is not None
+    assert new_obj.config == {"new": "object"}
