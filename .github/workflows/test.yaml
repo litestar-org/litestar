@@ -22,7 +22,7 @@ on:
 jobs:
   test:
     runs-on: ${{ inputs.os }}
-    timeout-minutes: ${{ inputs.integrations && 15 | 30 }}
+    timeout-minutes: ${{ inputs.integrations && 15 || 30 }}
     defaults:
       run:
         shell: bash
