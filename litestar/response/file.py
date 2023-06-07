@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.datastructures.headers import ETag
     from litestar.enums import MediaType
-    from litestar.types import HTTPResponseBodyEvent, PathType, Receive, ResponseCookies, Scope, Send
+    from litestar.types import HTTPResponseBodyEvent, PathType, Receive, ResponseCookies, Send
     from litestar.types.file_types import FileInfo, FileSystemProtocol
 
 __all__ = (
@@ -235,19 +235,6 @@ class FileResponse(StreamingResponse):
             encoding=encoding,
             is_head_response=is_head_response,
         )
-
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """ASGI callable of the ``Response``.
-
-        Args:
-            scope: The ASGI connection scope.
-            receive: The ASGI receive function.
-            send: The ASGI send function.
-
-        Returns:
-            None
-        """
-        await self.to_asgi_response()(scope, receive, send)
 
     def to_asgi_response(self) -> ASGIFileResponse:
         """Create an ASGIFileResponse from the FileResponse instance.

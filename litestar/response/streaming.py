@@ -21,7 +21,7 @@ from litestar.utils.sync import AsyncIteratorWrapper
 if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.enums import OpenAPIMediaType
-    from litestar.types import HTTPResponseBodyEvent, Receive, ResponseCookies, Scope, Send
+    from litestar.types import HTTPResponseBodyEvent, Receive, ResponseCookies, Send
 
 __all__ = (
     "ASGIStreamingResponse",
@@ -134,19 +134,6 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
         self.iterator: AsyncIterable[str | bytes] | AsyncGenerator[str | bytes, None] = (
             content if isinstance(content, (AsyncIterable, AsyncIterator)) else AsyncIteratorWrapper(content)
         )
-
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """ASGI callable of the ``Response``.
-
-        Args:
-            scope: The ASGI connection scope.
-            receive: The ASGI receive function.
-            send: The ASGI send function.
-
-        Returns:
-            None
-        """
-        await self.to_asgi_response()(scope, receive, send)
 
     def to_asgi_response(self) -> ASGIStreamingResponse:
         """Create an ASGIStreamingResponse from a StremaingResponse instance.
