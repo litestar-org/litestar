@@ -9,7 +9,7 @@ import pytest
 from msgspec import Struct, to_builtins
 from pydantic import BaseModel
 
-from litestar.dto.factory import DTOConfig
+from litestar.dto.factory import DTOConfig, DTOField
 from litestar.dto.factory._backends import MsgspecDTOBackend, PydanticDTOBackend
 from litestar.dto.factory._backends.abc import BackendContext
 from litestar.dto.factory._backends.types import CollectionType, SimpleType, TransferFieldDefinition
@@ -188,7 +188,7 @@ def test_backend_model_name_uniqueness(backend_type: type[AbstractDTOBackend], b
             default=Empty,
             parsed_type=ParsedType(int),
             default_factory=None,
-            dto_field=None,
+            dto_field=DTOField(),
             unique_model_name="some_module.SomeModel",
             serialization_name="a",
             transfer_type=transfer_type,

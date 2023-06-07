@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Dict, Optional, Sequence
+from unittest.mock import MagicMock
 
 import pytest
 from typing_extensions import Annotated
@@ -317,3 +318,43 @@ def test_dto_with_generic_sequence_annotations() -> None:
     with create_test_client(route_handlers=[handler], debug=True) as client:
         response = client.post("/", json=[{"name": "John", "age": 42}])
         assert response.json() == [{"name": "John", "age": 42}]
+
+
+def test_dto_private_fields() -> None:
+    @dataclass
+    class Foo:
+        bar: str
+        _baz: int
+
+    mock = MagicMock()
+
+    @post(dto=DataclassDTO[Foo], return_dto=None, signature_namespace={"Foo": Foo})
+    def handler(data: DTOData[Foo]) -> Foo:
+        mock.received_data = data.as_builtins()
+        return data.create_instance(_baz=42)
+
+    with create_test_client(route_handlers=[handler], debug=True) as client:
+        response = client.post("/", json={"bar": "hello", "_baz": "world"})
+        assert response.status_code == 201
+        assert response.json() == {"bar": "hello"}
+
+    assert mock.received_data == {"bar": "hello"}
+
+
+def test_dto_private_fields_disabled() -> None:
+    @dataclass
+    class Foo:
+        bar: str
+        _baz: int
+
+    @post(
+        dto=DataclassDTO[Annotated[Foo, DTOConfig(underscore_fields_private=False)]],
+        signature_namespace={"Foo": Foo},
+    )
+    def handler(data: Foo) -> Foo:
+        return data
+
+    with create_test_client(route_handlers=[handler], debug=True) as client:
+        response = client.post("/", json={"bar": "hello", "_baz": 42})
+        assert response.status_code == 201
+        assert response.json() == {"bar": "hello", "_baz": 42}

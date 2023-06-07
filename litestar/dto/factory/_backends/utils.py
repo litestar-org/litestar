@@ -35,6 +35,7 @@ __all__ = (
     "create_transfer_model_type_annotation",
     "should_exclude_field",
     "should_ignore_field",
+    "should_mark_private",
     "transfer_data",
 )
 
@@ -58,6 +59,23 @@ def build_annotation_for_backend(annotation: Any, model: type[T]) -> type[T] | t
         return origin[model]  # type:ignore[no-any-return]
     except TypeError:  # pragma: no cover
         return annotation.copy_with((model,))  # type:ignore[no-any-return]
+
+
+def should_mark_private(field_definition: FieldDefinition, underscore_fields_private: bool) -> bool:
+    """Returns ``True`` where a field should be marked as private.
+
+    Fields should be marked as private when:
+    - the ``underscore_fields_private`` flag is set.
+    - the field is not already marked.
+    - the field name is prefixed with an underscore
+
+    Args:
+        field_definition: defined DTO field
+        underscore_fields_private: whether fields prefixed with an underscore should be marked as private.
+    """
+    return (
+        underscore_fields_private and field_definition.dto_field.mark is None and field_definition.name.startswith("_")
+    )
 
 
 def should_exclude_field(field_definition: FieldDefinition, exclude: AbstractSet[str], dto_for: ForType) -> bool:
