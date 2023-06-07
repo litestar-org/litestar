@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Union
 
 import pytest
 
-from litestar.dto.factory import DTOConfig
+from litestar.dto.factory import DTOConfig, DTOField
 from litestar.dto.factory._backends.abc import AbstractDTOBackend, BackendContext
 from litestar.dto.factory._backends.types import (
     CollectionType,
@@ -57,7 +57,7 @@ def fx_field_definitions(data_model_type: type[Model]) -> list[FieldDefinition]:
             default=Empty,
             parsed_type=ParsedType(int),
             default_factory=None,
-            dto_field=None,
+            dto_field=DTOField(),
             unique_model_name="some_module.SomeModel",
             dto_for=None,
         ),
@@ -66,7 +66,7 @@ def fx_field_definitions(data_model_type: type[Model]) -> list[FieldDefinition]:
             default=Empty,
             parsed_type=ParsedType(str),
             default_factory=None,
-            dto_field=None,
+            dto_field=DTOField(),
             unique_model_name="some_module.SomeModel",
             dto_for=None,
         ),

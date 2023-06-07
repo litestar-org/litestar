@@ -40,9 +40,10 @@ class MsgspecDTO(AbstractDTOFactory[T], Generic[T]):
         for key, parsed_type in get_model_type_hints(model_type).items():
             msgspec_field = msgspec_fields[key]
 
-            dto_field: DTOField | None = None
             if isinstance(msgspec_field.type, inspect.Metadata):
-                dto_field = (msgspec_field.type.extra or {}).get(DTO_FIELD_META_KEY)
+                dto_field = (msgspec_field.type.extra or {}).get(DTO_FIELD_META_KEY, DTOField())
+            else:
+                dto_field = DTOField()
 
             field_def = FieldDefinition(
                 name=key,

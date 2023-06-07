@@ -12,6 +12,7 @@ from typing import (
     Iterator,
     Literal,
     Mapping,
+    MutableMapping,
     Sequence,
     Set,
     Tuple,
@@ -45,7 +46,7 @@ T = TypeVar("T")
 
 
 Dependencies = Mapping[str, Union[Provide, AnyCallable]]
-ExceptionHandlersMap = Mapping[Union[int, Type[Exception]], ExceptionHandler]
+ExceptionHandlersMap = MutableMapping[Union[int, Type[Exception]], ExceptionHandler]
 MaybePartial = Union[T, partial]
 Middleware = Union[
     Callable[..., ASGIApp], DefineMiddleware, Iterator[Tuple[ASGIApp, Dict[str, Any]]], Type[MiddlewareProtocol]

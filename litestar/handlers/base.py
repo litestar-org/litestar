@@ -430,6 +430,7 @@ class BaseRouteHandler(Generic[T]):
                 fn=cast("AnyCallable", self.fn.value),
                 preferred_validation_backend=app.preferred_validation_backend,
                 parsed_signature=self.parsed_fn_signature,
+                has_data_dto=bool(self.resolve_dto()),
             )
 
     def _create_provider_signature_models(self, app: Litestar) -> None:
@@ -443,6 +444,7 @@ class BaseRouteHandler(Generic[T]):
                     parsed_signature=ParsedSignature.from_fn(
                         unwrap_partial(provider.dependency.value), self.resolve_signature_namespace()
                     ),
+                    has_data_dto=bool(self.resolve_dto()),
                 )
 
     def _handle_serialization_plugins(self, plugins: list[SerializationPluginProtocol]) -> None:

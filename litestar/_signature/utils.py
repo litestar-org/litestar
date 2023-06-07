@@ -47,6 +47,7 @@ def create_signature_model(
     fn: AnyCallable,
     preferred_validation_backend: Literal["pydantic", "attrs"],
     parsed_signature: ParsedSignature,
+    has_data_dto: bool = False,
 ) -> type[SignatureModel]:
     """Create a model for a callable's signature. The model can than be used to parse and validate before passing it to
     the callable.
@@ -56,6 +57,7 @@ def create_signature_model(
         fn: A callable.
         preferred_validation_backend: Validation/Parsing backend to prefer, if installed
         parsed_signature: A parsed signature for the handler/dependency function.
+        has_data_dto: Is a data DTO defined for the handler?
 
     Returns:
         A signature model.
@@ -76,7 +78,7 @@ def create_signature_model(
         preferred_validation_backend=preferred_validation_backend, parsed_signature=parsed_signature
     )
 
-    type_overrides = _create_type_overrides(parsed_signature)
+    type_overrides = _create_type_overrides(parsed_signature, has_data_dto)
 
     return model_class.create(
         fn_name=fn_name,
@@ -113,11 +115,13 @@ def _any_pydantic_annotation(parsed_signature: ParsedSignature) -> bool:
     return False
 
 
-def _create_type_overrides(parsed_signature: ParsedSignature) -> dict[str, Any]:
+def _create_type_overrides(parsed_signature: ParsedSignature, has_data_dto: bool) -> dict[str, Any]:
     type_overrides = {}
     for parameter in parsed_signature.parameters.values():
         if _should_skip_validation(parameter):
             type_overrides[parameter.name] = Any
+        if has_data_dto and "data" in parsed_signature.parameters:
+            type_overrides["data"] = Any
     return type_overrides
 
 

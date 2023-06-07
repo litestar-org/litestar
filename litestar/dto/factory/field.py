@@ -30,7 +30,7 @@ class Mark(str, Enum):
 class DTOField:
     """For configuring DTO behavior on model fields."""
 
-    mark: Mark | Literal["read-only", "private"] | None = None
+    mark: Mark | Literal["read-only", "write-only", "private"] | None = None
     """Mark the field as read-only, or private."""
 
 

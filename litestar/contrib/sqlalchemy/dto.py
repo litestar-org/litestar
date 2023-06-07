@@ -94,7 +94,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                 default=default,
                 parsed_type=parsed_type,
                 default_factory=default_factory,
-                dto_field=elem.info.get(DTO_FIELD_META_KEY),
+                dto_field=elem.info.get(DTO_FIELD_META_KEY, DTOField()),
                 unique_model_name=model_name,
                 dto_for=None,
             )

@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Final, Generic, TypeVar
 
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
-from litestar.dto.factory import DTOData
+from litestar.dto.factory import DTOData, Mark
 from litestar.utils.helpers import get_fully_qualified_class_name
 
 from .types import (
@@ -27,6 +27,7 @@ from .utils import (
     build_annotation_for_backend,
     should_exclude_field,
     should_ignore_field,
+    should_mark_private,
     transfer_data,
 )
 
@@ -161,6 +162,9 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         for field_definition in self.context.field_definition_generator(model_type):
             if should_ignore_field(field_definition, self.context.dto_for):
                 continue
+
+            if should_mark_private(field_definition, self.context.config.underscore_fields_private):
+                field_definition.dto_field.mark = Mark.PRIVATE
 
             try:
                 transfer_type = self._create_transfer_type(
@@ -302,7 +306,11 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             Encoded data.
         """
         return transfer_data(
-            self.transfer_model_type, data, self.parsed_field_definitions, "return", self.context.parsed_type  # type: ignore[arg-type]
+            destination_type=self.transfer_model_type,  # type: ignore[arg-type]
+            source_data=data,
+            field_definitions=self.parsed_field_definitions,
+            dto_for="return",
+            parsed_type=self.context.parsed_type,
         )
 
     def create_openapi_schema(self, generate_examples: bool, schemas: dict[str, Schema]) -> Reference | Schema:

@@ -38,3 +38,5 @@ class DTOConfig:
     """The maximum depth of nested items allowed for data transfer."""
     partial: bool = False
     """Allow transfer of partial data."""
+    underscore_fields_private: bool = True
+    """Fields starting with an underscore are considered private and excluded from data transfer."""
