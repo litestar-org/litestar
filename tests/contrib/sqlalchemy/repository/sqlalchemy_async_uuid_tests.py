@@ -14,13 +14,20 @@ from sqlalchemy.ext.asyncio import (
 from litestar.contrib.repository.exceptions import RepositoryError
 from litestar.contrib.repository.filters import BeforeAfter, CollectionFilter, OrderBy, SearchFilter
 from litestar.contrib.sqlalchemy import base
-from tests.contrib.sqlalchemy.models_uuid import AuthorAsyncRepository, BookAsyncRepository, UUIDAuthor
+from tests.contrib.sqlalchemy.models_uuid import (
+    AuthorAsyncRepository,
+    BookAsyncRepository,
+    RuleAsyncRepository,
+    UUIDAuthor,
+    UUIDRule,
+)
 
 
 async def seed_db(
     engine: AsyncEngine,
     raw_authors_uuid: list[dict[str, Any]],
     raw_books_uuid: list[dict[str, Any]],
+    raw_rules_uuid: list[dict[str, Any]],
 ) -> None:
     """Populate test database with sample data.
 
@@ -32,11 +39,15 @@ async def seed_db(
         raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d").date()
         raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
         raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
+    for raw_author in raw_rules_uuid:
+        raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
+        raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
 
     async with engine.begin() as conn:
         await conn.run_sync(base.orm_registry.metadata.drop_all)
         await conn.run_sync(base.orm_registry.metadata.create_all)
         await conn.execute(insert(UUIDAuthor).values(raw_authors_uuid))
+        await conn.execute(insert(UUIDRule).values(raw_rules_uuid))
 
 
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorAsyncRepository) -> None:
@@ -374,3 +385,41 @@ async def test_repo_filter_collection(author_repo: AuthorAsyncRepository) -> Non
         CollectionFilter(field_name="id", values=[UUID("5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2")])
     )
     assert existing_obj[0].name == "Leo Tolstoy"
+
+
+async def test_repo_json_methods(
+    raw_rules_uuid: list[dict[str, Any]],
+    rule_repo: RuleAsyncRepository,
+) -> None:
+    """Test SQLALchemy JSON.
+
+    Args:
+        raw_rules_uuid (list[dict[str, Any]]): list of rules pre-seeded into the mock repository
+        rules_repo (AuthorSyncRepository): The rules mock repository
+    """
+    exp_count = len(raw_rules_uuid) + 1
+    new_rule = UUIDRule(name="Testing", config={"an": "object"})
+    obj = await rule_repo.add(new_rule)
+    count = await rule_repo.count()
+    assert exp_count == count
+    assert isinstance(obj, UUIDRule)
+    assert new_rule.name == obj.name
+    assert new_rule.config == obj.config
+    assert obj.id is not None
+    obj.config = {"the": "update"}
+    updated = await rule_repo.update(obj)
+    assert obj.config == updated.config
+
+    get_obj, get_created = await rule_repo.get_or_create(
+        match_fields=["name"], name="Secondary loading rule.", config={"another": "object"}
+    )
+    assert get_created is False
+    assert get_obj.id is not None
+    assert get_obj.config == {"another": "object"}
+
+    new_obj, new_created = await rule_repo.get_or_create(
+        match_fields=["name"], name="New rule.", config={"new": "object"}
+    )
+    assert new_created is True
+    assert new_obj.id is not None
+    assert new_obj.config == {"new": "object"}

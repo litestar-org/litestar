@@ -19,7 +19,7 @@ from sqlalchemy.orm import (
     registry,
 )
 
-from .types import GUID, JSON, BigIntIdentity
+from .types import GUID, BigIntIdentity, JsonB
 
 if TYPE_CHECKING:
     from sqlalchemy.sql import FromClause
@@ -151,7 +151,7 @@ def create_registry() -> registry:
             EmailStr: String,
             AnyUrl: String,
             AnyHttpUrl: String,
-            dict: JSON,
+            dict: JsonB,
             datetime: DateTime,
             date: Date,
         },

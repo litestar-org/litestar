@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 from uuid import UUID
@@ -87,6 +88,27 @@ def fx_raw_log_events_uuid() -> list[dict[str, Any]]:
     ]
 
 
+@pytest.fixture(name="raw_rules_uuid")
+def fx_raw_rules_uuid() -> list[dict[str, Any]]:
+    """Unstructured rules representations."""
+    return [
+        {
+            "id": "f34545b9-663c-4fce-915d-dd1ae9cea42a",
+            "name": "Initial loading rule.",
+            "config": json.dumps({"url": "https://litestar.dev", "setting_123": 1}),
+            "created": "2023-01-01T00:00:00",
+            "updated": "2023-02-01T00:00:00",
+        },
+        {
+            "id": "f34545b9-663c-4fce-915d-dd1ae9cea34b",
+            "name": "Secondary loading rule.",
+            "config": {"url": "https://litestar.dev", "bar": "foo", "setting_123": 4},
+            "created": "2023-02-01T00:00:00",
+            "updated": "2023-02-01T00:00:00",
+        },
+    ]
+
+
 @pytest.fixture(name="raw_authors_bigint")
 def fx_raw_authors_bigint() -> list[dict[str, Any]]:
     """Unstructured author representations."""
@@ -130,5 +152,26 @@ def fx_raw_log_events_bigint() -> list[dict[str, Any]]:
             "payload": {"foo": "bar", "baz": datetime.now()},
             "created": "0001-01-01T00:00:00",
             "updated": "0001-01-01T00:00:00",
+        },
+    ]
+
+
+@pytest.fixture(name="raw_rules_bigint")
+def fx_raw_rules_bigint() -> list[dict[str, Any]]:
+    """Unstructured rules representations."""
+    return [
+        {
+            "id": 2025,
+            "name": "Initial loading rule.",
+            "config": json.dumps({"url": "https://litestar.dev", "setting_123": 1}),
+            "created": "2023-01-01T00:00:00",
+            "updated": "2023-02-01T00:00:00",
+        },
+        {
+            "id": 2024,
+            "name": "Secondary loading rule.",
+            "config": {"url": "https://litestar.dev", "bar": "foo", "setting_123": 4},
+            "created": "2023-02-01T00:00:00",
+            "updated": "2023-02-01T00:00:00",
         },
     ]

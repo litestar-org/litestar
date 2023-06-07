@@ -13,7 +13,9 @@ from sqlalchemy.orm import Session, sessionmaker
 from tests.contrib.sqlalchemy.models_uuid import (
     AuthorSyncRepository,
     BookSyncRepository,
+    RuleSyncRepository,
     UUIDAuthor,
+    UUIDRule,
 )
 from tests.contrib.sqlalchemy.repository import sqlalchemy_sync_uuid_tests as st
 
@@ -21,8 +23,18 @@ pytestmark = [
     pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
     pytest.mark.usefixtures("spanner_service"),
     pytest.mark.sqlalchemy_integration,
-    pytest.mark.sqlalchemy_psycopg_sync,
+    pytest.mark.sqlalchemy_spanner,
 ]
+
+
+@pytest.fixture()
+def set_spanner_emulator_host(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("SPANNER_EMULATOR_HOST", "localhost:9010")
+
+
+@pytest.fixture()
+def set_google_cloud_project(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "emulator-test-project")
 
 
 @pytest.fixture(name="engine")
@@ -35,8 +47,6 @@ def fx_engine(docker_ip: str) -> Engine:
     Returns:
         Async SQLAlchemy engine instance.
     """
-    os.environ["SPANNER_EMULATOR_HOST"] = "localhost:9010"
-    os.environ["GOOGLE_CLOUD_PROJECT"] = "emulator-test-project"
     return create_engine(
         "spanner+spanner:///projects/emulator-test-project/instances/test-instance/databases/test-database",
         echo=True,
@@ -45,12 +55,18 @@ def fx_engine(docker_ip: str) -> Engine:
 
 @pytest.fixture(name="session")
 def fx_session(
-    engine: Engine, raw_authors_uuid: list[dict[str, Any]], raw_books_uuid: list[dict[str, Any]]
+    engine: Engine,
+    raw_authors_uuid: list[dict[str, Any]],
+    raw_books_uuid: list[dict[str, Any]],
+    raw_rules_uuid: list[dict[str, Any]],
 ) -> Generator[Session, None, None]:
     for raw_author in raw_authors_uuid:
         raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d").date()
         raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
         raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
+    for raw_rule in raw_rules_uuid:
+        raw_rule["created"] = datetime.strptime(raw_rule["created"], "%Y-%m-%dT%H:%M:%S")
+        raw_rule["updated"] = datetime.strptime(raw_rule["updated"], "%Y-%m-%dT%H:%M:%S")
     with engine.begin() as txn:
         objs = []
         for tbl in UUIDAuthor.registry.metadata.sorted_tables:
@@ -60,9 +76,15 @@ def fx_session(
 
     session = sessionmaker(bind=engine)()
     try:
-        repo = AuthorSyncRepository(session=session)
+        author_repo = AuthorSyncRepository(session=session)
         for author in raw_authors_uuid:
-            _ = repo.get_or_create("name", **author)
+            _ = author_repo.get_or_create(match_fields="name", **author)
+        if not bool(os.environ.get("SPANNER_EMULATOR_HOST")):
+            rule_repo = RuleSyncRepository(session=session)
+            for rule in raw_rules_uuid:
+                _ = rule_repo.add(
+                    UUIDRule(**rule),
+                )
         yield session
     finally:
         session.rollback()
@@ -79,6 +101,11 @@ def fx_author_repo(session: Session) -> AuthorSyncRepository:
 @pytest.fixture(name="book_repo")
 def fx_book_repo(session: Session) -> BookSyncRepository:
     return BookSyncRepository(session=session)
+
+
+@pytest.fixture(name="rule_repo")
+def fx_rule_repo(session: Session) -> RuleSyncRepository:
+    return RuleSyncRepository(session=session)
 
 
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorSyncRepository) -> None:
@@ -151,6 +178,7 @@ def test_repo_add_many_method(raw_authors_uuid: list[dict[str, Any]], author_rep
 
 
 # there's an emulator bug that causes this one to fail.
+@pytest.mark.skipif(bool(os.environ.get("SPANNER_EMULATOR_HOST")), reason="Skipped on emulator")
 @pytest.mark.xfail
 def test_repo_update_many_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Update Many.
@@ -285,3 +313,21 @@ def test_repo_filter_collection(author_repo: AuthorSyncRepository) -> None:
         author_repo (AuthorRepository): The author mock repository
     """
     st.test_repo_filter_collection(author_repo=author_repo)
+
+
+# there's an emulator bug that causes this one to fail.
+# The current google tests disable JSON tests when using the emulator.
+# https://github.com/googleapis/python-spanner-sqlalchemy/blob/main/test/test_suite_20.py#L2853
+@pytest.mark.skipif(bool(os.environ.get("SPANNER_EMULATOR_HOST")), reason="Skipped on emulator")
+@pytest.mark.xfail
+def test_repo_json_methods(
+    raw_rules_uuid: list[dict[str, Any]],
+    rule_repo: RuleSyncRepository,
+) -> None:
+    """Test SQLALchemy Collection filter.
+
+    Args:
+        raw_rules_uuid (list[dict[str, Any]]): list of rules pre-seeded into the mock repository
+        rule_repo (RuleSyncRepository): The rules mock repository
+    """
+    st.test_repo_json_methods(raw_rules_uuid=raw_rules_uuid, rule_repo=rule_repo)

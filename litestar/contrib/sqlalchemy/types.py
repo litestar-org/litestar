@@ -9,13 +9,13 @@ from sqlalchemy.dialects.oracle import BLOB as ORA_BLOB
 from sqlalchemy.dialects.oracle import RAW as ORA_RAW
 from sqlalchemy.dialects.postgresql import JSONB as PG_JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.types import BINARY, CHAR, BigInteger, Integer, SchemaType, TypeDecorator
+from sqlalchemy.types import BINARY, CHAR, BigInteger, Integer, SchemaType, TypeDecorator, TypeEngine
 from sqlalchemy.types import JSON as _JSON
+
+from litestar.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
     from sqlalchemy.engine import Dialect
-
-BigIntIdentity = BigInteger().with_variant(Integer, "sqlite")
 
 
 class GUID(TypeDecorator):
@@ -81,16 +81,14 @@ class GUID(TypeDecorator):
         return cast("uuid.UUID | None", value)
 
 
-class JSON(TypeDecorator, SchemaType):  # type: ignore
-    """Platform-independent JSON type.
+class ORA_JSONB(TypeDecorator, SchemaType):  # type: ignore  # noqa: N801
+    """Oracle Binary JSON type.
 
-    Uses JSONB type for postgres, BLOB for Oracle, otherwise uses the generic JSON data type.
-
-    JSON = _JSON().with_variant(PG_JSONB, "postgresql").with_variant(ORA_BLOB, "oracle")
+    JsonB = _JSON().with_variant(PG_JSONB, "postgresql").with_variant(ORA_JSONB, "oracle")
 
     """
 
-    impl = _JSON
+    impl = ORA_BLOB
     cache_ok = True
 
     @property
@@ -102,12 +100,21 @@ class JSON(TypeDecorator, SchemaType):  # type: ignore
         self.name = kwargs.pop("name", None)
         self.oracle_strict = kwargs.pop("oracle_strict", True)
 
-    def load_dialect_impl(self, dialect: Dialect) -> Any:
-        if dialect.name == "postgresql":
-            return dialect.type_descriptor(PG_JSONB())  # type: ignore
-        if dialect.name == "oracle":
-            return dialect.type_descriptor(ORA_BLOB())
-        return dialect.type_descriptor(_JSON())
+    def coerce_compared_value(self, op: Any, value: Any) -> Any:
+        return self.impl.coerce_compared_value(op=op, value=value)  # type: ignore
+
+    def load_dialect_impl(self, dialect: Dialect) -> TypeEngine[Any]:
+        return dialect.type_descriptor(ORA_BLOB())
+
+    def process_bind_param(self, value: Any, dialect: Dialect) -> Any | None:
+        if value is None:
+            return value
+        return encode_json(value)
+
+    def process_result_value(self, value: bytes | None, dialect: Dialect) -> Any | None:
+        if value is None:
+            return value
+        return decode_json(value)
 
     def _should_create_constraint(self, compiler: Any, **kw: Any) -> bool:
         return bool(compiler.dialect.name == "oracle")
@@ -136,3 +143,7 @@ class JSON(TypeDecorator, SchemaType):  # type: ignore
             _type_bound=True,
         )
         table.append_constraint(e)
+
+
+BigIntIdentity = BigInteger().with_variant(Integer, "sqlite")
+JsonB = _JSON().with_variant(PG_JSONB, "postgresql").with_variant(ORA_JSONB, "oracle")

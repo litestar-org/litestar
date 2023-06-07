@@ -13,7 +13,11 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from tests.contrib.sqlalchemy.models_uuid import AuthorAsyncRepository, BookAsyncRepository
+from tests.contrib.sqlalchemy.models_uuid import (
+    AuthorAsyncRepository,
+    BookAsyncRepository,
+    RuleAsyncRepository,
+)
 from tests.contrib.sqlalchemy.repository import sqlalchemy_async_uuid_tests as st
 
 pytestmark = pytest.mark.sqlalchemy_aiosqlite
@@ -41,10 +45,13 @@ async def fx_engine(tmp_path: Path) -> AsyncGenerator[AsyncEngine, None]:
     name="session",
 )
 async def fx_session(
-    engine: AsyncEngine, raw_authors_uuid: list[dict[str, Any]], raw_books_uuid: list[dict[str, Any]]
+    engine: AsyncEngine,
+    raw_authors_uuid: list[dict[str, Any]],
+    raw_books_uuid: list[dict[str, Any]],
+    raw_rules_uuid: list[dict[str, Any]],
 ) -> AsyncGenerator[AsyncSession, None]:
     session = async_sessionmaker(bind=engine)()
-    await st.seed_db(engine, raw_authors_uuid, raw_books_uuid)
+    await st.seed_db(engine, raw_authors_uuid, raw_books_uuid, raw_rules_uuid)
     try:
         yield session
     finally:
@@ -60,6 +67,11 @@ def fx_author_repo(session: AsyncSession) -> AuthorAsyncRepository:
 @pytest.fixture(name="book_repo")
 def fx_book_repo(session: AsyncSession) -> BookAsyncRepository:
     return BookAsyncRepository(session=session)
+
+
+@pytest.fixture(name="rule_repo")
+def fx_rule_repo(session: AsyncSession) -> RuleAsyncRepository:
+    return RuleAsyncRepository(session=session)
 
 
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorAsyncRepository) -> None:
@@ -276,3 +288,16 @@ async def test_repo_filter_collection(author_repo: AuthorAsyncRepository) -> Non
         author_repo (AuthorRepository): The author mock repository
     """
     await st.test_repo_filter_collection(author_repo=author_repo)
+
+
+async def test_repo_json_methods(
+    raw_rules_uuid: list[dict[str, Any]],
+    rule_repo: RuleAsyncRepository,
+) -> None:
+    """Test SQLALchemy Collection filter.
+
+    Args:
+        raw_rules_uuid (list[dict[str, Any]]): list of rules pre-seeded into the mock repository
+        rules_repo (AuthorAsyncRepository): The rules mock repository
+    """
+    await st.test_repo_json_methods(raw_rules_uuid=raw_rules_uuid, rule_repo=rule_repo)

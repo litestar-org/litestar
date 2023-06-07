@@ -32,6 +32,19 @@ class BigIntEventLog(BigIntAuditBase):
     payload: Mapped[dict] = mapped_column(default=lambda: {})  # pyright: ignore
 
 
+class BigIntRule(BigIntAuditBase):
+    """The rule domain object."""
+
+    name: Mapped[str] = mapped_column(String(length=250))  # pyright: ignore
+    config: Mapped[dict] = mapped_column(default=lambda: {})  # pyright: ignore
+
+
+class RuleAsyncRepository(SQLAlchemyAsyncRepository[BigIntRule]):
+    """Rule repository."""
+
+    model_type = BigIntRule
+
+
 class AuthorAsyncRepository(SQLAlchemyAsyncRepository[BigIntAuthor]):
     """Author repository."""
 
@@ -66,3 +79,9 @@ class EventLogSyncRepository(SQLAlchemySyncRepository[BigIntEventLog]):
     """Event log repository."""
 
     model_type = BigIntEventLog
+
+
+class RuleSyncRepository(SQLAlchemySyncRepository[BigIntRule]):
+    """Rule repository."""
+
+    model_type = BigIntRule

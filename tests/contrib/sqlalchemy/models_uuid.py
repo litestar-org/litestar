@@ -33,6 +33,19 @@ class UUIDEventLog(UUIDAuditBase):
     payload: Mapped[dict] = mapped_column(default={})  # pyright: ignore
 
 
+class UUIDRule(UUIDAuditBase):
+    """The rule domain object."""
+
+    name: Mapped[str] = mapped_column(String(length=250))  # pyright: ignore
+    config: Mapped[dict] = mapped_column(default=lambda: {})  # pyright: ignore
+
+
+class RuleAsyncRepository(SQLAlchemyAsyncRepository[UUIDRule]):
+    """Rule repository."""
+
+    model_type = UUIDRule
+
+
 class AuthorAsyncRepository(SQLAlchemyAsyncRepository[UUIDAuthor]):
     """Author repository."""
 
@@ -67,3 +80,9 @@ class EventLogSyncRepository(SQLAlchemySyncRepository[UUIDEventLog]):
     """Event log repository."""
 
     model_type = UUIDEventLog
+
+
+class RuleSyncRepository(SQLAlchemySyncRepository[UUIDRule]):
+    """Rule repository."""
+
+    model_type = UUIDRule

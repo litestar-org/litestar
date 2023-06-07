@@ -8,7 +8,7 @@ import pytest
 from sqlalchemy import Engine, NullPool, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from tests.contrib.sqlalchemy.models_uuid import AuthorSyncRepository, BookSyncRepository
+from tests.contrib.sqlalchemy.models_uuid import AuthorSyncRepository, BookSyncRepository, RuleSyncRepository
 from tests.contrib.sqlalchemy.repository import sqlalchemy_sync_uuid_tests as st
 
 pytestmark = [pytest.mark.sqlalchemy_sqlite]
@@ -34,10 +34,13 @@ def fx_engine(tmp_path: Path) -> Generator[Engine, None, None]:
 
 @pytest.fixture(name="session")
 def fx_session(
-    engine: Engine, raw_authors_uuid: list[dict[str, Any]], raw_books_uuid: list[dict[str, Any]]
+    engine: Engine,
+    raw_authors_uuid: list[dict[str, Any]],
+    raw_books_uuid: list[dict[str, Any]],
+    raw_rules_uuid: list[dict[str, Any]],
 ) -> Generator[Session, None, None]:
     session = sessionmaker(bind=engine)()
-    st.seed_db(engine, raw_authors_uuid, raw_books_uuid)
+    st.seed_db(engine, raw_authors_uuid, raw_books_uuid, raw_rules_uuid)
     try:
         yield session
     finally:
@@ -53,6 +56,11 @@ def fx_author_repo(session: Session) -> AuthorSyncRepository:
 @pytest.fixture(name="book_repo")
 def fx_book_repo(session: Session) -> BookSyncRepository:
     return BookSyncRepository(session=session)
+
+
+@pytest.fixture(name="rule_repo")
+def fx_rule_repo(session: Session) -> RuleSyncRepository:
+    return RuleSyncRepository(session=session)
 
 
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorSyncRepository) -> None:
@@ -257,3 +265,16 @@ def test_repo_filter_collection(author_repo: AuthorSyncRepository) -> None:
         author_repo (AuthorRepository): The author mock repository
     """
     st.test_repo_filter_collection(author_repo=author_repo)
+
+
+def test_repo_json_methods(
+    raw_rules_uuid: list[dict[str, Any]],
+    rule_repo: RuleSyncRepository,
+) -> None:
+    """Test SQLALchemy Collection filter.
+
+    Args:
+        raw_rules_uuid (list[dict[str, Any]]): list of rules pre-seeded into the mock repository
+        rule_repo (RuleSyncRepository): The rules mock repository
+    """
+    st.test_repo_json_methods(raw_rules_uuid=raw_rules_uuid, rule_repo=rule_repo)
