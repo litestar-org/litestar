@@ -1,9 +1,8 @@
 """Unit tests for the SQLAlchemy Repository implementation for psycopg."""
 from __future__ import annotations
 
-from asyncio import AbstractEventLoop, get_event_loop_policy
 from pathlib import Path
-from typing import Any, Generator, Iterator
+from typing import Any, Generator
 
 import pytest
 from sqlalchemy import Engine, NullPool, create_engine
@@ -14,17 +13,6 @@ from tests.contrib.sqlalchemy.models_bigint import (
     BookSyncRepository,
 )
 from tests.contrib.sqlalchemy.repository import sqlalchemy_sync_bigint_tests as st
-
-
-@pytest.mark.sqlalchemy_sqlite
-@pytest.fixture(scope="session")
-def event_loop() -> Iterator[AbstractEventLoop]:
-    """Need the event loop scoped to the session so that we can use it to check
-    containers are ready in session scoped containers fixture."""
-    policy = get_event_loop_policy()
-    loop = policy.new_event_loop()
-    yield loop
-    loop.close()
 
 
 @pytest.mark.sqlalchemy_sqlite

@@ -3,9 +3,8 @@ from __future__ import annotations
 
 import os
 import sys
-from asyncio import AbstractEventLoop, get_event_loop_policy
 from datetime import datetime
-from typing import Any, Generator, Iterator
+from typing import Any, Generator
 
 import pytest
 from sqlalchemy import Engine, create_engine
@@ -23,17 +22,6 @@ pytestmark = [
     pytest.mark.usefixtures("spanner_service"),
     pytest.mark.sqlalchemy_integration,
 ]
-
-
-@pytest.mark.sqlalchemy_spanner
-@pytest.fixture(scope="session")
-def event_loop() -> Iterator[AbstractEventLoop]:
-    """Need the event loop scoped to the session so that we can use it to check
-    containers are ready in session scoped containers fixture."""
-    policy = get_event_loop_policy()
-    loop = policy.new_event_loop()
-    yield loop
-    loop.close()
 
 
 @pytest.mark.sqlalchemy_spanner
@@ -56,9 +44,7 @@ def fx_engine(docker_ip: str) -> Engine:
 
 
 @pytest.mark.sqlalchemy_spanner
-@pytest.fixture(
-    name="session",
-)
+@pytest.fixture(name="session")
 def fx_session(
     engine: Engine, raw_authors_uuid: list[dict[str, Any]], raw_books_uuid: list[dict[str, Any]]
 ) -> Generator[Session, None, None]:
