@@ -5,10 +5,11 @@ import importlib.util
 import logging
 import os
 import random
+import re
 import string
+import subprocess
 import sys
 import timeit
-from asyncio import AbstractEventLoop, get_event_loop_policy
 from os import urandom
 from pathlib import Path
 from typing import (
@@ -17,25 +18,21 @@ from typing import (
     Awaitable,
     Callable,
     Generator,
-    Iterator,
     TypeVar,
     Union,
     cast,
 )
 
-import anyio
 import asyncmy
 import asyncpg
 import oracledb
 import pytest
 from _pytest.fixtures import FixtureRequest
-from _pytest.nodes import Item
 from fakeredis.aioredis import FakeRedis
 from freezegun import freeze_time
 from google.auth.credentials import AnonymousCredentials  # pyright: ignore
 from google.cloud import spanner  # pyright: ignore
 from oracledb.exceptions import DatabaseError, OperationalError
-from pytest_docker.plugin import Services
 from pytest_lazyfixture import lazy_fixture
 from redis.asyncio import Redis as AsyncRedis
 from redis.exceptions import ConnectionError as RedisConnectionError
@@ -303,68 +300,27 @@ def reset_httpx_logging() -> Generator[None, None, None]:
     httpx_logger.setLevel(initial_level)
 
 
+# the monkeypatch fixture does not work with session scoped dependencies
+@pytest.fixture(autouse=True, scope="session")
+def disable_warn_implicit_sync_to_thread() -> Generator[None, None, None]:
+    old_value = os.getenv("LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD")
+    os.environ["LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD"] = "0"
+    yield
+    if old_value is not None:
+        os.environ["LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD"] = old_value
+
+
+@pytest.fixture()
+def disable_warn_sync_to_thread_with_async(monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.setenv("LITESTAR_WARN_SYNC_TO_THREAD_WITH_ASYNC", "0")
+
+
+@pytest.fixture()
+def enable_warn_implicit_sync_to_thread(monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.setenv("LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD", "1")
+
+
 # Docker services
-
-
-class DockerServiceRegistry:
-    """Registry for docker services. Allows to register fixtures and collect requested
-    services for this test session
-    """
-
-    def __init__(self) -> None:
-        self._fixture_services: dict[str, str] = {}
-        self.requested_services: set[str] = set()
-
-    def register(self, service_name: str) -> Callable[[Callable], Callable]:
-        """Register a service, making it available via a fixture"""
-
-        def decorator(fn: Callable) -> Callable:
-            self._fixture_services[fn.__name__] = service_name
-            return pytest.fixture(scope="session")(fn)
-
-        return decorator
-
-    def notify_fixture(self, fixture_name: str) -> None:
-        if service_name := self._fixture_services.get(fixture_name):
-            self.requested_services.add(service_name)
-
-
-docker_service_registry = DockerServiceRegistry()
-
-
-@pytest.fixture(scope="session")
-def docker_compose_file() -> Path:
-    """
-    Returns:
-        Path to the docker-compose file for end-to-end test environment.
-    """
-    return Path(__file__).parent / "docker-compose.yml"
-
-
-@pytest.fixture(scope="session")
-def event_loop() -> Iterator[AbstractEventLoop]:
-    """Need the event loop scoped to the session so that we can use it to check
-    containers are ready in session scoped containers fixture."""
-    policy = get_event_loop_policy()
-    loop = policy.new_event_loop()
-    yield loop
-    loop.close()
-
-
-@pytest.fixture(scope="session")
-def docker_setup() -> str:
-    command = "up --build -d"
-    for item in docker_service_registry.requested_services:
-        command += f" {item}"
-    return command
-
-
-def pytest_collection_modifyitems(items: list[Item]) -> None:
-    """Check items if they make use of docker service fixtures and notify the registry"""
-    for item in items:
-        for marker in item.iter_markers(name="usefixtures"):
-            for arg in marker.args:
-                docker_service_registry.notify_fixture(arg)
 
 
 async def wait_until_responsive(
@@ -392,13 +348,73 @@ async def wait_until_responsive(
     raise Exception("Timeout reached while waiting on service!")
 
 
-async def redis_responsive(host: str) -> bool:
-    """Args:
-        host: docker IP address.
+class DockerServiceRegistry:
+    def __init__(self) -> None:
+        self._running_services: set[str] = set()
+        self.docker_ip = self._get_docker_ip()
+        self._base_command = [
+            "docker-compose",
+            "--file=tests/docker-compose.yml",
+            "--project-name=litestar_pytest",
+        ]
 
-    Returns:
-        Boolean indicating if we can connect to the redis server.
-    """
+    def _get_docker_ip(self) -> str:
+        docker_host = os.environ.get("DOCKER_HOST", "").strip()
+        if not docker_host or docker_host.startswith("unix://"):
+            return "127.0.0.1"
+
+        match = re.match(r"^tcp://(.+?):\d+$", docker_host)
+        if not match:
+            raise ValueError(f'Invalid value for DOCKER_HOST: "{docker_host}".')
+        return match.group(1)
+
+    def run_command(self, *args: str) -> None:
+        subprocess.run([*self._base_command, *args], check=True, capture_output=True)
+
+    async def start(
+        self,
+        name: str,
+        *,
+        check: Callable[..., Awaitable],
+        timeout: float = 30,
+        pause: float = 0.1,
+        **kwargs: Any,
+    ) -> None:
+        if name not in self._running_services:
+            self.run_command("up", "-d", name)
+            self._running_services.add(name)
+
+            # asyncio.run(
+            #     wait_until_responsive(
+            #         **kwargs,
+            await wait_until_responsive(
+                check=AsyncCallable(check),
+                timeout=timeout,
+                pause=pause,
+                host=self.docker_ip,
+                **kwargs,
+            )
+
+    def stop(self, name: str) -> None:
+        pass
+
+    def down(self) -> None:
+        self.run_command("down", "-t", "5")
+
+
+@pytest.fixture(scope="session")
+def docker_services() -> Generator[DockerServiceRegistry, None, None]:
+    registry = DockerServiceRegistry()
+    yield registry
+    registry.down()
+
+
+@pytest.fixture(scope="session")
+def docker_ip(docker_services: DockerServiceRegistry) -> str:
+    return docker_services.docker_ip
+
+
+async def redis_responsive(host: str) -> bool:
     client: AsyncRedis = AsyncRedis(host=host, port=6397)
     try:
         return await client.ping()
@@ -408,27 +424,12 @@ async def redis_responsive(host: str) -> bool:
         await client.close()
 
 
-@docker_service_registry.register("redis")
-async def redis_service(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
-    """Starts containers for required services, fixture waits until they are
-    responsive before returning.
-
-    Args:
-        docker_ip: the test docker IP
-        docker_services: the test docker services
-    """
-    await wait_until_responsive(timeout=30.0, pause=0.1, check=redis_responsive, host=docker_ip)
+@pytest.fixture()
+async def redis_service(docker_services: DockerServiceRegistry) -> None:  # pylint: disable=unused-argument
+    await docker_services.start("redis", check=redis_responsive)
 
 
 async def mysql_responsive(host: str) -> bool:
-    """
-    Args:
-        host: docker IP address.
-
-    Returns:
-        Boolean indicating if we can connect to the database.
-    """
-
     try:
         conn = await asyncmy.connect(
             host=host,
@@ -445,26 +446,12 @@ async def mysql_responsive(host: str) -> bool:
         return False
 
 
-@docker_service_registry.register("mysql")
-async def mysql_service(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
-    """Starts containers for required services, fixture waits until they are
-    responsive before returning.
-
-    Args:
-        docker_ip:
-        docker_services:
-    """
-    await wait_until_responsive(timeout=30.0, pause=0.1, check=mysql_responsive, host=docker_ip)
+@pytest.fixture()
+async def mysql_service(docker_services: DockerServiceRegistry) -> None:
+    await docker_services.start("mysql", check=mysql_responsive)
 
 
 async def postgres_responsive(host: str) -> bool:
-    """
-    Args:
-        host: docker IP address.
-
-    Returns:
-        Boolean indicating if we can connect to the database.
-    """
     try:
         conn = await asyncpg.connect(
             host=host, port=5423, user="postgres", database="postgres", password="super-secret"
@@ -478,27 +465,12 @@ async def postgres_responsive(host: str) -> bool:
         await conn.close()
 
 
-@docker_service_registry.register("postgres")
-async def postgres_service(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
-    """Starts containers for required services, fixture waits until they are
-    responsive before returning.
-
-    Args:
-        docker_ip:
-        docker_services:
-    """
-    await wait_until_responsive(timeout=30.0, pause=0.1, check=postgres_responsive, host=docker_ip)
+@pytest.fixture()
+async def postgres_service(docker_services: DockerServiceRegistry) -> None:
+    await docker_services.start("postgres", check=postgres_responsive)
 
 
 def oracle_responsive(host: str) -> bool:
-    """
-    Args:
-        host: docker IP address.
-
-    Returns:
-        Boolean indicating if we can connect to the database.
-    """
-
     try:
         conn = oracledb.connect(
             host=host,
@@ -515,29 +487,12 @@ def oracle_responsive(host: str) -> bool:
         return False
 
 
-@docker_service_registry.register("oracle")
-async def oracle_service(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
-    """Starts containers for required services, fixture waits until they are
-    responsive before returning.
-
-    Args:
-        docker_ip:
-        docker_services:
-    """
-    # oracle takes a while to mount and open initially.
-    await anyio.sleep(15)
-    await wait_until_responsive(timeout=30.0, pause=0.1, check=AsyncCallable(oracle_responsive), host=docker_ip)
+@pytest.fixture()
+async def oracle_service(docker_services: DockerServiceRegistry) -> None:
+    await docker_services.start("oracle", check=AsyncCallable(oracle_responsive), timeout=60)
 
 
 def spanner_responsive(host: str) -> bool:
-    """
-    Args:
-        host: docker IP address.
-
-    Returns:
-        Boolean indicating if we can connect to the database.
-    """
-
     try:
         os.environ["SPANNER_EMULATOR_HOST"] = "localhost:9010"
         os.environ["GOOGLE_CLOUD_PROJECT"] = "emulator-test-project"
@@ -559,46 +514,7 @@ def spanner_responsive(host: str) -> bool:
         return False
 
 
-@docker_service_registry.register("spanner")
-async def spanner_service(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
-    """Starts containers for required services, fixture waits until they are
-    responsive before returning.
-
-    Args:
-        docker_ip:
-        docker_services:
-    """
-    await anyio.sleep(15)
+@pytest.fixture()
+async def spanner_service(docker_services: DockerServiceRegistry) -> None:
     os.environ["SPANNER_EMULATOR_HOST"] = "localhost:9010"
-    await wait_until_responsive(timeout=30.0, pause=0.1, check=AsyncCallable(spanner_responsive), host=docker_ip)
-
-
-@docker_service_registry.register("spanner_init")
-async def spanner_init_service(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
-    """Starts containers for required services, fixture waits until they are
-    responsive before returning.
-
-    Args:
-        docker_ip:
-        docker_services:
-    """
-
-
-# the monkeypatch fixture does not work with session scoped dependencies
-@pytest.fixture(autouse=True, scope="session")
-def disable_warn_implicit_sync_to_thread() -> Generator[None, None, None]:
-    old_value = os.getenv("LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD")
-    os.environ["LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD"] = "0"
-    yield
-    if old_value is not None:
-        os.environ["LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD"] = old_value
-
-
-@pytest.fixture()
-def disable_warn_sync_to_thread_with_async(monkeypatch: MonkeyPatch) -> None:
-    monkeypatch.setenv("LITESTAR_WARN_SYNC_TO_THREAD_WITH_ASYNC", "0")
-
-
-@pytest.fixture()
-def enable_warn_implicit_sync_to_thread(monkeypatch: MonkeyPatch) -> None:
-    monkeypatch.setenv("LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD", "1")
+    await docker_services.start("spanner", timeout=60, check=AsyncCallable(spanner_responsive))

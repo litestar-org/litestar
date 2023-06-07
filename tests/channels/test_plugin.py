@@ -43,7 +43,7 @@ def async_mock() -> AsyncMock:
         pytest.param("redis_pub_sub_backend", id="redis:pubsub"),
     ]
 )
-async def channels_backend(request: FixtureRequest) -> ChannelsBackend:
+def channels_backend(request: FixtureRequest) -> ChannelsBackend:
     return cast(ChannelsBackend, request.getfixturevalue(request.param))
 
 

@@ -58,8 +58,14 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
         super().__init__(
             redis=redis, stream_sleep_no_subscriptions=stream_sleep_no_subscriptions, key_prefix=key_prefix
         )
-        self._pub_sub: PubSub = self._redis.pubsub()
+        self.__pub_sub: PubSub | None = None
         self._publish_script = self._redis.register_script(_PUBSUB_PUBLISH_SCRIPT)
+
+    @property
+    def _pub_sub(self) -> PubSub:
+        if self.__pub_sub is None:
+            self.__pub_sub = self._redis.pubsub()
+        return self.__pub_sub
 
     async def on_startup(self) -> None:
         pass

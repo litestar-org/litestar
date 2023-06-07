@@ -1,25 +1,13 @@
 from __future__ import annotations
 
-from asyncio import AbstractEventLoop, get_event_loop_policy
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Iterator
+from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
 import pytest
 
 if TYPE_CHECKING:
     from pytest import MonkeyPatch
-
-
-@pytest.mark.sqlalchemy_aiosqlite
-@pytest.fixture(scope="session")
-def event_loop() -> Iterator[AbstractEventLoop]:
-    """Need the event loop scoped to the session so that we can use it to check
-    containers are ready in session scoped containers fixture."""
-    policy = get_event_loop_policy()
-    loop = policy.new_event_loop()
-    yield loop
-    loop.close()
 
 
 @pytest.fixture(autouse=True)
