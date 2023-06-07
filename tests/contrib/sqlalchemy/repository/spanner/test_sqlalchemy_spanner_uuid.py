@@ -1,7 +1,6 @@
 """Unit tests for the SQLAlchemy Repository implementation for psycopg."""
 from __future__ import annotations
 
-import json
 import os
 import sys
 from datetime import datetime
@@ -28,6 +27,16 @@ pytestmark = [
 ]
 
 
+@pytest.fixture()
+def set_spanner_emulator_host(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("SPANNER_EMULATOR_HOST", "localhost:9010")
+
+
+@pytest.fixture()
+def set_google_cloud_project(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "emulator-test-project")
+
+
 @pytest.fixture(name="engine")
 def fx_engine(docker_ip: str) -> Engine:
     """Postgresql instance for end-to-end testing.
@@ -38,8 +47,6 @@ def fx_engine(docker_ip: str) -> Engine:
     Returns:
         Async SQLAlchemy engine instance.
     """
-    os.environ["SPANNER_EMULATOR_HOST"] = "localhost:9010"
-    os.environ["GOOGLE_CLOUD_PROJECT"] = "emulator-test-project"
     return create_engine(
         "spanner+spanner:///projects/emulator-test-project/instances/test-instance/databases/test-database",
         echo=True,
@@ -58,13 +65,6 @@ def fx_session(
         raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
         raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
     for raw_rule in raw_rules_uuid:
-        # spanner is a bit particular one bind variables here.
-        raw_rule["config"] = (
-            raw_rule["config"]
-            if isinstance(raw_rule.get("config", None), str | bytes | None)
-            else json.dumps(raw_rule.get("config", None))
-        )
-
         raw_rule["created"] = datetime.strptime(raw_rule["created"], "%Y-%m-%dT%H:%M:%S")
         raw_rule["updated"] = datetime.strptime(raw_rule["updated"], "%Y-%m-%dT%H:%M:%S")
     with engine.begin() as txn:
@@ -79,11 +79,12 @@ def fx_session(
         author_repo = AuthorSyncRepository(session=session)
         for author in raw_authors_uuid:
             _ = author_repo.get_or_create(match_fields="name", **author)
-        rule_repo = RuleSyncRepository(session=session)
-        for rule in raw_rules_uuid:
-            _ = rule_repo.add(
-                UUIDRule(**rule),
-            )
+        if not bool(os.environ.get("SPANNER_EMULATOR_HOST")):
+            rule_repo = RuleSyncRepository(session=session)
+            for rule in raw_rules_uuid:
+                _ = rule_repo.add(
+                    UUIDRule(**rule),
+                )
         yield session
     finally:
         session.rollback()
@@ -177,6 +178,7 @@ def test_repo_add_many_method(raw_authors_uuid: list[dict[str, Any]], author_rep
 
 
 # there's an emulator bug that causes this one to fail.
+@pytest.mark.skipif(bool(os.environ.get("SPANNER_EMULATOR_HOST")), reason="Skipped on emulator")
 @pytest.mark.xfail
 def test_repo_update_many_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Update Many.
@@ -316,6 +318,7 @@ def test_repo_filter_collection(author_repo: AuthorSyncRepository) -> None:
 # there's an emulator bug that causes this one to fail.
 # The current google tests disable JSON tests when using the emulator.
 # https://github.com/googleapis/python-spanner-sqlalchemy/blob/main/test/test_suite_20.py#L2853
+@pytest.mark.skipif(bool(os.environ.get("SPANNER_EMULATOR_HOST")), reason="Skipped on emulator")
 @pytest.mark.xfail
 def test_repo_json_methods(
     raw_rules_uuid: list[dict[str, Any]],
