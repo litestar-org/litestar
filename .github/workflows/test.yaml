@@ -67,7 +67,7 @@ jobs:
         run: poetry run pytest docs/examples tests --cov=litestar --cov-report=xml
       - name: Integration tests
         if: inputs.integration
-        run: pytest -m="sqlalchemy_integration"
+        run: poetry run pytest -m="sqlalchemy_integration"
       - uses: actions/upload-artifact@v3
         if: inputs.coverage
         with:
