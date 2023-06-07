@@ -18,10 +18,10 @@ from tests.contrib.sqlalchemy.repository import sqlalchemy_sync_bigint_tests as 
 pytestmark = [
     pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
     pytest.mark.sqlalchemy_integration,
+    pytest.mark.sqlalchemy_duckdb,
 ]
 
 
-@pytest.mark.sqlalchemy_duckdb
 @pytest.fixture(name="engine")
 def fx_engine(tmp_path: Path) -> Generator[Engine, None, None]:
     """SQLite engine for end-to-end testing.
@@ -40,7 +40,6 @@ def fx_engine(tmp_path: Path) -> Generator[Engine, None, None]:
         engine.dispose()
 
 
-@pytest.mark.sqlalchemy_duckdb
 @pytest.fixture(
     name="session",
 )
@@ -56,19 +55,16 @@ def fx_session(
         session.close()
 
 
-@pytest.mark.sqlalchemy_duckdb
 @pytest.fixture(name="author_repo")
 def fx_author_repo(session: Session) -> AuthorSyncRepository:
     return AuthorSyncRepository(session=session)
 
 
-@pytest.mark.sqlalchemy_duckdb
 @pytest.fixture(name="book_repo")
 def fx_book_repo(session: Session) -> BookSyncRepository:
     return BookSyncRepository(session=session)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy filter by kwargs with invalid column name.
 
@@ -78,7 +74,6 @@ def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorSyncR
     st.test_filter_by_kwargs_with_incorrect_attribute_name(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_count_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy count.
 
@@ -88,7 +83,6 @@ def test_repo_count_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_count_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_list_and_count_method(
     raw_authors_bigint: list[dict[str, Any]], author_repo: AuthorSyncRepository
 ) -> None:
@@ -101,7 +95,6 @@ def test_repo_list_and_count_method(
     st.test_repo_list_and_count_method(raw_authors_bigint=raw_authors_bigint, author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_list_and_count_method_empty(book_repo: BookSyncRepository) -> None:
     """Test SQLALchemy list with count.
 
@@ -113,7 +106,6 @@ def test_repo_list_and_count_method_empty(book_repo: BookSyncRepository) -> None
     st.test_repo_list_and_count_method_empty(book_repo=book_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_list_method(raw_authors_bigint: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy list.
 
@@ -124,7 +116,6 @@ def test_repo_list_method(raw_authors_bigint: list[dict[str, Any]], author_repo:
     st.test_repo_list_method(raw_authors_bigint=raw_authors_bigint, author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_add_method(raw_authors_bigint: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy list.
 
@@ -135,7 +126,6 @@ def test_repo_add_method(raw_authors_bigint: list[dict[str, Any]], author_repo: 
     st.test_repo_add_method(raw_authors_bigint=raw_authors_bigint, author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_add_many_method(raw_authors_bigint: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Add Many.
 
@@ -146,7 +136,6 @@ def test_repo_add_many_method(raw_authors_bigint: list[dict[str, Any]], author_r
     st.test_repo_add_many_method(raw_authors_bigint=raw_authors_bigint, author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_update_many_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Update Many.
 
@@ -156,7 +145,6 @@ def test_repo_update_many_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_update_many_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_exists_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy exists.
 
@@ -166,7 +154,6 @@ def test_repo_exists_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_exists_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_update_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Update.
 
@@ -176,7 +163,6 @@ def test_repo_update_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_update_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_delete_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy delete.
 
@@ -186,7 +172,6 @@ def test_repo_delete_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_delete_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_delete_many_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy delete many.
 
@@ -196,7 +181,6 @@ def test_repo_delete_many_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_delete_many_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_get_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Get.
 
@@ -206,7 +190,6 @@ def test_repo_get_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_get_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_get_one_or_none_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Get One.
 
@@ -216,7 +199,6 @@ def test_repo_get_one_or_none_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_get_one_or_none_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_get_one_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Get One.
 
@@ -226,7 +208,6 @@ def test_repo_get_one_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_get_one_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_get_or_create_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Get or create.
 
@@ -236,7 +217,6 @@ def test_repo_get_or_create_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_get_or_create_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_get_or_create_match_filter(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Get or create with a match filter
 
@@ -246,7 +226,6 @@ def test_repo_get_or_create_match_filter(author_repo: AuthorSyncRepository) -> N
     st.test_repo_get_or_create_match_filter(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_upsert_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy upsert.
 
@@ -256,7 +235,6 @@ def test_repo_upsert_method(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_upsert_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_filter_before_after(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy BeforeAfter filter.
 
@@ -266,7 +244,6 @@ def test_repo_filter_before_after(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_filter_before_after(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_filter_search(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Search filter.
 
@@ -276,7 +253,6 @@ def test_repo_filter_search(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_filter_search(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_filter_order_by(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Order By filter.
 
@@ -286,7 +262,6 @@ def test_repo_filter_order_by(author_repo: AuthorSyncRepository) -> None:
     st.test_repo_filter_order_by(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_duckdb
 def test_repo_filter_collection(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Collection filter.
 

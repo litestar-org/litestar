@@ -18,10 +18,10 @@ pytestmark = [
     pytest.mark.skipif(platform.uname()[4] != "x86_64", reason="oracle not available on this platform"),
     pytest.mark.usefixtures("oracle_service"),
     pytest.mark.sqlalchemy_integration,
+    pytest.mark.sqlalchemy_oracledb,
 ]
 
 
-@pytest.mark.sqlalchemy_oracledb
 @pytest.fixture(name="engine")
 def fx_engine(docker_ip: str) -> Engine:
     """Postgresql instance for end-to-end testing.

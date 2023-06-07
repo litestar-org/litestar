@@ -24,10 +24,10 @@ pytestmark = [
     pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
     pytest.mark.usefixtures("mysql_service"),
     pytest.mark.sqlalchemy_integration,
+    pytest.mark.sqlalchemy_asyncmy,
 ]
 
 
-@pytest.mark.sqlalchemy_asyncmy
 @pytest.fixture(name="engine")
 async def fx_engine(docker_ip: str) -> AsyncEngine:
     """Postgresql instance for end-to-end testing.
@@ -53,10 +53,7 @@ async def fx_engine(docker_ip: str) -> AsyncEngine:
     )
 
 
-@pytest.mark.sqlalchemy_asyncmy
-@pytest.fixture(
-    name="session",
-)
+@pytest.fixture(name="session")
 async def fx_session(
     engine: AsyncEngine, raw_authors_uuid: list[dict[str, Any]], raw_books_uuid: list[dict[str, Any]]
 ) -> AsyncGenerator[AsyncSession, None]:
@@ -69,19 +66,16 @@ async def fx_session(
         await session.close()
 
 
-@pytest.mark.sqlalchemy_asyncmy
 @pytest.fixture(name="author_repo")
 def fx_author_repo(session: AsyncSession) -> AuthorAsyncRepository:
     return AuthorAsyncRepository(session=session)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 @pytest.fixture(name="book_repo")
 def fx_book_repo(session: AsyncSession) -> BookAsyncRepository:
     return BookAsyncRepository(session=session)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy filter by kwargs with invalid column name.
 
@@ -91,7 +85,6 @@ def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorAsync
     st.test_filter_by_kwargs_with_incorrect_attribute_name(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_count_method(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy count.
 
@@ -101,7 +94,6 @@ async def test_repo_count_method(author_repo: AuthorAsyncRepository) -> None:
     await st.test_repo_count_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_list_and_count_method(
     raw_authors_uuid: list[dict[str, Any]], author_repo: AuthorAsyncRepository
 ) -> None:
@@ -114,7 +106,6 @@ async def test_repo_list_and_count_method(
     await st.test_repo_list_and_count_method(raw_authors_uuid=raw_authors_uuid, author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_list_and_count_method_empty(book_repo: BookAsyncRepository) -> None:
     """Test SQLALchemy list with count.
 
@@ -126,7 +117,6 @@ async def test_repo_list_and_count_method_empty(book_repo: BookAsyncRepository) 
     await st.test_repo_list_and_count_method_empty(book_repo=book_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_list_method(raw_authors_uuid: list[dict[str, Any]], author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy list.
 
@@ -137,7 +127,6 @@ async def test_repo_list_method(raw_authors_uuid: list[dict[str, Any]], author_r
     await st.test_repo_list_method(raw_authors_uuid=raw_authors_uuid, author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_add_method(raw_authors_uuid: list[dict[str, Any]], author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy list.
 
@@ -148,7 +137,6 @@ async def test_repo_add_method(raw_authors_uuid: list[dict[str, Any]], author_re
     await st.test_repo_add_method(raw_authors_uuid=raw_authors_uuid, author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_add_many_method(raw_authors_uuid: list[dict[str, Any]], author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy Add Many.
 
@@ -159,7 +147,6 @@ async def test_repo_add_many_method(raw_authors_uuid: list[dict[str, Any]], auth
     await st.test_repo_add_many_method(raw_authors_uuid=raw_authors_uuid, author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_update_many_method(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy Update Many.
 
@@ -169,7 +156,6 @@ async def test_repo_update_many_method(author_repo: AuthorAsyncRepository) -> No
     await st.test_repo_update_many_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_exists_method(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy exists.
 
@@ -179,7 +165,6 @@ async def test_repo_exists_method(author_repo: AuthorAsyncRepository) -> None:
     await st.test_repo_exists_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_update_method(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy Update.
 
@@ -189,7 +174,6 @@ async def test_repo_update_method(author_repo: AuthorAsyncRepository) -> None:
     await st.test_repo_update_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_delete_method(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy delete.
 
@@ -199,7 +183,6 @@ async def test_repo_delete_method(author_repo: AuthorAsyncRepository) -> None:
     await st.test_repo_delete_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_delete_many_method(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy delete many.
 
@@ -209,7 +192,6 @@ async def test_repo_delete_many_method(author_repo: AuthorAsyncRepository) -> No
     await st.test_repo_delete_many_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_get_method(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy Get.
 
@@ -219,7 +201,6 @@ async def test_repo_get_method(author_repo: AuthorAsyncRepository) -> None:
     await st.test_repo_get_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_get_one_or_none_method(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy Get One.
 
@@ -229,7 +210,6 @@ async def test_repo_get_one_or_none_method(author_repo: AuthorAsyncRepository) -
     await st.test_repo_get_one_or_none_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_get_one_method(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy Get One.
 
@@ -239,7 +219,6 @@ async def test_repo_get_one_method(author_repo: AuthorAsyncRepository) -> None:
     await st.test_repo_get_one_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_get_or_create_method(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy Get or create.
 
@@ -249,7 +228,6 @@ async def test_repo_get_or_create_method(author_repo: AuthorAsyncRepository) -> 
     await st.test_repo_get_or_create_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_get_or_create_match_filter(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy Get or create with a match filter
 
@@ -259,7 +237,6 @@ async def test_repo_get_or_create_match_filter(author_repo: AuthorAsyncRepositor
     await st.test_repo_get_or_create_match_filter(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_upsert_method(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy upsert.
 
@@ -269,7 +246,6 @@ async def test_repo_upsert_method(author_repo: AuthorAsyncRepository) -> None:
     await st.test_repo_upsert_method(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_filter_before_after(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy BeforeAfter filter.
 
@@ -279,7 +255,6 @@ async def test_repo_filter_before_after(author_repo: AuthorAsyncRepository) -> N
     await st.test_repo_filter_before_after(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_filter_search(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy Search filter.
 
@@ -289,7 +264,6 @@ async def test_repo_filter_search(author_repo: AuthorAsyncRepository) -> None:
     await st.test_repo_filter_search(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_filter_order_by(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy Order By filter.
 
@@ -299,7 +273,6 @@ async def test_repo_filter_order_by(author_repo: AuthorAsyncRepository) -> None:
     await st.test_repo_filter_order_by(author_repo=author_repo)
 
 
-@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_filter_collection(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy Collection filter.
 
