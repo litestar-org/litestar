@@ -18,6 +18,7 @@ from tests.contrib.sqlalchemy.repository import sqlalchemy_sync_bigint_tests as 
 pytestmark = [
     pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
     pytest.mark.usefixtures("postgres_service"),
+    pytest.mark.sqlalchemy_integration,
 ]
 
 

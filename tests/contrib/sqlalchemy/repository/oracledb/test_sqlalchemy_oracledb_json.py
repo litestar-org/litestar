@@ -17,6 +17,7 @@ pytestmark = [
     pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
     pytest.mark.skipif(platform.uname()[4] != "x86_64", reason="oracle not available on this platform"),
     pytest.mark.usefixtures("oracle_service"),
+    pytest.mark.sqlalchemy_integration,
 ]
 
 

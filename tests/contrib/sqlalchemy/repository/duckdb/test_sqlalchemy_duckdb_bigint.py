@@ -1,6 +1,7 @@
 """Unit tests for the SQLAlchemy Repository implementation for psycopg."""
 from __future__ import annotations
 
+import sys
 from asyncio import AbstractEventLoop, get_event_loop_policy
 from pathlib import Path
 from typing import Any, Generator, Iterator
@@ -14,6 +15,12 @@ from tests.contrib.sqlalchemy.models_bigint import (
     BookSyncRepository,
 )
 from tests.contrib.sqlalchemy.repository import sqlalchemy_sync_bigint_tests as st
+
+pytestmark = [
+    pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
+    pytest.mark.usefixtures("duckdb_service"),
+    pytest.mark.sqlalchemy_integration,
+]
 
 
 @pytest.mark.sqlalchemy_duckdb

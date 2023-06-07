@@ -127,7 +127,6 @@ pytest-asyncio = "*"
 pytest-cov = "*"
 pytest-lazy-fixture = "*"
 pytest-mock = "*"
-pytest_docker = "*"
 python-dateutil = "*"
 python-dotenv = "*"
 python-jose = "*"
@@ -243,7 +242,7 @@ exclude_lines = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "--ignore=examples"
+addopts = "--ignore=examples -m='not sqlalchemy_integration'"
 asyncio_mode = "auto"
 filterwarnings = [
     "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:164",
@@ -255,6 +254,7 @@ filterwarnings = [
     "ignore::DeprecationWarning:sphinxcontrib",
 ]
 markers = [
+    "sqlalchemy_integration: SQLAlchemy integration tests",
     "sqlalchemy_asyncmy: SQLAlchemy MySQL (asyncmy) Tests",
     "sqlalchemy_asyncpg: SQLAlchemy Postgres (asyncpg) Tests",
     "sqlalchemy_psycopg_async: SQLAlchemy Postgres (psycopg async) Tests",

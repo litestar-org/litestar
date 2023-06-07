@@ -21,7 +21,7 @@ from tests.contrib.sqlalchemy.repository import sqlalchemy_sync_uuid_tests as st
 pytestmark = [
     pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
     pytest.mark.usefixtures("spanner_service"),
-    pytest.mark.usefixtures("spanner_init_service"),
+    pytest.mark.sqlalchemy_integration,
 ]
 
 
