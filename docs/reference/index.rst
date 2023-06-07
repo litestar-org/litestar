@@ -28,7 +28,7 @@ API reference
     params
     partial
     plugins
-    response
+    response/index
     response_containers
     router
     routes

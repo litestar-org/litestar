@@ -30,7 +30,16 @@ __all__ = (
 
 
 class ASGIStreamingResponse(ASGIResponse):
+    """A streaming response."""
+
     def __init__(self, iterator: AsyncIterable[str | bytes], encoding: str, **kwargs: Any):
+        """A low-level ASGI streaming response.
+
+        Args:
+            iterator: An async iterator or iterable.
+            encoding: The encoding to be used for the stream if the iterator yields strings.
+            **kwargs: Additional keyword arguments propagated to :class:`ASGIResponse <.response.base.ASGIResponse>`.
+        """
         super().__init__(**kwargs)
         self.iterator = iterator
         self.encoding = encoding

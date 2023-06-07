@@ -33,6 +33,8 @@ T = TypeVar("T")
 
 
 class ASGIResponse:
+    """A low-level ASGI response class."""
+
     __slots__ = (
         "background",
         "body",
@@ -51,6 +53,16 @@ class ASGIResponse:
         background: BackgroundTask | BackgroundTasks | None,
         is_head_response: bool,
     ) -> None:
+        """A low-level ASGI response class.
+
+        Args:
+            body: The response body.
+            status_code: The response status code.
+            content_length: The response content length.
+            encoded_headers: The response headers.
+            background: A background task or a list of background tasks to be executed after the response is sent.
+            is_head_response: A boolean indicating if the response is a HEAD response.
+        """
         self.body = body
         self.status_code = status_code
         self.content_length = content_length

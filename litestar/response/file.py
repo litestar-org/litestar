@@ -70,6 +70,8 @@ def create_etag_for_file(path: PathType, modified_time: float, file_size: int) -
 
 
 class ASGIFileResponse(ASGIStreamingResponse):
+    """A low-level ASGI response, streaming a file as response body."""
+
     def __init__(
         self,
         file_path: str | PathLike | Path,
@@ -79,6 +81,16 @@ class ASGIFileResponse(ASGIStreamingResponse):
         file_info: FileInfo | Coroutine[None, None, FileInfo],
         **kwargs: Any,
     ) -> None:
+        """A low-level ASGI response, streaming a file as response body.
+
+        Args:
+            file_path: A path to a file.
+            chunk_size: The chunk size to use.
+            adapter: File system adapter class.
+            etag: An etag.
+            file_info: A file info.
+            **kwargs: Additional keyword arguments, propagated to :class:`ASGIResponse <.response.base.ASGIResponse>`.
+        """
         super().__init__(**kwargs)
         self.adapter = adapter
         self.file_path = file_path
@@ -237,10 +249,10 @@ class FileResponse(StreamingResponse):
         )
 
     def to_asgi_response(self) -> ASGIFileResponse:
-        """Create an ASGIFileResponse from the FileResponse instance.
+        """Create an :class:`ASGIFileResponse <litestar.response.file.ASGIFileResponse>` instance.
 
         Returns:
-            An ASGIResponse instance.
+            A low-level ASGI file response.
         """
         quoted_filename = quote(self.filename)
         is_utf8 = quoted_filename == self.filename
