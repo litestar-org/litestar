@@ -71,7 +71,7 @@ def test_create_exception_response_utility_litestar_http_exception() -> None:
     response = create_exception_response(exc)
     assert response.status_code == HTTP_400_BAD_REQUEST
     assert response.media_type == MediaType.JSON
-    assert response.body == b'{"status_code":400,"detail":"litestar http exception","extra":["any"]}'
+    assert response.content == {"status_code": 400, "detail": "litestar http exception", "extra": ["any"]}
 
 
 def test_create_exception_response_utility_starlette_http_exception() -> None:
@@ -79,7 +79,7 @@ def test_create_exception_response_utility_starlette_http_exception() -> None:
     response = create_exception_response(exc)
     assert response.status_code == HTTP_400_BAD_REQUEST
     assert response.media_type == MediaType.JSON
-    assert response.body == b'{"status_code":400,"detail":"starlette http exception"}'
+    assert response.content == {"status_code": 400, "detail": "starlette http exception"}
 
 
 def test_create_exception_response_utility_non_http_exception() -> None:
@@ -87,7 +87,7 @@ def test_create_exception_response_utility_non_http_exception() -> None:
     response = create_exception_response(exc)
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert response.media_type == MediaType.JSON
-    assert response.body == b'{"status_code":500,"detail":"RuntimeError(\'yikes\')"}'
+    assert response.content == {"status_code": 500, "detail": "RuntimeError('yikes')"}
 
 
 def test_missing_dependency_exception() -> None:

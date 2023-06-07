@@ -190,7 +190,7 @@ class ExceptionHandlerMiddleware:
 
         exception_handler = get_exception_handler(self.exception_handlers, exc) or self.default_http_exception_handler
         response = exception_handler(Request(scope=scope, receive=receive, send=send), exc)
-        await response(scope=scope, receive=receive, send=send)
+        await response.to_asgi_response()(scope=scope, receive=receive, send=send)
 
     @staticmethod
     async def handle_websocket_exception(send: Send, exc: Exception) -> None:

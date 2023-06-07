@@ -15,30 +15,12 @@ from litestar.response import Response
 from litestar.serialization import encode_json
 from litestar.status_codes import HTTP_404_NOT_FOUND
 
-__all__ = ("OpenAPIController", "OpenAPISchemaResponse")
+__all__ = ("OpenAPIController",)
 
 
 if TYPE_CHECKING:
     from litestar.connection.request import Request
     from litestar.openapi.spec.open_api import OpenAPI
-
-
-class OpenAPISchemaResponse(Response):
-    """Response class for OpenAPI Schemas."""
-
-    def render(self, content: OpenAPI) -> bytes:
-        """Handle rendering of schema into the correct format - either YAML or JSON.
-
-        Args:
-            content: The :class:`OpenAPI <litestar.openapi.spec.open_api.OpenAPI>` instance to render.
-
-        Returns:
-            Rendered bytes.
-        """
-        content_dict = content.to_schema()
-        if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
-            return dump_yaml(content_dict, default_flow_style=False).encode("utf-8")
-        return encode_json(content_dict)
 
 
 class OpenAPIController(Controller):
@@ -168,9 +150,10 @@ class OpenAPIController(Controller):
             A Response instance with the YAML object rendered into a string.
         """
         if self.should_serve_endpoint(request):
-            return OpenAPISchemaResponse(
-                content=self.get_schema_from_request(request), media_type=OpenAPIMediaType.OPENAPI_YAML
+            content = dump_yaml(self.get_schema_from_request(request).to_schema(), default_flow_style=False).encode(
+                "utf-8"
             )
+            return Response(content=content, media_type=OpenAPIMediaType.OPENAPI_YAML)
         return Response(content={}, status_code=HTTP_404_NOT_FOUND)
 
     @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False, sync_to_thread=False)
@@ -185,8 +168,9 @@ class OpenAPIController(Controller):
             A Response instance with the JSON object rendered into a string.
         """
         if self.should_serve_endpoint(request):
-            return OpenAPISchemaResponse(
-                content=self.get_schema_from_request(request), media_type=OpenAPIMediaType.OPENAPI_JSON
+            return Response(
+                content=encode_json(self.get_schema_from_request(request).to_schema()),
+                media_type=OpenAPIMediaType.OPENAPI_JSON,
             )
         return Response(content={}, status_code=HTTP_404_NOT_FOUND)
 

@@ -12,16 +12,18 @@ from starlette.responses import Response as StarletteResponse
 from litestar import HttpMethod, Litestar, MediaType, Request, Response, get, route
 from litestar._signature import create_signature_model
 from litestar.background_tasks import BackgroundTask
+from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import Cookie, ResponseHeader
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response import (
-    FileResponse,
     RedirectResponse,
-    StreamingResponse,
-    TemplateResponse,
 )
+from litestar.response.base import ASGIResponse
+from litestar.response.file import ASGIFileResponse
+from litestar.response.streaming import ASGIStreamingResponse
 from litestar.response_containers import File, Redirect, Stream, Template
 from litestar.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
+from litestar.template.config import TemplateConfig
 from litestar.testing import RequestFactory, create_test_client
 from litestar.utils.signature import ParsedSignature
 from tests import Person, PersonFactory
@@ -117,7 +119,7 @@ async def test_to_response_returning_litestar_response() -> None:
         response = await route_handler.to_response(
             data=route_handler.fn.value(), app=client.app, request=RequestFactory().get()
         )
-        assert isinstance(response, Response)
+        assert isinstance(response, ASGIResponse)
 
 
 @pytest.mark.parametrize(
@@ -170,15 +172,12 @@ async def test_to_response_returning_redirect_response(anyio_backend: str) -> No
         response = await route_handler.to_response(
             data=route_handler.fn.value(), app=client.app, request=RequestFactory().get()
         )
-        assert isinstance(response, RedirectResponse)
-        assert response.headers["location"] == "/somewhere-else"
-        assert response.headers["local-header"] == "123"
-        assert response.headers["response-header"] == "abc"
-        cookies = response.cookies
-        assert {cookie.to_header(header="") for cookie in cookies} == {
-            "general-cookie=xxx; Path=/; SameSite=lax",
-            "redirect-cookie=xyz; Path=/; SameSite=lax",
-        }
+        assert isinstance(response, ASGIResponse)
+        assert (b"location", b"/somewhere-else") in response.encoded_headers
+        assert (b"local-header", b"123") in response.encoded_headers
+        assert (b"response-header", b"abc") in response.encoded_headers
+        assert (b"set-cookie", b"general-cookie=xxx; Path=/; SameSite=lax") in response.encoded_headers
+        assert (b"set-cookie", b"redirect-cookie=xyz; Path=/; SameSite=lax") in response.encoded_headers
         assert response.background == background_task
 
 
@@ -231,18 +230,15 @@ async def test_to_response_returning_file_response(anyio_backend: str) -> None:
         response = await route_handler.to_response(
             data=route_handler.fn.value(), app=client.app, request=RequestFactory().get()
         )
-        assert isinstance(response, FileResponse)
+        assert isinstance(response, ASGIFileResponse)
         assert response.file_info
         if iscoroutine(response.file_info):
             await response.file_info
-        assert response.headers["local-header"] == "123"
-        assert response.headers["response-header"] == "abc"
-        cookies = response.cookies
-        assert {cookie.to_header(header="") for cookie in cookies} == {
-            "file-cookie=xyz; Path=/; SameSite=lax",
-            "general-cookie=xxx; Path=/; SameSite=lax",
-            "redirect-cookie=aaa; Path=/; SameSite=lax",
-        }
+        assert (b"local-header", b"123") in response.encoded_headers
+        assert (b"response-header", b"abc") in response.encoded_headers
+        assert (b"set-cookie", b"file-cookie=xyz; Path=/; SameSite=lax") in response.encoded_headers
+        assert (b"set-cookie", b"general-cookie=xxx; Path=/; SameSite=lax") in response.encoded_headers
+        assert (b"set-cookie", b"redirect-cookie=aaa; Path=/; SameSite=lax") in response.encoded_headers
         assert response.background == background_task
 
 
@@ -289,23 +285,23 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool,
             response = await route_handler.to_response(
                 data=route_handler.fn.value(), app=client.app, request=RequestFactory().get()
             )
-            assert isinstance(response, StreamingResponse)
-            assert response.headers["local-header"] == "123"
-            assert response.headers["response-header"] == "abc"
-            cookies = response.cookies
-            assert {cookie.to_header(header="") for cookie in cookies} == {
-                "general-cookie=xxx; Path=/; SameSite=lax",
-                "redirect-cookie=aaa; Path=/; SameSite=lax",
-                "streaming-cookie=xyz; Path=/; SameSite=lax",
-            }
+            assert isinstance(response, ASGIStreamingResponse)
+            assert (b"local-header", b"123") in response.encoded_headers
+            assert (b"response-header", b"abc") in response.encoded_headers
+            assert (b"set-cookie", b"general-cookie=xxx; Path=/; SameSite=lax") in response.encoded_headers
+            assert (b"set-cookie", b"redirect-cookie=aaa; Path=/; SameSite=lax") in response.encoded_headers
+            assert (b"set-cookie", b"streaming-cookie=xyz; Path=/; SameSite=lax") in response.encoded_headers
             assert response.background == background_task
     else:
         with pytest.raises(ImproperlyConfiguredException):
             Stream(iterator=iterator)
 
 
-async def func_to_response_template_response(anyio_backend: str) -> None:
+async def test_to_response_template_response(anyio_backend: str, tmp_path: Path) -> None:
     background_task = BackgroundTask(lambda: "")
+
+    p = tmp_path / "test.template"
+    p.write_text("<h1>hello world</h1>")
 
     @get(
         path="/test",
@@ -321,18 +317,17 @@ async def func_to_response_template_response(anyio_backend: str) -> None:
             background=background_task,
         )
 
-    with create_test_client(test_function) as client:
+    with create_test_client(
+        test_function, template_config=TemplateConfig(engine=JinjaTemplateEngine, directory=tmp_path)
+    ) as client:
         route: "HTTPRoute" = client.app.routes[0]
         route_handler = route.route_handlers[0]
         response = await route_handler.to_response(
             data=route_handler.fn.value(), app=client.app, request=RequestFactory().get()
         )
-        assert isinstance(response, TemplateResponse)
-        assert response.headers["local-header"] == "123"
-        assert response.headers["response-header"] == "abc"
-        cookies = response.cookies
-        assert {cookie.to_header(header="") for cookie in cookies} == {
-            "general-cookie=xxx; Path=/; SameSite=lax",
-            "template-cookie=xyz; Path=/; SameSite=lax",
-        }
+        assert isinstance(response, ASGIResponse)
+        assert (b"local-header", b"123") in response.encoded_headers
+        assert (b"response-header", b"abc") in response.encoded_headers
+        assert (b"set-cookie", b"general-cookie=xxx; Path=/; SameSite=lax") in response.encoded_headers
+        assert (b"set-cookie", b"template-cookie=xyz; Path=/; SameSite=lax") in response.encoded_headers
         assert response.background == background_task

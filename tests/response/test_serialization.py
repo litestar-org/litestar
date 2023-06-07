@@ -46,7 +46,7 @@ class _TestEnum(enum.Enum):
     ],
 )
 def test_response_serialization_structured_types(content: Any, response_type: Any, media_type: MediaType) -> None:
-    response = Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK)
+    response = Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK).to_asgi_response()
     if media_type == media_type.JSON:
         value = loads(response.body)
     else:
@@ -69,7 +69,7 @@ def test_response_serialization_structured_types(content: Any, response_type: An
     "content, response_type, media_type", [["abcdefg", str, MediaType.TEXT], ["<div/>", str, MediaType.HTML]]
 )
 def test_response_serialization_text_types(content: Any, response_type: Any, media_type: MediaType) -> None:
-    response = Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK)
+    response = Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK).to_asgi_response()
     assert response.body == content.encode("utf-8")
 
 
@@ -87,7 +87,7 @@ def test_response_validation_of_unknown_media_types(
 ) -> None:
     if should_raise:
         with pytest.raises(ImproperlyConfiguredException):
-            Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK)
+            Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK).to_asgi_response()
     else:
-        response = Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK)
+        response = Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK).to_asgi_response()
         assert response.body == (content.encode("utf-8") if not isinstance(content, bytes) else content)

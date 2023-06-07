@@ -24,7 +24,7 @@ def test_file_response_default_content_type(tmpdir: Path, content_disposition_ty
     def handler() -> FileResponse:
         return FileResponse(path=path, content_disposition_type=content_disposition_type)
 
-    with create_test_client(handler) as client:
+    with create_test_client(handler, debug=True) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"] == "application/octet-stream"
@@ -69,9 +69,7 @@ def test_file_response_content_length(tmpdir: Path) -> None:
 
     @get("/")
     def handler() -> FileResponse:
-        response = FileResponse(path=path)
-        assert response.content_length == 0
-        return response
+        return FileResponse(path=path)
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -96,13 +94,15 @@ def test_file_response_last_modified(tmpdir: Path) -> None:
 
 async def test_file_response_with_directory_raises_error(tmpdir: Path) -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        await FileResponse(path=tmpdir, filename="example.png").start_response(empty_send)
+        asgi_response = FileResponse(path=tmpdir, filename="example.png").to_asgi_response()
+        await asgi_response.start_response(empty_send)
 
 
 async def test_file_response_with_missing_file_raises_error(tmpdir: Path) -> None:
     path = tmpdir / "404.txt"
     with pytest.raises(ImproperlyConfiguredException):
-        await FileResponse(path=path, filename="404.txt").start_response(empty_send)
+        asgi_response = FileResponse(path=path, filename="404.txt").to_asgi_response()
+        await asgi_response.start_response(empty_send)
 
 
 @pytest.mark.parametrize("chunk_size", [4, 8, 16, 256, 512, 1024, 2048])
@@ -129,9 +129,7 @@ def test_large_files(tmpdir: Path, size: int) -> None:
 
     @get("/")
     def handler() -> FileResponse:
-        response = FileResponse(path=path)
-        assert response.content_length == 0
-        return response
+        return FileResponse(path=path)
 
     with create_test_client(handler) as client:
         response = client.get("/")

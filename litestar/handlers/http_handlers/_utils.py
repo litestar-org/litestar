@@ -77,13 +77,10 @@ def create_data_handler(
             media_type=media_type,
             status_code=status_code,
             type_encoders=type_encoders,
+            raw_headers=raw_headers,
         )
-        response.raw_headers = raw_headers
 
-        if after_request:
-            return await after_request(response)  # type: ignore
-
-        return response
+        return (await after_request(response) if after_request else response).to_asgi_response()  # type: ignore
 
     async def handler(
         data: Any,
@@ -187,7 +184,7 @@ def create_response_container_handler(
             request=request,
         )
         response.cookies = filter_cookies(frozenset(data.cookies), cookies)
-        return await after_request(response) if after_request else response  # type: ignore
+        return (await after_request(response) if after_request else response).to_asgi_response()  # type: ignore
 
     return handler
 
@@ -208,7 +205,7 @@ def create_response_handler(
 
     async def handler(data: Response, **kwargs: Any) -> ASGIApp:
         data.cookies = filter_cookies(frozenset(data.cookies), cookies)
-        return await after_request(data) if after_request else data  # type: ignore
+        return (await after_request(data) if after_request else data).to_asgi_response()  # type: ignore
 
     return handler
 

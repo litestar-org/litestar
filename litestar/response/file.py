@@ -10,11 +10,9 @@ from zlib import adler32
 from litestar.constants import ONE_MEGABYTE
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
-from litestar.response.streaming import StreamingResponse
+from litestar.response.base import _encode_headers
+from litestar.response.streaming import ASGIStreamingResponse, StreamingResponse
 from litestar.status_codes import HTTP_200_OK
-
-__all__ = ("FileResponse", "async_file_iterator", "create_etag_for_file")
-
 
 if TYPE_CHECKING:
     from os import PathLike
@@ -25,8 +23,15 @@ if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.datastructures.headers import ETag
     from litestar.enums import MediaType
-    from litestar.types import HTTPResponseBodyEvent, PathType, Receive, ResponseCookies, Send
+    from litestar.types import HTTPResponseBodyEvent, PathType, Receive, ResponseCookies, Scope, Send
     from litestar.types.file_types import FileInfo, FileSystemProtocol
+
+__all__ = (
+    "ASGIFileResponse",
+    "FileResponse",
+    "async_file_iterator",
+    "create_etag_for_file",
+)
 
 # brotli not supported in 'mimetypes.encodings_map' until py 3.9.
 encodings_map[".br"] = "br"
@@ -62,6 +67,78 @@ def create_etag_for_file(path: PathType, modified_time: float, file_size: int) -
     """
     check = adler32(str(path).encode("utf-8")) & 0xFFFFFFFF
     return f'"{modified_time}-{file_size}-{check}"'
+
+
+class ASGIFileResponse(ASGIStreamingResponse):
+    def __init__(
+        self,
+        file_path: str | PathLike | Path,
+        chunk_size: int,
+        adapter: FileSystemAdapter,
+        etag: ETag | None,
+        file_info: FileInfo | Coroutine[None, None, FileInfo],
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.adapter = adapter
+        self.file_path = file_path
+        self.chunk_size = chunk_size
+        self.etag = etag
+        self.file_info = file_info
+
+    async def send_body(self, send: Send, receive: Receive) -> None:
+        """Emit a stream of events correlating with the response body.
+
+        Args:
+            send: The ASGI send function.
+            receive: The ASGI receive function.
+
+        Returns:
+            None
+        """
+        if self.chunk_size < self.content_length:
+            await super().send_body(send=send, receive=receive)
+            return
+
+        async with await self.adapter.open(self.file_path) as file:
+            body_event: HTTPResponseBodyEvent = {
+                "type": "http.response.body",
+                "body": await file.read(),
+                "more_body": False,
+            }
+            await send(body_event)
+
+    async def start_response(self, send: Send) -> None:
+        """Emit the start event of the response. This event includes the headers and status codes.
+
+        Args:
+            send: The ASGI send function.
+
+        Returns:
+            None
+        """
+        try:
+            fs_info = self.file_info = cast(
+                "FileInfo", (await self.file_info if iscoroutine(self.file_info) else self.file_info)
+            )
+        except FileNotFoundError as e:
+            raise ImproperlyConfiguredException(f"{self.file_path} does not exist") from e
+
+        if fs_info["type"] != "file":
+            raise ImproperlyConfiguredException(f"{self.file_path} is not a file")
+
+        self.content_length = fs_info["size"]
+        self.encoded_headers.append((b"content-length", str(self.content_length).encode("ascii")))
+
+        self.encoded_headers.append((b"last-modified", formatdate(fs_info["mtime"], usegmt=True).encode("ascii")))
+
+        if self.etag:
+            self.encoded_headers.append((b"etag", self.etag.to_header().encode("ascii")))
+        else:
+            etag = create_etag_for_file(path=self.file_path, modified_time=fs_info["mtime"], file_size=fs_info["size"])
+            self.encoded_headers.append((b"etag", etag.encode("ascii")))
+
+        await super().start_response(send=send)
 
 
 class FileResponse(StreamingResponse):
@@ -141,6 +218,13 @@ class FileResponse(StreamingResponse):
         self.filename = filename or ""
         self.adapter = FileSystemAdapter(file_system or BaseLocalFileSystem())
 
+        if file_info:
+            self.file_info: FileInfo | Coroutine[Any, Any, FileInfo] = file_info
+        elif stat_result:
+            self.file_info = self.adapter.parse_stat_result(result=stat_result, path=path)
+        else:
+            self.file_info = self.adapter.info(self.file_path)
+
         super().__init__(
             content=async_file_iterator(file_path=path, chunk_size=chunk_size, adapter=self.adapter),
             status_code=status_code,
@@ -152,84 +236,51 @@ class FileResponse(StreamingResponse):
             is_head_response=is_head_response,
         )
 
-        if file_info:
-            self.file_info: FileInfo | Coroutine[Any, Any, FileInfo] = file_info
-        elif stat_result:
-            self.file_info = self.adapter.parse_stat_result(result=stat_result, path=path)
-        else:
-            self.file_info = self.adapter.info(self.file_path)
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """ASGI callable of the ``Response``.
 
-    @property
-    def content_disposition(self) -> str:
-        """Content disposition.
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
 
         Returns:
-            A value for the ``Content-Disposition`` header.
+            None
+        """
+        await self.to_asgi_response()(scope, receive, send)
+
+    def to_asgi_response(self) -> ASGIFileResponse:
+        """Create an ASGIFileResponse from the FileResponse instance.
+
+        Returns:
+            An ASGIResponse instance.
         """
         quoted_filename = quote(self.filename)
         is_utf8 = quoted_filename == self.filename
         if is_utf8:
-            return f'{self.content_disposition_type}; filename="{self.filename}"'
-        return f"{self.content_disposition_type}; filename*=utf-8''{quoted_filename}"
+            content_disposition = f'{self.content_disposition_type}; filename="{self.filename}"'
+        else:
+            content_disposition = f"{self.content_disposition_type}; filename*=utf-8''{quoted_filename}"
 
-    @property
-    def content_length(self) -> int:
-        """Content length of the response if applicable.
+        self.headers.pop("content-length", None)
+        self.headers.pop("etag", None)
+        self.headers.pop("last-modified", None)
 
-        Returns:
-            Returns the value of :attr:`stat_result.st_size <os.stat_result.st_size>` to populate the ``Content-Length``
-                header.
-        """
-        if isinstance(self.file_info, dict):
-            return self.file_info["size"]
-        return 0
+        raw_headers = self.raw_headers
+        raw_headers.append((b"content-disposition", content_disposition.encode("ascii")))
 
-    async def send_body(self, send: Send, receive: Receive) -> None:
-        """Emit a stream of events correlating with the response body.
-
-        Args:
-            send: The ASGI send function.
-            receive: The ASGI receive function.
-
-        Returns:
-            None
-        """
-        if self.chunk_size < self.content_length:
-            await super().send_body(send=send, receive=receive)
-            return
-
-        async with await self.adapter.open(self.file_path) as file:
-            body_event: HTTPResponseBodyEvent = {
-                "type": "http.response.body",
-                "body": await file.read(),
-                "more_body": False,
-            }
-            await send(body_event)
-
-    async def start_response(self, send: Send) -> None:
-        """Emit the start event of the response. This event includes the headers and status codes.
-
-        Args:
-            send: The ASGI send function.
-
-        Returns:
-            None
-        """
-        try:
-            fs_info = self.file_info = cast(
-                "FileInfo", (await self.file_info if iscoroutine(self.file_info) else self.file_info)
-            )
-        except FileNotFoundError as e:
-            raise ImproperlyConfiguredException(f"{self.file_path} does not exist") from e
-
-        if fs_info["type"] != "file":
-            raise ImproperlyConfiguredException(f"{self.file_path} is not a file")
-
-        self.set_header("last-modified", formatdate(fs_info["mtime"], usegmt=True))
-        self.set_header("content-disposition", self.content_disposition)
-        self.set_etag(
-            self.etag
-            or create_etag_for_file(path=self.file_path, modified_time=fs_info["mtime"], file_size=fs_info["size"])
+        return ASGIFileResponse(
+            body=b"",
+            status_code=self.status_code,
+            content_length=0,
+            encoded_headers=_encode_headers(headers=self.headers, cookies=self.cookies, raw_headers=self.raw_headers),
+            background=self.background,
+            is_head_response=self.is_head_response,
+            iterator=self.iterator,
+            encoding=self.encoding,
+            file_path=self.file_path,
+            chunk_size=self.chunk_size,
+            adapter=self.adapter,
+            etag=self.etag,
+            file_info=self.file_info,
         )
-
-        await super().start_response(send=send)
