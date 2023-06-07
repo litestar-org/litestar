@@ -16,9 +16,9 @@ from litestar.dto.factory._backends.types import (
     TupleType,
     UnionType,
 )
-from litestar.dto.factory._backends.utils.predicates import should_mark_private
-from litestar.dto.factory._backends.utils.transfer import (
+from litestar.dto.factory._backends.utils import (
     create_transfer_model_type_annotation,
+    should_mark_private,
     transfer_nested_union_type_data,
 )
 from litestar.dto.factory.data_structures import FieldDefinition

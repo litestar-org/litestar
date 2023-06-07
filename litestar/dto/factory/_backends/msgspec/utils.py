@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, NewType, TypeVar, Union
 
 from msgspec import UNSET, Struct, UnsetType, defstruct, field
 
-from litestar.dto.factory._backends.utils.transfer import create_transfer_model_type_annotation
+from litestar.dto.factory._backends.utils import create_transfer_model_type_annotation
 from litestar.types import Empty
 
 if TYPE_CHECKING:
