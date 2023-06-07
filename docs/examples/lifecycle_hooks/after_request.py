@@ -5,7 +5,7 @@ from litestar import Litestar, MediaType, Response, get
 
 async def after_request(response: Response) -> Response:
     if response.media_type == MediaType.TEXT:
-        return Response({"message": response.body.decode()})
+        return Response({"message": response.content})
     return response
 
 

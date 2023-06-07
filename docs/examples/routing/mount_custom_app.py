@@ -17,7 +17,7 @@ async def my_asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
     Returns:
         None
     """
-    response = Response(content={"forwarded_path": scope["path"]})
+    response = Response(content={"forwarded_path": scope["path"]}).to_asgi_response()
     await response(scope, receive, send)
 
 
