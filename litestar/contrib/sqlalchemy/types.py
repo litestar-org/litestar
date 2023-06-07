@@ -84,7 +84,7 @@ class GUID(TypeDecorator):
 class ORA_JSONB(TypeDecorator, SchemaType):  # type: ignore  # noqa: N801
     """Oracle Binary JSON type.
 
-    JSON = _JSON().with_variant(PG_JSONB, "postgresql").with_variant(ORA_BLOB, "oracle")
+    JsonB = _JSON().with_variant(PG_JSONB, "postgresql").with_variant(ORA_JSONB, "oracle")
 
     """
 
