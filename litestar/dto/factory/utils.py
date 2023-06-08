@@ -2,21 +2,27 @@ from __future__ import annotations
 
 import typing
 from inspect import getmodule
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, List, TypeVar
 
 from msgspec import Struct
 from typing_extensions import get_type_hints
 
+from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
+from litestar.types.builtin_types import NoneType
 from litestar.typing import ParsedType
 
 from .config import DTOConfig
+from .data_structures import DTOData
+from .exc import InvalidAnnotation
 
 if TYPE_CHECKING:
     from typing import Any
 
 __all__ = (
     "get_model_type_hints",
+    "normalize_parsed_type",
     "parse_configs_from_annotation",
+    "resolve_model_type",
 )
 
 T = TypeVar("T")
@@ -51,3 +57,45 @@ def parse_configs_from_annotation(parsed_type: ParsedType) -> tuple[DTOConfig, .
         The type and config object extracted from the annotation.
     """
     return tuple(item for item in parsed_type.metadata if isinstance(item, DTOConfig))
+
+
+def resolve_model_type(parsed_type: ParsedType) -> ParsedType:
+    """Resolve the data model type from a parsed type.
+
+    Args:
+        parsed_type: A parsed type annotation that represents the annotation used to narrow the DTO type.
+
+    Returns:
+        The data model type.
+    """
+    if parsed_type.is_optional:
+        return resolve_model_type(next(t for t in parsed_type.inner_types if not t.is_subclass_of(NoneType)))
+
+    if parsed_type.is_subclass_of((DTOData, ClassicPagination, OffsetPagination)):
+        return resolve_model_type(parsed_type.inner_types[0])
+
+    if parsed_type.is_subclass_of(CursorPagination):
+        return resolve_model_type(parsed_type.inner_types[1])
+
+    if parsed_type.is_collection:
+        if len(parsed_type.inner_types) == 1:
+            return resolve_model_type(parsed_type.inner_types[0])
+        raise InvalidAnnotation("AbstractDTOFactory only supports homogeneous collection types")
+
+    return parsed_type
+
+
+def normalize_parsed_type(parsed_type: ParsedType, model_type: ParsedType) -> ParsedType:
+    """Paginators are lists, as far as DTOs are concerned.
+
+    Args:
+        parsed_type: A parsed type annotation that represents the annotation used to narrow the DTO type.
+        model_type: The data model type.
+
+    Returns:
+        The normalized parsed type.
+    """
+    if parsed_type.is_subclass_of((ClassicPagination, CursorPagination, OffsetPagination)):
+        annotation = model_type.annotation
+        return ParsedType(List[annotation])  # type:ignore[valid-type]
+    return parsed_type

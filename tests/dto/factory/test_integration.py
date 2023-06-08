@@ -15,7 +15,7 @@ from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.dto.factory.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
 from litestar.params import Body
-from litestar.testing import create_test_client
+from litestar.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -377,3 +377,43 @@ def test_dto_concrete_builtin_collection_types() -> None:
         response = client.post("/", json={"bar": {"a": 1, "b": [1, 2, 3]}, "baz": [4, 5, 6]})
         assert response.status_code == 201
         assert response.json() == {"bar": {"a": 1, "b": [1, 2, 3]}, "baz": [4, 5, 6]}
+
+
+def test_dto_offset_pagination(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from dataclasses import dataclass
+from typing import List
+
+from typing_extensions import Annotated
+
+from litestar import Litestar, get
+from litestar.dto.factory import DTOConfig
+from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.pagination import OffsetPagination
+
+@dataclass
+class User:
+    name: str
+    age: int
+
+@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]], signature_namespace={"User": User})
+def handler() -> OffsetPagination[User]:
+    return OffsetPagination(
+        items=[User(name="John", age=42), User(name="Jane", age=43)],
+        limit=2,
+        offset=0,
+        total=20,
+    )
+
+app = Litestar(route_handlers=[handler], debug=True)
+"""
+    )
+    with TestClient(app=module.app) as client:
+        response = client.get("/")
+        assert response.json() == {
+            "items": [{"name": "John"}, {"name": "Jane"}],
+            "limit": 2,
+            "offset": 0,
+            "total": 20,
+        }

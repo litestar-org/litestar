@@ -5,11 +5,12 @@ from __future__ import annotations
 
 import secrets
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Final, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Final, Generic, TypeVar, cast
 
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
 from litestar.dto.factory import DTOData, Mark
+from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.typing import ParsedType
 from litestar.utils.helpers import get_fully_qualified_class_name
 
@@ -123,17 +124,12 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         self.dto_data_type: type[DTOData] | None = None
         if context.parsed_type.is_subclass_of(DTOData):
             self.dto_data_type = context.parsed_type.annotation
-            annotation = self.dto_data_type.parsed_type.annotation
+            annotation = self.context.parsed_type.inner_types[0].annotation
         else:
             annotation = context.parsed_type.annotation
         self.annotation = build_annotation_for_backend(annotation, self.transfer_model_type)
 
-    def parse_model(
-        self,
-        model_type: Any,
-        exclude: AbstractSet[str],
-        nested_depth: int = 0,
-    ) -> FieldDefinitionsType:
+    def parse_model(self, model_type: Any, exclude: AbstractSet[str], nested_depth: int = 0) -> FieldDefinitionsType:
         """Reduce :attr:`model_type` to :class:`FieldDefinitionsType`.
 
         .. important::
@@ -305,6 +301,19 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         Returns:
             Encoded data.
         """
+        if isinstance(data, (ClassicPagination, CursorPagination, OffsetPagination)):
+            data.items = cast(
+                "list",
+                transfer_data(
+                    destination_type=self.transfer_model_type,
+                    source_data=data.items,
+                    field_definitions=self.parsed_field_definitions,
+                    dto_for="return",
+                    parsed_type=self.context.parsed_type,
+                ),
+            )
+            return data
+
         return transfer_data(
             destination_type=self.transfer_model_type,  # type: ignore[arg-type]
             source_data=data,

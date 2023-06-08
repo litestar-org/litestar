@@ -10,9 +10,8 @@ from litestar.typing import ParsedType
 from ._backends import MsgspecDTOBackend, PydanticDTOBackend
 from ._backends.abc import BackendContext
 from .config import DTOConfig
-from .data_structures import DTOData, FieldDefinition
 from .exc import InvalidAnnotation
-from .utils import parse_configs_from_annotation
+from .utils import normalize_parsed_type, parse_configs_from_annotation, resolve_model_type
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Collection, Generator
@@ -25,6 +24,7 @@ if TYPE_CHECKING:
     from litestar.types.serialization import LitestarEncodableType
 
     from ._backends import AbstractDTOBackend
+    from .data_structures import FieldDefinition
 
 __all__ = ("AbstractDTOFactory",)
 
@@ -130,24 +130,16 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
             handler_context: A :class:`HandlerContext <.HandlerContext>` instance. Provides information about the
                 handler and application of the DTO.
         """
-        if handler_context.parsed_type.is_subclass_of(DTOData):
-            parsed_type = handler_context.parsed_type.annotation.parsed_type
-        else:
-            parsed_type = handler_context.parsed_type
+        model_type = resolve_model_type(handler_context.parsed_type)
 
-        if parsed_type.is_collection:
-            if len(parsed_type.inner_types) != 1:
-                raise InvalidAnnotation("AbstractDTOFactory only supports homogeneous collection types")
-            handler_type = parsed_type.inner_types[0]
-        else:
-            handler_type = parsed_type
-
-        if not handler_type.is_subclass_of(cls.model_type):
+        if not model_type.is_subclass_of(cls.model_type):
             raise InvalidAnnotation(
                 f"DTO narrowed with '{cls.model_type}', handler type is '{handler_context.parsed_type.annotation}'"
             )
 
-        key = (handler_context.dto_for, handler_context.parsed_type, handler_context.request_encoding_type)
+        parsed_type = normalize_parsed_type(handler_context.parsed_type, model_type)
+
+        key = (handler_context.dto_for, parsed_type, handler_context.request_encoding_type)
         backend = cls._type_backend_map.get(key)
         if backend is None:
             backend_type: type[AbstractDTOBackend]
@@ -162,10 +154,10 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
             backend_context = BackendContext(
                 cls.config,
                 handler_context.dto_for,
-                handler_context.parsed_type,
+                parsed_type,
                 cls.generate_field_definitions,
                 cls.detect_nested_field,
-                handler_type.annotation,
+                model_type.annotation,
             )
             backend = cls._type_backend_map.setdefault(key, backend_type(backend_context))
         cls._handler_backend_map[(handler_context.dto_for, handler_context.handler_id)] = backend

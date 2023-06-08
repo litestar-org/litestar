@@ -3,13 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from litestar.typing import ParsedType
 from litestar.utils.signature import ParsedParameter
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, ClassVar
-
-    from typing_extensions import Self
+    from typing import Any, Callable
 
     from litestar.dto.factory import DTOField
     from litestar.dto.factory._backends.abc import AbstractDTOBackend
@@ -23,14 +20,9 @@ class DTOData(Generic[T]):
 
     __slots__ = ("_backend", "_data_as_builtins")
 
-    parsed_type: ClassVar[ParsedType]
-
     def __init__(self, backend: AbstractDTOBackend, data_as_builtins: Any) -> None:
         self._backend = backend
         self._data_as_builtins = data_as_builtins
-
-    def __class_getitem__(cls, item: T) -> type[Self]:
-        return type(cls.__name__, (cls,), {"parsed_type": ParsedType(item)})
 
     def create_instance(self, **kwargs: Any) -> T:
         """Create an instance of the DTO validated data.
