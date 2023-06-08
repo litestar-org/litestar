@@ -137,7 +137,7 @@ class CommonTableAttributes:
         Returns:
             dict[str, Any]: A dict representation of the model
         """
-        exclude = {"_sentinel"}.union(self._sa_instance_state.unloaded).union(exclude or []) # type: ignore[attr-defined]
+        exclude = {"_sentinel"}.union(self._sa_instance_state.unloaded).union(exclude or [])  # type: ignore[attr-defined]
         return {field.name: getattr(self, field.name) for field in self.__table__.columns if field.name not in exclude}
 
 
