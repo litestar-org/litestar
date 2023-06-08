@@ -58,3 +58,20 @@ def test_patch_requests_app() -> None:
             "name": "Peter Pan",
             "age": 40,
         }
+
+
+def test_exclude_fields_app() -> None:
+    from docs.examples.data_transfer_objects.factory.excluding_fields import app
+
+    with TestClient(app) as client:
+        response = client.post(
+            "/users",
+            json={"name": "Litestar User", "password": "xyz", "created_at": "2023-04-24T00:00:00Z"},
+        )
+        assert response.status_code == 201
+        assert response.json() == {
+            "created_at": "0001-01-01T00:00:00",
+            "address": {"city": "Anytown", "state": "NY", "zip": "12345"},
+            "pets": [{"name": "Fido"}, {"name": "Spot"}],
+            "name": "Litestar User",
+        }
