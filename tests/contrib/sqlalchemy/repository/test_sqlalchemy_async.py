@@ -75,17 +75,17 @@ async def test_sqlalchemy_sentinel(monkeypatch: MonkeyPatch) -> None:
         """Inheriting from UUIDAuditBase gives the model 'created' and 'updated'
         columns."""
 
-        the_extra_col: Mapped[str | None] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
+        the_extra_col: Mapped[str] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
 
     class TheTestModel(base.UUIDBase):
         """Inheriting from DeclarativeBase gives the model 'id'  columns."""
 
-        the_extra_col: Mapped[str | None] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
+        the_extra_col: Mapped[str] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
 
     class TheBigIntModel(base.BigIntBase):
         """Inheriting from DeclarativeBase gives the model 'id'  columns."""
 
-        the_extra_col: Mapped[str | None] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
+        the_extra_col: Mapped[str] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
 
     unloaded_cols = {"the_extra_col"}
     sa_instance_mock = MagicMock()
