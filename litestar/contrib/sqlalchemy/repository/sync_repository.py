@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-
-from typing import Any, Generic, Literal, cast, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Generic, Literal, cast
 
 from sqlalchemy import Result, Select, delete, over, select, text, update
 from sqlalchemy import func as sql_func
@@ -13,9 +12,10 @@ from ._util import wrap_sqlalchemy_exception
 from .types import ModelT, RowT, SelectT
 
 if TYPE_CHECKING:
-    from sqlalchemy.orm import Session
     from collections import abc
     from datetime import datetime
+
+    from sqlalchemy.orm import Session
 
 
 class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):

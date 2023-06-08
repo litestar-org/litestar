@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from datetime import datetime
 
     from sqlalchemy.ext.asyncio import AsyncSession
+    from sqlalchemy.orm import Session  # noqa: F401
 
 
 class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]):
@@ -103,7 +104,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             chunk_size = 450
             for idx in range(0, len(item_ids), chunk_size):
                 chunk = item_ids[idx : min(idx + chunk_size, len(item_ids))]
-                if self.session.bind.dialect.delete_executemany_returning:
+                if self.session.bind and self.session.bind.dialect.delete_executemany_returning:
                     instances.extend(
                         await self.session.scalars(
                             delete(self.model_type)
@@ -295,7 +296,11 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         """
         data_to_update: list[dict[str, Any]] = [v.to_dict() if isinstance(v, self.model_type) else v for v in data]  # type: ignore
         with wrap_sqlalchemy_exception():
-            if self.session.bind.dialect.update_executemany_returning and self.session.bind.dialect.name != "oracle":
+            if (
+                self.session.bind
+                and self.session.bind.dialect.update_executemany_returning
+                and self.session.bind.dialect.name != "oracle"
+            ):
                 instances = list(
                     await self.session.scalars(  # type: ignore
                         update(self.model_type).returning(self.model_type),
@@ -327,7 +332,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         Returns:
             Count of records returned by query, ignoring pagination.
         """
-        if self.session.bind.dialect.name in {"spanner"}:
+        if self.session.bind and self.session.bind.dialect.name in {"spanner"}:
             return await self._list_and_count_basic(*filters, **kwargs)
         return await self._list_and_count_window(*filters, **kwargs)
 
