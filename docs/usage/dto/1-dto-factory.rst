@@ -71,7 +71,7 @@ nested models.
     :linenos:
 
 Here, the config is created with the exclude parameter, which is a set of strings. Each string represents the path to a
-field in the User object that should be excluded from the output DTO.
+field in the ``User`` object that should be excluded from the output DTO.
 
 .. code-block:: python
 
