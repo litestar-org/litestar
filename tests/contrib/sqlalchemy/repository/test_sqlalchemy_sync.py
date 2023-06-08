@@ -7,8 +7,9 @@ from unittest.mock import MagicMock, Mock, call
 from uuid import uuid4
 
 import pytest
+from sqlalchemy import String
 from sqlalchemy.exc import IntegrityError, InvalidRequestError, SQLAlchemyError
-from sqlalchemy.orm import MappedColumn, Session
+from sqlalchemy.orm import Mapped, MappedColumn, Session, mapped_column
 
 from litestar.contrib.repository.exceptions import ConflictError, RepositoryError
 from litestar.contrib.repository.filters import (
@@ -71,26 +72,34 @@ def test_sqlalchemy_sentinel(monkeypatch: MonkeyPatch) -> None:
         """Inheriting from UUIDAuditBase gives the model 'created' and 'updated'
         columns."""
 
-        ...
+        the_extra_col: Mapped[str] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
 
     class TheTestModel(base.UUIDBase):
         """Inheriting from DeclarativeBase gives the model 'id'  columns."""
 
-        ...
+        the_extra_col: Mapped[str] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
 
     class TheBigIntModel(base.BigIntBase):
         """Inheriting from DeclarativeBase gives the model 'id'  columns."""
 
-        ...
+        the_extra_col: Mapped[str] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
 
+    unloaded_cols = {"the_extra_col"}
+    sa_instance_mock = MagicMock()
+    sa_instance_mock.unloaded = unloaded_cols
     assert isinstance(AnotherModel._sentinel, MappedColumn)
     assert isinstance(TheTestModel._sentinel, MappedColumn)
     assert not hasattr(TheBigIntModel, "_sentinel")
     model1, model2, model3 = AnotherModel(), TheTestModel(), TheBigIntModel()
+    monkeypatch.setattr(model1, "_sa_instance_state", sa_instance_mock)
+    monkeypatch.setattr(model2, "_sa_instance_state", sa_instance_mock)
+    monkeypatch.setattr(model3, "_sa_instance_state", sa_instance_mock)
     assert "created" not in model1.to_dict(exclude={"created"}).keys()
+    assert "the_extra_col" not in model1.to_dict(exclude={"created"}).keys()
     assert "_sentinel" not in model1.to_dict().keys()
     assert "_sentinel" not in model2.to_dict().keys()
     assert "_sentinel" not in model3.to_dict().keys()
+    assert "the_extra_col" not in model1.to_dict().keys()
 
 
 def test_wrap_sqlalchemy_integrity_error() -> None:
