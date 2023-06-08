@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 from uuid import UUID
 
 from sqlalchemy import ForeignKey
@@ -19,16 +20,30 @@ class Address(Base):
     zip: Mapped[str]
 
 
+class Pets(Base):
+    name: Mapped[str]
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("user.id"))
+
+
 class User(Base):
     name: Mapped[str]
     password: Mapped[str] = mapped_column(info=dto_field("private"))
     created_at: Mapped[datetime] = mapped_column(info=dto_field("read-only"))
     address_id: Mapped[UUID] = mapped_column(ForeignKey("address.id"), info=dto_field("private"))
     address: Mapped[Address] = relationship(info=dto_field("read-only"))
+    pets: Mapped[List[Pets]] = relationship(info=dto_field("read-only"))
 
 
 UserDTO = SQLAlchemyDTO[User]
-config = DTOConfig(exclude={"id", "address.id", "address.street"})
+config = DTOConfig(
+    exclude={
+        "id",
+        "address.id",
+        "address.street",
+        "pets.0.id",
+        "pets.0.user_id",
+    }
+)
 ReadUserDTO = SQLAlchemyDTO[Annotated[User, config]]
 
 
@@ -36,6 +51,7 @@ ReadUserDTO = SQLAlchemyDTO[Annotated[User, config]]
 def create_user(data: User) -> User:
     data.created_at = datetime.min
     data.address = Address(street="123 Main St", city="Anytown", state="NY", zip="12345")
+    data.pets = [Pets(id=1, name="Fido"), Pets(id=2, name="Spot")]
     return data
 
 
