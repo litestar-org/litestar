@@ -358,3 +358,22 @@ def test_dto_private_fields_disabled() -> None:
         response = client.post("/", json={"bar": "hello", "_baz": 42})
         assert response.status_code == 201
         assert response.json() == {"bar": "hello", "_baz": 42}
+
+
+def test_dto_concrete_builtin_collection_types() -> None:
+    @dataclass
+    class Foo:
+        bar: dict
+        baz: list
+
+    @post(
+        dto=DataclassDTO[Annotated[Foo, DTOConfig(underscore_fields_private=False)]],
+        signature_namespace={"Foo": Foo},
+    )
+    def handler(data: Foo) -> Foo:
+        return data
+
+    with create_test_client(route_handlers=[handler], debug=True) as client:
+        response = client.post("/", json={"bar": {"a": 1, "b": [1, 2, 3]}, "baz": [4, 5, 6]})
+        assert response.status_code == 201
+        assert response.json() == {"bar": {"a": 1, "b": [1, 2, 3]}, "baz": [4, 5, 6]}

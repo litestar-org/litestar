@@ -281,7 +281,7 @@ def transfer_type_data(
             return transfer_nested_collection_type_data(
                 transfer_type.parsed_type.origin, transfer_type, dto_for, source_value
             )
-        return transfer_type.parsed_type.origin(source_value)
+        return transfer_type.parsed_type.instantiable_origin(source_value)
     return source_value
 
 
