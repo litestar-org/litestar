@@ -5,11 +5,12 @@ from __future__ import annotations
 
 import secrets
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Final, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Final, Generic, TypeVar
 
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
 from litestar.dto.factory import DTOData, Mark
+from litestar.typing import ParsedType
 from litestar.utils.helpers import get_fully_qualified_class_name
 
 from .types import (
@@ -32,7 +33,7 @@ from .utils import (
 )
 
 if TYPE_CHECKING:
-    from typing import AbstractSet, Any, Callable, Generator
+    from typing import AbstractSet, Callable, Generator
 
     from litestar.dto.factory import DTOConfig
     from litestar.dto.factory.data_structures import FieldDefinition
@@ -40,7 +41,6 @@ if TYPE_CHECKING:
     from litestar.dto.types import ForType
     from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
-    from litestar.typing import ParsedType
 
     from .types import FieldDefinitionsType
 
@@ -334,7 +334,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         if parsed_type.is_mapping:
             return self._create_mapping_type(parsed_type, exclude, unique_name, nested_depth)
 
-        if parsed_type.is_collection:
+        if parsed_type.is_non_string_collection:
             return self._create_collection_type(parsed_type, exclude, unique_name, nested_depth)
 
         transfer_model: NestedFieldInfo | None = None
@@ -353,8 +353,9 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
     def _create_collection_type(
         self, parsed_type: ParsedType, exclude: AbstractSet[str], unique_name: str, nested_depth: int
     ) -> CollectionType:
+        inner_types = parsed_type.inner_types
         inner_type = self._create_transfer_type(
-            parsed_type=parsed_type.inner_types[0],
+            parsed_type=ParsedType(Any) if not inner_types else inner_types[0],
             exclude=exclude,
             field_name="0",
             unique_name=_enumerate_name(unique_name, 0),
@@ -367,15 +368,16 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
     def _create_mapping_type(
         self, parsed_type: ParsedType, exclude: AbstractSet[str], unique_name: str, nested_depth: int
     ) -> MappingType:
+        inner_types = parsed_type.inner_types
         key_type = self._create_transfer_type(
-            parsed_type=parsed_type.inner_types[0],
+            parsed_type=ParsedType(Any) if not inner_types else inner_types[0],
             exclude=exclude,
             field_name="0",
             unique_name=_enumerate_name(unique_name, 0),
             nested_depth=nested_depth,
         )
         value_type = self._create_transfer_type(
-            parsed_type=parsed_type.inner_types[1],
+            parsed_type=ParsedType(Any) if not inner_types else inner_types[1],
             exclude=exclude,
             field_name="1",
             unique_name=_enumerate_name(unique_name, 1),

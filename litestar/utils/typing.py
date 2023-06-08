@@ -31,6 +31,7 @@ from litestar.types.builtin_types import UNION_TYPES, NoneType
 
 __all__ = (
     "annotation_is_iterable_of_type",
+    "get_instantiable_origin",
     "get_origin_or_inner_type",
     "get_safe_generic_origin",
     "instantiable_type_mapping",
@@ -219,19 +220,45 @@ def get_origin_or_inner_type(annotation: Any) -> Any:
     origin = get_origin(annotation)
     if origin in wrapper_type_set:
         inner, _, _ = unwrap_annotation(annotation)
-        # we need to recursively call here 'get_origin_or_inner_type' because we might be dealing with a generic type alias
-        # e.g. Annotated[dict[str, list[int]]
+        # we need to recursively call here 'get_origin_or_inner_type' because we might be dealing
+        # with a generic type alias e.g. Annotated[dict[str, list[int]]
         origin = get_origin_or_inner_type(inner)
     return instantiable_type_mapping.get(origin, origin)
 
 
-def get_safe_generic_origin(origin_type: Any) -> Any:
+def get_safe_generic_origin(origin_type: Any, annotation: Any) -> Any:
     """Get a type that is safe to use as a generic type across all supported Python versions.
+
+    If a builtin collection type is annotated without generic args, e.g, ``a: dict``, then the origin type will be
+    ``None``. In this case, we can use the annotation to determine the correct generic type, if one exists.
 
     Args:
         origin_type: A type - would be the return value of :func:`get_origin()`.
+        annotation: Type annotation associated with the origin type. Should be unwrapped from any wrapper types, such
+            as ``Annotated``.
 
     Returns:
         The ``typing`` module equivalent of the given type, if it exists. Otherwise, the original type is returned.
     """
+    if origin_type is None:
+        return _safe_generic_origin_map.get(annotation)
     return _safe_generic_origin_map.get(origin_type, origin_type)
+
+
+def get_instantiable_origin(origin_type: Any, annotation: Any) -> Any:
+    """Get a type that is safe to instantiate for the given origin type.
+
+    If a builtin collection type is annotated without generic args, e.g, ``a: dict``, then the origin type will be
+    ``None``. In this case, we can use the annotation to determine the correct instantiable type, if one exists.
+
+    Args:
+        origin_type: A type - would be the return value of :func:`get_origin()`.
+        annotation: Type annotation associated with the origin type. Should be unwrapped from any wrapper types, such
+            as ``Annotated``.
+
+    Returns:
+        A builtin type that is safe to instantiate for the given origin type.
+    """
+    if origin_type is None:
+        return instantiable_type_mapping.get(annotation)
+    return instantiable_type_mapping.get(origin_type, origin_type)

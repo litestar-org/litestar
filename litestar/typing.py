@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+from collections import abc
 from dataclasses import dataclass
-from typing import Any, AnyStr, Collection, ForwardRef, Mapping, TypeVar, Union
+from typing import Any, AnyStr, Collection, ForwardRef, Mapping, TypeVar
 
 from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin
 
 from litestar.types.builtin_types import UNION_TYPES, NoneType
-from litestar.utils.typing import get_safe_generic_origin, instantiable_type_mapping, unwrap_annotation
+from litestar.utils.typing import get_instantiable_origin, get_safe_generic_origin, unwrap_annotation
 
 __all__ = ("ParsedType",)
 
@@ -68,17 +69,19 @@ class ParsedType:
         """
         unwrapped, metadata, wrappers = unwrap_annotation(annotation)
         origin = get_origin(unwrapped)
-        args = get_args(unwrapped)
+
+        args = () if origin is abc.Callable else get_args(unwrapped)
+
         object.__setattr__(self, "raw", annotation)
         object.__setattr__(self, "annotation", unwrapped)
         object.__setattr__(self, "origin", origin)
         object.__setattr__(self, "args", args)
         object.__setattr__(self, "metadata", metadata)
-        object.__setattr__(self, "instantiable_origin", instantiable_type_mapping.get(origin, origin))
+        object.__setattr__(self, "instantiable_origin", get_instantiable_origin(origin, unwrapped))
         object.__setattr__(self, "is_annotated", Annotated in wrappers)
         object.__setattr__(self, "is_required", Required in wrappers)
         object.__setattr__(self, "is_not_required", NotRequired in wrappers)
-        object.__setattr__(self, "safe_generic_origin", get_safe_generic_origin(origin))
+        object.__setattr__(self, "safe_generic_origin", get_safe_generic_origin(origin, unwrapped))
         object.__setattr__(self, "inner_types", tuple(ParsedType(arg) for arg in args))
 
     def __eq__(self, other: Any) -> bool:
@@ -123,7 +126,12 @@ class ParsedType:
     @property
     def is_collection(self) -> bool:
         """Whether the annotation is a collection type or not."""
-        return bool(self.origin and self.origin is not Union and issubclass(self.origin, Collection))
+        return self.is_subclass_of(Collection)
+
+    @property
+    def is_non_string_collection(self) -> bool:
+        """Whether the annotation is a non-string collection type or not."""
+        return self.is_collection and not self.is_subclass_of((str, bytes))
 
     def is_subclass_of(self, cl: type[Any] | tuple[type[Any], ...]) -> bool:
         """Whether the annotation is a subclass of the given type.

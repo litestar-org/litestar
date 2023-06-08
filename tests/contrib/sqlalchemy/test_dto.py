@@ -509,3 +509,43 @@ dto_type = SQLAlchemyDTO[Annotated[A, DTOConfig()]]
     )
     assert isinstance(model, a_module.A)
     assert isinstance(model.b, b_module.B)
+
+
+async def test_dto_mapped_builtin_collection(
+    create_module: Callable[[str], ModuleType], connection_context: ConnectionContext
+) -> None:
+    """Test where a column type declared as e.g., `Mapped[dict]`."""
+
+    module = create_module(
+        """
+from __future__ import annotations
+
+from typing import Union
+
+from sqlalchemy import ForeignKey, Integer
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.types import JSON, ARRAY
+from typing_extensions import Annotated
+
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.dto.factory import DTOConfig
+
+class Base(DeclarativeBase):
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+class A(Base):
+    __tablename__ = "a"
+    a: Mapped[dict] = mapped_column(JSON)
+    c: Mapped[list] = mapped_column(ARRAY(Integer))
+
+dto_type = SQLAlchemyDTO[A]
+    """
+    )
+    model = await get_model_from_dto(
+        module.dto_type,
+        module.A,
+        connection_context,
+        b'{"id": 1, "a": {"b": 1}, "c": [1, 2, 3]}',
+    )
+    assert vars(model)["a"] == {"b": 1}
+    assert vars(model)["c"] == [1, 2, 3]
