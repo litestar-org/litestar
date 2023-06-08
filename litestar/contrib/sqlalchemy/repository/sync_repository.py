@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Generic, Literal, cast
 from sqlalchemy import Result, Select, delete, over, select, text, update
 from sqlalchemy import func as sql_func
 
-from litestar.contrib.repository import AbstractAsyncRepository, FilterTypes, RepositoryError, AbstractSyncRepository
+from litestar.contrib.repository import AbstractSyncRepository, FilterTypes, RepositoryError
 from litestar.contrib.repository.filters import BeforeAfter, CollectionFilter, LimitOffset, OrderBy, SearchFilter
 
 from ._util import wrap_sqlalchemy_exception
