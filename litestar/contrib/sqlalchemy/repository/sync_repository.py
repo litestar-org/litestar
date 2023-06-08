@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Generic, Literal, cast
 from sqlalchemy import Result, Select, delete, over, select, text, update
 from sqlalchemy import func as sql_func
 
-from litestar.contrib.repository import AbstractSyncRepository, FilterTypes, RepositoryError
+from litestar.contrib.repository import AbstractAsyncRepository, FilterTypes, RepositoryError, AbstractSyncRepository
 from litestar.contrib.repository.filters import BeforeAfter, CollectionFilter, LimitOffset, OrderBy, SearchFilter
 
 from ._util import wrap_sqlalchemy_exception
@@ -15,11 +15,12 @@ if TYPE_CHECKING:
     from collections import abc
     from datetime import datetime
 
-    from sqlalchemy.orm import Session
+    from sqlalchemy.ext.asyncio import AsyncSession  # noqa: RUF100, F401
+    from sqlalchemy.orm import Session  # noqa: RUF100, F401
 
 
 class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
-    """SQLAlchemy based implementation of the synchronous repository interface."""
+    """SQLAlchemy based implementation of the repository interface."""
 
     match_fields: list[str] | str | None = None
 
@@ -154,7 +155,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         with wrap_sqlalchemy_exception():
             statement = kwargs.pop("statement", self.statement)
             statement = self._filter_select_by_kwargs(statement=statement, **{self.id_attribute: item_id})
-            instance = self._execute(statement).scalar_one_or_none()
+            instance = (self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
             self.session.expunge(instance)
             return instance
@@ -301,7 +302,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                 and self.session.bind.dialect.name != "oracle"
             ):
                 instances = list(
-                    self.session.scalars(
+                    self.session.scalars(  # type: ignore
                         update(self.model_type).returning(self.model_type),
                         data_to_update,  # pyright: ignore[reportGeneralTypeIssues]
                     )
@@ -331,7 +332,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Returns:
             Count of records returned by query, ignoring pagination.
         """
-        if self.session.bind and self.session.bind.dialect.name in {"spanner+spanner"}:
+        if self.session.bind and self.session.bind.dialect.name in {"spanner"}:
             return self._list_and_count_basic(*filters, **kwargs)
         return self._list_and_count_window(*filters, **kwargs)
 
@@ -349,7 +350,6 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Returns:
             Count of records returned by query using an analytical window function, ignoring pagination.
         """
-
         statement = kwargs.pop("statement", self.statement)
         statement = statement.add_columns(over(sql_func.count(self.get_id_attribute_value(self.model_type))))
         statement = self._apply_filters(*filters, statement=statement)
@@ -379,7 +379,6 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Returns:
             Count of records returned by query using 2 queries, ignoring pagination.
         """
-
         statement = kwargs.pop("statement", self.statement)
         statement = self._apply_filters(*filters, statement=statement)
         statement = self._filter_select_by_kwargs(statement, **kwargs)
