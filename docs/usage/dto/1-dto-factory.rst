@@ -67,11 +67,34 @@ nested models.
 .. literalinclude:: /examples/data_transfer_objects/factory/excluding_fields.py
     :caption: Excluding fields
     :language: python
-    :emphasize-lines: 6,10,31,32,35
+    :emphasize-lines: 6,10,37-46,49
     :linenos:
 
-Examining the output of the above POST request, we can see that the user's ID, the ID of the user's address field, and
-the user's street address are excluded from the serialized response.
+Here, the config is created with the exclude parameter, which is a set of strings. Each string represents the path to a
+field in the ``User`` object that should be excluded from the output DTO.
+
+.. code-block:: python
+
+    config = DTOConfig(
+        exclude={
+            "id",
+            "address.id",
+            "address.street",
+            "pets.0.id",
+            "pets.0.user_id",
+        }
+    )
+
+In this example, ``"id"`` represents the id field of the ``User`` object, ``"address.id"`` and ``"address.street"``
+represent fields of the ``Address`` object nested inside the ``User`` object, and ``"pets.0.id"`` and
+``"pets.0.user_id"`` represent fields of the ``Pets`` objects nested within the list of ``User.pets``.
+
+.. note::
+
+    Given a generic type, with an arbitrary number of type parameters (e.g., ``GenericType[Type0, Type1, ..., TypeN]``),
+    we use the index of the type parameter to indicate which type the exclusion should refer to. For example, ``a.0.b``,
+    excludes the ``b`` field from the first type parameter of ``a``, ``a.1.b`` excludes the ``b`` field from the second
+    type parameter of ``a``, and so on.
 
 Renaming fields
 ---------------
