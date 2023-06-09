@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Any, Optional
 
 from litestar import MediaType, get
 from litestar.contrib.htmx._utils import HTMXHeaders
@@ -276,7 +276,7 @@ def test_triggering_event_bad_json() -> None:
 
 def test_triggering_event_good_json() -> None:
     @get("/")
-    def handler(request: HTMXRequest) -> Dict[str, None]:
+    def handler(request: HTMXRequest) -> Any:
         assert request.htmx.triggering_event == {"target": None}
         return request.htmx.triggering_event
 
