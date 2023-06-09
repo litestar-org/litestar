@@ -59,34 +59,27 @@ COLLECTION_RAW = (
 STRUCTURED = DC(a=1, b="b", c=[], nested=NestedDC(a=1, b="two"), nested_list=[NestedDC(a=1, b="two")], optional=None)
 
 
-@pytest.fixture(name="backend", params=[MsgspecDTOBackend, PydanticDTOBackend])
-def fx_backend(request: Any) -> AbstractDTOBackend:
-    ctx = BackendContext(
-        DTOConfig(),
-        "data",
-        ParsedType(DC),
-        DataclassDTO.generate_field_definitions,
-        DataclassDTO.detect_nested_field,
-        DC,
+@pytest.fixture(name="backend_context")
+def fx_backend_context() -> BackendContext:
+    return BackendContext(
+        dto_config=DTOConfig(),
+        dto_for="data",
+        parsed_type=ParsedType(DC),
+        field_definition_generator=DataclassDTO.generate_field_definitions,
+        is_nested_field_predicate=DataclassDTO.detect_nested_field,
+        model_type=DC,
+        wrapper_attribute_name=None,
     )
-    return request.param(ctx)  # type:ignore[no-any-return]
+
+
+@pytest.fixture(name="backend", params=[MsgspecDTOBackend, PydanticDTOBackend])
+def fx_backend(backend_context: BackendContext, request: Any) -> AbstractDTOBackend:
+    return request.param(backend_context)  # type:ignore[no-any-return]
 
 
 @pytest.fixture(name="connection_context")
 def fx_connection_context() -> ConnectionContext:
     return ConnectionContext(handler_id="handler_id", request_encoding_type="application/json")
-
-
-@pytest.fixture(name="backend_context")
-def fx_backend_context() -> BackendContext:
-    return BackendContext(
-        DTOConfig(),
-        "data",
-        ParsedType(DC),
-        DataclassDTO.generate_field_definitions,
-        DataclassDTO.detect_nested_field,
-        DC,
-    )
 
 
 def _destructure(model: BaseModel | Struct) -> dict[str, Any]:
@@ -237,12 +230,13 @@ def test_backend_encode_collection_data(
     backend_type: type[AbstractDTOBackend], connection_context: ConnectionContext
 ) -> None:
     ctx = BackendContext(
-        DTOConfig(),
-        "data",
-        ParsedType(List[DC]),
-        DataclassDTO.generate_field_definitions,
-        DataclassDTO.detect_nested_field,
-        DC,
+        dto_config=DTOConfig(),
+        dto_for="data",
+        parsed_type=ParsedType(List[DC]),
+        field_definition_generator=DataclassDTO.generate_field_definitions,
+        is_nested_field_predicate=DataclassDTO.detect_nested_field,
+        model_type=DC,
+        wrapper_attribute_name=None,
     )
     backend = backend_type(ctx)
     data = backend.encode_data([STRUCTURED], connection_context)
@@ -283,6 +277,7 @@ dto_type = DataclassDTO[Model]
         field_definition_generator=DataclassDTO.generate_field_definitions,
         is_nested_field_predicate=DataclassDTO.detect_nested_field,
         model_type=module.Model,
+        wrapper_attribute_name=None,
     )
     parsed = MsgspecDTOBackend(context=ctx).parsed_field_definitions
     assert next(f for f in parsed if f.name == "a").is_excluded

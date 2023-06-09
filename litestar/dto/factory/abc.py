@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, List, TypeVar
 
 from litestar.dto.interface import ConnectionContext, DTOInterface
 from litestar.enums import RequestEncodingType
@@ -11,7 +11,12 @@ from ._backends import MsgspecDTOBackend, PydanticDTOBackend
 from ._backends.abc import BackendContext
 from .config import DTOConfig
 from .exc import InvalidAnnotation
-from .utils import normalize_parsed_type, parse_configs_from_annotation, resolve_model_type
+from .utils import (
+    is_pagination_type,
+    parse_configs_from_annotation,
+    resolve_generic_wrapper_type,
+    resolve_model_type,
+)
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Collection, Generator
@@ -130,14 +135,22 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
             handler_context: A :class:`HandlerContext <.HandlerContext>` instance. Provides information about the
                 handler and application of the DTO.
         """
-        model_type = resolve_model_type(handler_context.parsed_type)
+        parsed_type = handler_context.parsed_type
+        type_is_pagination_type = is_pagination_type(parsed_type)
+        model_type = resolve_model_type(parsed_type)
+        wrapper_attribute_name: str | None = None
 
         if not model_type.is_subclass_of(cls.model_type):
-            raise InvalidAnnotation(
-                f"DTO narrowed with '{cls.model_type}', handler type is '{handler_context.parsed_type.annotation}'"
-            )
+            resolved_generic_result = resolve_generic_wrapper_type(model_type, cls.model_type)
+            if resolved_generic_result is not None:
+                model_type, parsed_type, wrapper_attribute_name = resolved_generic_result
+            else:
+                raise InvalidAnnotation(
+                    f"DTO narrowed with '{cls.model_type}', handler type is '{parsed_type.annotation}'"
+                )
 
-        parsed_type = normalize_parsed_type(handler_context.parsed_type, model_type)
+        if type_is_pagination_type:
+            parsed_type = ParsedType(List[model_type.annotation])  # type:ignore[name-defined]
 
         key = (handler_context.dto_for, parsed_type, handler_context.request_encoding_type)
         backend = cls._type_backend_map.get(key)
@@ -152,12 +165,13 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
                 backend_type = MsgspecDTOBackend
 
             backend_context = BackendContext(
-                cls.config,
-                handler_context.dto_for,
-                parsed_type,
-                cls.generate_field_definitions,
-                cls.detect_nested_field,
-                model_type.annotation,
+                dto_config=cls.config,
+                dto_for=handler_context.dto_for,
+                parsed_type=parsed_type,
+                field_definition_generator=cls.generate_field_definitions,
+                is_nested_field_predicate=cls.detect_nested_field,
+                model_type=model_type.annotation,
+                wrapper_attribute_name=wrapper_attribute_name,
             )
             backend = cls._type_backend_map.setdefault(key, backend_type(backend_context))
         cls._handler_backend_map[(handler_context.dto_for, handler_context.handler_id)] = backend

@@ -379,6 +379,87 @@ def test_dto_concrete_builtin_collection_types() -> None:
         assert response.json() == {"bar": {"a": 1, "b": [1, 2, 3]}, "baz": [4, 5, 6]}
 
 
+def test_dto_classic_pagination(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from dataclasses import dataclass
+from typing import List
+
+from typing_extensions import Annotated
+
+from litestar import Litestar, get
+from litestar.dto.factory import DTOConfig
+from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.pagination import ClassicPagination
+
+@dataclass
+class User:
+    name: str
+    age: int
+
+@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]], signature_namespace={"User": User})
+def handler() -> ClassicPagination[User]:
+    return ClassicPagination(
+        items=[User(name="John", age=42), User(name="Jane", age=43)],
+        page_size=2,
+        current_page=1,
+        total_pages=20,
+    )
+
+app = Litestar(route_handlers=[handler], debug=True)
+"""
+    )
+    with TestClient(app=module.app) as client:
+        response = client.get("/")
+        assert response.json() == {
+            "items": [{"name": "John"}, {"name": "Jane"}],
+            "page_size": 2,
+            "current_page": 1,
+            "total_pages": 20,
+        }
+
+
+def test_dto_cursor_pagination(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from dataclasses import dataclass
+from typing import List
+from uuid import UUID
+
+from typing_extensions import Annotated
+
+from litestar import Litestar, get
+from litestar.dto.factory import DTOConfig
+from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.pagination import CursorPagination
+
+@dataclass
+class User:
+    name: str
+    age: int
+
+uuid = UUID("00000000-0000-0000-0000-000000000000")
+
+@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]], signature_namespace={"User": User})
+def handler() -> CursorPagination[UUID, User]:
+    return CursorPagination(
+        items=[User(name="John", age=42), User(name="Jane", age=43)],
+        results_per_page=2,
+        cursor=uuid,
+    )
+
+app = Litestar(route_handlers=[handler], debug=True)
+"""
+    )
+    with TestClient(app=module.app) as client:
+        response = client.get("/")
+        assert response.json() == {
+            "items": [{"name": "John"}, {"name": "Jane"}],
+            "results_per_page": 2,
+            "cursor": "00000000-0000-0000-0000-000000000000",
+        }
+
+
 def test_dto_offset_pagination(create_module: Callable[[str], ModuleType]) -> None:
     module = create_module(
         """
@@ -417,3 +498,83 @@ app = Litestar(route_handlers=[handler], debug=True)
             "offset": 0,
             "total": 20,
         }
+
+
+def test_dto_generic_dataclass_wrapped_list_response(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from dataclasses import dataclass
+from typing import Generic, List, TypeVar
+
+from typing_extensions import Annotated
+
+from litestar import Litestar, get
+from litestar.dto.factory import DTOConfig
+from litestar.dto.factory.stdlib import DataclassDTO
+
+@dataclass
+class User:
+    name: str
+    age: int
+
+T = TypeVar("T")
+V = TypeVar("V")
+
+@dataclass
+class Wrapped(Generic[T, V]):
+    data: T
+    other: V
+
+@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]], signature_namespace={"User": User})
+def handler() -> Wrapped[List[User], int]:
+    return Wrapped(
+        data=[User(name="John", age=42), User(name="Jane", age=43)],
+        other=2,
+    )
+
+app = Litestar(route_handlers=[handler])
+"""
+    )
+    with TestClient(app=module.app) as client:
+        response = client.get("/")
+        assert response.json() == {"data": [{"name": "John"}, {"name": "Jane"}], "other": 2}
+
+
+def test_dto_generic_dataclass_wrapped_scalar_response(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from dataclasses import dataclass
+from typing import Generic, TypeVar
+
+from typing_extensions import Annotated
+
+from litestar import Litestar, get
+from litestar.dto.factory import DTOConfig
+from litestar.dto.factory.stdlib import DataclassDTO
+
+@dataclass
+class User:
+    name: str
+    age: int
+
+T = TypeVar("T")
+V = TypeVar("V")
+
+@dataclass
+class Wrapped(Generic[T, V]):
+    data: T
+    other: V
+
+@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]], signature_namespace={"User": User})
+def handler() -> Wrapped[User, int]:
+    return Wrapped(
+        data=User(name="John", age=42),
+        other=2,
+    )
+
+app = Litestar(route_handlers=[handler])
+"""
+    )
+    with TestClient(app=module.app) as client:
+        response = client.get("/")
+        assert response.json() == {"data": {"name": "John"}, "other": 2}

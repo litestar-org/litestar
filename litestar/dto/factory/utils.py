@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import typing
 from inspect import getmodule
-from typing import TYPE_CHECKING, List, TypeVar
+from typing import TYPE_CHECKING, TypeVar
 
 from msgspec import Struct
 from typing_extensions import get_type_hints
@@ -20,8 +20,9 @@ if TYPE_CHECKING:
 
 __all__ = (
     "get_model_type_hints",
-    "normalize_parsed_type",
+    "is_pagination_type",
     "parse_configs_from_annotation",
+    "resolve_generic_wrapper_type",
     "resolve_model_type",
 )
 
@@ -66,16 +67,13 @@ def resolve_model_type(parsed_type: ParsedType) -> ParsedType:
         parsed_type: A parsed type annotation that represents the annotation used to narrow the DTO type.
 
     Returns:
-        The data model type.
+        A :class:`ParsedType <.typing.ParsedType>` that represents the data model type.
     """
     if parsed_type.is_optional:
         return resolve_model_type(next(t for t in parsed_type.inner_types if not t.is_subclass_of(NoneType)))
 
-    if parsed_type.is_subclass_of((DTOData, ClassicPagination, OffsetPagination)):
+    if parsed_type.is_subclass_of(DTOData):
         return resolve_model_type(parsed_type.inner_types[0])
-
-    if parsed_type.is_subclass_of(CursorPagination):
-        return resolve_model_type(parsed_type.inner_types[1])
 
     if parsed_type.is_collection:
         if len(parsed_type.inner_types) == 1:
@@ -85,17 +83,46 @@ def resolve_model_type(parsed_type: ParsedType) -> ParsedType:
     return parsed_type
 
 
-def normalize_parsed_type(parsed_type: ParsedType, model_type: ParsedType) -> ParsedType:
-    """Paginators are lists, as far as DTOs are concerned.
+def resolve_generic_wrapper_type(
+    parsed_type: ParsedType, dto_specialized_type: type[Any]
+) -> tuple[ParsedType, ParsedType, str] | None:
+    """Handle where DTO supported data is wrapped in a generic container type.
 
     Args:
         parsed_type: A parsed type annotation that represents the annotation used to narrow the DTO type.
-        model_type: The data model type.
+        dto_specialized_type: The type used to specialize the DTO.
 
     Returns:
-        The normalized parsed type.
+        The data model type.
     """
-    if parsed_type.is_subclass_of((ClassicPagination, CursorPagination, OffsetPagination)):
-        annotation = model_type.annotation
-        return ParsedType(List[annotation])  # type:ignore[valid-type]
-    return parsed_type
+    if not (origin := parsed_type.origin):
+        return None
+
+    if not (parameters := origin.__parameters__):
+        return None
+
+    for param_index, inner_type in enumerate(parsed_type.inner_types):  # noqa: B007 (`param_index` not used)
+        model_type = resolve_model_type(inner_type)
+        if model_type.is_subclass_of(dto_specialized_type):
+            break
+    else:
+        return None
+
+    type_var = parameters[param_index]
+    for attr, attr_type in get_model_type_hints(origin).items():
+        if attr_type.annotation is type_var or any(t.annotation is type_var for t in attr_type.inner_types):
+            return model_type, inner_type, attr
+
+    return None
+
+
+def is_pagination_type(parsed_type: ParsedType) -> bool:
+    """Determine if the parsed type represents a pagination type.
+
+    Args:
+        parsed_type: A parsed type that represents the annotation used to narrow the DTO type.
+
+    Returns:
+        Whether the parsed type represents a pagination type.
+    """
+    return parsed_type.is_subclass_of((ClassicPagination, CursorPagination, OffsetPagination))
