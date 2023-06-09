@@ -7,7 +7,6 @@ from litestar._openapi.parameters import create_parameter_for_handler
 from litestar._openapi.request_body import create_request_body
 from litestar._openapi.responses import create_responses
 from litestar._openapi.utils import SEPARATORS_CLEANUP_PATTERN
-from litestar.openapi.spec.operation import Operation
 from litestar.openapi.spec.path_item import PathItem
 from litestar.utils.helpers import unwrap_partial
 
@@ -117,7 +116,7 @@ def create_path_item(
                 route_handler, http_method, route.path_components
             )
             tags, security = extract_layered_values(route_handler)
-            operation = Operation(
+            operation = route_handler.operation_class(
                 operation_id=operation_id,
                 tags=tags,
                 summary=route_handler.summary or SEPARATORS_CLEANUP_PATTERN.sub("", route_handler.handler_name.title()),

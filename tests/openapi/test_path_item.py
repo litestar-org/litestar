@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Any, Tuple, Type, cast
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, cast
 
 import pytest
 
@@ -7,6 +8,7 @@ from litestar._openapi.path_item import create_path_item
 from litestar._openapi.utils import default_operation_id_creator
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.http_handlers import HTTPRouteHandler
+from litestar.openapi.spec import Operation
 from litestar.utils import find_index
 
 if TYPE_CHECKING:
@@ -161,3 +163,37 @@ def test_operation_id_validation() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         app.openapi_schema
+
+
+def test_operation_override() -> None:
+    @dataclass
+    class CustomOperation(Operation):
+        x_codeSamples: Optional[List[Dict[str, str]]] = None
+
+        def __post_init__(self) -> None:
+            self.tags = ["test"]
+            self.description = "test"
+            self.x_codeSamples = [
+                {"lang": "Python", "source": "import requests; requests.get('localhost/example')", "label": "Python"},
+                {"lang": "cURL", "source": "curl -XGET localhost/example", "label": "curl"},
+            ]
+
+    @get(path="/1")
+    def handler_1() -> None:
+        ...
+
+    @get(path="/2", operation_class=CustomOperation)
+    def handler_2() -> None:
+        ...
+
+    app = Litestar(route_handlers=[handler_1, handler_2])
+
+    assert app.openapi_schema.paths
+    assert app.openapi_schema.paths["/1"]
+    assert app.openapi_schema.paths["/1"].get
+    assert isinstance(app.openapi_schema.paths["/1"].get, Operation)
+    assert app.openapi_schema.paths["/2"]
+    assert app.openapi_schema.paths["/2"].get
+    assert isinstance(app.openapi_schema.paths["/2"].get, CustomOperation)
+    assert app.openapi_schema.paths["/2"].get.tags == ["test"]
+    assert app.openapi_schema.paths["/2"].get.description == "test"
