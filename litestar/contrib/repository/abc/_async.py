@@ -3,10 +3,10 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
-from .exceptions import NotFoundError
+from litestar.contrib.repository.exceptions import NotFoundError
 
 if TYPE_CHECKING:
-    from .filters import FilterTypes
+    from litestar.contrib.repository.filters import FilterTypes
 
 T = TypeVar("T")
 CollectionT = TypeVar("CollectionT")

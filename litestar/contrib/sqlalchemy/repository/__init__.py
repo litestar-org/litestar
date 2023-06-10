@@ -1,6 +1,6 @@
+from ._async import SQLAlchemyAsyncRepository
+from ._sync import SQLAlchemySyncRepository
 from ._util import wrap_sqlalchemy_exception
-from .async_repository import SQLAlchemyAsyncRepository
-from .sync_repository import SQLAlchemySyncRepository
 from .types import ModelT
 
 __all__ = (

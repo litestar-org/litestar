@@ -5,8 +5,8 @@ if TYPE_CHECKING:
 
     from litestar.contrib.sqlalchemy import base
 
-    from .async_repository import SQLAlchemyAsyncRepository
-    from .sync_repository import SQLAlchemySyncRepository
+    from ._async import SQLAlchemyAsyncRepository
+    from ._sync import SQLAlchemySyncRepository
 
 
 __all__ = (
