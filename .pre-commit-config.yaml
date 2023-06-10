@@ -108,6 +108,7 @@ repos:
             types-pyyaml,
             types-redis,
             uvicorn,
+            prometheus_client,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.311
@@ -166,6 +167,7 @@ repos:
             types-pyyaml,
             types-redis,
             uvicorn,
+            prometheus_client,
           ]
   - repo: local
     hooks:
