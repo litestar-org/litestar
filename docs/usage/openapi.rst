@@ -365,8 +365,8 @@ The above will result in an OpenAPI schema object that looks like this:
 
 
 
-Customizing Operation class
-----------------------------------
+Customizing ``Operation`` class
+---------------------------------------------
 
 You can customize the `operation object <https://spec.openapis.org/oas/v3.1.0#operation-object>`_ used for a path in the
 generated OpenAPI schemas by creating a subclass of :class:`Operation <.openapi.spec.operation.Operation>`.
