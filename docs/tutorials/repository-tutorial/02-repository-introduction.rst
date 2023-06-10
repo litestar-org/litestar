@@ -189,7 +189,7 @@ Here we demonstrate how to perform a bulk delete operation. Just as with the bul
 insert, deleting multiple records with the batch record methods is more efficient than
 executing row-by-row.
 
- .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
+.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
     :caption: app.py
     :emphasize-lines: 77-79
