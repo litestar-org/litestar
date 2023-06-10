@@ -422,8 +422,13 @@ known-first-party = ["litestar", "tests", "examples"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
 
 
-[tool.unasyncd]
-files = {"litestar/contrib/sqlalchemy/repository/async_repository.py" = "litestar/contrib/sqlalchemy/repository/sync_repository.py"}
+[tool.unasyncd.files]
+"litestar/contrib/sqlalchemy/repository/async_repository.py" = "litestar/contrib/sqlalchemy/repository/sync_repository.py"
+"litestar/contrib/repository/async_base.py" = "litestar/contrib/repository/sync_base.py"
+
+[tool.unasyncd.per_file_add_replacements."litestar/contrib/repository/async_base.py"]
+"AbstractAsyncRepository" = "AbstractSyncRepository"
+"AsyncRepoT" = "SyncRepoT"
 
 [tool.unasyncd.per_file_add_replacements."litestar/contrib/sqlalchemy/repository/async_repository.py"]
 SQLAlchemyAsyncRepository = "SQLAlchemySyncRepository"
