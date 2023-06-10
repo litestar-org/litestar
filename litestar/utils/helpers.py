@@ -2,15 +2,25 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from itertools import chain
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
-__all__ = ("Ref", "get_enum_string_value", "get_fully_qualified_class_name", "get_name", "unwrap_partial")
+if TYPE_CHECKING:
+    from typing import Iterable
 
+    from litestar.datastructures import Cookie
+    from litestar.types import MaybePartial
+
+__all__ = (
+    "Ref",
+    "get_enum_string_value",
+    "get_fully_qualified_class_name",
+    "get_name",
+    "unwrap_partial",
+    "encode_headers",
+)
 
 T = TypeVar("T")
-
-if TYPE_CHECKING:
-    from litestar.types import MaybePartial
 
 
 def get_name(value: Any) -> str:
@@ -70,3 +80,25 @@ def unwrap_partial(value: MaybePartial[T]) -> T:
     while hasattr(output, "func"):
         output = output.func
     return cast("T", output)
+
+
+def encode_headers(
+    headers: Iterable[tuple[str, Any]], cookies: Iterable[Cookie], raw_headers: list[tuple[bytes, bytes]]
+) -> list[tuple[bytes, bytes]]:
+    """Encode the response headers as a list of byte tuples.
+
+    Args:
+        headers: Iterable of header name/value pairs.
+        cookies: A list of cookies.
+        raw_headers: A list of raw headers.
+
+    Returns:
+        A list of byte tuples.
+    """
+    return list(
+        chain(
+            ((k.lower().encode("latin-1"), str(v).encode("latin-1")) for k, v in headers),
+            (cookie.to_encoded_header() for cookie in cookies if not cookie.documentation_only),
+            raw_headers,
+        )
+    )

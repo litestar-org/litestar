@@ -1,6 +1,6 @@
 from litestar.utils.deprecation import deprecated, warn_deprecation
 
-from .helpers import Ref, get_enum_string_value, get_name
+from .helpers import Ref, encode_headers, get_enum_string_value, get_name
 from .path import join_paths, normalize_path
 from .predicates import (
     is_any,
@@ -40,6 +40,7 @@ __all__ = (
     "compact",
     "delete_litestar_scope_state",
     "deprecated",
+    "encode_headers",
     "find_index",
     "get_enum_string_value",
     "get_litestar_scope_state",

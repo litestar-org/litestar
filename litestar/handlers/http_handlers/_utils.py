@@ -8,6 +8,7 @@ from litestar.dto.interface import ConnectionContext
 from litestar.enums import HttpMethod
 from litestar.exceptions import ValidationException
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from litestar.utils import encode_headers
 
 if TYPE_CHECKING:
     from litestar.app import Litestar
@@ -64,11 +65,7 @@ def create_data_handler(
         A handler function.
 
     """
-    normalized_headers = [
-        (name.lower().encode("latin-1"), value.encode("latin-1")) for name, value in normalize_headers(headers).items()
-    ]
-    cookie_headers = [cookie.to_encoded_header() for cookie in cookies if not cookie.documentation_only]
-    raw_headers = [*normalized_headers, *cookie_headers]
+    raw_headers = encode_headers(normalize_headers(headers).items(), cookies, [])
 
     async def create_response(data: Any) -> ASGIApp:
         response = response_class(

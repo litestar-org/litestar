@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from itertools import chain
 from typing import TYPE_CHECKING, Any, Generic, Literal, Mapping, TypeVar, cast, overload
 
 from litestar.datastructures.cookie import Cookie
@@ -9,7 +8,7 @@ from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import encode_json, encode_msgpack, get_serializer
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
-from litestar.utils.helpers import get_enum_string_value
+from litestar.utils.helpers import encode_headers, get_enum_string_value
 
 if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
@@ -35,11 +34,11 @@ class ASGIResponse:
     __slots__ = (
         "background",
         "body",
-        "status_code",
         "content_length",
         "encoded_headers",
-        "is_head_response",
         "encoding",
+        "is_head_response",
+        "status_code",
     )
 
     def __init__(
@@ -108,7 +107,7 @@ class ASGIResponse:
 
         self.status_code = status_code
         self.content_length = content_length
-        self.encoded_headers = encode_headers(headers, cookies, encoded_headers)
+        self.encoded_headers = encode_headers(headers.items(), cookies, encoded_headers)
         self.background = background
         self.is_head_response = is_head_response
         self.encoding = encoding
@@ -209,29 +208,6 @@ def render(content: Any, media_type: str, enc_hook: Serializer, encoding: str) -
         raise ImproperlyConfiguredException(f"unsupported media_type {media_type} for content {content!r}")
     except (AttributeError, ValueError, TypeError) as e:
         raise ImproperlyConfiguredException("Unable to serialize response content") from e
-
-
-def encode_headers(
-    headers: dict[str, Any], cookies: list[Cookie], raw_headers: list[tuple[bytes, bytes]]
-) -> list[tuple[bytes, bytes]]:
-    """Encode the response headers as a list of byte tuples.
-
-    Args:
-        headers: A mapping of response headers.
-        cookies: A mapping of response cookies.
-        raw_headers: A list of raw headers.
-
-    Returns:
-        A list of byte tuples.
-    """
-
-    return list(
-        chain(
-            ((k.lower().encode("latin-1"), str(v).encode("latin-1")) for k, v in headers.items()),
-            (cookie.to_encoded_header() for cookie in cookies),
-            raw_headers,
-        )
-    )
 
 
 class Response(Generic[T]):
