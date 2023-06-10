@@ -24,31 +24,31 @@ class TemplateResponse(Response[bytes]):
         self,
         template_name: str,
         *,
-        template_engine: TemplateEngineProtocol,
-        context: dict[str, Any],
-        status_code: int = HTTP_200_OK,
         background: BackgroundTask | BackgroundTasks | None = None,
-        headers: dict[str, Any] | None = None,
+        context: dict[str, Any],
         cookies: ResponseCookies | None = None,
         encoding: str = "utf-8",
+        headers: dict[str, Any] | None = None,
         media_type: MediaType | str = MediaType.HTML,
+        status_code: int = HTTP_200_OK,
+        template_engine: TemplateEngineProtocol,
     ) -> None:
         """Handle the rendering of a given template into a bytes string.
 
         Args:
             template_name: Path-like name for the template to be rendered, e.g. ``index.html``.
-            template_engine: The template engine class to use to render the response.
-            status_code: A value for the response HTTP status code.
-            context: A dictionary of key/value pairs to be passed to the temple engine's render method.
             background: A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
                 :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
                 Defaults to ``None``.
-            headers: A string keyed dictionary of response headers. Header keys are insensitive.
+            context: A dictionary of key/value pairs to be passed to the temple engine's render method.
             cookies: A list of :class:`Cookie <.datastructures.Cookie>` instances to be set under the response
                 ``Set-Cookie`` header.
             encoding: Content encoding
+            headers: A string keyed dictionary of response headers. Header keys are insensitive.
             media_type: A string or member of the :class:`MediaType <.enums.MediaType>` enum. If not set, try to infer
                 the media type based on the template name. If this fails, fall back to ``text/plain``.
+            status_code: A value for the response HTTP status code.
+            template_engine: The template engine class to use to render the response.
         """
         if media_type == MediaType.JSON:  # we assume this is the default
             suffixes = PurePath(template_name).suffixes

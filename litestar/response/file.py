@@ -127,10 +127,10 @@ class ASGIFileResponse(ASGIStreamingResponse):
             **kwargs,
         )
         self.adapter = adapter
-        self.file_path = file_path
         self.chunk_size = chunk_size
         self.etag = etag
         self.file_info = file_info
+        self.file_path = file_path
 
     async def send_body(self, send: Send, receive: Receive) -> None:
         """Emit a stream of events correlating with the response body.

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, Literal, Mapping, TypeVar, cast, overload
+from typing import TYPE_CHECKING, Any, Generic, Literal, Mapping, TypeVar, overload
 
 from litestar.datastructures.cookie import Cookie
 from litestar.datastructures.headers import ETag
@@ -342,13 +342,11 @@ class Response(Generic[T]):
             return content
 
         try:
-            if media_type.startswith("text/") or isinstance(content, str):
-                if not content:
-                    return b""
+            if media_type.startswith("text/") and not content:
+                return b""
 
-                # TODO: refactor so this cast is unnecessary. The cast is necessary because the type of 'content'
-                #  has not been narrowed down to 'str' by this point. So, can it only be 'str' at this point?
-                return cast("str", content).encode(self.encoding)
+            if isinstance(content, str):
+                return content.encode(self.encoding)
 
             if media_type == MediaType.MESSAGEPACK:
                 return encode_msgpack(content, enc_hook)
