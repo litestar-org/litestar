@@ -5,8 +5,19 @@ from typing import TYPE_CHECKING, Any, Generic, Literal, cast
 from sqlalchemy import Result, Select, delete, over, select, text, update
 from sqlalchemy import func as sql_func
 
-from litestar.contrib.repository import AbstractAsyncRepository, FilterTypes, RepositoryError
-from litestar.contrib.repository.filters import BeforeAfter, CollectionFilter, LimitOffset, OrderBy, SearchFilter
+from litestar.contrib.repository import (  # noqa: RUF100, F401
+    AbstractAsyncRepository,
+    AbstractSyncRepository,
+    RepositoryError,
+)
+from litestar.contrib.repository.filters import (
+    BeforeAfter,
+    CollectionFilter,
+    FilterTypes,
+    LimitOffset,
+    OrderBy,
+    SearchFilter,
+)
 
 from ._util import wrap_sqlalchemy_exception
 from .types import ModelT, RowT, SelectT
@@ -16,7 +27,8 @@ if TYPE_CHECKING:
     from datetime import datetime
 
     from sqlalchemy.engine.interfaces import _CoreSingleExecuteParams
-    from sqlalchemy.ext.asyncio import AsyncSession
+    from sqlalchemy.ext.asyncio import AsyncSession  # noqa: RUF100, F401
+    from sqlalchemy.orm import Session  # noqa: RUF100, F401
 
 
 class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]):
