@@ -27,7 +27,7 @@ class ASGIRoute(BaseRoute):
 
         Args:
             path: The path for the route.
-            route_handler: An instance of :ref:`ASGIRouteHandler <litestar.handlers.asgi_handlers.ASGIRouteHandler>`.
+            route_handler: An instance of :class:`~.handlers.ASGIRouteHandler`.
         """
         self.route_handler = route_handler
         super().__init__(

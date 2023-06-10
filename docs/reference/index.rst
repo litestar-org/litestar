@@ -31,6 +31,7 @@ API reference
     response
     response_containers
     router
+    routes
     security/index
     serialization
     static_files

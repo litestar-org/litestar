@@ -1,10 +1,12 @@
 from functools import partial
-from typing import Literal
+from typing import Literal, cast
 
 from docutils import nodes
 from docutils.parsers.rst import directives
 from sphinx.application import Sphinx
+from sphinx.domains.std import StandardDomain
 from sphinx.util.docutils import SphinxDirective
+from sphinx.util.nodes import clean_astext
 
 _GH_BASE_URL = "https://github.com/litestar-org/litestar"
 
@@ -87,6 +89,8 @@ class ChangelogDirective(SphinxDirective):
 
         self.state.nested_parse(self.content, self.content_offset, changelog_node)
 
+        domain = cast(StandardDomain, self.env.get_domain("std"))
+
         change_group_lists = {
             "feature": nodes.definition_list(),
             "bugfix": nodes.definition_list(),
@@ -97,7 +101,7 @@ class ChangelogDirective(SphinxDirective):
 
         nodes_to_remove = []
 
-        for i, change_node in enumerate(changelog_node.findall(Change)):
+        for _i, change_node in enumerate(changelog_node.findall(Change)):
             change_type = change_node.attributes["change_type"]
             title = change_node.attributes["title"]
 
@@ -105,10 +109,15 @@ class ChangelogDirective(SphinxDirective):
 
             term = nodes.term()
             term += title
-            target_id = f"{version}-{change_type}-{i}"
+            target_id = f"{version}-{nodes.fully_normalize_name(title[0].astext())}"
             term += nodes.reference(
                 "#", "#", refuri="#" + target_id, internal=True, classes=["headerlink"], ids=[target_id]
             )
+
+            reference_id = "change:" + target_id
+            domain.anonlabels[reference_id] = self.env.docname, target_id
+            domain.labels[reference_id] = self.env.docname, target_id, "Change: " + clean_astext(title[0])
+
             if change_node.attributes["breaking"]:
                 breaking_notice = nodes.inline("breaking", "breaking")
                 breaking_notice.attributes["classes"].append("breaking-change")

@@ -195,7 +195,7 @@ html_theme_options = {
             },
         },
         "Release notes": {
-            "2.0 migration guide": "release-notes/migration_guide_2",
+            "2.0 migration guide": "release-notes/whats-new-2",
             "2.x Changelog": "https://docs.litestar.dev/2/release-notes/changelog.html",
             "1.x Changelog": "https://docs.litestar.dev/1/release-notes/changelog.html",
         },
