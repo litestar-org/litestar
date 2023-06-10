@@ -68,4 +68,5 @@ Alternately, you may use the ``SQLAlchemySyncRepository`` class for your synchro
     :caption: sqlalchemy_sync_repository.py
     :language: python
 
-Check out the tutorial for step-by-step usage instructions.
+.. seealso::
+    :doc:`/tutorials/repository-tutorial/index`
