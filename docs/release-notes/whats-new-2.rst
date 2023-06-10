@@ -301,7 +301,7 @@ SQLAlchemy 2 only.
 TODO: Migration instructions
 
 .. seealso::
-    :doc:`/usage/contrib/sqlalchemy`
+    :doc:`/usage/contrib/sqlalchemy/index`
     :doc:`/reference/contrib/sqlalchemy/index`
 
 
