@@ -208,4 +208,4 @@ Finally, we'll demonstrate how to count the number of records remaining in the d
 
 Now that we have demonstrated how to interact with the repository objects outside of a
 Litestar application, our next example will use dependency injection to add this
-functionality to a Controller!
+functionality to a :class:`~litestar.controller.Controller`!
