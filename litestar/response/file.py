@@ -12,6 +12,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
 from litestar.response.streaming import ASGIStreamingResponse, StreamingResponse
 from litestar.status_codes import HTTP_200_OK
+from litestar.utils.helpers import get_enum_string_value
 
 if TYPE_CHECKING:
     from os import PathLike
@@ -288,6 +289,10 @@ class FileResponse(StreamingResponse):
         """
         headers = {**headers, **self.headers} if headers is not None else self.headers
 
+        media_type = self.media_type or media_type
+        if media_type is not None:
+            media_type = get_enum_string_value(media_type)
+
         return ASGIFileResponse(
             adapter=self.adapter,
             background=self.background,
@@ -305,6 +310,6 @@ class FileResponse(StreamingResponse):
             headers=headers,
             is_head_response=is_head_response,
             iterator=self.iterator,
-            media_type=self.media_type or media_type,
+            media_type=media_type,
             status_code=self.status_code,
         )

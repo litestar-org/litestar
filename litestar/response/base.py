@@ -398,6 +398,6 @@ class Response(Generic[T]):
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,
-            media_type=self.media_type or media_type,
+            media_type=media_type,
             status_code=self.status_code,
         )
