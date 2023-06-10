@@ -42,7 +42,7 @@ from .route_handler import WebsocketRouteHandler
 if TYPE_CHECKING:
     from typing import Coroutine
 
-    from litestar import Litestar
+    from litestar import Litestar, Router
     from litestar.dto.interface import DTOInterface
     from litestar.types.asgi_types import WebSocketMode
 
@@ -358,8 +358,16 @@ class WebsocketListener(ABC):
     type_encoders: A mapping of types to callables that transform them into types supported for serialization.
     """
 
-    def __init__(self) -> None:
-        self._handler = websocket_listener(
+    def __init__(self, owner: Router) -> None:
+        """Initialize a WebsocketListener instance.
+
+        Args:
+            owner: The :class:`Router <.routing.Router>` instance that owns this listener.
+        """
+        self._owner = owner
+
+    def to_handler(self) -> websocket_listener:
+        handler = websocket_listener(
             dependencies=self.dependencies,
             dto=self.dto,
             exception_handlers=self.exception_handlers,
@@ -376,6 +384,8 @@ class WebsocketListener(ABC):
             signature_namespace=self.signature_namespace,
             type_encoders=self.type_encoders,
         )(self.on_receive)
+        handler.owner = self._owner
+        return handler
 
     @abstractmethod
     def on_receive(self, *args: Any, **kwargs: Any) -> Any:

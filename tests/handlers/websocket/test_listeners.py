@@ -364,25 +364,74 @@ def test_hook_dependencies() -> None:
     on_accept_mock = MagicMock()
     on_disconnect_mock = MagicMock()
 
-    def on_accept(name: str, state: State, query: dict) -> None:
-        on_accept_mock(name=name, state=state, query=query)
+    def some_dependency() -> str:
+        return "hello"
 
-    def on_disconnect(name: str, state: State, query: dict) -> None:
-        on_disconnect_mock(name=name, state=state, query=query)
+    def on_accept(name: str, state: State, query: dict, some: str) -> None:
+        on_accept_mock(name=name, state=state, query=query, some=some)
+
+    def on_disconnect(name: str, state: State, query: dict, some: str) -> None:
+        on_disconnect_mock(name=name, state=state, query=query, some=some)
 
     @websocket_listener("/{name: str}", on_accept=on_accept, on_disconnect=on_disconnect)
     def handler(data: bytes) -> None:
         pass
 
-    with create_test_client([handler], debug=True) as client, client.websocket_connect("/foo") as ws:
+    with create_test_client(
+        [handler], debug=True, dependencies={"some": some_dependency}
+    ) as client, client.websocket_connect("/foo") as ws:
         ws.send_text("")
 
-    assert on_accept_mock.call_args_list[0].kwargs["name"] == "foo"
-    assert isinstance(on_accept_mock.call_args_list[0].kwargs["state"], State)
-    assert isinstance(on_accept_mock.call_args_list[0].kwargs["query"], dict)
-    assert on_disconnect_mock.call_args_list[0].kwargs["name"] == "foo"
-    assert isinstance(on_disconnect_mock.call_args_list[0].kwargs["state"], State)
-    assert isinstance(on_disconnect_mock.call_args_list[0].kwargs["query"], dict)
+    on_accept_kwargs = on_accept_mock.call_args_list[0].kwargs
+    assert on_accept_kwargs["name"] == "foo"
+    assert on_accept_kwargs["some"] == "hello"
+    assert isinstance(on_accept_kwargs["state"], State)
+    assert isinstance(on_accept_kwargs["query"], dict)
+
+    on_disconnect_kwargs = on_disconnect_mock.call_args_list[0].kwargs
+    assert on_disconnect_kwargs["name"] == "foo"
+    assert on_disconnect_kwargs["some"] == "hello"
+    assert isinstance(on_disconnect_kwargs["state"], State)
+    assert isinstance(on_disconnect_kwargs["query"], dict)
+
+
+def test_websocket_listener_class_hook_dependencies() -> None:
+    on_accept_mock = MagicMock()
+    on_disconnect_mock = MagicMock()
+
+    def some_dependency() -> str:
+        return "hello"
+
+    class Listener(WebsocketListener):
+        path = "/{name: str}"
+
+        @staticmethod
+        def on_accept(name: str, state: State, query: dict, some: str) -> None:  # type: ignore[override]
+            on_accept_mock(name=name, state=state, query=query, some=some)
+
+        @staticmethod
+        def on_disconnect(name: str, state: State, query: dict, some: str) -> None:  # type: ignore[override]
+            on_disconnect_mock(name=name, state=state, query=query, some=some)
+
+        def on_receive(self, data: bytes) -> None:
+            pass
+
+    with create_test_client(
+        [Listener], debug=True, dependencies={"some": some_dependency}
+    ) as client, client.websocket_connect("/foo") as ws:
+        ws.send_text("")
+
+    on_accept_kwargs = on_accept_mock.call_args_list[0].kwargs
+    assert on_accept_kwargs["name"] == "foo"
+    assert on_accept_kwargs["some"] == "hello"
+    assert isinstance(on_accept_kwargs["state"], State)
+    assert isinstance(on_accept_kwargs["query"], dict)
+
+    on_disconnect_kwargs = on_disconnect_mock.call_args_list[0].kwargs
+    assert on_disconnect_kwargs["name"] == "foo"
+    assert on_disconnect_kwargs["some"] == "hello"
+    assert isinstance(on_disconnect_kwargs["state"], State)
+    assert isinstance(on_disconnect_kwargs["query"], dict)
 
 
 @pytest.mark.parametrize("hook_name", ["on_accept", "on_disconnect", "connection_accept_handler"])
