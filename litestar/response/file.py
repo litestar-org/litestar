@@ -11,8 +11,7 @@ from litestar.constants import ONE_MEGABYTE
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
 from litestar.response.streaming import ASGIStreamingResponse, StreamingResponse
-from litestar.status_codes import HTTP_200_OK
-from litestar.utils.helpers import get_enum_string_value
+from litestar.utils.helpers import filter_cookies, get_enum_string_value
 
 if TYPE_CHECKING:
     from os import PathLike
@@ -21,9 +20,18 @@ if TYPE_CHECKING:
     from anyio import Path
 
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
+    from litestar.datastructures.cookie import Cookie
     from litestar.datastructures.headers import ETag
     from litestar.enums import MediaType
-    from litestar.types import HTTPResponseBodyEvent, PathType, Receive, ResponseCookies, Send, TypeEncodersMap
+    from litestar.types import (
+        HTTPResponseBodyEvent,
+        PathType,
+        Receive,
+        ResponseCookies,
+        ResponseHeaders,
+        Send,
+        TypeEncodersMap,
+    )
     from litestar.types.file_types import FileInfo, FileSystemProtocol
 
 __all__ = (
@@ -214,10 +222,10 @@ class FileResponse(StreamingResponse):
         file_info: FileInfo | Coroutine[Any, Any, FileInfo] | None = None,
         file_system: FileSystemProtocol | None = None,
         filename: str | None = None,
-        headers: dict[str, Any] | None = None,
+        headers: ResponseHeaders | None = None,
         media_type: Literal[MediaType.TEXT] | str | None = None,
         stat_result: stat_result_type | None = None,
-        status_code: int = HTTP_200_OK,
+        status_code: int | None = None,
     ) -> None:
         """Initialize ``FileResponse``
 
@@ -276,18 +284,32 @@ class FileResponse(StreamingResponse):
     def to_asgi_response(
         self,
         *,
+        background: BackgroundTask | BackgroundTasks | None = None,
+        cookies: list[Cookie] | None = None,
         encoded_headers: list[tuple[bytes, bytes]] | None = None,
         headers: dict[str, str] | None = None,
         is_head_response: bool = False,
         media_type: MediaType | str | None = None,
+        status_code: int | None = None,
         type_encoders: TypeEncodersMap | None = None,
     ) -> ASGIFileResponse:
         """Create an :class:`ASGIFileResponse <litestar.response.file.ASGIFileResponse>` instance.
+
+        Args:
+            background: Background task(s) to be executed after the response is sent.
+            cookies: A list of cookies to be set on the response.
+            encoded_headers: A list of already encoded headers.
+            headers: Additional headers to be merged with the response headers. Response headers take precedence.
+            is_head_response: Whether the response is a HEAD response.
+            media_type: Media type for the response. If ``media_type`` is already set on the response, this is ignored.
+            status_code: Status code for the response. If ``status_code`` is already set on the response, this is
+            type_encoders: A dictionary of type encoders to use for encoding the response content.
 
         Returns:
             A low-level ASGI file response.
         """
         headers = {**headers, **self.headers} if headers is not None else self.headers
+        cookies = self.cookies if cookies is None else filter_cookies(self.cookies, cookies)
 
         media_type = self.media_type or media_type
         if media_type is not None:
@@ -295,12 +317,12 @@ class FileResponse(StreamingResponse):
 
         return ASGIFileResponse(
             adapter=self.adapter,
-            background=self.background,
+            background=self.background or background,
             body=b"",
             chunk_size=self.chunk_size,
             content_disposition_type=self.content_disposition_type,  # pyright: ignore
             content_length=0,
-            cookies=self.cookies,
+            cookies=cookies,
             encoded_headers=encoded_headers or [],
             encoding=self.encoding,
             etag=self.etag,
@@ -311,5 +333,5 @@ class FileResponse(StreamingResponse):
             is_head_response=is_head_response,
             iterator=self.iterator,
             media_type=media_type,
-            status_code=self.status_code,
+            status_code=self.status_code or status_code,
         )

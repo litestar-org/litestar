@@ -14,15 +14,15 @@ from anyio import CancelScope, create_task_group
 
 from litestar.enums import MediaType
 from litestar.response.base import ASGIResponse, Response
-from litestar.status_codes import HTTP_200_OK
 from litestar.types.composite_types import StreamType
-from litestar.utils.helpers import get_enum_string_value
+from litestar.utils.helpers import filter_cookies, get_enum_string_value
 from litestar.utils.sync import AsyncIteratorWrapper
 
 if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
+    from litestar.datastructures.cookie import Cookie
     from litestar.enums import OpenAPIMediaType
-    from litestar.types import HTTPResponseBodyEvent, Receive, ResponseCookies, Send, TypeEncodersMap
+    from litestar.types import HTTPResponseBodyEvent, Receive, ResponseCookies, ResponseHeaders, Send, TypeEncodersMap
 
 __all__ = (
     "ASGIStreamingResponse",
@@ -111,9 +111,9 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
         background: BackgroundTask | BackgroundTasks | None = None,
         cookies: ResponseCookies | None = None,
         encoding: str = "utf-8",
-        headers: dict[str, Any] | None = None,
+        headers: ResponseHeaders | None = None,
         media_type: MediaType | OpenAPIMediaType | str | None = None,
-        status_code: int = HTTP_200_OK,
+        status_code: int | None = None,
     ):
         """Initialize the response.
 
@@ -145,31 +145,46 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
     def to_asgi_response(
         self,
         *,
+        background: BackgroundTask | BackgroundTasks | None = None,
+        cookies: list[Cookie] | None = None,
         encoded_headers: list[tuple[bytes, bytes]] | None = None,
-        headers: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
         is_head_response: bool = False,
         media_type: MediaType | str | None = None,
+        status_code: int | None = None,
         type_encoders: TypeEncodersMap | None = None,
     ) -> ASGIResponse:
         """Create an ASGIStreamingResponse from a StremaingResponse instance.
 
+        Args:
+            background: Background task(s) to be executed after the response is sent.
+            cookies: A list of cookies to be set on the response.
+            encoded_headers: A list of already encoded headers.
+            headers: Additional headers to be merged with the response headers. Response headers take precedence.
+            is_head_response: Whether the response is a HEAD response.
+            media_type: Media type for the response. If ``media_type`` is already set on the response, this is ignored.
+            status_code: Status code for the response. If ``status_code`` is already set on the response, this is
+            type_encoders: A dictionary of type encoders to use for encoding the response content.
+
         Returns:
-            An ASGIResponse instance.
+            An ASGIStreamingResponse instance.
         """
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
+        cookies = self.cookies if cookies is None else filter_cookies(self.cookies, cookies)
+
         media_type = get_enum_string_value(media_type or self.media_type or MediaType.JSON)
 
         return ASGIStreamingResponse(
-            background=self.background,
+            background=self.background or background,
             body=b"",
             content_length=0,
-            cookies=self.cookies,
+            cookies=cookies,
             encoded_headers=encoded_headers or [],
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,
             iterator=self.iterator,
             media_type=media_type,
-            status_code=self.status_code,
+            status_code=self.status_code or status_code,
         )

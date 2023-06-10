@@ -9,6 +9,7 @@ from litestar.enums import HttpMethod
 from litestar.exceptions import ValidationException
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from litestar.utils import encode_headers
+from litestar.utils.helpers import filter_cookies
 
 if TYPE_CHECKING:
     from litestar.app import Litestar
@@ -32,7 +33,6 @@ __all__ = (
     "create_generic_asgi_response_handler",
     "create_response_container_handler",
     "create_response_handler",
-    "filter_cookies",
     "get_default_status_code",
     "normalize_headers",
     "normalize_http_method",
@@ -96,19 +96,6 @@ def create_data_handler(
         return await create_response(data=data)
 
     return handler
-
-
-def filter_cookies(local_cookies: frozenset[Cookie], layered_cookies: frozenset[Cookie]) -> list[Cookie]:
-    """Given two sets of cookies, return a unique list of cookies, that are not marked as documentation_only.
-
-    Args:
-        local_cookies: Cookies returned from the local scope.
-        layered_cookies: Cookies returned from the layers.
-
-    Returns:
-        A unified list of cookies
-    """
-    return [cookie for cookie in {*local_cookies, *layered_cookies} if not cookie.documentation_only]
 
 
 def create_generic_asgi_response_handler(
@@ -181,7 +168,7 @@ def create_response_container_handler(
             media_type=data.media_type or media_type,
             request=request,
         )
-        response.cookies = filter_cookies(frozenset(data.cookies), cookies)
+        response.cookies = filter_cookies(data.cookies, cookies)
         return (await after_request(response) if after_request else response).to_asgi_response()  # type: ignore
 
     return handler
@@ -202,7 +189,7 @@ def create_response_handler(
     """
 
     async def handler(data: Response, **kwargs: Any) -> ASGIApp:
-        data.cookies = filter_cookies(frozenset(data.cookies), cookies)
+        data.cookies = filter_cookies(data.cookies, cookies)
         return (await after_request(data) if after_request else data).to_asgi_response()  # type: ignore
 
     return handler

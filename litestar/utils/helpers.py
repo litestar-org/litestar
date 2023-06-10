@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 __all__ = (
     "Ref",
+    "filter_cookies",
     "get_enum_string_value",
     "get_fully_qualified_class_name",
     "get_name",
@@ -102,3 +103,17 @@ def encode_headers(
             raw_headers,
         )
     )
+
+
+def filter_cookies(local_cookies: Iterable[Cookie], layered_cookies: Iterable[Cookie]) -> list[Cookie]:
+    """Given two sets of cookies, return a unique list of cookies, that are not marked as documentation_only.
+
+    Args:
+        local_cookies: Cookies returned from the local scope.
+        layered_cookies: Cookies returned from the layers.
+
+    Returns:
+        A unified list of cookies
+    """
+    # TODO: check this precedence, should local cookies be overwritten by layered cookies?
+    return [cookie for cookie in {*local_cookies, *layered_cookies} if not cookie.documentation_only]

@@ -8,7 +8,7 @@ from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import encode_json, encode_msgpack, get_serializer
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
-from litestar.utils.helpers import encode_headers, get_enum_string_value
+from litestar.utils.helpers import encode_headers, filter_cookies, get_enum_string_value
 
 if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
@@ -189,12 +189,12 @@ class Response(Generic[T]):
         self,
         content: T,
         *,
-        status_code: int | None = None,
-        media_type: MediaType | OpenAPIMediaType | str | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
-        headers: ResponseHeaders | None = None,
         cookies: ResponseCookies | None = None,
         encoding: str = "utf-8",
+        headers: ResponseHeaders | None = None,
+        media_type: MediaType | OpenAPIMediaType | str | None = None,
+        status_code: int | None = None,
         type_encoders: TypeEncodersMap | None = None,
     ) -> None:
         """Initialize the response.
@@ -361,19 +361,25 @@ class Response(Generic[T]):
     def to_asgi_response(
         self,
         *,
+        background: BackgroundTask | BackgroundTasks | None = None,
+        cookies: list[Cookie] | None = None,
         encoded_headers: list[tuple[bytes, bytes]] | None = None,
         headers: dict[str, str] | None = None,
         is_head_response: bool = False,
         media_type: MediaType | str | None = None,
+        status_code: int | None = None,
         type_encoders: TypeEncodersMap | None = None,
     ) -> ASGIResponse:
         """Create an ASGIResponse from a Response instance.
 
         Args:
+            background: Background task(s) to be executed after the response is sent.
+            cookies: A list of cookies to be set on the response.
             encoded_headers: A list of already encoded headers.
             headers: Additional headers to be merged with the response headers. Response headers take precedence.
             is_head_response: Whether the response is a HEAD response.
             media_type: Media type for the response. If ``media_type`` is already set on the response, this is ignored.
+            status_code: Status code for the response. If ``status_code`` is already set on the response, this is
             type_encoders: A dictionary of type encoders to use for encoding the response content.
 
         Returns:
@@ -381,6 +387,7 @@ class Response(Generic[T]):
         """
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
+        cookies = self.cookies if cookies is None else filter_cookies(self.cookies, cookies)
 
         if type_encoders:
             type_encoders = {**(self.response_type_encoders or {}), **type_encoders}
@@ -390,14 +397,14 @@ class Response(Generic[T]):
         media_type = get_enum_string_value(media_type or self.media_type or MediaType.JSON)
 
         return ASGIResponse(
-            background=self.background,
+            background=self.background or background,
             body=self.render(self.content, media_type, get_serializer(type_encoders)),
             content_length=None,
-            cookies=self.cookies,
+            cookies=cookies,
             encoded_headers=encoded_headers or [],
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,
             media_type=media_type,
-            status_code=self.status_code,
+            status_code=self.status_code or status_code,
         )
