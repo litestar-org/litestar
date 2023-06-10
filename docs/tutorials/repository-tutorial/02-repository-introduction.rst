@@ -46,7 +46,7 @@ In the following examples, we'll cover a few ways that you can use the repositor
 
 
 Model Repository
-^^^^^^^^^^^
+^^^^^^^^^^^^^^^
 
 Here we import the :class:`SQLAlchemyAsyncRepository <litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository>` class and create an ``AuthorRepository`` repository class.  This is all that's required to include all of the integrated repository features.
 
