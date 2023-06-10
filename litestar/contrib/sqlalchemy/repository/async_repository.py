@@ -335,7 +335,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         Returns:
             Count of records returned by query, ignoring pagination.
         """
-        if self._dialect.name in {"spanner"}:
+        if self._dialect.name in {"spanner", "spanner+spanner"}:
             return await self._list_and_count_basic(*filters, **kwargs)
         return await self._list_and_count_window(*filters, **kwargs)
 
