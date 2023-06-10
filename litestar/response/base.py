@@ -45,22 +45,21 @@ class ASGIResponse:
         self,
         *,
         background: BackgroundTask | BackgroundTasks | None,
-        content: Any,
+        body: bytes,
         content_length: int | None,
         cookies: list[Cookie],
         encoded_headers: list[tuple[bytes, bytes]],
         encoding: str,
         headers: dict[str, Any],
         is_head_response: bool,
-        media_type: MediaType | OpenAPIMediaType | str | None,
+        media_type: str,
         status_code: int | None,
-        type_encoders: TypeEncodersMap,
     ) -> None:
         """A low-level ASGI response class.
 
         Args:
             background: A background task or a list of background tasks to be executed after the response is sent.
-            content: byte-encodable content to send in the response body.
+            body: encoded content to send in the response body.
             content_length: The response content length.
             cookies: The response cookies.
             encoded_headers: The response headers.
@@ -69,7 +68,6 @@ class ASGIResponse:
             is_head_response: A boolean indicating if the response is a HEAD response.
             media_type: The response media type.
             status_code: The response status code.
-            type_encoders: A mapping of types to encoders.
         """
         status_code = status_code or HTTP_200_OK
 
@@ -78,14 +76,13 @@ class ASGIResponse:
         )
 
         if not status_allows_body or is_head_response:
-            if content:
+            if body and body != b"null":
                 raise ImproperlyConfiguredException(
                     "response content is not supported for HEAD responses and responses with a status code "
                     "that does not allow content (304, 204, < 200)"
                 )
-            content = b""
+            body = b""
 
-        media_type = get_enum_string_value(media_type or MediaType.JSON)
         encoded_headers.append(
             (
                 b"content-type",
@@ -95,57 +92,19 @@ class ASGIResponse:
             ),
         )
 
-        self.body = self.render(
-            content=content, media_type=media_type, enc_hook=get_serializer(type_encoders), encoding=encoding
-        )
-
         if content_length is None:
-            content_length = len(self.body)
+            content_length = len(body)
 
         if "content-length" not in headers and content_length:
             encoded_headers.append((b"content-length", str(content_length).encode("latin-1")))
 
-        self.status_code = status_code
+        self.background = background
+        self.body = body
         self.content_length = content_length
         self.encoded_headers = encode_headers(headers.items(), cookies, encoded_headers)
-        self.background = background
-        self.is_head_response = is_head_response
         self.encoding = encoding
-
-    @staticmethod
-    def render(content: Any, media_type: str, enc_hook: Serializer, encoding: str) -> bytes:
-        """Handle the rendering of content into a bytes string.
-
-        Args:
-            content: A value for the response body that will be rendered into bytes string.
-            media_type: The media type of the response.
-            enc_hook: A callable that will be used to encode the content into a bytes string.
-            encoding: The encoding to use when encoding the content.
-
-        Returns:
-            An encoded bytes string
-        """
-        if isinstance(content, bytes):
-            return content
-
-        try:
-            if media_type.startswith("text/") or isinstance(content, str):
-                if not content:
-                    return b""
-
-                # TODO: refactor so this cast is unnecessary. The cast is necessary because the type of 'content'
-                #  has not been narrowed down to 'str' by this point. So, can it only be 'str' at this point?
-                return cast("str", content).encode(encoding)
-
-            if media_type == MediaType.MESSAGEPACK:
-                return encode_msgpack(content, enc_hook)
-
-            if media_type.startswith("application/json"):
-                return encode_json(content, enc_hook)
-
-            raise ImproperlyConfiguredException(f"unsupported media_type {media_type} for content {content!r}")
-        except (AttributeError, ValueError, TypeError) as e:
-            raise ImproperlyConfiguredException("Unable to serialize response content") from e
+        self.is_head_response = is_head_response
+        self.status_code = status_code
 
     async def after_response(self) -> None:
         """Execute after the response is sent.
@@ -219,11 +178,8 @@ class Response(Generic[T]):
         "cookies",
         "encoding",
         "headers",
-        "is_text_response",
         "media_type",
-        "status_allows_body",
         "status_code",
-        "raw_headers",
         "response_type_encoders",
     )
 
@@ -376,6 +332,34 @@ class Response(Generic[T]):
         self.cookies = [c for c in self.cookies if c != cookie]
         self.cookies.append(cookie)
 
+    def render(self, content: Any, media_type: str, enc_hook: Serializer) -> bytes:
+        """Handle the rendering of content into a bytes string.
+
+        Returns:
+            An encoded bytes string
+        """
+        if isinstance(content, bytes):
+            return content
+
+        try:
+            if media_type.startswith("text/") or isinstance(content, str):
+                if not content:
+                    return b""
+
+                # TODO: refactor so this cast is unnecessary. The cast is necessary because the type of 'content'
+                #  has not been narrowed down to 'str' by this point. So, can it only be 'str' at this point?
+                return cast("str", content).encode(self.encoding)
+
+            if media_type == MediaType.MESSAGEPACK:
+                return encode_msgpack(content, enc_hook)
+
+            if media_type.startswith("application/json"):
+                return encode_json(content, enc_hook)
+
+            raise ImproperlyConfiguredException(f"unsupported media_type {media_type} for content {content!r}")
+        except (AttributeError, ValueError, TypeError) as e:
+            raise ImproperlyConfiguredException("Unable to serialize response content") from e
+
     def to_asgi_response(
         self,
         *,
@@ -405,9 +389,11 @@ class Response(Generic[T]):
         else:
             type_encoders = self.response_type_encoders
 
+        media_type = get_enum_string_value(media_type or self.media_type or MediaType.JSON)
+
         return ASGIResponse(
             background=self.background,
-            content=self.content,
+            body=self.render(self.content, media_type, get_serializer(type_encoders)),
             content_length=None,
             cookies=self.cookies,
             encoded_headers=encoded_headers or [],
@@ -416,5 +402,4 @@ class Response(Generic[T]):
             is_head_response=is_head_response,
             media_type=self.media_type or media_type,
             status_code=self.status_code,
-            type_encoders=type_encoders,
         )

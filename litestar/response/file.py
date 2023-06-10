@@ -288,16 +288,11 @@ class FileResponse(StreamingResponse):
         """
         headers = {**headers, **self.headers} if headers is not None else self.headers
 
-        if type_encoders:
-            type_encoders = {**(self.response_type_encoders or {}), **type_encoders}
-        else:
-            type_encoders = self.response_type_encoders
-
         return ASGIFileResponse(
             adapter=self.adapter,
             background=self.background,
+            body=b"",
             chunk_size=self.chunk_size,
-            content=b"",
             content_disposition_type=self.content_disposition_type,  # pyright: ignore
             content_length=0,
             cookies=self.cookies,
@@ -312,5 +307,4 @@ class FileResponse(StreamingResponse):
             iterator=self.iterator,
             media_type=self.media_type or media_type,
             status_code=self.status_code,
-            type_encoders=type_encoders,
         )

@@ -12,14 +12,16 @@ from typing import (
 
 from anyio import CancelScope, create_task_group
 
+from litestar.enums import MediaType
 from litestar.response.base import ASGIResponse, Response
 from litestar.status_codes import HTTP_200_OK
 from litestar.types.composite_types import StreamType
+from litestar.utils.helpers import get_enum_string_value
 from litestar.utils.sync import AsyncIteratorWrapper
 
 if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
-    from litestar.enums import MediaType, OpenAPIMediaType
+    from litestar.enums import OpenAPIMediaType
     from litestar.types import HTTPResponseBodyEvent, Receive, ResponseCookies, Send, TypeEncodersMap
 
 __all__ = (
@@ -156,15 +158,11 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
         """
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
-
-        if type_encoders:
-            type_encoders = {**(self.response_type_encoders or {}), **type_encoders}
-        else:
-            type_encoders = self.response_type_encoders
+        media_type = get_enum_string_value(media_type or self.media_type or MediaType.JSON)
 
         return ASGIStreamingResponse(
             background=self.background,
-            content=b"",
+            body=b"",
             content_length=0,
             cookies=self.cookies,
             encoded_headers=encoded_headers or [],
@@ -172,7 +170,6 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
             headers=headers,
             is_head_response=is_head_response,
             iterator=self.iterator,
-            media_type=self.media_type or media_type,
+            media_type=media_type,
             status_code=self.status_code,
-            type_encoders=type_encoders,
         )
