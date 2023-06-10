@@ -15,8 +15,7 @@ if TYPE_CHECKING:
     from collections import abc
     from datetime import datetime
 
-    from sqlalchemy.ext.asyncio import AsyncSession  # noqa: RUF100, F401
-    from sqlalchemy.orm import Session  # noqa: RUF100, F401
+    from sqlalchemy.orm import Session
 
 
 class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
