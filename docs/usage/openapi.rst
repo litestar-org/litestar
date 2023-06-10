@@ -379,7 +379,7 @@ Litestar will not know how to create the OpenAPI operation data by default.
     :language: python
 
 
-The above will result in an OpenAPI schema object that looks like this:
+The above example will result in an OpenAPI schema object that looks like this:
 
 .. code-block:: json
 
