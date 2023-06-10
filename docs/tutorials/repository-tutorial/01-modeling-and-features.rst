@@ -19,9 +19,9 @@ simple, our first model will encompass only three fields: ``id``, ``name``, and 
 The books entity is not considered a "strong" entity and therefore always requires an
 author to be created.  We need to configure our SQLAlchemy classes so that it is aware
 of this relationship. We will extend the ``Author`` model by incorporating a ``Book``
-relationship. This would allow each ``Author`` record to possess multiple ``Book``
-records. By configuring it this way, SQLAlchemy will automatically include the necessary
-foreign key constraints when using the ``author_id`` field in each ``Book`` record.
+relationship. This allows each ``Author`` record to possess multiple ``Book`` records.
+By configuring it this way, SQLAlchemy will automatically include the necessary foreign
+key constraints when using the ``author_id`` field in each ``Book`` record.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :language: python
@@ -46,7 +46,10 @@ change endows the `book` table with automatic timestamp columns
     :class:`BigIntAuditBase <litestar.contrib.sqlalchemy.base.UUIDAuditBase>`
     respectively.
 
-    *Spanner Only*: Using monotonically changing primary keys is considered an
+.. important::
+    `Spanner <https://cloud.google.com/spanner>`_ only:
+
+    Using monotonically changing primary keys is considered an
     anti-pattern in Spanner and leads to performance problems. Additionally, Spanner
     does not currently include an idiom comparable to the ``Sequence`` object.  This
     means the ``BigIntBase`` and ``BigIntAuditBase`` are not currently supported for
