@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
 from litestar import Litestar, MediaType, Request, post
@@ -11,7 +11,7 @@ from litestar.status_codes import HTTP_400_BAD_REQUEST
 class CustomOperation(Operation):
     """Custom Operation class which includes a non-standard field which is part of an OpenAPI extension."""
 
-    x_codeSamples: Optional[List[Dict[str, str]]] = None  # noqa: N815
+    x_code_samples: Optional[List[Dict[str, str]]] = field(default=None, metadata={"alias": "x-codeSamples"})
 
     def __post_init__(self) -> None:
         self.tags = ["ok"]
@@ -35,7 +35,7 @@ class CustomOperation(Operation):
 
 
 @post("/", operation_class=CustomOperation, media_type=MediaType.TEXT)
-async def route(request: Request) -> None:
+async def route(request: Request) -> str:
     """
 
     Returns: OK

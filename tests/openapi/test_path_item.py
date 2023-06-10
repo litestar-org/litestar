@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, cast
 
 import pytest
@@ -168,12 +168,12 @@ def test_operation_id_validation() -> None:
 def test_operation_override() -> None:
     @dataclass
     class CustomOperation(Operation):
-        x_codeSamples: Optional[List[Dict[str, str]]] = None
+        x_code_samples: Optional[List[Dict[str, str]]] = field(default=None, metadata={"alias": "x-codeSamples"})
 
         def __post_init__(self) -> None:
             self.tags = ["test"]
             self.description = "test"
-            self.x_codeSamples = [
+            self.x_code_samples = [
                 {"lang": "Python", "source": "import requests; requests.get('localhost/example')", "label": "Python"},
                 {"lang": "cURL", "source": "curl -XGET localhost/example", "label": "curl"},
             ]
@@ -197,3 +197,6 @@ def test_operation_override() -> None:
     assert isinstance(app.openapi_schema.paths["/2"].get, CustomOperation)
     assert app.openapi_schema.paths["/2"].get.tags == ["test"]
     assert app.openapi_schema.paths["/2"].get.description == "test"
+
+    operation_schema = CustomOperation().to_schema()
+    assert "x-codeSamples" in operation_schema

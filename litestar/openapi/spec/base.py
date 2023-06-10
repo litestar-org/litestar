@@ -48,7 +48,13 @@ class BaseSchemaObject:
             value = _normalize_value(getattr(self, field.name, None))
 
             if value is not None:
-                key = _normalize_key(field.name)
+                if "alias" in field.metadata:
+                    if not isinstance(field.metadata["alias"], str):
+                        raise TypeError('metadata["alias"] must be a str')
+                    key = field.metadata["alias"]
+                else:
+                    key = _normalize_key(field.name)
+
                 result[key] = value
 
         return result

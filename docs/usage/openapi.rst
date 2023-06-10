@@ -368,8 +368,8 @@ The above will result in an OpenAPI schema object that looks like this:
 Customizing ``Operation`` class
 ---------------------------------------------
 
-You can customize the `operation object <https://spec.openapis.org/oas/v3.1.0#operation-object>`_ used for a path in the
-generated OpenAPI schemas by creating a subclass of :class:`Operation <.openapi.spec.operation.Operation>`.
+You can customize the `operation object <https://spec.openapis.org/oas/v3.1.0#operation-object>`_ used for a path in
+the generated OpenAPI schemas by creating a subclass of :class:`Operation <.openapi.spec.operation.Operation>`.
 
 This option can be helpful in situations where request data needs to be manually parsed as
 Litestar will not know how to create the OpenAPI operation data by default.
@@ -410,7 +410,7 @@ The above example will result in an OpenAPI schema object that looks like this:
                         }
                     },
                     "deprecated": false,
-                    "xCodesamples": [
+                    "x-codeSamples": [
                         {
                             "lang": "Python",
                             "source": "import requests; requests.get('localhost/example')",
@@ -427,3 +427,10 @@ The above example will result in an OpenAPI schema object that looks like this:
         },
         "components": { "schemas": {} }
     }
+
+.. attention::
+
+   OpenAPI Vendor Extension fields need to start with `x-` and should not be processed with the default field name
+   converter. To work around this, Litestar will honor an `alias` field provided to the
+   `dataclass.field <https://docs.python.org/3/library/dataclasses.html#dataclasses.field>`_ metadata
+   when generating the field name in the schema.
