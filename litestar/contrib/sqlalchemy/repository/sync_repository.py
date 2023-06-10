@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from collections import abc
     from datetime import datetime
 
+    from sqlalchemy.engine.interfaces import _CoreSingleExecuteParams
     from sqlalchemy.orm import Session
 
 
@@ -35,6 +36,11 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         super().__init__(**kwargs)
         self.session = session
         self.statement = statement if statement is not None else select(self.model_type)
+        if not self.session.bind:
+            # this shouldn't actually ever happen, but we include it anyway to properly
+            # narrow down the types
+            raise ValueError("Session improperly configure")
+        self._dialect = self.session.bind.dialect
 
     def add(self, data: ModelT) -> ModelT:
         """Add `data` to the collection.
@@ -103,7 +109,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             chunk_size = 450
             for idx in range(0, len(item_ids), chunk_size):
                 chunk = item_ids[idx : min(idx + chunk_size, len(item_ids))]
-                if self.session.bind and self.session.bind.dialect.delete_executemany_returning:
+                if self._dialect.delete_executemany_returning:
                     instances.extend(
                         self.session.scalars(
                             delete(self.model_type)
@@ -295,15 +301,13 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         """
         data_to_update: list[dict[str, Any]] = [v.to_dict() if isinstance(v, self.model_type) else v for v in data]  # type: ignore
         with wrap_sqlalchemy_exception():
-            if (
-                self.session.bind
-                and self.session.bind.dialect.update_executemany_returning
-                and self.session.bind.dialect.name != "oracle"
-            ):
+            if self._dialect.update_executemany_returning and self._dialect.name != "oracle":
                 instances = list(
-                    self.session.scalars(  # type: ignore
+                    self.session.scalars(
                         update(self.model_type).returning(self.model_type),
-                        data_to_update,  # pyright: ignore[reportGeneralTypeIssues]
+                        cast("_CoreSingleExecuteParams", data_to_update),  # this is not correct but the only way
+                        # currently to deal with an SQLAlchemy typing issue. See
+                        # https://github.com/sqlalchemy/sqlalchemy/discussions/9925
                     )
                 )
                 self.session.flush()
@@ -331,7 +335,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Returns:
             Count of records returned by query, ignoring pagination.
         """
-        if self.session.bind and self.session.bind.dialect.name in {"spanner"}:
+        if self._dialect.name in {"spanner"}:
             return self._list_and_count_basic(*filters, **kwargs)
         return self._list_and_count_window(*filters, **kwargs)
 
