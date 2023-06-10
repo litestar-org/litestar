@@ -3,7 +3,7 @@ from typing import Any
 
 import pytest
 
-from litestar import MediaType, get
+from litestar import get
 from litestar.contrib.htmx._utils import HTMXHeaders
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import (
@@ -59,7 +59,7 @@ async def test_client_refresh_response() -> None:
 
 
 async def test_push_url_false_response() -> None:
-    @get("/", media_type=MediaType.TEXT)
+    @get("/")
     def handler() -> PushUrl:
         return PushUrl(content="Success!", push_url=False)
 
@@ -70,7 +70,7 @@ async def test_push_url_false_response() -> None:
 
 
 async def test_push_url_response() -> None:
-    @get("/", media_type=MediaType.TEXT)
+    @get("/")
     def handler() -> PushUrl:
         return PushUrl(content="Success!", push_url="/index.html")
 
@@ -82,7 +82,7 @@ async def test_push_url_response() -> None:
 
 
 async def test_replace_url_false_response() -> None:
-    @get("/", media_type=MediaType.TEXT)
+    @get("/")
     def handler() -> ReplaceUrl:
         return ReplaceUrl(content="Success!", replace_url=False)
 
@@ -93,7 +93,7 @@ async def test_replace_url_false_response() -> None:
 
 
 async def test_replace_url_response() -> None:
-    @get("/", media_type=MediaType.TEXT)
+    @get("/")
     def handler() -> ReplaceUrl:
         return ReplaceUrl(content="Success!", replace_url="/index.html")
 
@@ -224,9 +224,9 @@ async def test_hx_location_response_with_all_parameters() -> None:
         spec = response.headers[HTMXHeaders.LOCATION]
         assert response.status_code == HTTP_200_OK
         assert "Location" not in response.headers
-        assert (
-            spec
-            == '{"path":"/contact-us","source":"#button","event":"click","target":"#content","swap":"innerHTML","values":{"action":"true"},"hx_headers":{"attribute":"value"}}'
+        assert spec == (
+            '{"path":"/contact-us","source":"#button","event":"click","target":"#content","swap":"innerHTML",'
+            '"values":{"action":"true"},"hx_headers":{"attribute":"value"}}'
         )
 
 
@@ -248,7 +248,7 @@ async def test_hx_location_response_with_all_parameters() -> None:
 def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str, template_dir: Path) -> None:
     Path(template_dir / "abc.html").write_text(template)
 
-    @get(path="/", media_type=MediaType.HTML)
+    @get(path="/")
     def handler() -> HTMXTemplate:
         return HTMXTemplate(
             name="abc.html",
@@ -286,7 +286,7 @@ def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str
 def test_HTMXTemplate_response_no_params(engine: Any, template: str, expected: str, template_dir: Path) -> None:
     Path(template_dir / "abc.html").write_text(template)
 
-    @get(path="/", media_type=MediaType.HTML)
+    @get(path="/")
     def handler() -> HTMXTemplate:
         return HTMXTemplate(
             name="abc.html",
@@ -320,7 +320,7 @@ def test_HTMXTemplate_response_push_url_set_to_false(
 ) -> None:
     Path(template_dir / "abc.html").write_text(template)
 
-    @get(path="/", media_type=MediaType.HTML)
+    @get(path="/")
     def handler() -> HTMXTemplate:
         return HTMXTemplate(
             name="abc.html",
@@ -355,7 +355,7 @@ def test_htmx_template_response_bad_trigger_params(
 ) -> None:
     Path(template_dir / "abc.html").write_text(template)
 
-    @get(path="/", media_type=MediaType.HTML)
+    @get(path="/")
     def handler() -> HTMXTemplate:
         return HTMXTemplate(
             name="abc.html",
