@@ -4,17 +4,25 @@ from __future__ import annotations
 from collections import abc  # noqa: TCH003
 from dataclasses import dataclass
 from datetime import datetime  # noqa: TCH003
-from typing import Generic, Literal, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar
+
+if TYPE_CHECKING:
+    from typing_extensions import TypeAlias
 
 T = TypeVar("T")
 
 __all__ = (
     "BeforeAfter",
     "CollectionFilter",
+    "FilterTypes",
     "LimitOffset",
     "OrderBy",
     "SearchFilter",
 )
+
+
+FilterTypes: TypeAlias = "BeforeAfter | CollectionFilter[Any] | LimitOffset | OrderBy | SearchFilter"
+"""Aggregate type alias of the types supported for collection filtering."""
 
 
 @dataclass

@@ -21,10 +21,7 @@ from litestar.contrib.repository.filters import (
     LimitOffset,
 )
 from litestar.contrib.sqlalchemy import base
-from litestar.contrib.sqlalchemy.repository import (
-    SQLAlchemyAsyncRepository,
-    wrap_sqlalchemy_exception,
-)
+from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository, wrap_sqlalchemy_exception
 
 if TYPE_CHECKING:
     from pytest import MonkeyPatch
