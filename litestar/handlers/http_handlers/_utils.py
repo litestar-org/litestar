@@ -77,10 +77,11 @@ def create_data_handler(
             media_type=media_type,
             status_code=status_code,
             type_encoders=type_encoders,
-            raw_headers=raw_headers,
         )
 
-        return (await after_request(response) if after_request else response).to_asgi_response()  # type: ignore
+        return (  # type:ignore[no-any-return]
+            await after_request(response) if after_request else response  # type:ignore[arg-type,misc]
+        ).to_asgi_response(encoded_headers=raw_headers)
 
     async def handler(
         data: Any,

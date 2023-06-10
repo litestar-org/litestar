@@ -32,7 +32,7 @@ def test_file_with_different_file_systems(tmpdir: "Path", file_system: "FileSyst
             file_system=file_system,
         )
 
-    with create_test_client(handler) as client:
+    with create_test_client(handler, debug=True) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == "content"

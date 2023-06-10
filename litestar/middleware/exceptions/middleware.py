@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, Type, cast
 
 from litestar.connection import Request
 from litestar.datastructures import Headers
-from litestar.enums import ScopeType
+from litestar.enums import MediaType, ScopeType
 from litestar.exceptions import WebSocketException
 from litestar.middleware.cors import CORSMiddleware
 from litestar.middleware.exceptions._debug_response import create_debug_response
@@ -91,6 +91,7 @@ class ExceptionResponseContent:
             content={k: v for k, v in asdict(self).items() if k != "headers" and v is not None},
             headers=self.headers,
             status_code=self.status_code,
+            media_type=MediaType.JSON,
         )
 
 

@@ -24,10 +24,7 @@ if TYPE_CHECKING:
         TypeEncodersMap,
     )
 
-__all__ = (
-    "ASGIResponse",
-    "Response",
-)
+__all__ = ("ASGIResponse", "Response")
 
 T = TypeVar("T")
 
@@ -42,33 +39,79 @@ class ASGIResponse:
         "content_length",
         "encoded_headers",
         "is_head_response",
+        "encoding",
     )
 
     def __init__(
         self,
-        body: bytes,
-        status_code: int,
-        content_length: int,
-        encoded_headers: list[tuple[bytes, bytes]],
+        *,
         background: BackgroundTask | BackgroundTasks | None,
+        content: Any,
+        content_length: int | None,
+        cookies: list[Cookie],
+        encoded_headers: list[tuple[bytes, bytes]],
+        encoding: str,
+        headers: dict[str, Any],
         is_head_response: bool,
+        media_type: MediaType | OpenAPIMediaType | str | None,
+        status_code: int | None,
+        type_encoders: TypeEncodersMap,
     ) -> None:
         """A low-level ASGI response class.
 
         Args:
-            body: The response body.
-            status_code: The response status code.
-            content_length: The response content length.
-            encoded_headers: The response headers.
             background: A background task or a list of background tasks to be executed after the response is sent.
+            content: byte-encodable content to send in the response body.
+            content_length: The response content length.
+            cookies: The response cookies.
+            encoded_headers: The response headers.
+            encoding: The response encoding.
+            headers: The response headers.
             is_head_response: A boolean indicating if the response is a HEAD response.
+            media_type: The response media type.
+            status_code: The response status code.
+            type_encoders: A mapping of types to encoders.
         """
-        self.body = body
+        status_code = status_code or HTTP_200_OK
+
+        status_allows_body = not (
+            status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or status_code < HTTP_200_OK
+        )
+
+        if not status_allows_body or is_head_response:
+            if content:
+                raise ImproperlyConfiguredException(
+                    "response content is not supported for HEAD responses and responses with a status code "
+                    "that does not allow content (304, 204, < 200)"
+                )
+            content = b""
+
+        media_type = get_enum_string_value(media_type or MediaType.JSON)
+        encoded_headers.append(
+            (
+                b"content-type",
+                (f"{media_type}; charset={encoding}" if media_type.startswith("text/") else media_type).encode(
+                    "latin-1"
+                ),
+            ),
+        )
+
+        self.body = render(
+            content=content, media_type=media_type, enc_hook=get_serializer(type_encoders), encoding=encoding
+        )
+
+        if content_length is None:
+            content_length = len(self.body)
+
+        if "content-length" not in headers and content_length:
+            encoded_headers.append((b"content-length", str(content_length).encode("latin-1")))
+
         self.status_code = status_code
         self.content_length = content_length
-        self.encoded_headers = encoded_headers
+        self.encoded_headers = encode_headers(headers, cookies, encoded_headers)
         self.background = background
         self.is_head_response = is_head_response
+        self.encoding = encoding
 
     async def after_response(self) -> None:
         """Execute after the response is sent.
@@ -133,30 +176,7 @@ class ASGIResponse:
         await self.after_response()
 
 
-def _encode_headers(
-    headers: dict[str, Any], cookies: list[Cookie], raw_headers: list[tuple[bytes, bytes]]
-) -> list[tuple[bytes, bytes]]:
-    """Encode the response headers as a list of byte tuples.
-
-    Args:
-        headers: A mapping of response headers.
-        cookies: A mapping of response cookies.
-        raw_headers: A list of raw headers.
-
-    Returns:
-        A list of byte tuples.
-    """
-
-    return list(
-        chain(
-            ((k.lower().encode("latin-1"), str(v).encode("latin-1")) for k, v in headers.items()),
-            (cookie.to_encoded_header() for cookie in cookies),
-            raw_headers,
-        )
-    )
-
-
-def _render(content: Any, media_type: str, enc_hook: Serializer, encoding: str) -> bytes:
+def render(content: Any, media_type: str, enc_hook: Serializer, encoding: str) -> bytes:
     """Handle the rendering of content into a bytes string.
 
     Args:
@@ -191,6 +211,29 @@ def _render(content: Any, media_type: str, enc_hook: Serializer, encoding: str) 
         raise ImproperlyConfiguredException("Unable to serialize response content") from e
 
 
+def encode_headers(
+    headers: dict[str, Any], cookies: list[Cookie], raw_headers: list[tuple[bytes, bytes]]
+) -> list[tuple[bytes, bytes]]:
+    """Encode the response headers as a list of byte tuples.
+
+    Args:
+        headers: A mapping of response headers.
+        cookies: A mapping of response cookies.
+        raw_headers: A list of raw headers.
+
+    Returns:
+        A list of byte tuples.
+    """
+
+    return list(
+        chain(
+            ((k.lower().encode("latin-1"), str(v).encode("latin-1")) for k, v in headers.items()),
+            (cookie.to_encoded_header() for cookie in cookies),
+            raw_headers,
+        )
+    )
+
+
 class Response(Generic[T]):
     """Base Litestar HTTP response class, used as the basis for all other response classes."""
 
@@ -200,14 +243,12 @@ class Response(Generic[T]):
         "cookies",
         "encoding",
         "headers",
-        "is_head_response",
         "is_text_response",
         "media_type",
         "status_allows_body",
         "status_code",
         "raw_headers",
-        "_enc_hook",
-        "_asgi_response",
+        "response_type_encoders",
     )
 
     type_encoders: TypeEncodersMap | None = None
@@ -216,14 +257,12 @@ class Response(Generic[T]):
         self,
         content: T,
         *,
-        status_code: int = HTTP_200_OK,
-        media_type: MediaType | OpenAPIMediaType | str = MediaType.JSON,
+        status_code: int | None = None,
+        media_type: MediaType | OpenAPIMediaType | str | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
         headers: ResponseHeaders | None = None,
         cookies: ResponseCookies | None = None,
-        raw_headers: list[tuple[bytes, bytes]] | None = None,
         encoding: str = "utf-8",
-        is_head_response: bool = False,
         type_encoders: TypeEncodersMap | None = None,
     ) -> None:
         """Initialize the response.
@@ -238,26 +277,10 @@ class Response(Generic[T]):
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
             cookies: A list of :class:`Cookie <.datastructures.Cookie>` instances to be set under the response
                 ``Set-Cookie`` header.
-            raw_headers: A list of headers already encoded into ``(bytes, bytes)`` tuples.
             encoding: The encoding to be used for the response headers.
-            is_head_response: Whether the response should send only the headers ("head" request) or also the content.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
         """
-        status_allows_body = not (
-            status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or status_code < HTTP_200_OK
-        )
-
-        self.content: Any
-        if not status_allows_body or is_head_response:
-            if content:
-                raise ImproperlyConfiguredException(
-                    "response content is not supported for HEAD responses and responses with a status code "
-                    "that does not allow content (304, 204, < 200)"
-                )
-            self.content = b""
-        else:
-            self.content = content
-
+        self.content = content
         self.background = background
         self.cookies: list[Cookie] = (
             [Cookie(key=key, value=value) for key, value in cookies.items()]
@@ -268,19 +291,9 @@ class Response(Generic[T]):
         self.headers: dict[str, Any] = (
             dict(headers) if isinstance(headers, Mapping) else {h.name: h.value for h in headers or {}}
         )
-        self.raw_headers = raw_headers or []
-        self.is_head_response = is_head_response
-        self.media_type = get_enum_string_value(media_type) or MediaType.JSON
-        self.status_allows_body = not (
-            status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or status_code < HTTP_200_OK
-        )
+        self.media_type = media_type
         self.status_code = status_code
-        self._enc_hook = get_serializer({**(self.type_encoders or {}), **(type_encoders or {})})
-
-        self.headers.setdefault(
-            "content-type",
-            f"{self.media_type}; charset={self.encoding}" if self.media_type.startswith("text/") else self.media_type,
-        )
+        self.response_type_encoders = {**(self.type_encoders or {}), **(type_encoders or {})}
 
     @overload
     def set_cookie(self, /, cookie: Cookie) -> None:
@@ -387,38 +400,45 @@ class Response(Generic[T]):
         self.cookies = [c for c in self.cookies if c != cookie]
         self.cookies.append(cookie)
 
-    def render(self, content: Any) -> bytes:
-        """Handle the rendering of content into a bytes string.
-
-        Args:
-            content: A value for the response body that will be rendered into bytes string.
-
-        Returns:
-            An encoded bytes string
-        """
-        return _render(content, self.media_type, self._enc_hook, self.encoding)
-
-    def to_asgi_response(self) -> ASGIResponse:
+    def to_asgi_response(
+        self,
+        *,
+        encoded_headers: list[tuple[bytes, bytes]] | None = None,
+        headers: dict[str, str] | None = None,
+        is_head_response: bool = False,
+        media_type: MediaType | str | None = None,
+        type_encoders: TypeEncodersMap | None = None,
+    ) -> ASGIResponse:
         """Create an ASGIResponse from a Response instance.
 
         Args:
-            self: A Response instance.
+            encoded_headers: A list of already encoded headers.
+            headers: Additional headers to be merged with the response headers. Response headers take precedence.
+            is_head_response: Whether the response is a HEAD response.
+            media_type: Media type for the response. If ``media_type`` is already set on the response, this is ignored.
+            type_encoders: A dictionary of type encoders to use for encoding the response content.
 
         Returns:
             An ASGIResponse instance.
         """
-        body = _render(self.content, media_type=self.media_type, enc_hook=self._enc_hook, encoding=self.encoding)
-        content_length = len(body)
-        raw_headers = self.raw_headers
 
-        if "content-length" not in self.headers and content_length:
-            raw_headers.append((b"content-length", str(content_length).encode("latin-1")))
+        headers = {**headers, **self.headers} if headers is not None else self.headers
+
+        if type_encoders:
+            type_encoders = {**(self.response_type_encoders or {}), **type_encoders}
+        else:
+            type_encoders = self.response_type_encoders
 
         return ASGIResponse(
-            body=body,
-            status_code=self.status_code,
-            content_length=content_length,
-            encoded_headers=_encode_headers(headers=self.headers, cookies=self.cookies, raw_headers=raw_headers),
             background=self.background,
-            is_head_response=self.is_head_response,
+            content=self.content,
+            content_length=None,
+            cookies=self.cookies,
+            encoded_headers=encoded_headers or [],
+            encoding=self.encoding,
+            headers=headers,
+            is_head_response=is_head_response,
+            media_type=self.media_type or media_type,
+            status_code=self.status_code,
+            type_encoders=type_encoders,
         )

@@ -12,16 +12,15 @@ from typing import (
 
 from anyio import CancelScope, create_task_group
 
-from litestar.enums import MediaType
-from litestar.response.base import ASGIResponse, Response, _encode_headers
+from litestar.response.base import ASGIResponse, Response
 from litestar.status_codes import HTTP_200_OK
 from litestar.types.composite_types import StreamType
 from litestar.utils.sync import AsyncIteratorWrapper
 
 if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
-    from litestar.enums import OpenAPIMediaType
-    from litestar.types import HTTPResponseBodyEvent, Receive, ResponseCookies, Send
+    from litestar.enums import MediaType, OpenAPIMediaType
+    from litestar.types import HTTPResponseBodyEvent, Receive, ResponseCookies, Send, TypeEncodersMap
 
 __all__ = (
     "ASGIStreamingResponse",
@@ -32,17 +31,17 @@ __all__ = (
 class ASGIStreamingResponse(ASGIResponse):
     """A streaming response."""
 
-    def __init__(self, iterator: AsyncIterable[str | bytes], encoding: str, **kwargs: Any):
+    __slots__ = ("iterator",)
+
+    def __init__(self, *, iterator: AsyncIterable[str | bytes], **kwargs: Any):
         """A low-level ASGI streaming response.
 
         Args:
             iterator: An async iterator or iterable.
-            encoding: The encoding to be used for the stream if the iterator yields strings.
             **kwargs: Additional keyword arguments propagated to :class:`ASGIResponse <.response.base.ASGIResponse>`.
         """
         super().__init__(**kwargs)
         self.iterator = iterator
-        self.encoding = encoding
 
     async def _listen_for_disconnect(self, cancel_scope: CancelScope, receive: Receive) -> None:
         """Listen for a cancellation message, and if received - call cancel on the cancel scope.
@@ -107,28 +106,26 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
         self,
         content: StreamType[str | bytes],
         *,
-        status_code: int = HTTP_200_OK,
-        media_type: MediaType | OpenAPIMediaType | str = MediaType.JSON,
         background: BackgroundTask | BackgroundTasks | None = None,
-        headers: dict[str, Any] | None = None,
         cookies: ResponseCookies | None = None,
         encoding: str = "utf-8",
-        is_head_response: bool = False,
+        headers: dict[str, Any] | None = None,
+        media_type: MediaType | OpenAPIMediaType | str | None = None,
+        status_code: int = HTTP_200_OK,
     ):
         """Initialize the response.
 
         Args:
             content: A sync or async iterator or iterable.
-            status_code: An HTTP status code.
-            media_type: A value for the response ``Content-Type`` header.
             background: A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
                 :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
                 Defaults to None.
-            headers: A string keyed dictionary of response headers. Header keys are insensitive.
             cookies: A list of :class:`Cookie <.datastructures.Cookie>` instances to be set under the response
                 ``Set-Cookie`` header.
             encoding: The encoding to be used for the response headers.
-            is_head_response: Whether the response should send only the headers ("head" request) or also the content.
+            headers: A string keyed dictionary of response headers. Header keys are insensitive.
+            media_type: A value for the response ``Content-Type`` header.
+            status_code: An HTTP status code.
         """
         super().__init__(
             background=background,
@@ -138,25 +135,44 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
             headers=headers,
             media_type=media_type,
             status_code=status_code,
-            is_head_response=is_head_response,
         )
         self.iterator: AsyncIterable[str | bytes] | AsyncGenerator[str | bytes, None] = (
             content if isinstance(content, (AsyncIterable, AsyncIterator)) else AsyncIteratorWrapper(content)
         )
 
-    def to_asgi_response(self) -> ASGIStreamingResponse:
+    def to_asgi_response(
+        self,
+        *,
+        encoded_headers: list[tuple[bytes, bytes]] | None = None,
+        headers: dict[str, Any] | None = None,
+        is_head_response: bool = False,
+        media_type: MediaType | str | None = None,
+        type_encoders: TypeEncodersMap | None = None,
+    ) -> ASGIResponse:
         """Create an ASGIStreamingResponse from a StremaingResponse instance.
 
         Returns:
             An ASGIResponse instance.
         """
+
+        headers = {**headers, **self.headers} if headers is not None else self.headers
+
+        if type_encoders:
+            type_encoders = {**(self.response_type_encoders or {}), **type_encoders}
+        else:
+            type_encoders = self.response_type_encoders
+
         return ASGIStreamingResponse(
-            body=b"",
-            status_code=self.status_code,
-            content_length=0,
-            encoded_headers=_encode_headers(headers=self.headers, cookies=self.cookies, raw_headers=self.raw_headers),
             background=self.background,
-            is_head_response=self.is_head_response,
-            iterator=self.iterator,
+            content=b"",
+            content_length=0,
+            cookies=self.cookies,
+            encoded_headers=encoded_headers or [],
             encoding=self.encoding,
+            headers=headers,
+            is_head_response=is_head_response,
+            iterator=self.iterator,
+            media_type=self.media_type or media_type,
+            status_code=self.status_code,
+            type_encoders=type_encoders,
         )

@@ -103,9 +103,8 @@ class StaticFiles:
                 file_info=fs_info,
                 file_system=self.adapter.file_system,
                 filename=filename,
-                is_head_response=scope["method"] == "HEAD",
                 content_disposition_type=content_disposition_type,
-            ).to_asgi_response()(scope, receive, send)
+            ).to_asgi_response(is_head_response=scope["method"] == "HEAD")(scope, receive, send)
             return
 
         if self.is_html_mode:
@@ -118,10 +117,9 @@ class StaticFiles:
                     file_info=fs_info,
                     file_system=self.adapter.file_system,
                     filename=filename,
-                    is_head_response=scope["method"] == "HEAD",
                     status_code=HTTP_404_NOT_FOUND,
                     content_disposition_type=content_disposition_type,
-                ).to_asgi_response()(scope, receive, send)
+                ).to_asgi_response(is_head_response=scope["method"] == "HEAD")(scope, receive, send)
                 return
 
         raise NotFoundException(

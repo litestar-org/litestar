@@ -10,7 +10,6 @@ from zlib import adler32
 from litestar.constants import ONE_MEGABYTE
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
-from litestar.response.base import _encode_headers
 from litestar.response.streaming import ASGIStreamingResponse, StreamingResponse
 from litestar.status_codes import HTTP_200_OK
 
@@ -23,7 +22,7 @@ if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.datastructures.headers import ETag
     from litestar.enums import MediaType
-    from litestar.types import HTTPResponseBodyEvent, PathType, Receive, ResponseCookies, Send
+    from litestar.types import HTTPResponseBodyEvent, PathType, Receive, ResponseCookies, Send, TypeEncodersMap
     from litestar.types.file_types import FileInfo, FileSystemProtocol
 
 __all__ = (
@@ -74,24 +73,59 @@ class ASGIFileResponse(ASGIStreamingResponse):
 
     def __init__(
         self,
-        file_path: str | PathLike | Path,
-        chunk_size: int,
+        *,
         adapter: FileSystemAdapter,
+        chunk_size: int,
+        content_disposition_type: Literal["attachment", "inline"],
+        encoded_headers: list[tuple[bytes, bytes]],
         etag: ETag | None,
         file_info: FileInfo | Coroutine[None, None, FileInfo],
+        file_path: str | PathLike | Path,
+        filename: str,
+        headers: dict[str, str],
+        media_type: MediaType | str | None,
         **kwargs: Any,
     ) -> None:
         """A low-level ASGI response, streaming a file as response body.
 
         Args:
-            file_path: A path to a file.
-            chunk_size: The chunk size to use.
             adapter: File system adapter class.
+            chunk_size: The chunk size to use.
+            content_disposition_type: The type of the ``Content-Disposition``. Either ``inline`` or ``attachment``.
+            encoded_headers: A list of encoded headers.
             etag: An etag.
             file_info: A file info.
+            file_path: A path to a file.
+            filename: The name of the file.
+            headers: A dictionary of headers.
+            media_type: The media type of the file.
             **kwargs: Additional keyword arguments, propagated to :class:`ASGIResponse <.response.base.ASGIResponse>`.
         """
-        super().__init__(**kwargs)
+        headers.pop("content-length", None)
+        headers.pop("etag", None)
+        headers.pop("last-modified", None)
+
+        if not media_type:
+            mimetype, content_encoding = guess_type(filename) if filename else (None, None)
+            media_type = mimetype or "application/octet-stream"
+            if content_encoding is not None:
+                headers.update({"content-encoding": content_encoding})
+
+        quoted_filename = quote(filename)
+        is_utf8 = quoted_filename == filename
+        if is_utf8:
+            content_disposition = f'{content_disposition_type}; filename="{filename}"'
+        else:
+            content_disposition = f"{content_disposition_type}; filename*=utf-8''{quoted_filename}"
+
+        encoded_headers.append((b"content-disposition", content_disposition.encode("ascii")))
+
+        super().__init__(
+            encoded_headers=encoded_headers,
+            headers=headers,
+            media_type=media_type,
+            **kwargs,
+        )
         self.adapter = adapter
         self.file_path = file_path
         self.chunk_size = chunk_size
@@ -176,11 +210,10 @@ class FileResponse(StreamingResponse):
         cookies: ResponseCookies | None = None,
         encoding: str = "utf-8",
         etag: ETag | None = None,
+        file_info: FileInfo | Coroutine[Any, Any, FileInfo] | None = None,
         file_system: FileSystemProtocol | None = None,
         filename: str | None = None,
-        file_info: FileInfo | None = None,
         headers: dict[str, Any] | None = None,
-        is_head_response: bool = False,
         media_type: Literal[MediaType.TEXT] | str | None = None,
         stat_result: stat_result_type | None = None,
         status_code: int = HTTP_200_OK,
@@ -192,37 +225,29 @@ class FileResponse(StreamingResponse):
 
         Args:
             path: A file path in one of the supported formats.
-            status_code: An HTTP status code.
-            media_type: A value for the response ``Content-Type`` header. If not provided, the value will be either
-                derived from the filename if provided and supported by the stdlib, or will default to
-                ``application/octet-stream``.
             background: A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
                 :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
                 Defaults to None.
-            headers: A string keyed dictionary of response headers. Header keys are insensitive.
+            chunk_size: The chunk sizes to use when streaming the file. Defaults to 1MB.
+            content_disposition_type: The type of the ``Content-Disposition``. Either ``inline`` or ``attachment``.
             cookies: A list of :class:`Cookie <.datastructures.Cookie>` instances to be set under the response
                 ``Set-Cookie`` header.
             encoding: The encoding to be used for the response headers.
-            is_head_response: Whether the response should send only the headers ("head" request) or also the content.
-            filename: An optional filename to set in the header.
-            stat_result: An optional result of calling :func:os.stat:. If not provided, this will be done by the
-                response constructor.
-            chunk_size: The chunk sizes to use when streaming the file. Defaults to 1MB.
-            content_disposition_type: The type of the ``Content-Disposition``. Either ``inline`` or ``attachment``.
             etag: An optional :class:`ETag <.datastructures.ETag>` instance. If not provided, an etag will be
                 generated.
-            file_system: An implementation of the :class:`FileSystemProtocol <.types.FileSystemProtocol>`. If provided
-                it will be used to load the file.
             file_info: The output of calling :meth:`file_system.info <types.FileSystemProtocol.info>`, equivalent to
                 providing an :class:`os.stat_result`.
+            file_system: An implementation of the :class:`FileSystemProtocol <.types.FileSystemProtocol>`. If provided
+                it will be used to load the file.
+            filename: An optional filename to set in the header.
+            headers: A string keyed dictionary of response headers. Header keys are insensitive.
+            media_type: A value for the response ``Content-Type`` header. If not provided, the value will be either
+                derived from the filename if provided and supported by the stdlib, or will default to
+                ``application/octet-stream``.
+            stat_result: An optional result of calling :func:os.stat:. If not provided, this will be done by the
+                response constructor.
+            status_code: An HTTP status code.
         """
-        if not media_type:
-            mimetype, content_encoding = guess_type(filename) if filename else (None, None)
-            media_type = mimetype or "application/octet-stream"
-            if content_encoding is not None:
-                headers = headers or {}
-                headers.update({"content-encoding": content_encoding})
-
         self.chunk_size = chunk_size
         self.content_disposition_type = content_disposition_type
         self.etag = etag
@@ -245,41 +270,47 @@ class FileResponse(StreamingResponse):
             headers=headers,
             cookies=cookies,
             encoding=encoding,
-            is_head_response=is_head_response,
         )
 
-    def to_asgi_response(self) -> ASGIFileResponse:
+    def to_asgi_response(
+        self,
+        *,
+        encoded_headers: list[tuple[bytes, bytes]] | None = None,
+        headers: dict[str, str] | None = None,
+        is_head_response: bool = False,
+        media_type: MediaType | str | None = None,
+        type_encoders: TypeEncodersMap | None = None,
+    ) -> ASGIFileResponse:
         """Create an :class:`ASGIFileResponse <litestar.response.file.ASGIFileResponse>` instance.
 
         Returns:
             A low-level ASGI file response.
         """
-        quoted_filename = quote(self.filename)
-        is_utf8 = quoted_filename == self.filename
-        if is_utf8:
-            content_disposition = f'{self.content_disposition_type}; filename="{self.filename}"'
+        headers = {**headers, **self.headers} if headers is not None else self.headers
+
+        if type_encoders:
+            type_encoders = {**(self.response_type_encoders or {}), **type_encoders}
         else:
-            content_disposition = f"{self.content_disposition_type}; filename*=utf-8''{quoted_filename}"
-
-        self.headers.pop("content-length", None)
-        self.headers.pop("etag", None)
-        self.headers.pop("last-modified", None)
-
-        raw_headers = self.raw_headers
-        raw_headers.append((b"content-disposition", content_disposition.encode("ascii")))
+            type_encoders = self.response_type_encoders
 
         return ASGIFileResponse(
-            body=b"",
-            status_code=self.status_code,
-            content_length=0,
-            encoded_headers=_encode_headers(headers=self.headers, cookies=self.cookies, raw_headers=self.raw_headers),
-            background=self.background,
-            is_head_response=self.is_head_response,
-            iterator=self.iterator,
-            encoding=self.encoding,
-            file_path=self.file_path,
-            chunk_size=self.chunk_size,
             adapter=self.adapter,
+            background=self.background,
+            chunk_size=self.chunk_size,
+            content=b"",
+            content_disposition_type=self.content_disposition_type,  # pyright: ignore
+            content_length=0,
+            cookies=self.cookies,
+            encoded_headers=encoded_headers or [],
+            encoding=self.encoding,
             etag=self.etag,
             file_info=self.file_info,
+            file_path=self.file_path,
+            filename=self.filename,
+            headers=headers,
+            is_head_response=is_head_response,
+            iterator=self.iterator,
+            media_type=self.media_type or media_type,
+            status_code=self.status_code,
+            type_encoders=type_encoders,
         )

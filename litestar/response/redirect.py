@@ -20,6 +20,8 @@ if TYPE_CHECKING:
 class RedirectResponse(Response[Any]):
     """A redirect response."""
 
+    status_code: Literal[301, 302, 303, 307, 308]
+
     def __init__(
         self,
         url: str,
