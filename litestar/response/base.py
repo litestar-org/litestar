@@ -95,7 +95,7 @@ class ASGIResponse:
             ),
         )
 
-        self.body = render(
+        self.body = self.render(
             content=content, media_type=media_type, enc_hook=get_serializer(type_encoders), encoding=encoding
         )
 
@@ -111,6 +111,41 @@ class ASGIResponse:
         self.background = background
         self.is_head_response = is_head_response
         self.encoding = encoding
+
+    @staticmethod
+    def render(content: Any, media_type: str, enc_hook: Serializer, encoding: str) -> bytes:
+        """Handle the rendering of content into a bytes string.
+
+        Args:
+            content: A value for the response body that will be rendered into bytes string.
+            media_type: The media type of the response.
+            enc_hook: A callable that will be used to encode the content into a bytes string.
+            encoding: The encoding to use when encoding the content.
+
+        Returns:
+            An encoded bytes string
+        """
+        if isinstance(content, bytes):
+            return content
+
+        try:
+            if media_type.startswith("text/") or isinstance(content, str):
+                if not content:
+                    return b""
+
+                # TODO: refactor so this cast is unnecessary. The cast is necessary because the type of 'content'
+                #  has not been narrowed down to 'str' by this point. So, can it only be 'str' at this point?
+                return cast("str", content).encode(encoding)
+
+            if media_type == MediaType.MESSAGEPACK:
+                return encode_msgpack(content, enc_hook)
+
+            if media_type.startswith("application/json"):
+                return encode_json(content, enc_hook)
+
+            raise ImproperlyConfiguredException(f"unsupported media_type {media_type} for content {content!r}")
+        except (AttributeError, ValueError, TypeError) as e:
+            raise ImproperlyConfiguredException("Unable to serialize response content") from e
 
     async def after_response(self) -> None:
         """Execute after the response is sent.
@@ -173,41 +208,6 @@ class ASGIResponse:
             await self.send_body(send=send, receive=receive)
 
         await self.after_response()
-
-
-def render(content: Any, media_type: str, enc_hook: Serializer, encoding: str) -> bytes:
-    """Handle the rendering of content into a bytes string.
-
-    Args:
-        content: A value for the response body that will be rendered into bytes string.
-        media_type: The media type of the response.
-        enc_hook: A callable that will be used to encode the content into a bytes string.
-        encoding: The encoding to use when encoding the content.
-
-    Returns:
-        An encoded bytes string
-    """
-    if isinstance(content, bytes):
-        return content
-
-    try:
-        if media_type.startswith("text/") or isinstance(content, str):
-            if not content:
-                return b""
-
-            # TODO: refactor so this cast is unnecessary. The cast is necessary because the type of 'content'
-            #  has not been narrowed down to 'str' by this point. So, can it only be 'str' at this point?
-            return cast("str", content).encode(encoding)
-
-        if media_type == MediaType.MESSAGEPACK:
-            return encode_msgpack(content, enc_hook)
-
-        if media_type.startswith("application/json"):
-            return encode_json(content, enc_hook)
-
-        raise ImproperlyConfiguredException(f"unsupported media_type {media_type} for content {content!r}")
-    except (AttributeError, ValueError, TypeError) as e:
-        raise ImproperlyConfiguredException("Unable to serialize response content") from e
 
 
 class Response(Generic[T]):
