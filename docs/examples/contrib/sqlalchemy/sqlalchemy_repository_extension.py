@@ -29,7 +29,8 @@ class BaseModel(_BaseModel):
         orm_mode = True
 
 
-# we are going to add a simple "slug" to our model that is a URL safe surrogate key to our database record.
+# we are going to add a simple "slug" to our model that is a URL safe surrogate key to
+# our database record.
 @declarative_mixin
 class SlugKey:
     """Slug unique Field Model Mixin."""
@@ -49,19 +50,23 @@ class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
     ) -> str:
         """Get a unique slug for the supplied value.
 
-        If the value is found to exist, a random 4 digit character is appended to the end.  There may be a better way to do this, but I wanted to limit the number of additional database calls.
+        If the value is found to exist, a random 4 digit character is appended to the end.
+        There may be a better way to do this, but I wanted to limit the number of
+        additional database calls.
 
         Args:
             value_to_slugify (str): A string that should be converted to a unique slug.
             **kwargs: stuff
 
         Returns:
-            str: a unique slug for the supplied value.  This is safe for URLs and other unique identifiers.
+            str: a unique slug for the supplied value. This is safe for URLs and other
+            unique identifiers.
         """
         slug = self._slugify(value_to_slugify)
         if await self._is_slug_unique(slug):
             return slug
-        # generate a random 4 digit alphanumeric string to make the slug unique and avoid another DB lookup.
+        # generate a random 4 digit alphanumeric string to make the slug unique and
+        # avoid another DB lookup.
         random_string = "".join(random.choices(string.ascii_lowercase + string.digits, k=4))
         return f"{slug}-{random_string}"
 
@@ -92,8 +97,9 @@ class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
         return await self.get_one_or_none(slug=slug) is None
 
 
-# The `AuditBase` class includes the same UUID` based primary key (`id`) and 2 additional columns: `created` and `updated`.
-# `created` is a timestamp of when the record created, and `updated` is the last time the record was modified.
+# The `AuditBase` class includes the same UUID` based primary key (`id`) and 2
+# additional columns: `created` and `updated`. `created` is a timestamp of when the
+# record created, and `updated` is the last time the record was modified.
 class BlogPost(UUIDAuditBase, SlugKey):
     title: Mapped[str]
     content: Mapped[str]
@@ -117,14 +123,16 @@ class BlogPostCreate(BaseModel):
     content: str
 
 
-# we can optionally override the default `select` used for the repository to pass in specific SQL options such as join details
+# we can optionally override the default `select` used for the repository to pass in
+# specific SQL options such as join details
 async def provide_blog_post_repo(db_session: "AsyncSession") -> BlogPostRepository:
-    """This provides a simple example demonstrating how to override the join options for the repository."""
+    """This provides a simple example demonstrating how to override the join options
+    for the repository."""
     return BlogPostRepository(session=db_session)
 
 
 sqlalchemy_config = SQLAlchemyAsyncConfig(
-    connection_string="sqlite+aiosqlite:///test.sqlite", session_dependency_key="db_session"
+    connection_string="sqlite+aiosqlite:///test.sqlite"
 )  # Create 'async_session' dependency.
 sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 

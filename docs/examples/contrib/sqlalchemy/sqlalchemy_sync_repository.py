@@ -39,8 +39,9 @@ class AuthorModel(UUIDBase):
     books: Mapped[list["BookModel"]] = relationship(back_populates="author", lazy="noload")
 
 
-# The `AuditBase` class includes the same UUID` based primary key (`id`) and 2 additional columns: `created` and `updated`.
-# `created` is a timestamp of when the record created, and `updated` is the last time the record was modified.
+# The `AuditBase` class includes the same UUID` based primary key (`id`) and 2
+# additional columns: `created` and `updated`. `created` is a timestamp of when the
+# record created, and `updated` is the last time the record was modified.
 class BookModel(UUIDAuditBase):
     __tablename__ = "book"  #  type: ignore[assignment]
     title: Mapped[str]
@@ -78,10 +79,15 @@ async def provide_authors_repo(db_session: "Session") -> AuthorRepository:
     return AuthorRepository(session=db_session)
 
 
-# we can optionally override the default `select` used for the repository to pass in specific SQL options such as join details
+# we can optionally override the default `select` used for the repository to pass in
+# specific SQL options such as join details
 async def provide_author_details_repo(db_session: "Session") -> AuthorRepository:
-    """This provides a simple example demonstrating how to override the join options for the repository."""
-    return AuthorRepository(statement=select(AuthorModel).options(selectinload(AuthorModel.books)), session=db_session)
+    """This provides a simple example demonstrating how to override the join options
+    for the repository."""
+    return AuthorRepository(
+        statement=select(AuthorModel).options(selectinload(AuthorModel.books)),
+        session=db_session,
+    )
 
 
 def provide_limit_offset_pagination(
@@ -134,7 +140,9 @@ class AuthorController(Controller):
         data: AuthorCreate,
     ) -> Author:
         """Create a new author."""
-        obj = authors_repo.add(AuthorModel(**data.dict(exclude_unset=True, by_alias=False, exclude_none=True)))
+        obj = authors_repo.add(
+            AuthorModel(**data.dict(exclude_unset=True, by_alias=False, exclude_none=True)),
+        )
         authors_repo.session.commit()
         return Author.from_orm(obj)
 
@@ -189,9 +197,7 @@ class AuthorController(Controller):
         authors_repo.session.commit()
 
 
-sqlalchemy_config = SQLAlchemySyncConfig(
-    connection_string="sqlite:///test.sqlite", session_dependency_key="db_session"
-)  # Create 'db_session' dependency.
+sqlalchemy_config = SQLAlchemySyncConfig(connection_string="sqlite:///test.sqlite")  # Create 'db_session' dependency.
 sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 
 
