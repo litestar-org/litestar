@@ -408,8 +408,7 @@ def test_websocket_listener_class_hook_dependencies() -> None:
         def on_accept(name: str, state: State, query: dict, some: str) -> None:
             on_accept_mock(name=name, state=state, query=query, some=some)
 
-        @staticmethod
-        def on_disconnect(name: str, state: State, query: dict, some: str) -> None:  # type: ignore[override]
+        def on_disconnect(name: str, state: State, query: dict, some: str) -> None:
             on_disconnect_mock(name=name, state=state, query=query, some=some)
 
         def on_receive(self, data: bytes) -> None:
