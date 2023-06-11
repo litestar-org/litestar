@@ -186,13 +186,14 @@ http route handler in the following way:
 .. code-block:: python
 
    from litestar import Request, get
+   from litestar.datastructures import State
 
    from my_app.db.models import User
    from my_app.security.jwt import Token
 
 
    @get("/")
-   def my_route_handler(request: Request[User, Token]) -> None:
+   def my_route_handler(request: Request[User, Token, State]) -> None:
        user = request.user  # correctly typed as User
        auth = request.auth  # correctly typed as Token
        assert isinstance(user, User)
@@ -203,13 +204,14 @@ Or for a websocket route:
 .. code-block:: python
 
    from litestar import WebSocket, websocket
+   from litestar.datastructures import State
 
    from my_app.db.models import User
    from my_app.security.jwt import Token
 
 
    @websocket("/")
-   async def my_route_handler(socket: WebSocket[User, Token]) -> None:
+   async def my_route_handler(socket: WebSocket[User, Token, State]) -> None:
        user = socket.user  # correctly typed as User
        auth = socket.auth  # correctly typed as Token
        assert isinstance(user, User)
@@ -253,12 +255,13 @@ And of course use the same kind of mechanism for dependencies:
    from typing import Any
 
    from litestar import Request, Provide, Router
+   from litestar.datastructures import State
 
    from my_app.db.models import User
    from my_app.security.jwt import Token
 
 
-   async def my_dependency(request: Request[User, Token]) -> Any:
+   async def my_dependency(request: Request[User, Token, State]) -> Any:
        user = request.user  # correctly typed as User
        auth = request.auth  # correctly typed as Token
        assert isinstance(user, User)
