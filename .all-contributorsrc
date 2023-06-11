@@ -1042,7 +1042,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/62290842?v=4",
       "profile": "https://github.com/ctrl-Felix",
       "contributions": [
-        "doc"
+        "doc",
+        "bug"
       ]
     }
   ],
