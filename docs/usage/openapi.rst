@@ -84,6 +84,10 @@ You can also modify the generated schema for the route handler using the followi
 ``response_description``
     Text used for the route's response schema *description* section.
 
+``operation_class``
+    A subclass of :class:`Operation <.openapi.spec.operation.Operation>` which can be used to fully
+    customize the `operation object <https://spec.openapis.org/oas/v3.1.0#operation-object>`_ for the handler.
+
 ``operation_id``
     An identifier used for the route's schema *operationId*. Defaults to the ``__name__`` attribute of the
     wrapped function.
@@ -358,3 +362,75 @@ The above will result in an OpenAPI schema object that looks like this:
 
    If you use multiple pydantic models that use the same name in the schema, you will need to use the `__schema_name__`
    dunder to ensure each has a unique name in the schema, otherwise the schema components will be ambivalent.
+
+
+
+Customizing ``Operation`` class
+---------------------------------------------
+
+You can customize the `operation object <https://spec.openapis.org/oas/v3.1.0#operation-object>`_ used for a path in
+the generated OpenAPI schemas by creating a subclass of :class:`Operation <.openapi.spec.operation.Operation>`.
+
+This option can be helpful in situations where request data needs to be manually parsed as
+Litestar will not know how to create the OpenAPI operation data by default.
+
+.. literalinclude:: /examples/openapi/customize_operation_class.py
+    :caption: Customize Components Example
+    :language: python
+
+
+The above example will result in an OpenAPI schema object that looks like this:
+
+.. code-block:: json
+
+    {
+        "info": { "title": "Litestar API", "version": "1.0.0" },
+        "openapi": "3.0.3",
+        "servers": [{ "url": "/" }],
+        "paths": {
+            "/": {
+                "post": {
+                    "tags": ["ok"],
+                    "summary": "Route",
+                    "description": "Requires OK, Returns OK",
+                    "operationId": "Route",
+                    "requestBody": {
+                        "content": {
+                            "text": {
+                                "schema": { "type": "string", "title": "Body", "example": "OK" }
+                            }
+                        },
+                        "description": "OK is the only accepted value",
+                        "required": false
+                    },
+                    "responses": {
+                        "201": {
+                            "description": "Document created, URL follows",
+                            "headers": {}
+                        }
+                    },
+                    "deprecated": false,
+                    "x-codeSamples": [
+                        {
+                            "lang": "Python",
+                            "source": "import requests; requests.get('localhost/example')",
+                            "label": "Python"
+                        },
+                        {
+                            "lang": "cURL",
+                            "source": "curl -XGET localhost/example",
+                            "label": "curl"
+                        }
+                    ]
+                }
+            }
+        },
+        "components": { "schemas": {} }
+    }
+
+.. attention::
+
+   OpenAPI Vendor Extension fields need to start with `x-` and should not be processed with the default field name
+   converter. To work around this, Litestar will honor an `alias` field provided to the
+   `dataclass.field <https://docs.python.org/3/library/dataclasses.html#dataclasses.field>`_ metadata
+   when generating the field name in the schema.

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from litestar.enums import HttpMethod, MediaType
 from litestar.exceptions import HTTPException, ImproperlyConfiguredException
+from litestar.openapi.spec import Operation
 from litestar.response import FileResponse
 from litestar.response_containers import File
 from litestar.types.builtin_types import NoneType
@@ -82,6 +83,7 @@ class delete(HTTPRouteHandler):
         deprecated: bool = False,
         description: str | None = None,
         include_in_schema: bool = True,
+        operation_class: type[Operation] = Operation,
         operation_id: str | None = None,
         raises: list[type[HTTPException]] | None = None,
         response_description: str | None = None,
@@ -148,6 +150,7 @@ class delete(HTTPRouteHandler):
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
+            operation_class: :class:`Operation <.openapi.spec.operation.Operation>` to be used with the route's OpenAPI schema.
             operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
             raises:  A list of exception classes extending from litestar.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Litestar
@@ -183,6 +186,7 @@ class delete(HTTPRouteHandler):
             media_type=media_type,
             middleware=middleware,
             name=name,
+            operation_class=operation_class,
             operation_id=operation_id,
             opt=opt,
             path=path,
@@ -243,6 +247,7 @@ class get(HTTPRouteHandler):
         deprecated: bool = False,
         description: str | None = None,
         include_in_schema: bool = True,
+        operation_class: type[Operation] = Operation,
         operation_id: str | None = None,
         raises: list[type[HTTPException]] | None = None,
         response_description: str | None = None,
@@ -309,6 +314,7 @@ class get(HTTPRouteHandler):
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
+            operation_class: :class:`Operation <.openapi.spec.operation.Operation>` to be used with the route's OpenAPI schema.
             operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
             raises:  A list of exception classes extending from litestar.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Litestar
@@ -345,6 +351,7 @@ class get(HTTPRouteHandler):
             media_type=media_type,
             middleware=middleware,
             name=name,
+            operation_class=operation_class,
             operation_id=operation_id,
             opt=opt,
             path=path,
@@ -404,6 +411,7 @@ class head(HTTPRouteHandler):
         deprecated: bool = False,
         description: str | None = None,
         include_in_schema: bool = True,
+        operation_class: type[Operation] = Operation,
         operation_id: str | None = None,
         raises: list[type[HTTPException]] | None = None,
         response_description: str | None = None,
@@ -475,6 +483,7 @@ class head(HTTPRouteHandler):
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
+            operation_class: :class:`Operation <.openapi.spec.operation.Operation>` to be used with the route's OpenAPI schema.
             operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
             raises:  A list of exception classes extending from litestar.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Litestar
@@ -511,6 +520,7 @@ class head(HTTPRouteHandler):
             media_type=media_type,
             middleware=middleware,
             name=name,
+            operation_class=operation_class,
             operation_id=operation_id,
             opt=opt,
             path=path,
@@ -584,6 +594,7 @@ class patch(HTTPRouteHandler):
         deprecated: bool = False,
         description: str | None = None,
         include_in_schema: bool = True,
+        operation_class: type[Operation] = Operation,
         operation_id: str | None = None,
         raises: list[type[HTTPException]] | None = None,
         response_description: str | None = None,
@@ -650,6 +661,7 @@ class patch(HTTPRouteHandler):
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
+            operation_class: :class:`Operation <.openapi.spec.operation.Operation>` to be used with the route's OpenAPI schema.
             operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
             raises:  A list of exception classes extending from litestar.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Litestar
@@ -685,6 +697,7 @@ class patch(HTTPRouteHandler):
             media_type=media_type,
             middleware=middleware,
             name=name,
+            operation_class=operation_class,
             operation_id=operation_id,
             opt=opt,
             path=path,
@@ -745,6 +758,7 @@ class post(HTTPRouteHandler):
         deprecated: bool = False,
         description: str | None = None,
         include_in_schema: bool = True,
+        operation_class: type[Operation] = Operation,
         operation_id: str | None = None,
         raises: list[type[HTTPException]] | None = None,
         response_description: str | None = None,
@@ -811,6 +825,7 @@ class post(HTTPRouteHandler):
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
+            operation_class: :class:`Operation <.openapi.spec.operation.Operation>` to be used with the route's OpenAPI schema.
             operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
             raises:  A list of exception classes extending from litestar.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Litestar
@@ -846,6 +861,7 @@ class post(HTTPRouteHandler):
             media_type=media_type,
             middleware=middleware,
             name=name,
+            operation_class=operation_class,
             operation_id=operation_id,
             opt=opt,
             path=path,
@@ -906,6 +922,7 @@ class put(HTTPRouteHandler):
         deprecated: bool = False,
         description: str | None = None,
         include_in_schema: bool = True,
+        operation_class: type[Operation] = Operation,
         operation_id: str | None = None,
         raises: list[type[HTTPException]] | None = None,
         response_description: str | None = None,
@@ -972,6 +989,7 @@ class put(HTTPRouteHandler):
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
+            operation_class: :class:`Operation <.openapi.spec.operation.Operation>` to be used with the route's OpenAPI schema.
             operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
             raises:  A list of exception classes extending from litestar.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Litestar
@@ -1007,6 +1025,7 @@ class put(HTTPRouteHandler):
             media_type=media_type,
             middleware=middleware,
             name=name,
+            operation_class=operation_class,
             operation_id=operation_id,
             opt=opt,
             path=path,

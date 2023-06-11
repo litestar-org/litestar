@@ -20,6 +20,7 @@ from litestar.handlers.http_handlers._utils import (
     get_default_status_code,
     normalize_http_method,
 )
+from litestar.openapi.spec import Operation
 from litestar.response import FileResponse, Response
 from litestar.response_containers import File, Redirect, ResponseContainer
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
@@ -96,6 +97,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "http_methods",
         "include_in_schema",
         "media_type",
+        "operation_class",
         "operation_id",
         "raises",
         "response_class",
@@ -146,6 +148,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         deprecated: bool = False,
         description: str | None = None,
         include_in_schema: bool = True,
+        operation_class: type[Operation] = Operation,
         operation_id: str | None = None,
         raises: Sequence[type[HTTPException]] | None = None,
         response_description: str | None = None,
@@ -214,6 +217,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
+            operation_class: :class:`Operation <.openapi.spec.operation.Operation>` to be used with the route's OpenAPI schema.
             operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
             raises:  A list of exception classes extending from litestar.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Litestar
@@ -266,6 +270,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.deprecated = deprecated
         self.description = description
         self.include_in_schema = include_in_schema
+        self.operation_class = operation_class
         self.operation_id = operation_id
         self.raises = raises
         self.response_description = response_description
