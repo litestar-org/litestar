@@ -32,7 +32,7 @@ async def seed_db(
     raw_books_bigint: list[dict[str, Any]],
     raw_rules_bigint: list[dict[str, Any]],
     async_engine: AsyncEngine,
-):
+) -> None:
     for raw_author in raw_authors_bigint:
         raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d").date()
         raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")

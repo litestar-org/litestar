@@ -3,10 +3,11 @@ from __future__ import annotations
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Generator
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Generator, cast
 from uuid import UUID
 
 import pytest
+from pytest import FixtureRequest
 from sqlalchemy import URL, Engine, NullPool, create_engine
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -196,7 +197,7 @@ def duckdb_engine(tmp_path: Path) -> Generator[Engine, None, None]:
 
 
 @pytest.fixture()
-def oracle_engine(docker_ip: str, oracle_service) -> Engine:
+def oracle_engine(docker_ip: str) -> Engine:
     """Postgresql instance for end-to-end testing.
 
     Args:
@@ -222,7 +223,7 @@ def oracle_engine(docker_ip: str, oracle_service) -> Engine:
 
 
 @pytest.fixture()
-def psycopg_engine(docker_ip: str, postgres_service) -> Engine:
+def psycopg_engine(docker_ip: str, postgres_service: None) -> Engine:
     """Postgresql instance for end-to-end testing.
 
     Args:
@@ -260,7 +261,7 @@ def sqlite_engine(tmp_path: Path) -> Generator[Engine, None, None]:
 
 
 @pytest.fixture()
-def spanner_engine(docker_ip: str, spanner_service, monkeypatch: MonkeyPatch) -> Engine:
+def spanner_engine(docker_ip: str, spanner_service: None, monkeypatch: MonkeyPatch) -> Engine:
     """Postgresql instance for end-to-end testing.
 
     Args:
@@ -285,8 +286,8 @@ def spanner_engine(docker_ip: str, spanner_service, monkeypatch: MonkeyPatch) ->
         pytest.param("sqlite_engine", marks=pytest.mark.sqlalchemy_sqlite),
     ]
 )
-def engine(request) -> Engine:
-    return request.getfixturevalue(request.param)
+def engine(request: FixtureRequest) -> Engine:
+    return cast(Engine, request.getfixturevalue(request.param))
 
 
 @pytest.fixture()
@@ -314,7 +315,7 @@ async def engine_aiosqlite(tmp_path: Path) -> AsyncGenerator[AsyncEngine, None]:
 
 
 @pytest.fixture()
-async def engine_asyncmy(docker_ip: str, mysql_service) -> AsyncEngine:
+async def engine_asyncmy(docker_ip: str, mysql_service: None) -> AsyncEngine:
     """Postgresql instance for end-to-end testing.
 
     Args:
@@ -339,7 +340,7 @@ async def engine_asyncmy(docker_ip: str, mysql_service) -> AsyncEngine:
 
 
 @pytest.fixture()
-async def engine_asyncpg(docker_ip: str, postgres_service) -> AsyncEngine:
+async def engine_asyncpg(docker_ip: str, postgres_service: None) -> AsyncEngine:
     """Postgresql instance for end-to-end testing.
 
     Args:
@@ -364,7 +365,7 @@ async def engine_asyncpg(docker_ip: str, postgres_service) -> AsyncEngine:
 
 
 @pytest.fixture()
-async def engine_psycopg_async(docker_ip: str, postgres_service) -> AsyncEngine:
+async def engine_psycopg_async(docker_ip: str, postgres_service: None) -> AsyncEngine:
     """Postgresql instance for end-to-end testing.
 
     Args:
@@ -396,8 +397,8 @@ async def engine_psycopg_async(docker_ip: str, postgres_service) -> AsyncEngine:
         pytest.param("engine_psycopg_async", marks=pytest.mark.sqlalchemy_psycopg_async),
     ]
 )
-def async_engine(request) -> AsyncEngine:
-    return request.getfixturevalue(request.param)
+def async_engine(request: FixtureRequest) -> AsyncEngine:
+    return cast(AsyncEngine, request.getfixturevalue(request.param))
 
 
 @pytest.fixture()

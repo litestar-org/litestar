@@ -3,11 +3,12 @@ from __future__ import annotations
 
 import os
 from datetime import datetime
-from typing import Any, Generator
+from typing import Any, Generator, cast
 from uuid import UUID, uuid4
 
 import pytest
-from sqlalchemy import Engine, insert
+from _pytest.fixtures import FixtureRequest
+from sqlalchemy import Engine, Table, insert
 from sqlalchemy.orm import Session, sessionmaker
 
 from litestar.contrib.repository.exceptions import RepositoryError
@@ -33,8 +34,8 @@ pytestmark = [pytest.mark.sqlalchemy_integration]
         pytest.param("spanner_engine", marks=pytest.mark.sqlalchemy_spanner),
     ]
 )
-def engine(request) -> Engine:
-    return request.getfixturevalue(request.param)
+def engine(request: FixtureRequest) -> Engine:
+    return cast(Engine, request.getfixturevalue(request.param))
 
 
 def _seed_db(
@@ -73,7 +74,7 @@ def _seed_spanner(
     raw_authors_uuid: list[dict[str, Any]],
     raw_books_uuid: list[dict[str, Any]],
     raw_rules_uuid: list[dict[str, Any]],
-) -> None:
+) -> list[Table]:
     for raw_author in raw_authors_uuid:
         raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d").date()
         raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
@@ -105,7 +106,12 @@ def seed_db(
 
 
 @pytest.fixture()
-def session(engine: Engine, raw_authors_uuid, raw_rules_uuid, seed_db) -> Generator[Session, None, None]:
+def session(
+    engine: Engine,
+    raw_authors_uuid: list[dict[str, Any]],
+    raw_rules_uuid: list[dict[str, Any]],
+    seed_db: None,
+) -> Generator[Session, None, None]:
     session = sessionmaker(bind=engine)()
 
     if engine.dialect.name.startswith("spanner"):
@@ -243,7 +249,7 @@ def test_repo_add_many_method(raw_authors_uuid: list[dict[str, Any]], author_rep
         assert obj.name in {"Testing 2", "Cody"}
 
 
-def test_repo_update_many_method(author_repo: AuthorSyncRepository, engine) -> None:
+def test_repo_update_many_method(author_repo: AuthorSyncRepository, engine: Engine) -> None:
     """Test SQLALchemy Update Many.
 
     Args:
