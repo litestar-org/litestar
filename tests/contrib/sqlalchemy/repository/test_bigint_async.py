@@ -35,11 +35,19 @@ async def seed_db(
 ) -> None:
     for raw_author in raw_authors_bigint:
         raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d").date()
-        raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc)
-        raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc)
+        raw_author["created_at"] = datetime.strptime(raw_author["created_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
+            timezone.utc
+        )
+        raw_author["updated_at"] = datetime.strptime(raw_author["updated_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
+            timezone.utc
+        )
     for raw_author in raw_rules_bigint:
-        raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc)
-        raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc)
+        raw_author["created_at"] = datetime.strptime(raw_author["created_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
+            timezone.utc
+        )
+        raw_author["updated_at"] = datetime.strptime(raw_author["updated_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
+            timezone.utc
+        )
 
     async with async_engine.begin() as conn:
         await conn.run_sync(base.orm_registry.metadata.drop_all)
