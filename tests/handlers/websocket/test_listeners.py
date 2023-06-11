@@ -405,8 +405,7 @@ def test_websocket_listener_class_hook_dependencies() -> None:
     class Listener(WebsocketListener):
         path = "/{name: str}"
 
-        @staticmethod
-        def on_accept(name: str, state: State, query: dict, some: str) -> None:  # type: ignore[override]
+        def on_accept(name: str, state: State, query: dict, some: str) -> None:
             on_accept_mock(name=name, state=state, query=query, some=some)
 
         @staticmethod
