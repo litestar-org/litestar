@@ -1,12 +1,13 @@
 """Unit tests for the SQLAlchemy Repository implementation."""
 from __future__ import annotations
 
+import sys
 from datetime import datetime
 from typing import Any
 
 import pytest
 from sqlalchemy import insert
-from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
 from litestar.contrib.repository.exceptions import RepositoryError
 from litestar.contrib.repository.filters import BeforeAfter, CollectionFilter, OrderBy, SearchFilter
@@ -19,19 +20,19 @@ from tests.contrib.sqlalchemy.models_bigint import (
     RuleAsyncRepository,
 )
 
+pytestmark = [
+    pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
+    pytest.mark.sqlalchemy_integration,
+]
 
+
+@pytest.fixture(autouse=True)
 async def seed_db(
-    engine: AsyncEngine,
     raw_authors_bigint: list[dict[str, Any]],
     raw_books_bigint: list[dict[str, Any]],
     raw_rules_bigint: list[dict[str, Any]],
-) -> None:
-    """Populate test database with sample data.
-
-    Args:
-        engine: The SQLAlchemy engine instance.
-    """
-    # convert date/time strings to dt objects.
+    async_engine: AsyncEngine,
+):
     for raw_author in raw_authors_bigint:
         raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d").date()
         raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
@@ -40,11 +41,26 @@ async def seed_db(
         raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
         raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
 
-    async with engine.begin() as conn:
+    async with async_engine.begin() as conn:
         await conn.run_sync(base.orm_registry.metadata.drop_all)
         await conn.run_sync(base.orm_registry.metadata.create_all)
         await conn.execute(insert(BigIntAuthor).values(raw_authors_bigint))
         await conn.execute(insert(BigIntRule).values(raw_rules_bigint))
+
+
+@pytest.fixture(name="author_repo")
+def fx_author_repo(async_session: AsyncSession) -> AuthorAsyncRepository:
+    return AuthorAsyncRepository(session=async_session)
+
+
+@pytest.fixture(name="book_repo")
+def fx_book_repo(async_session: AsyncSession) -> BookAsyncRepository:
+    return BookAsyncRepository(session=async_session)
+
+
+@pytest.fixture(name="rule_repo")
+def fx_rule_repo(async_session: AsyncSession) -> RuleAsyncRepository:
+    return RuleAsyncRepository(session=async_session)
 
 
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorAsyncRepository) -> None:

@@ -1,53 +1,68 @@
-"""Unit tests for the SQLAlchemy Repository implementation."""
+"""Unit tests for the SQLAlchemy Repository implementation for psycopg."""
 from __future__ import annotations
 
+import sys
 from datetime import datetime
 from typing import Any
-from uuid import UUID, uuid4
 
 import pytest
 from sqlalchemy import Engine, insert
+from sqlalchemy.orm import Session
 
 from litestar.contrib.repository.exceptions import RepositoryError
 from litestar.contrib.repository.filters import BeforeAfter, CollectionFilter, OrderBy, SearchFilter
 from litestar.contrib.sqlalchemy import base
-from tests.contrib.sqlalchemy.models_uuid import (
+from tests.contrib.sqlalchemy.models_bigint import (
     AuthorSyncRepository,
+    BigIntAuthor,
+    BigIntRule,
     BookSyncRepository,
     RuleSyncRepository,
-    UUIDAuthor,
-    UUIDRule,
 )
 
+pytestmark = [
+    pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
+    pytest.mark.sqlalchemy_integration,
+]
 
+
+@pytest.fixture(autouse=True)
 def seed_db(
     engine: Engine,
-    raw_authors_uuid: list[dict[str, Any]],
-    raw_books_uuid: list[dict[str, Any]],
-    raw_rules_uuid: list[dict[str, Any]],
+    raw_authors_bigint: list[dict[str, Any]],
+    raw_books_bigint: list[dict[str, Any]],
+    raw_rules_bigint: list[dict[str, Any]],
 ) -> None:
-    """Populate test database with sample data.
-
-    Args:
-        engine: The SQLAlchemy engine instance.
-    """
-    # convert date/time strings to dt objects.
-    for raw_author in raw_authors_uuid:
+    for raw_author in raw_authors_bigint:
         raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d").date()
         raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
         raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
-    for raw_author in raw_rules_uuid:
-        raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
-        raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
+    for raw_rule in raw_rules_bigint:
+        raw_rule["created"] = datetime.strptime(raw_rule["created"], "%Y-%m-%dT%H:%M:%S")
+        raw_rule["updated"] = datetime.strptime(raw_rule["updated"], "%Y-%m-%dT%H:%M:%S")
 
     with engine.begin() as conn:
         base.orm_registry.metadata.drop_all(conn)
         base.orm_registry.metadata.create_all(conn)
-    with engine.begin() as conn:
-        for author in raw_authors_uuid:
-            conn.execute(insert(UUIDAuthor).values(author))
-        for rule in raw_rules_uuid:
-            conn.execute(insert(UUIDRule).values(rule))
+        for author in raw_authors_bigint:
+            conn.execute(insert(BigIntAuthor).values(author))
+        for rule in raw_rules_bigint:
+            conn.execute(insert(BigIntRule).values(rule))
+
+
+@pytest.fixture(name="author_repo")
+def fx_author_repo(session: Session) -> AuthorSyncRepository:
+    return AuthorSyncRepository(session=session)
+
+
+@pytest.fixture(name="book_repo")
+def fx_book_repo(session: Session) -> BookSyncRepository:
+    return BookSyncRepository(session=session)
+
+
+@pytest.fixture(name="rule_repo")
+def fx_rule_repo(session: Session) -> RuleSyncRepository:
+    return RuleSyncRepository(session=session)
 
 
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorSyncRepository) -> None:
@@ -60,9 +75,7 @@ def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorSyncR
         author_repo.filter_collection_by_kwargs(author_repo.statement, whoops="silly me")
 
 
-def test_repo_count_method(
-    author_repo: AuthorSyncRepository,
-) -> None:
+def test_repo_count_method(author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy count.
 
     Args:
@@ -72,16 +85,15 @@ def test_repo_count_method(
 
 
 def test_repo_list_and_count_method(
-    raw_authors_uuid: list[dict[str, Any]],
-    author_repo: AuthorSyncRepository,
+    raw_authors_bigint: list[dict[str, Any]], author_repo: AuthorSyncRepository
 ) -> None:
-    """Test SQLALchemy list with count in asyncpg.
+    """Test SQLALchemy list with count.
 
     Args:
-        raw_authors_uuid (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_bigint (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorSyncRepository): The author mock repository
     """
-    exp_count = len(raw_authors_uuid)
+    exp_count = len(raw_authors_bigint)
     collection, count = author_repo.list_and_count()
     assert exp_count == count
     assert isinstance(collection, list)
@@ -89,10 +101,10 @@ def test_repo_list_and_count_method(
 
 
 def test_repo_list_and_count_method_empty(book_repo: BookSyncRepository) -> None:
-    """Test SQLALchemy list with count in asyncpg.
+    """Test SQLALchemy list with count.
 
     Args:
-        raw_authors_uuid (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_bigint (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorSyncRepository): The author mock repository
     """
 
@@ -102,52 +114,46 @@ def test_repo_list_and_count_method_empty(book_repo: BookSyncRepository) -> None
     assert len(collection) == 0
 
 
-def test_repo_list_method(
-    raw_authors_uuid: list[dict[str, Any]],
-    author_repo: AuthorSyncRepository,
-) -> None:
+def test_repo_list_method(raw_authors_bigint: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy list.
 
     Args:
-        raw_authors_uuid (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_bigint (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorSyncRepository): The author mock repository
     """
-    exp_count = len(raw_authors_uuid)
+    exp_count = len(raw_authors_bigint)
     collection = author_repo.list()
     assert isinstance(collection, list)
     assert len(collection) == exp_count
 
 
-def test_repo_add_method(
-    raw_authors_uuid: list[dict[str, Any]],
-    author_repo: AuthorSyncRepository,
-) -> None:
+def test_repo_add_method(raw_authors_bigint: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Add.
 
     Args:
-        raw_authors_uuid (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_bigint (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorSyncRepository): The author mock repository
     """
-    exp_count = len(raw_authors_uuid) + 1
-    new_author = UUIDAuthor(name="Testing", dob=datetime.now().date())
+    exp_count = len(raw_authors_bigint) + 1
+    new_author = BigIntAuthor(name="Testing", dob=datetime.now())
     obj = author_repo.add(new_author)
     count = author_repo.count()
     assert exp_count == count
-    assert isinstance(obj, UUIDAuthor)
+    assert isinstance(obj, BigIntAuthor)
     assert new_author.name == obj.name
     assert obj.id is not None
 
 
-def test_repo_add_many_method(raw_authors_uuid: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
+def test_repo_add_many_method(raw_authors_bigint: list[dict[str, Any]], author_repo: AuthorSyncRepository) -> None:
     """Test SQLALchemy Add Many.
 
     Args:
-        raw_authors_uuid (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        raw_authors_bigint (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
         author_repo (AuthorSyncRepository): The author mock repository
     """
-    exp_count = len(raw_authors_uuid) + 2
+    exp_count = len(raw_authors_bigint) + 2
     objs = author_repo.add_many(
-        [UUIDAuthor(name="Testing 2", dob=datetime.now().date()), UUIDAuthor(name="Cody", dob=datetime.now().date())]
+        [BigIntAuthor(name="Testing 2", dob=datetime.now()), BigIntAuthor(name="Cody", dob=datetime.now())]
     )
     count = author_repo.count()
     assert exp_count == count
@@ -178,7 +184,7 @@ def test_repo_exists_method(author_repo: AuthorSyncRepository) -> None:
     Args:
         author_repo (AuthorSyncRepository): The author mock repository
     """
-    exists = author_repo.exists(id=UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"))
+    exists = author_repo.exists(id=2023)
     assert exists
 
 
@@ -188,7 +194,7 @@ def test_repo_update_method(author_repo: AuthorSyncRepository) -> None:
     Args:
         author_repo (AuthorSyncRepository): The author mock repository
     """
-    obj = author_repo.get(UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"))
+    obj = author_repo.get(2023)
     obj.name = "Updated Name"
     updated_obj = author_repo.update(obj)
     assert updated_obj.name == obj.name
@@ -200,8 +206,8 @@ def test_repo_delete_method(author_repo: AuthorSyncRepository) -> None:
     Args:
         author_repo (AuthorSyncRepository): The author mock repository
     """
-    obj = author_repo.delete(UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"))
-    assert obj.id == UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")
+    obj = author_repo.delete(2023)
+    assert obj.id == 2023
 
 
 def test_repo_delete_many_method(author_repo: AuthorSyncRepository) -> None:
@@ -213,7 +219,7 @@ def test_repo_delete_many_method(author_repo: AuthorSyncRepository) -> None:
     data_to_insert = []
     for chunk in range(0, 1000):
         data_to_insert.append(
-            UUIDAuthor(
+            BigIntAuthor(
                 name="author name %d" % chunk,
             )
         )
@@ -234,7 +240,7 @@ def test_repo_get_method(author_repo: AuthorSyncRepository) -> None:
     Args:
         author_repo (AuthorSyncRepository): The author mock repository
     """
-    obj = author_repo.get(UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"))
+    obj = author_repo.get(2023)
     assert obj.name == "Agatha Christie"
 
 
@@ -244,7 +250,7 @@ def test_repo_get_one_or_none_method(author_repo: AuthorSyncRepository) -> None:
     Args:
         author_repo (AuthorSyncRepository): The author mock repository
     """
-    obj = author_repo.get_one_or_none(id=UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"))
+    obj = author_repo.get_one_or_none(id=2023)
     assert obj is not None
     assert obj.name == "Agatha Christie"
     none_obj = author_repo.get_one_or_none(name="I don't exist")
@@ -257,7 +263,7 @@ def test_repo_get_one_method(author_repo: AuthorSyncRepository) -> None:
     Args:
         author_repo (AuthorSyncRepository): The author mock repository
     """
-    obj = author_repo.get_one(id=UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"))
+    obj = author_repo.get_one(id=2023)
     assert obj is not None
     assert obj.name == "Agatha Christie"
     with pytest.raises(RepositoryError):
@@ -271,7 +277,7 @@ def test_repo_get_or_create_method(author_repo: AuthorSyncRepository) -> None:
         author_repo (AuthorSyncRepository): The author mock repository
     """
     existing_obj, existing_created = author_repo.get_or_create(name="Agatha Christie")
-    assert existing_obj.id == UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")
+    assert existing_obj.id == 2023
     assert existing_created is False
     new_obj, new_created = author_repo.get_or_create(name="New Author")
     assert new_obj.id is not None
@@ -289,7 +295,7 @@ def test_repo_get_or_create_match_filter(author_repo: AuthorSyncRepository) -> N
     existing_obj, existing_created = author_repo.get_or_create(
         match_fields="name", name="Agatha Christie", dob=now.date()
     )
-    assert existing_obj.id == UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")
+    assert existing_obj.id == 2023
     assert existing_obj.dob == now.date()
     assert existing_created is False
 
@@ -303,15 +309,15 @@ def test_repo_upsert_method(author_repo: AuthorSyncRepository) -> None:
     existing_obj = author_repo.get_one(name="Agatha Christie")
     existing_obj.name = "Agatha C."
     upsert_update_obj = author_repo.upsert(existing_obj)
-    assert upsert_update_obj.id == UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")
+    assert upsert_update_obj.id == 2023
     assert upsert_update_obj.name == "Agatha C."
 
-    upsert_insert_obj = author_repo.upsert(UUIDAuthor(name="An Author"))
+    upsert_insert_obj = author_repo.upsert(BigIntAuthor(name="An Author"))
     assert upsert_insert_obj.id is not None
     assert upsert_insert_obj.name == "An Author"
 
     # ensures that it still works even if the ID is added before insert
-    upsert2_insert_obj = author_repo.upsert(UUIDAuthor(id=uuid4(), name="Another Author"))
+    upsert2_insert_obj = author_repo.upsert(BigIntAuthor(id=10, name="Another Author"))
     assert upsert2_insert_obj.id is not None
     assert upsert2_insert_obj.name == "Another Author"
 
@@ -376,43 +382,40 @@ def test_repo_filter_collection(author_repo: AuthorSyncRepository) -> None:
         author_repo (AuthorSyncRepository): The author mock repository
     """
 
-    existing_obj = author_repo.list(
-        CollectionFilter(field_name="id", values=[UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")])
-    )
+    existing_obj = author_repo.list(CollectionFilter(field_name="id", values=[2023]))
     assert existing_obj[0].name == "Agatha Christie"
 
-    existing_obj = author_repo.list(
-        CollectionFilter(field_name="id", values=[UUID("5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2")])
-    )
+    existing_obj = author_repo.list(CollectionFilter(field_name="id", values=[2024]))
     assert existing_obj[0].name == "Leo Tolstoy"
 
 
 def test_repo_json_methods(
-    raw_rules_uuid: list[dict[str, Any]],
+    raw_rules_bigint: list[dict[str, Any]],
     rule_repo: RuleSyncRepository,
 ) -> None:
     """Test SQLALchemy JSON.
 
     Args:
-        raw_rules_uuid (list[dict[str, Any]]): list of rules pre-seeded into the mock repository
-        rules_repo (AuthorSyncRepository): The rules mock repository
+        raw_rules_bigint (list[dict[str, Any]]): list of rules pre-seeded into the mock repository
+        rule_repo (AuthorSyncRepository): The rules mock repository
     """
-    exp_count = len(raw_rules_uuid) + 1
-    new_rule = UUIDRule(name="Testing", config={"an": "object"})
+    exp_count = len(raw_rules_bigint) + 1
+    new_rule = BigIntRule(name="Testing", config={"an": "object"})
     obj = rule_repo.add(new_rule)
     count = rule_repo.count()
     assert exp_count == count
-    assert isinstance(obj, UUIDRule)
+    assert isinstance(obj, BigIntRule)
     assert new_rule.name == obj.name
     assert new_rule.config == obj.config
     assert obj.id is not None
-
     obj.config = {"the": "update"}
     updated = rule_repo.update(obj)
     assert obj.config == updated.config
 
     get_obj, get_created = rule_repo.get_or_create(
-        match_fields=["name"], name="Secondary loading rule.", config={"another": "object"}
+        match_fields=["name"],
+        name="Secondary loading rule.",
+        config={"another": "object"},
     )
     assert get_created is False
     assert get_obj.id is not None
