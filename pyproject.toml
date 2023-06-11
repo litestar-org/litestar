@@ -420,3 +420,21 @@ known-first-party = ["litestar", "tests", "examples"]
 "litestar/params.py" = ["N802"]
 "test_apps/**/*.*" = ["D", "TRY", "EM", "S", "PTH"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
+
+
+[tool.unasyncd]
+add_editors_note = true
+
+
+[tool.unasyncd.files]
+"litestar/contrib/sqlalchemy/repository/_async.py" = "litestar/contrib/sqlalchemy/repository/_sync.py"
+"litestar/contrib/repository/abc/_async.py" = "litestar/contrib/repository/abc/_sync.py"
+
+[tool.unasyncd.per_file_add_replacements."litestar/contrib/repository/abc/_async.py"]
+"AbstractAsyncRepository" = "AbstractSyncRepository"
+"AsyncRepoT" = "SyncRepoT"
+
+[tool.unasyncd.per_file_add_replacements."litestar/contrib/sqlalchemy/repository/_async.py"]
+SQLAlchemyAsyncRepository = "SQLAlchemySyncRepository"
+"sqlalchemy.ext.asyncio.AsyncSession" = "sqlalchemy.orm.Session"
+"litestar.contrib.repository.AbstractAsyncRepository" = "litestar.contrib.repository.AbstractSyncRepository"
