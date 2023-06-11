@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Generator
 
 import pytest
@@ -27,12 +27,12 @@ pytestmark = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture(autouse=True)
 def set_spanner_emulator_host(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("SPANNER_EMULATOR_HOST", "localhost:9010")
 
 
-@pytest.fixture()
+@pytest.fixture(autouse=True)
 def set_google_cloud_project(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "emulator-test-project")
 
@@ -62,11 +62,15 @@ def fx_session(
 ) -> Generator[Session, None, None]:
     for raw_author in raw_authors_uuid:
         raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d").date()
-        raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
-        raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
+        raw_author["created_at"] = datetime.strptime(raw_author["created_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
+            timezone.utc
+        )
+        raw_author["updated_at"] = datetime.strptime(raw_author["updated_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
+            timezone.utc
+        )
     for raw_rule in raw_rules_uuid:
-        raw_rule["created"] = datetime.strptime(raw_rule["created"], "%Y-%m-%dT%H:%M:%S")
-        raw_rule["updated"] = datetime.strptime(raw_rule["updated"], "%Y-%m-%dT%H:%M:%S")
+        raw_rule["created_at"] = datetime.strptime(raw_rule["created_at"], "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc)
+        raw_rule["updated_at"] = datetime.strptime(raw_rule["updated_at"], "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc)
     with engine.begin() as txn:
         objs = []
         for tbl in UUIDAuthor.registry.metadata.sorted_tables:

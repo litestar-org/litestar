@@ -1,7 +1,7 @@
 """Unit tests for the SQLAlchemy Repository implementation."""
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 import pytest
@@ -33,11 +33,15 @@ def seed_db(
     # convert date/time strings to dt objects.
     for raw_author in raw_authors_bigint:
         raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d").date()
-        raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
-        raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
+        raw_author["created_at"] = datetime.strptime(raw_author["created_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
+            timezone.utc
+        )
+        raw_author["updated_at"] = datetime.strptime(raw_author["updated_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
+            timezone.utc
+        )
     for raw_rule in raw_rules_bigint:
-        raw_rule["created"] = datetime.strptime(raw_rule["created"], "%Y-%m-%dT%H:%M:%S")
-        raw_rule["updated"] = datetime.strptime(raw_rule["updated"], "%Y-%m-%dT%H:%M:%S")
+        raw_rule["created_at"] = datetime.strptime(raw_rule["created_at"], "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc)
+        raw_rule["updated_at"] = datetime.strptime(raw_rule["updated_at"], "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc)
 
     with engine.begin() as conn:
         base.orm_registry.metadata.drop_all(conn)
@@ -312,13 +316,17 @@ def test_repo_filter_before_after(author_repo: AuthorSyncRepository) -> None:
         author_repo (AuthorSyncRepository): The author mock repository
     """
     before_filter = BeforeAfter(
-        field_name="created", before=datetime.strptime("2023-05-01T00:00:00", "%Y-%m-%dT%H:%M:%S"), after=None
+        field_name="created_at",
+        before=datetime.strptime("2023-05-01T00:00:00", "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc),
+        after=None,
     )
     existing_obj = author_repo.list(before_filter)
     assert existing_obj[0].name == "Leo Tolstoy"
 
     after_filter = BeforeAfter(
-        field_name="created", after=datetime.strptime("2023-03-01T00:00:00", "%Y-%m-%dT%H:%M:%S"), before=None
+        field_name="created_at",
+        after=datetime.strptime("2023-03-01T00:00:00", "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc),
+        before=None,
     )
     existing_obj = author_repo.list(after_filter)
     assert existing_obj[0].name == "Agatha Christie"
@@ -352,9 +360,9 @@ def test_repo_filter_order_by(author_repo: AuthorSyncRepository) -> None:
         author_repo (AuthorSyncRepository): The author mock repository
     """
 
-    existing_obj = author_repo.list(OrderBy(field_name="created", sort_order="desc"))
+    existing_obj = author_repo.list(OrderBy(field_name="created_at", sort_order="desc"))
     assert existing_obj[0].name == "Agatha Christie"
-    existing_obj = author_repo.list(OrderBy(field_name="created", sort_order="asc"))
+    existing_obj = author_repo.list(OrderBy(field_name="created_at", sort_order="asc"))
     assert existing_obj[0].name == "Leo Tolstoy"
 
 
