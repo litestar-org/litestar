@@ -226,7 +226,7 @@ include = '\.pyi?$'
 
 [tool.codespell]
 ignore-words-list = "selectin"
-skip = 'poetry.lock'
+skip = 'poetry.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
 omit = ["*/tests/*", "litestar/contrib/sqlalchemy_1/*"]

@@ -15,9 +15,13 @@ Features
 * Generic synchronous and asynchronous repositories for select, insert, update, and delete operations on SQLAlchemy models
 * Implements optimized methods for bulk inserts, updates, and deletes.
 * Integrated counts, pagination, sorting, filtering with ``LIKE``, ``IN``, and dates before and/or after.
-* Support for SQLite via `aiosqlite <https://aiosqlite.omnilib.dev/en/stable/>`_ or `sqlite <https://docs.python.org/3/library/sqlite3.html>`_, Postgres
-  via `asyncpg <https://magicstack.github.io/asyncpg/current/>`_ or `psycopg3 (async or sync) <https://www.psycopg.org/psycopg3/>`_, MySQL via
-  `asyncmy <https://github.com/long2ice/asyncmy>`_, and Oracle via `oracledb <https://oracle.github.io/python-oracledb/>`_.
+* Tested support for multiple database backends including:
+  - SQLite via `aiosqlite <https://aiosqlite.omnilib.dev/en/stable/>`_ or `sqlite <https://docs.python.org/3/library/sqlite3.html>`_
+  - Postgres via `asyncpg <https://magicstack.github.io/asyncpg/current/>`_ or `psycopg3 (async or sync) <https://www.psycopg.org/psycopg3/>`_
+  - MySQL via `asyncmy <https://github.com/long2ice/asyncmy>`_
+  - Oracle via `oracledb <https://oracle.github.io/python-oracledb/>`_
+  - Google Spanner via `spanner-sqlalchemy <https://github.com/googleapis/python-spanner-sqlalchemy/>`_
+  - DuckDB via `duckdb_engine <https://github.com/Mause/duckdb_engine>`_
 
 Basic Use
 ---------
@@ -58,8 +62,11 @@ your controllers and function based routes.
     :caption: sqlalchemy_async_repository.py
     :language: python
 
-Alternately, you may use the ``SQLAlchemyAsyncRepository`` class for your synchronous database connection.
+Alternately, you may use the ``SQLAlchemySyncRepository`` class for your synchronous database connection.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_sync_repository.py
     :caption: sqlalchemy_sync_repository.py
     :language: python
+
+.. seealso::
+    :doc:`/tutorials/repository-tutorial/index`
