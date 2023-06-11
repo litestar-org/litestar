@@ -3,6 +3,9 @@ from __future__ import annotations
 from inspect import getmembers, isclass
 from typing import TYPE_CHECKING, Any, Literal, cast
 
+import pydantic
+
+from litestar._signature.models.pydantic_signature_model import PydanticSignatureModel
 from litestar.constants import SKIP_VALIDATION_NAMES
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import DependencyKwarg
@@ -10,22 +13,10 @@ from litestar.types import AnyCallable, Empty
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.predicates import is_attrs_class
 
-try:
-    import pydantic
+pydantic_types: tuple[Any, ...] = tuple(
+    cls for _, cls in getmembers(pydantic.types, isclass) if "pydantic.types" in repr(cls)
+)
 
-    from litestar._signature.models.pydantic_signature_model import PydanticSignatureModel
-
-    pydantic_types: tuple[Any, ...] = tuple(
-        cls for _, cls in getmembers(pydantic.types, isclass) if "pydantic.types" in repr(cls)
-    )
-except ImportError:  # pragma: no cover
-    PydanticSignatureModel = Empty  # type: ignore
-    pydantic_types = ()
-
-try:
-    from litestar._signature.models.attrs_signature_model import AttrsSignatureModel
-except ImportError:
-    AttrsSignatureModel = Empty  # type: ignore
 
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
@@ -105,16 +96,6 @@ def _any_attrs_annotation(parsed_signature: ParsedSignature) -> bool:
     return False
 
 
-def _any_pydantic_annotation(parsed_signature: ParsedSignature) -> bool:
-    for parameter in parsed_signature.parameters.values():
-        parsed_type = parameter.parsed_type
-        if any(_is_pydantic_annotation(t.annotation) for t in parsed_type.inner_types) or _is_pydantic_annotation(
-            parsed_type.annotation
-        ):
-            return True
-    return False
-
-
 def _create_type_overrides(parsed_signature: ParsedSignature, has_data_dto: bool) -> dict[str, Any]:
     type_overrides = {}
     for parameter in parsed_signature.parameters.values():
@@ -129,19 +110,11 @@ def _get_signature_model_type(
     preferred_validation_backend: Literal["pydantic", "attrs"],
     parsed_signature: ParsedSignature,
 ) -> type[SignatureModel]:
-    pydantic_installed = PydanticSignatureModel is not Empty  # type: ignore[comparison-overlap]
-    attrs_installed = AttrsSignatureModel is not Empty  # type: ignore[comparison-overlap]
-    if (
-        pydantic_installed
-        and (not attrs_installed or not _any_attrs_annotation(parsed_signature))
-        and (preferred_validation_backend == "pydantic" or _any_pydantic_annotation(parsed_signature))
-    ):
-        return cast(SignatureModelType, PydanticSignatureModel)
-    return cast(SignatureModelType, AttrsSignatureModel)
+    if preferred_validation_backend == "attrs" or _any_attrs_annotation(parsed_signature):
+        from litestar._signature.models.attrs_signature_model import AttrsSignatureModel
 
-
-def _is_pydantic_annotation(annotation: Any) -> bool:
-    return annotation in pydantic_types or hasattr(annotation, "__get_validators__")
+        return AttrsSignatureModel
+    return PydanticSignatureModel
 
 
 def _should_skip_validation(parameter: ParsedParameter) -> bool:

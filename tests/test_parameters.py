@@ -16,7 +16,7 @@ def test_parsing_of_parameter_as_annotated(backend: Any) -> None:
     def handler(param: Annotated[str, Parameter(min_length=1)]) -> str:
         return param
 
-    with create_test_client(handler, preferred_validation_backend=backend) as client:
+    with create_test_client(handler, _preferred_validation_backend=backend) as client:
         response = client.get("/")
         assert response.status_code == HTTP_400_BAD_REQUEST
 
@@ -30,7 +30,7 @@ def test_parsing_of_parameter_as_default_value(backend: Any) -> None:
     def handler(param: str = Parameter(min_length=1)) -> str:
         return param
 
-    with create_test_client(handler, preferred_validation_backend=backend) as client:
+    with create_test_client(handler, _preferred_validation_backend=backend) as client:
         response = client.get("/?param=")
         assert response.status_code == HTTP_400_BAD_REQUEST
 
@@ -44,7 +44,7 @@ def test_parsing_of_body_as_annotated(backend: Any) -> None:
     def handler(data: Annotated[List[str], Body(min_items=1)]) -> List[str]:
         return data
 
-    with create_test_client(handler, preferred_validation_backend=backend) as client:
+    with create_test_client(handler, _preferred_validation_backend=backend) as client:
         response = client.post("/", json=[])
         assert response.status_code == HTTP_400_BAD_REQUEST
 
@@ -58,7 +58,7 @@ def test_parsing_of_body_as_default_value(backend: Any) -> None:
     def handler(data: List[str] = Body(min_items=1)) -> List[str]:
         return data
 
-    with create_test_client(handler, preferred_validation_backend=backend) as client:
+    with create_test_client(handler, _preferred_validation_backend=backend) as client:
         response = client.post("/", json=[])
         assert response.status_code == HTTP_400_BAD_REQUEST
 
@@ -72,7 +72,7 @@ def test_parsing_of_dependency_as_annotated(backend: Any) -> None:
     def handler(dep: Annotated[int, Dependency(skip_validation=True)]) -> int:
         return dep
 
-    with create_test_client(handler, preferred_validation_backend=backend) as client:
+    with create_test_client(handler, _preferred_validation_backend=backend) as client:
         response = client.get("/")
         assert response.text == "null"
 
@@ -83,6 +83,6 @@ def test_parsing_of_dependency_as_default_value(backend: Any) -> None:
     def handler(dep: int = Dependency(skip_validation=True)) -> int:
         return dep
 
-    with create_test_client(handler, preferred_validation_backend=backend) as client:
+    with create_test_client(handler, _preferred_validation_backend=backend) as client:
         response = client.get("/")
         assert response.text == "null"

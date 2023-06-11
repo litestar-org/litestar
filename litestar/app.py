@@ -39,7 +39,7 @@ from litestar.static_files.base import StaticFiles
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty
 from litestar.types.internal_types import PathParameterDefinition
-from litestar.utils import AsyncCallable, join_paths, unique
+from litestar.utils import AsyncCallable, join_paths, unique, warn_deprecation
 from litestar.utils.dataclass import extract_dataclass_items
 from litestar.utils.predicates import is_async_callable
 from litestar.utils.warnings import warn_pdb_on_exception
@@ -129,6 +129,7 @@ class Litestar(Router):
         "_lifespan_managers",
         "_debug",
         "_openapi_schema",
+        "_preferred_validation_backend",
         "after_exception",
         "allowed_hosts",
         "asgi_handler",
@@ -146,7 +147,6 @@ class Litestar(Router):
         "on_startup",
         "openapi_config",
         "openapi_schema_plugins",
-        "preferred_validation_backend",
         "request_class",
         "response_cache_config",
         "route_map",
@@ -192,7 +192,6 @@ class Litestar(Router):
         opt: Mapping[str, Any] | None = None,
         parameters: ParametersMap | None = None,
         plugins: OptionalSequence[PluginProtocol] = None,
-        preferred_validation_backend: Literal["pydantic", "attrs"] | None = None,
         request_class: type[Request] | None = None,
         response_cache_config: ResponseCacheConfig | None = None,
         response_class: ResponseType | None = None,
@@ -210,6 +209,7 @@ class Litestar(Router):
         websocket_class: type[WebSocket] | None = None,
         lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
         pdb_on_exception: bool | None = None,
+        _preferred_validation_backend: Literal["attrs", "pydantic"] | None = None,
     ) -> None:
         """Initialize a ``Litestar`` application.
 
@@ -268,7 +268,6 @@ class Litestar(Router):
                 paths.
             pdb_on_exception: Drop into the PDB when an exception occurs.
             plugins: Sequence of plugins.
-            preferred_validation_backend: Validation backend to use, if multiple are installed.
             request_class: An optional subclass of :class:`Request <.connection.Request>` to use for http connections.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as the app's default
                 response.
@@ -306,6 +305,13 @@ class Litestar(Router):
         if pdb_on_exception is None:
             pdb_on_exception = os.getenv("LITESTAR_PDB", "0") == "1"
 
+        if _preferred_validation_backend is not None:
+            warn_deprecation(
+                version="2.0.0beta1",
+                kind="parameter",
+                deprecated_name="_preferred_validation_backend",
+            )
+
         config = AppConfig(
             after_exception=list(after_exception or []),
             after_request=after_request,
@@ -336,7 +342,6 @@ class Litestar(Router):
             parameters=parameters or {},
             pdb_on_exception=pdb_on_exception,
             plugins=list(plugins or []),
-            preferred_validation_backend=preferred_validation_backend or "pydantic",
             request_class=request_class,
             response_cache_config=response_cache_config or ResponseCacheConfig(),
             response_class=response_class,
@@ -383,7 +388,7 @@ class Litestar(Router):
         self.on_startup = config.on_startup
         self.openapi_config = config.openapi_config
         self.openapi_schema_plugins = [p for p in config.plugins if isinstance(p, OpenAPISchemaPluginProtocol)]
-        self.preferred_validation_backend: Literal["pydantic", "attrs"] = config.preferred_validation_backend
+        self._preferred_validation_backend: Literal["attrs", "pydantic"] = _preferred_validation_backend or "pydantic"
         self.request_class = config.request_class or Request
         self.response_cache_config = config.response_cache_config
         self.serialization_plugins = [p for p in config.plugins if isinstance(p, SerializationPluginProtocol)]
