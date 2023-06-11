@@ -197,7 +197,7 @@ def duckdb_engine(tmp_path: Path) -> Generator[Engine, None, None]:
 
 
 @pytest.fixture()
-def oracle_engine(docker_ip: str) -> Engine:
+def oracle_engine(docker_ip: str, oracle_service: None) -> Engine:
     """Postgresql instance for end-to-end testing.
 
     Args:
@@ -334,7 +334,6 @@ async def engine_asyncmy(docker_ip: str, mysql_service: None) -> AsyncEngine:
             database="db",
             query={},  # type:ignore[arg-type]
         ),
-        echo=True,
         poolclass=NullPool,
     )
 
@@ -359,7 +358,6 @@ async def engine_asyncpg(docker_ip: str, postgres_service: None) -> AsyncEngine:
             database="postgres",
             query={},  # type:ignore[arg-type]
         ),
-        echo=True,
         poolclass=NullPool,
     )
 
@@ -384,7 +382,6 @@ async def engine_psycopg_async(docker_ip: str, postgres_service: None) -> AsyncE
             database="postgres",
             query={},  # type:ignore[arg-type]
         ),
-        echo=True,
         poolclass=NullPool,
     )
 
