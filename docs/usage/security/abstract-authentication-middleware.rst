@@ -8,7 +8,7 @@ To add authentication to your app using this class as a basis, subclass it and i
 
 .. code-block:: python
 
-   from litestar.authentication import (
+   from litestar.middleware import (
        AbstractAuthenticationMiddleware,
        AuthenticationResult,
    )
@@ -122,7 +122,7 @@ We can now create our authentication middleware:
 
     from sqlalchemy import select
     from sqlalchemy.ext.asyncio import AsyncSession
-    from litestar.authentication import (
+    from litestar.middleware import (
         AbstractAuthenticationMiddleware,
         AuthenticationResult,
     )
