@@ -362,7 +362,7 @@ class WebsocketListener(ABC):
         """Initialize a WebsocketListener instance.
 
         Args:
-            owner: The :class:`Router <.routing.Router>` instance that owns this listener.
+            owner: The :class:`Router <litestar.routing.Router>` instance that owns this listener.
         """
         self._owner = owner
 
