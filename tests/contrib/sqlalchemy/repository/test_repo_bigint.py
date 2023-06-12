@@ -32,21 +32,7 @@ from tests.contrib.sqlalchemy.repository.helpers import maybe_async, update_raw_
 async def seed_db_async(
     raw_authors_bigint: list[dict[str, Any]], raw_rules_bigint: list[dict[str, Any]], async_engine: AsyncEngine
 ) -> None:
-    for raw_author in raw_authors_bigint:
-        raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d").date()
-        raw_author["created_at"] = datetime.strptime(raw_author["created_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
-            timezone.utc
-        )
-        raw_author["updated_at"] = datetime.strptime(raw_author["updated_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
-            timezone.utc
-        )
-    for raw_author in raw_rules_bigint:
-        raw_author["created_at"] = datetime.strptime(raw_author["created_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
-            timezone.utc
-        )
-        raw_author["updated_at"] = datetime.strptime(raw_author["updated_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
-            timezone.utc
-        )
+    update_raw_records(raw_authors=raw_authors_bigint, raw_rules=raw_rules_bigint)
 
     async with async_engine.begin() as conn:
         await conn.run_sync(base.orm_registry.metadata.drop_all)
@@ -157,13 +143,13 @@ async def test_repo_created_updated(author_repo: AuthorAsyncRepository) -> None:
     Args:
         author_repo (AuthorAsyncRepository): The author mock repository
     """
-    author = await author_repo.get_one(name="Agatha Christie")
+    author = await maybe_async(author_repo.get_one(name="Agatha Christie"))
     assert author.created_at is not None
     assert author.updated_at is not None
     original_update_dt = author.updated_at
 
     author.books.append(BigIntBook(title="Testing"))
-    author = await author_repo.update(author)
+    author = await maybe_async(author_repo.update(author))
     assert author.updated_at == original_update_dt
 
 

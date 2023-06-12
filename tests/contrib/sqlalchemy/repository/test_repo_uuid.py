@@ -243,13 +243,13 @@ async def test_repo_created_updated(author_repo: AuthorAsyncRepository) -> None:
     Args:
         author_repo (AuthorAsyncRepository): The author mock repository
     """
-    author = await author_repo.get_one(name="Agatha Christie")
+    author = await maybe_async(author_repo.get_one(name="Agatha Christie"))
     assert author.created_at is not None
     assert author.updated_at is not None
     original_update_dt = author.updated_at
 
     author.books.append(UUIDBook(title="Testing"))
-    author = await author_repo.update(author)
+    author = await maybe_async(author_repo.update(author))
     assert author.updated_at == original_update_dt
 
 

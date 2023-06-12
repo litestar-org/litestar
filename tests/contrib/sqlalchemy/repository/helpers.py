@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import inspect
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Awaitable, TypeVar, cast, overload
 
 import pytest
@@ -29,11 +29,15 @@ async def maybe_async(obj: Awaitable[T] | T) -> T:
 def update_raw_records(raw_authors: list[dict[str, Any]], raw_rules: list[dict[str, Any]]) -> None:
     for raw_author in raw_authors:
         raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d").date()
-        raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
-        raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
+        raw_author["created_at"] = datetime.strptime(raw_author["created_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
+            timezone.utc
+        )
+        raw_author["updated_at"] = datetime.strptime(raw_author["updated_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
+            timezone.utc
+        )
     for raw_rule in raw_rules:
-        raw_rule["created"] = datetime.strptime(raw_rule["created"], "%Y-%m-%dT%H:%M:%S")
-        raw_rule["updated"] = datetime.strptime(raw_rule["updated"], "%Y-%m-%dT%H:%M:%S")
+        raw_rule["created_at"] = datetime.strptime(raw_rule["created_at"], "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc)
+        raw_rule["updated_at"] = datetime.strptime(raw_rule["updated_at"], "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc)
 
 
 mark_requires_docker = [
