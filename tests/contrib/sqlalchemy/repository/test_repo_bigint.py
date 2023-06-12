@@ -1,7 +1,6 @@
 """Unit tests for the SQLAlchemy Repository implementation."""
 from __future__ import annotations
 
-import sys
 from datetime import datetime, timezone
 from typing import Any
 
@@ -27,11 +26,6 @@ from tests.contrib.sqlalchemy.models_bigint import (
     RuleSyncRepository,
 )
 from tests.contrib.sqlalchemy.repository.helpers import maybe_async, update_raw_records
-
-pytestmark = [
-    pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
-    pytest.mark.sqlalchemy_integration,
-]
 
 
 @pytest.fixture()
@@ -78,7 +72,7 @@ def seed_db_sync(
             conn.execute(insert(BigIntRule).values(rule))
 
 
-@pytest.fixture(params=[lazy_fixture("session"), lazy_fixture("async_session")])
+@pytest.fixture(params=[lazy_fixture("session"), lazy_fixture("async_session")], ids=["sync", "async"])
 def any_session(request: FixtureRequest) -> AsyncSession | Session:
     if isinstance(request.param, AsyncSession):
         request.getfixturevalue("seed_db_async")

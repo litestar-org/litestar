@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import inspect
+import sys
 from datetime import datetime
 from typing import Any, Awaitable, TypeVar, cast, overload
+
+import pytest
 
 T = TypeVar("T")
 
@@ -31,3 +34,9 @@ def update_raw_records(raw_authors: list[dict[str, Any]], raw_rules: list[dict[s
     for raw_rule in raw_rules:
         raw_rule["created"] = datetime.strptime(raw_rule["created"], "%Y-%m-%dT%H:%M:%S")
         raw_rule["updated"] = datetime.strptime(raw_rule["updated"], "%Y-%m-%dT%H:%M:%S")
+
+
+mark_requires_docker = [
+    pytest.mark.sqlalchemy_integration,
+    pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
+]

@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import os
-import sys
 from datetime import datetime, timezone
 from typing import Any, Generator, cast
 from uuid import UUID, uuid4
@@ -32,21 +31,16 @@ from tests.contrib.sqlalchemy.models_uuid import (
     UUIDRule,
 )
 
-from .helpers import maybe_async, update_raw_records
-
-pytestmark = [
-    pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
-    pytest.mark.sqlalchemy_integration,
-]
+from .helpers import mark_requires_docker, maybe_async, update_raw_records
 
 
 @pytest.fixture(
     params=[
-        pytest.param("duckdb_engine", marks=pytest.mark.sqlalchemy_duckdb),
-        pytest.param("oracle_engine", marks=pytest.mark.sqlalchemy_oracledb),
-        pytest.param("psycopg_engine", marks=pytest.mark.sqlalchemy_psycopg_sync),
         pytest.param("sqlite_engine", marks=pytest.mark.sqlalchemy_sqlite),
-        pytest.param("spanner_engine", marks=pytest.mark.sqlalchemy_spanner),
+        pytest.param("duckdb_engine", marks=[pytest.mark.sqlalchemy_duckdb, *mark_requires_docker]),
+        pytest.param("oracle_engine", marks=[pytest.mark.sqlalchemy_oracledb, *mark_requires_docker]),
+        pytest.param("psycopg_engine", marks=[pytest.mark.sqlalchemy_psycopg_sync, *mark_requires_docker]),
+        pytest.param("spanner_engine", marks=[pytest.mark.sqlalchemy_spanner, *mark_requires_docker]),
     ]
 )
 def engine(request: FixtureRequest) -> Engine:
@@ -164,7 +158,7 @@ async def seed_db_async(
         await conn.execute(insert(UUIDRule).values(raw_rules_uuid))
 
 
-@pytest.fixture(params=[lazy_fixture("session"), lazy_fixture("async_session")])
+@pytest.fixture(params=[lazy_fixture("session"), lazy_fixture("async_session")], ids=["sync", "async"])
 def any_session(request: FixtureRequest) -> AsyncSession | Session:
     if isinstance(request.param, AsyncSession):
         request.getfixturevalue("seed_db_async")
