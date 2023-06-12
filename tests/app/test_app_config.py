@@ -62,7 +62,7 @@ def test_app_params_defined_on_app_config_object() -> None:
     litestar_signature = inspect.signature(Litestar)
     app_config_fields = {f.name for f in fields(AppConfig)}
     for name in litestar_signature.parameters:
-        if name in ("on_app_init", "initial_state"):
+        if name in {"on_app_init", "initial_state", "_preferred_validation_backend"}:
             continue
         assert name in app_config_fields
     # ensure there are not fields defined on AppConfig that aren't in the Litestar signature

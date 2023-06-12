@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from functools import partial
 from itertools import chain
 from typing import TYPE_CHECKING, Any, Generic, Literal, Mapping, TypeVar, overload
 
@@ -8,7 +7,7 @@ from litestar.datastructures.cookie import Cookie
 from litestar.datastructures.headers import ETag
 from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.serialization import DEFAULT_TYPE_ENCODERS, default_serializer, encode_json, encode_msgpack
+from litestar.serialization import encode_json, encode_msgpack, get_serializer
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from litestar.utils.helpers import get_enum_string_value
 
@@ -25,7 +24,6 @@ if TYPE_CHECKING:
         ResponseHeaders,
         Scope,
         Send,
-        Serializer,
         TypeEncodersMap,
     )
 
@@ -97,7 +95,7 @@ class Response(Generic[T]):
             status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or status_code < HTTP_200_OK
         )
         self.status_code = status_code
-        self._enc_hook = self.get_serializer(type_encoders)
+        self._enc_hook = get_serializer({**(self.type_encoders or {}), **(type_encoders or {})})
 
         if not self.status_allows_body or is_head_response:
             if content:
@@ -114,16 +112,6 @@ class Response(Generic[T]):
             f"{self.media_type}; charset={self.encoding}" if self.media_type.startswith("text/") else self.media_type,
         )
         self.raw_headers: list[tuple[bytes, bytes]] = []
-
-    @classmethod
-    def get_serializer(cls, type_encoders: TypeEncodersMap | None = None) -> Serializer:
-        """Get the serializer for this response class."""
-
-        type_encoders = {**(cls.type_encoders or {}), **(type_encoders or {})}
-        if type_encoders:
-            return partial(default_serializer, type_encoders={**DEFAULT_TYPE_ENCODERS, **type_encoders})
-
-        return default_serializer
 
     @overload
     def set_cookie(self, /, cookie: Cookie) -> None:

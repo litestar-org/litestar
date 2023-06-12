@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import deque
 from decimal import Decimal
+from functools import partial
 from ipaddress import (
     IPv4Address,
     IPv4Interface,
@@ -29,7 +30,7 @@ from pydantic.json import decimal_encoder
 
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
-from litestar.types import Empty
+from litestar.types import Empty, Serializer
 
 if TYPE_CHECKING:
     from litestar.types import TypeEncodersMap
@@ -42,6 +43,7 @@ __all__ = (
     "default_serializer",
     "encode_json",
     "encode_msgpack",
+    "get_serializer",
 )
 
 T = TypeVar("T")
@@ -271,3 +273,12 @@ def decode_media_type(raw: bytes, media_type: MediaType | str, type_: Any) -> An
         return decode_msgpack(raw, type_=type_)
 
     raise SerializationException(f"Unsupported media type: '{media_type}'")
+
+
+def get_serializer(type_encoders: TypeEncodersMap | None = None) -> Serializer:
+    """Get the serializer for the given type encoders."""
+
+    if type_encoders:
+        return partial(default_serializer, type_encoders={**DEFAULT_TYPE_ENCODERS, **type_encoders})
+
+    return default_serializer

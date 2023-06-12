@@ -141,7 +141,7 @@ def test_dependency_validation_failure_raises_500(
         ...
 
     with create_test_client(
-        route_handlers=[test], dependencies=dependencies, preferred_validation_backend=preferred_validation_backend
+        route_handlers=[test], dependencies=dependencies, _preferred_validation_backend=preferred_validation_backend
     ) as client:
         response = client.get("/?param=13")
 
@@ -166,7 +166,7 @@ def test_validation_failure_raises_400(
         ...
 
     with create_test_client(
-        route_handlers=[test], dependencies=dependencies, preferred_validation_backend=preferred_validation_backend
+        route_handlers=[test], dependencies=dependencies, _preferred_validation_backend=preferred_validation_backend
     ) as client:
         response = client.get("/?param=thirteen")
 
@@ -188,7 +188,7 @@ def test_client_pydantic_backend_error_precedence_over_server_error() -> None:
         ...
 
     with create_test_client(
-        route_handlers=[test], dependencies=dependencies, preferred_validation_backend="pydantic"
+        route_handlers=[test], dependencies=dependencies, _preferred_validation_backend="pydantic"
     ) as client:
         response = client.get("/?param=thirteen")
 
@@ -280,7 +280,7 @@ def test_query_param_bool(query: str, expected: bool, signature_backend: Literal
     def handler(param: bool) -> None:
         mock(param)
 
-    with create_test_client(route_handlers=[handler], preferred_validation_backend=signature_backend) as client:
+    with create_test_client(route_handlers=[handler], _preferred_validation_backend=signature_backend) as client:
         response = client.get(f"/?param={query}")
         assert response.status_code == HTTP_200_OK, response.json()
         mock.assert_called_once_with(expected)

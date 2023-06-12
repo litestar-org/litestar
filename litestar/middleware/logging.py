@@ -18,7 +18,7 @@ from litestar.data_extractors import (
 from litestar.enums import ScopeType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.middleware.base import AbstractMiddleware, DefineMiddleware
-from litestar.serialization import default_serializer, encode_json
+from litestar.serialization import encode_json
 from litestar.utils import (
     get_litestar_scope_state,
     get_serializer_from_scope,
@@ -195,7 +195,7 @@ class LoggingMiddleware(AbstractMiddleware):
             An dict.
         """
         data: dict[str, Any] = {"message": self.config.response_log_message}
-        serializer = get_serializer_from_scope(scope) or default_serializer
+        serializer = get_serializer_from_scope(scope)
         extracted_data = self.response_extractor(
             messages=(
                 get_litestar_scope_state(scope, HTTP_RESPONSE_START, pop=True),

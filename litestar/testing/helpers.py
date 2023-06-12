@@ -87,7 +87,6 @@ def create_test_client(
     parameters: ParametersMap | None = None,
     plugins: OptionalSequence[PluginProtocol] = None,
     lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
-    preferred_validation_backend: Literal["pydantic", "attrs"] | None = None,
     raise_server_exceptions: bool = True,
     pdb_on_exception: bool | None = None,
     request_class: type[Request] | None = None,
@@ -107,6 +106,7 @@ def create_test_client(
     template_config: TemplateConfig | None = None,
     type_encoders: TypeEncodersMap | None = None,
     websocket_class: type[WebSocket] | None = None,
+    _preferred_validation_backend: Literal["pydantic", "attrs"] | None = None,
 ) -> TestClient[Litestar]:
     """Create a Litestar app instance and initializes it.
 
@@ -132,7 +132,6 @@ def create_test_client(
                     assert response.json() == {"hello": "world"}
 
     Args:
-        preferred_validation_backend:
         route_handlers: A single handler or a sequence of route handlers, which can include instances of
             :class:`Router <litestar.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or
             any function decorated by the route handler decorators.
@@ -198,7 +197,6 @@ def create_test_client(
             paths.
         pdb_on_exception: Drop into the PDB when an exception occurs.
         plugins: Sequence of plugins.
-        preferred_validation_backend: Validation backend to use, if multiple are installed.
         request_class: An optional subclass of :class:`Request <.connection.Request>` to use for http connections.
         response_class: A custom subclass of :class:`Response <.response.Response>` to be used as the app's default
             response.
@@ -265,7 +263,6 @@ def create_test_client(
         parameters=parameters,
         pdb_on_exception=pdb_on_exception,
         plugins=plugins,
-        preferred_validation_backend=preferred_validation_backend,
         request_class=request_class,
         response_cache_config=response_cache_config,
         response_class=response_class,
@@ -282,6 +279,7 @@ def create_test_client(
         template_config=template_config,
         type_encoders=type_encoders,
         websocket_class=websocket_class,
+        _preferred_validation_backend=_preferred_validation_backend,
     )
 
     return TestClient[Litestar](
@@ -331,7 +329,6 @@ def create_async_test_client(
     parameters: ParametersMap | None = None,
     pdb_on_exception: bool | None = None,
     plugins: OptionalSequence[PluginProtocol] = None,
-    preferred_validation_backend: Literal["pydantic", "attrs"] | None = None,
     raise_server_exceptions: bool = True,
     request_class: type[Request] | None = None,
     response_cache_config: ResponseCacheConfig | None = None,
@@ -350,6 +347,7 @@ def create_async_test_client(
     template_config: TemplateConfig | None = None,
     type_encoders: TypeEncodersMap | None = None,
     websocket_class: type[WebSocket] | None = None,
+    _preferred_validation_backend: Literal["pydantic", "attrs"] | None = None,
 ) -> AsyncTestClient[Litestar]:
     """Create a Litestar app instance and initializes it.
 
@@ -440,7 +438,6 @@ def create_async_test_client(
             paths.
         pdb_on_exception: Drop into the PDB when an exception occurs.
         plugins: Sequence of plugins.
-        preferred_validation_backend: Validation backend to use, if multiple are installed.
         request_class: An optional subclass of :class:`Request <.connection.Request>` to use for http connections.
         response_class: A custom subclass of :class:`Response <.response.Response>` to be used as the app's default
             response.
@@ -507,7 +504,6 @@ def create_async_test_client(
         parameters=parameters,
         pdb_on_exception=pdb_on_exception,
         plugins=plugins,
-        preferred_validation_backend=preferred_validation_backend,
         request_class=request_class,
         response_cache_config=response_cache_config,
         response_class=response_class,
@@ -524,6 +520,7 @@ def create_async_test_client(
         template_config=template_config,
         type_encoders=type_encoders,
         websocket_class=websocket_class,
+        _preferred_validation_backend=_preferred_validation_backend,
     )
 
     return AsyncTestClient[Litestar](
