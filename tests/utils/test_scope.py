@@ -2,12 +2,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from litestar import Litestar
 from litestar.constants import SCOPE_STATE_NAMESPACE
-from litestar.handlers.base import BaseRouteHandler
 from litestar.utils import (
     get_litestar_scope_state,
-    get_serializer_from_scope,
     set_litestar_scope_state,
 )
 
@@ -18,10 +15,6 @@ if TYPE_CHECKING:
 @pytest.fixture()
 def scope() -> "HTTPScope":
     return {"state": {}}  # type:ignore[typeddict-item]
-
-
-def test_get_serializer_from_scope() -> None:
-    assert get_serializer_from_scope({"app": Litestar([]), "route_handler": BaseRouteHandler()}) is None  # type: ignore
 
 
 def test_get_litestar_scope_state_without_default_does_not_set_key_in_scope_state(scope: "HTTPScope") -> None:

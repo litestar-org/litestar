@@ -3,6 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from litestar.constants import SCOPE_STATE_NAMESPACE
+from litestar.serialization import get_serializer
+
+if TYPE_CHECKING:
+    from litestar.types import Scope, Serializer
 
 __all__ = (
     "delete_litestar_scope_state",
@@ -12,11 +16,7 @@ __all__ = (
 )
 
 
-if TYPE_CHECKING:
-    from litestar.types import Scope, Serializer
-
-
-def get_serializer_from_scope(scope: Scope) -> Serializer | None:
+def get_serializer_from_scope(scope: Scope) -> Serializer:
     """Return a serializer given a scope object.
 
     Args:
@@ -28,18 +28,19 @@ def get_serializer_from_scope(scope: Scope) -> Serializer | None:
     route_handler = scope["route_handler"]
     app = scope["app"]
 
+    if hasattr(route_handler, "resolve_type_encoders"):
+        type_encoders = route_handler.resolve_type_encoders()
+    else:
+        type_encoders = app.type_encoders or {}
+
     if response_class := (
         route_handler.resolve_response_class()  # pyright: ignore
         if hasattr(route_handler, "resolve_response_class")
         else app.response_class
     ):
-        return response_class.get_serializer(
-            route_handler.resolve_type_encoders()  # pyright: ignore
-            if hasattr(route_handler, "resolve_type_encoders")
-            else app.type_encoders
-        )
+        type_encoders = {**type_encoders, **(response_class.type_encoders or {})}
 
-    return None
+    return get_serializer(type_encoders)
 
 
 def get_litestar_scope_state(scope: Scope, key: str, default: Any = None, pop: bool = False) -> Any:

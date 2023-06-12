@@ -188,11 +188,11 @@ def test_get_serializer() -> None:
     class FooResponse(Response):
         type_encoders = foo_encoder
 
-    assert Response.get_serializer() is default_serializer
-    assert CustomResponse.get_serializer() is default_serializer
+    assert Response(None)._enc_hook is default_serializer
+    assert CustomResponse(None)._enc_hook is default_serializer
 
-    assert Response.get_serializer(type_encoders=foo_encoder)(Foo()) == "it's a foo"
-    assert Response.get_serializer(type_encoders=path_encoder)(PurePosixPath()) == "it's a path"
+    assert Response(None, type_encoders=foo_encoder)._enc_hook(Foo()) == "it's a foo"
+    assert Response(None, type_encoders=path_encoder)._enc_hook(PurePosixPath()) == "it's a path"
 
-    assert FooResponse.get_serializer()(Foo()) == "it's a foo"
-    assert FooResponse.get_serializer(type_encoders={Foo: lambda f: "foo"})(Foo()) == "foo"
+    assert FooResponse(None)._enc_hook(Foo()) == "it's a foo"
+    assert FooResponse(None, type_encoders={Foo: lambda f: "foo"})._enc_hook(Foo()) == "foo"
