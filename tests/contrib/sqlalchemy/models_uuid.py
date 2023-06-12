@@ -1,5 +1,4 @@
 """Example domain objects for testing."""
-from __future__ import annotations
 
 from datetime import date, datetime
 from uuid import UUID
@@ -16,7 +15,7 @@ class UUIDAuthor(UUIDAuditBase):
 
     name: Mapped[str] = mapped_column(String(length=100))  # pyright: ignore
     dob: Mapped[date] = mapped_column(nullable=True)  # pyright: ignore
-    books: Mapped[list[UUIDBook]] = relationship(  # pyright: ignore
+    books: "Mapped[list[UUIDBook]]" = relationship(  # pyright: ignore
         lazy="selectin",
         back_populates="author",
         cascade="all, delete",

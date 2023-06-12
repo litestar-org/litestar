@@ -1,5 +1,4 @@
 """Example domain objects for testing."""
-from __future__ import annotations
 
 from datetime import date, datetime
 
@@ -15,7 +14,7 @@ class BigIntAuthor(BigIntAuditBase):
 
     name: Mapped[str] = mapped_column(String(length=100))  # pyright: ignore
     dob: Mapped[date] = mapped_column(nullable=True)  # pyright: ignore
-    books: Mapped[list[BigIntBook]] = relationship(  # pyright: ignore
+    books: "Mapped[list[BigIntBook]]" = relationship(  # pyright: ignore
         lazy="selectin",
         back_populates="author",
         cascade="all, delete",
