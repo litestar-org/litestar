@@ -1,6 +1,8 @@
 """Example domain objects for testing."""
+from __future__ import annotations
 
 from datetime import date, datetime
+from typing import List
 
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -14,7 +16,7 @@ class BigIntAuthor(BigIntAuditBase):
 
     name: Mapped[str] = mapped_column(String(length=100))  # pyright: ignore
     dob: Mapped[date] = mapped_column(nullable=True)  # pyright: ignore
-    books: "Mapped[list[BigIntBook]]" = relationship(  # pyright: ignore
+    books: Mapped[List[BigIntBook]] = relationship(  # pyright: ignore  # noqa: UP
         lazy="selectin",
         back_populates="author",
         cascade="all, delete",
