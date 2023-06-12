@@ -26,23 +26,6 @@ and Route Handlers should be registered on it.
     :ref:`usage/routing:Registering Routes`
 
 
-Validation Backends
--------------------
-
-Litestar supports both `attrs <https://www.attrs.org/en/stable/>`_ and `pydantic <https://docs.pydantic.dev/>`_ as
-validation backends. If you have one of these libraries installed alongside Litestar, it will be used automatically.
-If you have both of these installed though, Litestar will default to using attrs unless a handler uses a pydantic-specific
-type or a custom class that has the pydantic ``__get_validators__`` dunder defined. You can change this behaviour by
-setting the ``preferred_validation_backend`` kwarg to ``pydantic``:
-
-
-.. code-block:: python
-
-   from litestar import Litestar
-
-   app = Litestar(route_handlers=..., preferred_validation_backend="pydantic")
-
-
 Startup and Shutdown
 --------------------
 

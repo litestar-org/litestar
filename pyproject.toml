@@ -252,6 +252,7 @@ filterwarnings = [
     "ignore::DeprecationWarning:google.iam",
     "ignore::DeprecationWarning:google",
     "ignore::DeprecationWarning:sphinxcontrib",
+    "ignore::DeprecationWarning:litestar.*",
 ]
 markers = [
     "sqlalchemy_integration: SQLAlchemy integration tests",
