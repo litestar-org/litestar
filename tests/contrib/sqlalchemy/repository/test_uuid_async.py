@@ -21,6 +21,7 @@ from tests.contrib.sqlalchemy.models_uuid import (
     BookAsyncRepository,
     RuleAsyncRepository,
     UUIDAuthor,
+    UUIDBook,
     UUIDRule,
 )
 
@@ -126,6 +127,22 @@ async def test_repo_list_and_count_method_empty(book_repo: BookAsyncRepository) 
     assert 0 == count
     assert isinstance(collection, list)
     assert len(collection) == 0
+
+
+async def test_repo_created_updated(author_repo: AuthorAsyncRepository) -> None:
+    """Test SQLALchemy created_at - updated_at.
+
+    Args:
+        author_repo (AuthorAsyncRepository): The author mock repository
+    """
+    author = await author_repo.get_one(name="Agatha Christie")
+    assert author.created_at is not None
+    assert author.updated_at is not None
+    original_update_dt = author.updated_at
+
+    author.books.append(UUIDBook(title="Testing"))
+    author = await author_repo.update(author)
+    assert author.updated_at == original_update_dt
 
 
 async def test_repo_list_method(

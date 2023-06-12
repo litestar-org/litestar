@@ -7,10 +7,12 @@ from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar, runtime_chec
 from uuid import UUID, uuid4
 
 from pydantic import AnyHttpUrl, AnyUrl, EmailStr
-from sqlalchemy import Date, MetaData, Sequence, String, func
+from sqlalchemy import Date, MetaData, Sequence, String
+from sqlalchemy.event import listens_for
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
+    Session,
     declared_attr,
     mapped_column,
     orm_insert_sentinel,
@@ -30,6 +32,7 @@ __all__ = (
     "CommonTableAttributes",
     "create_registry",
     "ModelProtocol",
+    "touch_updated_timestamp",
     "UUIDAuditBase",
     "UUIDBase",
     "UUIDPrimaryKey",
@@ -47,6 +50,23 @@ convention = {
     "pk": "pk_%(table_name)s",
 }
 """Templates for automated constraint name generation."""
+
+
+@listens_for(Session, "before_flush")
+def touch_updated_timestamp(session: Session, *_: Any) -> None:
+    """Set timestamp on update.
+
+    Called from SQLAlchemy's
+    :meth:`before_flush <sqlalchemy.orm.SessionEvents.before_flush>` event to bump the ``updated``
+    timestamp on modified instances.
+
+    Args:
+        session: The sync :class:`Session <sqlalchemy.orm.Session>` instance that underlies the async
+            session.
+    """
+    for instance in session.dirty:
+        if hasattr(instance, "updated_at"):
+            instance.updated = (datetime.now(timezone.utc),)
 
 
 @runtime_checkable
@@ -93,13 +113,13 @@ class AuditColumns:
     """Created/Updated At Fields Mixin."""
 
     created_at: Mapped[datetime] = mapped_column(  # pyright: ignore
-        DateTimeUTC(timezone=True), server_default=func.current_timestamp()
+        DateTimeUTC(timezone=True),
+        default=datetime.now(timezone.utc),
     )
     """Date/time of instance creation."""
     updated_at: Mapped[datetime] = mapped_column(  # pyright: ignore
         DateTimeUTC(timezone=True),
-        server_default=func.current_timestamp(),
-        onupdate=datetime.now(timezone.utc),
+        default=datetime.now(timezone.utc),
     )
     """Date/time of instance last update."""
 

@@ -15,6 +15,7 @@ from litestar.contrib.sqlalchemy import base
 from tests.contrib.sqlalchemy.models_bigint import (
     AuthorAsyncRepository,
     BigIntAuthor,
+    BigIntBook,
     BigIntRule,
     BookAsyncRepository,
     RuleAsyncRepository,
@@ -93,7 +94,7 @@ async def test_repo_count_method(author_repo: AuthorAsyncRepository) -> None:
 async def test_repo_list_and_count_method(
     raw_authors_bigint: list[dict[str, Any]], author_repo: AuthorAsyncRepository
 ) -> None:
-    """Test SQLALchemy list with count in asyncpg.
+    """Test SQLALchemy list with count.
 
     Args:
         raw_authors_bigint (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
@@ -107,7 +108,7 @@ async def test_repo_list_and_count_method(
 
 
 async def test_repo_list_and_count_method_empty(book_repo: BookAsyncRepository) -> None:
-    """Test SQLALchemy list with count in asyncpg.
+    """Test SQLALchemy list with count.
 
     Args:
         raw_authors_bigint (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
@@ -118,6 +119,22 @@ async def test_repo_list_and_count_method_empty(book_repo: BookAsyncRepository) 
     assert 0 == count
     assert isinstance(collection, list)
     assert len(collection) == 0
+
+
+async def test_repo_created_updated(author_repo: AuthorAsyncRepository) -> None:
+    """Test SQLALchemy created_at - updated_at.
+
+    Args:
+        author_repo (AuthorAsyncRepository): The author mock repository
+    """
+    author = await author_repo.get_one(name="Agatha Christie")
+    assert author.created_at is not None
+    assert author.updated_at is not None
+    original_update_dt = author.updated_at
+
+    author.books.append(BigIntBook(title="Testing"))
+    author = await author_repo.update(author)
+    assert author.updated_at == original_update_dt
 
 
 async def test_repo_list_method(raw_authors_bigint: list[dict[str, Any]], author_repo: AuthorAsyncRepository) -> None:
