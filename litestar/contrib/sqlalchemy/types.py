@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import datetime
 import uuid
 from base64 import b64decode
 from typing import TYPE_CHECKING, Any, cast
 
-from sqlalchemy import text, util
+from sqlalchemy import DateTime, text, util
 from sqlalchemy.dialects.oracle import BLOB as ORA_BLOB
 from sqlalchemy.dialects.oracle import RAW as ORA_RAW
 from sqlalchemy.dialects.postgresql import JSONB as PG_JSONB
@@ -143,6 +144,30 @@ class ORA_JSONB(TypeDecorator, SchemaType):  # type: ignore  # noqa: N801
             _type_bound=True,
         )
         table.append_constraint(e)
+
+
+class DateTimeUTC(TypeDecorator):
+    """Timezone Aware DateTime.
+
+    Ensure UTC is stored in the database and that TZ aware dates are returned for all dialects.
+    """
+
+    impl = DateTime(timezone=True)
+    cache_ok = True
+
+    def process_bind_param(self, value: datetime.datetime | None, dialect: Dialect) -> datetime.datetime | None:
+        if value is None:
+            return value
+        if not value.tzinfo:
+            raise TypeError("tzinfo is required")
+        return value.astimezone(datetime.timezone.utc)
+
+    def process_result_value(self, value: datetime.datetime | None, dialect: Dialect) -> datetime.datetime | None:
+        if value is None:
+            return value
+        if value.tzinfo is None:
+            return value.replace(tzinfo=datetime.timezone.utc)
+        return value
 
 
 BigIntIdentity = BigInteger().with_variant(Integer, "sqlite")

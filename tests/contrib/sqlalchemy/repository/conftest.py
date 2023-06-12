@@ -53,15 +53,15 @@ def fx_raw_authors_uuid() -> list[dict[str, Any]]:
             "id": UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"),
             "name": "Agatha Christie",
             "dob": "1890-09-15",
-            "created": "2023-05-01T00:00:00",
-            "updated": "2023-05-11T00:00:00",
+            "created_at": "2023-05-01T00:00:00",
+            "updated_at": "2023-05-11T00:00:00",
         },
         {
             "id": "5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2",
             "name": "Leo Tolstoy",
             "dob": "1828-09-09",
-            "created": "2023-03-01T00:00:00",
-            "updated": "2023-05-15T00:00:00",
+            "created_at": "2023-03-01T00:00:00",
+            "updated_at": "2023-05-15T00:00:00",
         },
     ]
 
@@ -87,8 +87,8 @@ def fx_raw_log_events_uuid() -> list[dict[str, Any]]:
             "id": "f34545b9-663c-4fce-915d-dd1ae9cea42a",
             "logged_at": "0001-01-01T00:00:00",
             "payload": {"foo": "bar", "baz": datetime.now()},
-            "created": "0001-01-01T00:00:00",
-            "updated": "0001-01-01T00:00:00",
+            "created_at": "0001-01-01T00:00:00",
+            "updated_at": "0001-01-01T00:00:00",
         },
     ]
 
@@ -101,15 +101,15 @@ def fx_raw_rules_uuid() -> list[dict[str, Any]]:
             "id": "f34545b9-663c-4fce-915d-dd1ae9cea42a",
             "name": "Initial loading rule.",
             "config": json.dumps({"url": "https://litestar.dev", "setting_123": 1}),
-            "created": "2023-01-01T00:00:00",
-            "updated": "2023-02-01T00:00:00",
+            "created_at": "2023-01-01T00:00:00",
+            "updated_at": "2023-02-01T00:00:00",
         },
         {
             "id": "f34545b9-663c-4fce-915d-dd1ae9cea34b",
             "name": "Secondary loading rule.",
             "config": {"url": "https://litestar.dev", "bar": "foo", "setting_123": 4},
-            "created": "2023-02-01T00:00:00",
-            "updated": "2023-02-01T00:00:00",
+            "created_at": "2023-02-01T00:00:00",
+            "updated_at": "2023-02-01T00:00:00",
         },
     ]
 
@@ -122,15 +122,15 @@ def fx_raw_authors_bigint() -> list[dict[str, Any]]:
             "id": 2023,
             "name": "Agatha Christie",
             "dob": "1890-09-15",
-            "created": "2023-05-01T00:00:00",
-            "updated": "2023-05-11T00:00:00",
+            "created_at": "2023-05-01T00:00:00",
+            "updated_at": "2023-05-11T00:00:00",
         },
         {
             "id": 2024,
             "name": "Leo Tolstoy",
             "dob": "1828-09-09",
-            "created": "2023-03-01T00:00:00",
-            "updated": "2023-05-15T00:00:00",
+            "created_at": "2023-03-01T00:00:00",
+            "updated_at": "2023-05-15T00:00:00",
         },
     ]
 
@@ -155,8 +155,8 @@ def fx_raw_log_events_bigint() -> list[dict[str, Any]]:
             "id": 2025,
             "logged_at": "0001-01-01T00:00:00",
             "payload": {"foo": "bar", "baz": datetime.now()},
-            "created": "0001-01-01T00:00:00",
-            "updated": "0001-01-01T00:00:00",
+            "created_at": "0001-01-01T00:00:00",
+            "updated_at": "0001-01-01T00:00:00",
         },
     ]
 
@@ -169,15 +169,15 @@ def fx_raw_rules_bigint() -> list[dict[str, Any]]:
             "id": 2025,
             "name": "Initial loading rule.",
             "config": json.dumps({"url": "https://litestar.dev", "setting_123": 1}),
-            "created": "2023-01-01T00:00:00",
-            "updated": "2023-02-01T00:00:00",
+            "created_at": "2023-01-01T00:00:00",
+            "updated_at": "2023-02-01T00:00:00",
         },
         {
             "id": 2024,
             "name": "Secondary loading rule.",
             "config": {"url": "https://litestar.dev", "bar": "foo", "setting_123": 4},
-            "created": "2023-02-01T00:00:00",
-            "updated": "2023-02-01T00:00:00",
+            "created_at": "2023-02-01T00:00:00",
+            "updated_at": "2023-02-01T00:00:00",
         },
     ]
 

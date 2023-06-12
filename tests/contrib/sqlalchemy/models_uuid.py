@@ -1,7 +1,9 @@
 """Example domain objects for testing."""
+
 from __future__ import annotations
 
 from datetime import date, datetime
+from typing import List
 from uuid import UUID
 
 from sqlalchemy import ForeignKey, String
@@ -16,6 +18,11 @@ class UUIDAuthor(UUIDAuditBase):
 
     name: Mapped[str] = mapped_column(String(length=100))  # pyright: ignore
     dob: Mapped[date] = mapped_column(nullable=True)  # pyright: ignore
+    books: Mapped[List[UUIDBook]] = relationship(  # pyright: ignore  # noqa: UP
+        lazy="selectin",
+        back_populates="author",
+        cascade="all, delete",
+    )
 
 
 class UUIDBook(UUIDBase):
@@ -23,7 +30,7 @@ class UUIDBook(UUIDBase):
 
     title: Mapped[str] = mapped_column(String(length=250))  # pyright: ignore
     author_id: Mapped[UUID] = mapped_column(ForeignKey("uuid_author.id"))  # pyright: ignore
-    author: Mapped[UUIDAuthor] = relationship(lazy="joined", innerjoin=True)  # pyright: ignore
+    author: Mapped[UUIDAuthor] = relationship(lazy="joined", innerjoin=True, back_populates="books")  # pyright: ignore
 
 
 class UUIDEventLog(UUIDAuditBase):

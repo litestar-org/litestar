@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime
+from typing import List
 
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -15,6 +16,11 @@ class BigIntAuthor(BigIntAuditBase):
 
     name: Mapped[str] = mapped_column(String(length=100))  # pyright: ignore
     dob: Mapped[date] = mapped_column(nullable=True)  # pyright: ignore
+    books: Mapped[List[BigIntBook]] = relationship(  # pyright: ignore  # noqa: UP
+        lazy="selectin",
+        back_populates="author",
+        cascade="all, delete",
+    )
 
 
 class BigIntBook(BigIntBase):
@@ -22,7 +28,9 @@ class BigIntBook(BigIntBase):
 
     title: Mapped[str] = mapped_column(String(length=250))  # pyright: ignore
     author_id: Mapped[int] = mapped_column(ForeignKey("big_int_author.id"))  # pyright: ignore
-    author: Mapped[BigIntAuthor] = relationship(lazy="joined", innerjoin=True)  # pyright: ignore
+    author: Mapped[BigIntAuthor] = relationship(  # pyright: ignore
+        lazy="joined", innerjoin=True, back_populates="books"
+    )
 
 
 class BigIntEventLog(BigIntAuditBase):

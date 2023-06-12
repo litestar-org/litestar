@@ -18,7 +18,7 @@ from tests.contrib.sqlalchemy.models_uuid import UUIDAuthor, UUIDBook
 def fx_authors() -> list[UUIDAuthor]:
     """Collection of Author models."""
     return [
-        UUIDAuthor(id=uuid4(), name=name, dob=dob, created=datetime.min, updated=datetime.min)
+        UUIDAuthor(id=uuid4(), name=name, dob=dob, created_at=datetime.min, updated_at=datetime.min)
         for name, dob in [("Agatha Christie", date(1890, 9, 15)), ("Leo Tolstoy", date(1828, 9, 9))]
     ]
 
@@ -113,36 +113,36 @@ def test_generic_mock_repository_raises_repository_exception_if_named_attribute_
 
 
 async def test_sets_created_updated_on_add() -> None:
-    """Test that the repository updates the 'created' and 'updated' timestamps
+    """Test that the repository updates the 'created_at' and 'updated_at' timestamps
     if necessary."""
 
     class UUIDModel(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
 
     class BigIntModel(base.BigIntAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
 
     uuid_instance = UUIDModel()
-    assert "created" not in vars(uuid_instance)
-    assert "updated" not in vars(uuid_instance)
+    assert "created_at" not in vars(uuid_instance)
+    assert "updated_at" not in vars(uuid_instance)
 
     uuid_instance = await GenericAsyncMockRepository[UUIDModel]().add(uuid_instance)
-    assert "created" in vars(uuid_instance)
-    assert "updated" in vars(uuid_instance)
+    assert "created_at" in vars(uuid_instance)
+    assert "updated_at" in vars(uuid_instance)
 
     bigint_instance = BigIntModel()
-    assert "created" not in vars(bigint_instance)
-    assert "updated" not in vars(bigint_instance)
+    assert "created_at" not in vars(bigint_instance)
+    assert "updated_at" not in vars(bigint_instance)
 
     bigint_instance = await GenericAsyncMockRepository[BigIntModel]().add(bigint_instance)  # type: ignore[type-var]
-    assert "created" in vars(bigint_instance)
-    assert "updated" in vars(bigint_instance)
+    assert "created_at" in vars(bigint_instance)
+    assert "updated_at" in vars(bigint_instance)
 
 
 async def test_sets_updated_on_update(author_repository: GenericAsyncMockRepository[UUIDAuthor]) -> None:
@@ -150,9 +150,9 @@ async def test_sets_updated_on_update(author_repository: GenericAsyncMockReposit
     necessary."""
 
     instance = list(author_repository.collection.values())[0]
-    original_updated = instance.updated
+    original_updated = instance.updated_at
     instance = await author_repository.update(instance)
-    assert instance.updated > original_updated
+    assert instance.updated_at > original_updated
 
 
 async def test_does_not_set_created_updated() -> None:
@@ -160,51 +160,51 @@ async def test_does_not_set_created_updated() -> None:
     appropriate."""
 
     class UUIDModel(base.UUIDBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
 
     class BigIntModel(base.BigIntBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
 
     uuid_instance = UUIDModel()
     uuid_repo = GenericAsyncMockRepository[UUIDModel]()
-    assert "created" not in vars(uuid_instance)
-    assert "updated" not in vars(uuid_instance)
+    assert "created_at" not in vars(uuid_instance)
+    assert "updated_at" not in vars(uuid_instance)
     uuid_instance = await uuid_repo.add(uuid_instance)
-    assert "created" not in vars(uuid_instance)
-    assert "updated" not in vars(uuid_instance)
+    assert "created_at" not in vars(uuid_instance)
+    assert "updated_at" not in vars(uuid_instance)
     uuid_instance = await uuid_repo.update(uuid_instance)
-    assert "created" not in vars(uuid_instance)
-    assert "updated" not in vars(uuid_instance)
+    assert "created_at" not in vars(uuid_instance)
+    assert "updated_at" not in vars(uuid_instance)
 
     bigint_instance = BigIntModel()
     bigint_repo = GenericAsyncMockRepository[BigIntModel]()  # type: ignore[type-var]
-    assert "created" not in vars(bigint_instance)
-    assert "updated" not in vars(bigint_instance)
+    assert "created_at" not in vars(bigint_instance)
+    assert "updated_at" not in vars(bigint_instance)
     bigint_instance = await bigint_repo.add(bigint_instance)
-    assert "created" not in vars(bigint_instance)
-    assert "updated" not in vars(bigint_instance)
+    assert "created_at" not in vars(bigint_instance)
+    assert "updated_at" not in vars(bigint_instance)
     bigint_instance = await bigint_repo.update(bigint_instance)
-    assert "created" not in vars(bigint_instance)
-    assert "updated" not in vars(bigint_instance)
+    assert "created_at" not in vars(bigint_instance)
+    assert "updated_at" not in vars(bigint_instance)
 
 
 async def test_add() -> None:
     """Test that the repository add method works correctly`."""
 
     class UUIDModel(base.UUIDBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
 
     class BigIntModel(base.BigIntBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
@@ -224,13 +224,13 @@ async def test_add_many() -> None:
     """Test that the repository add_many method works correctly`."""
 
     class UUIDModel(base.UUIDBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
 
     class BigIntModel(base.BigIntBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
@@ -249,7 +249,7 @@ async def test_update() -> None:
     """Test that the repository update method works correctly`."""
 
     class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         random_column: Mapped[str]
@@ -267,7 +267,7 @@ async def test_update_many() -> None:
     """Test that the repository add_many method works correctly`."""
 
     class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         random_column: Mapped[str]
@@ -287,7 +287,7 @@ async def test_upsert() -> None:
     """Test that the repository upsert method works correctly`."""
 
     class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         random_column: Mapped[str]
@@ -305,7 +305,7 @@ async def test_list() -> None:
     """Test that the repository list returns records."""
 
     class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
@@ -320,7 +320,7 @@ async def test_delete() -> None:
     """Test that the repository delete functionality."""
 
     class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
@@ -337,7 +337,7 @@ async def test_delete_many() -> None:
     """Test that the repository delete many functionality."""
 
     class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
@@ -354,7 +354,7 @@ async def test_list_and_count() -> None:
     """Test that the repository list_and_count returns records and the total record count."""
 
     class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
@@ -371,7 +371,7 @@ async def test_exists() -> None:
     """Test that the repository exists returns booleans."""
 
     class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         random_column: Mapped[str]
@@ -387,7 +387,7 @@ async def test_count() -> None:
     """Test that the repository count returns the total record count."""
 
     class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
@@ -403,7 +403,7 @@ async def test_get() -> None:
     """Test that the repository get returns a model record correctly."""
 
     class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         random_column: Mapped[str]
@@ -420,7 +420,7 @@ async def test_get_one() -> None:
     """Test that the repository get_one returns a model record correctly."""
 
     class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         random_column: Mapped[str]
@@ -438,7 +438,7 @@ async def test_get_one_or_none() -> None:
     """Test that the repository get_one_or_none returns a model record correctly."""
 
     class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         random_column: Mapped[str]
@@ -456,7 +456,7 @@ async def test_get_or_create() -> None:
     """Test that the repository get_or_create returns a model record correctly."""
 
     class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         random_column: Mapped[str]
@@ -478,7 +478,7 @@ async def test_get_or_create_match_fields() -> None:
     """Test that the repository get_or_create returns a model record correctly."""
 
     class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         random_column: Mapped[str]

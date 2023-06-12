@@ -2,12 +2,12 @@
 from __future__ import annotations
 
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar, runtime_checkable
 from uuid import UUID, uuid4
 
 from pydantic import AnyHttpUrl, AnyUrl, EmailStr
-from sqlalchemy import Date, DateTime, MetaData, Sequence, String
+from sqlalchemy import Date, MetaData, Sequence, String
 from sqlalchemy.event import listens_for
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -19,7 +19,7 @@ from sqlalchemy.orm import (
     registry,
 )
 
-from .types import GUID, BigIntIdentity, JsonB
+from .types import GUID, BigIntIdentity, DateTimeUTC, JsonB
 
 if TYPE_CHECKING:
     from sqlalchemy.sql import FromClause
@@ -65,8 +65,8 @@ def touch_updated_timestamp(session: Session, *_: Any) -> None:
             session.
     """
     for instance in session.dirty:
-        if hasattr(instance, "updated"):
-            instance.updated = datetime.now()  # noqa: DTZ005
+        if hasattr(instance, "updated_at"):
+            instance.updated = (datetime.now(timezone.utc),)
 
 
 @runtime_checkable
@@ -112,9 +112,15 @@ class BigIntPrimaryKey:
 class AuditColumns:
     """Created/Updated At Fields Mixin."""
 
-    created: Mapped[datetime] = mapped_column(default=datetime.now)  # pyright: ignore
+    created_at: Mapped[datetime] = mapped_column(  # pyright: ignore
+        DateTimeUTC(timezone=True),
+        default=datetime.now(timezone.utc),
+    )
     """Date/time of instance creation."""
-    updated: Mapped[datetime] = mapped_column(default=datetime.now)  # pyright: ignore
+    updated_at: Mapped[datetime] = mapped_column(  # pyright: ignore
+        DateTimeUTC(timezone=True),
+        default=datetime.now(timezone.utc),
+    )
     """Date/time of instance last update."""
 
 
@@ -152,7 +158,7 @@ def create_registry() -> registry:
             AnyUrl: String,
             AnyHttpUrl: String,
             dict: JsonB,
-            datetime: DateTime,
+            datetime: DateTimeUTC,
             date: Date,
         },
     )

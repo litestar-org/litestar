@@ -35,8 +35,8 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
     model_type: type[ModelT]
     match_fields: list[str] | str | None = None
 
-    _model_has_created: bool
-    _model_has_updated: bool
+    _model_has_created_at: bool
+    _model_has_updated_at: bool
 
     def __init__(
         self, id_factory: Callable[[], Any] = uuid4, tz: tzinfo = timezone.utc, allow_ids_on_add: bool = False, **_: Any
@@ -59,8 +59,8 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
             {
                 "collection": {},
                 "model_type": item,
-                "_model_has_created": hasattr(item, "created"),
-                "_model_has_updated": hasattr(item, "updated"),
+                "_model_has_created_at": hasattr(item, "created_at"),
+                "_model_has_updated_at": hasattr(item, "updated_at"),
             },
         )
 
@@ -72,10 +72,10 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
 
     def _update_audit_attributes(self, data: ModelT, now: datetime | None = None, do_created: bool = False) -> ModelT:
         now = now or self._now()
-        if self._model_has_updated:
-            data.updated = now  # type:ignore[attr-defined]
-        if self._model_has_updated and do_created:
-            data.created = now  # type:ignore[attr-defined]
+        if self._model_has_updated_at:
+            data.updated_at = now  # type:ignore[attr-defined]
+        if self._model_has_updated_at and do_created:
+            data.created_at = now  # type:ignore[attr-defined]
         return data
 
     async def add(self, data: ModelT) -> ModelT:
@@ -386,8 +386,8 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
     model_type: type[ModelT]
     match_fields: list[str] | str | None = None
 
-    _model_has_created: bool
-    _model_has_updated: bool
+    _model_has_created_at: bool
+    _model_has_updated_at: bool
 
     def __init__(
         self,
@@ -414,8 +414,8 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
             {
                 "collection": {},
                 "model_type": item,
-                "_model_has_created": hasattr(item, "created"),
-                "_model_has_updated": hasattr(item, "updated"),
+                "_model_has_created_at": hasattr(item, "created_at"),
+                "_model_has_updated_at": hasattr(item, "updated_at"),
             },
         )
 
@@ -427,10 +427,10 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
 
     def _update_audit_attributes(self, data: ModelT, now: datetime | None = None, do_created: bool = False) -> ModelT:
         now = now or self._now()
-        if self._model_has_updated:
-            data.updated = now  # type:ignore[attr-defined]
-        if self._model_has_updated and do_created:
-            data.created = now  # type:ignore[attr-defined]
+        if self._model_has_updated_at:
+            data.updated_at = now  # type:ignore[attr-defined]
+        if self._model_has_updated_at and do_created:
+            data.created_at = now  # type:ignore[attr-defined]
         return data
 
     def add(self, data: ModelT) -> ModelT:

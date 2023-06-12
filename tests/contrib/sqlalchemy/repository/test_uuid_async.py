@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -21,6 +21,7 @@ from tests.contrib.sqlalchemy.models_uuid import (
     BookAsyncRepository,
     RuleAsyncRepository,
     UUIDAuthor,
+    UUIDBook,
     UUIDRule,
 )
 
@@ -40,11 +41,19 @@ async def seed_db(
     # convert date/time strings to dt objects.
     for raw_author in raw_authors_uuid:
         raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d").date()
-        raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
-        raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
+        raw_author["created_at"] = datetime.strptime(raw_author["created_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
+            timezone.utc
+        )
+        raw_author["updated_at"] = datetime.strptime(raw_author["updated_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
+            timezone.utc
+        )
     for raw_author in raw_rules_uuid:
-        raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
-        raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
+        raw_author["created_at"] = datetime.strptime(raw_author["created_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
+            timezone.utc
+        )
+        raw_author["updated_at"] = datetime.strptime(raw_author["updated_at"], "%Y-%m-%dT%H:%M:%S").astimezone(
+            timezone.utc
+        )
 
     async with async_engine.begin() as conn:
         await conn.run_sync(base.orm_registry.metadata.drop_all)
@@ -118,6 +127,22 @@ async def test_repo_list_and_count_method_empty(book_repo: BookAsyncRepository) 
     assert 0 == count
     assert isinstance(collection, list)
     assert len(collection) == 0
+
+
+async def test_repo_created_updated(author_repo: AuthorAsyncRepository) -> None:
+    """Test SQLALchemy created_at - updated_at.
+
+    Args:
+        author_repo (AuthorAsyncRepository): The author mock repository
+    """
+    author = await author_repo.get_one(name="Agatha Christie")
+    assert author.created_at is not None
+    assert author.updated_at is not None
+    original_update_dt = author.updated_at
+
+    author.books.append(UUIDBook(title="Testing"))
+    author = await author_repo.update(author)
+    assert author.updated_at == original_update_dt
 
 
 async def test_repo_list_method(
@@ -341,13 +366,17 @@ async def test_repo_filter_before_after(author_repo: AuthorAsyncRepository) -> N
         author_repo (AuthorAsyncRepository): The author mock repository
     """
     before_filter = BeforeAfter(
-        field_name="created", before=datetime.strptime("2023-05-01T00:00:00", "%Y-%m-%dT%H:%M:%S"), after=None
+        field_name="created_at",
+        before=datetime.strptime("2023-05-01T00:00:00", "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc),
+        after=None,
     )
     existing_obj = await author_repo.list(before_filter)
     assert existing_obj[0].name == "Leo Tolstoy"
 
     after_filter = BeforeAfter(
-        field_name="created", after=datetime.strptime("2023-03-01T00:00:00", "%Y-%m-%dT%H:%M:%S"), before=None
+        field_name="created_at",
+        after=datetime.strptime("2023-03-01T00:00:00", "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc),
+        before=None,
     )
     existing_obj = await author_repo.list(after_filter)
     assert existing_obj[0].name == "Agatha Christie"
@@ -381,9 +410,9 @@ async def test_repo_filter_order_by(author_repo: AuthorAsyncRepository) -> None:
         author_repo (AuthorAsyncRepository): The author mock repository
     """
 
-    existing_obj = await author_repo.list(OrderBy(field_name="created", sort_order="desc"))
+    existing_obj = await author_repo.list(OrderBy(field_name="created_at", sort_order="desc"))
     assert existing_obj[0].name == "Agatha Christie"
-    existing_obj = await author_repo.list(OrderBy(field_name="created", sort_order="asc"))
+    existing_obj = await author_repo.list(OrderBy(field_name="created_at", sort_order="asc"))
     assert existing_obj[0].name == "Leo Tolstoy"
 
 

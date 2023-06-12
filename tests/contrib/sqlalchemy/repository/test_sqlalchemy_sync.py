@@ -43,19 +43,19 @@ def test_sqlalchemy_tablename(monkeypatch: MonkeyPatch) -> None:
     """Test the snake case conversion for table names."""
 
     class BigModel(base.UUIDAuditBase):
-        """Inheriting from UUIDAuditBase gives the model 'created' and 'updated'
+        """Inheriting from UUIDAuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
 
     class TESTModel(base.UUIDAuditBase):
-        """Inheriting from UUIDAuditBase gives the model 'created' and 'updated'
+        """Inheriting from UUIDAuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
 
     class BigIntModel(base.BigIntAuditBase):
-        """Inheriting from BigIntAuditBase gives the model 'created' and 'updated'
+        """Inheriting from BigIntAuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
@@ -69,7 +69,7 @@ def test_sqlalchemy_sentinel(monkeypatch: MonkeyPatch) -> None:
     """Test the sqlalchemy sentinel column only exists on `UUIDPrimaryKey` models."""
 
     class AnotherModel(base.UUIDAuditBase):
-        """Inheriting from UUIDAuditBase gives the model 'created' and 'updated'
+        """Inheriting from UUIDAuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         the_extra_col: Mapped[str] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
@@ -130,13 +130,13 @@ def test_sqlalchemy_repo_add_many(mock_repo: SQLAlchemySyncRepository, monkeypat
     """Test expected method calls for add many operation."""
 
     class UUIDModel(base.UUIDAuditBase):
-        """Inheriting from UUIDAuditBase gives the model 'created' and 'updated'
+        """Inheriting from UUIDAuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
 
     class BigIntModel(base.BigIntAuditBase):
-        """Inheriting from BigIntAuditBase gives the model 'created' and 'updated'
+        """Inheriting from BigIntAuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
@@ -158,13 +158,13 @@ def test_sqlalchemy_repo_update_many(mock_repo: SQLAlchemySyncRepository, monkey
     """Test expected method calls for update many operation."""
 
     class UUIDModel(base.UUIDAuditBase):
-        """Inheriting from UUIDAuditBase gives the model 'created' and 'updated'
+        """Inheriting from UUIDAuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
 
     class BigIntModel(base.BigIntAuditBase):
-        """Inheriting from BigIntAuditBase gives the model 'created' and 'updated'
+        """Inheriting from BigIntAuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
@@ -201,13 +201,13 @@ def test_sqlalchemy_repo_delete_many(mock_repo: SQLAlchemySyncRepository, monkey
     """Test expected method calls for delete operation."""
 
     class UUIDModel(base.UUIDAuditBase):
-        """Inheriting from UUIDAuditBase gives the model 'created' and 'updated'
+        """Inheriting from UUIDAuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
 
     class BigIntModel(base.BigIntAuditBase):
-        """Inheriting from BigIntAuditBase gives the model 'created' and 'updated'
+        """Inheriting from BigIntAuditBase gives the model 'created_at' and 'updated_at'
         columns."""
 
         ...
@@ -420,7 +420,7 @@ def test_sqlalchemy_repo_list_with_before_after_filter(
     mock_repo: SQLAlchemySyncRepository, monkeypatch: MonkeyPatch
 ) -> None:
     """Test list operation with BeforeAfter filter."""
-    field_name = "updated"
+    field_name = "updated_at"
     # model has to support comparison with the datetimes
     getattr(mock_repo.model_type, field_name).__lt__ = lambda self, compare: "lt"
     getattr(mock_repo.model_type, field_name).__gt__ = lambda self, compare: "gt"
@@ -511,12 +511,12 @@ def test_filter_in_collection_noop_if_collection_empty(mock_repo: SQLAlchemySync
         (datetime.max, None),
     ],
 )
-def test__filter_on_datetime_field(before: datetime, after: datetime, mock_repo: SQLAlchemySyncRepository) -> None:
+def test_filter_on_datetime_field(before: datetime, after: datetime, mock_repo: SQLAlchemySyncRepository) -> None:
     """Test through branches of _filter_on_datetime_field()"""
     field_mock = MagicMock()
     field_mock.__gt__ = field_mock.__lt__ = lambda self, other: True
-    mock_repo.model_type.updated = field_mock
-    mock_repo._filter_on_datetime_field("updated", before, after, statement=mock_repo.statement)
+    mock_repo.model_type.updated_at = field_mock
+    mock_repo._filter_on_datetime_field("updated_at", before, after, statement=mock_repo.statement)
 
 
 def test_filter_collection_by_kwargs(mock_repo: SQLAlchemySyncRepository) -> None:
