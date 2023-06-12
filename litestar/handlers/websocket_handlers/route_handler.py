@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from litestar.types import Dependencies, ExceptionHandler, Guard, Middleware
 
 
-class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
+class WebsocketRouteHandler(BaseRouteHandler):
     """Websocket route handler decorator.
 
     Use this decorator to decorate websocket handler functions.
