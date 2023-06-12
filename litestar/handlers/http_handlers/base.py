@@ -71,7 +71,7 @@ class ResponseHandlerMap(TypedDict):
     response_type_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType
 
 
-class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
+class HTTPRouteHandler(BaseRouteHandler):
     """HTTP Route Decorator.
 
     Use this decorator to decorate an HTTP handler with multiple methods.

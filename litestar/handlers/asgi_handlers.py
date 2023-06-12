@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     )
 
 
-class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
+class ASGIRouteHandler(BaseRouteHandler):
     """ASGI Route Handler decorator.
 
     Use this decorator to decorate ASGI applications.

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import copy
 from functools import partial
-from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
 
 from litestar._signature import create_signature_model
 from litestar._signature.field import SignatureField
@@ -32,10 +32,8 @@ if TYPE_CHECKING:
 
 __all__ = ("BaseRouteHandler",)
 
-T = TypeVar("T", bound="BaseRouteHandler")
 
-
-class BaseRouteHandler(Generic[T]):
+class BaseRouteHandler:
     """Base route handler.
 
     Serves as a subclass for all route handlers
@@ -186,7 +184,7 @@ class BaseRouteHandler(Generic[T]):
         return {name for layer in layered_dependencies for name in layer}  # pyright: ignore
 
     @property
-    def ownership_layers(self) -> list[T | Controller | Router]:
+    def ownership_layers(self) -> list[Self | Controller | Router]:
         """Return the handler layers from the app down to the route handler.
 
         ``app -> ... -> route handler``
