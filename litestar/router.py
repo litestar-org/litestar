@@ -290,7 +290,7 @@ class Router:
 
         # this narrows down to an ABC, but we assume a non-abstract subclass of the ABC superclass
         if is_class_and_subclass(value, WebsocketListener):  # type: ignore[type-abstract]
-            return value()._handler  # pyright: ignore
+            return value(owner=self).to_handler()  # pyright: ignore
 
         if isinstance(value, Router):
             if value.owner:
