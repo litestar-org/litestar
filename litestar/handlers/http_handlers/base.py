@@ -460,7 +460,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         Args:
             app: The :class:`Litestar <litestar.app.Litestar>` app instance
-            data: Either an instance of a :class:`ResponseContainer <.response_containers.ResponseContainer>`,
+            data: Either an instance of a :class:`Response <.response.Response>`,
                 a Response instance or an arbitrary value.
             request: A :class:`Request <.connection.Request>` instance
 

@@ -29,7 +29,6 @@ API reference
     partial
     plugins
     response/index
-    response_containers
     router
     routes
     security/index

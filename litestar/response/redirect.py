@@ -24,6 +24,7 @@ __all__ = (
 
 
 RedirectStatusType = Literal[301, 302, 303, 307, 308]
+"""Acceptable status codes for redirect responses."""
 
 
 class ASGIRedirectResponse(ASGIResponse):

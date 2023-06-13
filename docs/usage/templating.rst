@@ -97,7 +97,7 @@ If you need to access the template engine instance, you can do so via the
 Template responses
 ------------------
 
-Once you have a template engine registered you can return :class:`Templates <.response_containers.Template>` from
+Once you have a template engine registered you can return :class:`templates responses <.response.TemplateResponse>` from
 your route handlers:
 
 .. tab-set::
@@ -230,12 +230,14 @@ container, so simply pass a string keyed dictionary of values:
 .. code-block:: python
 
    from litestar import get
-   from litestar.response_containers import Template
+   from litestar.response import TemplateResponse
 
 
    @get(path="/info")
    def info() -> Template:
-       return Template(name="info.html", context={"numbers": "1234567890"})
+       return TemplateResponse(
+           template_name="info.html", context={"numbers": "1234567890"}
+       )
 
 
 Template callables
