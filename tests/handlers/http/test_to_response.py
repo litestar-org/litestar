@@ -14,7 +14,6 @@ from litestar._signature import create_signature_model
 from litestar.background_tasks import BackgroundTask
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import Cookie, ResponseHeader
-from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import ASGIResponse
 from litestar.response.file import ASGIFileResponse, FileResponse
 from litestar.response.redirect import RedirectResponse

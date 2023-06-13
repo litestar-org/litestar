@@ -29,7 +29,6 @@ if TYPE_CHECKING:
 __all__ = (
     "create_data_handler",
     "create_generic_asgi_response_handler",
-    "create_response_container_handler",
     "create_response_handler",
     "get_default_status_code",
     "normalize_headers",
@@ -88,7 +87,7 @@ def create_data_handler(
         )
 
         if after_request:
-            response = await after_request(response)
+            response = await after_request(response)  # type: ignore[arg-type,misc]
 
         return response.to_asgi_response(
             app=app,
@@ -160,26 +159,28 @@ def create_response_handler(
 
     Args:
         after_request: An after request handler.
+        background: A background task or background tasks.
         cookies: A set of pre-defined cookies.
+        headers: A set of response headers.
+        media_type: The response media type.
+        status_code: The response status code.
+        type_encoders: A mapping of types to encoder functions.
 
     Returns:
         A handler function.
     """
 
     normalized_headers = normalize_headers(headers)
+    cookie_list = list(cookies)
 
     async def handler(
-        data: Response, app: Litestar, request: Request, return_dto: type[DTOInterface] | None
+        data: Response, app: Litestar, request: Request, **kwargs: Any  # kwargs is for return dto
     ) -> ASGIApp:
-        if return_dto:
-            ctx = ConnectionContext.from_connection(request)
-            data = return_dto(ctx).data_to_encodable_type(data)
-
-        response = await after_request(data) if after_request else data
+        response = await after_request(data) if after_request else data  # type:ignore[arg-type,misc]
         return response.to_asgi_response(  # type: ignore
             app=app,
             background=background,
-            cookies=cookies,
+            cookies=cookie_list,
             encoded_headers=[],
             headers=normalized_headers,
             is_head_response=False,

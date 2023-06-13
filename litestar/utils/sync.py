@@ -20,9 +20,8 @@ from typing_extensions import ParamSpec
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
-from litestar.utils.helpers import Ref
+from litestar.utils.helpers import Ref, unwrap_partial
 from litestar.utils.predicates import is_async_callable
-from litestar.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
     from litestar.types.empty import EmptyType

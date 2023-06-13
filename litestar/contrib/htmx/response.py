@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from typing import Any, Generic, TypeVar
 from urllib.parse import quote
 
-from litestar import Litestar, MediaType, Request, Response
+from litestar import Response
 from litestar.contrib.htmx._utils import HTMX_STOP_POLLING, get_headers
 from litestar.contrib.htmx.types import (
     EventAfterType,
@@ -29,10 +28,6 @@ __all__ = (
     "Retarget",
     "TriggerEvent",
 )
-
-if TYPE_CHECKING:
-    from litestar.background_tasks import BackgroundTask, BackgroundTasks
-    from litestar.datastructures import Cookie
 
 
 # HTMX defined HTTP status code.
@@ -192,6 +187,7 @@ class HTMXTemplate(TemplateResponse):
             trigger_event: Event name to trigger.
             params: Dictionary of parameters if any required with trigger event parameter.
             after: Changes to apply after ``receive``, ``settle`` or ``swap`` event.
+            **kwargs: Additional arguments to pass to ``TemplateResponse``.
         """
         super().__init__(**kwargs)
 

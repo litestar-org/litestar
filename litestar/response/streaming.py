@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING, Any, AsyncGenerator, AsyncIterable, AsyncIterator, Iterable, Iterator, Union
+from typing import TYPE_CHECKING, Any, AsyncGenerator, AsyncIterable, AsyncIterator, Callable, Iterable, Iterator, Union
 
 from anyio import CancelScope, create_task_group
 
@@ -103,7 +103,7 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
 
     def __init__(
         self,
-        content: StreamType[str | bytes],
+        content: StreamType[str | bytes] | Callable[[], StreamType[str | bytes]],
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
         cookies: ResponseCookies | None = None,
@@ -175,8 +175,8 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
         media_type = get_enum_string_value(media_type or self.media_type or MediaType.JSON)
 
         iterator = self.iterator
-        if not isinstance(self.iterator, (Iterable, Iterator, AsyncIterable, AsyncIterator)) and callable(iterator):
-            iterator = self.iterator()
+        if not isinstance(iterator, (Iterable, Iterator, AsyncIterable, AsyncIterator)) and callable(iterator):
+            iterator = iterator()
 
         return ASGIStreamingResponse(
             background=self.background or background,

@@ -3,12 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.constants import REDIRECT_ALLOWED_MEDIA_TYPES, REDIRECT_STATUS_CODES
-from litestar.datastructures import Cookie
 from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import ASGIResponse, Response
 from litestar.status_codes import HTTP_307_TEMPORARY_REDIRECT
-from litestar.types import TypeEncodersMap
 from litestar.utils import url_quote
 from litestar.utils.helpers import filter_cookies, get_enum_string_value
 
@@ -16,7 +14,8 @@ if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.connection import Request
-    from litestar.types import ResponseCookies, ResponseHeaders
+    from litestar.datastructures import Cookie
+    from litestar.types import ResponseCookies, ResponseHeaders, TypeEncodersMap
 
 __all__ = (
     "ASGIRedirectResponse",
@@ -122,7 +121,6 @@ class RedirectResponse(Response[Any]):
     ) -> ASGIResponse:
         headers = {**headers, **self.headers} if headers is not None else self.headers
         cookies = self.cookies if cookies is None else filter_cookies(self.cookies, cookies)
-        print(f"{self.media_type = }; {media_type = }")
         media_type = get_enum_string_value(self.media_type or media_type or MediaType.TEXT)
 
         return ASGIRedirectResponse(

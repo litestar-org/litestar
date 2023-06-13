@@ -108,9 +108,11 @@ class ASGIFileResponse(ASGIStreamingResponse):
             etag: An etag.
             file_info: A file info.
             file_path: A path to a file.
+            file_system: A file system adapter.
             filename: The name of the file.
             headers: A dictionary of headers.
             media_type: The media type of the file.
+            stat_result: A stat result.
             **kwargs: Additional keyword arguments, propagated to :class:`ASGIResponse <.response.base.ASGIResponse>`.
         """
         encoded_headers = encoded_headers or []

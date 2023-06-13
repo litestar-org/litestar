@@ -497,9 +497,10 @@ class HTTPRouteHandler(BaseRouteHandler):
                 "If the function should return a value, change the route handler status code to an appropriate value.",
             )
 
-        if before_request := self.resolve_before_request():
-            if not before_request.parsed_signature.return_type.is_optional:
-                return_type = before_request.parsed_signature.return_type
+        if (
+            before_request := self.resolve_before_request()
+        ) and not before_request.parsed_signature.return_type.is_optional:
+            return_type = before_request.parsed_signature.return_type
 
         if not self.media_type:
             if return_type.is_subclass_of((str, bytes)) or return_type.annotation is AnyStr:

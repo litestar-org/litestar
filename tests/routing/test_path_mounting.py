@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from litestar import Litestar, MediaType, Response, asgi, get, websocket
+from litestar import Litestar, MediaType, asgi, get, websocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import ASGIResponse
 from litestar.status_codes import HTTP_200_OK

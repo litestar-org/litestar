@@ -8,8 +8,6 @@ from inspect import Signature
 from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Iterator
 
-from typing_extensions import get_args
-
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
 from litestar.enums import MediaType
@@ -20,15 +18,17 @@ from litestar.openapi.spec.header import OpenAPIHeader
 from litestar.openapi.spec.media_type import OpenAPIMediaType
 from litestar.openapi.spec.schema import Schema
 from litestar.response import (
-    Response as LitestarResponse,
+    FileResponse,
     RedirectResponse,
     StreamingResponse,
-    FileResponse,
     TemplateResponse,
+)
+from litestar.response import (
+    Response as LitestarResponse,
 )
 from litestar.response.base import ASGIResponse
 from litestar.types.builtin_types import NoneType
-from litestar.utils import get_enum_string_value, get_name, is_class_and_subclass
+from litestar.utils import get_enum_string_value, get_name
 
 if TYPE_CHECKING:
     from litestar.datastructures.cookie import Cookie

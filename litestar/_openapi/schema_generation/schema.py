@@ -672,7 +672,6 @@ def create_schema_for_dataclass(
     Returns:
         A schema instance.
     """
-    print(f"{field_type = }")
     field_type_hints = get_type_hints(field_type)
     return Schema(
         required=sorted(

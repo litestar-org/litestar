@@ -15,7 +15,6 @@ if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.connection import Request
     from litestar.datastructures import Cookie
-    from litestar.template import TemplateEngineProtocol
     from litestar.types import ResponseCookies, TypeEncodersMap
 
 __all__ = ("TemplateResponse",)
@@ -60,7 +59,7 @@ class TemplateResponse(Response[bytes]):
         """
         super().__init__(
             background=background,
-            content=None,
+            content=b"",
             cookies=cookies,
             encoding=encoding,
             headers=headers,

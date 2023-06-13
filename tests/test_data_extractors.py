@@ -2,7 +2,7 @@ from typing import Any, List
 
 import pytest
 
-from litestar import Request, Response
+from litestar import Request
 from litestar.connection.base import empty_receive
 from litestar.data_extractors import ConnectionDataExtractor, ResponseDataExtractor
 from litestar.datastructures import Cookie

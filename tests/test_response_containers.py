@@ -128,7 +128,7 @@ def test_file_system_validation(tmpdir: "Path") -> None:
         FileResponse(
             filename="text.txt",
             path=path,
-            file_system=FSWithoutOpen(),
+            file_system=FSWithoutOpen(),  # type:ignore[arg-type]
         )
 
     class FSWithoutInfo:
@@ -139,7 +139,7 @@ def test_file_system_validation(tmpdir: "Path") -> None:
         FileResponse(
             filename="text.txt",
             path=path,
-            file_system=FSWithoutInfo(),
+            file_system=FSWithoutInfo(),  # type:ignore[arg-type]
         )
 
     class ImplementedFS:
@@ -152,7 +152,7 @@ def test_file_system_validation(tmpdir: "Path") -> None:
     assert FileResponse(
         filename="text.txt",
         path=path,
-        file_system=ImplementedFS(),
+        file_system=ImplementedFS(),  # type:ignore[arg-type]
     )
 
 

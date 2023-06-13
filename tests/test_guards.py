@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from litestar import Litestar, Response, Router, asgi, get, websocket
+from litestar import Litestar, Router, asgi, get, websocket
 from litestar.connection import WebSocket
 from litestar.exceptions import PermissionDeniedException, WebSocketDisconnect
 from litestar.response.base import ASGIResponse
