@@ -91,7 +91,7 @@ rich-click = { version = "*", optional = true }
 sqlalchemy = { version = ">=2.0.12", optional = true }
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
-uvicorn = {extras = ["standard"], version = "^0.21.1", optional = true}
+uvicorn = {extras = ["standard"], version = "^0.22.0", optional = true}
 importlib-resources = { version="^5.12.0", python = "<3.9" }
 
 [tool.poetry.group.dev.dependencies]
