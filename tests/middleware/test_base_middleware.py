@@ -69,7 +69,7 @@ def test_exclude_by_pattern() -> None:
 
     @asgi("/mount", is_mount=True)
     async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        response = ASGIResponse(body=b"ok", media_type=MediaType.TEXT.value)
+        response = ASGIResponse(body=b"ok", media_type=MediaType.TEXT)
         await response(scope, receive, send)
 
     with create_test_client(

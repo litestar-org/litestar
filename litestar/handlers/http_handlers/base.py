@@ -498,8 +498,10 @@ class HTTPRouteHandler(BaseRouteHandler):
             )
 
         if (
-            before_request := self.resolve_before_request()
-        ) and not before_request.parsed_signature.return_type.is_optional:
+            (before_request := self.resolve_before_request())
+            and not before_request.parsed_signature.return_type.is_subclass_of(NoneType)
+            and not before_request.parsed_signature.return_type.is_optional
+        ):
             return_type = before_request.parsed_signature.return_type
 
         if not self.media_type:

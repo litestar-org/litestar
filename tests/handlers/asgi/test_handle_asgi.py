@@ -11,7 +11,7 @@ def test_handle_asgi() -> None:
     async def root_asgi_handler(scope: Scope, receive: Receive, send: Send) -> None:
         assert scope["type"] == ScopeType.HTTP
         assert scope["method"] == "GET"
-        response = ASGIResponse(body=b"Hello World", media_type=MediaType.TEXT.value)
+        response = ASGIResponse(body=b"Hello World", media_type=MediaType.TEXT)
         await response(scope, receive, send)
 
     class MyController(Controller):
@@ -21,7 +21,7 @@ def test_handle_asgi() -> None:
         async def root_asgi_handler(self, scope: Scope, receive: Receive, send: Send) -> None:
             assert scope["type"] == ScopeType.HTTP
             assert scope["method"] == "GET"
-            response = ASGIResponse(body=b"Hello World", media_type=MediaType.TEXT.value)
+            response = ASGIResponse(body=b"Hello World", media_type=MediaType.TEXT)
             await response(scope, receive, send)
 
     with create_test_client([root_asgi_handler, MyController]) as client:
@@ -42,7 +42,7 @@ def test_asgi_signature_namespace() -> None:
         async def root_asgi_handler(
             self, scope: "a", receive: "b", send: "c"  # type:ignore[name-defined]  # noqa: F821
         ) -> None:
-            await ASGIResponse(body=scope["path"].encode(), media_type=MediaType.TEXT.value)(scope, receive, send)
+            await ASGIResponse(body=scope["path"].encode(), media_type=MediaType.TEXT)(scope, receive, send)
 
     with create_test_client([MyController], signature_namespace={"a": Scope}) as client:
         response = client.get("/asgi")

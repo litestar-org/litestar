@@ -311,7 +311,7 @@ def test_request_raw_path() -> None:
         request = Request[Any, Any, Any](scope, receive)
         path = str(request.scope["path"])
         raw_path = str(request.scope["raw_path"])
-        response = ASGIResponse(body=f"{path}, {raw_path}".encode(), media_type=MediaType.TEXT.value)
+        response = ASGIResponse(body=f"{path}, {raw_path}".encode(), media_type=MediaType.TEXT)
         await response(scope, receive, send)
 
     client = TestClient(app)

@@ -8,7 +8,7 @@ from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import ASGIResponse, Response
 from litestar.status_codes import HTTP_200_OK
-from litestar.utils.helpers import filter_cookies, get_enum_string_value
+from litestar.utils.helpers import filter_cookies
 
 if TYPE_CHECKING:
     from litestar.app import Litestar
@@ -105,7 +105,7 @@ class TemplateResponse(Response[bytes]):
         headers = {**headers, **self.headers} if headers is not None else self.headers
         cookies = self.cookies if cookies is None else filter_cookies(self.cookies, cookies)
 
-        media_type = self.media_type or media_type if media_type != "application/json" else None
+        media_type = self.media_type or media_type
         if not media_type:
             suffixes = PurePath(self.template_name).suffixes
             for suffix in suffixes:
@@ -114,8 +114,6 @@ class TemplateResponse(Response[bytes]):
                     break
             else:
                 media_type = MediaType.TEXT
-
-        media_type = get_enum_string_value(media_type)
 
         template = app.template_engine.get_template(self.template_name)
         context = self.create_template_context(request)

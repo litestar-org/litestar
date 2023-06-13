@@ -55,7 +55,7 @@ class ASGIResponse:
         encoding: str = "utf-8",
         headers: dict[str, Any] | None = None,
         is_head_response: bool = False,
-        media_type: str | None = None,
+        media_type: MediaType | str | None = None,
         status_code: int | None = None,
     ) -> None:
         """A low-level ASGI response class.
@@ -76,7 +76,7 @@ class ASGIResponse:
         cookies = cookies or []
         encoded_headers = encoded_headers or []
         headers = headers or {}
-        media_type = media_type or get_enum_string_value(MediaType.JSON)
+        media_type = get_enum_string_value(media_type or MediaType.JSON)
 
         status_allows_body = not (
             status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or status_code < HTTP_200_OK

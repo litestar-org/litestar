@@ -39,7 +39,7 @@ class ASGIRedirectResponse(ASGIResponse):
         **kwargs: Any,
     ) -> None:
         headers = {**(headers or {}), "location": url_quote(url)}
-        media_type = media_type or MediaType.TEXT.value
+        media_type = media_type or MediaType.TEXT
         status_code = status_code or HTTP_307_TEMPORARY_REDIRECT
 
         if status_code not in REDIRECT_STATUS_CODES:

@@ -14,7 +14,6 @@ from litestar.handlers import get
 from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json
 from litestar.status_codes import HTTP_404_NOT_FOUND
-from litestar.utils.helpers import get_enum_string_value
 
 __all__ = ("OpenAPIController",)
 
@@ -22,8 +21,6 @@ __all__ = ("OpenAPIController",)
 if TYPE_CHECKING:
     from litestar.connection.request import Request
     from litestar.openapi.spec.open_api import OpenAPI
-
-MEDIA_TYPE_HTML = get_enum_string_value(MediaType.HTML)
 
 
 class OpenAPIController(Controller):
@@ -157,7 +154,7 @@ class OpenAPIController(Controller):
                 "utf-8"
             )
             return ASGIResponse(body=content, media_type=OpenAPIMediaType.OPENAPI_YAML)
-        return ASGIResponse(body=b"", status_code=HTTP_404_NOT_FOUND, media_type=MEDIA_TYPE_HTML)
+        return ASGIResponse(body=b"", status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
     @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False, sync_to_thread=False)
     def retrieve_schema_json(self, request: Request) -> ASGIResponse:
@@ -175,7 +172,7 @@ class OpenAPIController(Controller):
                 body=encode_json(self.get_schema_from_request(request).to_schema()),
                 media_type=OpenAPIMediaType.OPENAPI_JSON,
             )
-        return ASGIResponse(body=b"", status_code=HTTP_404_NOT_FOUND, media_type=MEDIA_TYPE_HTML)
+        return ASGIResponse(body=b"", status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
     @get(path="/", include_in_schema=False, sync_to_thread=False)
     def root(self, request: Request) -> ASGIResponse:
@@ -201,8 +198,8 @@ class OpenAPIController(Controller):
         render_method = self.render_methods_map[config.root_schema_site]
 
         if self.should_serve_endpoint(request):
-            return ASGIResponse(body=render_method(request), media_type=MEDIA_TYPE_HTML)
-        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MEDIA_TYPE_HTML)
+            return ASGIResponse(body=render_method(request), media_type=MediaType.HTML)
+        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
     @get(path="/swagger", include_in_schema=False, sync_to_thread=False)
     def swagger_ui(self, request: Request) -> ASGIResponse:
@@ -216,8 +213,8 @@ class OpenAPIController(Controller):
             A response with a rendered swagger documentation site
         """
         if self.should_serve_endpoint(request):
-            return ASGIResponse(body=self.render_swagger_ui(request), media_type=MEDIA_TYPE_HTML)
-        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MEDIA_TYPE_HTML)
+            return ASGIResponse(body=self.render_swagger_ui(request), media_type=MediaType.HTML)
+        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
     @get(path="/elements", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
     def stoplight_elements(self, request: Request) -> ASGIResponse:
@@ -231,8 +228,8 @@ class OpenAPIController(Controller):
             A response with a rendered stoplight elements documentation site
         """
         if self.should_serve_endpoint(request):
-            return ASGIResponse(body=self.render_stoplight_elements(request), media_type=MEDIA_TYPE_HTML)
-        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MEDIA_TYPE_HTML)
+            return ASGIResponse(body=self.render_stoplight_elements(request), media_type=MediaType.HTML)
+        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
     @get(path="/redoc", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
     def redoc(self, request: Request) -> ASGIResponse:  # pragma: no cover
@@ -246,8 +243,8 @@ class OpenAPIController(Controller):
             A response with a rendered redoc documentation site
         """
         if self.should_serve_endpoint(request):
-            return ASGIResponse(body=self.render_redoc(request), media_type=MEDIA_TYPE_HTML)
-        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MEDIA_TYPE_HTML)
+            return ASGIResponse(body=self.render_redoc(request), media_type=MediaType.HTML)
+        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
     def render_swagger_ui(self, request: Request) -> bytes:
         """Render an HTML page for Swagger-UI.

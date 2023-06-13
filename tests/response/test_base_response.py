@@ -173,7 +173,7 @@ def test_render_method(body: Any, media_type: MediaType, should_raise: bool) -> 
 
 def test_head_response_doesnt_support_content() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        ASGIResponse(body=b"hello world", media_type=MediaType.TEXT.value, is_head_response=True)
+        ASGIResponse(body=b"hello world", media_type=MediaType.TEXT, is_head_response=True)
 
 
 def test_get_serializer() -> None:
