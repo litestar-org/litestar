@@ -384,9 +384,6 @@ class DockerServiceRegistry:
             self.run_command("up", "-d", name)
             self._running_services.add(name)
 
-            # asyncio.run(
-            #     wait_until_responsive(
-            #         **kwargs,
             await wait_until_responsive(
                 check=AsyncCallable(check),
                 timeout=timeout,

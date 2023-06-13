@@ -12,6 +12,8 @@ from sqlalchemy import URL, Engine, NullPool, create_engine
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from tests.contrib.sqlalchemy.repository.helpers import mark_requires_docker
+
 if TYPE_CHECKING:
     from pytest import MonkeyPatch
 
@@ -280,9 +282,9 @@ def spanner_engine(docker_ip: str, spanner_service: None, monkeypatch: MonkeyPat
 
 @pytest.fixture(
     params=[
-        pytest.param("duckdb_engine", marks=pytest.mark.sqlalchemy_duckdb),
-        pytest.param("oracle_engine", marks=pytest.mark.sqlalchemy_oracledb),
-        pytest.param("psycopg_engine", marks=pytest.mark.sqlalchemy_psycopg_sync),
+        pytest.param("duckdb_engine", marks=[pytest.mark.sqlalchemy_duckdb, pytest.mark.sqlalchemy_integration]),
+        pytest.param("oracle_engine", marks=[pytest.mark.sqlalchemy_oracledb, *mark_requires_docker]),
+        pytest.param("psycopg_engine", marks=[pytest.mark.sqlalchemy_psycopg_sync, *mark_requires_docker]),
         pytest.param("sqlite_engine", marks=pytest.mark.sqlalchemy_sqlite),
     ]
 )
@@ -301,7 +303,7 @@ def session(engine: Engine) -> Generator[Session, None, None]:
 
 
 @pytest.fixture()
-async def engine_aiosqlite(tmp_path: Path) -> AsyncGenerator[AsyncEngine, None]:
+async def aiosqlite_engine(tmp_path: Path) -> AsyncGenerator[AsyncEngine, None]:
     """SQLite engine for end-to-end testing.
 
     Returns:
@@ -315,7 +317,7 @@ async def engine_aiosqlite(tmp_path: Path) -> AsyncGenerator[AsyncEngine, None]:
 
 
 @pytest.fixture()
-async def engine_asyncmy(docker_ip: str, mysql_service: None) -> AsyncEngine:
+async def asyncmy_engine(docker_ip: str, mysql_service: None) -> AsyncEngine:
     """Postgresql instance for end-to-end testing.
 
     Args:
@@ -339,7 +341,7 @@ async def engine_asyncmy(docker_ip: str, mysql_service: None) -> AsyncEngine:
 
 
 @pytest.fixture()
-async def engine_asyncpg(docker_ip: str, postgres_service: None) -> AsyncEngine:
+async def asyncpg_engine(docker_ip: str, postgres_service: None) -> AsyncEngine:
     """Postgresql instance for end-to-end testing.
 
     Args:
@@ -363,7 +365,7 @@ async def engine_asyncpg(docker_ip: str, postgres_service: None) -> AsyncEngine:
 
 
 @pytest.fixture()
-async def engine_psycopg_async(docker_ip: str, postgres_service: None) -> AsyncEngine:
+async def psycopg_async_engine(docker_ip: str, postgres_service: None) -> AsyncEngine:
     """Postgresql instance for end-to-end testing.
 
     Args:
@@ -388,10 +390,10 @@ async def engine_psycopg_async(docker_ip: str, postgres_service: None) -> AsyncE
 
 @pytest.fixture(
     params=[
-        pytest.param("engine_aiosqlite", marks=pytest.mark.sqlalchemy_aiosqlite),
-        pytest.param("engine_asyncmy", marks=pytest.mark.sqlalchemy_asyncmy),
-        pytest.param("engine_asyncpg", marks=pytest.mark.sqlalchemy_asyncpg),
-        pytest.param("engine_psycopg_async", marks=pytest.mark.sqlalchemy_psycopg_async),
+        pytest.param("aiosqlite_engine", marks=pytest.mark.sqlalchemy_aiosqlite),
+        pytest.param("asyncmy_engine", marks=[pytest.mark.sqlalchemy_asyncmy, *mark_requires_docker]),
+        pytest.param("asyncpg_engine", marks=[pytest.mark.sqlalchemy_asyncpg, *mark_requires_docker]),
+        pytest.param("psycopg_async_engine", marks=[pytest.mark.sqlalchemy_psycopg_async, *mark_requires_docker]),
     ]
 )
 def async_engine(request: FixtureRequest) -> AsyncEngine:
