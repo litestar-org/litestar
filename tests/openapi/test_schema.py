@@ -204,7 +204,9 @@ class Foo(BaseModel):
     foo: Annotated[int, "Foo description"]
 """
     )
-    schema = create_schema_for_pydantic_model(module.Foo, generate_examples=False, plugins=[], schemas={})
+    schema = create_schema_for_pydantic_model(
+        module.Foo, generate_examples=False, plugins=[], schemas={}, prefer_alias=True
+    )
     assert schema.properties and "foo" in schema.properties
 
 
@@ -224,7 +226,7 @@ class Foo:
     foo: Annotated[int, "Foo description"]
 """
     )
-    schema = create_schema_for_dataclass(module.Foo, generate_examples=False, plugins=[], schemas={})
+    schema = create_schema_for_dataclass(module.Foo, generate_examples=False, plugins=[], schemas={}, prefer_alias=True)
     assert schema.properties and "foo" in schema.properties
 
 
@@ -245,7 +247,9 @@ class Foo(TypedDict):
     baz: Annotated[NotRequired[int], "Baz description"]
 """
     )
-    schema = create_schema_for_typed_dict(module.Foo, generate_examples=False, plugins=[], schemas={})
+    schema = create_schema_for_typed_dict(
+        module.Foo, generate_examples=False, plugins=[], schemas={}, prefer_alias=True
+    )
     assert schema.properties and all(key in schema.properties for key in ("foo", "bar", "baz"))
 
 

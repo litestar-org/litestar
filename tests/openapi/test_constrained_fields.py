@@ -30,6 +30,7 @@ def test_create_collection_constrained_field_schema(field_type: Any) -> None:
         kwargs_model=signature_field.kwarg_model,  # type: ignore[arg-type]
         plugins=[],
         schemas={},
+        prefer_alias=True,
     )
     assert schema.type == OpenAPIType.ARRAY
     assert schema.items.type == OpenAPIType.INTEGER  # type: ignore
@@ -46,6 +47,7 @@ def test_create_collection_constrained_field_schema_sub_fields() -> None:
             kwargs_model=signature_field.kwarg_model,  # type: ignore[arg-type]
             plugins=[],
             schemas={},
+            prefer_alias=True,
         )
         assert schema.type == OpenAPIType.ARRAY
         expected = {
@@ -117,5 +119,6 @@ def test_create_constrained_field_schema(field_type: Any) -> None:
         kwargs_model=signature_field.kwarg_model,  # type: ignore[arg-type]
         plugins=[],
         schemas={},
+        prefer_alias=True,
     )
     assert schema
