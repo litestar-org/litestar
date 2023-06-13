@@ -313,10 +313,14 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             parsed_type=self.context.parsed_type,
         )
 
-    def create_openapi_schema(self, generate_examples: bool, schemas: dict[str, Schema]) -> Reference | Schema:
+    def create_openapi_schema(
+        self, generate_examples: bool, schemas: dict[str, Schema], prefer_alias: bool
+    ) -> Reference | Schema:
         """Create a RequestBody model for the given RouteHandler or return None."""
         field = SignatureField.create(self.annotation)
-        return create_schema(field=field, generate_examples=generate_examples, plugins=[], schemas=schemas)
+        return create_schema(
+            field=field, generate_examples=generate_examples, plugins=[], schemas=schemas, prefer_alias=prefer_alias
+        )
 
     def _create_transfer_type(
         self, parsed_type: ParsedType, exclude: AbstractSet[str], field_name: str, unique_name: str, nested_depth: int

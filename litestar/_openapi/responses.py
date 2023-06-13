@@ -89,7 +89,7 @@ def create_success_response(  # noqa: C901
             return_annotation = get_args(return_annotation)[0] or Any
 
         if dto := route_handler.resolve_return_dto():
-            result = dto.create_openapi_schema("return", str(route_handler), generate_examples, schemas)
+            result = dto.create_openapi_schema("return", str(route_handler), generate_examples, schemas, False)
         else:
             result = create_schema(
                 field=SignatureField.create(field_type=return_annotation),

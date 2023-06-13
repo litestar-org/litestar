@@ -105,4 +105,4 @@ def test_request_body_generation_with_dto() -> None:
         schemas={},
     )
 
-    mock_dto.create_openapi_schema.assert_called_once_with("data", str(handler), False, {})
+    mock_dto.create_openapi_schema.assert_called_once_with("data", str(handler), False, {}, True)

@@ -436,4 +436,4 @@ def test_response_generation_with_dto() -> None:
         schemas={},
     )
 
-    mock_dto.create_openapi_schema.assert_called_once_with("return", str(handler), False, {})
+    mock_dto.create_openapi_schema.assert_called_once_with("return", str(handler), False, {}, False)
