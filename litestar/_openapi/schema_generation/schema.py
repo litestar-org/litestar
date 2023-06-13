@@ -858,7 +858,7 @@ def create_schema(
     generate_examples: bool,
     plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
-    prefer_alias: bool = True,
+    prefer_alias: bool,
 ) -> Schema | Reference:
     """Create a Schema for a given SignatureField.
 

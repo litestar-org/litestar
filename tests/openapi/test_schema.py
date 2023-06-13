@@ -136,6 +136,7 @@ def test_handling_of_literals() -> None:
         generate_examples=False,
         plugins=[],
         schemas=schemas,
+        prefer_alias=True,
     )
     assert isinstance(result, Reference)
     schema = schemas["DataclassWithLiteral"]
@@ -168,6 +169,7 @@ def test_title_validation() -> None:
         generate_examples=False,
         plugins=[],
         schemas=schemas,
+        prefer_alias=True,
     )
     assert schemas.get("Person")
 
@@ -176,6 +178,7 @@ def test_title_validation() -> None:
         generate_examples=False,
         plugins=[],
         schemas=schemas,
+        prefer_alias=True,
     )
 
     assert schemas.get("Pet")
@@ -186,6 +189,7 @@ def test_title_validation() -> None:
             generate_examples=False,
             plugins=[],
             schemas=schemas,
+            prefer_alias=True,
         )
 
 
@@ -263,6 +267,7 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
         generate_examples=False,
         plugins=[],
         schemas=schemas,
+        prefer_alias=True,
     )
     schema = schemas["Lookup"]
     assert schema.properties["id"].type == OpenAPIType.STRING  # type: ignore
@@ -282,6 +287,7 @@ def test_create_schema_for_pydantic_field() -> None:
         generate_examples=False,
         plugins=[],
         schemas=schemas,
+        prefer_alias=True,
     )
     schema = schemas["Model"]
 
