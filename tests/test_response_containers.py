@@ -1,5 +1,4 @@
 import os
-from inspect import iscoroutine
 from os import stat
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
@@ -11,9 +10,10 @@ from litestar import get
 from litestar.datastructures import ETag
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem
-from litestar.response_containers import File, Redirect
+from litestar.response.file import FileResponse
+from litestar.response.redirect import RedirectResponse
 from litestar.status_codes import HTTP_200_OK
-from litestar.testing import RequestFactory, create_test_client
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
     from litestar.types import FileSystemProtocol
@@ -25,8 +25,8 @@ def test_file_with_different_file_systems(tmpdir: "Path", file_system: "FileSyst
     path.write_text("content", "utf-8")
 
     @get("/", media_type="application/octet-stream")
-    def handler() -> File:
-        return File(
+    def handler() -> FileResponse:
+        return FileResponse(
             filename="text.txt",
             path=path,
             file_system=file_system,
@@ -49,8 +49,8 @@ def test_file_with_passed_in_file_info(tmpdir: "Path") -> None:
     assert fs_info
 
     @get("/", media_type="application/octet-stream")
-    def handler() -> File:
-        return File(filename="text.txt", path=path, file_system=fs, file_info=fs_info)  # pyright: ignore
+    def handler() -> FileResponse:
+        return FileResponse(filename="text.txt", path=path, file_system=fs, file_info=fs_info)  # pyright: ignore
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -67,8 +67,8 @@ def test_file_with_passed_in_stat_result(tmpdir: "Path") -> None:
     stat_result = stat(path)
 
     @get("/", media_type="application/octet-stream")
-    def handler() -> File:
-        return File(filename="text.txt", path=path, file_system=fs, stat_result=stat_result)
+    def handler() -> FileResponse:
+        return FileResponse(filename="text.txt", path=path, file_system=fs, stat_result=stat_result)
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -90,8 +90,8 @@ async def test_file_with_symbolic_link(tmpdir: "Path") -> None:
     assert file_info["islink"]
 
     @get("/", media_type="application/octet-stream")
-    def handler() -> File:
-        return File(filename="alt.txt", path=linked, file_system=fs, file_info=file_info)
+    def handler() -> FileResponse:
+        return FileResponse(filename="alt.txt", path=linked, file_system=fs, file_info=file_info)
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -101,20 +101,19 @@ async def test_file_with_symbolic_link(tmpdir: "Path") -> None:
 
 
 async def test_file_sets_etag_correctly(tmpdir: "Path") -> None:
-    request = RequestFactory().get()
-
     path = tmpdir / "file.txt"
     content = b"<file content>"
     Path(path).write_bytes(content)
-
     etag = ETag(value="special")
-    file_container = File(path=path, etag=etag)
-    response = file_container.to_response(
-        status_code=HTTP_200_OK, media_type=None, headers={}, app=request.app, request=request
-    )
-    if iscoroutine(response.file_info):
-        await response.file_info
-    assert response.etag == etag
+
+    @get("/")
+    def handler() -> FileResponse:
+        return FileResponse(path=path, etag=etag)
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers["etag"] == '"special"'
 
 
 def test_file_system_validation(tmpdir: "Path") -> None:
@@ -126,7 +125,7 @@ def test_file_system_validation(tmpdir: "Path") -> None:
             return
 
     with pytest.raises(ImproperlyConfiguredException):
-        File(
+        FileResponse(
             filename="text.txt",
             path=path,
             file_system=FSWithoutOpen(),
@@ -137,7 +136,7 @@ def test_file_system_validation(tmpdir: "Path") -> None:
             return
 
     with pytest.raises(ImproperlyConfiguredException):
-        File(
+        FileResponse(
             filename="text.txt",
             path=path,
             file_system=FSWithoutInfo(),
@@ -150,7 +149,7 @@ def test_file_system_validation(tmpdir: "Path") -> None:
         def open(self) -> None:
             return
 
-    assert File(
+    assert FileResponse(
         filename="text.txt",
         path=path,
         file_system=ImplementedFS(),
@@ -169,10 +168,10 @@ def test_file_system_validation(tmpdir: "Path") -> None:
 )
 def test_redirect_dynamic_status_code(status_code: Optional[int], expected_status_code: int) -> None:
     @get("/")
-    def handler() -> Redirect:
-        return Redirect(path="/something-else", status_code=status_code)  # type: ignore[arg-type]
+    def handler() -> RedirectResponse:
+        return RedirectResponse(url="/something-else", status_code=status_code)  # type: ignore[arg-type]
 
-    with create_test_client([handler]) as client:
+    with create_test_client([handler], debug=True) as client:
         res = client.get("/", follow_redirects=False)
         assert res.status_code == expected_status_code
 
@@ -180,8 +179,8 @@ def test_redirect_dynamic_status_code(status_code: Optional[int], expected_statu
 @pytest.mark.parametrize("handler_status_code", [301, 307, None])
 def test_redirect(handler_status_code: Optional[int]) -> None:
     @get("/", status_code=handler_status_code)
-    def handler() -> Redirect:
-        return Redirect(path="/something-else", status_code=301)
+    def handler() -> RedirectResponse:
+        return RedirectResponse(url="/something-else", status_code=301)
 
     with create_test_client([handler]) as client:
         res = client.get("/", follow_redirects=False)

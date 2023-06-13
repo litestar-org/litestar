@@ -6,12 +6,14 @@ from litestar.datastructures.cookie import Cookie
 from litestar.datastructures.headers import ETag
 from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.serialization import encode_json, encode_msgpack, get_serializer
+from litestar.serialization import default_serializer, encode_json, encode_msgpack, get_serializer
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from litestar.utils.helpers import encode_headers, filter_cookies, get_enum_string_value
 
 if TYPE_CHECKING:
+    from litestar.app import Litestar
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
+    from litestar.connection import Request
     from litestar.types import (
         HTTPResponseBodyEvent,
         HTTPResponseStartEvent,
@@ -20,6 +22,7 @@ if TYPE_CHECKING:
         ResponseHeaders,
         Scope,
         Send,
+        Serializer,
         TypeEncodersMap,
     )
 
@@ -44,16 +47,16 @@ class ASGIResponse:
     def __init__(
         self,
         *,
-        background: BackgroundTask | BackgroundTasks | None,
-        body: bytes,
-        content_length: int | None,
-        cookies: list[Cookie],
-        encoded_headers: list[tuple[bytes, bytes]],
-        encoding: str,
-        headers: dict[str, Any],
-        is_head_response: bool,
-        media_type: str,
-        status_code: int | None,
+        background: BackgroundTask | BackgroundTasks | None = None,
+        body: bytes = b"",
+        content_length: int | None = None,
+        cookies: list[Cookie] | None = None,
+        encoded_headers: list[tuple[bytes, bytes]] | None = None,
+        encoding: str = "utf-8",
+        headers: dict[str, Any] | None = None,
+        is_head_response: bool = False,
+        media_type: str | None = None,
+        status_code: int | None = None,
     ) -> None:
         """A low-level ASGI response class.
 
@@ -70,6 +73,10 @@ class ASGIResponse:
             status_code: The response status code.
         """
         status_code = status_code or HTTP_200_OK
+        cookies = cookies or []
+        encoded_headers = encoded_headers or []
+        headers = headers or {}
+        media_type = media_type or get_enum_string_value(MediaType.JSON)
 
         status_allows_body = not (
             status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or status_code < HTTP_200_OK
@@ -289,7 +296,7 @@ class Response(Generic[T]):
             )
         self.cookies.append(key)
 
-    def set_header(self, key: str, value: str) -> None:
+    def set_header(self, key: str, value: Any) -> None:
         """Set a header on the response.
 
         Args:
@@ -332,7 +339,7 @@ class Response(Generic[T]):
         self.cookies = [c for c in self.cookies if c != cookie]
         self.cookies.append(cookie)
 
-    def render(self, content: Any, media_type: str, enc_hook: Serializer) -> bytes:
+    def render(self, content: Any, media_type: str, enc_hook: Serializer = default_serializer) -> bytes:
         """Handle the rendering of content into a bytes string.
 
         Returns:
@@ -361,24 +368,28 @@ class Response(Generic[T]):
     def to_asgi_response(
         self,
         *,
-        background: BackgroundTask | BackgroundTasks | None = None,
-        cookies: list[Cookie] | None = None,
-        encoded_headers: list[tuple[bytes, bytes]] | None = None,
-        headers: dict[str, str] | None = None,
-        is_head_response: bool = False,
-        media_type: MediaType | str | None = None,
-        status_code: int | None = None,
-        type_encoders: TypeEncodersMap | None = None,
+        app: Litestar,
+        background: BackgroundTask | BackgroundTasks | None,
+        cookies: list[Cookie] | None,
+        encoded_headers: list[tuple[bytes, bytes]] | None,
+        headers: dict[str, str] | None,
+        is_head_response: bool,
+        media_type: MediaType | str | None,
+        request: Request,
+        status_code: int | None,
+        type_encoders: TypeEncodersMap | None,
     ) -> ASGIResponse:
         """Create an ASGIResponse from a Response instance.
 
         Args:
+            app: The :class:`Litestar <.app.Litestar>` application instance.
             background: Background task(s) to be executed after the response is sent.
             cookies: A list of cookies to be set on the response.
             encoded_headers: A list of already encoded headers.
             headers: Additional headers to be merged with the response headers. Response headers take precedence.
             is_head_response: Whether the response is a HEAD response.
             media_type: Media type for the response. If ``media_type`` is already set on the response, this is ignored.
+            request: The :class:`Request <.connection.Request>` instance.
             status_code: Status code for the response. If ``status_code`` is already set on the response, this is
             type_encoders: A dictionary of type encoders to use for encoding the response content.
 
@@ -390,11 +401,11 @@ class Response(Generic[T]):
         cookies = self.cookies if cookies is None else filter_cookies(self.cookies, cookies)
 
         if type_encoders:
-            type_encoders = {**(self.response_type_encoders or {}), **type_encoders}
+            type_encoders = {**type_encoders, **(self.response_type_encoders or {})}
         else:
             type_encoders = self.response_type_encoders
 
-        media_type = get_enum_string_value(media_type or self.media_type or MediaType.JSON)
+        media_type = get_enum_string_value(self.media_type or media_type or MediaType.JSON)
 
         return ASGIResponse(
             background=self.background or background,

@@ -9,8 +9,7 @@ from litestar import get
 from litestar.connection.base import empty_send
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
-from litestar.response import FileResponse
-from litestar.response.file import async_file_iterator
+from litestar.response.file import ASGIFileResponse, FileResponse, async_file_iterator
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
@@ -24,7 +23,7 @@ def test_file_response_default_content_type(tmpdir: Path, content_disposition_ty
     def handler() -> FileResponse:
         return FileResponse(path=path, content_disposition_type=content_disposition_type)
 
-    with create_test_client(handler, debug=True) as client:
+    with create_test_client(handler, debug=True, openapi_config=None) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"] == "application/octet-stream"
@@ -94,14 +93,14 @@ def test_file_response_last_modified(tmpdir: Path) -> None:
 
 async def test_file_response_with_directory_raises_error(tmpdir: Path) -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        asgi_response = FileResponse(path=tmpdir, filename="example.png").to_asgi_response()
+        asgi_response = ASGIFileResponse(file_path=tmpdir, filename="example.png")
         await asgi_response.start_response(empty_send)
 
 
 async def test_file_response_with_missing_file_raises_error(tmpdir: Path) -> None:
     path = tmpdir / "404.txt"
     with pytest.raises(ImproperlyConfiguredException):
-        asgi_response = FileResponse(path=path, filename="404.txt").to_asgi_response()
+        asgi_response = ASGIFileResponse(file_path=path, filename="404.txt")
         await asgi_response.start_response(empty_send)
 
 

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 from itertools import chain
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
+from urllib.parse import quote
 
 if TYPE_CHECKING:
     from typing import Iterable
@@ -13,12 +14,13 @@ if TYPE_CHECKING:
 
 __all__ = (
     "Ref",
+    "encode_headers",
     "filter_cookies",
     "get_enum_string_value",
     "get_fully_qualified_class_name",
     "get_name",
     "unwrap_partial",
-    "encode_headers",
+    "url_quote",
 )
 
 T = TypeVar("T")
@@ -117,3 +119,15 @@ def filter_cookies(local_cookies: Iterable[Cookie], layered_cookies: Iterable[Co
     """
     # TODO: check this precedence, should local cookies be overwritten by layered cookies?
     return [cookie for cookie in {*local_cookies, *layered_cookies} if not cookie.documentation_only]
+
+
+def url_quote(value: str | bytes) -> str:
+    """Quote a URL.
+
+    Args:
+        value: A URL.
+
+    Returns:
+        A quoted URL.
+    """
+    return quote(value, safe="/#%[]=:;$&()+,!?*@'~")

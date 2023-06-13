@@ -7,10 +7,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from litestar import Response
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.response import RedirectResponse
-from litestar.status_codes import HTTP_200_OK, HTTP_307_TEMPORARY_REDIRECT
+from litestar.response.base import ASGIResponse
+from litestar.response.redirect import ASGIRedirectResponse
+from litestar.status_codes import HTTP_200_OK
 from litestar.testing import TestClient
 
 if TYPE_CHECKING:
@@ -20,9 +20,9 @@ if TYPE_CHECKING:
 def test_redirect_response() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         if scope["path"] == "/":
-            response = Response("hello, world", media_type="text/plain").to_asgi_response()
+            response = ASGIResponse(body=b"hello, world", media_type="text/plain")
         else:
-            response = RedirectResponse("/").to_asgi_response()
+            response = ASGIRedirectResponse(url="/")
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -34,9 +34,9 @@ def test_redirect_response() -> None:
 def test_quoting_redirect_response() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         if scope["path"] == "/test/":
-            response = Response("hello, world", media_type="text/plain").to_asgi_response()
+            response = ASGIResponse(body=b"hello, world", media_type="text/plain")
         else:
-            response = RedirectResponse(url="/test/").to_asgi_response()
+            response = ASGIRedirectResponse(url="/test/")
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -48,9 +48,9 @@ def test_quoting_redirect_response() -> None:
 def test_redirect_response_content_length_header() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         if scope["path"] == "/":
-            response = Response("hello", media_type="text/plain").to_asgi_response()
+            response = ASGIResponse(body=b"hello", media_type="text/plain")
         else:
-            response = RedirectResponse("/").to_asgi_response()
+            response = ASGIRedirectResponse(url="/")
         await response(scope, receive, send)
 
     client: TestClient = TestClient(app)
@@ -61,15 +61,15 @@ def test_redirect_response_content_length_header() -> None:
 
 def test_redirect_response_status_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        RedirectResponse("/", status_code=HTTP_200_OK).to_asgi_response()  # type:ignore[arg-type]
+        ASGIRedirectResponse(url="/", status_code=HTTP_200_OK)  # type:ignore[arg-type]
 
 
 def test_redirect_response_html_media_type() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         if scope["path"] == "/":
-            response = Response("hello").to_asgi_response()
+            response = ASGIResponse(body=b"hello")
         else:
-            response = RedirectResponse("/", media_type="text/html").to_asgi_response()
+            response = ASGIRedirectResponse(url="/", media_type="text/html")
         await response(scope, receive, send)
 
     client: TestClient = TestClient(app)
@@ -80,4 +80,4 @@ def test_redirect_response_html_media_type() -> None:
 
 def test_redirect_response_media_type_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        RedirectResponse("/", status_code=HTTP_307_TEMPORARY_REDIRECT, media_type="application/json").to_asgi_response()
+        ASGIRedirectResponse(url="/", media_type="application/json")

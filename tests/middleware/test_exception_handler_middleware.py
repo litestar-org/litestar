@@ -38,9 +38,9 @@ def test_default_handle_http_exception_handling_extra_object() -> None:
     response = middleware.default_http_exception_handler(
         Request(scope={"type": "http", "method": "GET"}),  # type: ignore
         HTTPException(detail="litestar_exception", extra={"key": "value"}),
-    ).to_asgi_response()
+    )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {
+    assert response.content == {
         "detail": "litestar_exception",
         "extra": {"key": "value"},
         "status_code": 500,
@@ -51,27 +51,27 @@ def test_default_handle_http_exception_handling_extra_none() -> None:
     response = middleware.default_http_exception_handler(
         Request(scope={"type": "http", "method": "GET"}),  # type: ignore
         HTTPException(detail="litestar_exception"),
-    ).to_asgi_response()
+    )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {"detail": "litestar_exception", "status_code": 500}
+    assert response.content == {"detail": "litestar_exception", "status_code": 500}
 
 
 def test_default_handle_litestar_http_exception_handling() -> None:
     response = middleware.default_http_exception_handler(
         Request(scope={"type": "http", "method": "GET"}),  # type: ignore
         HTTPException(detail="litestar_exception"),
-    ).to_asgi_response()
+    )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {"detail": "litestar_exception", "status_code": 500}
+    assert response.content == {"detail": "litestar_exception", "status_code": 500}
 
 
 def test_default_handle_litestar_http_exception_extra_list() -> None:
     response = middleware.default_http_exception_handler(
         Request(scope={"type": "http", "method": "GET"}),  # type: ignore
         HTTPException(detail="litestar_exception", extra=["extra-1", "extra-2"]),
-    ).to_asgi_response()
+    )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {
+    assert response.content == {
         "detail": "litestar_exception",
         "extra": ["extra-1", "extra-2"],
         "status_code": 500,
@@ -82,9 +82,9 @@ def test_default_handle_starlette_http_exception_handling() -> None:
     response = middleware.default_http_exception_handler(
         Request(scope={"type": "http", "method": "GET"}),  # type: ignore
         StarletteHTTPException(detail="litestar_exception", status_code=HTTP_500_INTERNAL_SERVER_ERROR),
-    ).to_asgi_response()
+    )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {
+    assert response.content == {
         "detail": "litestar_exception",
         "status_code": 500,
     }
@@ -93,9 +93,9 @@ def test_default_handle_starlette_http_exception_handling() -> None:
 def test_default_handle_python_http_exception_handling() -> None:
     response = middleware.default_http_exception_handler(
         Request(scope={"type": "http", "method": "GET"}), AttributeError("oops")  # type: ignore
-    ).to_asgi_response()
+    )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {
+    assert response.content == {
         "detail": repr(AttributeError("oops")),
         "status_code": HTTP_500_INTERNAL_SERVER_ERROR,
     }

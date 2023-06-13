@@ -12,10 +12,10 @@ import pytest
 from litestar import MediaType, get
 from litestar.connection.base import empty_send
 from litestar.connection.request import Request
-from litestar.datastructures import Address
+from litestar.datastructures import Address, Cookie
 from litestar.exceptions import InternalServerException, SerializationException
-from litestar.response import Response
-from litestar.serialization import encode_msgpack
+from litestar.response.base import ASGIResponse
+from litestar.serialization import encode_json, encode_msgpack
 from litestar.static_files.config import StaticFilesConfig
 from litestar.testing import TestClient, create_test_client
 
@@ -139,7 +139,7 @@ def test_request_url() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any, Any](scope, receive)
         data = {"method": request.method, "url": str(request.url)}
-        response = Response(content=data).to_asgi_response()
+        response = ASGIResponse(body=encode_json(data))
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -154,7 +154,7 @@ def test_request_query_params() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any, Any](scope, receive)
         params = dict(request.query_params)
-        response = Response(content={"params": params}).to_asgi_response()
+        response = ASGIResponse(body=encode_json({"params": params}))
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -166,7 +166,7 @@ def test_request_headers() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any, Any](scope, receive)
         headers = dict(request.headers)
-        response = Response(content={"headers": headers}).to_asgi_response()
+        response = ASGIResponse(body=encode_json({"headers": headers}))
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -185,7 +185,7 @@ def test_request_headers() -> None:
 def test_request_accept_header() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any, Any](scope, receive)
-        response = Response(content={"accepted_types": list(request.accept)}).to_asgi_response()
+        response = ASGIResponse(body=encode_json({"accepted_types": list(request.accept)}))
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -210,7 +210,7 @@ def test_request_body() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any, Any](scope, receive)
         body = await request.body()
-        response = Response(content={"body": body.decode()}).to_asgi_response()
+        response = ASGIResponse(body=encode_json({"body": body.decode()}))
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -231,7 +231,7 @@ def test_request_stream() -> None:
         body = b""
         async for chunk in request.stream():
             body += chunk
-        response = Response(content={"body": body.decode()}).to_asgi_response()
+        response = ASGIResponse(body=encode_json({"body": body.decode()}))
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -250,7 +250,7 @@ def test_request_form_urlencoded() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any, Any](scope, receive)
         form = await request.form()
-        response = Response(content={"form": dict(form)}).to_asgi_response()
+        response = ASGIResponse(body=encode_json({"form": dict(form)}))
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -266,7 +266,7 @@ def test_request_body_then_stream() -> None:
         chunks = b""
         async for chunk in request.stream():
             chunks += chunk
-        response = Response(content={"body": body.decode(), "stream": chunks.decode()}).to_asgi_response()
+        response = ASGIResponse(body=encode_json({"body": body.decode(), "stream": chunks.decode()}))
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -285,7 +285,7 @@ def test_request_stream_then_body() -> None:
             body = await request.body()
         except InternalServerException:
             body = b"<stream consumed>"
-        response = Response(content={"body": body.decode(), "stream": chunks.decode()}).to_asgi_response()
+        response = ASGIResponse(body=encode_json({"body": body.decode(), "stream": chunks.decode()}))
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -298,7 +298,7 @@ def test_request_json() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any, Any](scope, receive)
         data = await request.json()
-        response = Response(content={"json": data}).to_asgi_response()
+        response = ASGIResponse(body=encode_json({"json": data}))
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -311,7 +311,7 @@ def test_request_raw_path() -> None:
         request = Request[Any, Any, Any](scope, receive)
         path = str(request.scope["path"])
         raw_path = str(request.scope["raw_path"])
-        response = Response(content=f"{path}, {raw_path}", media_type=MediaType.TEXT).to_asgi_response()
+        response = ASGIResponse(body=f"{path}, {raw_path}".encode(), media_type=MediaType.TEXT.value)
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -328,7 +328,7 @@ def test_request_without_setting_receive() -> None:
             data = await request.json()
         except RuntimeError:
             data = "Receive channel not available"
-        response = Response(content={"json": data}).to_asgi_response()
+        response = ASGIResponse(body=encode_json({"json": data}))
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -367,11 +367,13 @@ def test_request_cookies() -> None:
         request = Request[Any, Any, Any](scope, receive)
         mycookie = request.cookies.get("mycookie")
         if mycookie:
-            asgi_response = Response(content=mycookie, media_type="text/plain").to_asgi_response()
+            asgi_response = ASGIResponse(body=mycookie.encode("utf-8"), media_type="text/plain")
         else:
-            response = Response(content="Hello, world!", media_type=MediaType.TEXT)
-            response.set_cookie("mycookie", "Hello, cookies!")
-            asgi_response = response.to_asgi_response()
+            asgi_response = ASGIResponse(
+                body=b"Hello, world!",
+                media_type="text/plain",
+                cookies=[Cookie(key="mycookie", value="Hello, cookies!")],
+            )
 
         await asgi_response(scope, receive, send)
 
@@ -386,7 +388,7 @@ def test_chunked_encoding() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any, Any](scope, receive)
         body = await request.body()
-        response = Response(content={"body": body.decode()}).to_asgi_response()
+        response = ASGIResponse(body=encode_json({"body": body.decode()}))
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -407,7 +409,7 @@ def test_request_send_push_promise() -> None:
         request = Request[Any, Any, Any](scope, receive, send)
         await request.send_push_promise("/style.css")
 
-        response = Response(content={"json": "OK"}).to_asgi_response()
+        response = ASGIResponse(body=encode_json({"json": "OK"}))
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -425,7 +427,7 @@ def test_request_send_push_promise_without_push_extension() -> None:
         request = Request[Any, Any, Any](scope)
         await request.send_push_promise("/style.css")
 
-        response = Response(content={"json": "OK"}).to_asgi_response()
+        response = ASGIResponse(body=encode_json({"json": "OK"}))
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -449,7 +451,7 @@ def test_request_send_push_promise_without_setting_send() -> None:
             await request.send_push_promise("/style.css")
         except RuntimeError:
             data = "Send channel not available"
-        response = Response(content={"json": data}).to_asgi_response()
+        response = ASGIResponse(body=encode_json({"json": data}))
         await response(scope, receive, send)
 
     client = TestClient(app)

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Literal, Sequence
 from litestar.enums import ScopeType
 from litestar.exceptions import MethodNotAllowedException, NotFoundException
 from litestar.file_system import FileSystemAdapter
-from litestar.response import FileResponse
+from litestar.response.file import ASGIFileResponse
 from litestar.status_codes import HTTP_404_NOT_FOUND
 
 __all__ = ("StaticFiles",)
@@ -98,13 +98,14 @@ class StaticFiles:
             )
 
         if fs_info and fs_info["type"] == "file":
-            await FileResponse(
-                path=resolved_path or joined_path,
+            await ASGIFileResponse(
+                file_path=resolved_path or joined_path,
                 file_info=fs_info,
                 file_system=self.adapter.file_system,
                 filename=filename,
                 content_disposition_type=content_disposition_type,
-            ).to_asgi_response(is_head_response=scope["method"] == "HEAD")(scope, receive, send)
+                is_head_response=scope["method"] == "HEAD",
+            )(scope, receive, send)
             return
 
         if self.is_html_mode:
@@ -112,14 +113,15 @@ class StaticFiles:
             resolved_path, fs_info = await self.get_fs_info(directories=self.directories, file_path=filename)
 
             if fs_info and fs_info["type"] == "file":
-                await FileResponse(
-                    path=resolved_path or joined_path,
+                await ASGIFileResponse(
+                    file_path=resolved_path or joined_path,
                     file_info=fs_info,
                     file_system=self.adapter.file_system,
                     filename=filename,
                     status_code=HTTP_404_NOT_FOUND,
                     content_disposition_type=content_disposition_type,
-                ).to_asgi_response(is_head_response=scope["method"] == "HEAD")(scope, receive, send)
+                    is_head_response=scope["method"] == "HEAD",
+                )(scope, receive, send)
                 return
 
         raise NotFoundException(

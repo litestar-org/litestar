@@ -55,7 +55,7 @@ async def test_controller_http_method(
         def test_method(self) -> return_annotation:
             return return_value
 
-    with create_test_client(MyController) as client:
+    with create_test_client(MyController, debug=True) as client:
         response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
         if return_value:

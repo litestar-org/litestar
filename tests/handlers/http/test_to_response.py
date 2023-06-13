@@ -15,13 +15,11 @@ from litestar.background_tasks import BackgroundTask
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import Cookie, ResponseHeader
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.response import (
-    RedirectResponse,
-)
 from litestar.response.base import ASGIResponse
-from litestar.response.file import ASGIFileResponse
-from litestar.response.streaming import ASGIStreamingResponse
-from litestar.response_containers import File, Redirect, Stream, Template
+from litestar.response.file import ASGIFileResponse, FileResponse
+from litestar.response.redirect import RedirectResponse
+from litestar.response.streaming import ASGIStreamingResponse, StreamingResponse
+from litestar.response.template import TemplateResponse
 from litestar.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
 from litestar.template.config import TemplateConfig
 from litestar.testing import RequestFactory, create_test_client
@@ -158,9 +156,9 @@ async def test_to_response_returning_redirect_response(anyio_backend: str) -> No
         response_headers=[ResponseHeader(name="local-header", value="123")],
         response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
     )
-    def test_function() -> Redirect:
-        return Redirect(
-            path="/somewhere-else",
+    def test_function() -> RedirectResponse:
+        return RedirectResponse(
+            url="/somewhere-else",
             headers={"response-header": "abc"},
             cookies=[Cookie(key="redirect-cookie", value="xyz")],
             background=background_task,
@@ -186,22 +184,16 @@ def test_to_response_returning_redirect_response_from_redirect() -> None:
     def proxy_handler() -> Dict[str, str]:
         return {"message": "redirected by before request hook"}
 
-    def before_request_hook_handler(request: Request) -> RedirectResponse:
-        return Redirect(path="/proxy").to_response(
-            headers={},
-            media_type="application/json",
-            status_code=HTTP_308_PERMANENT_REDIRECT,
-            app=request.app,
-            request=request,
-        )
+    def before_request_hook_handler(_: Request) -> RedirectResponse:
+        return RedirectResponse(url="/proxy", status_code=HTTP_308_PERMANENT_REDIRECT)
 
     @get(path="/test", before_request=before_request_hook_handler)
     def redirect_handler() -> None:
         raise AssertionError("this endpoint should not be reached")
 
-    with create_test_client(route_handlers=[redirect_handler, proxy_handler]) as client:
+    with create_test_client(route_handlers=[redirect_handler, proxy_handler], debug=True) as client:
         response = client.get("/test")
-        assert response.status_code == HTTP_200_OK, response.json()
+        assert response.status_code == HTTP_200_OK
         assert response.json() == {"message": "redirected by before request hook"}
 
 
@@ -215,8 +207,8 @@ async def test_to_response_returning_file_response(anyio_backend: str) -> None:
         response_headers=[ResponseHeader(name="local-header", value="123")],
         response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
     )
-    def test_function() -> File:
-        return File(
+    def test_function() -> FileResponse:
+        return FileResponse(
             path=current_file_path,
             filename=filename,
             headers={"response-header": "abc"},
@@ -263,25 +255,30 @@ async def test_to_response_returning_file_response(anyio_backend: str) -> None:
     ],
 )
 async def test_to_response_streaming_response(iterator: Any, should_raise: bool, anyio_backend: str) -> None:
-    if not should_raise:
-        background_task = BackgroundTask(lambda: "")
+    background_task = BackgroundTask(lambda: "")
 
-        @get(
-            path="/test",
-            response_headers=[ResponseHeader(name="local-header", value="123")],
-            response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
+    @get(
+        path="/test",
+        response_headers=[ResponseHeader(name="local-header", value="123")],
+        response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
+    )
+    def test_function() -> StreamingResponse:
+        return StreamingResponse(
+            iterator,
+            headers={"response-header": "abc"},
+            cookies=[Cookie(key="streaming-cookie", value="xyz")],
+            background=background_task,
         )
-        def test_function() -> Stream:
-            return Stream(
-                iterator=iterator,
-                headers={"response-header": "abc"},
-                cookies=[Cookie(key="streaming-cookie", value="xyz")],
-                background=background_task,
-            )
 
-        with create_test_client(test_function) as client:
-            route: "HTTPRoute" = client.app.routes[0]
-            route_handler = route.route_handlers[0]
+    with create_test_client(test_function) as client:
+        route: "HTTPRoute" = client.app.routes[0]
+        route_handler = route.route_handlers[0]
+        if should_raise:
+            with pytest.raises(TypeError):
+                await route_handler.to_response(
+                    data=route_handler.fn.value(), app=client.app, request=RequestFactory().get()
+                )
+        else:
             response = await route_handler.to_response(
                 data=route_handler.fn.value(), app=client.app, request=RequestFactory().get()
             )
@@ -292,9 +289,6 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool,
             assert (b"set-cookie", b"redirect-cookie=aaa; Path=/; SameSite=lax") in response.encoded_headers
             assert (b"set-cookie", b"streaming-cookie=xyz; Path=/; SameSite=lax") in response.encoded_headers
             assert response.background == background_task
-    else:
-        with pytest.raises(ImproperlyConfiguredException):
-            Stream(iterator=iterator)
 
 
 async def test_to_response_template_response(anyio_backend: str, tmp_path: Path) -> None:
@@ -308,9 +302,9 @@ async def test_to_response_template_response(anyio_backend: str, tmp_path: Path)
         response_headers=[ResponseHeader(name="local-header", value="123")],
         response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
     )
-    def test_function() -> Template:
-        return Template(
-            name="test.template",
+    def test_function() -> TemplateResponse:
+        return TemplateResponse(
+            template_name="test.template",
             context={},
             headers={"response-header": "abc"},
             cookies=[Cookie(key="template-cookie", value="xyz")],

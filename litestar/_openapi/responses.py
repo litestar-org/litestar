@@ -8,7 +8,7 @@ from inspect import Signature
 from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Iterator
 
-from typing_extensions import get_args, get_origin
+from typing_extensions import get_args
 
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
@@ -19,8 +19,14 @@ from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.header import OpenAPIHeader
 from litestar.openapi.spec.media_type import OpenAPIMediaType
 from litestar.openapi.spec.schema import Schema
-from litestar.response import Response as LitestarResponse
-from litestar.response_containers import File, Redirect, Stream, Template
+from litestar.response import (
+    Response as LitestarResponse,
+    RedirectResponse,
+    StreamingResponse,
+    FileResponse,
+    TemplateResponse,
+)
+from litestar.response.base import ASGIResponse
 from litestar.types.builtin_types import NoneType
 from litestar.utils import get_enum_string_value, get_name, is_class_and_subclass
 
@@ -69,11 +75,12 @@ def create_success_response(  # noqa: C901
     schemas: dict[str, Schema],
 ) -> OpenAPIResponse:
     """Create the schema for a success response."""
-    return_annotation = route_handler.parsed_fn_signature.return_type.annotation
+    return_type = route_handler.parsed_fn_signature.return_type
+    return_annotation = return_type.annotation
     default_descriptions: dict[Any, str] = {
-        Stream: "Stream Response",
-        Redirect: "Redirect Response",
-        File: "File Download",
+        StreamingResponse: "Stream Response",
+        RedirectResponse: "Redirect Response",
+        FileResponse: "File Download",
     }
     description = (
         route_handler.response_description
@@ -81,12 +88,16 @@ def create_success_response(  # noqa: C901
         or HTTPStatus(route_handler.status_code).description
     )
 
-    if return_annotation not in {Signature.empty, None, NoneType, Redirect, File, Stream}:
-        if return_annotation is Template:
+    if return_annotation is not Signature.empty and not return_type.is_subclass_of(
+        (NoneType, FileResponse, RedirectResponse, StreamingResponse, ASGIResponse)
+    ):
+        if return_annotation is TemplateResponse:
             return_annotation = str
             route_handler.media_type = get_enum_string_value(MediaType.HTML)
-        elif is_class_and_subclass(get_origin(return_annotation), LitestarResponse):
-            return_annotation = get_args(return_annotation)[0] or Any
+        elif return_type.is_subclass_of(LitestarResponse):
+            return_annotation = return_type.inner_types[0].annotation if return_type.inner_types else Any
+            if not route_handler.media_type:
+                route_handler.media_type = get_enum_string_value(MediaType.JSON)
 
         if dto := route_handler.resolve_return_dto():
             result = dto.create_openapi_schema("return", str(route_handler), generate_examples, schemas)
@@ -112,7 +123,7 @@ def create_success_response(  # noqa: C901
             description=description,
         )
 
-    elif return_annotation is Redirect:
+    elif return_type.is_subclass_of(RedirectResponse):
         response = OpenAPIResponse(
             content=None,
             description=description,
@@ -123,7 +134,7 @@ def create_success_response(  # noqa: C901
             },
         )
 
-    elif return_annotation in (File, Stream):
+    elif return_type.is_subclass_of((FileResponse, StreamingResponse)):
         response = OpenAPIResponse(
             content={
                 route_handler.media_type: OpenAPIMediaType(

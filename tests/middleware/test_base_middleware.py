@@ -1,9 +1,10 @@
 from typing import TYPE_CHECKING
 
-from litestar import MediaType, Response, asgi, get
+from litestar import MediaType, asgi, get
 from litestar.datastructures.headers import MutableScopeHeaders
 from litestar.exceptions import ValidationException
 from litestar.middleware import AbstractMiddleware, DefineMiddleware
+from litestar.response.base import ASGIResponse
 from litestar.status_codes import HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 
@@ -68,7 +69,7 @@ def test_exclude_by_pattern() -> None:
 
     @asgi("/mount", is_mount=True)
     async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        response = Response("ok", media_type=MediaType.TEXT).to_asgi_response()
+        response = ASGIResponse(body=b"ok", media_type=MediaType.TEXT.value)
         await response(scope, receive, send)
 
     with create_test_client(

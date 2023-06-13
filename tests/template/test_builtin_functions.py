@@ -7,7 +7,7 @@ import pytest
 from litestar import get
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
-from litestar.response_containers import Template
+from litestar.response.template import TemplateResponse
 from litestar.static_files.config import StaticFilesConfig
 from litestar.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.template.config import TemplateConfig
@@ -19,8 +19,8 @@ def test_jinja_url_for(template_dir: Path) -> None:
     template_config = TemplateConfig(engine=JinjaTemplateEngine, directory=template_dir)
 
     @get(path="/")
-    def tpl_renderer() -> Template:
-        return Template(name="tpl.html")
+    def tpl_renderer() -> TemplateResponse:
+        return TemplateResponse(template_name="tpl.html")
 
     @get(path="/simple", name="simple")
     def simple_handler() -> None:
@@ -31,7 +31,7 @@ def test_jinja_url_for(template_dir: Path) -> None:
         pass
 
     with create_test_client(
-        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
+        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config, debug=True
     ) as client:
         Path(template_dir / "tpl.html").write_text("{{ url_for('simple') }}")
 
@@ -79,8 +79,8 @@ def test_jinja_url_for_static_asset(template_dir: Path, tmp_path: Path) -> None:
     template_config = TemplateConfig(engine=JinjaTemplateEngine, directory=template_dir)
 
     @get(path="/", name="tpl_renderer")
-    def tpl_renderer() -> Template:
-        return Template(name="tpl.html")
+    def tpl_renderer() -> TemplateResponse:
+        return TemplateResponse(template_name="tpl.html")
 
     with create_test_client(
         route_handlers=[tpl_renderer],
@@ -128,8 +128,8 @@ def test_mako_url_for_static_asset(
     template_config = TemplateConfig(engine=MakoTemplateEngine, directory=template_dir)
 
     @get(path="/", name="tpl_renderer")
-    def tpl_renderer() -> Template:
-        return Template(name="tpl.html")
+    def tpl_renderer() -> TemplateResponse:
+        return TemplateResponse(template_name="tpl.html")
 
     with create_test_client(
         route_handlers=[tpl_renderer],
@@ -157,8 +157,8 @@ def test_mako_url_for(template_dir: Path, builtin: str, expected_status: int, ex
     template_config = TemplateConfig(engine=MakoTemplateEngine, directory=template_dir)
 
     @get(path="/")
-    def tpl_renderer() -> Template:
-        return Template(name="tpl.html")
+    def tpl_renderer() -> TemplateResponse:
+        return TemplateResponse(template_name="tpl.html")
 
     @get(path="/simple", name="simple")
     def simple_handler() -> None:

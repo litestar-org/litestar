@@ -6,7 +6,7 @@ import pytest
 from litestar import MediaType, get
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
-from litestar.response_containers import Template
+from litestar.response.template import TemplateResponse
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
 
@@ -22,8 +22,8 @@ def test_request_is_set_in_context(engine: Any, template: str, expected: str, te
     Path(template_dir / "abc.html").write_text(template)
 
     @get(path="/", media_type=MediaType.HTML)
-    def handler() -> Template:
-        return Template(name="abc.html", context={"request": {"scope": {"path": "nope"}}})
+    def handler() -> TemplateResponse:
+        return TemplateResponse(template_name="abc.html", context={"request": {"scope": {"path": "nope"}}})
 
     with create_test_client(
         route_handlers=[handler],

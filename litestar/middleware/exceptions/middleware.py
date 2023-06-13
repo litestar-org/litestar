@@ -190,8 +190,20 @@ class ExceptionHandlerMiddleware:
             send = cors_middleware.send_wrapper(send=send, origin=origin, has_cookie="cookie" in headers)
 
         exception_handler = get_exception_handler(self.exception_handlers, exc) or self.default_http_exception_handler
-        response = exception_handler(Request(scope=scope, receive=receive, send=send), exc)
-        await response.to_asgi_response()(scope=scope, receive=receive, send=send)
+        request = Request[Any, Any, Any](scope=scope, receive=receive, send=send)
+        response = exception_handler(request, exc)
+        await response.to_asgi_response(
+            app=litestar_app,
+            background=None,
+            cookies=None,
+            encoded_headers=None,
+            headers=None,
+            is_head_response=False,
+            media_type=None,
+            request=request,
+            status_code=None,
+            type_encoders=None,
+        )(scope=scope, receive=receive, send=send)
 
     @staticmethod
     async def handle_websocket_exception(send: Send, exc: Exception) -> None:

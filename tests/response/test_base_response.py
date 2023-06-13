@@ -7,6 +7,7 @@ from litestar import MediaType, get
 from litestar.datastructures import Cookie
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response import Response
+from litestar.response.base import ASGIResponse
 from litestar.serialization import default_serializer, get_serializer
 from litestar.status_codes import (
     HTTP_100_CONTINUE,
@@ -172,7 +173,7 @@ def test_render_method(body: Any, media_type: MediaType, should_raise: bool) -> 
 
 def test_head_response_doesnt_support_content() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        Response(content="hello world", media_type=MediaType.TEXT).to_asgi_response(is_head_response=True)
+        ASGIResponse(body=b"hello world", media_type=MediaType.TEXT.value, is_head_response=True)
 
 
 def test_get_serializer() -> None:

@@ -11,7 +11,7 @@ from litestar.controller import Controller
 from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import get
-from litestar.response import Response
+from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json
 from litestar.status_codes import HTTP_404_NOT_FOUND
 
@@ -139,7 +139,7 @@ class OpenAPIController(Controller):
         }
 
     @get(path="/openapi.yaml", media_type=OpenAPIMediaType.OPENAPI_YAML, include_in_schema=False, sync_to_thread=False)
-    def retrieve_schema_yaml(self, request: Request) -> Response:
+    def retrieve_schema_yaml(self, request: Request) -> ASGIResponse:
         """Return the OpenAPI schema as YAML with an ``application/vnd.oai.openapi`` Content-Type header.
 
         Args:
@@ -153,11 +153,11 @@ class OpenAPIController(Controller):
             content = dump_yaml(self.get_schema_from_request(request).to_schema(), default_flow_style=False).encode(
                 "utf-8"
             )
-            return Response(content=content, media_type=OpenAPIMediaType.OPENAPI_YAML)
-        return Response(content={}, status_code=HTTP_404_NOT_FOUND)
+            return ASGIResponse(body=content, media_type=OpenAPIMediaType.OPENAPI_YAML)
+        return ASGIResponse(body=b"", status_code=HTTP_404_NOT_FOUND)
 
     @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False, sync_to_thread=False)
-    def retrieve_schema_json(self, request: Request) -> Response:
+    def retrieve_schema_json(self, request: Request) -> ASGIResponse:
         """Return the OpenAPI schema as JSON with an ``application/vnd.oai.openapi+json`` Content-Type header.
 
         Args:
@@ -168,14 +168,14 @@ class OpenAPIController(Controller):
             A Response instance with the JSON object rendered into a string.
         """
         if self.should_serve_endpoint(request):
-            return Response(
-                content=encode_json(self.get_schema_from_request(request).to_schema()),
+            return ASGIResponse(
+                body=encode_json(self.get_schema_from_request(request).to_schema()),
                 media_type=OpenAPIMediaType.OPENAPI_JSON,
             )
-        return Response(content={}, status_code=HTTP_404_NOT_FOUND)
+        return ASGIResponse(body=b"", status_code=HTTP_404_NOT_FOUND)
 
     @get(path="/", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
-    def root(self, request: Request) -> Response:
+    def root(self, request: Request) -> ASGIResponse:
         """Render a static documentation site.
 
          The site to be rendered is based on the ``root_schema_site`` value set in the application's
@@ -198,16 +198,16 @@ class OpenAPIController(Controller):
         render_method = self.render_methods_map[config.root_schema_site]
 
         if self.should_serve_endpoint(request):
-            return Response(content=render_method(request), media_type=MediaType.HTML)
+            return ASGIResponse(body=render_method(request), media_type=MediaType.HTML)
 
-        return Response(
-            content=self.render_404_page(),
+        return ASGIResponse(
+            body=self.render_404_page(),
             status_code=HTTP_404_NOT_FOUND,
             media_type=MediaType.HTML,
         )
 
     @get(path="/swagger", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
-    def swagger_ui(self, request: Request) -> Response:
+    def swagger_ui(self, request: Request) -> ASGIResponse:
         """Route handler responsible for rendering Swagger-UI.
 
         Args:
@@ -218,15 +218,15 @@ class OpenAPIController(Controller):
             A response with a rendered swagger documentation site
         """
         if self.should_serve_endpoint(request):
-            return Response(content=self.render_swagger_ui(request), media_type=MediaType.HTML)
-        return Response(
-            content=self.render_404_page(),
+            return ASGIResponse(body=self.render_swagger_ui(request), media_type=MediaType.HTML)
+        return ASGIResponse(
+            body=self.render_404_page(),
             status_code=HTTP_404_NOT_FOUND,
             media_type=MediaType.HTML,
         )
 
     @get(path="/elements", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
-    def stoplight_elements(self, request: Request) -> Response:
+    def stoplight_elements(self, request: Request) -> ASGIResponse:
         """Route handler responsible for rendering StopLight Elements.
 
         Args:
@@ -237,11 +237,11 @@ class OpenAPIController(Controller):
             A response with a rendered stoplight elements documentation site
         """
         if self.should_serve_endpoint(request):
-            return Response(content=self.render_stoplight_elements(request), media_type=MediaType.HTML)
-        return Response(content=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+            return ASGIResponse(body=self.render_stoplight_elements(request), media_type=MediaType.HTML)
+        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
     @get(path="/redoc", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
-    def redoc(self, request: Request) -> Response:  # pragma: no cover
+    def redoc(self, request: Request) -> ASGIResponse:  # pragma: no cover
         """Route handler responsible for rendering Redoc.
 
         Args:
@@ -252,8 +252,8 @@ class OpenAPIController(Controller):
             A response with a rendered redoc documentation site
         """
         if self.should_serve_endpoint(request):
-            return Response(content=self.render_redoc(request), media_type=MediaType.HTML)
-        return Response(content=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+            return ASGIResponse(body=self.render_redoc(request), media_type=MediaType.HTML)
+        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
     def render_swagger_ui(self, request: Request) -> str:
         """Render an HTML page for Swagger-UI.
@@ -315,7 +315,9 @@ class OpenAPIController(Controller):
                 {head}
                 {body}
             </html>
-        """
+        """.encode(
+            "utf-8"
+        )
 
     def render_stoplight_elements(self, request: Request) -> str:
         """Render an HTML page for StopLight Elements.
@@ -359,7 +361,9 @@ class OpenAPIController(Controller):
                 {head}
                 {body}
             </html>
-        """
+        """.encode(
+            "utf-8"
+        )
 
     def render_redoc(self, request: Request) -> str:  # pragma: no cover
         """Render an HTML page for Redoc.
@@ -419,7 +423,9 @@ class OpenAPIController(Controller):
                 {head}
                 {body}
             </html>
-        """
+        """.encode(
+            "utf-8"
+        )
 
     def render_404_page(self) -> str:
         """Render an HTML 404 page.
@@ -444,4 +450,6 @@ class OpenAPIController(Controller):
                 <h1>Error 404</h1>
             </body>
         </html>
-        """
+        """.encode(
+            "utf-8"
+        )

@@ -1,6 +1,6 @@
 from litestar.utils.deprecation import deprecated, warn_deprecation
 
-from .helpers import Ref, encode_headers, get_enum_string_value, get_name
+from .helpers import Ref, encode_headers, get_enum_string_value, get_name, url_quote
 from .path import join_paths, normalize_path
 from .predicates import (
     is_any,
@@ -69,5 +69,6 @@ __all__ = (
     "normalize_path",
     "set_litestar_scope_state",
     "unique",
+    "url_quote",
     "warn_deprecation",
 )

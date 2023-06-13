@@ -9,7 +9,6 @@ from litestar.enums import HttpMethod
 from litestar.exceptions import ValidationException
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from litestar.utils import encode_headers
-from litestar.utils.helpers import filter_cookies
 
 if TYPE_CHECKING:
     from litestar.app import Litestar
@@ -18,7 +17,6 @@ if TYPE_CHECKING:
     from litestar.datastructures import Cookie, ResponseHeader
     from litestar.dto.interface import DTOInterface
     from litestar.response import Response
-    from litestar.response_containers import ResponseContainer
     from litestar.types import (
         AfterRequestHookHandler,
         ASGIApp,
@@ -67,23 +65,11 @@ def create_data_handler(
     """
     raw_headers = encode_headers(normalize_headers(headers).items(), cookies, [])
 
-    async def create_response(data: Any) -> ASGIApp:
-        response = response_class(
-            background=background,
-            content=data,
-            media_type=media_type,
-            status_code=status_code,
-            type_encoders=type_encoders,
-        )
-
-        return (  # type:ignore[no-any-return]
-            await after_request(response) if after_request else response  # type:ignore[arg-type,misc]
-        ).to_asgi_response(encoded_headers=raw_headers)
-
     async def handler(
         data: Any,
         return_dto: type[DTOInterface] | None,
         request: Request[Any, Any, Any],
+        app: Litestar,
         **kwargs: Any,
     ) -> ASGIApp:
         if isawaitable(data):
@@ -93,7 +79,29 @@ def create_data_handler(
             ctx = ConnectionContext.from_connection(request)
             data = return_dto(ctx).data_to_encodable_type(data)
 
-        return await create_response(data=data)
+        response = response_class(
+            background=background,
+            content=data,
+            media_type=media_type,
+            status_code=status_code,
+            type_encoders=type_encoders,
+        )
+
+        if after_request:
+            response = await after_request(response)
+
+        return response.to_asgi_response(
+            app=app,
+            background=None,
+            cookies=[],
+            encoded_headers=raw_headers,
+            headers={},
+            is_head_response=False,
+            media_type=None,
+            request=request,
+            status_code=None,
+            type_encoders=None,
+        )
 
     return handler
 
@@ -139,44 +147,14 @@ def normalize_headers(headers: frozenset[ResponseHeader]) -> dict[str, str]:
     }
 
 
-def create_response_container_handler(
+def create_response_handler(
     after_request: AfterRequestHookHandler | None,
+    background: BackgroundTask | BackgroundTasks | None,
     cookies: frozenset[Cookie],
     headers: frozenset[ResponseHeader],
     media_type: str,
     status_code: int,
-) -> AsyncAnyCallable:
-    """Create a handler function for ResponseContainers.
-
-    Args:
-        after_request: An after request handler.
-        cookies: A set of pre-defined cookies.
-        headers: A set of response headers.
-        media_type: The response media type.
-        status_code: The response status code.
-
-    Returns:
-        A handler function.
-    """
-    normalized_headers = normalize_headers(headers)
-
-    async def handler(data: ResponseContainer, app: Litestar, request: Request, **kwargs: Any) -> ASGIApp:
-        response = data.to_response(
-            app=app,
-            headers={**normalized_headers, **data.headers},
-            status_code=status_code,
-            media_type=data.media_type or media_type,
-            request=request,
-        )
-        response.cookies = filter_cookies(data.cookies, cookies)
-        return (await after_request(response) if after_request else response).to_asgi_response()  # type: ignore
-
-    return handler
-
-
-def create_response_handler(
-    after_request: AfterRequestHookHandler | None,
-    cookies: frozenset[Cookie],
+    type_encoders: TypeEncodersMap | None,
 ) -> AsyncAnyCallable:
     """Create a handler function for Litestar Responses.
 
@@ -188,9 +166,28 @@ def create_response_handler(
         A handler function.
     """
 
-    async def handler(data: Response, **kwargs: Any) -> ASGIApp:
-        data.cookies = filter_cookies(data.cookies, cookies)
-        return (await after_request(data) if after_request else data).to_asgi_response()  # type: ignore
+    normalized_headers = normalize_headers(headers)
+
+    async def handler(
+        data: Response, app: Litestar, request: Request, return_dto: type[DTOInterface] | None
+    ) -> ASGIApp:
+        if return_dto:
+            ctx = ConnectionContext.from_connection(request)
+            data = return_dto(ctx).data_to_encodable_type(data)
+
+        response = await after_request(data) if after_request else data
+        return response.to_asgi_response(  # type: ignore
+            app=app,
+            background=background,
+            cookies=cookies,
+            encoded_headers=[],
+            headers=normalized_headers,
+            is_head_response=False,
+            media_type=media_type,
+            request=request,
+            status_code=status_code,
+            type_encoders=type_encoders,
+        )
 
     return handler
 

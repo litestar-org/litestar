@@ -3,7 +3,7 @@ from typing import Dict
 
 from litestar import Litestar, get
 from litestar.contrib.mako import MakoTemplateEngine
-from litestar.response_containers import Template
+from litestar.response import TemplateResponse
 from litestar.template.config import TemplateConfig
 
 
@@ -26,8 +26,8 @@ template_config = TemplateConfig(
 
 
 @get("/")
-def index() -> Template:
-    return Template(name="index.html.mako")
+def index() -> TemplateResponse:
+    return TemplateResponse(template_name="index.html.mako")
 
 
 app = Litestar(

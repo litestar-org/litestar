@@ -8,7 +8,7 @@ from litestar import Litestar, MediaType, get
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.response_containers import Template
+from litestar.response.template import TemplateResponse
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
 
@@ -19,8 +19,8 @@ if TYPE_CHECKING:
 
 def test_handler_raise_for_no_template_engine() -> None:
     @get(path="/")
-    def invalid_path() -> Template:
-        return Template(name="index.html", context={"ye": "yeeee"})
+    def invalid_path() -> TemplateResponse:
+        return TemplateResponse(template_name="index.html", context={"ye": "yeeee"})
 
     with create_test_client(route_handlers=[invalid_path]) as client:
         response = client.request("GET", "/")
@@ -72,8 +72,8 @@ def test_media_type(media_type: Union[MediaType, str], template_dir: Path) -> No
     (template_dir / "hello.tpl").write_text("hello")
 
     @get("/", media_type=media_type)
-    def index() -> Template:
-        return Template(name="hello.tpl")
+    def index() -> TemplateResponse:
+        return TemplateResponse(template_name="hello.tpl")
 
     with create_test_client(
         [index], template_config=TemplateConfig(directory=template_dir, engine=JinjaTemplateEngine)
@@ -105,8 +105,8 @@ def test_media_type_inferred(extension: str, expected_type: MediaType, template_
     (template_dir / tpl_name).write_text("hello")
 
     @get("/")
-    def index() -> Template:
-        return Template(name=tpl_name)
+    def index() -> TemplateResponse:
+        return TemplateResponse(template_name=tpl_name)
 
     with create_test_client(
         [index], template_config=TemplateConfig(directory=template_dir, engine=JinjaTemplateEngine)
@@ -123,8 +123,8 @@ def test_before_request_handler_content_type(template_dir: Path) -> None:
         template_loc.write_text("before request")
 
     @get("/", before_request=before_request_handler)
-    def index() -> Template:
-        return Template(name="about.html")
+    def index() -> TemplateResponse:
+        return TemplateResponse(template_name="about.html")
 
     with create_test_client(
         [index], template_config=TemplateConfig(directory=template_dir, engine=JinjaTemplateEngine)

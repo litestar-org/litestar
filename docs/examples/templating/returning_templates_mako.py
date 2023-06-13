@@ -2,13 +2,13 @@ from pathlib import Path
 
 from litestar import Litestar, get
 from litestar.contrib.mako import MakoTemplateEngine
-from litestar.response_containers import Template
+from litestar.response import TemplateResponse
 from litestar.template.config import TemplateConfig
 
 
 @get(path="/")
-def index(name: str) -> Template:
-    return Template(name="hello.html.mako", context={"name": name})
+def index(name: str) -> TemplateResponse:
+    return TemplateResponse(template_name="hello.html.mako", context={"name": name})
 
 
 app = Litestar(
