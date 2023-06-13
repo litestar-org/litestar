@@ -288,7 +288,7 @@ The handler function will receive all requests with an url that begins with ``/s
     the value of ``scope["path"]`` will equal ``"/`"``. If we send a request to ``/some/sub-path/abc``, it will also be
     invoked,and ``scope["path"]`` will equal ``"/abc"``.
 
-Mounting is especially useful when you need to combine components of other ASGI applications - for example, for 3rd part libraries.
+Mounting is especially useful when you need to combine components of other ASGI applications - for example, for 3rd party libraries.
 The following example is identical in principle to the one above, but it uses `Starlette <https://www.starlette.io/>`_:
 
 .. literalinclude:: /examples/routing/mounting_starlette_app.py
