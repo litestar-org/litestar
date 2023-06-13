@@ -87,17 +87,17 @@ class TemplateResponse(Response[bytes]):
 
     def to_asgi_response(
         self,
-        *,
         app: Litestar,
-        background: BackgroundTask | BackgroundTasks | None,
-        cookies: list[Cookie] | None,
-        encoded_headers: list[tuple[bytes, bytes]] | None,
-        headers: dict[str, str] | None,
-        is_head_response: bool,
-        media_type: MediaType | str | None,
         request: Request,
-        status_code: int | None,
-        type_encoders: TypeEncodersMap | None,
+        *,
+        background: BackgroundTask | BackgroundTasks | None = None,
+        cookies: list[Cookie] | None = None,
+        encoded_headers: list[tuple[bytes, bytes]] | None = None,
+        headers: dict[str, str] | None = None,
+        is_head_response: bool = False,
+        media_type: MediaType | str | None = None,
+        status_code: int | None = None,
+        type_encoders: TypeEncodersMap | None = None,
     ) -> ASGIResponse:
         if not app.template_engine:
             raise ImproperlyConfiguredException("Template engine is not configured")

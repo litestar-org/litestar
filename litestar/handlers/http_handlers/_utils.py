@@ -89,18 +89,7 @@ def create_data_handler(
         if after_request:
             response = await after_request(response)  # type: ignore[arg-type,misc]
 
-        return response.to_asgi_response(
-            app=app,
-            background=None,
-            cookies=[],
-            encoded_headers=raw_headers,
-            headers={},
-            is_head_response=False,
-            media_type=None,
-            request=request,
-            status_code=None,
-            type_encoders=None,
-        )
+        return response.to_asgi_response(app=app, request=request, encoded_headers=raw_headers)
 
     return handler
 
@@ -181,9 +170,7 @@ def create_response_handler(
             app=app,
             background=background,
             cookies=cookie_list,
-            encoded_headers=[],
             headers=normalized_headers,
-            is_head_response=False,
             media_type=media_type,
             request=request,
             status_code=status_code,
