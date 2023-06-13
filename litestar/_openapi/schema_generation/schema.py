@@ -439,7 +439,20 @@ def create_schema_for_object_type(
         A schema instance.
     """
     if field.is_mapping:
-        return Schema(type=OpenAPIType.OBJECT)
+        return Schema(
+            type=OpenAPIType.OBJECT,
+            additional_properties=(
+                create_schema(
+                    field=field.children[1],
+                    generate_examples=generate_examples,
+                    plugins=plugins,
+                    schemas=schemas,
+                    prefer_alias=prefer_alias,
+                )
+                if field.children and len(field.children) == 2
+                else None
+            ),
+        )
 
     if field.is_non_string_sequence or field.is_non_string_iterable:
         items = [
