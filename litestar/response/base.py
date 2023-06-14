@@ -48,7 +48,7 @@ class ASGIResponse:
         self,
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
-        body: bytes = b"",
+        body: bytes | str = b"",
         content_length: int | None = None,
         cookies: list[Cookie] | None = None,
         encoded_headers: list[tuple[bytes, bytes]] | None = None,
@@ -72,6 +72,7 @@ class ASGIResponse:
             media_type: The response media type.
             status_code: The response status code.
         """
+        body = body.encode() if isinstance(body, str) else body
         status_code = status_code or HTTP_200_OK
         cookies = cookies or []
         encoded_headers = encoded_headers or []
