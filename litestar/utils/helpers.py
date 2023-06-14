@@ -117,7 +117,6 @@ def filter_cookies(local_cookies: Iterable[Cookie], layered_cookies: Iterable[Co
     Returns:
         A unified list of cookies
     """
-    # TODO: check this precedence, should local cookies be overwritten by layered cookies?
     return [cookie for cookie in {*local_cookies, *layered_cookies} if not cookie.documentation_only]
 
 
