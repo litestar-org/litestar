@@ -169,7 +169,7 @@ def test_openapi_swagger_caching_schema(
         client.get("/schema/redoc")  # Cache the schema
         response = client.get("/schema/swagger")  # Request swagger, should use a different cache
 
-        assert "3.0.3" in response.text  # Make sure the injected version is still there
+        assert "3.1.0" in response.text  # Make sure the injected version is still there
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"].startswith(MediaType.HTML.value)
 
