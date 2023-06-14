@@ -22,7 +22,7 @@ def test_redirect_response() -> None:
         if scope["path"] == "/":
             response = ASGIResponse(body=b"hello, world", media_type="text/plain")
         else:
-            response = ASGIRedirectResponse(url="/")
+            response = ASGIRedirectResponse(path="/")
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -36,7 +36,7 @@ def test_quoting_redirect_response() -> None:
         if scope["path"] == "/test/":
             response = ASGIResponse(body=b"hello, world", media_type="text/plain")
         else:
-            response = ASGIRedirectResponse(url="/test/")
+            response = ASGIRedirectResponse(path="/test/")
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -50,7 +50,7 @@ def test_redirect_response_content_length_header() -> None:
         if scope["path"] == "/":
             response = ASGIResponse(body=b"hello", media_type="text/plain")
         else:
-            response = ASGIRedirectResponse(url="/")
+            response = ASGIRedirectResponse(path="/")
         await response(scope, receive, send)
 
     client: TestClient = TestClient(app)
@@ -61,7 +61,7 @@ def test_redirect_response_content_length_header() -> None:
 
 def test_redirect_response_status_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        ASGIRedirectResponse(url="/", status_code=HTTP_200_OK)  # type:ignore[arg-type]
+        ASGIRedirectResponse(path="/", status_code=HTTP_200_OK)  # type:ignore[arg-type]
 
 
 def test_redirect_response_html_media_type() -> None:
@@ -69,7 +69,7 @@ def test_redirect_response_html_media_type() -> None:
         if scope["path"] == "/":
             response = ASGIResponse(body=b"hello")
         else:
-            response = ASGIRedirectResponse(url="/", media_type="text/html")
+            response = ASGIRedirectResponse(path="/", media_type="text/html")
         await response(scope, receive, send)
 
     client: TestClient = TestClient(app)
@@ -80,4 +80,4 @@ def test_redirect_response_html_media_type() -> None:
 
 def test_redirect_response_media_type_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        ASGIRedirectResponse(url="/", media_type="application/json")
+        ASGIRedirectResponse(path="/", media_type="application/json")

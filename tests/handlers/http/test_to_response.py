@@ -157,7 +157,7 @@ async def test_to_response_returning_redirect_response(anyio_backend: str) -> No
     )
     def test_function() -> RedirectResponse:
         return RedirectResponse(
-            url="/somewhere-else",
+            path="/somewhere-else",
             headers={"response-header": "abc"},
             cookies=[Cookie(key="redirect-cookie", value="xyz")],
             background=background_task,
@@ -184,7 +184,7 @@ def test_to_response_returning_redirect_response_from_redirect() -> None:
         return {"message": "redirected by before request hook"}
 
     def before_request_hook_handler(_: Request) -> RedirectResponse:
-        return RedirectResponse(url="/proxy", status_code=HTTP_308_PERMANENT_REDIRECT)
+        return RedirectResponse(path="/proxy", status_code=HTTP_308_PERMANENT_REDIRECT)
 
     @get(path="/test", before_request=before_request_hook_handler)
     def redirect_handler() -> None:

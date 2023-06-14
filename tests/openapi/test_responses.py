@@ -237,7 +237,7 @@ def test_create_success_response_with_stream() -> None:
 def test_create_success_response_redirect() -> None:
     @get(path="/test", status_code=HTTP_307_TEMPORARY_REDIRECT, name="test")
     def redirect_handler() -> RedirectResponse:
-        return RedirectResponse(url="/target")
+        return RedirectResponse(path="/target")
 
     handler = get_registered_route_handler(redirect_handler, "test")
 

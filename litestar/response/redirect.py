@@ -32,13 +32,13 @@ class ASGIRedirectResponse(ASGIResponse):
 
     def __init__(
         self,
-        url: str | bytes,
+        path: str | bytes,
         media_type: str | None = None,
         status_code: RedirectStatusType | None = None,
         headers: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
-        headers = {**(headers or {}), "location": url_quote(url)}
+        headers = {**(headers or {}), "location": url_quote(path)}
         media_type = media_type or MediaType.TEXT
         status_code = status_code or HTTP_307_TEMPORARY_REDIRECT
 
@@ -66,7 +66,7 @@ class RedirectResponse(Response[Any]):
 
     def __init__(
         self,
-        url: str,
+        path: str,
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
         cookies: ResponseCookies | None = None,
@@ -79,7 +79,7 @@ class RedirectResponse(Response[Any]):
         """Initialize the response.
 
         Args:
-            url: A url to redirect to.
+            path: A path to redirect to.
             background: A background task or tasks to be run after the response is sent.
             cookies: A list of :class:`Cookie <.datastructures.Cookie>` instances to be set under the response
                 ``Set-Cookie`` header.
@@ -94,7 +94,7 @@ class RedirectResponse(Response[Any]):
             ImproperlyConfiguredException: Either if status code is not a redirect status code or media type is not
                 supported.
         """
-        self.url = url
+        self.url = path
         super().__init__(
             background=background,
             content=b"",
@@ -125,7 +125,7 @@ class RedirectResponse(Response[Any]):
         media_type = get_enum_string_value(self.media_type or media_type or MediaType.TEXT)
 
         return ASGIRedirectResponse(
-            url=self.url,
+            path=self.url,
             background=self.background or background,
             body=b"",
             content_length=None,

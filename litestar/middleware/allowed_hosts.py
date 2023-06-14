@@ -75,7 +75,7 @@ class AllowedHostsMiddleware(AbstractMiddleware):
             if self.redirect_domains is not None and self.redirect_domains.fullmatch(host):
                 url = URL.from_scope(scope)
                 redirect_url = url.with_replacements(netloc="www." + url.netloc)
-                redirect_response = ASGIRedirectResponse(url=str(redirect_url))
+                redirect_response = ASGIRedirectResponse(path=str(redirect_url))
                 await redirect_response(scope, receive, send)
                 return
 

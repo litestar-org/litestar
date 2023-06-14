@@ -169,7 +169,7 @@ def test_file_system_validation(tmpdir: "Path") -> None:
 def test_redirect_dynamic_status_code(status_code: Optional[int], expected_status_code: int) -> None:
     @get("/")
     def handler() -> RedirectResponse:
-        return RedirectResponse(url="/something-else", status_code=status_code)  # type: ignore[arg-type]
+        return RedirectResponse(path="/something-else", status_code=status_code)  # type: ignore[arg-type]
 
     with create_test_client([handler], debug=True) as client:
         res = client.get("/", follow_redirects=False)
@@ -180,7 +180,7 @@ def test_redirect_dynamic_status_code(status_code: Optional[int], expected_statu
 def test_redirect(handler_status_code: Optional[int]) -> None:
     @get("/", status_code=handler_status_code)
     def handler() -> RedirectResponse:
-        return RedirectResponse(url="/something-else", status_code=301)
+        return RedirectResponse(path="/something-else", status_code=301)
 
     with create_test_client([handler]) as client:
         res = client.get("/", follow_redirects=False)
