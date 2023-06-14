@@ -104,6 +104,8 @@ nitpick_ignore = [
     ("py:class", "litestar.utils.sync.AsyncCallable"),
     ("py:class", "BacklogStrategy"),
     ("py:class", "ExceptionT"),
+    ("py:class", "litestar.response_containers.Template"),
+    ("py:class", "litestar.response_containers.Redirect"),
 ]
 nitpick_ignore_regex = [
     (r"py:.*", r"litestar\.types.*"),

@@ -315,7 +315,7 @@
         :type: feature
         :pr: 1488
 
-        Pass the template context to the :class:`Template <litestar.response.TemplateResponse>` returned by
+        Pass the template context to the :class:`Template <litestar.response_containers.Template>` returned by
         :class:`htmx.Response <litestar.contrib.htmx.response>`.
 
 
@@ -616,7 +616,7 @@
         :issue: 1371
 
         Add support for manually setting status codes in the
-        :class:`RedirectResponse <litestar.response.RedirectResponse>` response container.
+        :class:`RedirectResponse <litestar.response_containers.Redirect>` response container.
         This was previously only possible by setting the ``status_code`` parameter on
         the corresponding route handler, making dynamic redirect status codes and
         conditional redirects using this container hard to implement.
