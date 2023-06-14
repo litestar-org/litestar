@@ -15,14 +15,12 @@ from litestar.handlers.base import BaseRouteHandler
 from litestar.handlers.http_handlers._utils import (
     create_data_handler,
     create_generic_asgi_response_handler,
-    create_response_container_handler,
     create_response_handler,
     get_default_status_code,
     normalize_http_method,
 )
 from litestar.openapi.spec import Operation
-from litestar.response import FileResponse, Response
-from litestar.response_containers import File, Redirect, ResponseContainer
+from litestar.response import Response
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from litestar.types import (
     AfterRequestHookHandler,
@@ -421,23 +419,22 @@ class HTTPRouteHandler(BaseRouteHandler):
                 handler_return_type = before_request_handler.parsed_signature.return_type
                 if not handler_return_type.is_subclass_of((Empty, NoneType)):
                     return_annotation = handler_return_type.annotation
+
             self._response_handler_mapping["response_type_handler"] = response_type_handler = create_response_handler(
-                cookies=cookies, after_request=after_request
+                after_request=after_request,
+                background=self.background,
+                cookies=cookies,
+                headers=headers,
+                media_type=media_type,
+                status_code=self.status_code,
+                type_encoders=type_encoders,
             )
 
             if return_type.is_subclass_of(Response):
                 self._response_handler_mapping["default_handler"] = response_type_handler
-            elif return_type.is_subclass_of(ResponseContainer):
-                self._response_handler_mapping["default_handler"] = create_response_container_handler(
-                    after_request=after_request,
-                    cookies=cookies,
-                    headers=headers,
-                    media_type=media_type,
-                    status_code=self.status_code,
-                )
             elif is_async_callable(return_annotation) or return_annotation is ASGIApp:
                 self._response_handler_mapping["default_handler"] = create_generic_asgi_response_handler(
-                    cookies=cookies, after_request=after_request
+                    after_request=after_request, cookies=cookies
                 )
             else:
                 self._response_handler_mapping["default_handler"] = create_data_handler(
@@ -463,7 +460,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         Args:
             app: The :class:`Litestar <litestar.app.Litestar>` app instance
-            data: Either an instance of a :class:`ResponseContainer <.response_containers.ResponseContainer>`,
+            data: Either an instance of a :class:`Response <.response.Response>`,
                 a Response instance or an arbitrary value.
             request: A :class:`Request <.connection.Request>` instance
 
@@ -474,9 +471,10 @@ class HTTPRouteHandler(BaseRouteHandler):
         return await response_handler(app=app, data=data, request=request, return_dto=self.resolve_return_dto())  # type: ignore
 
     def on_registration(self, app: Litestar) -> None:
-        super().on_registration(app)
         if before_request := self.resolve_before_request():
             before_request.set_parsed_signature(self.resolve_signature_namespace())
+
+        super().on_registration(app)
         self.resolve_after_response()
 
     def _validate_handler_function(self) -> None:
@@ -499,12 +497,17 @@ class HTTPRouteHandler(BaseRouteHandler):
                 "If the function should return a value, change the route handler status code to an appropriate value.",
             )
 
+        if (
+            (before_request := self.resolve_before_request())
+            and not before_request.parsed_signature.return_type.is_subclass_of(NoneType)
+            and not before_request.parsed_signature.return_type.is_optional
+        ):
+            return_type = before_request.parsed_signature.return_type
+
         if not self.media_type:
-            if return_type.annotation is AnyStr or return_type.is_subclass_of(
-                (str, bytes, Redirect, File, FileResponse)
-            ):
+            if return_type.is_subclass_of((str, bytes)) or return_type.annotation is AnyStr:
                 self.media_type = MediaType.TEXT
-            else:
+            elif not return_type.is_subclass_of(Response):
                 self.media_type = MediaType.JSON
 
         if "socket" in self.parsed_fn_signature.parameters:

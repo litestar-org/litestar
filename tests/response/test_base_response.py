@@ -7,7 +7,8 @@ from litestar import MediaType, get
 from litestar.datastructures import Cookie
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response import Response
-from litestar.serialization import default_serializer
+from litestar.response.base import ASGIResponse
+from litestar.serialization import default_serializer, get_serializer
 from litestar.status_codes import (
     HTTP_100_CONTINUE,
     HTTP_101_SWITCHING_PROTOCOLS,
@@ -172,7 +173,7 @@ def test_render_method(body: Any, media_type: MediaType, should_raise: bool) -> 
 
 def test_head_response_doesnt_support_content() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        Response(content="hello world", media_type=MediaType.TEXT, is_head_response=True)
+        ASGIResponse(body=b"hello world", media_type=MediaType.TEXT, is_head_response=True)
 
 
 def test_get_serializer() -> None:
@@ -182,17 +183,15 @@ def test_get_serializer() -> None:
     foo_encoder = {Foo: lambda f: "it's a foo"}
     path_encoder = {PurePosixPath: lambda p: "it's a path"}
 
-    class CustomResponse(Response):
-        pass
-
     class FooResponse(Response):
         type_encoders = foo_encoder
 
-    assert Response(None)._enc_hook is default_serializer
-    assert CustomResponse(None)._enc_hook is default_serializer
+    assert get_serializer() is default_serializer
 
-    assert Response(None, type_encoders=foo_encoder)._enc_hook(Foo()) == "it's a foo"
-    assert Response(None, type_encoders=path_encoder)._enc_hook(PurePosixPath()) == "it's a path"
+    assert get_serializer(type_encoders=foo_encoder)(Foo()) == "it's a foo"
+    assert get_serializer(type_encoders=path_encoder)(PurePosixPath()) == "it's a path"
 
-    assert FooResponse(None)._enc_hook(Foo()) == "it's a foo"
-    assert FooResponse(None, type_encoders={Foo: lambda f: "foo"})._enc_hook(Foo()) == "foo"
+    assert get_serializer(FooResponse(None).type_encoders)(Foo()) == "it's a foo"
+    assert (
+        get_serializer(FooResponse(None, type_encoders={Foo: lambda f: "foo"}).response_type_encoders)(Foo()) == "foo"
+    )

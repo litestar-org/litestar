@@ -26,8 +26,8 @@ from litestar.handlers import HTTPRouteHandler
 from litestar.openapi.datastructures import ResponseSpec
 from litestar.openapi.spec import OpenAPIHeader, OpenAPIMediaType, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
+from litestar.response import File, Redirect, Stream, Template
 from litestar.response.base import T
-from litestar.response_containers import File, Redirect, Stream, Template
 from litestar.routes import HTTPRoute
 from litestar.status_codes import (
     HTTP_200_OK,
@@ -227,7 +227,7 @@ def test_create_success_response_with_response_class() -> None:
 def test_create_success_response_with_stream() -> None:
     @get(path="/test", name="test")
     def handler() -> Stream:
-        return Stream(iterator=iter([]))
+        return Stream(iter([]))
 
     handler = get_registered_route_handler(handler, "test")
     response = create_success_response(handler, True, plugins=[], schemas={})
@@ -281,7 +281,7 @@ def test_create_success_response_file_data() -> None:
 def test_create_success_response_template() -> None:
     @get(path="/template", name="test")
     def template_handler() -> Template:
-        return Template(name="none")
+        return Template(template_name="none")
 
     handler = get_registered_route_handler(template_handler, "test")
 

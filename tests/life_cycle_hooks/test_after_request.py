@@ -10,19 +10,19 @@ from litestar.types import AfterRequestHookHandler
 
 def sync_after_request_handler(response: Response) -> Response:
     assert isinstance(response, Response)
-    response.body = response.render({"hello": "moon"})
+    response.content = {"hello": "moon"}
     return response
 
 
 async def async_after_request_handler(response: Response) -> Response:
     assert isinstance(response, Response)
-    response.body = response.render({"hello": "moon"})
+    response.content = {"hello": "moon"}
     return response
 
 
 async def async_after_request_handler_with_hello_world(response: Response) -> Response:
     assert isinstance(response, Response)
-    response.body = response.render({"hello": "world"})
+    response.content = {"hello": "world"}
     return response
 
 

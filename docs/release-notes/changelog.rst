@@ -616,7 +616,7 @@
         :issue: 1371
 
         Add support for manually setting status codes in the
-        :class:`Redirect <litestar.response_containers.Redirect>` response container.
+        :class:`RedirectResponse <litestar.response_containers.Redirect>` response container.
         This was previously only possible by setting the ``status_code`` parameter on
         the corresponding route handler, making dynamic redirect status codes and
         conditional redirects using this container hard to implement.

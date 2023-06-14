@@ -20,7 +20,7 @@ from typing_extensions import ParamSpec
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
-from litestar.utils.helpers import Ref
+from litestar.utils.helpers import Ref, unwrap_partial
 from litestar.utils.predicates import is_async_callable
 
 if TYPE_CHECKING:
@@ -81,7 +81,7 @@ class AsyncCallable(Generic[P, T]):
         """
         from litestar.utils.signature import ParsedSignature
 
-        self._parsed_signature = ParsedSignature.from_fn(self.ref.value, namespace)
+        self._parsed_signature = ParsedSignature.from_fn(unwrap_partial(self.ref.value), namespace)
 
 
 def async_partial(fn: Callable) -> Callable:

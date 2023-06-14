@@ -8,7 +8,7 @@ from litestar import Litestar, MediaType, get
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.response_containers import Template
+from litestar.response.template import Template
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
 
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 def test_handler_raise_for_no_template_engine() -> None:
     @get(path="/")
     def invalid_path() -> Template:
-        return Template(name="index.html", context={"ye": "yeeee"})
+        return Template(template_name="index.html", context={"ye": "yeeee"})
 
     with create_test_client(route_handlers=[invalid_path]) as client:
         response = client.request("GET", "/")
@@ -73,7 +73,7 @@ def test_media_type(media_type: Union[MediaType, str], template_dir: Path) -> No
 
     @get("/", media_type=media_type)
     def index() -> Template:
-        return Template(name="hello.tpl")
+        return Template(template_name="hello.tpl")
 
     with create_test_client(
         [index], template_config=TemplateConfig(directory=template_dir, engine=JinjaTemplateEngine)
@@ -106,7 +106,7 @@ def test_media_type_inferred(extension: str, expected_type: MediaType, template_
 
     @get("/")
     def index() -> Template:
-        return Template(name=tpl_name)
+        return Template(template_name=tpl_name)
 
     with create_test_client(
         [index], template_config=TemplateConfig(directory=template_dir, engine=JinjaTemplateEngine)
@@ -124,7 +124,7 @@ def test_before_request_handler_content_type(template_dir: Path) -> None:
 
     @get("/", before_request=before_request_handler)
     def index() -> Template:
-        return Template(name="about.html")
+        return Template(template_name="about.html")
 
     with create_test_client(
         [index], template_config=TemplateConfig(directory=template_dir, engine=JinjaTemplateEngine)

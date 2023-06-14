@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, Type, cast
 
 from litestar.connection import Request
 from litestar.datastructures import Headers
-from litestar.enums import ScopeType
+from litestar.enums import MediaType, ScopeType
 from litestar.exceptions import WebSocketException
 from litestar.middleware.cors import CORSMiddleware
 from litestar.middleware.exceptions._debug_response import create_debug_response
@@ -91,6 +91,7 @@ class ExceptionResponseContent:
             content={k: v for k, v in asdict(self).items() if k != "headers" and v is not None},
             headers=self.headers,
             status_code=self.status_code,
+            media_type=MediaType.JSON,
         )
 
 
@@ -189,8 +190,9 @@ class ExceptionHandlerMiddleware:
             send = cors_middleware.send_wrapper(send=send, origin=origin, has_cookie="cookie" in headers)
 
         exception_handler = get_exception_handler(self.exception_handlers, exc) or self.default_http_exception_handler
-        response = exception_handler(Request(scope=scope, receive=receive, send=send), exc)
-        await response(scope=scope, receive=receive, send=send)
+        request = Request[Any, Any, Any](scope=scope, receive=receive, send=send)
+        response = exception_handler(request, exc)
+        await response.to_asgi_response(app=litestar_app, request=request)(scope=scope, receive=receive, send=send)
 
     @staticmethod
     async def handle_websocket_exception(send: Send, exc: Exception) -> None:

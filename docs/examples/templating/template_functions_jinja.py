@@ -3,7 +3,7 @@ from typing import Dict
 
 from litestar import Litestar, get
 from litestar.contrib.jinja import JinjaTemplateEngine
-from litestar.response_containers import Template
+from litestar.response import Template
 from litestar.template.config import TemplateConfig
 
 
@@ -27,7 +27,7 @@ template_config = TemplateConfig(
 
 @get("/")
 def index() -> Template:
-    return Template(name="index.html.jinja2")
+    return Template(template_name="index.html.jinja2")
 
 
 app = Litestar(

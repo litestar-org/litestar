@@ -1,6 +1,8 @@
+import json
 from typing import TYPE_CHECKING
 
-from litestar import Litestar, Response, asgi
+from litestar import Litestar, asgi
+from litestar.response.base import ASGIResponse
 
 if TYPE_CHECKING:
     from litestar.types import Receive, Scope, Send
@@ -17,7 +19,8 @@ async def my_asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
     Returns:
         None
     """
-    response = Response(content={"forwarded_path": scope["path"]})
+    body = json.dumps({"forwarded_path": scope["path"]})
+    response = ASGIResponse(body=body.encode("utf-8"))
     await response(scope, receive, send)
 
 

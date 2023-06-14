@@ -27,13 +27,13 @@ async def async_before_request_handler_without_return_value(request: Request) ->
 
 def sync_after_request_handler(response: Response) -> Response:
     assert isinstance(response, Response)
-    response.body = response.render({"hello": "moon"})
+    response.content = {"hello": "moon"}
     return response
 
 
 async def async_after_request_handler(response: Response) -> Response:
     assert isinstance(response, Response)
-    response.body = response.render({"hello": "moon"})
+    response.content = {"hello": "moon"}
     return response
 
 

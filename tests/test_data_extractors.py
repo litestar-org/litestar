@@ -2,11 +2,12 @@ from typing import Any, List
 
 import pytest
 
-from litestar import Request, Response
+from litestar import Request
 from litestar.connection.base import empty_receive
 from litestar.data_extractors import ConnectionDataExtractor, ResponseDataExtractor
 from litestar.datastructures import Cookie
 from litestar.enums import RequestEncodingType
+from litestar.response.base import ASGIResponse
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import RequestFactory
 
@@ -92,9 +93,7 @@ def test_request_extraction_cookie_obfuscation(req: Request[Any, Any, Any], key:
 async def test_response_data_extractor() -> None:
     headers = {"common": "abc", "special": "123", "content-type": "application/json"}
     cookies = [Cookie(key="regular"), Cookie(key="auth")]
-    response = Response(content={"hello": "world"}, headers=headers)
-    for cookie in cookies:
-        response.set_cookie(**cookie.dict)
+    response = ASGIResponse(body=b'{"hello":"world"}', cookies=cookies, headers=headers)
     extractor = ResponseDataExtractor()
     messages: List["Any"] = []
 

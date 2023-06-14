@@ -104,6 +104,10 @@ nitpick_ignore = [
     ("py:class", "litestar.utils.sync.AsyncCallable"),
     ("py:class", "BacklogStrategy"),
     ("py:class", "ExceptionT"),
+    # types in changelog that no longer exist
+    ("py:class", "litestar.response_containers.Template"),
+    ("py:class", "litestar.response_containers.Redirect"),
+    ("py:class", "litestar.response.RedirectResponse"),
 ]
 nitpick_ignore_regex = [
     (r"py:.*", r"litestar\.types.*"),
@@ -134,6 +138,8 @@ ignore_missing_refs = {
     "litestar.template.base.TemplateEngineProtocol.get_template": {"litestar.template.base.T_co"},
     "litestar.template": {"litestar.template.base.T_co"},
     "litestar.openapi.OpenAPIController.security": {"SecurityRequirement"},
+    "litestar.response.file.async_file_iterator": {"FileSystemAdapter"},
+    re.compile("litestar.response.redirect.*"): {"RedirectStatusType"},
     re.compile(r"litestar\.plugins.*"): re.compile(".*ModelT"),
     re.compile(r"litestar\.contrib\.*"): re.compile(".*T"),
     re.compile(r"litestar\.contrib\.sqlalchemy\.*"): re.compile(

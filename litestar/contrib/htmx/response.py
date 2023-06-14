@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from typing import Any, Generic, TypeVar
 from urllib.parse import quote
 
-from litestar import Litestar, MediaType, Request, Response
+from litestar import Response
 from litestar.contrib.htmx._utils import HTMX_STOP_POLLING, get_headers
 from litestar.contrib.htmx.types import (
     EventAfterType,
@@ -14,8 +13,7 @@ from litestar.contrib.htmx.types import (
     ReSwapMethod,
     TriggerEventType,
 )
-from litestar.response import TemplateResponse
-from litestar.response_containers import ResponseContainer, Template
+from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
 __all__ = (
@@ -30,10 +28,6 @@ __all__ = (
     "Retarget",
     "TriggerEvent",
 )
-
-if TYPE_CHECKING:
-    from litestar.background_tasks import BackgroundTask, BackgroundTasks
-    from litestar.datastructures import Cookie
 
 
 # HTMX defined HTTP status code.
@@ -170,68 +164,37 @@ class HXLocation(Response):
         self.headers.update(spec)
 
 
-@dataclass
-class HTMXTemplate(ResponseContainer[TemplateResponse]):
+class HTMXTemplate(Template):
     """HTMX template wrapper"""
 
-    name: str
-    """Path-like name for the template to be rendered, e.g. "index.html"."""
-    context: dict[str, Any] = field(default_factory=dict)
-    """A dictionary of key/value pairs to be passed to the temple engine's render method.
-
-    Defaults to None.
-    """
-    background: BackgroundTask | BackgroundTasks | None = field(default=None)
-    """A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
-    :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished. Defaults to
-    ``None``.
-    """
-    headers: dict[str, Any] = field(default_factory=dict)
-    """A string/string dictionary of response headers.Header keys are insensitive. Defaults to ``None``."""
-    cookies: list[Cookie] = field(default_factory=list)
-    """A list of :class:`Cookies <.datastructures.Cookie>` to be set under the response ``Set-Cookie`` header. Defaults
-    to ``None``.
-    """
-    media_type: MediaType | str | None = field(default=None)
-    """If defined, overrides the media type configured in the route decorator."""
-    encoding: str = field(default="utf-8")
-    """The encoding to be used for the response headers."""
-    push_url: PushUrlType | None = field(default=None)
-    """Either a string value specifying a URL to push to browser history or ``False`` to prevent HTMX client from
-    pushing a url to browser history."""
-    re_swap: ReSwapMethod | None = field(default=None)
-    """Method value to instruct HTMX which swapping method to use."""
-    re_target: str | None = field(default=None)
-    """Value for 'id of target element' to apply changes to."""
-    trigger_event: str | None = field(default=None)
-    """Event name to trigger."""
-    params: dict[str, Any] | None = field(default=None)
-    """Dictionary of parameters if any required with trigger event parameter."""
-    after: EventAfterType | None = field(default=None)
-    """Changes to apply after ``receive``, ``settle`` or ``swap`` event."""
-
-    def to_response(
+    def __init__(
         self,
-        headers: dict[str, Any],
-        media_type: MediaType | str,
-        status_code: int,
-        app: Litestar,
-        request: Request,
-    ) -> TemplateResponse:
-        """Add HTMX headers and return a :class:`TemplateResponse <.response.TemplateResponse>`."""
+        push_url: PushUrlType | None = None,
+        re_swap: ReSwapMethod | None = None,
+        re_target: str | None = None,
+        trigger_event: str | None = None,
+        params: dict[str, Any] | None = None,
+        after: EventAfterType | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create HTMXTemplate response.
+
+        Args:
+            push_url: Either a string value specifying a URL to push to browser history or ``False`` to prevent HTMX client from
+                pushing a url to browser history.
+            re_swap: Method value to instruct HTMX which swapping method to use.
+            re_target: Value for 'id of target element' to apply changes to.
+            trigger_event: Event name to trigger.
+            params: Dictionary of parameters if any required with trigger event parameter.
+            after: Changes to apply after ``receive``, ``settle`` or ``swap`` event.
+            **kwargs: Additional arguments to pass to ``Template``.
+        """
+        super().__init__(**kwargs)
 
         event: TriggerEventType | None = None
-        if self.trigger_event:
-            event = TriggerEventType(name=str(self.trigger_event), params=self.params, after=self.after)
+        if trigger_event:
+            event = TriggerEventType(name=str(trigger_event), params=params, after=after)
 
-        hx_headers: dict[str, Any] = get_headers(
-            hx_headers=HtmxHeaderType(
-                push_url=self.push_url, re_swap=self.re_swap, re_target=self.re_target, trigger_event=event
-            )
-        )
-
-        template = Template(name=self.name, background=self.background, context=self.context, encoding=self.encoding)
-
-        return template.to_response(
-            headers=hx_headers, media_type=media_type, app=app, status_code=status_code, request=request
+        self.headers.update(
+            get_headers(HtmxHeaderType(push_url=push_url, re_swap=re_swap, re_target=re_target, trigger_event=event))
         )
