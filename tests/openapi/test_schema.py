@@ -125,10 +125,14 @@ def test_get_schema_for_field_type_enum() -> None:
 
 
 def test_handling_of_literals() -> None:
+    ValueType = Literal["a", "b", "c"]
+    ConstType = Literal[1]
+
     @dataclass
     class DataclassWithLiteral:
-        value: Literal["a", "b", "c"]
-        const: Literal[1]
+        value: ValueType
+        const: ConstType
+        composite: Literal[ValueType, ConstType]
 
     schemas: Dict[str, Schema] = {}
     result = create_schema(
@@ -136,17 +140,25 @@ def test_handling_of_literals() -> None:
         generate_examples=False,
         plugins=[],
         schemas=schemas,
+        prefer_alias=True,
     )
     assert isinstance(result, Reference)
+
     schema = schemas["DataclassWithLiteral"]
     assert isinstance(schema, Schema)
     assert schema.properties
+
     value = schema.properties["value"]
     assert isinstance(value, Schema)
     assert value.enum == ("a", "b", "c")
+
     const = schema.properties["const"]
     assert isinstance(const, Schema)
     assert const.const == 1
+
+    composite = schema.properties["composite"]
+    assert isinstance(composite, Schema)
+    assert composite.enum == ("a", "b", "c", 1)
 
 
 def test_schema_hashing() -> None:
@@ -168,6 +180,7 @@ def test_title_validation() -> None:
         generate_examples=False,
         plugins=[],
         schemas=schemas,
+        prefer_alias=True,
     )
     assert schemas.get("Person")
 
@@ -176,6 +189,7 @@ def test_title_validation() -> None:
         generate_examples=False,
         plugins=[],
         schemas=schemas,
+        prefer_alias=True,
     )
 
     assert schemas.get("Pet")
@@ -186,6 +200,7 @@ def test_title_validation() -> None:
             generate_examples=False,
             plugins=[],
             schemas=schemas,
+            prefer_alias=True,
         )
 
 
@@ -204,7 +219,9 @@ class Foo(BaseModel):
     foo: Annotated[int, "Foo description"]
 """
     )
-    schema = create_schema_for_pydantic_model(module.Foo, generate_examples=False, plugins=[], schemas={})
+    schema = create_schema_for_pydantic_model(
+        module.Foo, generate_examples=False, plugins=[], schemas={}, prefer_alias=True
+    )
     assert schema.properties and "foo" in schema.properties
 
 
@@ -224,7 +241,7 @@ class Foo:
     foo: Annotated[int, "Foo description"]
 """
     )
-    schema = create_schema_for_dataclass(module.Foo, generate_examples=False, plugins=[], schemas={})
+    schema = create_schema_for_dataclass(module.Foo, generate_examples=False, plugins=[], schemas={}, prefer_alias=True)
     assert schema.properties and "foo" in schema.properties
 
 
@@ -245,7 +262,9 @@ class Foo(TypedDict):
     baz: Annotated[NotRequired[int], "Baz description"]
 """
     )
-    schema = create_schema_for_typed_dict(module.Foo, generate_examples=False, plugins=[], schemas={})
+    schema = create_schema_for_typed_dict(
+        module.Foo, generate_examples=False, plugins=[], schemas={}, prefer_alias=True
+    )
     assert schema.properties and all(key in schema.properties for key in ("foo", "bar", "baz"))
 
 
@@ -259,6 +278,7 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
         generate_examples=False,
         plugins=[],
         schemas=schemas,
+        prefer_alias=True,
     )
     schema = schemas["Lookup"]
     assert schema.properties["id"].type == OpenAPIType.STRING  # type: ignore
@@ -278,6 +298,7 @@ def test_create_schema_for_pydantic_field() -> None:
         generate_examples=False,
         plugins=[],
         schemas=schemas,
+        prefer_alias=True,
     )
     schema = schemas["Model"]
 

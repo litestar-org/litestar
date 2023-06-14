@@ -41,7 +41,7 @@ def test_openapi_yaml_not_allowed(person_controller: Type[Controller], pet_contr
     openapi_config = DEFAULT_OPENAPI_CONFIG
     openapi_config.enabled_endpoints.discard("openapi.yaml")
 
-    with create_test_client([person_controller, pet_controller], openapi_config=openapi_config) as client:
+    with create_test_client([person_controller, pet_controller], openapi_config=openapi_config, debug=True) as client:
         assert client.app.openapi_schema
         openapi_schema = client.app.openapi_schema
         assert openapi_schema.paths

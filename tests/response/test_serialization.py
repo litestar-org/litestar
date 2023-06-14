@@ -9,7 +9,7 @@ from pydantic import SecretStr
 
 from litestar import MediaType, Response
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.status_codes import HTTP_200_OK
+from litestar.serialization import get_serializer
 from tests import (
     MsgSpecStructPerson,
     Person,
@@ -46,11 +46,11 @@ class _TestEnum(enum.Enum):
     ],
 )
 def test_response_serialization_structured_types(content: Any, response_type: Any, media_type: MediaType) -> None:
-    response = Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK)
+    encoded = Response(None).render(content, media_type=media_type, enc_hook=get_serializer({}))
     if media_type == media_type.JSON:
-        value = loads(response.body)
+        value = loads(encoded)
     else:
-        value = msgspec.msgpack.decode(response.body)
+        value = msgspec.msgpack.decode(encoded)
     if isinstance(value, dict) and "enum" in value:
         assert content.__class__(**value)["enum"] == content["enum"].value
     elif isinstance(value, dict) and "secret" in value:
@@ -69,8 +69,7 @@ def test_response_serialization_structured_types(content: Any, response_type: An
     "content, response_type, media_type", [["abcdefg", str, MediaType.TEXT], ["<div/>", str, MediaType.HTML]]
 )
 def test_response_serialization_text_types(content: Any, response_type: Any, media_type: MediaType) -> None:
-    response = Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK)
-    assert response.body == content.encode("utf-8")
+    assert Response(None).render(content, media_type=media_type, enc_hook=get_serializer({})) == content.encode("utf-8")
 
 
 @pytest.mark.parametrize(
@@ -85,9 +84,10 @@ def test_response_serialization_text_types(content: Any, response_type: Any, med
 def test_response_validation_of_unknown_media_types(
     content: Any, response_type: Any, media_type: MediaType, should_raise: bool
 ) -> None:
+    response = Response(None)
     if should_raise:
         with pytest.raises(ImproperlyConfiguredException):
-            Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK)
+            response.render(content, media_type=media_type)
     else:
-        response = Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK)
-        assert response.body == (content.encode("utf-8") if not isinstance(content, bytes) else content)
+        rendered = response.render(content, media_type=media_type)
+        assert rendered == (content.encode("utf-8") if not isinstance(content, bytes) else content)

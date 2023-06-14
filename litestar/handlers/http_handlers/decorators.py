@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING
 from litestar.enums import HttpMethod, MediaType
 from litestar.exceptions import HTTPException, ImproperlyConfiguredException
 from litestar.openapi.spec import Operation
-from litestar.response import FileResponse
-from litestar.response_containers import File
+from litestar.response.file import ASGIFileResponse, File
 from litestar.types.builtin_types import NoneType
 from litestar.types.empty import Empty
 from litestar.utils import is_class_and_subclass
@@ -545,12 +544,12 @@ class head(HTTPRouteHandler):
         """Validate the route handler function once it is set by inspecting its return annotations."""
         super()._validate_handler_function()
 
-        # we allow here File and FileResponse because these have special setting for head responses
+        # we allow here File and File because these have special setting for head responses
         return_annotation = self.parsed_fn_signature.return_type.annotation
         if not (
             return_annotation in {NoneType, None}
             or is_class_and_subclass(return_annotation, File)
-            or is_class_and_subclass(return_annotation, FileResponse)
+            or is_class_and_subclass(return_annotation, ASGIFileResponse)
         ):
             raise ImproperlyConfiguredException("A response to a head request should not have a body")
 

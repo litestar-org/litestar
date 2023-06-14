@@ -7,7 +7,7 @@ import pytest
 from litestar import get
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
-from litestar.response_containers import Template
+from litestar.response.template import Template
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
 
@@ -46,7 +46,7 @@ def index_handler(engine_test: EngineTest, template_dir: Path) -> "HTTPRouteHand
 
     @get(path="/")
     def index_handler() -> Template:
-        return Template(name="index.html", context={"test": "yep"})
+        return Template(template_name="index.html", context={"test": "yep"})
 
     return index_handler
 
@@ -59,7 +59,7 @@ def nested_path_handler(engine_test: EngineTest, template_dir: Path) -> "HTTPRou
 
     @get(path="/nested")
     def nested_path_handler() -> Template:
-        return Template(name="nested-dir/nested.html", context={"test": "yep"})
+        return Template(template_name="nested-dir/nested.html", context={"test": "yep"})
 
     return nested_path_handler
 
@@ -88,7 +88,7 @@ def test_nested_template_directory(nested_path_handler: "HTTPRouteHandler", temp
 def test_raise_for_invalid_template_name(template_config: TemplateConfig) -> None:
     @get(path="/")
     def invalid_template_name_handler() -> Template:
-        return Template(name="invalid.html", context={"test": "yep"})
+        return Template(template_name="invalid.html", context={"test": "yep"})
 
     with create_test_client(route_handlers=[invalid_template_name_handler], template_config=template_config) as client:
         response = client.request("GET", "/")
@@ -101,7 +101,7 @@ def test_no_context(template_dir: Path, template_config: TemplateConfig) -> None
 
     @get(path="/")
     def index() -> Template:
-        return Template(name="index.html")
+        return Template(template_name="index.html")
 
     with create_test_client(route_handlers=[index], template_config=template_config) as client:
         index_response = client.request("GET", "/")

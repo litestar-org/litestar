@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, AsyncIterator, Iterator
 import anyio
 
 from litestar.background_tasks import BackgroundTask
-from litestar.response import StreamingResponse
+from litestar.response.streaming import ASGIStreamingResponse
 from litestar.testing import TestClient
 
 if TYPE_CHECKING:
@@ -17,14 +17,14 @@ if TYPE_CHECKING:
 
 
 def test_streaming_response_unknown_size() -> None:
-    app = StreamingResponse(content=iter(["hello", "world"]))
+    app = ASGIStreamingResponse(iterator=iter(["hello", "world"]))
     client = TestClient(app)
     response = client.get("/")
     assert "content-length" not in response.headers
 
 
 def test_streaming_response_known_size() -> None:
-    app = StreamingResponse(content=iter(["hello", "world"]), headers={"content-length": "10"})
+    app = ASGIStreamingResponse(iterator=iter(["hello", "world"]), headers={"content-length": "10"})
     client = TestClient(app)
     response = client.get("/")
     assert response.headers["content-length"] == "10"
@@ -53,7 +53,7 @@ async def test_streaming_response_stops_if_receiving_http_disconnect_with_async_
             await anyio.sleep(0)
             yield b"chunk "
 
-    response = StreamingResponse(content=stream_indefinitely())
+    response = ASGIStreamingResponse(iterator=stream_indefinitely())
 
     with anyio.move_on_after(1) as cancel_scope:
         await response({}, receive_disconnect, send)  # type: ignore
@@ -77,7 +77,7 @@ async def test_streaming_response_stops_if_receiving_http_disconnect_with_sync_i
             if streamed >= 16:
                 disconnected.set()
 
-    response = StreamingResponse(content=cycle(["1", "2", "3"]))
+    response = ASGIStreamingResponse(iterator=cycle(["1", "2", "3"]))
 
     with anyio.move_on_after(1) as cancel_scope:
         await response({}, receive_disconnect, send)  # type: ignore
@@ -102,7 +102,7 @@ def test_streaming_response() -> None:
 
         cleanup_task = BackgroundTask(numbers_for_cleanup, start=6, stop=9)
         generator = numbers(1, 5)
-        response = StreamingResponse(generator, media_type="text/plain", background=cleanup_task)
+        response = ASGIStreamingResponse(iterator=generator, media_type="text/plain", background=cleanup_task)
         await response(scope, receive, send)
 
     assert not filled_by_bg_task
@@ -127,7 +127,7 @@ def test_streaming_response_custom_iterator() -> None:
                 self._called += 1
                 return str(self._called)
 
-        response = StreamingResponse(CustomAsyncIterator(), media_type="text/plain")
+        response = ASGIStreamingResponse(iterator=CustomAsyncIterator(), media_type="text/plain")
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -142,7 +142,7 @@ def test_streaming_response_custom_iterable() -> None:
                 for i in range(5):
                     yield str(i + 1)
 
-        response = StreamingResponse(CustomAsyncIterable(), media_type="text/plain")
+        response = ASGIStreamingResponse(iterator=CustomAsyncIterable(), media_type="text/plain")
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -159,7 +159,7 @@ def test_sync_streaming_response() -> None:
                     yield ", "
 
         generator = numbers(1, 5)
-        response = StreamingResponse(generator, media_type="text/plain")
+        response = ASGIStreamingResponse(iterator=generator, media_type="text/plain")
         await response(scope, receive, send)
 
     client = TestClient(app)

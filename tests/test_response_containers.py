@@ -1,5 +1,4 @@
 import os
-from inspect import iscoroutine
 from os import stat
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
@@ -11,9 +10,10 @@ from litestar import get
 from litestar.datastructures import ETag
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem
-from litestar.response_containers import File, Redirect
+from litestar.response.file import File
+from litestar.response.redirect import Redirect
 from litestar.status_codes import HTTP_200_OK
-from litestar.testing import RequestFactory, create_test_client
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
     from litestar.types import FileSystemProtocol
@@ -32,7 +32,7 @@ def test_file_with_different_file_systems(tmpdir: "Path", file_system: "FileSyst
             file_system=file_system,
         )
 
-    with create_test_client(handler) as client:
+    with create_test_client(handler, debug=True) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == "content"
@@ -101,20 +101,19 @@ async def test_file_with_symbolic_link(tmpdir: "Path") -> None:
 
 
 async def test_file_sets_etag_correctly(tmpdir: "Path") -> None:
-    request = RequestFactory().get()
-
     path = tmpdir / "file.txt"
     content = b"<file content>"
     Path(path).write_bytes(content)
-
     etag = ETag(value="special")
-    file_container = File(path=path, etag=etag)
-    response = file_container.to_response(
-        status_code=HTTP_200_OK, media_type=None, headers={}, app=request.app, request=request
-    )
-    if iscoroutine(response.file_info):
-        await response.file_info
-    assert response.etag == etag
+
+    @get("/")
+    def handler() -> File:
+        return File(path=path, etag=etag)
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers["etag"] == '"special"'
 
 
 def test_file_system_validation(tmpdir: "Path") -> None:
@@ -129,7 +128,7 @@ def test_file_system_validation(tmpdir: "Path") -> None:
         File(
             filename="text.txt",
             path=path,
-            file_system=FSWithoutOpen(),
+            file_system=FSWithoutOpen(),  # type:ignore[arg-type]
         )
 
     class FSWithoutInfo:
@@ -140,7 +139,7 @@ def test_file_system_validation(tmpdir: "Path") -> None:
         File(
             filename="text.txt",
             path=path,
-            file_system=FSWithoutInfo(),
+            file_system=FSWithoutInfo(),  # type:ignore[arg-type]
         )
 
     class ImplementedFS:
@@ -153,7 +152,7 @@ def test_file_system_validation(tmpdir: "Path") -> None:
     assert File(
         filename="text.txt",
         path=path,
-        file_system=ImplementedFS(),
+        file_system=ImplementedFS(),  # type:ignore[arg-type]
     )
 
 
@@ -172,7 +171,7 @@ def test_redirect_dynamic_status_code(status_code: Optional[int], expected_statu
     def handler() -> Redirect:
         return Redirect(path="/something-else", status_code=status_code)  # type: ignore[arg-type]
 
-    with create_test_client([handler]) as client:
+    with create_test_client([handler], debug=True) as client:
         res = client.get("/", follow_redirects=False)
         assert res.status_code == expected_status_code
 

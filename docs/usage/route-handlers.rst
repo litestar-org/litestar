@@ -366,7 +366,6 @@ Limitations of ASGI route handlers
 
 In difference to the other route handlers, the ``asgi`` route handler accepts only 3 kwargs that **must** be defined:
 
-
 * ``scope`` , a mapping of values describing the ASGI connection. It always includes a ``type`` key, with the values being
   either ``http`` or ``websocket`` , and a ``path`` key. If the type is ``http`` , the scope dictionary will also include
   a ``method`` key with the value being one of ``DELETE, GET, POST, PATCH, PUT, HEAD``.
@@ -380,8 +379,6 @@ function is not an async function, an informative exception will be raised.
 
 See the :class:`API Reference <.handlers.asgi_handlers.ASGIRouteHandler>` for full details on the ``asgi`` decorator and the
 kwargs it accepts.
-
-
 
 Route handler indexing
 ----------------------
@@ -397,7 +394,7 @@ it can be used to build a URL path for that handler:
 
    from litestar import Litestar, Request, get
    from litestar.exceptions import NotFoundException
-   from litestar.response_containers import Redirect
+   from litestar.response import Redirect
 
 
    @get("/abc", name="one")
@@ -425,13 +422,13 @@ it can be used to build a URL path for that handler:
        # do something with the handler index below, e.g. send a redirect response to the handler, or access
        # handler.opt and some values stored there etc.
 
-       return Redirect(path=handler_index[0])
+       return Redirect(url=handler_index[0])
 
 
    @get("/redirect/{param_value:int}", name="five")
    def handler_five(request: Request, param_value: int) -> Redirect:
        path = request.app.route_reverse("three", param=param_value)
-       return Redirect(path=path)
+       return Redirect(url=path)
 
 
    app = Litestar(route_handlers=[handler_one, handler_two, handler_three])

@@ -1,4 +1,3 @@
-import json
 from typing import TYPE_CHECKING, Any, Optional
 
 import pytest
@@ -40,7 +39,7 @@ def test_default_handle_http_exception_handling_extra_object() -> None:
         HTTPException(detail="litestar_exception", extra={"key": "value"}),
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {
+    assert response.content == {
         "detail": "litestar_exception",
         "extra": {"key": "value"},
         "status_code": 500,
@@ -53,7 +52,7 @@ def test_default_handle_http_exception_handling_extra_none() -> None:
         HTTPException(detail="litestar_exception"),
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {"detail": "litestar_exception", "status_code": 500}
+    assert response.content == {"detail": "litestar_exception", "status_code": 500}
 
 
 def test_default_handle_litestar_http_exception_handling() -> None:
@@ -62,7 +61,7 @@ def test_default_handle_litestar_http_exception_handling() -> None:
         HTTPException(detail="litestar_exception"),
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {"detail": "litestar_exception", "status_code": 500}
+    assert response.content == {"detail": "litestar_exception", "status_code": 500}
 
 
 def test_default_handle_litestar_http_exception_extra_list() -> None:
@@ -71,7 +70,7 @@ def test_default_handle_litestar_http_exception_extra_list() -> None:
         HTTPException(detail="litestar_exception", extra=["extra-1", "extra-2"]),
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {
+    assert response.content == {
         "detail": "litestar_exception",
         "extra": ["extra-1", "extra-2"],
         "status_code": 500,
@@ -84,7 +83,7 @@ def test_default_handle_starlette_http_exception_handling() -> None:
         StarletteHTTPException(detail="litestar_exception", status_code=HTTP_500_INTERNAL_SERVER_ERROR),
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {
+    assert response.content == {
         "detail": "litestar_exception",
         "status_code": 500,
     }
@@ -95,7 +94,7 @@ def test_default_handle_python_http_exception_handling() -> None:
         Request(scope={"type": "http", "method": "GET"}), AttributeError("oops")  # type: ignore
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {
+    assert response.content == {
         "detail": repr(AttributeError("oops")),
         "status_code": HTTP_500_INTERNAL_SERVER_ERROR,
     }

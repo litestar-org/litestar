@@ -3,10 +3,10 @@ from typing import Dict
 
 import pytest
 
-from litestar import HttpMethod, Litestar, MediaType, WebSocket, delete, get, route
+from litestar import HttpMethod, Litestar, WebSocket, delete, get, route
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 from litestar.handlers.http_handlers import HTTPRouteHandler
-from litestar.response_containers import File, Redirect
+from litestar.response import File, Redirect
 from litestar.status_codes import (
     HTTP_100_CONTINUE,
     HTTP_200_OK,
@@ -81,7 +81,7 @@ async def test_function_validation() -> None:
 
     file_method.on_registration(Litestar())
 
-    assert file_method.media_type == MediaType.TEXT
+    assert not file_method.media_type
 
     with pytest.raises(ImproperlyConfiguredException):
 

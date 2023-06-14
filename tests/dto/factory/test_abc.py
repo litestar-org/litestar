@@ -180,5 +180,5 @@ def test_create_openapi_schema(monkeypatch: MonkeyPatch) -> None:
     dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Model)))
 
     with patch("litestar.dto.factory._backends.abc.AbstractDTOBackend.create_openapi_schema") as mock:
-        dto_type.create_openapi_schema("data", "handler", True, {})
-        mock.assert_called_once_with(True, {})
+        dto_type.create_openapi_schema("data", "handler", True, {}, True)
+        mock.assert_called_once_with(True, {}, True)

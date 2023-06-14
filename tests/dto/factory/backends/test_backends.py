@@ -163,7 +163,7 @@ def test_backend_populate_data_from_builtins(
 def test_backend_create_openapi_schema(backend_type: type[AbstractDTOBackend], backend_context: BackendContext) -> None:
     backend = backend_type(backend_context)
     schemas: dict[str, Any] = {}
-    ref = backend.create_openapi_schema(False, schemas)
+    ref = backend.create_openapi_schema(False, schemas, True)
     assert isinstance(ref, Reference)
     schema = schemas[ref.value]
     assert schema.properties["a"].type == "integer"

@@ -8,6 +8,7 @@ from litestar.dto.interface import ConnectionContext
 from litestar.enums import HttpMethod
 from litestar.exceptions import ValidationException
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from litestar.utils import encode_headers
 
 if TYPE_CHECKING:
     from litestar.app import Litestar
@@ -16,7 +17,6 @@ if TYPE_CHECKING:
     from litestar.datastructures import Cookie, ResponseHeader
     from litestar.dto.interface import DTOInterface
     from litestar.response import Response
-    from litestar.response_containers import ResponseContainer
     from litestar.types import (
         AfterRequestHookHandler,
         ASGIApp,
@@ -29,9 +29,7 @@ if TYPE_CHECKING:
 __all__ = (
     "create_data_handler",
     "create_generic_asgi_response_handler",
-    "create_response_container_handler",
     "create_response_handler",
-    "filter_cookies",
     "get_default_status_code",
     "normalize_headers",
     "normalize_http_method",
@@ -64,31 +62,13 @@ def create_data_handler(
         A handler function.
 
     """
-    normalized_headers = [
-        (name.lower().encode("latin-1"), value.encode("latin-1")) for name, value in normalize_headers(headers).items()
-    ]
-    cookie_headers = [cookie.to_encoded_header() for cookie in cookies if not cookie.documentation_only]
-    raw_headers = [*normalized_headers, *cookie_headers]
-
-    async def create_response(data: Any) -> ASGIApp:
-        response = response_class(
-            background=background,
-            content=data,
-            media_type=media_type,
-            status_code=status_code,
-            type_encoders=type_encoders,
-        )
-        response.raw_headers = raw_headers
-
-        if after_request:
-            return await after_request(response)  # type: ignore
-
-        return response
+    raw_headers = encode_headers(normalize_headers(headers).items(), cookies, [])
 
     async def handler(
         data: Any,
         return_dto: type[DTOInterface] | None,
         request: Request[Any, Any, Any],
+        app: Litestar,
         **kwargs: Any,
     ) -> ASGIApp:
         if isawaitable(data):
@@ -98,22 +78,20 @@ def create_data_handler(
             ctx = ConnectionContext.from_connection(request)
             data = return_dto(ctx).data_to_encodable_type(data)
 
-        return await create_response(data=data)
+        response = response_class(
+            background=background,
+            content=data,
+            media_type=media_type,
+            status_code=status_code,
+            type_encoders=type_encoders,
+        )
+
+        if after_request:
+            response = await after_request(response)  # type: ignore[arg-type,misc]
+
+        return response.to_asgi_response(app=app, request=request, encoded_headers=raw_headers)
 
     return handler
-
-
-def filter_cookies(local_cookies: frozenset[Cookie], layered_cookies: frozenset[Cookie]) -> list[Cookie]:
-    """Given two sets of cookies, return a unique list of cookies, that are not marked as documentation_only.
-
-    Args:
-        local_cookies: Cookies returned from the local scope.
-        layered_cookies: Cookies returned from the layers.
-
-    Returns:
-        A unified list of cookies
-    """
-    return [cookie for cookie in {*local_cookies, *layered_cookies} if not cookie.documentation_only]
 
 
 def create_generic_asgi_response_handler(
@@ -157,58 +135,47 @@ def normalize_headers(headers: frozenset[ResponseHeader]) -> dict[str, str]:
     }
 
 
-def create_response_container_handler(
+def create_response_handler(
     after_request: AfterRequestHookHandler | None,
+    background: BackgroundTask | BackgroundTasks | None,
     cookies: frozenset[Cookie],
     headers: frozenset[ResponseHeader],
     media_type: str,
     status_code: int,
-) -> AsyncAnyCallable:
-    """Create a handler function for ResponseContainers.
-
-    Args:
-        after_request: An after request handler.
-        cookies: A set of pre-defined cookies.
-        headers: A set of response headers.
-        media_type: The response media type.
-        status_code: The response status code.
-
-    Returns:
-        A handler function.
-    """
-    normalized_headers = normalize_headers(headers)
-
-    async def handler(data: ResponseContainer, app: Litestar, request: Request, **kwargs: Any) -> ASGIApp:
-        response = data.to_response(
-            app=app,
-            headers={**normalized_headers, **data.headers},
-            status_code=status_code,
-            media_type=data.media_type or media_type,
-            request=request,
-        )
-        response.cookies = filter_cookies(frozenset(data.cookies), cookies)
-        return await after_request(response) if after_request else response  # type: ignore
-
-    return handler
-
-
-def create_response_handler(
-    after_request: AfterRequestHookHandler | None,
-    cookies: frozenset[Cookie],
+    type_encoders: TypeEncodersMap | None,
 ) -> AsyncAnyCallable:
     """Create a handler function for Litestar Responses.
 
     Args:
         after_request: An after request handler.
+        background: A background task or background tasks.
         cookies: A set of pre-defined cookies.
+        headers: A set of response headers.
+        media_type: The response media type.
+        status_code: The response status code.
+        type_encoders: A mapping of types to encoder functions.
 
     Returns:
         A handler function.
     """
 
-    async def handler(data: Response, **kwargs: Any) -> ASGIApp:
-        data.cookies = filter_cookies(frozenset(data.cookies), cookies)
-        return await after_request(data) if after_request else data  # type: ignore
+    normalized_headers = normalize_headers(headers)
+    cookie_list = list(cookies)
+
+    async def handler(
+        data: Response, app: Litestar, request: Request, **kwargs: Any  # kwargs is for return dto
+    ) -> ASGIApp:
+        response = await after_request(data) if after_request else data  # type:ignore[arg-type,misc]
+        return response.to_asgi_response(  # type: ignore
+            app=app,
+            background=background,
+            cookies=cookie_list,
+            headers=normalized_headers,
+            media_type=media_type,
+            request=request,
+            status_code=status_code,
+            type_encoders=type_encoders,
+        )
 
     return handler
 

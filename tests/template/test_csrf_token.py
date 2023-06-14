@@ -9,7 +9,7 @@ from litestar.config.csrf import CSRFConfig
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
 from litestar.middleware.csrf import generate_csrf_token
-from litestar.response_containers import Template
+from litestar.response.template import Template
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
 from litestar.types import Scope
@@ -27,7 +27,7 @@ def test_csrf_token(engine: Any, template: str, template_dir: Path) -> None:
 
     @get(path="/", media_type=MediaType.HTML)
     def handler() -> Template:
-        return Template(name="abc.html")
+        return Template(template_name="abc.html")
 
     csrf_config = CSRFConfig(secret="yaba daba do")
 
@@ -57,7 +57,7 @@ def test_csrf_input(engine: Any, template: str, template_dir: Path) -> None:
     @get(path="/", media_type=MediaType.HTML)
     def handler(scope: Scope) -> Template:
         token["value"] = scope.get("_csrf_token", "")  # type: ignore
-        return Template(name="abc.html")
+        return Template(template_name="abc.html")
 
     csrf_config = CSRFConfig(secret="yaba daba do")
 

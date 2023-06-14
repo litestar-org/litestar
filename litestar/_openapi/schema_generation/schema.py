@@ -17,6 +17,7 @@ from typing import (
     Hashable,
     Iterable,
     List,
+    Literal,
     Mapping,
     MutableMapping,
     MutableSequence,
@@ -78,6 +79,7 @@ if TYPE_CHECKING:
             ConstrainedSet,
             ConstrainedStr,
         )
+        from pydantic.fields import ModelField
     except ImportError:
         BaseModel = Any  # type: ignore
         ConstrainedBytes = Any  # type: ignore
@@ -89,6 +91,7 @@ if TYPE_CHECKING:
         ConstrainedList = Any  # type: ignore
         ConstrainedSet = Any  # type: ignore
         ConstrainedStr = Any  # type: ignore
+        ModelField = Any  # type: ignore
 
     try:
         from attrs import AttrsInstance
@@ -297,6 +300,22 @@ def create_enum_schema(annotation: EnumMeta) -> Schema:
     return Schema(type=openapi_type, enum=enum_values)
 
 
+def iter_flat_literal_args(annotation: Any) -> Iterable[Any]:
+    """Iterate over the flattened arguments of a Literal.
+
+    Args:
+        annotation: An Literal annotation.
+
+    Yields:
+        The flattened arguments of the Literal.
+    """
+    for arg in get_args(annotation):
+        if get_origin_or_inner_type(arg) is Literal:
+            yield from iter_flat_literal_args(arg)
+        else:
+            yield arg
+
+
 def create_literal_schema(annotation: Any) -> Schema:
     """Create a schema instance for a Literal.
 
@@ -306,7 +325,7 @@ def create_literal_schema(annotation: Any) -> Schema:
     Returns:
         A schema instance.
     """
-    args = get_args(annotation)
+    args = tuple(iter_flat_literal_args(annotation))
     schema = copy(TYPE_MAP[type(args[0])])
     if len(args) > 1:
         schema.enum = args
@@ -339,6 +358,7 @@ def create_schema_for_optional_field(
     generate_examples: bool,
     plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
+    prefer_alias: bool,
 ) -> Schema:
     """Create a Schema for an optional SignatureField.
 
@@ -347,6 +367,7 @@ def create_schema_for_optional_field(
         generate_examples: Whether to generate examples if none are given.
         plugins: A list of plugins.
         schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
+        prefer_alias: Whether to prefer the alias name for the schema.
 
     Returns:
         A schema instance.
@@ -360,6 +381,7 @@ def create_schema_for_optional_field(
         generate_examples=generate_examples,
         plugins=plugins,
         schemas=schemas,
+        prefer_alias=prefer_alias,
     )
 
     if isinstance(schema_or_reference, Schema) and isinstance(schema_or_reference.one_of, list):
@@ -380,6 +402,7 @@ def create_schema_for_union_field(
     generate_examples: bool,
     plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
+    prefer_alias: bool,
 ) -> Schema:
     """Create a Schema for a union SignatureField.
 
@@ -388,6 +411,7 @@ def create_schema_for_union_field(
         generate_examples: Whether to generate examples if none are given.
         plugins: A list of plugins.
         schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
+        prefer_alias: Whether to prefer the alias name for the schema.
 
     Returns:
         A schema instance.
@@ -395,7 +419,13 @@ def create_schema_for_union_field(
     return Schema(
         one_of=sort_schemas_and_references(
             [
-                create_schema(field=sub_field, generate_examples=generate_examples, plugins=plugins, schemas=schemas)
+                create_schema(
+                    field=sub_field,
+                    generate_examples=generate_examples,
+                    plugins=plugins,
+                    schemas=schemas,
+                    prefer_alias=prefer_alias,
+                )
                 for sub_field in field.children or []
             ]
         )
@@ -407,6 +437,7 @@ def create_schema_for_object_type(
     generate_examples: bool,
     plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
+    prefer_alias: bool,
 ) -> Schema:
     """Create schema for object types (dict, Mapping, list, Sequence etc.) types.
 
@@ -415,16 +446,36 @@ def create_schema_for_object_type(
         generate_examples: Whether to generate examples if none are given.
         plugins: A list of plugins.
         schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
+        prefer_alias: Whether to prefer the alias name for the schema.
 
     Returns:
         A schema instance.
     """
     if field.is_mapping:
-        return Schema(type=OpenAPIType.OBJECT)
+        return Schema(
+            type=OpenAPIType.OBJECT,
+            additional_properties=(
+                create_schema(
+                    field=field.children[1],
+                    generate_examples=generate_examples,
+                    plugins=plugins,
+                    schemas=schemas,
+                    prefer_alias=prefer_alias,
+                )
+                if field.children and len(field.children) == 2
+                else None
+            ),
+        )
 
     if field.is_non_string_sequence or field.is_non_string_iterable:
         items = [
-            create_schema(field=sub_field, generate_examples=generate_examples, plugins=plugins, schemas=schemas)
+            create_schema(
+                field=sub_field,
+                generate_examples=generate_examples,
+                plugins=plugins,
+                schemas=schemas,
+                prefer_alias=prefer_alias,
+            )
             for sub_field in (field.children or ())
         ]
 
@@ -449,6 +500,7 @@ def create_schema_for_builtin_generics(
     generate_examples: bool,
     plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
+    prefer_alias: bool,
 ) -> Schema:
     """Handle builtin generic types.
 
@@ -457,6 +509,7 @@ def create_schema_for_builtin_generics(
         generate_examples: Whether to generate examples if none are given.
         plugins: A list of plugins.
         schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
+        prefer_alias: Whether to prefer the alias name for the schema.
 
     Returns:
         A schema instance.
@@ -474,6 +527,7 @@ def create_schema_for_builtin_generics(
                         generate_examples=generate_examples,
                         plugins=plugins,
                         schemas=schemas,
+                        prefer_alias=prefer_alias,
                     ),
                 ),
                 "page_size": Schema(type=OpenAPIType.INTEGER, description="Number of items per page."),
@@ -493,6 +547,7 @@ def create_schema_for_builtin_generics(
                         generate_examples=generate_examples,
                         plugins=plugins,
                         schemas=schemas,
+                        prefer_alias=prefer_alias,
                     ),
                 ),
                 "limit": Schema(type=OpenAPIType.INTEGER, description="Maximal number of items to send."),
@@ -502,7 +557,11 @@ def create_schema_for_builtin_generics(
         )
 
     cursor_schema = create_schema(
-        field=field.children[0], generate_examples=False, plugins=plugins, schemas=schemas  # type: ignore[index]
+        field=field.children[0],  # type: ignore[index]
+        generate_examples=False,
+        plugins=plugins,
+        schemas=schemas,
+        prefer_alias=prefer_alias,
     )
     cursor_schema.description = "Unique ID, designating the last identifier in the given data set. This value can be used to request the 'next' batch of records."
 
@@ -516,6 +575,7 @@ def create_schema_for_builtin_generics(
                     generate_examples=generate_examples,
                     plugins=plugins,
                     schemas=schemas,
+                    prefer_alias=prefer_alias,
                 ),
             ),
             "cursor": cursor_schema,
@@ -529,6 +589,7 @@ def create_schema_for_pydantic_model(
     generate_examples: bool,
     plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
+    prefer_alias: bool,
 ) -> Schema:
     """Create a schema object for a given pydantic model class.
 
@@ -537,6 +598,7 @@ def create_schema_for_pydantic_model(
         generate_examples: Whether to generate examples if none are given.
         plugins: A list of plugins.
         schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
+        prefer_alias: Whether to prefer the alias over the field name.
 
     Returns:
         A schema instance.
@@ -549,16 +611,20 @@ def create_schema_for_pydantic_model(
         getattr(model_config, "example", None) if not isinstance(model_config, dict) else model_config.get("example")
     )
 
+    def get_name(f: ModelField) -> str:
+        return (f.alias or f.name) if prefer_alias else f.name
+
     return Schema(
-        required=sorted([field.alias or field.name for field in field_type.__fields__.values() if field.required]),
+        required=sorted(get_name(field) for field in field_type.__fields__.values() if field.required),
         properties={
-            (f.alias or f.name): create_schema(
+            get_name(f): create_schema(
                 field=SignatureField.create(
-                    field_type=field_type_hints[f.name], name=f.alias or f.name, default_value=f.field_info
+                    field_type=field_type_hints[f.name], name=get_name(f), default_value=f.field_info
                 ),
                 generate_examples=generate_examples,
                 plugins=plugins,
                 schemas=schemas,
+                prefer_alias=prefer_alias,
             )
             for f in field_type.__fields__.values()
         },
@@ -573,6 +639,7 @@ def create_schema_for_attrs_class(
     generate_examples: bool,
     plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
+    prefer_alias: bool,
 ) -> Schema:
     """Create a schema object for a given attrs class.
 
@@ -581,6 +648,7 @@ def create_schema_for_attrs_class(
         generate_examples: Whether to generate examples if none are given.
         plugins: A list of plugins.
         schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
+        prefer_alias: Whether to prefer the alias name for the schema.
 
     Returns:
         A schema instance.
@@ -603,6 +671,7 @@ def create_schema_for_attrs_class(
                 generate_examples=generate_examples,
                 plugins=plugins,
                 schemas=schemas,
+                prefer_alias=prefer_alias,
             )
             for k, v in field_type_hints.items()
         },
@@ -616,6 +685,7 @@ def create_schema_for_struct_class(
     generate_examples: bool,
     plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
+    prefer_alias: bool,
 ) -> Schema:
     """Create a schema object for a given msgspec.Struct class.
 
@@ -624,6 +694,7 @@ def create_schema_for_struct_class(
         generate_examples: Whether to generate examples if none are given.
         plugins: A list of plugins.
         schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
+        prefer_alias: Whether to prefer the alias name for the schema.
 
     Returns:
         A schema instance.
@@ -643,6 +714,7 @@ def create_schema_for_struct_class(
                 generate_examples=generate_examples,
                 plugins=plugins,
                 schemas=schemas,
+                prefer_alias=prefer_alias,
             )
             for field in msgspec_struct_fields(field_type)
         },
@@ -656,6 +728,7 @@ def create_schema_for_dataclass(
     generate_examples: bool,
     plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
+    prefer_alias: bool,
 ) -> Schema:
     """Create a schema object for a given dataclass class.
 
@@ -664,6 +737,7 @@ def create_schema_for_dataclass(
         generate_examples: Whether to generate examples if none are given.
         plugins: A list of plugins.
         schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
+        prefer_alias: Whether to prefer the alias name for the schema.
 
     Returns:
         A schema instance.
@@ -687,6 +761,7 @@ def create_schema_for_dataclass(
                 generate_examples=generate_examples,
                 plugins=plugins,
                 schemas=schemas,
+                prefer_alias=prefer_alias,
             )
             for k, v in field_type_hints.items()
         },
@@ -700,6 +775,7 @@ def create_schema_for_typed_dict(
     generate_examples: bool,
     plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
+    prefer_alias: bool,
 ) -> Schema:
     """Create a schema object for a given typed dict.
 
@@ -708,6 +784,7 @@ def create_schema_for_typed_dict(
         generate_examples: Whether to generate examples if none are given.
         plugins: A list of plugins.
         schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
+        prefer_alias: Whether to prefer the alias name for the schema.
 
     Returns:
         A schema instance.
@@ -720,6 +797,7 @@ def create_schema_for_typed_dict(
                 generate_examples=generate_examples,
                 plugins=plugins,
                 schemas=schemas,
+                prefer_alias=prefer_alias,
             )
             for k, v in get_type_hints(field_type).items()
         },
@@ -733,6 +811,7 @@ def create_schema_for_plugin(
     generate_examples: bool,
     plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
+    prefer_alias: bool,
     plugin: OpenAPISchemaPluginProtocol,
 ) -> Schema | Reference:
     """Create a schema using a plugin.
@@ -742,6 +821,7 @@ def create_schema_for_plugin(
         generate_examples: Whether to generate examples if none are given.
         plugins: A list of plugins.
         schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
+        prefer_alias: Whether to prefer the alias name for the schema.
         plugin: A plugin for the field type.
 
     Returns:
@@ -761,6 +841,7 @@ def create_schema_for_plugin(
             generate_examples=generate_examples,
             plugins=plugins,
             schemas=schemas,
+            prefer_alias=prefer_alias,
         )
     return schema  # pragma: no cover
 
@@ -803,6 +884,7 @@ def create_schema(
     generate_examples: bool,
     plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
+    prefer_alias: bool,
 ) -> Schema | Reference:
     """Create a Schema for a given SignatureField.
 
@@ -811,43 +893,72 @@ def create_schema(
         generate_examples: Whether to generate examples if none are given.
         plugins: A list of plugins.
         schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
+        prefer_alias: Whether to prefer the alias name for the schema.
 
     Returns:
         A schema instance.
     """
     if field.is_optional:
         result: Schema | Reference = create_schema_for_optional_field(
-            field=field, generate_examples=generate_examples, plugins=plugins, schemas=schemas
+            field=field,
+            generate_examples=generate_examples,
+            plugins=plugins,
+            schemas=schemas,
+            prefer_alias=prefer_alias,
         )
 
     elif field.is_union:
         result = create_schema_for_union_field(
-            field=field, generate_examples=generate_examples, plugins=plugins, schemas=schemas
+            field=field,
+            generate_examples=generate_examples,
+            plugins=plugins,
+            schemas=schemas,
+            prefer_alias=prefer_alias,
         )
 
     elif is_pydantic_model_class(annotation=field.field_type):
         result = create_schema_for_pydantic_model(
-            field_type=field.field_type, generate_examples=generate_examples, plugins=plugins, schemas=schemas
+            field_type=field.field_type,
+            generate_examples=generate_examples,
+            plugins=plugins,
+            schemas=schemas,
+            prefer_alias=prefer_alias,
         )
 
     elif is_attrs_class(annotation=field.field_type):
         result = create_schema_for_attrs_class(
-            field_type=field.field_type, generate_examples=generate_examples, plugins=plugins, schemas=schemas
+            field_type=field.field_type,
+            generate_examples=generate_examples,
+            plugins=plugins,
+            schemas=schemas,
+            prefer_alias=prefer_alias,
         )
 
     elif is_struct_class(annotation=field.field_type):
         result = create_schema_for_struct_class(
-            field_type=field.field_type, generate_examples=generate_examples, plugins=plugins, schemas=schemas
+            field_type=field.field_type,
+            generate_examples=generate_examples,
+            plugins=plugins,
+            schemas=schemas,
+            prefer_alias=prefer_alias,
         )
 
     elif is_dataclass_class(annotation=field.field_type):
         result = create_schema_for_dataclass(
-            field_type=field.field_type, generate_examples=generate_examples, plugins=plugins, schemas=schemas
+            field_type=field.field_type,
+            generate_examples=generate_examples,
+            plugins=plugins,
+            schemas=schemas,
+            prefer_alias=prefer_alias,
         )
 
     elif is_typed_dict(annotation=field.field_type):
         result = create_schema_for_typed_dict(
-            field_type=field.field_type, generate_examples=generate_examples, plugins=plugins, schemas=schemas
+            field_type=field.field_type,
+            generate_examples=generate_examples,
+            plugins=plugins,
+            schemas=schemas,
+            prefer_alias=prefer_alias,
         )
 
     elif plugins_for_annotation := [plugin for plugin in plugins if plugin.is_plugin_supported_type(field.field_type)]:
@@ -856,6 +967,7 @@ def create_schema(
             generate_examples=generate_examples,
             plugins=plugins,
             schemas=schemas,
+            prefer_alias=prefer_alias,
             plugin=plugins_for_annotation[0],
         )
 
@@ -867,19 +979,28 @@ def create_schema(
             children=field.children,
             plugins=plugins,
             schemas=schemas,
+            prefer_alias=prefer_alias,
             kwargs_model=field.kwarg_model,  # type: ignore[arg-type]
         )
 
     elif field.children and not field.is_generic:
         result = create_schema_for_object_type(
-            field=field, generate_examples=generate_examples, plugins=plugins, schemas=schemas
+            field=field,
+            generate_examples=generate_examples,
+            plugins=plugins,
+            schemas=schemas,
+            prefer_alias=prefer_alias,
         )
 
     elif field.is_generic and (
         get_origin_or_inner_type(field.field_type) in (ClassicPagination, CursorPagination, OffsetPagination)
     ):
         result = create_schema_for_builtin_generics(
-            field=field, generate_examples=generate_examples, plugins=plugins, schemas=schemas
+            field=field,
+            generate_examples=generate_examples,
+            plugins=plugins,
+            schemas=schemas,
+            prefer_alias=prefer_alias,
         )
     else:
         result = create_schema_for_annotation(annotation=field.field_type) or Schema()

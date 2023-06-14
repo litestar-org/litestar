@@ -2,9 +2,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from litestar import Litestar, Response, Router, asgi, get, websocket
+from litestar import Litestar, Router, asgi, get, websocket
 from litestar.connection import WebSocket
 from litestar.exceptions import PermissionDeniedException, WebSocketDisconnect
+from litestar.response.base import ASGIResponse
 from litestar.status_codes import HTTP_200_OK, HTTP_403_FORBIDDEN
 from litestar.testing import create_test_client
 from litestar.types import Receive, Scope, Send
@@ -49,7 +50,7 @@ def test_guards_with_http_handler() -> None:
 def test_guards_with_asgi_handler() -> None:
     @asgi(path="/secret", guards=[local_guard])
     async def my_asgi_handler(scope: Scope, receive: Receive, send: Send) -> None:
-        response = Response(content={"hello": "world"})
+        response = ASGIResponse(body=b'{"hello": "world"}')
         await response(scope=scope, receive=receive, send=send)
 
     with create_test_client(guards=[app_guard], route_handlers=[my_asgi_handler]) as client:

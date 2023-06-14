@@ -213,9 +213,9 @@ example will work perfectly fine:
 
 .. attention::
 
-    In the case of the builtin :class:`TemplateResponse <litestar.response.TemplateResponse>`,
-    :class:`FileResponse <litestar.response.FileResponse>`, :class:`StreamingResponse <litestar.response.StreamingResponse>`, and
-    :class:`RedirectResponse <litestar.response.RedirectResponse>` you should use the response "response containers", otherwise
+    In the case of the builtin :class:`Template <litestar.response.Template>`,
+    :class:`File <litestar.response.File>`, :class:`Stream <litestar.response.Stream>`, and
+    :class:`Redirect <litestar.response.Redirect>` you should use the response "response containers", otherwise
     OpenAPI documentation will not be generated correctly. For more details see the respective documentation sections:
 
     - `Template responses`_
@@ -577,7 +577,7 @@ In Litestar, a redirect response looks like this:
 
    from litestar.status_codes import HTTP_307_TEMPORARY_REDIRECT
    from litestar import get
-   from litestar.response_containers import Redirect
+   from litestar.response import Redirect
 
 
    @get(path="/some-path", status_code=HTTP_307_TEMPORARY_REDIRECT)
@@ -585,20 +585,13 @@ In Litestar, a redirect response looks like this:
        # do some stuff here
        # ...
        # finally return redirect
-       return Redirect(path="/other-path")
+       return Redirect(url="/other-path")
 
 To return a redirect response you should do the following:
 
 - set an appropriate status code for the route handler (301, 302, 303, 307, 308)
-- annotate the return value of the route handler as returning ``Redirect``
-- return an instance of the ``Redirect`` class with the desired redirect path
-
-The Redirect Class
-++++++++++++++++++
-
-:class:`API Reference <.response_containers.Redirect>` is a container class used to generate redirect responses and
-their respective OpenAPI documentation.
-
+- annotate the return value of the route handler as returning :class:`Redirect <.response.Redirect>`
+- return an instance of the :class:`Redirect <.response.Redirect>` class with the desired redirect path
 
 File Responses
 --------------
@@ -609,7 +602,7 @@ File responses send a file:
 
    from pathlib import Path
    from litestar import get
-   from litestar.response_containers import File
+   from litestar.response import File
 
 
    @get(path="/file-download")
@@ -619,7 +612,7 @@ File responses send a file:
            filename="repost.pdf",
        )
 
-The :class:`File <.response_containers.File>` class expects two kwargs:
+The :class:`File <.response.File>` class expects two kwargs:
 
 
 * ``path``: path of the file to download.
@@ -629,7 +622,7 @@ The :class:`File <.response_containers.File>` class expects two kwargs:
 
 .. attention::
 
-    When a route handler's return value is annotated with :class:`File <.response_containers.File>`, the default
+    When a route handler's return value is annotated with :class:`File <.response.File>`, the default
     ``media_type`` for the route_handler is switched from :class:`MediaType.JSON <.enums.MediaType>` to
     :class:`MediaType.TEXT <.enums.MediaType>` (i.e. ``"text/plain"``). If the file being sent has an
     `IANA media type <https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types>`_, you should set it
@@ -641,7 +634,7 @@ For example:
 
    from pathlib import Path
    from litestar import get
-   from litestar.response_containers import File
+   from litestar.response import File
 
 
    @get(path="/file-download", media_type="application/pdf")
@@ -655,8 +648,8 @@ For example:
 Streaming Responses
 -------------------
 
-To return a streaming response use the :class:`Stream <.response_containers.Stream>` class. The Stream class receives a
-single required kwarg - ``iterator``:
+To return a streaming response use the :class:`Stream <.response.Stream>` class. The class
+receives a single positional arg, that must be an iterator delivering the stream:
 
 .. literalinclude:: /examples/responses/streaming_responses.py
     :language: python
@@ -664,8 +657,8 @@ single required kwarg - ``iterator``:
 
 .. note::
 
-    You can use different kinds of values of the `iterator` keyword - it can be a callable returning a sync or async
-    generator. The generator itself. A sync or async iterator class, or and instance of this class.
+    You can use different kinds of values for the iterator. It can be a callable returning a sync or async generator,
+    a generator itself, a sync or async iterator class, or an instance of a sync or async iterator class.
 
 
 
@@ -679,24 +672,21 @@ engine is in place, you can use a template response like so:
 .. code-block:: python
 
    from litestar import Request, get
-   from litestar.response_containers import Template
+   from litestar.response import Template
 
 
    @get(path="/info")
    def info(request: Request) -> Template:
-       return Template(name="info.html", context={"user": request.user})
+       return Template(template_name="info.html", context={"user": request.user})
 
-In the above example, :class:`Template <.response_containers.Template>` is passed the template name, which is a path
-like value, and a context dictionary that maps string keys into values that will be rendered in the template.
-
-
+In the above example, :class:`Template <.response.Template>` is passed the template name, which is a
+path like value, and a context dictionary that maps string keys into values that will be rendered in the template.
 
 Custom Responses
 ----------------
 
-While Litestar supports the serialization of many types by default, sometimes you
-want to return something that's not supported. In those cases it's convenient to make
-use of a custom response class.
+While Litestar supports the serialization of many types by default, sometimes you want to return something that's not
+supported. In those cases it's convenient to make use of a custom response class.
 
 The example below illustrates how to deal with :class:`MultiDict <.datastructures.MultiDict>`
 instances.
@@ -704,25 +694,21 @@ instances.
 .. literalinclude:: /examples/responses/custom_responses.py
     :language: python
 
-
 .. admonition:: Layered architecture
     :class: seealso
 
-
    Response classes are part of Litestar's layered architecture, which means you can
    set a response class on every layer of the application. If you have set a response
-   class on multiple layers, the layer closes to the route handler will take precedence.
+   class on multiple layers, the layer closest to the route handler will take precedence.
 
    You can read more about this here: :ref:`usage/the-litestar-app:layered architecture`
-
-
 
 Background Tasks
 ----------------
 
-All Litestar responses and response containers (e.g. ``File``, ``Template``, etc.) allow passing in a ``background``
-kwarg. This kwarg accepts either an instance of :class:`BackgroundTask <.background_tasks.BackgroundTask>`
-or an instance of :class:`BackgroundTasks <.background_tasks.BackgroundTasks>`, which wraps an iterable of
+All Litestar responses allow passing in a ``background`` kwarg. This kwarg accepts either an instance of
+:class:`BackgroundTask <.background_tasks.BackgroundTask>` or an instance of
+:class:`BackgroundTasks <.background_tasks.BackgroundTasks>`, which wraps an iterable of
 :class:`BackgroundTask <.background_tasks.BackgroundTask>` instances.
 
 A background task is a sync or async callable (function, method, or class that implements the :meth:`object.__call__`
@@ -733,7 +719,6 @@ Thus, in the following example the passed in background task will be executed af
 .. literalinclude:: /examples/responses/background_tasks_1.py
     :caption: Background Task Passed into Response
     :language: python
-
 
 When the ``greeter`` handler is called, the logging task will be called with any ``*args`` and ``**kwargs`` passed into
 the :class:`BackgroundTask <.background_tasks.BackgroundTask>`.
@@ -756,7 +741,6 @@ Route decorators (e.g. ``@get``, ``@post``, etc.) also allow passing in a backgr
 
     Route handler arguments cannot be passed into background tasks when they are passed into decorators.
 
-
 Executing Multiple Background Tasks
 +++++++++++++++++++++++++++++++++++
 
@@ -775,8 +759,6 @@ allows background tasks to run concurrently, using an `anyio.task_group <https:/
 .. note::
 
    Setting ``run_in_task_group`` to ``True`` will not preserve execution order.
-
-
 
 Pagination
 -----------
@@ -798,7 +780,6 @@ In classic pagination the dataset is divided into pages of a specific size and t
     :caption: Classic Pagination
     :language: python
 
-
 The data container for this pagination is called :class:`ClassicPagination <.pagination.ClassicPagination>`, which is
 what will be returned by the paginator in the above example This will also generate the corresponding OpenAPI
 documentation.
@@ -816,7 +797,6 @@ For example, given a list of 50 items, you could request ``limit=10``, ``offset=
 .. literalinclude:: /examples/pagination/using_offset_pagination.py
     :caption: Offset Pagination
     :language: python
-
 
 The data container for this pagination is
 called :class:`OffsetPagination <.pagination.OffsetPagination>`, which is what will be returned by the paginator in the
@@ -837,7 +817,6 @@ kwargs>`
     :caption: Offset Pagination With SQLAlchemy
     :language: python
 
-
 See :ref:`SQLAlchemy plugin <usage/contrib/sqlalchemy/plugins/index:Plugins>` for sqlalchemy integration.
 
 Cursor Pagination
@@ -849,7 +828,6 @@ Cursor is unique identifier within the dataset that serves as a way to point the
 .. literalinclude:: /examples/pagination/using_cursor_pagination.py
     :caption: Cursor Pagination
     :language: python
-
 
 The data container for this pagination is called :class:`CursorPagination <.pagination.CursorPagination>`, which is what
 will be returned by the paginator in the above example This will also generate the corresponding OpenAPI documentation.

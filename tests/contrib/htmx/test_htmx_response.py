@@ -251,7 +251,7 @@ def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str
     @get(path="/")
     def handler() -> HTMXTemplate:
         return HTMXTemplate(
-            name="abc.html",
+            template_name="abc.html",
             context={"request": {"scope": {"path": "nope"}}, "custom_key": "custom_value"},
             push_url="/about",
             re_swap="beforebegin",
@@ -289,7 +289,7 @@ def test_HTMXTemplate_response_no_params(engine: Any, template: str, expected: s
     @get(path="/")
     def handler() -> HTMXTemplate:
         return HTMXTemplate(
-            name="abc.html",
+            template_name="abc.html",
             context={"request": {"scope": {"path": "nope"}}},
         )
 
@@ -323,7 +323,7 @@ def test_HTMXTemplate_response_push_url_set_to_false(
     @get(path="/")
     def handler() -> HTMXTemplate:
         return HTMXTemplate(
-            name="abc.html",
+            template_name="abc.html",
             context={"request": {"scope": {"path": "nope"}}},
             push_url=False,
         )
@@ -358,7 +358,7 @@ def test_htmx_template_response_bad_trigger_params(
     @get(path="/")
     def handler() -> HTMXTemplate:
         return HTMXTemplate(
-            name="abc.html",
+            template_name="abc.html",
             context={"request": {"scope": {"path": "nope"}}},
             trigger_event="showMessage",
             params={"alert": "Confirm your Choice."},

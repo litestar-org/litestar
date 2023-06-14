@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING, Pattern
 
 from litestar.datastructures import URL, MutableScopeHeaders
 from litestar.middleware.base import AbstractMiddleware
-from litestar.response import RedirectResponse, Response
+from litestar.response.base import ASGIResponse
+from litestar.response.redirect import ASGIRedirectResponse
 from litestar.status_codes import HTTP_400_BAD_REQUEST
 
 __all__ = ("AllowedHostsMiddleware",)
@@ -74,9 +75,9 @@ class AllowedHostsMiddleware(AbstractMiddleware):
             if self.redirect_domains is not None and self.redirect_domains.fullmatch(host):
                 url = URL.from_scope(scope)
                 redirect_url = url.with_replacements(netloc="www." + url.netloc)
-                await RedirectResponse(url=str(redirect_url))(scope, receive, send)
+                redirect_response = ASGIRedirectResponse(path=str(redirect_url))
+                await redirect_response(scope, receive, send)
                 return
 
-        await Response(content={"message": "invalid host header"}, status_code=HTTP_400_BAD_REQUEST)(
-            scope, receive, send
-        )
+        response = ASGIResponse(body=b'{"message":"invalid host header"}', status_code=HTTP_400_BAD_REQUEST)
+        await response(scope, receive, send)
