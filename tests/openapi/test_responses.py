@@ -26,7 +26,7 @@ from litestar.handlers import HTTPRouteHandler
 from litestar.openapi.datastructures import ResponseSpec
 from litestar.openapi.spec import OpenAPIHeader, OpenAPIMediaType, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
-from litestar.response import FileResponse, RedirectResponse, StreamingResponse, TemplateResponse
+from litestar.response import File, Redirect, Stream, Template
 from litestar.response.base import T
 from litestar.routes import HTTPRoute
 from litestar.status_codes import (
@@ -226,8 +226,8 @@ def test_create_success_response_with_response_class() -> None:
 
 def test_create_success_response_with_stream() -> None:
     @get(path="/test", name="test")
-    def handler() -> StreamingResponse:
-        return StreamingResponse(iter([]))
+    def handler() -> Stream:
+        return Stream(iter([]))
 
     handler = get_registered_route_handler(handler, "test")
     response = create_success_response(handler, True, plugins=[], schemas={})
@@ -236,8 +236,8 @@ def test_create_success_response_with_stream() -> None:
 
 def test_create_success_response_redirect() -> None:
     @get(path="/test", status_code=HTTP_307_TEMPORARY_REDIRECT, name="test")
-    def redirect_handler() -> RedirectResponse:
-        return RedirectResponse(path="/target")
+    def redirect_handler() -> Redirect:
+        return Redirect(path="/target")
 
     handler = get_registered_route_handler(redirect_handler, "test")
 
@@ -253,8 +253,8 @@ def test_create_success_response_redirect() -> None:
 
 def test_create_success_response_file_data() -> None:
     @get(path="/test", name="test")
-    def file_handler() -> FileResponse:
-        return FileResponse(path=Path("test_responses.py"))
+    def file_handler() -> File:
+        return File(path=Path("test_responses.py"))
 
     handler = get_registered_route_handler(file_handler, "test")
 
@@ -280,8 +280,8 @@ def test_create_success_response_file_data() -> None:
 
 def test_create_success_response_template() -> None:
     @get(path="/template", name="test")
-    def template_handler() -> TemplateResponse:
-        return TemplateResponse(template_name="none")
+    def template_handler() -> Template:
+        return Template(template_name="none")
 
     handler = get_registered_route_handler(template_handler, "test")
 

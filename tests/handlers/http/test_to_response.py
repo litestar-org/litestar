@@ -15,10 +15,10 @@ from litestar.background_tasks import BackgroundTask
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import Cookie, ResponseHeader
 from litestar.response.base import ASGIResponse
-from litestar.response.file import ASGIFileResponse, FileResponse
-from litestar.response.redirect import RedirectResponse
-from litestar.response.streaming import ASGIStreamingResponse, StreamingResponse
-from litestar.response.template import TemplateResponse
+from litestar.response.file import ASGIFileResponse, File
+from litestar.response.redirect import Redirect
+from litestar.response.streaming import ASGIStreamingResponse, Stream
+from litestar.response.template import Template
 from litestar.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
 from litestar.template.config import TemplateConfig
 from litestar.testing import RequestFactory, create_test_client
@@ -155,8 +155,8 @@ async def test_to_response_returning_redirect_response(anyio_backend: str) -> No
         response_headers=[ResponseHeader(name="local-header", value="123")],
         response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
     )
-    def test_function() -> RedirectResponse:
-        return RedirectResponse(
+    def test_function() -> Redirect:
+        return Redirect(
             path="/somewhere-else",
             headers={"response-header": "abc"},
             cookies=[Cookie(key="redirect-cookie", value="xyz")],
@@ -183,8 +183,8 @@ def test_to_response_returning_redirect_response_from_redirect() -> None:
     def proxy_handler() -> Dict[str, str]:
         return {"message": "redirected by before request hook"}
 
-    def before_request_hook_handler(_: Request) -> RedirectResponse:
-        return RedirectResponse(path="/proxy", status_code=HTTP_308_PERMANENT_REDIRECT)
+    def before_request_hook_handler(_: Request) -> Redirect:
+        return Redirect(path="/proxy", status_code=HTTP_308_PERMANENT_REDIRECT)
 
     @get(path="/test", before_request=before_request_hook_handler)
     def redirect_handler() -> None:
@@ -206,8 +206,8 @@ async def test_to_response_returning_file_response(anyio_backend: str) -> None:
         response_headers=[ResponseHeader(name="local-header", value="123")],
         response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
     )
-    def test_function() -> FileResponse:
-        return FileResponse(
+    def test_function() -> File:
+        return File(
             path=current_file_path,
             filename=filename,
             headers={"response-header": "abc"},
@@ -261,8 +261,8 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool,
         response_headers=[ResponseHeader(name="local-header", value="123")],
         response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
     )
-    def test_function() -> StreamingResponse:
-        return StreamingResponse(
+    def test_function() -> Stream:
+        return Stream(
             iterator,
             headers={"response-header": "abc"},
             cookies=[Cookie(key="streaming-cookie", value="xyz")],
@@ -301,8 +301,8 @@ async def test_to_response_template_response(anyio_backend: str, tmp_path: Path)
         response_headers=[ResponseHeader(name="local-header", value="123")],
         response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
     )
-    def test_function() -> TemplateResponse:
-        return TemplateResponse(
+    def test_function() -> Template:
+        return Template(
             template_name="test.template",
             context={},
             headers={"response-header": "abc"},

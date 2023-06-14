@@ -13,7 +13,7 @@ from litestar.contrib.mako import MakoTemplateEngine
 from litestar.enums import RequestEncodingType
 from litestar.handlers import HTTPRouteHandler
 from litestar.params import Body
-from litestar.response.template import TemplateResponse
+from litestar.response.template import Template
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
@@ -177,8 +177,8 @@ def test_custom_csrf_config(get_handler: HTTPRouteHandler, post_handler: HTTPRou
 )
 def test_csrf_form_parsing(engine: Any, template: str, template_dir: Path) -> None:
     @get(path="/", media_type=MediaType.HTML)
-    def handler() -> TemplateResponse:
-        return TemplateResponse(template_name="abc.html")
+    def handler() -> Template:
+        return Template(template_name="abc.html")
 
     @post("/")
     def form_handler(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:

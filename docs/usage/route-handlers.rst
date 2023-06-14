@@ -394,7 +394,7 @@ it can be used to build a URL path for that handler:
 
    from litestar import Litestar, Request, get
    from litestar.exceptions import NotFoundException
-   from litestar.response import RedirectResponse
+   from litestar.response import Redirect
 
 
    @get("/abc", name="one")
@@ -413,7 +413,7 @@ it can be used to build a URL path for that handler:
 
 
    @get("/{handler_name:str}", name="four")
-   def handler_four(request: Request, name: str) -> RedirectResponse:
+   def handler_four(request: Request, name: str) -> Redirect:
        handler_index = request.app.get_handler_index_by_name(name)
        if not handler_index:
            raise NotFoundException(f"no handler matching the name {name} was found")
@@ -422,13 +422,13 @@ it can be used to build a URL path for that handler:
        # do something with the handler index below, e.g. send a redirect response to the handler, or access
        # handler.opt and some values stored there etc.
 
-       return RedirectResponse(url=handler_index[0])
+       return Redirect(url=handler_index[0])
 
 
    @get("/redirect/{param_value:int}", name="five")
-   def handler_five(request: Request, param_value: int) -> RedirectResponse:
+   def handler_five(request: Request, param_value: int) -> Redirect:
        path = request.app.route_reverse("three", param=param_value)
-       return RedirectResponse(url=path)
+       return Redirect(url=path)
 
 
    app = Litestar(route_handlers=[handler_one, handler_two, handler_three])

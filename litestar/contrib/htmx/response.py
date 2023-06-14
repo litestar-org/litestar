@@ -13,7 +13,7 @@ from litestar.contrib.htmx.types import (
     ReSwapMethod,
     TriggerEventType,
 )
-from litestar.response import TemplateResponse
+from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
 __all__ = (
@@ -164,7 +164,7 @@ class HXLocation(Response):
         self.headers.update(spec)
 
 
-class HTMXTemplate(TemplateResponse):
+class HTMXTemplate(Template):
     """HTMX template wrapper"""
 
     def __init__(
@@ -187,7 +187,7 @@ class HTMXTemplate(TemplateResponse):
             trigger_event: Event name to trigger.
             params: Dictionary of parameters if any required with trigger event parameter.
             after: Changes to apply after ``receive``, ``settle`` or ``swap`` event.
-            **kwargs: Additional arguments to pass to ``TemplateResponse``.
+            **kwargs: Additional arguments to pass to ``Template``.
         """
         super().__init__(**kwargs)
 

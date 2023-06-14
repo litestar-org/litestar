@@ -9,7 +9,7 @@ from litestar.enums import CompressionEncoding
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import HTTPRouteHandler
 from litestar.middleware.compression import CompressionMiddleware
-from litestar.response.streaming import StreamingResponse
+from litestar.response.streaming import Stream
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 from litestar.types.asgi_types import ASGIApp, HTTPResponseBodyEvent, HTTPResponseStartEvent, Message, Scope
@@ -61,8 +61,8 @@ def test_compression_works_for_streaming_response(
     backend: Literal["gzip", "brotli"], compression_encoding: CompressionEncoding
 ) -> None:
     @get("/streaming-response")
-    def streaming_handler() -> StreamingResponse:
-        return StreamingResponse(streaming_iter(content=b"_litestar_" * 400, count=10))
+    def streaming_handler() -> Stream:
+        return Stream(streaming_iter(content=b"_litestar_" * 400, count=10))
 
     with create_test_client(
         route_handlers=[streaming_handler], compression_config=CompressionConfig(backend=backend)

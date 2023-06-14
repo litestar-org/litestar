@@ -10,8 +10,8 @@ from litestar import get
 from litestar.datastructures import ETag
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem
-from litestar.response.file import FileResponse
-from litestar.response.redirect import RedirectResponse
+from litestar.response.file import File
+from litestar.response.redirect import Redirect
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
@@ -25,8 +25,8 @@ def test_file_with_different_file_systems(tmpdir: "Path", file_system: "FileSyst
     path.write_text("content", "utf-8")
 
     @get("/", media_type="application/octet-stream")
-    def handler() -> FileResponse:
-        return FileResponse(
+    def handler() -> File:
+        return File(
             filename="text.txt",
             path=path,
             file_system=file_system,
@@ -49,8 +49,8 @@ def test_file_with_passed_in_file_info(tmpdir: "Path") -> None:
     assert fs_info
 
     @get("/", media_type="application/octet-stream")
-    def handler() -> FileResponse:
-        return FileResponse(filename="text.txt", path=path, file_system=fs, file_info=fs_info)  # pyright: ignore
+    def handler() -> File:
+        return File(filename="text.txt", path=path, file_system=fs, file_info=fs_info)  # pyright: ignore
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -67,8 +67,8 @@ def test_file_with_passed_in_stat_result(tmpdir: "Path") -> None:
     stat_result = stat(path)
 
     @get("/", media_type="application/octet-stream")
-    def handler() -> FileResponse:
-        return FileResponse(filename="text.txt", path=path, file_system=fs, stat_result=stat_result)
+    def handler() -> File:
+        return File(filename="text.txt", path=path, file_system=fs, stat_result=stat_result)
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -90,8 +90,8 @@ async def test_file_with_symbolic_link(tmpdir: "Path") -> None:
     assert file_info["islink"]
 
     @get("/", media_type="application/octet-stream")
-    def handler() -> FileResponse:
-        return FileResponse(filename="alt.txt", path=linked, file_system=fs, file_info=file_info)
+    def handler() -> File:
+        return File(filename="alt.txt", path=linked, file_system=fs, file_info=file_info)
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -107,8 +107,8 @@ async def test_file_sets_etag_correctly(tmpdir: "Path") -> None:
     etag = ETag(value="special")
 
     @get("/")
-    def handler() -> FileResponse:
-        return FileResponse(path=path, etag=etag)
+    def handler() -> File:
+        return File(path=path, etag=etag)
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -125,7 +125,7 @@ def test_file_system_validation(tmpdir: "Path") -> None:
             return
 
     with pytest.raises(ImproperlyConfiguredException):
-        FileResponse(
+        File(
             filename="text.txt",
             path=path,
             file_system=FSWithoutOpen(),  # type:ignore[arg-type]
@@ -136,7 +136,7 @@ def test_file_system_validation(tmpdir: "Path") -> None:
             return
 
     with pytest.raises(ImproperlyConfiguredException):
-        FileResponse(
+        File(
             filename="text.txt",
             path=path,
             file_system=FSWithoutInfo(),  # type:ignore[arg-type]
@@ -149,7 +149,7 @@ def test_file_system_validation(tmpdir: "Path") -> None:
         def open(self) -> None:
             return
 
-    assert FileResponse(
+    assert File(
         filename="text.txt",
         path=path,
         file_system=ImplementedFS(),  # type:ignore[arg-type]
@@ -168,8 +168,8 @@ def test_file_system_validation(tmpdir: "Path") -> None:
 )
 def test_redirect_dynamic_status_code(status_code: Optional[int], expected_status_code: int) -> None:
     @get("/")
-    def handler() -> RedirectResponse:
-        return RedirectResponse(path="/something-else", status_code=status_code)  # type: ignore[arg-type]
+    def handler() -> Redirect:
+        return Redirect(path="/something-else", status_code=status_code)  # type: ignore[arg-type]
 
     with create_test_client([handler], debug=True) as client:
         res = client.get("/", follow_redirects=False)
@@ -179,8 +179,8 @@ def test_redirect_dynamic_status_code(status_code: Optional[int], expected_statu
 @pytest.mark.parametrize("handler_status_code", [301, 307, None])
 def test_redirect(handler_status_code: Optional[int]) -> None:
     @get("/", status_code=handler_status_code)
-    def handler() -> RedirectResponse:
-        return RedirectResponse(path="/something-else", status_code=301)
+    def handler() -> Redirect:
+        return Redirect(path="/something-else", status_code=301)
 
     with create_test_client([handler]) as client:
         res = client.get("/", follow_redirects=False)

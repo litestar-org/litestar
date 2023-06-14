@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 __all__ = (
     "ASGIStreamingResponse",
-    "StreamingResponse",
+    "Stream",
 )
 
 
@@ -96,7 +96,7 @@ class ASGIStreamingResponse(ASGIResponse):
             await self._listen_for_disconnect(cancel_scope=task_group.cancel_scope, receive=receive)
 
 
-class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
+class Stream(Response[StreamType[Union[str, bytes]]]):
     """An HTTP response that streams the response data as a series of ASGI ``http.response.body`` events."""
 
     __slots__ = ("iterator",)

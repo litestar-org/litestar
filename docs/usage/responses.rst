@@ -213,9 +213,9 @@ example will work perfectly fine:
 
 .. attention::
 
-    In the case of the builtin :class:`TemplateResponse <litestar.response.TemplateResponse>`,
-    :class:`FileResponse <litestar.response.FileResponse>`, :class:`StreamingResponse <litestar.response.StreamingResponse>`, and
-    :class:`RedirectResponse <litestar.response.RedirectResponse>` you should use the response "response containers", otherwise
+    In the case of the builtin :class:`Template <litestar.response.Template>`,
+    :class:`File <litestar.response.File>`, :class:`Stream <litestar.response.Stream>`, and
+    :class:`Redirect <litestar.response.Redirect>` you should use the response "response containers", otherwise
     OpenAPI documentation will not be generated correctly. For more details see the respective documentation sections:
 
     - `Template responses`_
@@ -577,21 +577,21 @@ In Litestar, a redirect response looks like this:
 
    from litestar.status_codes import HTTP_307_TEMPORARY_REDIRECT
    from litestar import get
-   from litestar.response import RedirectResponse
+   from litestar.response import Redirect
 
 
    @get(path="/some-path", status_code=HTTP_307_TEMPORARY_REDIRECT)
-   def redirect() -> RedirectResponse:
+   def redirect() -> Redirect:
        # do some stuff here
        # ...
        # finally return redirect
-       return RedirectResponse(url="/other-path")
+       return Redirect(url="/other-path")
 
 To return a redirect response you should do the following:
 
 - set an appropriate status code for the route handler (301, 302, 303, 307, 308)
-- annotate the return value of the route handler as returning :class:`RedirectResponse <.response.RedirectResponse>`
-- return an instance of the :class:`RedirectResponse <.response.RedirectResponse>` class with the desired redirect path
+- annotate the return value of the route handler as returning :class:`Redirect <.response.Redirect>`
+- return an instance of the :class:`Redirect <.response.Redirect>` class with the desired redirect path
 
 File Responses
 --------------
@@ -602,17 +602,17 @@ File responses send a file:
 
    from pathlib import Path
    from litestar import get
-   from litestar.response import FileResponse
+   from litestar.response import File
 
 
    @get(path="/file-download")
-   def handle_file_download() -> FileResponse:
-       return FileResponse(
+   def handle_file_download() -> File:
+       return File(
            path=Path(Path(__file__).resolve().parent, "report").with_suffix(".pdf"),
            filename="repost.pdf",
        )
 
-The :class:`File <.response.FileResponse>` class expects two kwargs:
+The :class:`File <.response.File>` class expects two kwargs:
 
 
 * ``path``: path of the file to download.
@@ -622,7 +622,7 @@ The :class:`File <.response.FileResponse>` class expects two kwargs:
 
 .. attention::
 
-    When a route handler's return value is annotated with :class:`FileResponse <.response.FileResponse>`, the default
+    When a route handler's return value is annotated with :class:`File <.response.File>`, the default
     ``media_type`` for the route_handler is switched from :class:`MediaType.JSON <.enums.MediaType>` to
     :class:`MediaType.TEXT <.enums.MediaType>` (i.e. ``"text/plain"``). If the file being sent has an
     `IANA media type <https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types>`_, you should set it
@@ -634,12 +634,12 @@ For example:
 
    from pathlib import Path
    from litestar import get
-   from litestar.response import FileResponse
+   from litestar.response import File
 
 
    @get(path="/file-download", media_type="application/pdf")
-   def handle_file_download() -> FileResponse:
-       return FileResponse(
+   def handle_file_download() -> File:
+       return File(
            path=Path(Path(__file__).resolve().parent, "report").with_suffix(".pdf"),
            filename="repost.pdf",
        )
@@ -648,7 +648,7 @@ For example:
 Streaming Responses
 -------------------
 
-To return a streaming response use the :class:`StreamingResponse <.response.StreamingResponse>` class. The class
+To return a streaming response use the :class:`Stream <.response.Stream>` class. The class
 receives a single positional arg, that must be an iterator delivering the stream:
 
 .. literalinclude:: /examples/responses/streaming_responses.py
@@ -672,14 +672,14 @@ engine is in place, you can use a template response like so:
 .. code-block:: python
 
    from litestar import Request, get
-   from litestar.response import TemplateResponse
+   from litestar.response import Template
 
 
    @get(path="/info")
-   def info(request: Request) -> TemplateResponse:
-       return TemplateResponse(template_name="info.html", context={"user": request.user})
+   def info(request: Request) -> Template:
+       return Template(template_name="info.html", context={"user": request.user})
 
-In the above example, :class:`TemplateResponse <.response.TemplateResponse>` is passed the template name, which is a
+In the above example, :class:`Template <.response.Template>` is passed the template name, which is a
 path like value, and a context dictionary that maps string keys into values that will be rendered in the template.
 
 Custom Responses

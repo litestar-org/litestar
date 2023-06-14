@@ -18,10 +18,10 @@ from litestar.openapi.spec.header import OpenAPIHeader
 from litestar.openapi.spec.media_type import OpenAPIMediaType
 from litestar.openapi.spec.schema import Schema
 from litestar.response import (
-    FileResponse,
-    RedirectResponse,
-    StreamingResponse,
-    TemplateResponse,
+    File,
+    Redirect,
+    Stream,
+    Template,
 )
 from litestar.response import (
     Response as LitestarResponse,
@@ -78,9 +78,9 @@ def create_success_response(  # noqa: C901
     return_type = route_handler.parsed_fn_signature.return_type
     return_annotation = return_type.annotation
     default_descriptions: dict[Any, str] = {
-        StreamingResponse: "Stream Response",
-        RedirectResponse: "Redirect Response",
-        FileResponse: "File Download",
+        Stream: "Stream Response",
+        Redirect: "Redirect Response",
+        File: "File Download",
     }
     description = (
         route_handler.response_description
@@ -89,9 +89,9 @@ def create_success_response(  # noqa: C901
     )
 
     if return_annotation is not Signature.empty and not return_type.is_subclass_of(
-        (NoneType, FileResponse, RedirectResponse, StreamingResponse, ASGIResponse)
+        (NoneType, File, Redirect, Stream, ASGIResponse)
     ):
-        if return_annotation is TemplateResponse:
+        if return_annotation is Template:
             return_annotation = str
             route_handler.media_type = get_enum_string_value(MediaType.HTML)
         elif return_type.is_subclass_of(LitestarResponse):
@@ -123,7 +123,7 @@ def create_success_response(  # noqa: C901
             description=description,
         )
 
-    elif return_type.is_subclass_of(RedirectResponse):
+    elif return_type.is_subclass_of(Redirect):
         response = OpenAPIResponse(
             content=None,
             description=description,
@@ -134,7 +134,7 @@ def create_success_response(  # noqa: C901
             },
         )
 
-    elif return_type.is_subclass_of((FileResponse, StreamingResponse)):
+    elif return_type.is_subclass_of((File, Stream)):
         response = OpenAPIResponse(
             content={
                 route_handler.media_type: OpenAPIMediaType(

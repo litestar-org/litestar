@@ -318,13 +318,13 @@ In addition to Jinja, Litestar supports `Mako <https://www.makotemplates.org/>`_
 
             from litestar import Litestar, get
             from litestar.contrib.jinja import JinjaTemplateEngine
-            from litestar.response import TemplateResponse
+            from litestar.response import Template
             from litestar.template.config import TemplateConfig
 
 
             @get("/hello/{name:str}")
             def hello(name: str) -> Template:
-                return TemplateResponse(response_name="hello.html", context={"name": name})
+                return Template(response_name="hello.html", context={"name": name})
 
 
             app = Litestar(
@@ -431,7 +431,7 @@ For redirects, instead of ``redirect`` use ``Redirect``:
         .. code-block:: python
 
             from litestar import Litestar, get
-            from litestar.response import RedirectResponse
+            from litestar.response import Redirect
 
 
             @get("/")
@@ -441,7 +441,7 @@ For redirects, instead of ``redirect`` use ``Redirect``:
 
             @get("/hello")
             def hello() -> Redirect:
-                return RedirectResponse(url="index")
+                return Redirect(url="index")
 
 
             app = Litestar([index, hello])

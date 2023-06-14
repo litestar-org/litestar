@@ -97,7 +97,7 @@ If you need to access the template engine instance, you can do so via the
 Template responses
 ------------------
 
-Once you have a template engine registered you can return :class:`templates responses <.response.TemplateResponse>` from
+Once you have a template engine registered you can return :class:`templates responses <.response.Template>` from
 your route handlers:
 
 .. tab-set::
@@ -224,20 +224,18 @@ back to the server when the form is submitted, and is checked by the CSRF middle
 Passing template context
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Passing context to the template is very simple - its one of the kwargs expected by the :class:`Template <litestar.response.TemplateResponse>`
+Passing context to the template is very simple - its one of the kwargs expected by the :class:`Template <litestar.response.Template>`
 container, so simply pass a string keyed dictionary of values:
 
 .. code-block:: python
 
    from litestar import get
-   from litestar.response import TemplateResponse
+   from litestar.response import Template
 
 
    @get(path="/info")
    def info() -> Template:
-       return TemplateResponse(
-           template_name="info.html", context={"numbers": "1234567890"}
-       )
+       return Template(template_name="info.html", context={"numbers": "1234567890"})
 
 
 Template callables

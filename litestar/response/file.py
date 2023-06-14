@@ -39,7 +39,7 @@ if TYPE_CHECKING:
 
 __all__ = (
     "ASGIFileResponse",
-    "FileResponse",
+    "File",
     "async_file_iterator",
     "create_etag_for_file",
 )
@@ -211,7 +211,7 @@ class ASGIFileResponse(ASGIStreamingResponse):
         await super().start_response(send=send)
 
 
-class FileResponse(Response):
+class File(Response):
     """A response, streaming a file as response body."""
 
     __slots__ = (
@@ -243,10 +243,10 @@ class FileResponse(Response):
         stat_result: stat_result_type | None = None,
         status_code: int | None = None,
     ) -> None:
-        """Initialize ``FileResponse``
+        """Initialize ``File``
 
         Notes:
-            - This class extends the :class:`StreamingResponse <.response.StreamingResponse>` class.
+            - This class extends the :class:`Stream <.response.Stream>` class.
 
         Args:
             path: A file path in one of the supported formats.

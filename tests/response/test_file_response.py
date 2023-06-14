@@ -9,7 +9,7 @@ from litestar import get
 from litestar.connection.base import empty_send
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
-from litestar.response.file import ASGIFileResponse, FileResponse, async_file_iterator
+from litestar.response.file import ASGIFileResponse, File, async_file_iterator
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
@@ -20,8 +20,8 @@ def test_file_response_default_content_type(tmpdir: Path, content_disposition_ty
     path.write_bytes(b"")
 
     @get("/")
-    def handler() -> FileResponse:
-        return FileResponse(path=path, content_disposition_type=content_disposition_type)
+    def handler() -> File:
+        return File(path=path, content_disposition_type=content_disposition_type)
 
     with create_test_client(handler, debug=True, openapi_config=None) as client:
         response = client.get("/")
@@ -36,8 +36,8 @@ def test_file_response_infer_content_type(tmpdir: Path, content_disposition_type
     path.write_bytes(b"")
 
     @get("/")
-    def handler() -> FileResponse:
-        return FileResponse(path=path, filename="image.png", content_disposition_type=content_disposition_type)
+    def handler() -> File:
+        return File(path=path, filename="image.png", content_disposition_type=content_disposition_type)
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -52,8 +52,8 @@ def test_filename(tmpdir: Path, filename: str, expected: str) -> None:
     path.write_bytes(b"")
 
     @get("/")
-    def handler() -> FileResponse:
-        return FileResponse(path=path, filename=f"{filename}.txt")
+    def handler() -> File:
+        return File(path=path, filename=f"{filename}.txt")
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -67,8 +67,8 @@ def test_file_response_content_length(tmpdir: Path) -> None:
     path.write_bytes(content)
 
     @get("/")
-    def handler() -> FileResponse:
-        return FileResponse(path=path)
+    def handler() -> File:
+        return File(path=path)
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -82,8 +82,8 @@ def test_file_response_last_modified(tmpdir: Path) -> None:
     path.write_bytes(b"")
 
     @get("/")
-    def handler() -> FileResponse:
-        return FileResponse(path=path, filename="image.png")
+    def handler() -> File:
+        return File(path=path, filename="image.png")
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -127,8 +127,8 @@ def test_large_files(tmpdir: Path, size: int) -> None:
     path.write_bytes(content)
 
     @get("/")
-    def handler() -> FileResponse:
-        return FileResponse(path=path)
+    def handler() -> File:
+        return File(path=path)
 
     with create_test_client(handler) as client:
         response = client.get("/")

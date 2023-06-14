@@ -4,7 +4,7 @@ import pytest
 
 from litestar import HttpMethod, Litestar, head
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.response.file import ASGIFileResponse, FileResponse
+from litestar.response.file import ASGIFileResponse, File
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
@@ -41,8 +41,8 @@ def test_head_decorator_raises_validation_error_if_method_is_passed() -> None:
 
 def test_head_decorator_does_not_raise_for_file_response() -> None:
     @head("/")
-    def handler() -> "FileResponse":
-        return FileResponse("test_to_response.py")
+    def handler() -> "File":
+        return File("test_to_response.py")
 
     handler.on_registration(Litestar())
 

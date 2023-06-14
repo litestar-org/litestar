@@ -17,10 +17,10 @@ if TYPE_CHECKING:
     from litestar.datastructures import Cookie
     from litestar.types import ResponseCookies, TypeEncodersMap
 
-__all__ = ("TemplateResponse",)
+__all__ = ("Template",)
 
 
-class TemplateResponse(Response[bytes]):
+class Template(Response[bytes]):
     """Template-based response, rendering a given template into a bytes string."""
 
     __slots__ = (

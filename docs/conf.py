@@ -104,8 +104,10 @@ nitpick_ignore = [
     ("py:class", "litestar.utils.sync.AsyncCallable"),
     ("py:class", "BacklogStrategy"),
     ("py:class", "ExceptionT"),
+    # types in changelog that no longer exist
     ("py:class", "litestar.response_containers.Template"),
     ("py:class", "litestar.response_containers.Redirect"),
+    ("py:class", "litestar.response.RedirectResponse"),
 ]
 nitpick_ignore_regex = [
     (r"py:.*", r"litestar\.types.*"),

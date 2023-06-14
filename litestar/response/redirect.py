@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 __all__ = (
     "ASGIRedirectResponse",
-    "RedirectResponse",
+    "Redirect",
 )
 
 
@@ -59,7 +59,7 @@ class ASGIRedirectResponse(ASGIResponse):
         super().__init__(status_code=status_code, headers=headers, media_type=media_type, **kwargs)
 
 
-class RedirectResponse(Response[Any]):
+class Redirect(Response[Any]):
     """A redirect response."""
 
     __slots__ = ("url",)
