@@ -17,6 +17,7 @@ from typing import (
     Hashable,
     Iterable,
     List,
+    Literal,
     Mapping,
     MutableMapping,
     MutableSequence,
@@ -303,6 +304,22 @@ def create_enum_schema(annotation: EnumMeta) -> Schema:
     return Schema(type=openapi_type, enum=enum_values)
 
 
+def iter_flat_literal_args(annotation: Any) -> Iterable[Any]:
+    """Iterate over the flattened arguments of a Literal.
+
+    Args:
+        annotation: An Literal annotation.
+
+    Yields:
+        The flattened arguments of the Literal.
+    """
+    for arg in get_args(annotation):
+        if get_origin_or_inner_type(arg) is Literal:
+            yield from iter_flat_literal_args(arg)
+        else:
+            yield arg
+
+
 def create_literal_schema(annotation: Any) -> Schema:
     """Create a schema instance for a Literal.
 
@@ -312,7 +329,7 @@ def create_literal_schema(annotation: Any) -> Schema:
     Returns:
         A schema instance.
     """
-    args = get_args(annotation)
+    args = tuple(iter_flat_literal_args(annotation))
     schema = copy(TYPE_MAP[type(args[0])])
     if len(args) > 1:
         schema.enum = args
