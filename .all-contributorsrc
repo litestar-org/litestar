@@ -1045,6 +1045,15 @@
         "doc",
         "bug"
       ]
+    },
+    {
+      "login": "gsakkis",
+      "name": "George Sakkis",
+      "avatar_url": "https://avatars.githubusercontent.com/u/291289?v=4",
+      "profile": "https://www.linkedin.com/in/gsakkis",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
