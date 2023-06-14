@@ -107,7 +107,7 @@ class PrometheusMiddleware(AbstractMiddleware):
 
         return extra_labels
 
-    def _get_default_labels(self, request: Request) -> dict[str, str | int]:
+    def _get_default_labels(self, request: Request) -> dict[str, str | int | float]:
         """Get default label values from the request.
 
         Default:
@@ -143,10 +143,9 @@ class PrometheusMiddleware(AbstractMiddleware):
             await self.app(scope, receive, send)
             return
 
-        default_labels = self._get_default_labels(request)
+        labels = self._get_default_labels(request)
         extra_labels = self._get_extra_labels(request)
-        labels = default_labels | extra_labels
-
+        labels.update(extra_labels)
         label_values = [*labels.values()]
         request_span = {"start_time": time.perf_counter(), "end_time": 0, "duration": 0, "status_code": 200}
 
