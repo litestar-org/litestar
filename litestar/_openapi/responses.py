@@ -89,13 +89,14 @@ def create_success_response(  # noqa: C901
             return_annotation = get_args(return_annotation)[0] or Any
 
         if dto := route_handler.resolve_return_dto():
-            result = dto.create_openapi_schema("return", str(route_handler), generate_examples, schemas)
+            result = dto.create_openapi_schema("return", str(route_handler), generate_examples, schemas, False)
         else:
             result = create_schema(
                 field=SignatureField.create(field_type=return_annotation),
                 generate_examples=generate_examples,
                 plugins=plugins,
                 schemas=schemas,
+                prefer_alias=False,
             )
 
         schema = result if isinstance(result, Schema) else schemas[result.value]
@@ -104,11 +105,7 @@ def create_success_response(  # noqa: C901
         schema.content_media_type = route_handler.content_media_type
 
         response = OpenAPIResponse(
-            content={
-                route_handler.media_type: OpenAPIMediaType(
-                    schema=result,
-                )
-            },
+            content={route_handler.media_type: OpenAPIMediaType(schema=result)},
             description=description,
         )
 
@@ -165,6 +162,7 @@ def create_success_response(  # noqa: C901
                     generate_examples=False,
                     plugins=plugins,
                     schemas=schemas,
+                    prefer_alias=False,
                 )
 
             elif attribute_name != "documentation_only":
@@ -231,6 +229,7 @@ def create_additional_responses(
             generate_examples=additional_response.generate_examples,
             plugins=plugins,
             schemas=schemas,
+            prefer_alias=False,
         )
         yield str(status_code), OpenAPIResponse(
             description=additional_response.description,

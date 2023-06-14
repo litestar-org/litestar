@@ -103,6 +103,7 @@ def create_collection_constrained_field_schema(
     kwargs_model: ParameterKwarg | BodyKwarg,
     plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
+    prefer_alias: bool,
 ) -> Schema:
     """Create Schema from Constrained List/Set field.
 
@@ -112,6 +113,7 @@ def create_collection_constrained_field_schema(
         kwargs_model:  A constrained field model.
         plugins: A list of plugins.
         schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
+        prefer_alias: Whether to prefer the alias name for the schema.
 
     Returns:
         A schema instance.
@@ -128,7 +130,9 @@ def create_collection_constrained_field_schema(
         schema.unique_items = True
     if children:
         items = [
-            create_schema(field=sub_field, generate_examples=False, plugins=plugins, schemas=schemas)
+            create_schema(
+                field=sub_field, generate_examples=False, plugins=plugins, schemas=schemas, prefer_alias=prefer_alias
+            )
             for sub_field in children
         ]
         if len(items) > 1:
@@ -143,6 +147,7 @@ def create_collection_constrained_field_schema(
             generate_examples=False,
             plugins=plugins,
             schemas=schemas,
+            prefer_alias=prefer_alias,
         )
     return schema
 
@@ -153,6 +158,7 @@ def create_constrained_field_schema(
     kwargs_model: ParameterKwarg | BodyKwarg,
     plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
+    prefer_alias: bool,
 ) -> Schema:
     """Create Schema for Pydantic Constrained fields (created using constr(), conint() and so forth, or by subclassing
     Constrained*)
@@ -163,6 +169,7 @@ def create_constrained_field_schema(
         kwargs_model:  A constrained field model.
         plugins: A list of plugins.
         schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
+        prefer_alias: Whether to prefer the alias name for the schema.
 
     Returns:
         A schema instance.
@@ -179,5 +186,6 @@ def create_constrained_field_schema(
         children=tuple(children) if children else None,
         plugins=plugins,
         schemas=schemas,
+        prefer_alias=prefer_alias,
         kwargs_model=kwargs_model,
     )

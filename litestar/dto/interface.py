@@ -114,6 +114,7 @@ class DTOInterface(Protocol):
         handler_id: str,
         generate_examples: bool,
         schemas: dict[str, Schema],
+        prefer_alias: bool,
     ) -> Reference | Schema:
         """Create an OpenAPI request body for the DTO.
 

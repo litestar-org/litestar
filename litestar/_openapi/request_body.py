@@ -31,8 +31,10 @@ def create_request_body(
         media_type = field.kwarg_model.media_type
 
     if dto := route_handler.resolve_dto():
-        schema = dto.create_openapi_schema("data", str(route_handler), generate_examples, schemas)
+        schema = dto.create_openapi_schema("data", str(route_handler), generate_examples, schemas, True)
     else:
-        schema = create_schema(field=field, generate_examples=generate_examples, plugins=plugins, schemas=schemas)
+        schema = create_schema(
+            field=field, generate_examples=generate_examples, plugins=plugins, schemas=schemas, prefer_alias=True
+        )
 
     return RequestBody(required=True, content={media_type: OpenAPIMediaType(schema=schema)})

@@ -48,6 +48,7 @@ def create_path_parameter_schema(
         generate_examples=generate_examples,
         plugins=[],
         schemas=schemas,
+        prefer_alias=True,
     )
 
 
@@ -128,7 +129,9 @@ def create_parameter(
         parameter_name = kwargs_model.query if kwargs_model and kwargs_model.query else parameter_name
 
     if not result:
-        result = create_schema(field=signature_field, generate_examples=generate_examples, plugins=[], schemas=schemas)
+        result = create_schema(
+            field=signature_field, generate_examples=generate_examples, plugins=[], schemas=schemas, prefer_alias=True
+        )
 
     schema = result if isinstance(result, Schema) else schemas[result.value]
 

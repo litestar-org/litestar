@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from pydantic import BaseModel, Field
 
-from litestar import Litestar, get
+from litestar import Litestar, get, post
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.spec import Components, Example, OpenAPIHeader, OpenAPIType, Schema
@@ -48,21 +48,31 @@ def test_merged_components_correct() -> None:
 
 
 def test_by_alias() -> None:
-    class ModelWithAlias(BaseModel):
+    class RequestWithAlias(BaseModel):
         first: str = Field(alias="second")
 
-    @get("/")
-    def handler() -> ModelWithAlias:
-        return ModelWithAlias(second="abc")
+    class ResponseWithAlias(BaseModel):
+        first: str = Field(alias="second")
+
+    @post("/")
+    def handler(data: RequestWithAlias) -> ResponseWithAlias:
+        return ResponseWithAlias(second=data.first)
 
     app = Litestar(route_handlers=[handler], openapi_config=OpenAPIConfig(title="my title", version="1.0.0"))
 
     assert app.openapi_schema
-    assert app.openapi_schema.to_schema()["components"]["schemas"]["ModelWithAlias"] == {
+    schemas = app.openapi_schema.to_schema()["components"]["schemas"]
+    assert schemas["RequestWithAlias"] == {
         "properties": {"second": {"type": "string"}},
         "type": "object",
         "required": ["second"],
-        "title": "ModelWithAlias",
+        "title": "RequestWithAlias",
+    }
+    assert schemas["ResponseWithAlias"] == {
+        "properties": {"first": {"type": "string"}},
+        "type": "object",
+        "required": ["first"],
+        "title": "ResponseWithAlias",
     }
 
 

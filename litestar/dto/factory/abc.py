@@ -172,11 +172,7 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
 
     @classmethod
     def create_openapi_schema(
-        cls,
-        dto_for: ForType,
-        handler_id: str,
-        generate_examples: bool,
-        schemas: dict[str, Schema],
+        cls, dto_for: ForType, handler_id: str, generate_examples: bool, schemas: dict[str, Schema], prefer_alias: bool
     ) -> Reference | Schema:
         """Create an OpenAPI request body.
 
@@ -184,7 +180,7 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
             OpenAPI request body.
         """
         backend = cls._get_backend(dto_for, handler_id)
-        return backend.create_openapi_schema(generate_examples, schemas)
+        return backend.create_openapi_schema(generate_examples, schemas, prefer_alias)
 
     @classmethod
     def _get_backend(cls, dto_for: ForType, handler_id: str) -> AbstractDTOBackend:
