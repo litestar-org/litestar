@@ -265,12 +265,8 @@ TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     time: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.DURATION),
     timedelta: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.DURATION),
     tuple: Schema(type=OpenAPIType.ARRAY),
-    # litestar types,
-    # the following is a hack -https://www.openapis.org/blog/2021/02/16/migrating-from-openapi-3-0-to-3-1-0
-    # the format for OA 3.1 is type + contentMediaType, for 3.0.* is type + format, we do both.
     UploadFile: Schema(
         type=OpenAPIType.STRING,
-        format="binary",  # type: ignore
         content_media_type="application/octet-stream",
     ),
     # pydantic types

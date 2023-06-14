@@ -119,6 +119,4 @@ class UploadFile:
             None
         """
         if field:
-            field_schema.update(
-                {"type": OpenAPIType.STRING.value, "contentMediaType": "application/octet-stream", "format": "binary"}
-            )
+            field_schema.update({"type": OpenAPIType.STRING.value, "contentMediaType": "application/octet-stream"})
