@@ -278,7 +278,7 @@ class OpenAPIController(Controller):
             <div id='swagger-container'/>
             <script type="text/javascript">
             const ui = SwaggerUIBundle({{
-                spec: {self.schema},
+                spec: {encode_json(schema.to_schema()).decode("utf-8")},
                 dom_id: '#swagger-container',
                 deepLinking: true,
                 showExtensions: true,
