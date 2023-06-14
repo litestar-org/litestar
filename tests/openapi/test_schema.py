@@ -125,10 +125,14 @@ def test_get_schema_for_field_type_enum() -> None:
 
 
 def test_handling_of_literals() -> None:
+    ValueType = Literal["a", "b", "c"]
+    ConstType = Literal[1]
+
     @dataclass
     class DataclassWithLiteral:
-        value: Literal["a", "b", "c"]
-        const: Literal[1]
+        value: ValueType
+        const: ConstType
+        composite: Literal[ValueType, ConstType]
 
     schemas: Dict[str, Schema] = {}
     result = create_schema(
@@ -138,15 +142,22 @@ def test_handling_of_literals() -> None:
         schemas=schemas,
     )
     assert isinstance(result, Reference)
+
     schema = schemas["DataclassWithLiteral"]
     assert isinstance(schema, Schema)
     assert schema.properties
+
     value = schema.properties["value"]
     assert isinstance(value, Schema)
     assert value.enum == ("a", "b", "c")
+
     const = schema.properties["const"]
     assert isinstance(const, Schema)
     assert const.const == 1
+
+    composite = schema.properties["composite"]
+    assert isinstance(composite, Schema)
+    assert composite.enum == ("a", "b", "c", 1)
 
 
 def test_schema_hashing() -> None:
