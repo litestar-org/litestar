@@ -100,8 +100,8 @@ def resolve_generic_wrapper_type(
     if not (origin := parsed_type.origin):
         return None
 
-    if not (parameters := origin.__parameters__):
-        return None
+    if not (parameters := getattr(origin, "__parameters__", None)):
+        return None  # pragma: no cover
 
     for param_index, inner_type in enumerate(parsed_type.inner_types):  # noqa: B007 (`param_index` not used)
         model_type = resolve_model_type(inner_type)
