@@ -397,7 +397,7 @@ class User:
     name: str
     age: int
 
-@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]], signature_namespace={"User": User})
+@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]])
 def handler() -> ClassicPagination[User]:
     return ClassicPagination(
         items=[User(name="John", age=42), User(name="Jane", age=43)],
@@ -440,7 +440,7 @@ class User:
 
 uuid = UUID("00000000-0000-0000-0000-000000000000")
 
-@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]], signature_namespace={"User": User})
+@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]])
 def handler() -> CursorPagination[UUID, User]:
     return CursorPagination(
         items=[User(name="John", age=42), User(name="Jane", age=43)],
@@ -478,7 +478,7 @@ class User:
     name: str
     age: int
 
-@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]], signature_namespace={"User": User})
+@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]])
 def handler() -> OffsetPagination[User]:
     return OffsetPagination(
         items=[User(name="John", age=42), User(name="Jane", age=43)],
@@ -525,7 +525,7 @@ class Wrapped(Generic[T, V]):
     data: T
     other: V
 
-@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]], signature_namespace={"User": User})
+@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]])
 def handler() -> Wrapped[List[User], int]:
     return Wrapped(
         data=[User(name="John", age=42), User(name="Jane", age=43)],
@@ -565,7 +565,7 @@ class Wrapped(Generic[T, V]):
     data: T
     other: V
 
-@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]], signature_namespace={"User": User})
+@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]])
 def handler() -> Wrapped[User, int]:
     return Wrapped(
         data=User(name="John", age=42),
@@ -578,3 +578,61 @@ app = Litestar(route_handlers=[handler])
     with TestClient(app=module.app) as client:
         response = client.get("/")
         assert response.json() == {"data": {"name": "John"}, "other": 2}
+
+
+def test_dto_response_wrapped_scalar_return_type(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from dataclasses import dataclass
+from typing import Generic, TypeVar
+
+from typing_extensions import Annotated
+
+from litestar import Litestar, Response, get
+from litestar.dto.factory import DTOConfig
+from litestar.dto.factory.stdlib import DataclassDTO
+
+@dataclass
+class User:
+    name: str
+    age: int
+
+@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]])
+def handler() -> Response[User]:
+    return Response(content=User(name="John", age=42))
+
+app = Litestar(route_handlers=[handler])
+"""
+    )
+    with TestClient(app=module.app) as client:
+        response = client.get("/")
+        assert response.json() == {"name": "John"}
+
+
+def test_dto_response_wrapped_collection_return_type(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from dataclasses import dataclass
+from typing import Generic, List, TypeVar
+
+from typing_extensions import Annotated
+
+from litestar import Litestar, Response, get
+from litestar.dto.factory import DTOConfig
+from litestar.dto.factory.stdlib import DataclassDTO
+
+@dataclass
+class User:
+    name: str
+    age: int
+
+@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]])
+def handler() -> Response[List[User]]:
+    return Response(content=[User(name="John", age=42), User(name="Jane", age=43)])
+
+app = Litestar(route_handlers=[handler])
+"""
+    )
+    with TestClient(app=module.app) as client:
+        response = client.get("/")
+        assert response.json() == [{"name": "John"}, {"name": "Jane"}]

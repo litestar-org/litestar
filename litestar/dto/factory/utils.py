@@ -9,6 +9,7 @@ from typing_extensions import get_type_hints
 
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.types.builtin_types import NoneType
+from litestar.types.composite_types import TypeEncodersMap
 from litestar.typing import ParsedType
 
 from .config import DTOConfig
@@ -42,6 +43,7 @@ def get_model_type_hints(model_type: type[Any], namespace: dict[str, Any] | None
     """
     namespace = namespace or {}
     namespace.update(vars(typing))
+    namespace.update({"TypeEncodersMap": TypeEncodersMap})
     model_module = getmodule(model_type)
     if model_module:
         namespace.update(vars(model_module))
