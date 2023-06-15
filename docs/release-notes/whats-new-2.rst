@@ -726,3 +726,24 @@ functionality equal to the ``on_startup`` and ``on_shutdown`` hooks.
 
 .. literalinclude:: /examples/application_hooks/lifespan_manager.py
     :language: python
+
+
+Response types
+--------------
+
+Starlite had the concept of Response Containers, which were datatypes used to indicate
+the type of response returned by a handler. These included ``File``, ``Redirect``,
+``Template`` and ``Stream`` types. These types abstracted the interface of responses
+from the underlying response itself.
+
+In Litestar, these types still exist, however they are now subclasses of
+:class:`Response <.response.Response>` and are imported from the ``litestar.response``
+module. In contrast to Starlite's Response Containers, these types have more utility
+for interacting with the outgoing response, such as methods to add headers and
+cookies. Otherwise, their usage should remain very similar to Starlite.
+
+Litestar also introduces a new layer of ASGI response type, based on
+:class:`ASGIResponse <.response.base.ASGIResponse>`. These types represent the response
+as an immutable object and are used internally by Litestar to perform the I/O operations
+of the response. These can be created and returned from handlers, however they are
+low-level, and lack the utility of the higher-level response types.
