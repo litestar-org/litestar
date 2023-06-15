@@ -737,7 +737,7 @@ the type of response returned by a handler. These included ``File``, ``Redirect`
 from the underlying response itself.
 
 In Litestar, these types still exist, however they are now subclasses of
-:class:`Response <.response.Response>` and are imported from ``litestar.response``
+:class:`Response <.response.Response>` and are imported from the ``litestar.response``
 module. In contrast to Starlite's Response Containers, these types have more utility
 for interacting with the outgoing response, such as methods to add headers and
 cookies. Otherwise, their usage should remain very similar to Starlite.
