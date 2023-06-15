@@ -268,3 +268,212 @@ This can be overridden by setting the
     :language: python
     :linenos:
     :emphasize-lines: 14,15
+
+Enveloping Return Data
+----------------------
+
+Litestar's DTO Factory types are versatile enough to manage your data, even when it's nested within generic wrappers.
+
+The following example demonstrates a route handler that returns DTO managed data wrapped in an enveloping type. The
+envelope is used to deliver additional metadata about the response - in this case, a count of the number of items
+returned. Read on for an explanation of how this works.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/enveloping_return_data.py
+    :caption: Enveloping Return Data
+    :language: python
+    :linenos:
+
+First, create a generic dataclass to act as your envelope. This envelope will contain your data and any additional
+attributes you might need. In this example, we have a ``CountEnvelope`` dataclass which has a ``count`` attribute.
+The envelope must be a python generic type with one or more type parameters, and at least one of those type parameters
+should describe an instance attribute that will be populated with the data.
+
+.. code-block:: python
+
+   from dataclasses import dataclass
+   from typing import Generic, TypeVar
+
+   T = TypeVar("T")
+
+
+   @dataclass
+   class CountEnvelope(Generic[T]):
+       count: int
+       data: T
+
+
+Now, create a DTO for your data object and configure it using ``DTOConfig``. In this example, we're excluding
+``password`` and ``created_at`` from the final output.
+
+.. code-block:: python
+
+   from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+   from litestar.dto.factory import DTOConfig
+
+
+   class UserDTO(SQLAlchemyDTO[User]):
+       config = DTOConfig(exclude={"password", "created_at"})
+
+Then, set up your route handler. This example sets up a ``/users`` endpoint, where a list of ``User`` objects is
+returned, wrapped in the ``CountEnvelope`` dataclass.
+
+.. code-block:: python
+
+   from litestar import get
+
+
+   @get("/users", dto=UserDTO, sync_to_thread=False)
+   def create_user() -> CountEnvelope[List[User]]:
+       return CountEnvelope(
+           count=1,
+           data=[
+               User(
+                   id=1,
+                   name="Litestar User",
+                   password="xyz",
+                   created_at=datetime.now(),
+               ),
+           ],
+       )
+
+
+This setup allows the DTO to manage the rendering of ``User`` objects into the response. The DTO Factory type will find
+the attribute on the enveloping type that holds the data and perform its serialization operations upon it.
+
+Returning enveloped data is subject to the following constraints:
+
+#. The type returned from the handler must be a type that litestar can natively encode.
+#. The annotation used to specialize the generic envelope type must be a type that DTOs could otherwise manage.
+#. The generic type argument of the wrapper class that represents the DTO managed data should completely describe the
+   enveloped data.
+
+Here's an example of correct use in reference to the third constraint, where ``Data`` is our data model:
+
+.. code-block:: python
+
+    class Wrapper(Generic[T]):
+        data: T
+
+
+    @get(dto=...)
+    def return_wrapped_collection() -> Wrapper[list[Data]]:
+        ...
+
+
+    @get(dto=...)
+    def return_wrapped_scalar() -> Wrapper[Data]:
+        ...
+
+Notice the ``Wrapper`` class is specialized with ``list[Data]``. This is a complete annotation that would otherwise be
+used as the return annotation for a handler if it were not wrapped in the ``Wrapper`` class.
+
+In contrast, this is incorrect use in reference to the third constraint:
+
+.. code-block:: python
+
+    class CollectionWrapper(Generic[T]):
+        data: List[T]
+
+
+    @get(dto=...)
+    def return_wrapped_collection() -> WrappedCollection[Data]:
+        ...
+
+Working with Litestar's Pagination Envelopes
+--------------------------------------------
+
+Litestar offers paginated response envelopes, and DTO Factory types can handle this out of the box.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/paginated_return_data.py
+    :caption: Paginated Return Data
+    :language: python
+    :linenos:
+
+The DTO is defined and configured, in our example, we're excluding ``password`` and ``created_at`` fields from the final
+representation of our users.
+
+.. code-block:: python
+
+   from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+   from litestar.dto.factory import DTOConfig
+
+
+   class UserDTO(SQLAlchemyDTO[User]):
+       config = DTOConfig(exclude={"password", "created_at"})
+
+The example sets up a ``/users`` endpoint, where a paginated list of ``User`` objects is returned, wrapped in
+:class:`ClassicPagination <.pagination.ClassicPagination>`.
+
+.. code-block:: python
+
+   from litestar import get
+   from litestar.pagination import ClassicPagination
+
+
+   @get("/users", dto=UserDTO, sync_to_thread=False)
+   def get_users() -> ClassicPagination[User]:
+       return ClassicPagination(
+           page_size=10,
+           total_pages=1,
+           current_page=1,
+           items=[
+               User(
+                   id=1,
+                   name="Litestar User",
+                   password="xyz",
+                   created_at=datetime.now(),
+               ),
+           ],
+       )
+
+The :class:`ClassicPagination <.pagination.ClassicPagination>` class contains ``page_size`` (number of items per page),
+``total_pages`` (total number of pages), ``current_page`` (current page number), and ``items`` (items for the current
+page).
+
+The DTO operates on the data contained in the ``items`` attribute, and the pagination envelope is handled automatically
+by Litestar's serialization process.
+
+Using Litestar's Response Type with DTO Factory
+-----------------------------------------------
+
+Litestar's DTO (Data Transfer Object) Factory Types can handle data wrapped in a ``Response`` type.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/response_return_data.py
+    :caption: Response Wrapped Return Data
+    :language: python
+    :linenos:
+
+We create a DTO for the ``User`` type and configure it using ``DTOConfig`` to exclude ``password`` and ``created_at``
+from the serialized output.
+
+.. code-block:: python
+
+   from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+   from litestar.dto.factory import DTOConfig
+
+
+   class UserDTO(SQLAlchemyDTO[User]):
+       config = DTOConfig(exclude={"password", "created_at"})
+
+
+The example sets up a ``/users`` endpoint where a ``User`` object is returned wrapped in a ``Response`` type.
+
+.. code-block:: python
+
+   from litestar import get, Response
+
+
+   @get("/users", dto=UserDTO, sync_to_thread=False)
+   def get_users() -> Response[User]:
+       return Response(
+           content=User(
+               id=1,
+               name="Litestar User",
+               password="xyz",
+               created_at=datetime.now(),
+           ),
+           headers={"X-Total-Count": "1"},
+       )
+
+The ``Response`` object encapsulates the ``User`` object in its ``content`` attribute and allows us to configure the
+response received by the client. In this case, we add a custom header.
