@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, AnyStr, Mapping, TypedDict, cast
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.datastructures.cookie import Cookie
 from litestar.datastructures.response_header import ResponseHeader
+from litestar.dto.interface import ConnectionContext
 from litestar.enums import HttpMethod, MediaType
 from litestar.exceptions import (
     HTTPException,
@@ -467,8 +468,12 @@ class HTTPRouteHandler(BaseRouteHandler):
         Returns:
             A Response instance
         """
+        if return_dto_type := self.resolve_return_dto():
+            ctx = ConnectionContext.from_connection(request)
+            data = return_dto_type(ctx).data_to_encodable_type(data)
+
         response_handler = self.get_response_handler(is_response_type_data=isinstance(data, Response))
-        return await response_handler(app=app, data=data, request=request, return_dto=self.resolve_return_dto())  # type: ignore
+        return await response_handler(app=app, data=data, request=request)  # type: ignore
 
     def on_registration(self, app: Litestar) -> None:
         if before_request := self.resolve_before_request():

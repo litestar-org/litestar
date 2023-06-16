@@ -75,3 +75,39 @@ def test_exclude_fields_app() -> None:
             "pets": [{"name": "Fido"}, {"name": "Spot"}],
             "name": "Litestar User",
         }
+
+
+def test_enveloped_return_data_app() -> None:
+    from docs.examples.data_transfer_objects.factory.enveloping_return_data import app
+
+    with TestClient(app) as client:
+        response = client.get("/users")
+        assert response.status_code == 200
+        assert response.json() == {
+            "count": 1,
+            "data": [{"id": 1, "name": "Litestar User"}],
+        }
+
+
+def test_paginated_return_data_app() -> None:
+    from docs.examples.data_transfer_objects.factory.paginated_return_data import app
+
+    with TestClient(app) as client:
+        response = client.get("/users")
+        assert response.status_code == 200
+        assert response.json() == {
+            "page_size": 10,
+            "total_pages": 1,
+            "current_page": 1,
+            "items": [{"id": 1, "name": "Litestar User"}],
+        }
+
+
+def test_response_return_data_app() -> None:
+    from docs.examples.data_transfer_objects.factory.response_return_data import app
+
+    with TestClient(app) as client:
+        response = client.get("/users")
+        assert response.status_code == 200
+        assert response.json() == {"id": 1, "name": "Litestar User"}
+        assert response.headers["X-Total-Count"] == "1"

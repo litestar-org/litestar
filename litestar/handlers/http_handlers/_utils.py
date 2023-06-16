@@ -4,7 +4,6 @@ from functools import lru_cache
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Sequence, cast
 
-from litestar.dto.interface import ConnectionContext
 from litestar.enums import HttpMethod
 from litestar.exceptions import ValidationException
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
@@ -15,7 +14,6 @@ if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.connection import Request
     from litestar.datastructures import Cookie, ResponseHeader
-    from litestar.dto.interface import DTOInterface
     from litestar.response import Response
     from litestar.types import (
         AfterRequestHookHandler,
@@ -66,17 +64,12 @@ def create_data_handler(
 
     async def handler(
         data: Any,
-        return_dto: type[DTOInterface] | None,
         request: Request[Any, Any, Any],
         app: Litestar,
         **kwargs: Any,
     ) -> ASGIApp:
         if isawaitable(data):
             data = await data
-
-        if return_dto:
-            ctx = ConnectionContext.from_connection(request)
-            data = return_dto(ctx).data_to_encodable_type(data)
 
         response = response_class(
             background=background,

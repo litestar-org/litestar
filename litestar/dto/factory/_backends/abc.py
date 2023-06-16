@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import secrets
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Final, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Final, Generic, TypeVar, cast
 
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
@@ -59,6 +59,7 @@ class BackendContext:
         "is_nested_field_predicate",
         "model_type",
         "parsed_type",
+        "wrapper_attribute_name",
     )
 
     def __init__(
@@ -69,6 +70,7 @@ class BackendContext:
         field_definition_generator: Callable[[Any], Generator[FieldDefinition, None, None]],
         is_nested_field_predicate: Callable[[ParsedType], bool],
         model_type: type[Any],
+        wrapper_attribute_name: str | None,
     ) -> None:
         """Create a backend context.
 
@@ -80,6 +82,8 @@ class BackendContext:
                 :class:`FieldDefinition <.dto.factory.types.FieldDefinition>` instances given ``model_type``.
             is_nested_field_predicate: Function that detects if a field is nested.
             model_type: Model type.
+            wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure, this is the
+                name of the attribute that the data is stored in.
         """
         self.config: Final[DTOConfig] = dto_config
         self.dto_for: Final[ForType] = dto_for
@@ -89,6 +93,7 @@ class BackendContext:
         ] = field_definition_generator
         self.is_nested_field_predicate: Final[Callable[[ParsedType], bool]] = is_nested_field_predicate
         self.model_type: Final[type[Any]] = model_type
+        self.wrapper_attribute_name = wrapper_attribute_name
 
 
 class NestedDepthExceededError(Exception):
@@ -123,17 +128,12 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         self.dto_data_type: type[DTOData] | None = None
         if context.parsed_type.is_subclass_of(DTOData):
             self.dto_data_type = context.parsed_type.annotation
-            annotation = self.dto_data_type.parsed_type.annotation
+            annotation = self.context.parsed_type.inner_types[0].annotation
         else:
             annotation = context.parsed_type.annotation
         self.annotation = build_annotation_for_backend(annotation, self.transfer_model_type)
 
-    def parse_model(
-        self,
-        model_type: Any,
-        exclude: AbstractSet[str],
-        nested_depth: int = 0,
-    ) -> FieldDefinitionsType:
+    def parse_model(self, model_type: Any, exclude: AbstractSet[str], nested_depth: int = 0) -> FieldDefinitionsType:
         """Reduce :attr:`model_type` to :class:`FieldDefinitionsType`.
 
         .. important::
@@ -305,6 +305,22 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         Returns:
             Encoded data.
         """
+        if self.context.wrapper_attribute_name:
+            setattr(
+                data,
+                self.context.wrapper_attribute_name,
+                transfer_data(
+                    destination_type=self.transfer_model_type,
+                    source_data=getattr(data, self.context.wrapper_attribute_name),
+                    field_definitions=self.parsed_field_definitions,
+                    dto_for="return",
+                    parsed_type=self.context.parsed_type,
+                ),
+            )
+            # cast() here because we take for granted that whatever ``data`` is, it must be something
+            # that litestar can natively encode.
+            return cast("LitestarEncodableType", data)
+
         return transfer_data(
             destination_type=self.transfer_model_type,  # type: ignore[arg-type]
             source_data=data,

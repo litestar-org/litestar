@@ -268,3 +268,179 @@ This can be overridden by setting the
     :language: python
     :linenos:
     :emphasize-lines: 14,15
+
+Wrapping Return Data
+--------------------
+
+Litestar's DTO Factory types are versatile enough to manage your data, even when it's nested within generic wrappers.
+
+The following example demonstrates a route handler that returns DTO managed data wrapped in a generic type. The
+wrapper is used to deliver additional metadata about the response - in this case, a count of the number of items
+returned. Read on for an explanation of how to do this yourself.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/enveloping_return_data.py
+    :caption: Enveloping Return Data
+    :language: python
+    :linenos:
+
+First, create a generic dataclass to act as your wrapper. This type will contain your data and any additional
+attributes you might need. In this example, we have a ``WithCount`` dataclass which has a ``count`` attribute.
+The wrapper must be a python generic type with one or more type parameters, and at least one of those type parameters
+should describe an instance attribute that will be populated with the data.
+
+.. code-block:: python
+
+   from dataclasses import dataclass
+   from typing import Generic, TypeVar
+
+   T = TypeVar("T")
+
+
+   @dataclass
+   class WithCount(Generic[T]):
+       count: int
+       data: List[T]
+
+
+Now, create a DTO for your data object and configure it using ``DTOConfig``. In this example, we're excluding
+``password`` and ``created_at`` from the final output.
+
+.. code-block:: python
+
+   from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+   from litestar.dto.factory import DTOConfig
+
+
+   class UserDTO(SQLAlchemyDTO[User]):
+       config = DTOConfig(exclude={"password", "created_at"})
+
+Then, set up your route handler. This example sets up a ``/users`` endpoint, where a list of ``User`` objects is
+returned, wrapped in the ``WithCount`` dataclass.
+
+.. code-block:: python
+
+   from litestar import get
+
+
+   @get("/users", dto=UserDTO, sync_to_thread=False)
+   def get_users() -> WithCount[User]:
+       return WithCount(
+           count=1,
+           data=[
+               User(
+                   id=1,
+                   name="Litestar User",
+                   password="xyz",
+                   created_at=datetime.now(),
+               ),
+           ],
+       )
+
+
+This setup allows the DTO to manage the rendering of ``User`` objects into the response. The DTO Factory type will find
+the attribute on the wrapper type that holds the data and perform its serialization operations upon it.
+
+Returning enveloped data is subject to the following constraints:
+
+#. The type returned from the handler must be a type that Litestar can natively encode.
+#. There can be multiple type arguments to the generic wrapper type, but there must be exactly one type argument to the
+   generic wrapper that is a type supported by the DTO.
+
+Working with Litestar's Pagination Types
+----------------------------------------
+
+Litestar offers paginated response wrapper types, and DTO Factory types can handle this out of the box.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/paginated_return_data.py
+    :caption: Paginated Return Data
+    :language: python
+    :linenos:
+
+The DTO is defined and configured, in our example, we're excluding ``password`` and ``created_at`` fields from the final
+representation of our users.
+
+.. code-block:: python
+
+   from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+   from litestar.dto.factory import DTOConfig
+
+
+   class UserDTO(SQLAlchemyDTO[User]):
+       config = DTOConfig(exclude={"password", "created_at"})
+
+The example sets up a ``/users`` endpoint, where a paginated list of ``User`` objects is returned, wrapped in
+:class:`ClassicPagination <.pagination.ClassicPagination>`.
+
+.. code-block:: python
+
+   from litestar import get
+   from litestar.pagination import ClassicPagination
+
+
+   @get("/users", dto=UserDTO, sync_to_thread=False)
+   def get_users() -> ClassicPagination[User]:
+       return ClassicPagination(
+           page_size=10,
+           total_pages=1,
+           current_page=1,
+           items=[
+               User(
+                   id=1,
+                   name="Litestar User",
+                   password="xyz",
+                   created_at=datetime.now(),
+               ),
+           ],
+       )
+
+The :class:`ClassicPagination <.pagination.ClassicPagination>` class contains ``page_size`` (number of items per page),
+``total_pages`` (total number of pages), ``current_page`` (current page number), and ``items`` (items for the current
+page).
+
+The DTO operates on the data contained in the ``items`` attribute, and the pagination wrapper is handled automatically
+by Litestar's serialization process.
+
+Using Litestar's Response Type with DTO Factory
+-----------------------------------------------
+
+Litestar's DTO (Data Transfer Object) Factory Types can handle data wrapped in a ``Response`` type.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/response_return_data.py
+    :caption: Response Wrapped Return Data
+    :language: python
+    :linenos:
+
+We create a DTO for the ``User`` type and configure it using ``DTOConfig`` to exclude ``password`` and ``created_at``
+from the serialized output.
+
+.. code-block:: python
+
+   from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+   from litestar.dto.factory import DTOConfig
+
+
+   class UserDTO(SQLAlchemyDTO[User]):
+       config = DTOConfig(exclude={"password", "created_at"})
+
+
+The example sets up a ``/users`` endpoint where a ``User`` object is returned wrapped in a ``Response`` type.
+
+.. code-block:: python
+
+   from litestar import get, Response
+
+
+   @get("/users", dto=UserDTO, sync_to_thread=False)
+   def get_users() -> Response[User]:
+       return Response(
+           content=User(
+               id=1,
+               name="Litestar User",
+               password="xyz",
+               created_at=datetime.now(),
+           ),
+           headers={"X-Total-Count": "1"},
+       )
+
+The ``Response`` object encapsulates the ``User`` object in its ``content`` attribute and allows us to configure the
+response received by the client. In this case, we add a custom header.

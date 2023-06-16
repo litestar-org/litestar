@@ -176,7 +176,7 @@ def transfer_data(
     Returns:
         Data parsed into ``destination_type``.
     """
-    if not parsed_type.is_subclass_of(str) and not parsed_type.is_mapping and parsed_type.is_collection:
+    if parsed_type.is_non_string_collection and not parsed_type.is_mapping:
         origin = parsed_type.instantiable_origin
         if not issubclass(origin, InstantiableCollection):  # pragma: no cover
             raise RuntimeError(f"Unexpected origin type '{parsed_type.instantiable_origin}', expected collection type")

@@ -82,6 +82,7 @@ def fx_context(data_model_type: type[Model], field_definitions: list[FieldDefini
         field_definition_generator=lambda _: (f for f in field_definitions),
         is_nested_field_predicate=lambda parsed_type: parsed_type.is_subclass_of((Model, Model2)),
         model_type=data_model_type,
+        wrapper_attribute_name=None,
     )
 
 
