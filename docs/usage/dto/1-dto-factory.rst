@@ -269,23 +269,23 @@ This can be overridden by setting the
     :linenos:
     :emphasize-lines: 14,15
 
-Enveloping Return Data
-----------------------
+Wrapping Return Data
+--------------------
 
 Litestar's DTO Factory types are versatile enough to manage your data, even when it's nested within generic wrappers.
 
-The following example demonstrates a route handler that returns DTO managed data wrapped in an enveloping type. The
-envelope is used to deliver additional metadata about the response - in this case, a count of the number of items
-returned. Read on for an explanation of how this works.
+The following example demonstrates a route handler that returns DTO managed data wrapped in a generic type. The
+wrapper is used to deliver additional metadata about the response - in this case, a count of the number of items
+returned. Read on for an explanation of how to do this yourself.
 
 .. literalinclude:: /examples/data_transfer_objects/factory/enveloping_return_data.py
     :caption: Enveloping Return Data
     :language: python
     :linenos:
 
-First, create a generic dataclass to act as your envelope. This envelope will contain your data and any additional
-attributes you might need. In this example, we have a ``CountEnvelope`` dataclass which has a ``count`` attribute.
-The envelope must be a python generic type with one or more type parameters, and at least one of those type parameters
+First, create a generic dataclass to act as your wrapper. This type will contain your data and any additional
+attributes you might need. In this example, we have a ``WithCount`` dataclass which has a ``count`` attribute.
+The wrapper must be a python generic type with one or more type parameters, and at least one of those type parameters
 should describe an instance attribute that will be populated with the data.
 
 .. code-block:: python
@@ -297,9 +297,9 @@ should describe an instance attribute that will be populated with the data.
 
 
    @dataclass
-   class CountEnvelope(Generic[T]):
+   class WithCount(Generic[T]):
        count: int
-       data: T
+       data: List[T]
 
 
 Now, create a DTO for your data object and configure it using ``DTOConfig``. In this example, we're excluding
@@ -315,7 +315,7 @@ Now, create a DTO for your data object and configure it using ``DTOConfig``. In 
        config = DTOConfig(exclude={"password", "created_at"})
 
 Then, set up your route handler. This example sets up a ``/users`` endpoint, where a list of ``User`` objects is
-returned, wrapped in the ``CountEnvelope`` dataclass.
+returned, wrapped in the ``WithCount`` dataclass.
 
 .. code-block:: python
 
@@ -323,8 +323,8 @@ returned, wrapped in the ``CountEnvelope`` dataclass.
 
 
    @get("/users", dto=UserDTO, sync_to_thread=False)
-   def create_user() -> CountEnvelope[List[User]]:
-       return CountEnvelope(
+   def get_users() -> WithCount[User]:
+       return WithCount(
            count=1,
            data=[
                User(
@@ -338,51 +338,18 @@ returned, wrapped in the ``CountEnvelope`` dataclass.
 
 
 This setup allows the DTO to manage the rendering of ``User`` objects into the response. The DTO Factory type will find
-the attribute on the enveloping type that holds the data and perform its serialization operations upon it.
+the attribute on the wrapper type that holds the data and perform its serialization operations upon it.
 
 Returning enveloped data is subject to the following constraints:
 
-#. The type returned from the handler must be a type that litestar can natively encode.
-#. The annotation used to specialize the generic envelope type must be a type that DTOs could otherwise manage.
-#. The generic type argument of the wrapper class that represents the DTO managed data should completely describe the
-   enveloped data.
+#. The type returned from the handler must be a type that Litestar can natively encode.
+#. There can be multiple type arguments to the generic wrapper type, but there must be exactly one type argument to the
+   generic wrapper that is a type supported by the DTO.
 
-Here's an example of correct use in reference to the third constraint, where ``Data`` is our data model:
+Working with Litestar's Pagination Types
+----------------------------------------
 
-.. code-block:: python
-
-    class Wrapper(Generic[T]):
-        data: T
-
-
-    @get(dto=...)
-    def return_wrapped_collection() -> Wrapper[list[Data]]:
-        ...
-
-
-    @get(dto=...)
-    def return_wrapped_scalar() -> Wrapper[Data]:
-        ...
-
-Notice the ``Wrapper`` class is specialized with ``list[Data]``. This is a complete annotation that would otherwise be
-used as the return annotation for a handler if it were not wrapped in the ``Wrapper`` class.
-
-In contrast, this is incorrect use in reference to the third constraint:
-
-.. code-block:: python
-
-    class CollectionWrapper(Generic[T]):
-        data: List[T]
-
-
-    @get(dto=...)
-    def return_wrapped_collection() -> WrappedCollection[Data]:
-        ...
-
-Working with Litestar's Pagination Envelopes
---------------------------------------------
-
-Litestar offers paginated response envelopes, and DTO Factory types can handle this out of the box.
+Litestar offers paginated response wrapper types, and DTO Factory types can handle this out of the box.
 
 .. literalinclude:: /examples/data_transfer_objects/factory/paginated_return_data.py
     :caption: Paginated Return Data
@@ -430,7 +397,7 @@ The :class:`ClassicPagination <.pagination.ClassicPagination>` class contains ``
 ``total_pages`` (total number of pages), ``current_page`` (current page number), and ``items`` (items for the current
 page).
 
-The DTO operates on the data contained in the ``items`` attribute, and the pagination envelope is handled automatically
+The DTO operates on the data contained in the ``items`` attribute, and the pagination wrapper is handled automatically
 by Litestar's serialization process.
 
 Using Litestar's Response Type with DTO Factory

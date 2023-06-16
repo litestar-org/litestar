@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
-from typing import TYPE_CHECKING, Generic, List, TypeVar
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar.dto.interface import ConnectionContext, DTOInterface
 from litestar.enums import RequestEncodingType
@@ -12,7 +12,6 @@ from ._backends.abc import BackendContext
 from .config import DTOConfig
 from .exc import InvalidAnnotation
 from .utils import (
-    is_pagination_type,
     parse_configs_from_annotation,
     resolve_generic_wrapper_type,
     resolve_model_type,
@@ -136,7 +135,6 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
                 handler and application of the DTO.
         """
         parsed_type = handler_context.parsed_type
-        type_is_pagination_type = is_pagination_type(parsed_type)
         model_type = resolve_model_type(parsed_type)
         wrapper_attribute_name: str | None = None
 
@@ -148,9 +146,6 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
                 raise InvalidAnnotation(
                     f"DTO narrowed with '{cls.model_type}', handler type is '{parsed_type.annotation}'"
                 )
-
-        if type_is_pagination_type:
-            parsed_type = ParsedType(List[model_type.annotation])  # type:ignore[name-defined]
 
         key = (handler_context.dto_for, parsed_type, handler_context.request_encoding_type)
         backend = cls._type_backend_map.get(key)

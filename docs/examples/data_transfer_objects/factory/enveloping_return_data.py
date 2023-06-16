@@ -14,9 +14,9 @@ T = TypeVar("T")
 
 
 @dataclass
-class CountEnvelope(Generic[T]):
+class WithCount(Generic[T]):
     count: int
-    data: T
+    data: List[T]
 
 
 class User(Base):
@@ -30,8 +30,8 @@ class UserDTO(SQLAlchemyDTO[User]):
 
 
 @get("/users", dto=UserDTO, sync_to_thread=False)
-def get_users() -> CountEnvelope[List[User]]:
-    return CountEnvelope(
+def get_users() -> WithCount[User]:
+    return WithCount(
         count=1,
         data=[
             User(

@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, TypeVar
 from msgspec import Struct
 from typing_extensions import get_type_hints
 
-from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.types.builtin_types import NoneType
 from litestar.types.composite_types import TypeEncodersMap
 from litestar.typing import ParsedType
@@ -21,7 +20,6 @@ if TYPE_CHECKING:
 
 __all__ = (
     "get_model_type_hints",
-    "is_pagination_type",
     "parse_configs_from_annotation",
     "resolve_generic_wrapper_type",
     "resolve_model_type",
@@ -113,18 +111,11 @@ def resolve_generic_wrapper_type(
     type_var = parameters[param_index]
     for attr, attr_type in get_model_type_hints(origin).items():
         if attr_type.annotation is type_var or any(t.annotation is type_var for t in attr_type.inner_types):
+            if attr_type.is_non_string_collection:
+                # the inner type of the collection type is the type var, so we need to specialize the
+                # collection type with the DTO supported type.
+                specialized_annotation = attr_type.safe_generic_origin[model_type.annotation]
+                return model_type, ParsedType(specialized_annotation), attr
             return model_type, inner_type, attr
 
     return None
-
-
-def is_pagination_type(parsed_type: ParsedType) -> bool:
-    """Determine if the parsed type represents a pagination type.
-
-    Args:
-        parsed_type: A parsed type that represents the annotation used to narrow the DTO type.
-
-    Returns:
-        Whether the parsed type represents a pagination type.
-    """
-    return parsed_type.is_subclass_of((ClassicPagination, CursorPagination, OffsetPagination))
