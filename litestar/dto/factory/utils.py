@@ -13,7 +13,6 @@ from litestar.typing import ParsedType
 
 from .config import DTOConfig
 from .data_structures import DTOData
-from .exc import InvalidAnnotation
 
 if TYPE_CHECKING:
     from typing import Any
@@ -76,9 +75,14 @@ def resolve_model_type(parsed_type: ParsedType) -> ParsedType:
         return resolve_model_type(parsed_type.inner_types[0])
 
     if parsed_type.is_collection:
-        if len(parsed_type.inner_types) == 1:
+        if parsed_type.is_mapping:
+            return resolve_model_type(parsed_type.inner_types[1])
+
+        if parsed_type.is_tuple:
+            if any(t is Ellipsis for t in parsed_type.args):
+                return resolve_model_type(parsed_type.inner_types[0])
+        elif parsed_type.is_non_string_collection:
             return resolve_model_type(parsed_type.inner_types[0])
-        raise InvalidAnnotation("AbstractDTOFactory only supports homogeneous collection types")
 
     return parsed_type
 

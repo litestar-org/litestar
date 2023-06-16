@@ -580,6 +580,49 @@ app = Litestar(route_handlers=[handler])
         assert response.json() == {"data": {"name": "John"}, "other": 2}
 
 
+def test_dto_generic_dataclass_wrapped_scalar_response_with_additional_mapping_data(
+    create_module: Callable[[str], ModuleType]
+) -> None:
+    module = create_module(
+        """
+from dataclasses import dataclass
+from typing import Dict, Generic, TypeVar
+
+from typing_extensions import Annotated
+
+from litestar import Litestar, get
+from litestar.dto.factory import DTOConfig
+from litestar.dto.factory.stdlib import DataclassDTO
+
+@dataclass
+class User:
+    name: str
+    age: int
+
+T = TypeVar("T")
+K = TypeVar("K")
+V = TypeVar("V")
+
+@dataclass
+class Wrapped(Generic[K, V, T]):
+    data: T
+    other: Dict[K, V]
+
+@get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]])
+def handler() -> Wrapped[str, int, User]:
+    return Wrapped(
+        data=User(name="John", age=42),
+        other={"a": 1, "b": 2},
+    )
+
+app = Litestar(route_handlers=[handler])
+"""
+    )
+    with TestClient(app=module.app) as client:
+        response = client.get("/")
+        assert response.json() == {"data": {"name": "John"}, "other": {"a": 1, "b": 2}}
+
+
 def test_dto_response_wrapped_scalar_return_type(create_module: Callable[[str], ModuleType]) -> None:
     module = create_module(
         """
