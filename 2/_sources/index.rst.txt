@@ -1,14 +1,14 @@
 Litestar library documentation
 ==============================
 
-Litestar is a powerful, flexible, highly performant and opinionated ASGI framework,
+Litestar is a powerful, flexible, highly performant, and opinionated ASGI framework,
 offering first class typing support and a full `Pydantic <https://github.com/pydantic/pydantic>`_
 integration.
 
-The Litestar framework supports :doc:`/usage/plugins/index`, ships
+The Litestar framework supports :doc:`/usage/plugins`, ships
 with :doc:`dependency injection </usage/dependency-injection>`, :doc:`security primitives </usage/security/index>`,
 :doc:`OpenAPI schema generation </usage/openapi>`, `MessagePack <https://msgpack.org/>`_,
-:doc:`middlewares </usage/middleware/index>` and much more.
+:doc:`middlewares </usage/middleware/index>`, and much more.
 
 Installation
 ------------
@@ -42,7 +42,7 @@ Installation
     :doc:`Open Telemetry Instrumentation </usage/contrib/open-telemetry>`
         :code:`pip install litestar[openetelemetry]`
 
-    :doc:`SQLAlchemy </usage/plugins/sqlalchemy/index>`
+    :doc:`SQLAlchemy </usage/contrib/sqlalchemy/index>`
         :code:`pip install litestar[sqlalchemy]`
 
     :doc:`CLI </usage/cli>`
@@ -81,7 +81,7 @@ Minimal Example
 
 
 You can also use dataclasses (standard library and Pydantic),
-:class:`typing.TypedDict` or :class:`msgspec.Struct`.
+:class:`typing.TypedDict`, or :class:`msgspec.Struct`.
 
 .. code-block:: python
 
@@ -165,9 +165,9 @@ Philosophy
   opinions and patterns at its core.
 - While still allowing for **function-based endpoints**, Litestar seeks to build on Python's powerful and versatile
   OOP, by placing **class-based controllers** at its core.
-- Litestar is **not** a microframework. Unlike frameworks such as FastAPI, Starlette or Flask, Litestar includes a lot
+- Litestar is **not** a microframework. Unlike frameworks such as FastAPI, Starlette, or Flask, Litestar includes a lot
   of functionalities out of the box needed for a typical modern web application, such as ORM integration,
-  client- and server-side sessions, caching, OpenTelemetry integration and many more. It's not aiming to be "the next
+  client- and server-side sessions, caching, OpenTelemetry integration, and many more. It's not aiming to be "the next
   Django" (for example, it will never feature its own ORM), but its scope is not micro either.
 
 

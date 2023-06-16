@@ -1,11 +1,12 @@
 middleware
 ==========
 
+.. automodule:: litestar.middleware
+
 
 .. toctree::
     :maxdepth: 1
 
-    base
     allowed_hosts
     authentication
     compression

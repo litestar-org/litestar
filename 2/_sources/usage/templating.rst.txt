@@ -97,7 +97,7 @@ If you need to access the template engine instance, you can do so via the
 Template responses
 ------------------
 
-Once you have a template engine registered you can return :class:`Templates <.response_containers.Template>` from
+Once you have a template engine registered you can return :class:`templates responses <.response.Template>` from
 your route handlers:
 
 .. tab-set::
@@ -224,18 +224,18 @@ back to the server when the form is submitted, and is checked by the CSRF middle
 Passing template context
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Passing context to the template is very simple - its one of the kwargs expected by the :class:`Template <litestar.response.TemplateResponse>`
+Passing context to the template is very simple - its one of the kwargs expected by the :class:`Template <litestar.response.Template>`
 container, so simply pass a string keyed dictionary of values:
 
 .. code-block:: python
 
    from litestar import get
-   from litestar.response_containers import Template
+   from litestar.response import Template
 
 
    @get(path="/info")
    def info() -> Template:
-       return Template(name="info.html", context={"numbers": "1234567890"})
+       return Template(template_name="info.html", context={"numbers": "1234567890"})
 
 
 Template callables
@@ -268,7 +268,7 @@ Registering template callables
 The  :class:`TemplateEngineProtocol <litestar.template.base.TemplateEngineProtocol>` specifies the method
 ``register_template_callable`` that allows defining a custom callable on a template engine. This method is implemented
 for the two built in engines, and it can be used to register callables that will be injected into the template. The callable
-should expect one argument - the context dictionary. It can be any callable - a function, method or class that defines
+should expect one argument - the context dictionary. It can be any callable - a function, method, or class that defines
 the call method. For example:
 
 .. tab-set::
