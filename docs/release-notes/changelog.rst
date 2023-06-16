@@ -3,8 +3,507 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.0.0beta1
+    :date: 2023/06/16
+
+    .. change:: Expose ``ParsedType`` as public API
+        :type: feature
+        :pr: 1677, 1567
+
+        Expose the previously private :class:`litestar.typing.ParsedType`. This is
+        mainly indented for usage with
+        :meth:`litestar.plugins.SerializationPluginProtocol.supports_type`
+
+    .. change:: Improved debugging capabilities
+        :type: feature
+        :pr: 1742
+
+        - A new ``pdb_on_exception`` parameter was added to
+          :class:`~litestar.app.Litestar`. When set to ``True``, Litestar will drop into
+          a the Python debugger when an exception occurs. It defaults to ``None``
+        - When ``pdb_on_exception`` is ``None``, setting the environment variable
+          ``LITESTAR_PDB=1`` can be used to enable this behaviour
+        - When using the CLI, passing the ``--pdb`` flag to the ``run`` command will
+          temporarily set the environment variable ``LITESTAR_PDB=1``
+
+    .. change:: OpenAPI: Add `operation_class` argument to HTTP route handlers
+        :type: feature
+        :pr: 1732
+
+        The ``operation_class`` argument was added to
+        :class:`~litestar.handlers.HTTPRouteHandler` and the corresponding decorators,
+        allowing to override the :class:`~litestar.openapi.spec.Operation` class, to
+        enable further customization of the generated OpenAPI schema.
+
+    .. change:: OpenAPI: Support nested ``Literal`` annotations
+        :type: feature
+        :pr: 1829
+
+        Support nested :class:`typing.Literal` annotations by flattening them into
+        a single ``Literal``.
+
+    .. change:: CLI: Add ``--reload-dir`` option to ``run`` command
+        :type: feature
+        :pr: 1689
+
+        A new ``--reload-dir`` option was added to the ``litestar run`` command. When
+        used, ``--reload`` is implied, and the server will watch for changes in the
+        given directory.
+
+    .. change:: Allow extra attributes on JWTs via ``extras`` attribute
+        :type: feature
+        :pr: 1695
+
+        Add the :attr:`extras <litestar.contrib.jwt.Token.extras>` attribute, containing
+        extra attributes found on the JWT.
+
+    .. change:: Add default modes for ``Websocket.iter_json`` and ``WebSocket.iter_data``
+        :type: feature
+        :pr: 1733
+
+        Add a default ``mode`` for :meth:`~litestar.connection.WebSocket.iter_json` and
+        :meth:`~litestar.connection.WebSocket.iter_data`, with a value of ``text``.
+
+    .. change:: SQLAlchemy repository: Synchronous repositories
+        :type: feature
+        :pr: 1683
+
+        Add a new synchronous repository base class:
+        :class:`litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository`,
+        which offer the same functionality as its asynchronous counterpart while
+        operating on a synchronous :class:`sqlalchemy.orm.Session`.
+
+    .. change:: SQLAlchemy repository: Oracle Database support
+        :type: feature
+        :pr: 1694
+
+        Add support for Oracle Database via
+        `oracledb <https://oracle.github.io/python-oracledb/>`_.
+
+    .. change:: SQLAlchemy repository: DuckDB support
+        :type: feature
+        :pr: 1744
+
+        Add support for `DuckDB <https://duckdb.org/>`_.
+
+    .. change:: SQLAlchemy repository: Google Spanner support
+        :type: feature
+        :pr: 1744
+
+        Add support for `Google Spanner <https://cloud.google.com/spanner>`_.
+
+    .. change:: SQLAlchemy repository: JSON check constraint for Oracle Database
+        :type: feature
+        :pr: 1780
+
+        When using the :class:`litestar.contrib.sqlalchemy.types.JsonB` type with an
+        Oracle Database engine, a JSON check constraint will be created for that
+        column.
+
+    .. change:: SQLAlchemy repository: Remove ``created`` and ``updated`` columns
+        :type: feature
+        :pr: 1816
+        :breaking:
+
+        The ``created`` and ``updated`` columns have been superseded by
+        ``created_at`` and ``updated_at`` respectively, to prevent name clashes.
+
+
+    .. change:: SQLAlchemy repository: Add timezone aware type
+        :type: feature
+        :pr: 1816
+        :breaking:
+
+        A new timezone aware type :class:`litestar.contrib.sqlalchemy.types.DateTimeUTC`
+        has been added, which enforces UTC timestamps stored in the database.
+
+    .. change:: SQLAlchemy repository: Exclude unloaded columns in ``to_dict``
+        :type: feature
+        :pr: 1802
+
+        When exporting models using the
+        :meth:`~litestar.contrib.sqlalchemy.base.CommonTableAttributes.to_dict` method,
+        unloaded columns will now always be excluded. This prevents implicit I/O via
+        lazy loading, and errors when using an asynchronous session.
+
+    .. change:: DTOs: Nested keyword arguments in ``.create_instance()``
+        :type: feature
+        :pr: 1741
+        :issue: 1727
+
+        The
+        :meth:`DTOData.create_instance <litestar.dto.factory.DTOData.create_instance>`
+        method now supports providing values for arbitrarily nested data via kwargs
+        using a double-underscore syntax, for example
+        ``data.create_instance(foo__bar="baz")``.
+
+        .. seealso::
+            :ref:`usage/dto/1-dto-factory:Providing values for nested data`
+
+    .. change:: DTOs: Hybrid properties and association proxies in ``SQLAlchemyDTO``
+        :type: feature
+        :pr: 1754, 1776
+
+        The :class:`~litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO` now supports
+        `hybrid attribute <https://docs.sqlalchemy.org/en/20/orm/extensions/hybrid.html>`_
+        and `associationproxy <https://docs.sqlalchemy.org/en/20/orm/extensions/associationproxy.html>`_.
+
+        The generated field will be marked read-only.
+
+    .. change:: DTOs: Transfer to generic collection types
+        :type: feature
+        :pr: 1764
+        :issue: 1763
+
+        DTOs can now be wrapped in generic collection types such as
+        :class:`typing.Sequence`. These will be substituted with a concrete and
+        instantiable type at run time, e.g. in the case of ``Sequence`` a :class:`list`.
+
+    .. change:: DTOs: Data transfer for non-generic builtin collection annotations
+        :type: feature
+        :pr: 1799
+
+        Non-parametrized generics in annotations (e.g. ``a: dict``) will now be inferred
+        as being parametrized with ``Any``. ``a: dict`` is then equivalent to
+        ``a: dict[Any, Any]``.
+
+    .. change:: DTOs: Exclude leading underscore fields by default
+        :type: feature
+        :pr: 1777
+        :issue: 1768
+        :breaking:
+
+        Leading underscore fields will not be excluded by default. This behaviour can be
+        configured with the newly introduced
+        :attr:`~litestar.dto.factory.DTOConfig.underscore_fields_private` configuration
+        value, which defaults to ``True``.
+
+    .. change:: DTOs: Msgspec and Pydantic DTO factory implementation
+        :type: feature
+        :pr: 1712
+        :issue: 1531, 1532
+
+        DTO factories for `msgspec <https://jcristharif.com/msgspec/>`_ and
+        `Pydantic <https://docs.pydantic.dev/latest/>`_ have been added:
+
+        - :class:`~litestar.contrib.msgspec.MsgspecDTO`
+        - :class:`~litestar.contrib.pydantic.PydanticDTO`
+
+    .. change:: DTOs: Arbitrary generic wrappers
+        :pr: 1801
+        :issue: 1631, 1798
+
+        When a handler returns a type that is not supported by the DTO, but:
+
+        - the return type is generic
+        - it has a generic type argument that is supported by the dto
+        - the type argument maps to an attribute on the return type
+
+        the DTO operations will be performed on the data retrieved from that attribute
+        of the instance returned from the handler, and return the instance.
+
+        The constraints are:
+
+        - the type returned from the handler must be a type that litestar can
+          natively encode
+        - the annotation of the attribute that holds the data must be a type that DTOs
+          can otherwise manage
+
+        .. code-block:: python
+
+            from dataclasses import dataclass
+            from typing import Generic, List, TypeVar
+
+            from typing_extensions import Annotated
+
+            from litestar import Litestar, get
+            from litestar.dto.factory import DTOConfig
+            from litestar.dto.factory.stdlib import DataclassDTO
+
+
+            @dataclass
+            class User:
+                name: str
+                age: int
+
+
+            T = TypeVar("T")
+            V = TypeVar("V")
+
+
+            @dataclass
+            class Wrapped(Generic[T, V]):
+                data: List[T]
+                other: V
+
+
+            @get(dto=DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]])
+            def handler() -> Wrapped[User, int]:
+                return Wrapped(
+                    data=[User(name="John", age=42), User(name="Jane", age=43)],
+                    other=2,
+                )
+
+
+            app = Litestar(route_handlers=[handler])
+
+            # GET "/": {"data": [{"name": "John"}, {"name": "Jane"}], "other": 2}
+
+    .. change:: Store and reuse state `deep_copy` directive when copying state
+        :type: bugfix
+        :issue: 1674
+        :pr: 1678
+
+        App state can be created using ``deep_copy=False``, however state would still be
+        deep copied for dependency injection.
+
+        This was fixed memoizing the value of ``deep_copy`` when state is created, and
+        reusing it on subsequent copies.
+
+    .. change:: ``ParsedType.is_subclass_of(X)`` ``True`` for union if all union types are subtypes of ``X``
+        :type: bugfix
+        :pr: 1690
+        :issue: 1652
+
+        When :class:`~litestar.typing.ParsedType` was introduced,
+        :meth:`~litestar.typing.ParsedType.is_subclass_of` any union was deliberately
+        left to return ``False`` with the intention of waiting for some use-cases to
+        arrive.
+
+        This behaviour was changed to address an issue where a handler may be typed to
+        return a union of multiple response types; If all response types are
+        :class:`~litestar.response.Response` subtypes then the correct response handler
+        will now be applied.
+
+    .. change:: Inconsistent template autoescape behavior
+        :type: bugfix
+        :pr: 1718
+        :issue: 1699
+
+        The mako template engine now defaults to autoescaping expressions, making it
+        consistent with config of Jinja template engine.
+
+    .. change:: Missing ``ChannelsPlugin`` in signature namespace population
+        :type: bugfix
+        :pr: 1719
+        :issue: 1691
+
+        The :class:`~litestar.channels.plugin.ChannelsPlugin` has been added to the
+        signature namespace, fixing an issue where using
+        ``from __future__ import annotations`` or stringized annotations would lead to
+        a :exc:`NameError`, if the plugin was not added to the signatured namespace
+        manually.
+
+    .. change:: Gzip middleware not sending small streaming responses
+        :type: bugfix
+        :pr: 1723
+        :issue: 1681
+
+        A bug was fixed that would cause smaller streaming responses to not be sent at
+        all when the :class:`~litestar.middleware.compression.CompressionMiddleware` was
+        used with ``gzip``.
+
+    .. change:: Premature transfer to nested models with `DTOData`
+        :type: bugfix
+        :pr: 1731
+        :issue: 1726
+
+        An issue was fixed where data that should be transferred to builtin types on
+        instantiation of :class:`~litestar.dto.factory.DTOData` was being instantiated
+        into a model type for nested models.
+
+    .. change:: Incorrect ``sync_to_thread`` usage warnings for generator dependencies
+        :type: bugfix
+        :pr: 1716, 1740
+        :issue: 1711
+
+        A bug was fixed that caused incorrect warnings about missing ``sync_to_thread``
+        usage were issues when asynchronous generators were being used as dependencies.
+
+    .. change:: Dependency injection custom dependencies in ``WebSocketListener``
+        :type: bugfix
+        :pr: 1807
+        :issue: 1762
+
+        An issue was resolved that would cause failures when dependency injection was
+        being used with custom dependencies (that is, injection of things other than
+        ``state``, ``query``, path parameters, etc.) within a
+        :class:`~litestar.handlers.WebsocketListener`.
+
+    .. change:: OpenAPI schema for ``Dict[K, V]`` ignores generic
+        :type: bugfix
+        :pr: 1828
+        :issue: 1795
+
+        An issue with the OpenAPI schema generation was fixed that would lead to generic
+        arguments to :class:`dict` being ignored.
+
+        An type like ``dict[str, int]`` now correctly renders as
+        ``{"type": "object", "additionalProperties": { "type": "integer" }}``.
+
+    .. change:: ``WebSocketTestSession`` not timing out without when connection is not accepted
+        :type: bugfix
+        :pr: 1696
+
+        A bug was fixed that caused :class:`~litestar.testing.WebSocketTestSession` to
+        block indefinitely when if :meth:`~litestar.connection.WebSocket.accept` was
+        never called, ignoring the ``timeout`` parameter.
+
+    .. change:: SQLAlchemy repository: Fix alembic migrations generated for models using ``GUID``
+        :type: bugfix
+        :pr: 1676
+
+        Migrations generated for models with a
+        :class:`~litestar.contrib.sqlalchemy.types.GUID` type would erroneously add a
+        ``length=16`` on the input.  Since this parameter is not defined in the type's
+        the ``__init__`` method. This was fixed by adding the appropriate parameter to
+        the type's signature.
+
+    .. change:: Remove ``state`` parameter from ``AfterExceptionHookHandler`` and ``BeforeMessageSendHookHandler``
+        :type: misc
+        :pr: 1739
+        :breaking:
+
+        Remove the ``state`` parameter from ``AfterExceptionHookHandler`` and
+        ``BeforeMessageSendHookHandler``.
+
+        ``AfterExceptionHookHandler``\ s will have to be updated from
+
+        .. code-block:: python
+
+            async def after_exception_handler(exc: Exception, scope: Scope, state: State) -> None:
+                ...
+
+        to
+
+        .. code-block:: python
+
+            async def after_exception_handler(exc: Exception, scope: Scope) -> None:
+                ...
+
+        The state can still be accessed like so:
+
+        .. code-block:: python
+
+            async def after_exception_handler(exc: Exception, scope: Scope) -> None:
+                state = scope["app"].state
+
+
+        ``BeforeMessageSendHookHandler``\ s will have to be updated from
+
+        .. code-block:: python
+
+            async def before_send_hook_handler(
+                message: Message, state: State, scope: Scope
+            ) -> None:
+                ...
+
+
+        to
+
+        .. code-block:: python
+
+            async def before_send_hook_handler(message: Message, scope: Scope) -> None:
+                ...
+
+        where state can be accessed in the same manner:
+
+        .. code-block:: python
+
+            async def before_send_hook_handler(message: Message, scope: Scope) -> None:
+                state = scope["app"].state
+
+    .. change:: Removal of ``dto.exceptions`` module
+        :pr: 1773
+        :breaking:
+
+        The module ``dto.exceptions`` has been removed, since it was not used anymore
+        internally by the DTO implementations, and superseded by standard exceptions.
+
+
+    .. change:: ``BaseRouteHandler`` no longer generic
+        :pr: 1819
+        :breaking:
+
+        :class:`~litestar.handlers.BaseRouteHandler` was originally made generic to
+        support proper typing of the ``ownership_layers`` property, but the same effect
+        can now be achieved using :class:`typing.Self`.
+
+    .. change:: Deprecation of ``Litestar`` parameter ``preferred_validation_backend``
+        :pr: 1810
+        :breaking:
+
+        The following changes have been made regarding the
+        ``preferred_validation_backend``:
+
+        - The ``preferred_validation_backend`` parameter of
+          :class:`~litestar.app.Litestar` has been renamed to
+          ``_preferred_validation_backend`` and deprecated. It will be removed
+          completely in a future version.
+        - The ``Litestar.preferred_validation_backend`` attribute has been made private
+        - The ``preferred_validation_backend`` attribute has been removed from
+          :class:`~litestar.config.app.AppConfig`
+
+        In addition, the logic for selecting a signature validation backend has been
+        simplified as follows: If the preferred backend is set to ``attrs``, or the
+        signature contains attrs types, ``attrs`` is selected. In all other cases,
+        Pydantic will be used.
+
+    .. change:: ``Response.get_serializer`` moved to ``serialization.get_serializer``
+        :pr: 1820
+        :breaking:
+
+
+        The ``Response.get_serializer()`` method has been removed in favor of the
+        :func:`~litestar.serialization.get_serializer` function.
+
+        In the previous :class:`~litestar.response.Response` implementation,
+        ``get_serializer()`` was called on the response inside the response's
+        ``__init__``, and the merging of class-level ``type_encoders`` with the
+        ``Response``\ 's ``type_encoders`` occurred inside its ``get_serializer``
+        method.
+
+        In the current version of ``Response``, the response body is not encoded until
+        after the response object has been returned from the handler, and it is
+        converted into a low-level :class:`~litestar.response.base.ASGIResponse` object.
+        Due to this, there is still opportunity for the handler layer resolved
+        ``type_encoders`` object to be merged with the ``Response`` defined
+        ``type_encoders``, making the merge inside the ``Response`` no longer necessary.
+
+        In addition, the separate ``get_serializer`` function greatly simplifies the
+        interaction between middlewares and serializers, allowing to retrieve one
+        independently from a ``Response``.
+
+    .. change:: Remove response containers and introduce ``ASGIResponse``
+        :pr: 1790
+        :breaking:
+
+        Response Containers were wrapper classes used to indicate the type of response
+        returned by a handler, for example ``File``, ``Redirect``, ``Template`` and
+        ``Stream`` types. These types abstracted the interface of responses from the
+        underlying response itself.
+
+        Response containers have been removed and their functionality largely merged with
+        that of :class:`~litestar.response.Response`. The predefined response containers
+        still exist functionally, as subclasses of
+        :class:`Response <.response.Response>` and are now located within the
+        :mod:`litestar.response` module.
+        In addition to the functionality of Response containers, they now also feature
+        all of the response's functionality, such as methods to add headers and cookies.
+
+        The :class:`~litestar.response.Response` class now only serves as a wrapper and
+        context object, and does not handle the data sending part, which has been
+        delegated to a newly introduced
+        :class:`ASGIResponse <.response.base.ASGIResponse>`. This type (and its
+        subclasses) represent the response as an immutable object and are used
+        internally by Litestar to perform the I/O operations of the response. These can
+        be created and returned from handlers like any other ASGI application, however
+        they are low-level, and lack the utility of the higher-level response types.
+
+
+
 .. changelog:: 2.0.0alpha7
-    :date: 14.05.2023
+    :date: 2023/05/14
 
     .. change:: Warn about sync callables in route handlers and dependencies without an explicit ``sync_to_thread`` value
         :type: feature
@@ -174,7 +673,7 @@
 
 
 .. changelog:: 2.0.0alpha6
-    :date: 09.05.2023
+    :date: 2023/05/09
 
     .. change:: Relax typing of ``**kwargs`` in ``ASGIConnection.url_for``
         :type: bugfix
