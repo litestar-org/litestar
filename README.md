@@ -50,10 +50,10 @@ pip install litestar
 ```
 
 **Litestar 2.0 is coming out soon**, bringing many new features and improvements.
-You can check out the alpha version by instead running
+You can check out the beta version by instead running
 
 ```shell
-pip install litestar==2.0.0alpha7
+pip install litestar==2.0.0beta1
 ```
 
 ## Quick Start
