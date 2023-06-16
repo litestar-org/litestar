@@ -20,7 +20,7 @@ def test_field_definition_generation(
 ) -> None:
     class TestModel(BaseModel):
         a: int
-        b: Annotated[int, Field(**dto_field("read-only"))]
+        b: Annotated[int, Field(**dto_field("read-only"))]  # pyright: ignore
         c: Annotated[int, Field(gt=1)]
         d: int = Field(default=1)
         e: int = Field(default_factory=int_factory)

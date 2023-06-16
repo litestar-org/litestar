@@ -117,7 +117,7 @@ def filter_cookies(local_cookies: Iterable[Cookie], layered_cookies: Iterable[Co
     Returns:
         A unified list of cookies
     """
-    return [cookie for cookie in {*local_cookies, *layered_cookies} if not cookie.documentation_only]
+    return [cookie for cookie in {*local_cookies, *layered_cookies} if not cookie.documentation_only]  # noqa: PLC0208
 
 
 def url_quote(value: str | bytes) -> str:
