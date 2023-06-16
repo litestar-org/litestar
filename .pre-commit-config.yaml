@@ -17,12 +17,12 @@ repos:
     hooks:
       - id: unasyncd
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.270"
+    rev: "v0.0.272"
     hooks:
       - id: ruff
         args: ["--fix"]
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.4
+    rev: v2.2.5
     hooks:
       - id: codespell
         exclude: "tests/openapi/typescript_converter/test_converter"
@@ -32,7 +32,7 @@ repos:
       - id: black
         args: [--config=./pyproject.toml]
   - repo: https://github.com/asottile/blacken-docs
-    rev: 1.13.0
+    rev: 1.14.0
     hooks:
       - id: blacken-docs
   - repo: https://github.com/pre-commit/mirrors-prettier
@@ -110,7 +110,7 @@ repos:
             uvicorn,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.311
+    rev: v1.1.314
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs|_openapi"

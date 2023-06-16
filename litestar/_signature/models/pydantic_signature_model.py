@@ -166,7 +166,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
             f"{fn_name}_signature_model",
             __base__=PydanticSignatureModel,
             __module__=fn_module or "pydantic.main",
-            **field_definitions,
+            **field_definitions,  # pyright: ignore
         )
         model.return_annotation = parsed_signature.return_type.annotation
         model.dependency_name_set = dependency_names

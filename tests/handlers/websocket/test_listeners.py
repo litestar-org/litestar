@@ -442,6 +442,6 @@ def test_listeners_lifespan_hooks_and_manager_raises(hook_name: str) -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
 
-        @websocket_listener("/", **{hook_name: hook_callback}, connection_lifespan=lifespan)
+        @websocket_listener("/", **{hook_name: hook_callback}, connection_lifespan=lifespan)  # pyright: ignore
         def handler(data: bytes) -> None:
             pass

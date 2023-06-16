@@ -113,7 +113,7 @@ class Partial(Generic[T]):
                 field_definitions[field_name] = (field_type, None)
 
         cls._models[item] = pydantic.create_model(
-            _create_partial_type_name(item), __base__=item, **field_definitions
+            _create_partial_type_name(item), __base__=item, **field_definitions  # pyright: ignore
         )  # type: ignore
 
     @classmethod
