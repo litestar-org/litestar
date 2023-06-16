@@ -276,7 +276,7 @@ class Response(Generic[T]):
             key: Key for the cookie or a :class:`Cookie <.datastructures.Cookie>` instance.
             value: Value for the cookie, if none given defaults to empty string.
             max_age: Maximal age of the cookie before its invalidated.
-            expires: Expiration date as unix MS timestamp.
+            expires: Seconds from now until the cookie expires.
             path: Path fragment that must exist in the request url for the cookie to be valid. Defaults to ``/``.
             domain: Domain for which the cookie is valid.
             secure: Https is required for the cookie.
