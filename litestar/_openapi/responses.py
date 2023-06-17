@@ -91,13 +91,13 @@ def create_success_response(  # noqa: C901
     if return_annotation is not Signature.empty and not return_type.is_subclass_of(
         (NoneType, File, Redirect, Stream, ASGIResponse)
     ):
+        media_type = route_handler.media_type
         if return_annotation is Template:
             return_annotation = str
-            route_handler.media_type = get_enum_string_value(MediaType.HTML)
+            media_type = media_type or MediaType.HTML
         elif return_type.is_subclass_of(LitestarResponse):
             return_annotation = return_type.inner_types[0].annotation if return_type.inner_types else Any
-            if not route_handler.media_type:
-                route_handler.media_type = get_enum_string_value(MediaType.JSON)
+            media_type = media_type or MediaType.JSON
 
         if dto := route_handler.resolve_return_dto():
             result = dto.create_openapi_schema("return", str(route_handler), generate_examples, schemas, False)
@@ -116,8 +116,7 @@ def create_success_response(  # noqa: C901
         schema.content_media_type = route_handler.content_media_type
 
         response = OpenAPIResponse(
-            content={route_handler.media_type: OpenAPIMediaType(schema=result)},
-            description=description,
+            content={get_enum_string_value(media_type): OpenAPIMediaType(schema=result)}, description=description
         )
 
     elif return_type.is_subclass_of(Redirect):
