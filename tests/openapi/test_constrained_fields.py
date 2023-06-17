@@ -5,12 +5,11 @@ import pytest
 from pydantic import conlist, conset
 
 from litestar._openapi.schema_generation.constrained_fields import (
-    create_collection_constrained_field_schema,
-    create_constrained_field_schema,
     create_date_constrained_field_schema,
     create_numerical_constrained_field_schema,
     create_string_constrained_field_schema,
 )
+from litestar._openapi.schema_generation.schema import SchemaCreator
 from litestar._signature.field import SignatureField
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from tests.openapi.utils import (
@@ -24,13 +23,10 @@ from tests.openapi.utils import (
 @pytest.mark.parametrize("field_type", constrained_collection)
 def test_create_collection_constrained_field_schema(field_type: Any) -> None:
     signature_field = SignatureField.create(field_type=field_type)
-    schema = create_collection_constrained_field_schema(
-        field_type=signature_field.field_type,
-        children=signature_field.children,
-        kwargs_model=signature_field.kwarg_model,  # type: ignore[arg-type]
-        plugins=[],
-        schemas={},
-        prefer_alias=True,
+    schema = SchemaCreator(
+        generate_examples=False, plugins=[], schemas={}, prefer_alias=True
+    ).for_collection_constrained_field(
+        signature_field.field_type, signature_field.children, signature_field.kwarg_model  # type: ignore[arg-type]
     )
     assert schema.type == OpenAPIType.ARRAY
     assert schema.items.type == OpenAPIType.INTEGER  # type: ignore
@@ -41,13 +37,10 @@ def test_create_collection_constrained_field_schema(field_type: Any) -> None:
 def test_create_collection_constrained_field_schema_sub_fields() -> None:
     for pydantic_fn in (conlist, conset):
         signature_field = SignatureField.create(field_type=pydantic_fn(Union[str, int], min_items=1, max_items=10))  # type: ignore
-        schema = create_collection_constrained_field_schema(
-            field_type=signature_field.field_type,
-            children=signature_field.children,
-            kwargs_model=signature_field.kwarg_model,  # type: ignore[arg-type]
-            plugins=[],
-            schemas={},
-            prefer_alias=True,
+        schema = SchemaCreator(
+            generate_examples=False, plugins=[], schemas={}, prefer_alias=True
+        ).for_collection_constrained_field(
+            signature_field.field_type, signature_field.children, signature_field.kwarg_model  # type: ignore[arg-type]
         )
         assert schema.type == OpenAPIType.ARRAY
         expected = {
@@ -113,12 +106,7 @@ def test_create_date_constrained_field_schema(field_type: Any) -> None:
 )
 def test_create_constrained_field_schema(field_type: Any) -> None:
     signature_field = SignatureField.create(field_type=field_type)
-    schema = create_constrained_field_schema(
-        field_type=field_type,
-        children=signature_field.children,
-        kwargs_model=signature_field.kwarg_model,  # type: ignore[arg-type]
-        plugins=[],
-        schemas={},
-        prefer_alias=True,
+    schema = SchemaCreator(generate_examples=False, plugins=[], schemas={}, prefer_alias=True).for_constrained_field(
+        signature_field.field_type, signature_field.children, signature_field.kwarg_model  # type: ignore[arg-type]
     )
     assert schema
