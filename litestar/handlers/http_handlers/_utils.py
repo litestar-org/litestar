@@ -87,24 +87,17 @@ def create_data_handler(
     return handler
 
 
-def create_generic_asgi_response_handler(
-    after_request: AfterRequestHookHandler | None,
-    cookies: frozenset[Cookie],
-) -> AsyncAnyCallable:
+def create_generic_asgi_response_handler(after_request: AfterRequestHookHandler | None) -> AsyncAnyCallable:
     """Create a handler function for Responses.
 
     Args:
         after_request: An after request handler.
-        cookies: A set of pre-defined cookies.
 
     Returns:
         A handler function.
     """
 
     async def handler(data: ASGIApp, **kwargs: Any) -> ASGIApp:
-        if hasattr(data, "set_cookie"):
-            for cookie in cookies:
-                data.set_cookie(**cookie.dict)
         return await after_request(data) if after_request else data  # type: ignore
 
     return handler
