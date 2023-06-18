@@ -10,12 +10,9 @@ from typing_extensions import Annotated
 from litestar import Controller, MediaType, get
 from litestar._openapi.schema_generation.schema import (
     KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
-    _process_schema_result,
+    SchemaCreator,
     create_schema,
     create_schema_for_annotation,
-    create_schema_for_dataclass,
-    create_schema_for_pydantic_model,
-    create_schema_for_typed_dict,
 )
 from litestar._signature.field import SignatureField
 from litestar._signature.models.pydantic_signature_model import PydanticSignatureModel
@@ -56,14 +53,10 @@ def test_process_schema_result() -> None:
         max_length=1,
         pattern="^[a-z]$",
     )
-    schemas: Dict[str, Schema] = {}
     schema = Schema()
-    _process_schema_result(
-        schema=schema,
-        field=SignatureField.create(field_type=str, kwarg_model=kwarg_model),
-        generate_examples=False,
-        schemas=schemas,
-    )
+    field = SignatureField.create(field_type=str, kwarg_model=kwarg_model)
+    SchemaCreator().process_schema_result(field, schema)
+
     assert schema.title
     assert schema.const == test_str
     for signature_key, schema_key in KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
@@ -219,9 +212,7 @@ class Foo(BaseModel):
     foo: Annotated[int, "Foo description"]
 """
     )
-    schema = create_schema_for_pydantic_model(
-        module.Foo, generate_examples=False, plugins=[], schemas={}, prefer_alias=True
-    )
+    schema = SchemaCreator().for_pydantic_model(module.Foo)
     assert schema.properties and "foo" in schema.properties
 
 
@@ -241,7 +232,7 @@ class Foo:
     foo: Annotated[int, "Foo description"]
 """
     )
-    schema = create_schema_for_dataclass(module.Foo, generate_examples=False, plugins=[], schemas={}, prefer_alias=True)
+    schema = SchemaCreator().for_dataclass(module.Foo)
     assert schema.properties and "foo" in schema.properties
 
 
@@ -262,9 +253,7 @@ class Foo(TypedDict):
     baz: Annotated[NotRequired[int], "Baz description"]
 """
     )
-    schema = create_schema_for_typed_dict(
-        module.Foo, generate_examples=False, plugins=[], schemas={}, prefer_alias=True
-    )
+    schema = SchemaCreator().for_typed_dict(module.Foo)
     assert schema.properties and all(key in schema.properties for key in ("foo", "bar", "baz"))
 
 
