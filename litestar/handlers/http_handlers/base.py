@@ -435,7 +435,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 self._response_handler_mapping["default_handler"] = response_type_handler
             elif is_async_callable(return_annotation) or return_annotation is ASGIApp:
                 self._response_handler_mapping["default_handler"] = create_generic_asgi_response_handler(
-                    after_request=after_request, cookies=cookies
+                    after_request=after_request
                 )
             else:
                 self._response_handler_mapping["default_handler"] = create_data_handler(
