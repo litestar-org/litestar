@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from litestar._openapi.parameters import create_parameter_for_handler
 from litestar._openapi.request_body import create_request_body
 from litestar._openapi.responses import create_responses
+from litestar._openapi.schema_generation import SchemaCreator
 from litestar._openapi.utils import SEPARATORS_CLEANUP_PATTERN
 from litestar.openapi.spec.path_item import PathItem
 from litestar.utils.helpers import unwrap_partial
@@ -86,19 +87,14 @@ def create_path_item(
     path_item = PathItem()
     operation_ids: list[str] = []
 
+    schema_creator = SchemaCreator(generate_examples=create_examples, schemas=schemas)
     for http_method, handler_tuple in route.route_handler_map.items():
         route_handler, _ = handler_tuple
 
         if route_handler.include_in_schema:
             handler_fields = route_handler.signature_model.fields if route_handler.signature_model else {}
             parameters = (
-                create_parameter_for_handler(
-                    route_handler=route_handler,
-                    handler_fields=handler_fields,
-                    path_parameters=route.path_parameters,
-                    generate_examples=create_examples,
-                    schemas=schemas,
-                )
+                create_parameter_for_handler(route_handler, handler_fields, route.path_parameters, schema_creator)
                 or None
             )
             raises_validation_error = bool("data" in handler_fields or path_item.parameters or parameters)
