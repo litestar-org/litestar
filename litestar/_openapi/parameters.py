@@ -134,10 +134,22 @@ def get_recursive_handler_parameters(
     """
 
     if field_name not in dependency_providers:
-        return [create_parameter(signature_field, field_name, path_parameters, schema_creator)]
+        return [
+            create_parameter(
+                signature_field=signature_field,
+                parameter_name=field_name,
+                path_parameters=path_parameters,
+                schema_creator=schema_creator,
+            )
+        ]
 
     dependency_fields = dependency_providers[field_name].signature_model.fields
-    return create_parameter_for_handler(route_handler, dependency_fields, path_parameters, schema_creator)
+    return create_parameter_for_handler(
+        route_handler=route_handler,
+        handler_fields=dependency_fields,
+        path_parameters=path_parameters,
+        schema_creator=schema_creator,
+    )
 
 
 def get_layered_parameter(
@@ -171,7 +183,12 @@ def get_layered_parameter(
         kwarg_model=field.kwarg_model,
         name=field_name,
     )
-    return create_parameter(signature_field, parameter_name, path_parameters, schema_creator)
+    return create_parameter(
+        signature_field=signature_field,
+        parameter_name=parameter_name,
+        path_parameters=path_parameters,
+        schema_creator=schema_creator,
+    )
 
 
 def create_parameter_for_handler(
@@ -202,16 +219,34 @@ def create_parameter_for_handler(
             continue
 
         for parameter in get_recursive_handler_parameters(
-            field_name, signature_field, dependency_providers, route_handler, path_parameters, schema_creator
+            field_name=field_name,
+            signature_field=signature_field,
+            dependency_providers=dependency_providers,
+            route_handler=route_handler,
+            path_parameters=path_parameters,
+            schema_creator=schema_creator,
         ):
             parameters.add(parameter)
 
     for field_name, signature_field in unique_layered_fields:
-        parameters.add(create_parameter(signature_field, field_name, path_parameters, schema_creator))
+        parameters.add(
+            create_parameter(
+                signature_field=signature_field,
+                parameter_name=field_name,
+                path_parameters=path_parameters,
+                schema_creator=schema_creator,
+            )
+        )
 
     for field_name, signature_field in intersection_fields:
         parameters.add(
-            get_layered_parameter(field_name, signature_field, layered_parameters, path_parameters, schema_creator)
+            get_layered_parameter(
+                field_name=field_name,
+                signature_field=signature_field,
+                layered_parameters=layered_parameters,
+                path_parameters=path_parameters,
+                schema_creator=schema_creator,
+            )
         )
 
     return parameters.list()

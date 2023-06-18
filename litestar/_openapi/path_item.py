@@ -96,7 +96,10 @@ def create_path_item(
             handler_fields = route_handler.signature_model.fields if route_handler.signature_model else {}
             parameters = (
                 create_parameter_for_handler(
-                    route_handler, handler_fields, route.path_parameters, request_schema_creator
+                    route_handler=route_handler,
+                    handler_fields=handler_fields,
+                    path_parameters=route.path_parameters,
+                    schema_creator=request_schema_creator,
                 )
                 or None
             )
@@ -104,7 +107,9 @@ def create_path_item(
 
             request_body = None
             if "data" in handler_fields:
-                request_body = create_request_body(route_handler, handler_fields["data"], request_schema_creator)
+                request_body = create_request_body(
+                    route_handler=route_handler, field=handler_fields["data"], schema_creator=request_schema_creator
+                )
             operation_id = route_handler.operation_id or operation_id_creator(
                 route_handler, http_method, route.path_components
             )
@@ -115,7 +120,11 @@ def create_path_item(
                 summary=route_handler.summary or SEPARATORS_CLEANUP_PATTERN.sub("", route_handler.handler_name.title()),
                 description=get_description_for_handler(route_handler, use_handler_docstrings),
                 deprecated=route_handler.deprecated,
-                responses=create_responses(route_handler, raises_validation_error, response_schema_creator),
+                responses=create_responses(
+                    route_handler=route_handler,
+                    raises_validation_error=raises_validation_error,
+                    schema_creator=response_schema_creator,
+                ),
                 request_body=request_body,
                 parameters=parameters,  # type: ignore[arg-type]
                 security=security,
