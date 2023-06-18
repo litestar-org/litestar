@@ -564,7 +564,7 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        field_type_hints = get_type_hints(field_type)
+        field_type_hints = field_type.__annotations__
         model_config = getattr(field_type, "__config__", getattr(field_type, "model_config", Empty))
         if isinstance(model_config, dict):
             title = model_config.get("title")
@@ -600,7 +600,7 @@ class SchemaCreator:
         from attr import NOTHING
         from attrs import fields_dict
 
-        field_type_hints = get_type_hints(field_type)
+        field_type_hints = field_type.__annotations__
         return Schema(
             required=sorted(
                 [
@@ -648,7 +648,7 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        field_type_hints = get_type_hints(field_type)
+        field_type_hints = field_type.__annotations__
         return Schema(
             required=sorted(
                 [

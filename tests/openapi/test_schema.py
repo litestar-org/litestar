@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import date
 from enum import Enum
 from typing import TYPE_CHECKING, Dict, Literal
 
@@ -56,8 +57,8 @@ def test_process_schema_result() -> None:
     field = SignatureField.create(field_type=str, kwarg_model=kwarg_model)
     schema = create_schema(field=field, plugins=[], schemas={}, prefer_alias=True, generate_examples=False)
 
-    assert schema.title
-    assert schema.const == test_str
+    assert schema.title  # type: ignore
+    assert schema.const == test_str  # type: ignore
     for signature_key, schema_key in KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
         assert getattr(schema, schema_key) == getattr(kwarg_model, signature_key)
 
@@ -211,7 +212,7 @@ class Foo(BaseModel):
     foo: Annotated[int, "Foo description"]
 """
     )
-    schemas = {}
+    schemas: Dict[str, Schema] = {}
     create_schema(
         field=SignatureField.create(module.Foo), plugins=[], schemas=schemas, prefer_alias=True, generate_examples=False
     )
@@ -235,7 +236,7 @@ class Foo:
     foo: Annotated[int, "Foo description"]
 """
     )
-    schemas = {}
+    schemas: Dict[str, Schema] = {}
     create_schema(
         field=SignatureField.create(module.Foo), plugins=[], schemas=schemas, prefer_alias=True, generate_examples=False
     )
@@ -260,7 +261,7 @@ class Foo(TypedDict):
     baz: Annotated[NotRequired[int], "Baz description"]
 """
     )
-    schemas = {}
+    schemas: Dict[str, Schema] = {}
     create_schema(
         field=SignatureField.create(module.Foo), plugins=[], schemas=schemas, prefer_alias=True, generate_examples=False
     )
@@ -308,10 +309,14 @@ def test_create_schema_for_pydantic_field() -> None:
 
 
 def test_annotated_types() -> None:
+    historical_date = date(year=1980, day=1, month=1)
+    today = date.today()
+
     @dataclass
     class MyDataclass:
-        constrained_int = Annotated[int, annotated_types.Gt(1), annotated_types.Lt(10)]
-        constrained_float = Annotated[float, annotated_types.Ge(1), annotated_types.Le(10)]
+        constrained_int: Annotated[int, annotated_types.Gt(1), annotated_types.Lt(10)]
+        constrained_float: Annotated[float, annotated_types.Ge(1), annotated_types.Le(10)]
+        constrained_date: Annotated[date, annotated_types.Interval(gt=historical_date, lt=today)]
 
     schemas: Dict[str, Schema] = {}
     create_schema(
@@ -323,5 +328,9 @@ def test_annotated_types() -> None:
     )
     schema = schemas["MyDataclass"]
 
-    assert schema.properties["constrained_int"] == {}  # type: ignore
-    assert schema.properties["constrained_float"] == {}  # type: ignore
+    assert schema.properties["constrained_int"].exclusive_minimum == 1  # type: ignore
+    assert schema.properties["constrained_int"].exclusive_maximum == 10  # type: ignore
+    assert schema.properties["constrained_float"].minimum == 1  # type: ignore
+    assert schema.properties["constrained_float"].maximum == 10  # type: ignore
+    assert date.fromtimestamp(schema.properties["constrained_date"].exclusive_minimum) == historical_date  # type: ignore
+    assert date.fromtimestamp(schema.properties["constrained_date"].exclusive_maximum) == today  # type: ignore

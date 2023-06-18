@@ -25,10 +25,10 @@ def test_create_collection_constrained_field_schema(field_type: Any) -> None:
     schema = create_schema(
         field=SignatureField.create(field_type), plugins=[], schemas={}, prefer_alias=True, generate_examples=False
     )
-    assert schema.type == OpenAPIType.ARRAY
+    assert schema.type == OpenAPIType.ARRAY  # type: ignore
     assert schema.items.type == OpenAPIType.INTEGER  # type: ignore
-    assert schema.min_items == field_type.min_items
-    assert schema.max_items == field_type.max_items
+    assert schema.min_items == field_type.min_items  # type: ignore
+    assert schema.max_items == field_type.max_items  # type: ignore
 
 
 def test_create_collection_constrained_field_schema_sub_fields() -> None:
@@ -37,7 +37,7 @@ def test_create_collection_constrained_field_schema_sub_fields() -> None:
         schema = create_schema(
             field=signature_field, plugins=[], schemas={}, prefer_alias=True, generate_examples=False
         )
-        assert schema.type == OpenAPIType.ARRAY
+        assert schema.type == OpenAPIType.ARRAY  # type: ignore
         expected = {
             "items": {"oneOf": [{"type": "integer"}, {"type": "string"}]},
             "maxItems": 10,
