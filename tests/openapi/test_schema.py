@@ -55,9 +55,7 @@ def test_process_schema_result() -> None:
     )
     schema = Schema()
     field = SignatureField.create(field_type=str, kwarg_model=kwarg_model)
-    SchemaCreator(generate_examples=False, plugins=[], schemas={}, prefer_alias=True).process_schema_result(
-        field, schema
-    )
+    SchemaCreator().process_schema_result(field, schema)
 
     assert schema.title
     assert schema.const == test_str
@@ -214,9 +212,7 @@ class Foo(BaseModel):
     foo: Annotated[int, "Foo description"]
 """
     )
-    schema = SchemaCreator(generate_examples=False, plugins=[], schemas={}, prefer_alias=True).for_pydantic_model(
-        module.Foo
-    )
+    schema = SchemaCreator().for_pydantic_model(module.Foo)
     assert schema.properties and "foo" in schema.properties
 
 
@@ -236,7 +232,7 @@ class Foo:
     foo: Annotated[int, "Foo description"]
 """
     )
-    schema = SchemaCreator(generate_examples=False, plugins=[], schemas={}, prefer_alias=True).for_dataclass(module.Foo)
+    schema = SchemaCreator().for_dataclass(module.Foo)
     assert schema.properties and "foo" in schema.properties
 
 
@@ -257,9 +253,7 @@ class Foo(TypedDict):
     baz: Annotated[NotRequired[int], "Baz description"]
 """
     )
-    schema = SchemaCreator(generate_examples=False, plugins=[], schemas={}, prefer_alias=True).for_typed_dict(
-        module.Foo
-    )
+    schema = SchemaCreator().for_typed_dict(module.Foo)
     assert schema.properties and all(key in schema.properties for key in ("foo", "bar", "baz"))
 
 
