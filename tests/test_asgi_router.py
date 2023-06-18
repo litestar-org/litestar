@@ -4,17 +4,26 @@ from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, AsyncGenerator, Callable
 from unittest.mock import AsyncMock, MagicMock
 
+import pytest
 from pytest_mock import MockerFixture
 
-from litestar import Litestar
+from litestar import Litestar, asgi
 from litestar._asgi.asgi_router import ASGIRouter
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
     from contextlib import AbstractAsyncContextManager
 
-import pytest
+    from litestar.types import Receive, Scope, Send
 
-from litestar.testing import TestClient, create_test_client
+
+def test_add_mount_route_disallow_path_parameter() -> None:
+    async def handler(scope: Scope, receive: Receive, send: Send) -> None:
+        return None
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Litestar(route_handlers=[asgi("/mount-path", is_static=True)(handler), asgi("/mount-path/{id:str}")(handler)])
 
 
 class _LifeSpanCallable:

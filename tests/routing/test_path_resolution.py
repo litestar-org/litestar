@@ -255,3 +255,21 @@ def test_support_for_path_type_parameters() -> None:
 
         response = client.get("/abc/a/b/c")
         assert response.status_code == HTTP_200_OK
+
+
+def test_root_path_param_resolution() -> None:
+    # https://github.com/litestar-org/litestar/issues/1830
+    @get("/{name:str}")
+    async def hello_world(name: str) -> str:
+        return f"Hello, {name}!"
+
+    with create_test_client(hello_world) as client:
+        response = client.get("/jon")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "Hello, jon!"
+
+        response = client.get("/jon/bon")
+        assert response.status_code == HTTP_404_NOT_FOUND
+
+        response = client.get("/jon/bon/jovi")
+        assert response.status_code == HTTP_404_NOT_FOUND
