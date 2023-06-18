@@ -2,12 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, NewType, TypeVar
 
-from msgspec import Struct
-
-try:
-    from msgspec import convert
-except ImportError:  # pragma: no cover
-    from msgspec import from_builtins as convert  # type: ignore[no-redef]
+from msgspec import Struct, convert
 
 from litestar.dto.factory._backends.abc import AbstractDTOBackend
 from litestar.serialization import decode_media_type
