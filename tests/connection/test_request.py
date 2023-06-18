@@ -9,11 +9,11 @@ from unittest.mock import patch
 
 import pytest
 
-from litestar import MediaType, get
+from litestar import MediaType, Request, get
 from litestar.connection.base import empty_send
-from litestar.connection.request import Request
 from litestar.datastructures import Address, Cookie
 from litestar.exceptions import InternalServerException, SerializationException
+from litestar.middleware import MiddlewareProtocol
 from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json, encode_msgpack
 from litestar.static_files.config import StaticFilesConfig
@@ -22,7 +22,7 @@ from litestar.testing import TestClient, create_test_client
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from litestar.types import Receive, Scope, Send
+    from litestar.types import ASGIApp, Receive, Scope, Send
 
 
 async def test_request_empty_body_to_json(anyio_backend: str) -> None:
@@ -457,3 +457,28 @@ def test_request_send_push_promise_without_setting_send() -> None:
     client = TestClient(app)
     response = client.get("/")
     assert response.json() == {"json": "Send channel not available"}
+
+
+class BeforeRequestMiddleWare(MiddlewareProtocol):
+    def __init__(self, app: "ASGIApp") -> None:
+        self.app = app
+
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+        scope["state"]["main"] = 1
+        await self.app(scope, receive, send)
+
+
+def test_state() -> None:
+    def before_request(request: Request) -> None:
+        assert request.state.main == 1
+        request.state.main = 2
+
+    @get(path="/")
+    async def get_state(request: Request) -> Dict[str, str]:
+        return {"state": request.state.main}
+
+    with create_test_client(
+        route_handlers=[get_state], middleware=[BeforeRequestMiddleWare], before_request=before_request
+    ) as client:
+        response = client.get("/")
+        assert response.json() == {"state": 2}
