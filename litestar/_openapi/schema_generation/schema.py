@@ -572,15 +572,12 @@ class SchemaCreator:
             title = getattr(model_config, "title", None)
             example = getattr(model_config, "example", None)
 
-        def get_name(f: ModelField) -> str:
-            return (f.alias or f.name) if self.prefer_alias else f.name
-
         return Schema(
-            required=sorted(get_name(field) for field in field_type.__fields__.values() if field.required),
+            required=sorted(self.get_field_name(field) for field in field_type.__fields__.values() if field.required),
             properties={
-                get_name(f): self.for_field(
+                self.get_field_name(f): self.for_field(
                     SignatureField.create(
-                        field_type=field_type_hints[f.name], name=get_name(f), default_value=f.field_info
+                        field_type=field_type_hints[f.name], name=self.get_field_name(f), default_value=f.field_info
                     )
                 )
                 for f in field_type.__fields__.values()
@@ -733,6 +730,17 @@ class SchemaCreator:
                 SignatureField.create(field.field_type.item_type, f"{field.field_type.__name__}Field")
             )
         return schema
+
+    def get_field_name(self, field: ModelField) -> str:
+        """Get the preferred name for a model field.
+
+        Args:
+            field: A model field instance.
+
+        Returns:
+            The preferred name for the field.
+        """
+        return (field.alias or field.name) if self.prefer_alias else field.name
 
     def process_schema_result(self, field: SignatureField, schema: Schema) -> Schema | Reference:
         if field.kwarg_model and field.is_const and not field.is_empty and schema.const is None:
