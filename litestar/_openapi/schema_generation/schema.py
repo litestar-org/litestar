@@ -26,6 +26,7 @@ from typing import (
     Sequence,
     Set,
     Tuple,
+    Union,
     cast,
 )
 from uuid import UUID
@@ -398,7 +399,7 @@ class SchemaCreator:
         elif is_pydantic_constrained_field(field.field_type) or (
             isinstance(field.kwarg_model, (ParameterKwarg, BodyKwarg)) and field.kwarg_model.is_constrained
         ):
-            result = self.for_constrained_field(field.field_type, field.children, field.kwarg_model)  # type: ignore[arg-type]
+            result = self.for_constrained_field(field)
         elif field.children and not field.is_generic:
             result = self.for_object_type(field)
         elif field.is_generic and (
@@ -683,65 +684,53 @@ class SchemaCreator:
             title=_get_type_schema_name(field_type),
         )
 
-    def for_constrained_field(
-        self,
-        field_type: Any,
-        children: tuple[SignatureField, ...] | None,
-        kwargs_model: ParameterKwarg | BodyKwarg,
-    ) -> Schema:
+    def for_constrained_field(self, field: SignatureField) -> Schema:
         """Create Schema for Pydantic Constrained fields (created using constr(), conint() and so forth, or by subclassing
         Constrained*)
 
         Args:
-            field_type: A constrained field type.
-            children: Any children.
-            kwargs_model:  A constrained field model.
+            field: A signature field instance.
 
         Returns:
             A schema instance.
         """
-        if any(is_safe_subclass(field_type, t) for t in (int, float, Decimal)):
-            return create_numerical_constrained_field_schema(field_type, kwargs_model)
-        if any(is_safe_subclass(field_type, t) for t in (str, bytes)):  # type: ignore[arg-type]
-            return create_string_constrained_field_schema(field_type, kwargs_model)
-        if any(is_safe_subclass(field_type, t) for t in (date, datetime)):
-            return create_date_constrained_field_schema(field_type, kwargs_model)
-        return self.for_collection_constrained_field(field_type, tuple(children) if children else None, kwargs_model)
+        kwargs_model = cast(Union[ParameterKwarg, BodyKwarg], field.kwarg_model)
+        if any(is_safe_subclass(field.field_type, t) for t in (int, float, Decimal)):
+            return create_numerical_constrained_field_schema(field.field_type, kwargs_model)
+        if any(is_safe_subclass(field.field_type, t) for t in (str, bytes)):  # type: ignore[arg-type]
+            return create_string_constrained_field_schema(field.field_type, kwargs_model)
+        if any(is_safe_subclass(field.field_type, t) for t in (date, datetime)):
+            return create_date_constrained_field_schema(field.field_type, kwargs_model)
+        return self.for_collection_constrained_field(field)
 
-    def for_collection_constrained_field(
-        self,
-        field_type: type[list] | type[set] | type[frozenset] | type[tuple],
-        children: tuple[SignatureField, ...] | None,
-        kwargs_model: ParameterKwarg | BodyKwarg,
-    ) -> Schema:
+    def for_collection_constrained_field(self, field: SignatureField) -> Schema:
         """Create Schema from Constrained List/Set field.
 
         Args:
-            field_type: A constrained field type.
-            children: Any child fields.
-            kwargs_model:  A constrained field model.
+            field: A signature field instance.
 
         Returns:
             A schema instance.
         """
         schema = Schema(type=OpenAPIType.ARRAY)
+        kwargs_model = cast(Union[ParameterKwarg, BodyKwarg], field.kwarg_model)
         if kwargs_model.min_items:
             schema.min_items = kwargs_model.min_items
         if kwargs_model.max_items:
             schema.max_items = kwargs_model.max_items
-        if any(is_safe_subclass(field_type, t) for t in (set, frozenset)):  # type: ignore[arg-type]
+        if any(is_safe_subclass(field.field_type, t) for t in (set, frozenset)):  # type: ignore[arg-type]
             schema.unique_items = True
 
         item_creator = replace(self, generate_examples=False)
-        if children:
-            items = list(map(item_creator.for_field, children))
+        if field.children:
+            items = list(map(item_creator.for_field, field.children))
             if len(items) > 1:
                 schema.items = Schema(one_of=sort_schemas_and_references(items))
             else:
                 schema.items = items[0]
         else:
             schema.items = item_creator.for_field(
-                SignatureField.create(field_type.item_type, f"{field_type.__name__}Field")  # type: ignore[union-attr]
+                SignatureField.create(field.field_type.item_type, f"{field.field_type.__name__}Field")
             )
         return schema
 
