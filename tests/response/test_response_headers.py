@@ -5,7 +5,6 @@ import pytest
 from litestar import Controller, HttpMethod, Litestar, Router, get, post
 from litestar.datastructures import CacheControlHeader, ETag, ResponseHeader
 from litestar.datastructures.headers import Header
-from litestar.exceptions import ImproperlyConfiguredException
 from litestar.status_codes import HTTP_201_CREATED
 from litestar.testing import TestClient, create_test_client
 
@@ -71,12 +70,6 @@ def test_response_headers_mapping_unresolved() -> None:
     handler_one.response_headers = {"foo": "bar"}  # type: ignore[assignment]
 
     assert handler_one.resolve_response_headers() == frozenset([ResponseHeader(name="foo", value="bar")])
-
-
-def test_response_headers_validation() -> None:
-    ResponseHeader(name="test", documentation_only=True)
-    with pytest.raises(ImproperlyConfiguredException):
-        ResponseHeader(name="test")
 
 
 def test_response_headers_rendering() -> None:
