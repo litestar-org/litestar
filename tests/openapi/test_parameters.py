@@ -109,7 +109,7 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
                     "examples": [{"description": "Example  value", "value": "F"}],
                 },
                 "type": "array",
-                "examples": [{"description": "Example  value", "value": ["A"]}],
+                "examples": [{"description": "Example  value", "value": ["M"]}],
             },
             {
                 "type": "string",

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import deque
 from copy import copy
-from dataclasses import MISSING, dataclass, field, fields, replace
+from dataclasses import MISSING, dataclass, fields, replace
 from datetime import date, datetime, time, timedelta
 from enum import EnumMeta
 from ipaddress import IPv4Address, IPv4Interface, IPv4Network, IPv6Address, IPv6Interface, IPv6Network
@@ -359,13 +359,14 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
 
 @dataclass(frozen=True)
 class SchemaCreator:
-    generate_examples: bool = False
+    __slots__ = ("generate_examples", "plugins", "schemas", "prefer_alias")
+    generate_examples: bool
     """Whether to generate examples if none are given."""
-    plugins: list[OpenAPISchemaPluginProtocol] = field(default_factory=list)
+    plugins: list[OpenAPISchemaPluginProtocol]
     """A list of plugins."""
-    schemas: dict[str, Schema] = field(default_factory=dict)
+    schemas: dict[str, Schema]
     """A mapping of namespaces to schemas - this mapping is used in the OA components section."""
-    prefer_alias: bool = True
+    prefer_alias: bool
     """Whether to prefer the alias name for the schema."""
 
     def for_field(self, field: SignatureField) -> Schema | Reference:

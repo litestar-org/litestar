@@ -11,7 +11,6 @@ from typing_extensions import Annotated
 from litestar import Controller, MediaType, get
 from litestar._openapi.schema_generation.schema import (
     KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
-    SchemaCreator,
     create_schema,
     create_schema_for_annotation,
 )
@@ -54,9 +53,8 @@ def test_process_schema_result() -> None:
         max_length=1,
         pattern="^[a-z]$",
     )
-    schema = Schema()
     field = SignatureField.create(field_type=str, kwarg_model=kwarg_model)
-    SchemaCreator().process_schema_result(field, schema)
+    schema = create_schema(field=field, plugins=[], schemas={}, prefer_alias=True, generate_examples=False)
 
     assert schema.title
     assert schema.const == test_str
@@ -213,7 +211,11 @@ class Foo(BaseModel):
     foo: Annotated[int, "Foo description"]
 """
     )
-    schema = SchemaCreator().for_pydantic_model(module.Foo)
+    schemas = {}
+    create_schema(
+        field=SignatureField.create(module.Foo), plugins=[], schemas=schemas, prefer_alias=True, generate_examples=False
+    )
+    schema = schemas["Foo"]
     assert schema.properties and "foo" in schema.properties
 
 
@@ -233,7 +235,11 @@ class Foo:
     foo: Annotated[int, "Foo description"]
 """
     )
-    schema = SchemaCreator().for_dataclass(module.Foo)
+    schemas = {}
+    create_schema(
+        field=SignatureField.create(module.Foo), plugins=[], schemas=schemas, prefer_alias=True, generate_examples=False
+    )
+    schema = schemas["Foo"]
     assert schema.properties and "foo" in schema.properties
 
 
@@ -254,7 +260,11 @@ class Foo(TypedDict):
     baz: Annotated[NotRequired[int], "Baz description"]
 """
     )
-    schema = SchemaCreator().for_typed_dict(module.Foo)
+    schemas = {}
+    create_schema(
+        field=SignatureField.create(module.Foo), plugins=[], schemas=schemas, prefer_alias=True, generate_examples=False
+    )
+    schema = schemas["Foo"]
     assert schema.properties and all(key in schema.properties for key in ("foo", "bar", "baz"))
 
 
