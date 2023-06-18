@@ -5,6 +5,7 @@ from pydantic import BaseConfig, BaseModel
 
 from litestar import Controller, Litestar, post
 from litestar._openapi.request_body import create_request_body
+from litestar._openapi.schema_generation import SchemaCreator
 from litestar._signature.field import SignatureField
 from litestar.datastructures.upload_file import UploadFile
 from litestar.dto.interface import DTOInterface
@@ -28,9 +29,7 @@ def test_create_request_body(person_controller: Type[Controller]) -> None:
                 request_body = create_request_body(
                     route_handler=route_handler,
                     field=handler_fields["data"],
-                    generate_examples=True,
-                    plugins=[],
-                    schemas={},
+                    schema_creator=SchemaCreator(generate_examples=True),
                 )
                 assert request_body
 
@@ -97,9 +96,7 @@ def test_request_body_generation_with_dto() -> None:
     create_request_body(
         route_handler=handler,
         field=SignatureField.create(Dict[str, Any]),
-        generate_examples=False,
-        plugins=[],
-        schemas={},
+        schema_creator=SchemaCreator(generate_examples=False),
     )
 
     mock_dto.create_openapi_schema.assert_called_once_with("data", str(handler), False, {}, True)

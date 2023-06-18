@@ -87,7 +87,7 @@ def create_path_item(
     path_item = PathItem()
     operation_ids: list[str] = []
 
-    schema_creator = SchemaCreator(generate_examples=create_examples, schemas=schemas)
+    schema_creator = SchemaCreator(create_examples, plugins, schemas)
     for http_method, handler_tuple in route.route_handler_map.items():
         route_handler, _ = handler_tuple
 
@@ -104,9 +104,7 @@ def create_path_item(
                 request_body = create_request_body(
                     route_handler=route_handler,
                     field=handler_fields["data"],
-                    generate_examples=create_examples,
-                    plugins=plugins,
-                    schemas=schemas,
+                    schema_creator=schema_creator,
                 )
             operation_id = route_handler.operation_id or operation_id_creator(
                 route_handler, http_method, route.path_components
