@@ -1,3 +1,3 @@
-from .schema import SchemaCreator, create_schema
+from .schema import SchemaCreator
 
-__all__ = ("create_schema", "SchemaCreator")
+__all__ = ("SchemaCreator",)

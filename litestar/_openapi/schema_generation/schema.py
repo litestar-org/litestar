@@ -207,7 +207,6 @@ try:
 except ImportError:
     PYDANTIC_TYPE_MAP = {}
 
-__all__ = ("create_schema",)
 
 KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "default": "default",
@@ -790,25 +789,3 @@ class SchemaCreator:
             self.schemas[schema.title] = schema
             return Reference(ref=f"#/components/schemas/{schema.title}")
         return schema
-
-
-def create_schema(
-    field: SignatureField,
-    generate_examples: bool,
-    plugins: list[OpenAPISchemaPluginProtocol],
-    schemas: dict[str, Schema],
-    prefer_alias: bool,
-) -> Schema | Reference:
-    """Create a Schema for a given SignatureField.
-
-    Args:
-        field: A signature field instance.
-        generate_examples: Whether to generate examples if none are given.
-        plugins: A list of plugins.
-        schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
-        prefer_alias: Whether to prefer the alias name for the schema.
-
-    Returns:
-        A schema instance.
-    """
-    return SchemaCreator(generate_examples, plugins, schemas, prefer_alias).for_field(field)
