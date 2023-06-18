@@ -1,13 +1,92 @@
-from typing import Any, AsyncGenerator, Dict, Generator, List, Optional
+from typing import Any, Dict, List, Optional
 
 import pytest
+from typing_extensions import Annotated
 
-from litestar import Controller, Litestar, get
+from litestar import Controller, Litestar, get, post
 from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import Dependency
-from litestar.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
+from litestar.params import Body, Dependency, Parameter
+from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import create_test_client
+
+
+@pytest.mark.parametrize("backend", ("pydantic", "attrs"))
+def test_parsing_of_parameter_as_annotated(backend: Any) -> None:
+    @get(path="/")
+    def handler(param: Annotated[str, Parameter(min_length=1)]) -> str:
+        return param
+
+    with create_test_client(handler, _preferred_validation_backend=backend) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+        response = client.get("/?param=a")
+        assert response.status_code == HTTP_200_OK
+
+
+@pytest.mark.parametrize("backend", ("pydantic", "attrs"))
+def test_parsing_of_parameter_as_default_value(backend: Any) -> None:
+    @get(path="/")
+    def handler(param: str = Parameter(min_length=1)) -> str:
+        return param
+
+    with create_test_client(handler, _preferred_validation_backend=backend) as client:
+        response = client.get("/?param=")
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+        response = client.get("/?param=a")
+        assert response.status_code == HTTP_200_OK
+
+
+@pytest.mark.parametrize("backend", ("pydantic", "attrs"))
+def test_parsing_of_body_as_annotated(backend: Any) -> None:
+    @post(path="/")
+    def handler(data: Annotated[List[str], Body(min_items=1)]) -> List[str]:
+        return data
+
+    with create_test_client(handler, _preferred_validation_backend=backend) as client:
+        response = client.post("/", json=[])
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+        response = client.post("/", json=["a"])
+        assert response.status_code == HTTP_201_CREATED
+
+
+@pytest.mark.parametrize("backend", ("pydantic", "attrs"))
+def test_parsing_of_body_as_default_value(backend: Any) -> None:
+    @post(path="/")
+    def handler(data: List[str] = Body(min_items=1)) -> List[str]:
+        return data
+
+    with create_test_client(handler, _preferred_validation_backend=backend) as client:
+        response = client.post("/", json=[])
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+        response = client.post("/", json=["a"])
+        assert response.status_code == HTTP_201_CREATED
+
+
+@pytest.mark.parametrize("backend", ("pydantic", "attrs"))
+def test_parsing_of_dependency_as_annotated(backend: Any) -> None:
+    @get(path="/", dependencies={"dep": Provide(lambda: None, sync_to_thread=False)})
+    def handler(dep: Annotated[int, Dependency(skip_validation=True)]) -> int:
+        return dep
+
+    with create_test_client(handler, _preferred_validation_backend=backend) as client:
+        response = client.get("/")
+        assert response.text == "null"
+
+
+@pytest.mark.parametrize("backend", ("pydantic", "attrs"))
+def test_parsing_of_dependency_as_default_value(backend: Any) -> None:
+    @get(path="/", dependencies={"dep": Provide(lambda: None, sync_to_thread=False)})
+    def handler(dep: int = Dependency(skip_validation=True)) -> int:
+        return dep
+
+    with create_test_client(handler, _preferred_validation_backend=backend) as client:
+        response = client.get("/")
+        assert response.text == "null"
 
 
 @pytest.mark.parametrize(
@@ -28,7 +107,7 @@ def test_dependency_defaults(dependency: Any, expected: Optional[int]) -> None:
         assert resp.json() == {"value": expected}
 
 
-def test_non_optional_with_default() -> None:
+def test_dependency_non_optional_with_default() -> None:
     @get("/")
     def handler(value: int = Dependency(default=13)) -> Dict[str, int]:
         return {"value": value}
@@ -38,7 +117,7 @@ def test_non_optional_with_default() -> None:
         assert resp.json() == {"value": 13}
 
 
-def test_no_default_dependency_provided() -> None:
+def test_dependency_no_default() -> None:
     @get(dependencies={"value": Provide(lambda: 13, sync_to_thread=False)})
     def test(value: int = Dependency()) -> Dict[str, int]:
         return {"value": value}
@@ -105,7 +184,7 @@ def test_dependency_skip_validation_with_default_value() -> None:
         assert skipped_resp.json() == {"value": 1}
 
 
-def test_nested_sequence_dependency() -> None:
+def test_dependency_nested_sequence() -> None:
     class Obj:
         def __init__(self, seq: List[str]) -> None:
             self.seq = seq
@@ -130,27 +209,3 @@ def test_nested_sequence_dependency() -> None:
         assert resp.json() == ["a", "b", "c"]
         resp = client.get("/obj", params={"seq": seq})
         assert resp.json() == ["a", "b", "c"]
-
-
-def sync_callable() -> float:
-    return 0.1
-
-
-async def async_callable() -> float:
-    return 0.1
-
-
-def sync_generator() -> Generator[float, None, None]:
-    yield 0.1
-
-
-async def async_generator() -> AsyncGenerator[float, None]:
-    yield 0.1
-
-
-@pytest.mark.parametrize(
-    ("dep", "exp"),
-    [(sync_callable, True), (async_callable, False), (sync_generator, True), (async_generator, True)],
-)
-def test_dependency_has_async_callable(dep: Any, exp: bool) -> None:
-    assert Provide(dep).has_sync_callable is exp
