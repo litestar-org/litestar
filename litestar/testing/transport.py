@@ -148,7 +148,7 @@ class TestClientTransport(Generic[T]):
             scope.update(
                 subprotocols=[value.strip() for value in request.headers.get("sec-websocket-protocol", "").split(",")]
             )
-            session = WebSocketTestSession(client=self.client, scope=cast("WebSocketScope", scope))  # type: ignore [arg-type]
+            session = WebSocketTestSession(client=self.client, scope=cast("WebSocketScope", scope))  # type: ignore[arg-type]
             raise ConnectionUpgradeExceptionError(session)
 
         scope.update(method=request.method, http_version="1.1", extensions={"http.response.template": {}})
