@@ -176,21 +176,22 @@ class SignatureField:
 
         elif isinstance(default_value, FieldInfo):
             kwarg_model = _create_metadata_from_type(
-                value=default_value, model=BodyKwarg if name == "data" else ParameterKwarg, field_type=field_type
+                metadata=[default_value], model=BodyKwarg if name == "data" else ParameterKwarg, field_type=field_type
             )
 
         # this is for pydantic v1 only
         elif is_pydantic_constrained_field(field_type):
-            kwarg_model = _create_metadata_from_type(value=field_type, model=ParameterKwarg, field_type=field_type)
+            kwarg_model = _create_metadata_from_type(metadata=[field_type], model=ParameterKwarg, field_type=field_type)
 
         origin = get_origin(field_type)
 
         if not children and origin and (type_args := get_args(field_type)):
             if origin is Annotated:
                 field_type = normalize_type_annotation(type_args[0])
-                kwarg_model = kwarg_model or _create_metadata_from_type(
-                    value=type_args[1], model=BodyKwarg if name == "data" else ParameterKwarg, field_type=field_type
-                )
+                if len(type_args) > 1 and (metadata := list(type_args)[1:]):
+                    kwarg_model = kwarg_model or _create_metadata_from_type(
+                        metadata=metadata, model=BodyKwarg if name == "data" else ParameterKwarg, field_type=field_type
+                    )
             else:
                 children = tuple(SignatureField.create(arg) for arg in type_args)
 

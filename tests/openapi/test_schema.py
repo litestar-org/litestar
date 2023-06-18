@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Dict, Literal
 
+import annotated_types
 import msgspec
 import pytest
 from pydantic import BaseModel, Field
@@ -294,3 +295,23 @@ def test_create_schema_for_pydantic_field() -> None:
     assert schema.properties["value"].description == "description"  # type: ignore
     assert schema.properties["value"].title == "title"  # type: ignore
     assert schema.properties["value"].examples == [Example(value="example")]  # type: ignore
+
+
+def test_annotated_types() -> None:
+    @dataclass
+    class MyDataclass:
+        constrained_int = Annotated[int, annotated_types.Gt(1), annotated_types.Lt(10)]
+        constrained_float = Annotated[float, annotated_types.Ge(1), annotated_types.Le(10)]
+
+    schemas: Dict[str, Schema] = {}
+    create_schema(
+        field=SignatureField.create(name="MyDataclass", field_type=MyDataclass),
+        generate_examples=False,
+        plugins=[],
+        schemas=schemas,
+        prefer_alias=True,
+    )
+    schema = schemas["MyDataclass"]
+
+    assert schema.properties["constrained_int"] == {}  # type: ignore
+    assert schema.properties["constrained_float"] == {}  # type: ignore

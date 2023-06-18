@@ -114,7 +114,7 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
             {
                 "type": "string",
                 "enum": ["M", "F", "O", "A"],
-                "examples": [{"description": "Example  value", "value": "M"}],
+                "examples": [{"description": "Example  value", "value": "A"}],
             },
         ],
         "examples": [{"value": "M"}, {"value": ["M", "O"]}],

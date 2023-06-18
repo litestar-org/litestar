@@ -13,7 +13,7 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/python-poetry/poetry
-    rev: "1.5.1"
+    rev: "1.5.0"
     hooks:
       - id: poetry-check
       - id: poetry-lock
