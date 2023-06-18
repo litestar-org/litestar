@@ -2682,13 +2682,13 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "polyfactory"
-version = "2.3.1"
+version = "2.3.2"
 description = "Mock data generation factories"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "polyfactory-2.3.1-py3-none-any.whl", hash = "sha256:5d2dfdc25c9d471c9bb68f34be7cbd501179ab54fa95afc87756d531fb842606"},
-    {file = "polyfactory-2.3.1.tar.gz", hash = "sha256:19b483deadadb84c19bcc5b3463b0f12a308edd140fada5afd3cb85676e3eab4"},
+    {file = "polyfactory-2.3.2-py3-none-any.whl", hash = "sha256:00d8fa88b24287f11ca3dfd91a483e32d2a0326ff7a70544a3d28bf9b432cd1e"},
+    {file = "polyfactory-2.3.2.tar.gz", hash = "sha256:7285080fced78480983005a713e36601874d7259af6738c3aa10b5e13160b2e7"},
 ]
 
 [package.dependencies]
@@ -4389,4 +4389,4 @@ tortoise-orm = ["tortoise-orm"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "8efc71fe31d0e7302cb84cab702f08680abc18d34db3649aa7641518044ce299"
+content-hash = "4db64a8334c1f781732a0f125b3cfa3399792997fb0a42d9732e0b2a07e14b9c"
