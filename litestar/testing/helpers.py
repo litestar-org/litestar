@@ -104,6 +104,7 @@ def create_test_client(
     stores: StoreRegistry | dict[str, Store] | None = None,
     tags: Sequence[str] | None = None,
     template_config: TemplateConfig | None = None,
+    timeout: float | None = None,
     type_encoders: TypeEncodersMap | None = None,
     websocket_class: type[WebSocket] | None = None,
     _preferred_validation_backend: Literal["pydantic", "attrs"] | None = None,
@@ -221,6 +222,7 @@ def create_test_client(
         tags: A sequence of string tags that will be appended to the schema of all route handlers under the
             application.
         template_config: An instance of :class:`TemplateConfig <.template.TemplateConfig>`
+        timeout: Request timeout
         type_encoders: A mapping of types to callables that transform them into types supported for serialization.
         websocket_class: An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket
             connections.
@@ -290,6 +292,7 @@ def create_test_client(
         raise_server_exceptions=raise_server_exceptions,
         root_path=root_path,
         session_config=session_config,
+        timeout=timeout,
     )
 
 
@@ -345,6 +348,7 @@ def create_async_test_client(
     stores: StoreRegistry | dict[str, Store] | None = None,
     tags: Sequence[str] | None = None,
     template_config: TemplateConfig | None = None,
+    timeout: float | None = None,
     type_encoders: TypeEncodersMap | None = None,
     websocket_class: type[WebSocket] | None = None,
     _preferred_validation_backend: Literal["pydantic", "attrs"] | None = None,
@@ -462,6 +466,7 @@ def create_async_test_client(
         tags: A sequence of string tags that will be appended to the schema of all route handlers under the
             application.
         template_config: An instance of :class:`TemplateConfig <.template.TemplateConfig>`
+        timeout: Request timeout
         type_encoders: A mapping of types to callables that transform them into types supported for serialization.
         websocket_class: An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket
             connections.
@@ -531,4 +536,5 @@ def create_async_test_client(
         raise_server_exceptions=raise_server_exceptions,
         root_path=root_path,
         session_config=session_config,
+        timeout=timeout,
     )

@@ -44,6 +44,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
         backend: AnyIOBackend = "asyncio",
         backend_options: Mapping[str, Any] | None = None,
         session_config: BaseBackendConfig | None = None,
+        timeout: float | None = None,
         cookies: CookieTypes | None = None,
     ):
         """An Async client implementation providing a context manager for testing applications asynchronously.
@@ -58,6 +59,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             backend_options: 'anyio' options.
             session_config: Configuration for Session Middleware class to create raw session cookies for request to the
                 route handlers.
+            timeout: Request timeout
             cookies: Cookies to set on the client.
         """
         BaseTestClient.__init__(
@@ -81,6 +83,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
                 raise_server_exceptions=raise_server_exceptions,
                 root_path=root_path,
             ),
+            timeout=timeout,
         )
 
     async def __aenter__(self) -> AsyncTestClient[T]:
