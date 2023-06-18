@@ -93,10 +93,11 @@ def test_request_body_generation_with_dto() -> None:
     async def handler(data: Dict[str, Any]) -> None:
         return None
 
+    schema_creator = SchemaCreator(generate_examples=False)
     create_request_body(
         route_handler=handler,
         field=SignatureField.create(Dict[str, Any]),
-        schema_creator=SchemaCreator(generate_examples=False),
+        schema_creator=schema_creator,
     )
 
-    mock_dto.create_openapi_schema.assert_called_once_with("data", str(handler), False, {}, True)
+    mock_dto.create_openapi_schema.assert_called_once_with("data", str(handler), schema_creator)

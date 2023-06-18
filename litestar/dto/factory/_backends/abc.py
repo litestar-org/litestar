@@ -7,7 +7,6 @@ import secrets
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Final, Generic, TypeVar, cast
 
-from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
 from litestar.dto.factory import DTOData, Mark
 from litestar.typing import ParsedType
@@ -35,6 +34,7 @@ from .utils import (
 if TYPE_CHECKING:
     from typing import AbstractSet, Callable, Generator
 
+    from litestar._openapi.schema_generation import SchemaCreator
     from litestar.dto.factory import DTOConfig
     from litestar.dto.factory.data_structures import FieldDefinition
     from litestar.dto.interface import ConnectionContext
@@ -329,14 +329,9 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             parsed_type=self.context.parsed_type,
         )
 
-    def create_openapi_schema(
-        self, generate_examples: bool, schemas: dict[str, Schema], prefer_alias: bool
-    ) -> Reference | Schema:
+    def create_openapi_schema(self, schema_creator: SchemaCreator) -> Reference | Schema:
         """Create a RequestBody model for the given RouteHandler or return None."""
-        field = SignatureField.create(self.annotation)
-        return create_schema(
-            field=field, generate_examples=generate_examples, plugins=[], schemas=schemas, prefer_alias=prefer_alias
-        )
+        return schema_creator.for_field(SignatureField.create(self.annotation))
 
     def _create_transfer_type(
         self, parsed_type: ParsedType, exclude: AbstractSet[str], field_name: str, unique_name: str, nested_depth: int

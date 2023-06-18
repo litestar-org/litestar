@@ -426,5 +426,6 @@ def test_response_generation_with_dto() -> None:
     async def handler(data: Dict[str, Any]) -> Dict[str, Any]:
         return data
 
-    create_success_response(handler, SchemaCreator(generate_examples=False))
-    mock_dto.create_openapi_schema.assert_called_once_with("return", str(handler), False, {}, False)
+    schema_creator = SchemaCreator(generate_examples=False)
+    create_success_response(handler, schema_creator)
+    mock_dto.create_openapi_schema.assert_called_once_with("return", str(handler), schema_creator)

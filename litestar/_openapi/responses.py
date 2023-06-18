@@ -96,9 +96,7 @@ def create_success_response(  # noqa: C901
             media_type = media_type or MediaType.JSON
 
         if dto := route_handler.resolve_return_dto():
-            result = dto.create_openapi_schema(
-                "return", str(route_handler), schema_creator.generate_examples, schema_creator.schemas, False
-            )
+            result = dto.create_openapi_schema("return", str(route_handler), schema_creator)
         else:
             result = schema_creator.for_field(SignatureField.create(return_annotation))
 
