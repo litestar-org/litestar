@@ -87,25 +87,24 @@ def create_path_item(
     path_item = PathItem()
     operation_ids: list[str] = []
 
-    schema_creator = SchemaCreator(create_examples, plugins, schemas)
+    request_schema_creator = SchemaCreator(create_examples, plugins, schemas, prefer_alias=True)
+    response_schema_creator = SchemaCreator(create_examples, plugins, schemas, prefer_alias=False)
     for http_method, handler_tuple in route.route_handler_map.items():
         route_handler, _ = handler_tuple
 
         if route_handler.include_in_schema:
             handler_fields = route_handler.signature_model.fields if route_handler.signature_model else {}
             parameters = (
-                create_parameter_for_handler(route_handler, handler_fields, route.path_parameters, schema_creator)
+                create_parameter_for_handler(
+                    route_handler, handler_fields, route.path_parameters, request_schema_creator
+                )
                 or None
             )
             raises_validation_error = bool("data" in handler_fields or path_item.parameters or parameters)
 
             request_body = None
             if "data" in handler_fields:
-                request_body = create_request_body(
-                    route_handler=route_handler,
-                    field=handler_fields["data"],
-                    schema_creator=schema_creator,
-                )
+                request_body = create_request_body(route_handler, handler_fields["data"], request_schema_creator)
             operation_id = route_handler.operation_id or operation_id_creator(
                 route_handler, http_method, route.path_components
             )
@@ -116,13 +115,7 @@ def create_path_item(
                 summary=route_handler.summary or SEPARATORS_CLEANUP_PATTERN.sub("", route_handler.handler_name.title()),
                 description=get_description_for_handler(route_handler, use_handler_docstrings),
                 deprecated=route_handler.deprecated,
-                responses=create_responses(
-                    route_handler=route_handler,
-                    raises_validation_error=raises_validation_error,
-                    generate_examples=create_examples,
-                    plugins=plugins,
-                    schemas=schemas,
-                ),
+                responses=create_responses(route_handler, raises_validation_error, response_schema_creator),
                 request_body=request_body,
                 parameters=parameters,  # type: ignore[arg-type]
                 security=security,
