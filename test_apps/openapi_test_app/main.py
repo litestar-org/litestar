@@ -1,7 +1,7 @@
 from typing import Dict
 
 from litestar import Litestar, get
-from tests.openapi.conftest import create_person_controller, create_pet_controller
+from tests.unit.test_openapi.conftest import create_person_controller, create_pet_controller
 
 
 @get("/")
