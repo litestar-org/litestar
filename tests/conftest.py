@@ -37,6 +37,8 @@ from pytest_lazyfixture import lazy_fixture
 from redis.asyncio import Redis as AsyncRedis
 from redis.exceptions import ConnectionError as RedisConnectionError
 
+from litestar.logging import LoggingConfig
+from litestar.logging.config import default_handlers as logging_default_handlers
 from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.base import BaseSessionBackend
 from litestar.middleware.session.client_side import (
@@ -65,6 +67,7 @@ if TYPE_CHECKING:
         AnyIOBackend,
         ASGIApp,
         ASGIVersion,
+        GetLogger,
         Receive,
         RouteHandlerType,
         Scope,
@@ -318,6 +321,18 @@ def disable_warn_sync_to_thread_with_async(monkeypatch: MonkeyPatch) -> None:
 @pytest.fixture()
 def enable_warn_implicit_sync_to_thread(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.setenv("LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD", "1")
+
+
+@pytest.fixture
+def get_logger() -> GetLogger:
+    # due to the limitations of caplog we have to place this call here.
+    # we also have to allow propagation.
+    return LoggingConfig(
+        handlers=logging_default_handlers,
+        loggers={
+            "litestar": {"level": "INFO", "handlers": ["queue_listener"], "propagate": True},
+        },
+    ).configure()
 
 
 # Docker services
