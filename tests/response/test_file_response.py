@@ -1,17 +1,21 @@
+import os
 from email.utils import formatdate
-from os import urandom
+from os import stat, urandom
 from pathlib import Path
 from typing import Any
 
 import pytest
+from fsspec.implementations.local import LocalFileSystem
 
 from litestar import get
 from litestar.connection.base import empty_send
+from litestar.datastructures import ETag
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
 from litestar.response.file import ASGIFileResponse, File, async_file_iterator
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
+from litestar.types import FileSystemProtocol
 
 
 @pytest.mark.parametrize("content_disposition_type", ("inline", "attachment"))
@@ -97,13 +101,6 @@ async def test_file_response_with_directory_raises_error(tmpdir: Path) -> None:
         await asgi_response.start_response(empty_send)
 
 
-async def test_file_response_with_missing_file_raises_error(tmpdir: Path) -> None:
-    path = tmpdir / "404.txt"
-    with pytest.raises(ImproperlyConfiguredException):
-        asgi_response = ASGIFileResponse(file_path=path, filename="404.txt")
-        await asgi_response.start_response(empty_send)
-
-
 @pytest.mark.parametrize("chunk_size", [4, 8, 16, 256, 512, 1024, 2048])
 async def test_file_iterator(tmpdir: Path, chunk_size: int) -> None:
     content = urandom(1024)
@@ -135,3 +132,147 @@ def test_large_files(tmpdir: Path, size: int) -> None:
         assert response.status_code == HTTP_200_OK
         assert response.content == content
         assert response.headers["content-length"] == str(len(content))
+
+
+@pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), LocalFileSystem()))
+def test_file_with_different_file_systems(tmpdir: "Path", file_system: "FileSystemProtocol") -> None:
+    path = tmpdir / "text.txt"
+    path.write_text("content", "utf-8")
+
+    @get("/", media_type="application/octet-stream")
+    def handler() -> File:
+        return File(
+            filename="text.txt",
+            path=path,
+            file_system=file_system,
+        )
+
+    with create_test_client(handler, debug=True) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "content"
+        assert response.headers.get("content-disposition") == 'attachment; filename="text.txt"'
+
+
+def test_file_with_passed_in_file_info(tmpdir: "Path") -> None:
+    path = tmpdir / "text.txt"
+    path.write_text("content", "utf-8")
+
+    fs = LocalFileSystem()
+    fs_info = fs.info(tmpdir / "text.txt")
+
+    assert fs_info
+
+    @get("/", media_type="application/octet-stream")
+    def handler() -> File:
+        return File(filename="text.txt", path=path, file_system=fs, file_info=fs_info)  # pyright: ignore
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK, response.text
+        assert response.text == "content"
+        assert response.headers.get("content-disposition") == 'attachment; filename="text.txt"'
+
+
+def test_file_with_passed_in_stat_result(tmpdir: "Path") -> None:
+    path = tmpdir / "text.txt"
+    path.write_text("content", "utf-8")
+
+    fs = LocalFileSystem()
+    stat_result = stat(path)
+
+    @get("/", media_type="application/octet-stream")
+    def handler() -> File:
+        return File(filename="text.txt", path=path, file_system=fs, stat_result=stat_result)
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "content"
+        assert response.headers.get("content-disposition") == 'attachment; filename="text.txt"'
+
+
+async def test_file_with_symbolic_link(tmpdir: "Path") -> None:
+    path = tmpdir / "text.txt"
+    path.write_text("content", "utf-8")
+
+    linked = tmpdir / "alt.txt"
+    os.symlink(path, linked, target_is_directory=False)
+
+    fs = BaseLocalFileSystem()
+    file_info = await fs.info(linked)
+
+    assert file_info["islink"]
+
+    @get("/", media_type="application/octet-stream")
+    def handler() -> File:
+        return File(filename="alt.txt", path=linked, file_system=fs, file_info=file_info)
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "content"
+        assert response.headers.get("content-disposition") == 'attachment; filename="alt.txt"'
+
+
+async def test_file_sets_etag_correctly(tmpdir: "Path") -> None:
+    path = tmpdir / "file.txt"
+    content = b"<file content>"
+    Path(path).write_bytes(content)
+    etag = ETag(value="special")
+
+    @get("/")
+    def handler() -> File:
+        return File(path=path, etag=etag)
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers["etag"] == '"special"'
+
+
+def test_file_system_validation(tmpdir: "Path") -> None:
+    path = tmpdir / "text.txt"
+    path.write_text("content", "utf-8")
+
+    class FSWithoutOpen:
+        def info(self) -> None:
+            return
+
+    with pytest.raises(ImproperlyConfiguredException):
+        File(
+            filename="text.txt",
+            path=path,
+            file_system=FSWithoutOpen(),  # type:ignore[arg-type]
+        )
+
+    class FSWithoutInfo:
+        def open(self) -> None:
+            return
+
+    with pytest.raises(ImproperlyConfiguredException):
+        File(
+            filename="text.txt",
+            path=path,
+            file_system=FSWithoutInfo(),  # type:ignore[arg-type]
+        )
+
+    class ImplementedFS:
+        def info(self) -> None:
+            return
+
+        def open(self) -> None:
+            return
+
+    assert File(
+        filename="text.txt",
+        path=path,
+        file_system=ImplementedFS(),  # type:ignore[arg-type]
+    )
+
+
+async def test_file_response_with_missing_file_raises_error(tmpdir: Path) -> None:
+    path = tmpdir / "404.txt"
+    with pytest.raises(ImproperlyConfiguredException):
+        asgi_response = ASGIFileResponse(file_path=path, filename="404.txt")
+        await asgi_response.start_response(empty_send)

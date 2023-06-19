@@ -3,15 +3,16 @@
 https://github.com/encode/starlette/blob/master/tests/test_responses.py And are meant to ensure our compatibility with
 their API.
 """
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import pytest
 
+from litestar import get
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import ASGIResponse
-from litestar.response.redirect import ASGIRedirectResponse
+from litestar.response.redirect import ASGIRedirectResponse, Redirect
 from litestar.status_codes import HTTP_200_OK
-from litestar.testing import TestClient
+from litestar.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
     from litestar.types import Receive, Scope, Send
@@ -81,3 +82,34 @@ def test_redirect_response_html_media_type() -> None:
 def test_redirect_response_media_type_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         ASGIRedirectResponse(path="/", media_type="application/json")
+
+
+@pytest.mark.parametrize(
+    "status_code,expected_status_code",
+    [
+        (301, 301),
+        (302, 302),
+        (303, 303),
+        (307, 307),
+        (308, 308),
+    ],
+)
+def test_redirect_dynamic_status_code(status_code: Optional[int], expected_status_code: int) -> None:
+    @get("/")
+    def handler() -> Redirect:
+        return Redirect(path="/something-else", status_code=status_code)  # type: ignore[arg-type]
+
+    with create_test_client([handler], debug=True) as client:
+        res = client.get("/", follow_redirects=False)
+        assert res.status_code == expected_status_code
+
+
+@pytest.mark.parametrize("handler_status_code", [301, 307, None])
+def test_redirect(handler_status_code: Optional[int]) -> None:
+    @get("/", status_code=handler_status_code)
+    def handler() -> Redirect:
+        return Redirect(path="/something-else", status_code=301)
+
+    with create_test_client([handler]) as client:
+        res = client.get("/", follow_redirects=False)
+        assert res.status_code == 301
