@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Generic, Literal, cast
 from sqlalchemy import Result, Select, delete, over, select, text, update
 from sqlalchemy import func as sql_func
 
-from litestar.contrib.repository import AbstractAsyncRepository, RepositoryError, AbstractSyncRepository
+from litestar.contrib.repository import AbstractSyncRepository, RepositoryError
 from litestar.contrib.repository.filters import (
     BeforeAfter,
     CollectionFilter,
@@ -25,7 +25,6 @@ if TYPE_CHECKING:
     from datetime import datetime
 
     from sqlalchemy.engine.interfaces import _CoreSingleExecuteParams
-    from sqlalchemy.ext.asyncio import AsyncSession
     from sqlalchemy.orm import Session
 
 
