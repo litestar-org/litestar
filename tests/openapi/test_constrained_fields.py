@@ -9,7 +9,7 @@ from litestar._openapi.schema_generation.constrained_fields import (
     create_numerical_constrained_field_schema,
     create_string_constrained_field_schema,
 )
-from litestar._openapi.schema_generation.schema import SchemaCreator
+from litestar._openapi.schema_generation.schema import create_schema
 from litestar._signature.field import SignatureField
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from tests.openapi.utils import (
@@ -22,18 +22,22 @@ from tests.openapi.utils import (
 
 @pytest.mark.parametrize("field_type", constrained_collection)
 def test_create_collection_constrained_field_schema(field_type: Any) -> None:
-    schema = SchemaCreator().for_collection_constrained_field(SignatureField.create(field_type))
-    assert schema.type == OpenAPIType.ARRAY
+    schema = create_schema(
+        field=SignatureField.create(field_type), plugins=[], schemas={}, prefer_alias=True, generate_examples=False
+    )
+    assert schema.type == OpenAPIType.ARRAY  # type: ignore
     assert schema.items.type == OpenAPIType.INTEGER  # type: ignore
-    assert schema.min_items == field_type.min_items
-    assert schema.max_items == field_type.max_items
+    assert schema.min_items == field_type.min_items  # type: ignore
+    assert schema.max_items == field_type.max_items  # type: ignore
 
 
 def test_create_collection_constrained_field_schema_sub_fields() -> None:
     for pydantic_fn in (conlist, conset):
         signature_field = SignatureField.create(pydantic_fn(Union[str, int], min_items=1, max_items=10))  # type: ignore
-        schema = SchemaCreator().for_collection_constrained_field(signature_field)
-        assert schema.type == OpenAPIType.ARRAY
+        schema = create_schema(
+            field=signature_field, plugins=[], schemas={}, prefer_alias=True, generate_examples=False
+        )
+        assert schema.type == OpenAPIType.ARRAY  # type: ignore
         expected = {
             "items": {"oneOf": [{"type": "integer"}, {"type": "string"}]},
             "maxItems": 10,
@@ -96,5 +100,7 @@ def test_create_date_constrained_field_schema(field_type: Any) -> None:
     "field_type", [*constrained_numbers, *constrained_collection, *constrained_string, *constrained_dates]
 )
 def test_create_constrained_field_schema(field_type: Any) -> None:
-    schema = SchemaCreator().for_constrained_field(SignatureField.create(field_type))
+    schema = create_schema(
+        field=SignatureField.create(field_type), plugins=[], schemas={}, prefer_alias=True, generate_examples=False
+    )
     assert schema

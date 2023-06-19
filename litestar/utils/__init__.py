@@ -3,6 +3,7 @@ from litestar.utils.deprecation import deprecated, warn_deprecation
 from .helpers import Ref, encode_headers, get_enum_string_value, get_name, url_quote
 from .path import join_paths, normalize_path
 from .predicates import (
+    is_annotated_type,
     is_any,
     is_async_callable,
     is_attrs_class,
@@ -48,6 +49,7 @@ __all__ = (
     "get_origin_or_inner_type",
     "get_serializer_from_scope",
     "is_any",
+    "is_annotated_type",
     "is_async_callable",
     "is_attrs_class",
     "is_class_and_subclass",

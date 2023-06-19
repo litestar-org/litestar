@@ -422,7 +422,7 @@ async def redis_responsive(host: str) -> bool:
 
 
 @pytest.fixture()
-async def redis_service(docker_services: DockerServiceRegistry) -> None:  # pylint: disable=unused-argument
+async def redis_service(docker_services: DockerServiceRegistry) -> None:
     await docker_services.start("redis", check=redis_responsive)
 
 
