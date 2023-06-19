@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, Mock, PropertyMock
 import pytest
 from pytest import MonkeyPatch
 
-from litestar import MediaType, Request, Response, get, post
+from litestar import Litestar, MediaType, Request, Response, get, post
 from litestar.config.app import AppConfig
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.datastructures import MutableScopeHeaders, State
@@ -30,7 +30,6 @@ from tests import Person
 if TYPE_CHECKING:
     from typing import Dict
 
-    from litestar import Litestar
     from litestar.types import Message, Scope
 
 
