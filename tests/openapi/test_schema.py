@@ -1,7 +1,9 @@
 from dataclasses import dataclass
+from datetime import date
 from enum import Enum
 from typing import TYPE_CHECKING, Dict, Literal
 
+import annotated_types
 import msgspec
 import pytest
 from pydantic import BaseModel, Field
@@ -52,12 +54,11 @@ def test_process_schema_result() -> None:
         max_length=1,
         pattern="^[a-z]$",
     )
-    schema = Schema()
     field = SignatureField.create(field_type=str, kwarg_model=kwarg_model)
-    SchemaCreator().process_schema_result(field, schema)
+    schema = SchemaCreator().for_field(field)
 
-    assert schema.title
-    assert schema.const == test_str
+    assert schema.title  # type: ignore
+    assert schema.const == test_str  # type: ignore
     for signature_key, schema_key in KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
         assert getattr(schema, schema_key) == getattr(kwarg_model, signature_key)
 
@@ -190,7 +191,9 @@ class Foo(BaseModel):
     foo: Annotated[int, "Foo description"]
 """
     )
-    schema = SchemaCreator().for_pydantic_model(module.Foo)
+    schemas: Dict[str, Schema] = {}
+    SchemaCreator(schemas=schemas).for_field(SignatureField.create(module.Foo))
+    schema = schemas["Foo"]
     assert schema.properties and "foo" in schema.properties
 
 
@@ -210,7 +213,9 @@ class Foo:
     foo: Annotated[int, "Foo description"]
 """
     )
-    schema = SchemaCreator().for_dataclass(module.Foo)
+    schemas: Dict[str, Schema] = {}
+    SchemaCreator(schemas=schemas).for_field(SignatureField.create(module.Foo))
+    schema = schemas["Foo"]
     assert schema.properties and "foo" in schema.properties
 
 
@@ -231,7 +236,9 @@ class Foo(TypedDict):
     baz: Annotated[NotRequired[int], "Baz description"]
 """
     )
-    schema = SchemaCreator().for_typed_dict(module.Foo)
+    schemas: Dict[str, Schema] = {}
+    SchemaCreator(schemas=schemas).for_field(SignatureField.create(module.Foo))
+    schema = schemas["Foo"]
     assert schema.properties and all(key in schema.properties for key in ("foo", "bar", "baz"))
 
 
@@ -261,3 +268,33 @@ def test_create_schema_for_pydantic_field() -> None:
     assert schema.properties["value"].description == "description"  # type: ignore
     assert schema.properties["value"].title == "title"  # type: ignore
     assert schema.properties["value"].examples == [Example(value="example")]  # type: ignore
+
+
+def test_annotated_types() -> None:
+    historical_date = date(year=1980, day=1, month=1)
+    today = date.today()
+
+    @dataclass
+    class MyDataclass:
+        constrained_int: Annotated[int, annotated_types.Gt(1), annotated_types.Lt(10)]
+        constrained_float: Annotated[float, annotated_types.Ge(1), annotated_types.Le(10)]
+        constrained_date: Annotated[date, annotated_types.Interval(gt=historical_date, lt=today)]
+        constrainted_lower_case: Annotated[str, annotated_types.LowerCase]
+        constrainted_upper_case: Annotated[str, annotated_types.UpperCase]
+        constrainted_is_ascii: Annotated[str, annotated_types.IsAscii]
+        constrainted_is_digit: Annotated[str, annotated_types.IsDigits]
+
+    schemas: Dict[str, Schema] = {}
+    SchemaCreator(schemas=schemas).for_field(SignatureField.create(name="MyDataclass", field_type=MyDataclass))
+    schema = schemas["MyDataclass"]
+
+    assert schema.properties["constrained_int"].exclusive_minimum == 1  # type: ignore
+    assert schema.properties["constrained_int"].exclusive_maximum == 10  # type: ignore
+    assert schema.properties["constrained_float"].minimum == 1  # type: ignore
+    assert schema.properties["constrained_float"].maximum == 10  # type: ignore
+    assert date.fromtimestamp(schema.properties["constrained_date"].exclusive_minimum) == historical_date  # type: ignore
+    assert date.fromtimestamp(schema.properties["constrained_date"].exclusive_maximum) == today  # type: ignore
+    assert schema.properties["constrainted_lower_case"].description == "must be in lower case"  # type: ignore
+    assert schema.properties["constrainted_upper_case"].description == "must be in upper case"  # type: ignore
+    assert schema.properties["constrainted_is_ascii"].pattern == "[[:ascii:]]"  # type: ignore
+    assert schema.properties["constrainted_is_digit"].pattern == "[[:digit:]]"  # type: ignore

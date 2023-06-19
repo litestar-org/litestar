@@ -28,13 +28,14 @@ from typing import (
     Tuple,
     Union,
     cast,
+    get_origin,
 )
 from uuid import UUID
 
 from _decimal import Decimal
 from msgspec.structs import fields as msgspec_struct_fields
 from polyfactory.utils.predicates import is_safe_subclass
-from typing_extensions import get_args, get_type_hints
+from typing_extensions import NotRequired, Required, get_args
 
 from litestar._openapi.schema_generation.constrained_fields import (
     create_date_constrained_field_schema,
@@ -583,7 +584,7 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        field_type_hints = get_type_hints(field_type)
+        field_type_hints = field_type.__annotations__
         model_config = getattr(field_type, "__config__", getattr(field_type, "model_config", Empty))
         if isinstance(model_config, dict):
             title = model_config.get("title")
@@ -619,7 +620,7 @@ class SchemaCreator:
         from attr import NOTHING
         from attrs import fields_dict
 
-        field_type_hints = get_type_hints(field_type)
+        field_type_hints = field_type.__annotations__
         return Schema(
             required=sorted(
                 [
@@ -667,7 +668,7 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        field_type_hints = get_type_hints(field_type)
+        field_type_hints = field_type.__annotations__
         return Schema(
             required=sorted(
                 [
@@ -694,9 +695,16 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
+        annotations: dict[str, Any] = {}
+        for k, v in field_type.__annotations__.items():
+            if get_origin(v) in (Required, NotRequired):
+                annotations[k] = get_args(v)[0]
+            else:
+                annotations[k] = v
+
         return Schema(
             required=sorted(getattr(field_type, "__required_keys__", [])),
-            properties={k: self.for_field(SignatureField.create(v, k)) for k, v in get_type_hints(field_type).items()},
+            properties={k: self.for_field(SignatureField.create(v, k)) for k, v in annotations.items()},
             type=OpenAPIType.OBJECT,
             title=_get_type_schema_name(field_type),
         )

@@ -31,6 +31,7 @@ from msgspec import Struct
 from typing_extensions import (
     ParamSpec,
     TypeGuard,
+    _AnnotatedAlias,
     get_args,
     is_typeddict,
 )
@@ -402,3 +403,15 @@ def is_sync_or_async_generator(obj: Any) -> TypeGuard[AnyGenerator]:
         A boolean.
     """
     return isgeneratorfunction(obj) or isasyncgenfunction(obj)
+
+
+def is_annotated_type(annotation: Any) -> bool:
+    """Check if the given annotation is an Annotated.
+
+    Args:
+        annotation: A type annotation
+
+    Returns:
+        A boolean.
+    """
+    return isinstance(annotation, _AnnotatedAlias) and getattr(annotation, "__args__", None) is not None

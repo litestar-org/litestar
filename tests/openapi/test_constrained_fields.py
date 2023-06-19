@@ -24,7 +24,7 @@ from tests.openapi.utils import (
 def test_create_collection_constrained_field_schema(field_type: Any) -> None:
     schema = SchemaCreator().for_collection_constrained_field(SignatureField.create(field_type))
     assert schema.type == OpenAPIType.ARRAY
-    assert schema.items.type == OpenAPIType.INTEGER  # type: ignore
+    assert schema.items.type == OpenAPIType.INTEGER  # type: ignore[union-attr]
     assert schema.min_items == field_type.min_items
     assert schema.max_items == field_type.max_items
 

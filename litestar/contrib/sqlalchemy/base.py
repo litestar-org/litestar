@@ -132,7 +132,7 @@ class CommonTableAttributes:
 
     # noinspection PyMethodParameters
     @declared_attr.directive
-    def __tablename__(cls) -> str:  # pylint: disable=no-self-argument
+    def __tablename__(cls) -> str:
         """Infer table name from class name."""
         regexp = re.compile("((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))")
         return regexp.sub(r"_\1", cls.__name__).lower()
