@@ -24,16 +24,6 @@ project_base = Path(__file__).parent.parent.parent
 
 
 @pytest.fixture()
-def mock_subprocess_run(mocker: MockerFixture) -> MagicMock:
-    return mocker.patch("litestar.cli.commands.core.subprocess.run")
-
-
-@pytest.fixture()
-def mock_uvicorn_run(mocker: MockerFixture) -> MagicMock:
-    return mocker.patch("litestar.cli.commands.core.uvicorn.run")
-
-
-@pytest.fixture()
 def mock_show_app_info(mocker: MockerFixture) -> MagicMock:
     return mocker.patch("litestar.cli.commands.core.show_app_info")
 

@@ -22,8 +22,8 @@ from litestar.types import Scope
         (MakoTemplateEngine, "${csrf_token()}"),
     ),
 )
-def test_csrf_token(engine: Any, template: str, template_dir: Path) -> None:
-    Path(template_dir / "abc.html").write_text(template)
+def test_csrf_token(engine: Any, template: str, tmp_path: Path) -> None:
+    Path(tmp_path / "abc.html").write_text(template)
 
     @get(path="/", media_type=MediaType.HTML)
     def handler() -> Template:
@@ -34,7 +34,7 @@ def test_csrf_token(engine: Any, template: str, template_dir: Path) -> None:
     with create_test_client(
         route_handlers=[handler],
         template_config=TemplateConfig(
-            directory=template_dir,
+            directory=tmp_path,
             engine=engine,
         ),
         csrf_config=csrf_config,
@@ -50,8 +50,8 @@ def test_csrf_token(engine: Any, template: str, template_dir: Path) -> None:
         (MakoTemplateEngine, "${csrf_input}"),
     ),
 )
-def test_csrf_input(engine: Any, template: str, template_dir: Path) -> None:
-    Path(template_dir / "abc.html").write_text(template)
+def test_csrf_input(engine: Any, template: str, tmp_path: Path) -> None:
+    Path(tmp_path / "abc.html").write_text(template)
     token = {"value": ""}
 
     @get(path="/", media_type=MediaType.HTML)
@@ -64,7 +64,7 @@ def test_csrf_input(engine: Any, template: str, template_dir: Path) -> None:
     with create_test_client(
         route_handlers=[handler],
         template_config=TemplateConfig(
-            directory=template_dir,
+            directory=tmp_path,
             engine=engine,
         ),
         csrf_config=csrf_config,

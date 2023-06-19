@@ -18,8 +18,8 @@ from litestar.testing import create_test_client
         (MakoTemplateEngine, 'path: ${request.scope["path"]}', "path: /"),
     ),
 )
-def test_request_is_set_in_context(engine: Any, template: str, expected: str, template_dir: Path) -> None:
-    Path(template_dir / "abc.html").write_text(template)
+def test_request_is_set_in_context(engine: Any, template: str, expected: str, tmp_path: Path) -> None:
+    Path(tmp_path / "abc.html").write_text(template)
 
     @get(path="/", media_type=MediaType.HTML)
     def handler() -> Template:
@@ -28,7 +28,7 @@ def test_request_is_set_in_context(engine: Any, template: str, expected: str, te
     with create_test_client(
         route_handlers=[handler],
         template_config=TemplateConfig(
-            directory=template_dir,
+            directory=tmp_path,
             engine=engine,
         ),
     ) as client:

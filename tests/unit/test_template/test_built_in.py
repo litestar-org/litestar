@@ -41,8 +41,8 @@ def engine_test(request: Any) -> EngineTest:
 
 
 @pytest.fixture()
-def index_handler(engine_test: EngineTest, template_dir: Path) -> "HTTPRouteHandler":
-    Path(template_dir / "index.html").write_text(engine_test.index_template)
+def index_handler(engine_test: EngineTest, tmp_path: Path) -> "HTTPRouteHandler":
+    Path(tmp_path / "index.html").write_text(engine_test.index_template)
 
     @get(path="/")
     def index_handler() -> Template:
@@ -52,8 +52,8 @@ def index_handler(engine_test: EngineTest, template_dir: Path) -> "HTTPRouteHand
 
 
 @pytest.fixture()
-def nested_path_handler(engine_test: EngineTest, template_dir: Path) -> "HTTPRouteHandler":
-    nested_path = template_dir / "nested-dir"
+def nested_path_handler(engine_test: EngineTest, tmp_path: Path) -> "HTTPRouteHandler":
+    nested_path = tmp_path / "nested-dir"
     nested_path.mkdir()
     Path(nested_path / "nested.html").write_text(engine_test.nested_template)
 
@@ -65,8 +65,8 @@ def nested_path_handler(engine_test: EngineTest, template_dir: Path) -> "HTTPRou
 
 
 @pytest.fixture()
-def template_config(engine_test: EngineTest, template_dir: Path) -> TemplateConfig:
-    return TemplateConfig(engine=engine_test.engine, directory=template_dir)
+def template_config(engine_test: EngineTest, tmp_path: Path) -> TemplateConfig:
+    return TemplateConfig(engine=engine_test.engine, directory=tmp_path)
 
 
 def test_template(index_handler: "HTTPRouteHandler", template_config: TemplateConfig) -> None:
@@ -77,7 +77,7 @@ def test_template(index_handler: "HTTPRouteHandler", template_config: TemplateCo
         assert response.headers["Content-Type"] == "text/html; charset=utf-8"
 
 
-def test_nested_template_directory(nested_path_handler: "HTTPRouteHandler", template_config: TemplateConfig) -> None:
+def test_nested_tmp_pathectory(nested_path_handler: "HTTPRouteHandler", template_config: TemplateConfig) -> None:
     with create_test_client(route_handlers=[nested_path_handler], template_config=template_config) as client:
         response = client.request("GET", "/nested")
         assert response.status_code == 200, response.text
@@ -96,8 +96,8 @@ def test_raise_for_invalid_template_name(template_config: TemplateConfig) -> Non
         assert response.json() == {"detail": "Template invalid.html not found.", "status_code": 500}
 
 
-def test_no_context(template_dir: Path, template_config: TemplateConfig) -> None:
-    Path(template_dir / "index.html").write_text("<html>This works!</html>")
+def test_no_context(tmp_path: Path, template_config: TemplateConfig) -> None:
+    Path(tmp_path / "index.html").write_text("<html>This works!</html>")
 
     @get(path="/")
     def index() -> Template:

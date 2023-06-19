@@ -18,11 +18,6 @@ from litestar.types.asgi_types import WebSocketMode
 
 
 @pytest.fixture
-def mock() -> MagicMock:
-    return MagicMock()
-
-
-@pytest.fixture
 def listener_class(mock: MagicMock) -> Type[WebsocketListener]:
     class Listener(WebsocketListener):
         def on_receive(self, data: str) -> str:

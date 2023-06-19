@@ -175,7 +175,7 @@ def test_custom_csrf_config(get_handler: HTTPRouteHandler, post_handler: HTTPRou
         (MakoTemplateEngine, "${csrf_input}"),
     ),
 )
-def test_csrf_form_parsing(engine: Any, template: str, template_dir: Path) -> None:
+def test_csrf_form_parsing(engine: Any, template: str, tmp_path: Path) -> None:
     @get(path="/", media_type=MediaType.HTML)
     def handler() -> Template:
         return Template(template_name="abc.html")
@@ -187,13 +187,13 @@ def test_csrf_form_parsing(engine: Any, template: str, template_dir: Path) -> No
     with create_test_client(
         route_handlers=[handler, form_handler],
         template_config=TemplateConfig(
-            directory=template_dir,
+            directory=tmp_path,
             engine=engine,
         ),
         csrf_config=CSRFConfig(secret=str(urandom(10))),
     ) as client:
         url = str(client.base_url) + "/"
-        Path(template_dir / "abc.html").write_text(
+        Path(tmp_path / "abc.html").write_text(
             f'<html><body><div><form action="{url}" method="post">{template}</form></div></body></html>'
         )
         _ = client.get("/")

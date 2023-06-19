@@ -28,7 +28,7 @@ def test_handler_raise_for_no_template_engine() -> None:
         assert response.json() == {"detail": "Template engine is not configured", "status_code": 500}
 
 
-def test_engine_passed_to_callback(template_dir: "Path") -> None:
+def test_engine_passed_to_callback(tmp_path: "Path") -> None:
     received_engine: Optional[JinjaTemplateEngine] = None
 
     def callback(engine: JinjaTemplateEngine) -> None:
@@ -38,7 +38,7 @@ def test_engine_passed_to_callback(template_dir: "Path") -> None:
     app = Litestar(
         route_handlers=[],
         template_config=TemplateConfig(
-            directory=template_dir,
+            directory=tmp_path,
             engine=JinjaTemplateEngine,
             engine_callback=callback,
         ),
@@ -49,8 +49,8 @@ def test_engine_passed_to_callback(template_dir: "Path") -> None:
 
 
 @pytest.mark.parametrize("engine", (JinjaTemplateEngine, MakoTemplateEngine))
-def test_engine_instance(engine: Type["TemplateEngineProtocol"], template_dir: "Path") -> None:
-    engine_instance = engine(template_dir)
+def test_engine_instance(engine: Type["TemplateEngineProtocol"], tmp_path: "Path") -> None:
+    engine_instance = engine(tmp_path)
     if isinstance(engine_instance, JinjaTemplateEngine):
         assert engine_instance.engine.autoescape is True
 
@@ -62,21 +62,21 @@ def test_engine_instance(engine: Type["TemplateEngineProtocol"], template_dir: "
 
 
 @pytest.mark.parametrize("engine", (JinjaTemplateEngine, MakoTemplateEngine))
-def test_directory_validation(engine: Type["TemplateEngineProtocol"], template_dir: "Path") -> None:
+def test_directory_validation(engine: Type["TemplateEngineProtocol"], tmp_path: "Path") -> None:
     with pytest.raises(ImproperlyConfiguredException):
         TemplateConfig(engine=engine)
 
 
 @pytest.mark.parametrize("media_type", [MediaType.HTML, MediaType.TEXT, "text/arbitrary"])
-def test_media_type(media_type: Union[MediaType, str], template_dir: Path) -> None:
-    (template_dir / "hello.tpl").write_text("hello")
+def test_media_type(media_type: Union[MediaType, str], tmp_path: Path) -> None:
+    (tmp_path / "hello.tpl").write_text("hello")
 
     @get("/", media_type=media_type)
     def index() -> Template:
         return Template(template_name="hello.tpl")
 
     with create_test_client(
-        [index], template_config=TemplateConfig(directory=template_dir, engine=JinjaTemplateEngine)
+        [index], template_config=TemplateConfig(directory=tmp_path, engine=JinjaTemplateEngine)
     ) as client:
         res = client.get("/")
         assert res.status_code == 200
@@ -100,24 +100,24 @@ def test_media_type(media_type: Union[MediaType, str], template_dir: Path) -> No
     ],
 )
 @pytest.mark.skipif(sys.platform == "win32", reason="mimetypes.guess_types is unreliable on windows")
-def test_media_type_inferred(extension: str, expected_type: MediaType, template_dir: Path) -> None:
+def test_media_type_inferred(extension: str, expected_type: MediaType, tmp_path: Path) -> None:
     tpl_name = "hello" + extension
-    (template_dir / tpl_name).write_text("hello")
+    (tmp_path / tpl_name).write_text("hello")
 
     @get("/")
     def index() -> Template:
         return Template(template_name=tpl_name)
 
     with create_test_client(
-        [index], template_config=TemplateConfig(directory=template_dir, engine=JinjaTemplateEngine)
+        [index], template_config=TemplateConfig(directory=tmp_path, engine=JinjaTemplateEngine)
     ) as client:
         res = client.get("/")
         assert res.status_code == 200
         assert res.headers["content-type"].startswith(expected_type.value)
 
 
-def test_before_request_handler_content_type(template_dir: Path) -> None:
-    template_loc = template_dir / "about.html"
+def test_before_request_handler_content_type(tmp_path: Path) -> None:
+    template_loc = tmp_path / "about.html"
 
     def before_request_handler(_: "Request") -> None:
         template_loc.write_text("before request")
@@ -127,7 +127,7 @@ def test_before_request_handler_content_type(template_dir: Path) -> None:
         return Template(template_name="about.html")
 
     with create_test_client(
-        [index], template_config=TemplateConfig(directory=template_dir, engine=JinjaTemplateEngine)
+        [index], template_config=TemplateConfig(directory=tmp_path, engine=JinjaTemplateEngine)
     ) as client:
         res = client.get("/")
         assert res.status_code == 200

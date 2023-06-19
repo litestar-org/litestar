@@ -9,6 +9,7 @@ import sys
 from os import urandom
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, TypeVar, Union, cast
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fakeredis.aioredis import FakeRedis
@@ -52,17 +53,17 @@ if TYPE_CHECKING:
 pytest_plugins = ["tests.docker_service_fixtures"]
 
 
+@pytest.fixture
+def mock() -> MagicMock:
+    return MagicMock()
+
+
 @pytest.fixture()
-def template_dir(tmp_path: Path) -> Path:
-    return tmp_path
+def async_mock() -> AsyncMock:
+    return AsyncMock()
 
 
-@pytest.fixture(
-    params=[
-        pytest.param("asyncio", id="asyncio"),
-        pytest.param("trio", id="trio"),
-    ]
-)
+@pytest.fixture(params=[pytest.param("asyncio", id="asyncio"), pytest.param("trio", id="trio")])
 def anyio_backend(request: pytest.FixtureRequest) -> str:
     return request.param  # type: ignore[no-any-return]
 
@@ -251,11 +252,6 @@ def create_module(tmp_path: Path, monkeypatch: MonkeyPatch) -> Callable[[str], M
         return module
 
     return wrapped
-
-
-@pytest.fixture(scope="module")
-def mock_db() -> MemoryStore:
-    return MemoryStore()
 
 
 @pytest.fixture()

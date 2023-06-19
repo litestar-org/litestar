@@ -11,12 +11,17 @@ from pydantic import BaseModel, Field
 from litestar import Litestar, Request, Response, get
 from litestar.contrib.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
+from litestar.stores.memory import MemoryStore
 from litestar.testing import create_test_client
 from tests import User, UserFactory
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
-    from litestar.stores.memory import MemoryStore
+
+
+@pytest.fixture(scope="module")
+def mock_db() -> MemoryStore:
+    return MemoryStore()
 
 
 @given(

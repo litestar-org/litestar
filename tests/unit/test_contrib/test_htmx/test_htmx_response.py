@@ -245,8 +245,8 @@ async def test_hx_location_response_with_all_parameters() -> None:
         ),
     ),
 )
-def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str, template_dir: Path) -> None:
-    Path(template_dir / "abc.html").write_text(template)
+def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str, tmp_path: Path) -> None:
+    Path(tmp_path / "abc.html").write_text(template)
 
     @get(path="/")
     def handler() -> HTMXTemplate:
@@ -264,7 +264,7 @@ def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str
     with create_test_client(
         route_handlers=[handler],
         template_config=TemplateConfig(
-            directory=template_dir,
+            directory=tmp_path,
             engine=engine,
         ),
     ) as client:
@@ -283,8 +283,8 @@ def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str
         (MakoTemplateEngine, "path: ${request.scope['path']}", "path: /"),
     ),
 )
-def test_HTMXTemplate_response_no_params(engine: Any, template: str, expected: str, template_dir: Path) -> None:
-    Path(template_dir / "abc.html").write_text(template)
+def test_HTMXTemplate_response_no_params(engine: Any, template: str, expected: str, tmp_path: Path) -> None:
+    Path(tmp_path / "abc.html").write_text(template)
 
     @get(path="/")
     def handler() -> HTMXTemplate:
@@ -296,7 +296,7 @@ def test_HTMXTemplate_response_no_params(engine: Any, template: str, expected: s
     with create_test_client(
         route_handlers=[handler],
         template_config=TemplateConfig(
-            directory=template_dir,
+            directory=tmp_path,
             engine=engine,
         ),
     ) as client:
@@ -315,10 +315,8 @@ def test_HTMXTemplate_response_no_params(engine: Any, template: str, expected: s
         (MakoTemplateEngine, "path: ${request.scope['path']}", "path: /"),
     ),
 )
-def test_HTMXTemplate_response_push_url_set_to_false(
-    engine: Any, template: str, expected: str, template_dir: Path
-) -> None:
-    Path(template_dir / "abc.html").write_text(template)
+def test_HTMXTemplate_response_push_url_set_to_false(engine: Any, template: str, expected: str, tmp_path: Path) -> None:
+    Path(tmp_path / "abc.html").write_text(template)
 
     @get(path="/")
     def handler() -> HTMXTemplate:
@@ -331,7 +329,7 @@ def test_HTMXTemplate_response_push_url_set_to_false(
     with create_test_client(
         route_handlers=[handler],
         template_config=TemplateConfig(
-            directory=template_dir,
+            directory=tmp_path,
             engine=engine,
         ),
     ) as client:
@@ -350,10 +348,8 @@ def test_HTMXTemplate_response_push_url_set_to_false(
         (MakoTemplateEngine, "path: ${request.scope['path']}", "path: /"),
     ),
 )
-def test_htmx_template_response_bad_trigger_params(
-    engine: Any, template: str, expected: str, template_dir: Path
-) -> None:
-    Path(template_dir / "abc.html").write_text(template)
+def test_htmx_template_response_bad_trigger_params(engine: Any, template: str, expected: str, tmp_path: Path) -> None:
+    Path(tmp_path / "abc.html").write_text(template)
 
     @get(path="/")
     def handler() -> HTMXTemplate:
@@ -368,7 +364,7 @@ def test_htmx_template_response_bad_trigger_params(
     with create_test_client(
         route_handlers=[handler],
         template_config=TemplateConfig(
-            directory=template_dir,
+            directory=tmp_path,
             engine=engine,
         ),
     ) as client:

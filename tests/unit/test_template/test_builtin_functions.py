@@ -15,8 +15,8 @@ from litestar.testing import create_test_client
 
 
 @pytest.mark.xfail(sys.platform == "win32", reason="For some reason this is flaky on windows")
-def test_jinja_url_for(template_dir: Path) -> None:
-    template_config = TemplateConfig(engine=JinjaTemplateEngine, directory=template_dir)
+def test_jinja_url_for(tmp_path: Path) -> None:
+    template_config = TemplateConfig(engine=JinjaTemplateEngine, directory=tmp_path)
 
     @get(path="/")
     def tpl_renderer() -> Template:
@@ -33,7 +33,7 @@ def test_jinja_url_for(template_dir: Path) -> None:
     with create_test_client(
         route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config, debug=True
     ) as client:
-        Path(template_dir / "tpl.html").write_text("{{ url_for('simple') }}")
+        Path(tmp_path / "tpl.html").write_text("{{ url_for('simple') }}")
 
         response = client.get("/")
         assert response.status_code == 200
@@ -42,7 +42,7 @@ def test_jinja_url_for(template_dir: Path) -> None:
     with create_test_client(
         route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
     ) as client:
-        Path(template_dir / "tpl.html").write_text("{{ url_for('complex', int_param=100, time_param='18:00') }}")
+        Path(tmp_path / "tpl.html").write_text("{{ url_for('complex', int_param=100, time_param='18:00') }}")
 
         response = client.get("/")
         assert response.status_code == 200
@@ -52,7 +52,7 @@ def test_jinja_url_for(template_dir: Path) -> None:
         route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
     ) as client:
         # missing route params should cause 500 err
-        Path(template_dir / "tpl.html").write_text("{{ url_for('complex') }}")
+        Path(tmp_path / "tpl.html").write_text("{{ url_for('complex') }}")
         response = client.get("/")
         assert response.status_code == 500
 
@@ -60,7 +60,7 @@ def test_jinja_url_for(template_dir: Path) -> None:
         route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
     ) as client:
         # wrong param type should also cause 500 error
-        Path(template_dir / "tpl.html").write_text("{{ url_for('complex', int_param='100', time_param='18:00') }}")
+        Path(tmp_path / "tpl.html").write_text("{{ url_for('complex', int_param='100', time_param='18:00') }}")
 
         response = client.get("/")
         assert response.status_code == 500
@@ -68,15 +68,15 @@ def test_jinja_url_for(template_dir: Path) -> None:
     with create_test_client(
         route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
     ) as client:
-        Path(template_dir / "tpl.html").write_text("{{ url_for('non-existent-route') }}")
+        Path(tmp_path / "tpl.html").write_text("{{ url_for('non-existent-route') }}")
 
         response = client.get("/")
         assert response.status_code == 500
 
 
 @pytest.mark.xfail(sys.platform == "win32", reason="For some reason this is flaky on windows")
-def test_jinja_url_for_static_asset(template_dir: Path, tmp_path: Path) -> None:
-    template_config = TemplateConfig(engine=JinjaTemplateEngine, directory=template_dir)
+def test_jinja_url_for_static_asset(tmp_path: Path) -> None:
+    template_config = TemplateConfig(engine=JinjaTemplateEngine, directory=tmp_path)
 
     @get(path="/", name="tpl_renderer")
     def tpl_renderer() -> Template:
@@ -87,7 +87,7 @@ def test_jinja_url_for_static_asset(template_dir: Path, tmp_path: Path) -> None:
         template_config=template_config,
         static_files_config=[StaticFilesConfig(path="/static/css", directories=[tmp_path], name="css")],
     ) as client:
-        Path(template_dir / "tpl.html").write_text("{{ url_for_static_asset('css', 'main/main.css') }}")
+        Path(tmp_path / "tpl.html").write_text("{{ url_for_static_asset('css', 'main/main.css') }}")
 
         response = client.get("/")
         assert response.status_code == 200
@@ -98,7 +98,7 @@ def test_jinja_url_for_static_asset(template_dir: Path, tmp_path: Path) -> None:
         template_config=template_config,
         static_files_config=[StaticFilesConfig(path="/static/css", directories=[tmp_path], name="css")],
     ) as client:
-        Path(template_dir / "tpl.html").write_text("{{ url_for_static_asset('non-existent', 'main.css') }}")
+        Path(tmp_path / "tpl.html").write_text("{{ url_for_static_asset('non-existent', 'main.css') }}")
 
         response = client.get("/")
         assert response.status_code == 500
@@ -108,7 +108,7 @@ def test_jinja_url_for_static_asset(template_dir: Path, tmp_path: Path) -> None:
         template_config=template_config,
         static_files_config=[StaticFilesConfig(path="/static/css", directories=[tmp_path], name="css")],
     ) as client:
-        Path(template_dir / "tpl.html").write_text("{{ url_for_static_asset('tpl_renderer', 'main.css') }}")
+        Path(tmp_path / "tpl.html").write_text("{{ url_for_static_asset('tpl_renderer', 'main.css') }}")
 
         response = client.get("/")
         assert response.status_code == 500
@@ -123,9 +123,9 @@ def test_jinja_url_for_static_asset(template_dir: Path, tmp_path: Path) -> None:
     ),
 )
 def test_mako_url_for_static_asset(
-    template_dir: Path, tmp_path: Path, builtin: str, expected_status: int, expected_text: Optional[str]
+    tmp_path: Path, builtin: str, expected_status: int, expected_text: Optional[str]
 ) -> None:
-    template_config = TemplateConfig(engine=MakoTemplateEngine, directory=template_dir)
+    template_config = TemplateConfig(engine=MakoTemplateEngine, directory=tmp_path)
 
     @get(path="/", name="tpl_renderer")
     def tpl_renderer() -> Template:
@@ -136,7 +136,7 @@ def test_mako_url_for_static_asset(
         template_config=template_config,
         static_files_config=[StaticFilesConfig(path="/static/css", directories=[tmp_path], name="css")],
     ) as client:
-        Path(template_dir / "tpl.html").write_text(builtin)
+        Path(tmp_path / "tpl.html").write_text(builtin)
 
         response = client.get("/")
         assert response.status_code == expected_status
@@ -153,8 +153,8 @@ def test_mako_url_for_static_asset(
         ("${url_for('non-existent-route')}", HTTP_500_INTERNAL_SERVER_ERROR, None),
     ),
 )
-def test_mako_url_for(template_dir: Path, builtin: str, expected_status: int, expected_text: Optional[str]) -> None:
-    template_config = TemplateConfig(engine=MakoTemplateEngine, directory=template_dir)
+def test_mako_url_for(tmp_path: Path, builtin: str, expected_status: int, expected_text: Optional[str]) -> None:
+    template_config = TemplateConfig(engine=MakoTemplateEngine, directory=tmp_path)
 
     @get(path="/")
     def tpl_renderer() -> Template:
@@ -172,7 +172,7 @@ def test_mako_url_for(template_dir: Path, builtin: str, expected_status: int, ex
         route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
     ) as client:
         # missing route params should cause 500 err
-        Path(template_dir / "tpl.html").write_text(builtin)
+        Path(tmp_path / "tpl.html").write_text(builtin)
         response = client.get("/")
         assert response.status_code == expected_status
         if expected_text:

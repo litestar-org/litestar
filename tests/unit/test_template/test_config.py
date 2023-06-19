@@ -7,9 +7,9 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-def test_pytest_config_caches_engine_instance(template_dir: "Path") -> None:
+def test_pytest_config_caches_engine_instance(tmp_path: "Path") -> None:
     config = TemplateConfig(
-        directory=template_dir,
+        directory=tmp_path,
         engine=JinjaTemplateEngine,
     )
     assert config.engine_instance is config.engine_instance

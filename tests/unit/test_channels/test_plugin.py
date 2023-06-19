@@ -20,16 +20,6 @@ from litestar.types.asgi_types import WebSocketMode
 from .util import get_from_stream
 
 
-@pytest.fixture
-def mock() -> MagicMock:
-    return MagicMock()
-
-
-@pytest.fixture()
-def async_mock() -> AsyncMock:
-    return AsyncMock()
-
-
 @pytest.fixture(
     params=[
         pytest.param("memory_backend", id="memory"),

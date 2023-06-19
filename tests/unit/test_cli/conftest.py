@@ -117,6 +117,11 @@ def mock_uvicorn_run(mocker: MockerFixture) -> MagicMock:
     return mocker.patch("uvicorn.run")
 
 
+@pytest.fixture()
+def mock_subprocess_run(mocker: MockerFixture) -> MagicMock:
+    return mocker.patch("subprocess.run")
+
+
 @pytest.fixture
 def mock_confirm_ask(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
     yield mocker.patch("rich.prompt.Confirm.ask", return_value=True)
