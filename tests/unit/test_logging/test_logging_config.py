@@ -5,18 +5,9 @@ from unittest.mock import Mock, patch
 import pytest
 
 from litestar import Request, get
-from litestar.logging.config import (
-    LoggingConfig,
-    _get_default_handlers,
-    default_handlers,
-    default_picologging_handlers,
-)
-from litestar.logging.picologging import (
-    QueueListenerHandler as PicologgingQueueListenerHandler,
-)
-from litestar.logging.standard import (
-    QueueListenerHandler as StandardQueueListenerHandler,
-)
+from litestar.logging.config import LoggingConfig, _get_default_handlers, default_handlers, default_picologging_handlers
+from litestar.logging.picologging import QueueListenerHandler as PicologgingQueueListenerHandler
+from litestar.logging.standard import QueueListenerHandler as StandardQueueListenerHandler
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
