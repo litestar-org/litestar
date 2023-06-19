@@ -317,6 +317,10 @@ def test_annotated_types() -> None:
         constrained_int: Annotated[int, annotated_types.Gt(1), annotated_types.Lt(10)]
         constrained_float: Annotated[float, annotated_types.Ge(1), annotated_types.Le(10)]
         constrained_date: Annotated[date, annotated_types.Interval(gt=historical_date, lt=today)]
+        constrainted_lower_case: Annotated[str, annotated_types.LowerCase]
+        constrainted_upper_case: Annotated[str, annotated_types.UpperCase]
+        constrainted_is_ascii: Annotated[str, annotated_types.IsAscii]
+        constrainted_is_digit: Annotated[str, annotated_types.IsDigits]
 
     schemas: Dict[str, Schema] = {}
     create_schema(
@@ -334,3 +338,7 @@ def test_annotated_types() -> None:
     assert schema.properties["constrained_float"].maximum == 10  # type: ignore
     assert date.fromtimestamp(schema.properties["constrained_date"].exclusive_minimum) == historical_date  # type: ignore
     assert date.fromtimestamp(schema.properties["constrained_date"].exclusive_maximum) == today  # type: ignore
+    assert schema.properties["constrainted_lower_case"].description == "must be in lower case"  # type: ignore
+    assert schema.properties["constrainted_upper_case"].description == "must be in upper case"  # type: ignore
+    assert schema.properties["constrainted_is_ascii"].pattern == "[[:ascii:]]"  # type: ignore
+    assert schema.properties["constrainted_is_digit"].pattern == "[[:digit:]]"  # type: ignore

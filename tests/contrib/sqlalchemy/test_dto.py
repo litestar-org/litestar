@@ -37,7 +37,7 @@ def fx_base() -> type[DeclarativeBase]:
 
         # noinspection PyMethodParameters
         @declared_attr.directive
-        def __tablename__(cls) -> str:  # pylint: disable=no-self-argument
+        def __tablename__(cls) -> str:
             """Infer table name from class name."""
             return cls.__name__.lower()
 

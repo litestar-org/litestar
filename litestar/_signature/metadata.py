@@ -1,12 +1,33 @@
 from __future__ import annotations
 
-from typing import Any, TypeVar, cast
+from typing import Any, TypeVar, cast, get_args
+
+from hypothesis.strategies._internal.types import is_annotated_type
 
 from litestar.openapi.spec import Example
 from litestar.params import KwargDefinition
 from litestar.utils import is_non_string_sequence
 
 T = TypeVar("T", bound=KwargDefinition)
+
+
+def _unpack_predicate(value: Any) -> dict[str, Any]:
+    try:
+        from annotated_types import Predicate
+
+        if isinstance(value, Predicate):
+            if value.func == str.islower:
+                return {"lower_case": True}
+            if value.func == str.isupper:
+                return {"upper_case": True}
+            if value.func == str.isascii:
+                return {"pattern": "[[:ascii:]]"}
+            if value.func == str.isdigit:
+                return {"pattern": "[[:digit:]]"}
+    except ImportError:
+        pass
+
+    return {}
 
 
 def _parse_metadata(value: Any, is_sequence_container: bool) -> dict[str, Any]:
@@ -59,5 +80,11 @@ def _create_metadata_from_type(metadata: list[Any], model: type[T], field_type: 
     is_sequence_container = is_non_string_sequence(field_type)
     constraints: dict[str, Any] = {}
     for value in metadata:
-        constraints.update(_parse_metadata(value=value, is_sequence_container=is_sequence_container))
+        if is_annotated_type(value):  # type: ignore[no-untyped-call]
+            # annotated values can be nested inside other annotated values
+            value = [v for v in get_args(value) if v is not None][1]
+        if unpacked_predicate := _unpack_predicate(value):
+            constraints.update(unpacked_predicate)
+        else:
+            constraints.update(_parse_metadata(value=value, is_sequence_container=is_sequence_container))
     return model(**constraints) if constraints else None
