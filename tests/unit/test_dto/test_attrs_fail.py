@@ -4,7 +4,8 @@ import pytest
 
 from litestar import post
 from litestar.testing import create_test_client
-from tests.test_dto import MockDTO, Model
+
+from . import MockDTO, Model
 
 
 @pytest.mark.xfail

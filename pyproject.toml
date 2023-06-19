@@ -276,7 +276,7 @@ include = ["litestar", "tests", "examples"]
 exclude = [
     "examples/plugins/sqlalchemy_plugin",
     "litestar/openapi",
-    "tests/test_contrib/test_sqlalchemy/test_dto.py",
+    "tests/unit/test_contrib/test_sqlalchemy/test_dto.py",
 ]
 
 [tool.slotscheck]

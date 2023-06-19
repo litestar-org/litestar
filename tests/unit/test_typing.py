@@ -6,7 +6,8 @@ import pytest
 from typing_extensions import Annotated
 
 from litestar.typing import ParsedType
-from tests.test_utils.test_signature import T, _check_parsed_type, parsed_type_int, test_type_hints
+
+from .test_utils.test_signature import T, _check_parsed_type, parsed_type_int, test_type_hints
 
 
 @pytest.mark.parametrize(

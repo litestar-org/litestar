@@ -63,7 +63,7 @@ def test_create_responses(person_controller: Type[Controller], pet_controller: T
 
     handler = get_registered_route_handler(
         pet_controller,
-        "tests.test_openapi.conftest.create_pet_controller.<locals>.PetController.get_pets_or_owners",
+        "tests.unit.test_openapi.conftest.create_pet_controller.<locals>.PetController.get_pets_or_owners",
     )
     responses = create_responses(
         route_handler=handler,

@@ -13,7 +13,8 @@ from click.testing import CliRunner
 from pytest_mock import MockerFixture
 
 from litestar.cli._utils import _path_to_dotted_path
-from tests.test_cli import (
+
+from . import (
     APP_FILE_CONTENT,
     CREATE_APP_FILE_CONTENT,
     GENERIC_APP_FACTORY_FILE_CONTENT,

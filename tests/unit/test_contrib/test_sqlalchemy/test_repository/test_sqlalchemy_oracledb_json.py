@@ -9,7 +9,7 @@ from sqlalchemy import Engine
 from sqlalchemy.dialects import oracle
 from sqlalchemy.schema import CreateTable
 
-from tests.test_contrib.test_sqlalchemy.models_uuid import UUIDEventLog
+from tests.unit.test_contrib.test_sqlalchemy.models_uuid import UUIDEventLog
 
 pytestmark = [
     pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),

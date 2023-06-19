@@ -279,7 +279,7 @@ def test_dto_openapi_model_name_collision() -> None:
         assert schemas[0] != schemas[1]
         assert all(
             k.startswith(
-                "tests.test_dto.test_factory.test_integration.test_dto_openapi_model_name_collision.<locals>.Bar"
+                "tests.unit.test_dto.test_factory.test_integration.test_dto_openapi_model_name_collision.<locals>.Bar"
             )
             for k in response.json()["components"]["schemas"]
         )

@@ -5,7 +5,8 @@ from unittest.mock import MagicMock
 
 from litestar import Controller, Router, post
 from litestar.testing import create_test_client
-from tests.test_dto import MockDTO, MockReturnDTO, Model
+
+from . import MockDTO, MockReturnDTO, Model
 
 
 def test_dto_defined_on_handler() -> None:
