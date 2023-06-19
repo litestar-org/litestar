@@ -15,6 +15,7 @@ from litestar._openapi.responses import (
     create_responses,
     create_success_response,
 )
+from litestar._openapi.schema_generation import SchemaCreator
 from litestar.datastructures import Cookie, ResponseHeader
 from litestar.dto.interface import DTOInterface
 from litestar.exceptions import (
@@ -51,11 +52,7 @@ def test_create_responses(person_controller: Type[Controller], pet_controller: T
         for route_handler, _ in route.route_handler_map.values():
             if route_handler.include_in_schema:
                 responses = create_responses(
-                    route_handler=route_handler,
-                    raises_validation_error=True,
-                    generate_examples=True,
-                    plugins=[],
-                    schemas={},
+                    route_handler, raises_validation_error=True, schema_creator=SchemaCreator(generate_examples=True)
                 )
                 assert responses
                 assert str(route_handler.status_code) in responses
@@ -66,11 +63,7 @@ def test_create_responses(person_controller: Type[Controller], pet_controller: T
         "tests.unit.test_openapi.conftest.create_pet_controller.<locals>.PetController.get_pets_or_owners",
     )
     responses = create_responses(
-        route_handler=handler,
-        raises_validation_error=False,
-        generate_examples=True,
-        plugins=[],
-        schemas={},
+        handler, raises_validation_error=False, schema_creator=SchemaCreator(generate_examples=True)
     )
     assert responses
     assert str(HTTP_400_BAD_REQUEST) not in responses
@@ -156,7 +149,7 @@ def test_create_success_response_with_headers() -> None:
         return []
 
     handler = get_registered_route_handler(handler, "test")
-    response = create_success_response(handler, True, plugins=[], schemas={})
+    response = create_success_response(handler, SchemaCreator(generate_examples=True))
     assert response.description == "test"
 
     assert response.content
@@ -187,7 +180,7 @@ def test_create_success_response_with_cookies() -> None:
         return []
 
     handler = get_registered_route_handler(handler, "test")
-    response = create_success_response(handler, True, plugins=[], schemas={})
+    response = create_success_response(handler, SchemaCreator(generate_examples=True))
 
     assert isinstance(response.headers, dict)
     assert isinstance(response.headers["Set-Cookie"], OpenAPIHeader)
@@ -214,7 +207,7 @@ def test_create_success_response_with_response_class() -> None:
 
     handler = get_registered_route_handler(handler, "test")
     schemas: Dict[str, Schema] = {}
-    response = create_success_response(handler, True, plugins=[], schemas=schemas)
+    response = create_success_response(handler, SchemaCreator(generate_examples=True, schemas=schemas))
 
     assert response.content
     reference = response.content["application/json"].schema
@@ -231,7 +224,7 @@ def test_create_success_response_with_stream() -> None:
         return Stream(iter([]))
 
     handler = get_registered_route_handler(handler, "test")
-    response = create_success_response(handler, True, plugins=[], schemas={})
+    response = create_success_response(handler, SchemaCreator(generate_examples=True))
     assert response.description == "Stream Response"
 
 
@@ -242,7 +235,7 @@ def test_create_success_response_redirect() -> None:
 
     handler = get_registered_route_handler(redirect_handler, "test")
 
-    response = create_success_response(handler, True, plugins=[], schemas={})
+    response = create_success_response(handler, SchemaCreator(generate_examples=True))
     assert response.description == "Redirect Response"
     assert response.headers
     location = response.headers["location"]
@@ -259,7 +252,7 @@ def test_create_success_response_file_data() -> None:
 
     handler = get_registered_route_handler(file_handler, "test")
 
-    response = create_success_response(handler, True, plugins=[], schemas={})
+    response = create_success_response(handler, SchemaCreator(generate_examples=True))
     assert response.description == "File Download"
     assert response.headers
 
@@ -286,7 +279,7 @@ def test_create_success_response_template() -> None:
 
     handler = get_registered_route_handler(template_handler, "test")
 
-    response = create_success_response(handler, True, plugins=[], schemas={})
+    response = create_success_response(handler, SchemaCreator(generate_examples=True))
     assert response.description == "Request fulfilled, document follows"
     assert response.content
     assert response.content[MediaType.HTML.value]
@@ -314,7 +307,7 @@ def test_create_additional_responses() -> None:
         return PersonFactory.build()
 
     schemas: Dict[str, Schema] = {}
-    responses = create_additional_responses(handler, plugins=[], schemas=schemas)
+    responses = create_additional_responses(handler, SchemaCreator(schemas=schemas))
 
     first_response = next(responses)
     assert first_response[0] == "401"
@@ -358,7 +351,9 @@ def test_additional_responses_overlap_with_other_responses() -> None:
         return PersonFactory.build()
 
     handler = get_registered_route_handler(handler, "test")
-    responses = create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[], schemas={})
+    responses = create_responses(
+        handler, raises_validation_error=True, schema_creator=SchemaCreator(generate_examples=False)
+    )
 
     assert responses is not None
     assert responses["200"] is not None
@@ -379,7 +374,9 @@ def test_additional_responses_overlap_with_raises() -> None:
 
     handler = get_registered_route_handler(handler, "test")
 
-    responses = create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[], schemas={})
+    responses = create_responses(
+        handler, raises_validation_error=True, schema_creator=SchemaCreator(generate_examples=False)
+    )
 
     assert responses is not None
     assert responses["400"] is not None
@@ -397,7 +394,7 @@ def test_create_response_for_response_subclass() -> None:
     handler = get_registered_route_handler(handler, "test")
 
     schemas: Dict[str, Schema] = {}
-    response = create_success_response(handler, True, plugins=[], schemas=schemas)
+    response = create_success_response(handler, SchemaCreator(generate_examples=True, schemas=schemas))
     assert response.content
     assert isinstance(response.content["application/json"], OpenAPIMediaType)
     reference = response.content["application/json"].schema
@@ -418,7 +415,7 @@ def handler() -> int:
 """
     )
     handler = get_registered_route_handler(module.handler, "test")
-    response = create_success_response(handler, True, plugins=[], schemas={})
+    response = create_success_response(handler, SchemaCreator(generate_examples=True))
     assert next(iter(response.content.values())).schema.type == OpenAPIType.INTEGER  # type: ignore[union-attr]
 
 
@@ -430,11 +427,6 @@ def test_response_generation_with_dto() -> None:
     async def handler(data: Dict[str, Any]) -> Dict[str, Any]:
         return data
 
-    create_success_response(
-        route_handler=handler,
-        generate_examples=False,
-        plugins=[],
-        schemas={},
-    )
-
-    mock_dto.create_openapi_schema.assert_called_once_with("return", str(handler), False, {}, False)
+    schema_creator = SchemaCreator(generate_examples=False)
+    create_success_response(handler, schema_creator)
+    mock_dto.create_openapi_schema.assert_called_once_with("return", str(handler), schema_creator)

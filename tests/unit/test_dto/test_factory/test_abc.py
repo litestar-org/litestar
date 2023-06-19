@@ -8,6 +8,7 @@ from unittest.mock import patch
 import pytest
 from typing_extensions import Annotated
 
+from litestar._openapi.schema_generation import SchemaCreator
 from litestar.dto.factory._backends import PydanticDTOBackend
 from litestar.dto.factory.config import DTOConfig
 from litestar.dto.factory.exc import InvalidAnnotation
@@ -180,5 +181,6 @@ def test_create_openapi_schema(monkeypatch: MonkeyPatch) -> None:
     dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Model)))
 
     with patch("litestar.dto.factory._backends.abc.AbstractDTOBackend.create_openapi_schema") as mock:
-        dto_type.create_openapi_schema("data", "handler", True, {}, True)
-        mock.assert_called_once_with(True, {}, True)
+        schema_creator = SchemaCreator()
+        dto_type.create_openapi_schema("data", "handler", schema_creator)
+        mock.assert_called_once_with(schema_creator)

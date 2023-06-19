@@ -9,6 +9,7 @@ import pytest
 from msgspec import Struct, to_builtins
 from pydantic import BaseModel
 
+from litestar._openapi.schema_generation import SchemaCreator
 from litestar.dto.factory import DTOConfig, DTOField
 from litestar.dto.factory._backends import MsgspecDTOBackend, PydanticDTOBackend
 from litestar.dto.factory._backends.abc import BackendContext
@@ -156,7 +157,7 @@ def test_backend_populate_data_from_builtins(
 def test_backend_create_openapi_schema(backend_type: type[AbstractDTOBackend], backend_context: BackendContext) -> None:
     backend = backend_type(backend_context)
     schemas: dict[str, Any] = {}
-    ref = backend.create_openapi_schema(False, schemas, True)
+    ref = backend.create_openapi_schema(SchemaCreator(schemas=schemas))
     assert isinstance(ref, Reference)
     schema = schemas[ref.value]
     assert schema.properties["a"].type == "integer"

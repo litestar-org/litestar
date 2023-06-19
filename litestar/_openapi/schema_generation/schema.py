@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import deque
 from copy import copy
-from dataclasses import MISSING, dataclass, fields, replace
+from dataclasses import MISSING, fields
 from datetime import date, datetime, time, timedelta
 from enum import EnumMeta
 from ipaddress import IPv4Address, IPv4Interface, IPv4Network, IPv6Address, IPv6Interface, IPv6Network
@@ -208,7 +208,6 @@ try:
 except ImportError:
     PYDANTIC_TYPE_MAP = {}
 
-__all__ = ("create_schema",)
 
 KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "default": "default",
@@ -358,17 +357,37 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
     return Schema()
 
 
-@dataclass(frozen=True)
 class SchemaCreator:
     __slots__ = ("generate_examples", "plugins", "schemas", "prefer_alias")
-    generate_examples: bool
-    """Whether to generate examples if none are given."""
-    plugins: list[OpenAPISchemaPluginProtocol]
-    """A list of plugins."""
-    schemas: dict[str, Schema]
-    """A mapping of namespaces to schemas - this mapping is used in the OA components section."""
-    prefer_alias: bool
-    """Whether to prefer the alias name for the schema."""
+
+    def __init__(
+        self,
+        generate_examples: bool = False,
+        plugins: list[OpenAPISchemaPluginProtocol] | None = None,
+        schemas: dict[str, Schema] | None = None,
+        prefer_alias: bool = True,
+    ):
+        """Instantiate a SchemaCreator.
+
+        Args:
+            generate_examples: Whether to generate examples if none are given.
+            plugins: A list of plugins.
+            schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
+            prefer_alias: Whether to prefer the alias name for the schema.
+        """
+        self.generate_examples = generate_examples
+        self.plugins = plugins if plugins is not None else []
+        self.schemas = schemas if schemas is not None else {}
+        self.prefer_alias = prefer_alias
+
+    @property
+    def not_generating_examples(self) -> SchemaCreator:
+        """Return a SchemaCreator with generate_examples set to False."""
+        if not self.generate_examples:
+            return self
+        new = copy(self)
+        new.generate_examples = False
+        return new
 
     def for_field(self, field: SignatureField) -> Schema | Reference:
         """Create a Schema for a given SignatureField.
@@ -519,7 +538,7 @@ class SchemaCreator:
                 },
             )
 
-        cursor_schema = replace(self, generate_examples=False).for_field(field.children[0])  # type: ignore[index]
+        cursor_schema = self.not_generating_examples.for_field(field.children[0])  # type: ignore[index]
         cursor_schema.description = "Unique ID, designating the last identifier in the given data set. This value can be used to request the 'next' batch of records."
 
         return Schema(
@@ -727,7 +746,7 @@ class SchemaCreator:
         if any(is_safe_subclass(field.field_type, t) for t in (set, frozenset)):  # type: ignore[arg-type]
             schema.unique_items = True
 
-        item_creator = replace(self, generate_examples=False)
+        item_creator = self.not_generating_examples
         if field.children:
             items = list(map(item_creator.for_field, field.children))
             if len(items) > 1:
@@ -778,25 +797,3 @@ class SchemaCreator:
             self.schemas[schema.title] = schema
             return Reference(ref=f"#/components/schemas/{schema.title}")
         return schema
-
-
-def create_schema(
-    field: SignatureField,
-    generate_examples: bool,
-    plugins: list[OpenAPISchemaPluginProtocol],
-    schemas: dict[str, Schema],
-    prefer_alias: bool,
-) -> Schema | Reference:
-    """Create a Schema for a given SignatureField.
-
-    Args:
-        field: A signature field instance.
-        generate_examples: Whether to generate examples if none are given.
-        plugins: A list of plugins.
-        schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
-        prefer_alias: Whether to prefer the alias name for the schema.
-
-    Returns:
-        A schema instance.
-    """
-    return SchemaCreator(generate_examples, plugins, schemas, prefer_alias).for_field(field)

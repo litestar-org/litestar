@@ -8,4 +8,4 @@ from . import MockDTO
 
 
 def test_dto_interface_create_openapi_schema_default_implementation() -> None:
-    assert MockDTO.create_openapi_schema("data", MagicMock(), False, {}, True) == Schema()
+    assert MockDTO.create_openapi_schema("data", MagicMock(), MagicMock()) == Schema()

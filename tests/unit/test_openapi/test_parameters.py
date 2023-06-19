@@ -5,6 +5,7 @@ from polyfactory import BaseFactory
 
 from litestar import Controller, Litestar, Router, get
 from litestar._openapi.parameters import create_parameter_for_handler
+from litestar._openapi.schema_generation import SchemaCreator
 from litestar._openapi.typescript_converter.schema_parsing import is_schema_value
 from litestar._signature import create_signature_model
 from litestar.di import Provide
@@ -35,11 +36,7 @@ def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
     ).fields
 
     return create_parameter_for_handler(
-        route_handler=route_handler,
-        handler_fields=handler_fields,
-        path_parameters=route.path_parameters,
-        generate_examples=True,
-        schemas={},
+        route_handler, handler_fields, route.path_parameters, SchemaCreator(generate_examples=True)
     )
 
 

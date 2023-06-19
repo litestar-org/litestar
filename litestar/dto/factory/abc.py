@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
+    from litestar._openapi.schema_generation import SchemaCreator
     from litestar.dto.interface import HandlerContext
     from litestar.dto.types import ForType
     from litestar.openapi.spec import Reference, Schema
@@ -173,15 +174,14 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
 
     @classmethod
     def create_openapi_schema(
-        cls, dto_for: ForType, handler_id: str, generate_examples: bool, schemas: dict[str, Schema], prefer_alias: bool
+        cls, dto_for: ForType, handler_id: str, schema_creator: SchemaCreator
     ) -> Reference | Schema:
         """Create an OpenAPI request body.
 
         Returns:
             OpenAPI request body.
         """
-        backend = cls._get_backend(dto_for, handler_id)
-        return backend.create_openapi_schema(generate_examples, schemas, prefer_alias)
+        return cls._get_backend(dto_for, handler_id).create_openapi_schema(schema_creator)
 
     @classmethod
     def _get_backend(cls, dto_for: ForType, handler_id: str) -> AbstractDTOBackend:
