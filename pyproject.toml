@@ -428,6 +428,7 @@ known-first-party = ["litestar", "tests", "examples"]
 
 [tool.unasyncd]
 add_editors_note = true
+ruff_fix = true
 
 [tool.unasyncd.files]
 "litestar/contrib/sqlalchemy/repository/_async.py" = "litestar/contrib/sqlalchemy/repository/_sync.py"
