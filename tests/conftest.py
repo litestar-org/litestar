@@ -1,66 +1,39 @@
 from __future__ import annotations
 
-import asyncio
 import importlib.util
 import logging
 import os
 import random
-import re
 import string
-import subprocess
 import sys
-import timeit
 from os import urandom
 from pathlib import Path
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Awaitable,
-    Callable,
-    Generator,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, TypeVar, Union, cast
 
-import asyncmy
-import asyncpg
-import oracledb
 import pytest
-from _pytest.fixtures import FixtureRequest
 from fakeredis.aioredis import FakeRedis
 from freezegun import freeze_time
-from google.auth.credentials import AnonymousCredentials  # pyright: ignore
-from google.cloud import spanner  # pyright: ignore
-from oracledb.exceptions import DatabaseError, OperationalError
 from pytest_lazyfixture import lazy_fixture
 from redis.asyncio import Redis as AsyncRedis
-from redis.exceptions import ConnectionError as RedisConnectionError
+from redis.client import Redis
 
 from litestar.logging import LoggingConfig
 from litestar.logging.config import default_handlers as logging_default_handlers
 from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.base import BaseSessionBackend
-from litestar.middleware.session.client_side import (
-    ClientSideSessionBackend,
-    CookieBackendConfig,
-)
-from litestar.middleware.session.server_side import (
-    ServerSideSessionBackend,
-    ServerSideSessionConfig,
-)
+from litestar.middleware.session.client_side import ClientSideSessionBackend, CookieBackendConfig
+from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
 from litestar.stores.base import Store
 from litestar.stores.file import FileStore
 from litestar.stores.memory import MemoryStore
 from litestar.stores.redis import RedisStore
 from litestar.testing import RequestFactory
-from litestar.utils.sync import AsyncCallable
 
 if TYPE_CHECKING:
     from types import ModuleType
 
     from freezegun.api import FrozenDateTimeFactory
-    from pytest import MonkeyPatch
+    from pytest import FixtureRequest, MonkeyPatch
 
     from litestar import Litestar
     from litestar.types import (
@@ -74,6 +47,9 @@ if TYPE_CHECKING:
         ScopeSession,
         Send,
     )
+
+
+pytest_plugins = ["tests.docker_service_fixtures"]
 
 
 @pytest.fixture()
@@ -335,198 +311,15 @@ def get_logger() -> GetLogger:
     ).configure()
 
 
-# Docker services
+@pytest.fixture()
+async def redis_client(docker_ip: str, redis_service: None) -> AsyncGenerator[AsyncRedis, None]:
+    # this is to get around some weirdness with pytest-asyncio and redis interaction
+    # on 3.8 and 3.9
 
-
-async def wait_until_responsive(
-    check: Callable[..., Awaitable],
-    timeout: float,
-    pause: float,
-    **kwargs: Any,
-) -> None:
-    """Wait until a service is responsive.
-
-    Args:
-        check: Coroutine, return truthy value when waiting should stop.
-        timeout: Maximum seconds to wait.
-        pause: Seconds to wait between calls to `check`.
-        **kwargs: Given as kwargs to `check`.
-    """
-    ref = timeit.default_timer()
-    now = ref
-    while (now - ref) < timeout:
-        if await check(**kwargs):
-            return
-        await asyncio.sleep(pause)
-        now = timeit.default_timer()
-
-    raise Exception("Timeout reached while waiting on service!")
-
-
-class DockerServiceRegistry:
-    def __init__(self) -> None:
-        self._running_services: set[str] = set()
-        self.docker_ip = self._get_docker_ip()
-        self._base_command = [
-            "docker-compose",
-            "--file=tests/docker-compose.yml",
-            "--project-name=litestar_pytest",
-        ]
-
-    def _get_docker_ip(self) -> str:
-        docker_host = os.environ.get("DOCKER_HOST", "").strip()
-        if not docker_host or docker_host.startswith("unix://"):
-            return "127.0.0.1"
-
-        match = re.match(r"^tcp://(.+?):\d+$", docker_host)
-        if not match:
-            raise ValueError(f'Invalid value for DOCKER_HOST: "{docker_host}".')
-        return match.group(1)
-
-    def run_command(self, *args: str) -> None:
-        subprocess.run([*self._base_command, *args], check=True, capture_output=True)
-
-    async def start(
-        self,
-        name: str,
-        *,
-        check: Callable[..., Awaitable],
-        timeout: float = 30,
-        pause: float = 0.1,
-        **kwargs: Any,
-    ) -> None:
-        if name not in self._running_services:
-            self.run_command("up", "-d", name)
-            self._running_services.add(name)
-
-            await wait_until_responsive(
-                check=AsyncCallable(check),
-                timeout=timeout,
-                pause=pause,
-                host=self.docker_ip,
-                **kwargs,
-            )
-
-    def stop(self, name: str) -> None:
-        pass
-
-    def down(self) -> None:
-        self.run_command("down", "-t", "5")
-
-
-@pytest.fixture(scope="session")
-def docker_services() -> Generator[DockerServiceRegistry, None, None]:
-    registry = DockerServiceRegistry()
-    yield registry
-    registry.down()
-
-
-@pytest.fixture(scope="session")
-def docker_ip(docker_services: DockerServiceRegistry) -> str:
-    return docker_services.docker_ip
-
-
-async def redis_responsive(host: str) -> bool:
-    client: AsyncRedis = AsyncRedis(host=host, port=6397)
+    Redis(host=docker_ip, port=6397).flushall()
+    client: AsyncRedis = AsyncRedis(host=docker_ip, port=6397)
+    yield client
     try:
-        return await client.ping()
-    except (ConnectionError, RedisConnectionError):
-        return False
-    finally:
         await client.close()
-
-
-@pytest.fixture()
-async def redis_service(docker_services: DockerServiceRegistry) -> None:
-    await docker_services.start("redis", check=redis_responsive)
-
-
-async def mysql_responsive(host: str) -> bool:
-    try:
-        conn = await asyncmy.connect(
-            host=host,
-            port=3360,
-            user="app",
-            database="db",
-            password="super-secret",
-        )
-        async with conn.cursor() as cursor:
-            await cursor.execute("select 1 as is_available")
-            resp = await cursor.fetchone()
-        return bool(resp[0] == 1)
-    except asyncmy.errors.OperationalError:  # pyright: ignore
-        return False
-
-
-@pytest.fixture()
-async def mysql_service(docker_services: DockerServiceRegistry) -> None:
-    await docker_services.start("mysql", check=mysql_responsive)
-
-
-async def postgres_responsive(host: str) -> bool:
-    try:
-        conn = await asyncpg.connect(
-            host=host, port=5423, user="postgres", database="postgres", password="super-secret"
-        )
-    except (ConnectionError, asyncpg.CannotConnectNowError):
-        return False
-
-    try:
-        return (await conn.fetchrow("SELECT 1"))[0] == 1  # type: ignore
-    finally:
-        await conn.close()
-
-
-@pytest.fixture()
-async def postgres_service(docker_services: DockerServiceRegistry) -> None:
-    await docker_services.start("postgres", check=postgres_responsive)
-
-
-def oracle_responsive(host: str) -> bool:
-    try:
-        conn = oracledb.connect(
-            host=host,
-            port=1512,
-            user="app",
-            service_name="xepdb1",
-            password="super-secret",
-        )
-        with conn.cursor() as cursor:
-            cursor.execute("SELECT 1 FROM dual")
-            resp = cursor.fetchone()
-        return bool(resp[0] == 1)
-    except (OperationalError, DatabaseError):  # pyright: ignore
-        return False
-
-
-@pytest.fixture()
-async def oracle_service(docker_services: DockerServiceRegistry) -> None:
-    await docker_services.start("oracle", check=AsyncCallable(oracle_responsive), timeout=60)
-
-
-def spanner_responsive(host: str) -> bool:
-    try:
-        os.environ["SPANNER_EMULATOR_HOST"] = "localhost:9010"
-        os.environ["GOOGLE_CLOUD_PROJECT"] = "emulator-test-project"
-        spanner_client = spanner.Client(project="emulator-test-project", credentials=AnonymousCredentials())
-        instance = spanner_client.instance("test-instance")
-        try:
-            instance.create()
-        except Exception:  # pyright: ignore
-            pass
-        database = instance.database("test-database")
-        try:
-            database.create()
-        except Exception:  # pyright: ignore
-            pass
-        with database.snapshot() as snapshot:
-            resp = list(snapshot.execute_sql("SELECT 1"))[0]
-        return bool(resp[0] == 1)
-    except Exception:  # pyright: ignore
-        return False
-
-
-@pytest.fixture()
-async def spanner_service(docker_services: DockerServiceRegistry) -> None:
-    os.environ["SPANNER_EMULATOR_HOST"] = "localhost:9010"
-    await docker_services.start("spanner", timeout=60, check=AsyncCallable(spanner_responsive))
+    except RuntimeError:
+        pass

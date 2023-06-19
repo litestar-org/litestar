@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import sys
 from datetime import timedelta
 from typing import AsyncGenerator, cast
 
@@ -13,11 +12,6 @@ from litestar.channels import ChannelsBackend
 from litestar.channels.backends.memory import MemoryChannelsBackend
 from litestar.channels.backends.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
 from litestar.utils.compat import async_next
-
-pytestmark = [
-    pytest.mark.usefixtures("redis_service"),
-    pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform"),
-]
 
 
 @pytest.fixture(
@@ -96,7 +90,7 @@ async def test_get_history(
     assert history == expected_messages
 
 
-async def test_memory_backend_discards_history_entries(channels_backend: ChannelsBackend) -> None:
+async def test_discards_history_entries(channels_backend: ChannelsBackend) -> None:
     if isinstance(channels_backend, RedisChannelsPubSubBackend):
         pytest.skip()
 

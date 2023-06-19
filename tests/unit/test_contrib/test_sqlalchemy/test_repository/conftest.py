@@ -12,8 +12,6 @@ from sqlalchemy import URL, Engine, NullPool, create_engine
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from .helpers import mark_requires_docker
-
 if TYPE_CHECKING:
     from pytest import MonkeyPatch
 
@@ -283,8 +281,8 @@ def spanner_engine(docker_ip: str, spanner_service: None, monkeypatch: MonkeyPat
 @pytest.fixture(
     params=[
         pytest.param("duckdb_engine", marks=[pytest.mark.sqlalchemy_duckdb, pytest.mark.sqlalchemy_integration]),
-        pytest.param("oracle_engine", marks=[pytest.mark.sqlalchemy_oracledb, *mark_requires_docker]),
-        pytest.param("psycopg_engine", marks=[pytest.mark.sqlalchemy_psycopg_sync, *mark_requires_docker]),
+        pytest.param("oracle_engine", marks=[pytest.mark.sqlalchemy_oracledb, pytest.mark.sqlalchemy_integration]),
+        pytest.param("psycopg_engine", marks=[pytest.mark.sqlalchemy_psycopg_sync, pytest.mark.sqlalchemy_integration]),
         pytest.param("sqlite_engine", marks=pytest.mark.sqlalchemy_sqlite),
     ]
 )
@@ -391,9 +389,11 @@ async def psycopg_async_engine(docker_ip: str, postgres_service: None) -> AsyncE
 @pytest.fixture(
     params=[
         pytest.param("aiosqlite_engine", marks=pytest.mark.sqlalchemy_aiosqlite),
-        pytest.param("asyncmy_engine", marks=[pytest.mark.sqlalchemy_asyncmy, *mark_requires_docker]),
-        pytest.param("asyncpg_engine", marks=[pytest.mark.sqlalchemy_asyncpg, *mark_requires_docker]),
-        pytest.param("psycopg_async_engine", marks=[pytest.mark.sqlalchemy_psycopg_async, *mark_requires_docker]),
+        pytest.param("asyncmy_engine", marks=[pytest.mark.sqlalchemy_asyncmy, pytest.mark.sqlalchemy_integration]),
+        pytest.param("asyncpg_engine", marks=[pytest.mark.sqlalchemy_asyncpg, pytest.mark.sqlalchemy_integration]),
+        pytest.param(
+            "psycopg_async_engine", marks=[pytest.mark.sqlalchemy_psycopg_async, pytest.mark.sqlalchemy_integration]
+        ),
     ]
 )
 def async_engine(request: FixtureRequest) -> AsyncEngine:
