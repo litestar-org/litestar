@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, ClassVar, List, TypeVar
 from uuid import UUID, uuid4
 
 import pytest
+import sqlalchemy
 from sqlalchemy import func
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, declared_attr, mapped_column
 from typing_extensions import Annotated
@@ -15,6 +16,7 @@ from litestar.dto.factory import DTOConfig, DTOField, Mark
 from litestar.dto.factory.field import DTO_FIELD_META_KEY
 from litestar.dto.interface import ConnectionContext, HandlerContext
 from litestar.dto.types import ForType
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import encode_json
 from litestar.typing import ParsedType
 
@@ -549,3 +551,12 @@ dto_type = SQLAlchemyDTO[A]
     )
     assert vars(model)["a"] == {"b": 1}
     assert vars(model)["c"] == [1, 2, 3]
+
+
+async def test_no_type_hints(base: type[DeclarativeBase], connection_context: ConnectionContext) -> None:
+    class Model(base):
+        field = mapped_column(sqlalchemy.String)
+
+    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig()]]
+    with pytest.raises(ImproperlyConfiguredException, match="No type information found for 'Model.field'"):
+        await get_model_from_dto(dto_type, Model, connection_context, b"")
