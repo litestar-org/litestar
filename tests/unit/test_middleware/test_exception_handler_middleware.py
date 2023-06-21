@@ -40,7 +40,7 @@ def test_default_handle_http_exception_handling_extra_object() -> None:
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert response.content == {
-        "detail": "litestar_exception",
+        "detail": "Internal Server Error",
         "extra": {"key": "value"},
         "status_code": 500,
     }
@@ -52,7 +52,7 @@ def test_default_handle_http_exception_handling_extra_none() -> None:
         HTTPException(detail="litestar_exception"),
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert response.content == {"detail": "litestar_exception", "status_code": 500}
+    assert response.content == {"detail": "Internal Server Error", "status_code": 500}
 
 
 def test_default_handle_litestar_http_exception_handling() -> None:
@@ -61,7 +61,7 @@ def test_default_handle_litestar_http_exception_handling() -> None:
         HTTPException(detail="litestar_exception"),
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert response.content == {"detail": "litestar_exception", "status_code": 500}
+    assert response.content == {"detail": "Internal Server Error", "status_code": 500}
 
 
 def test_default_handle_litestar_http_exception_extra_list() -> None:
@@ -71,7 +71,7 @@ def test_default_handle_litestar_http_exception_extra_list() -> None:
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert response.content == {
-        "detail": "litestar_exception",
+        "detail": "Internal Server Error",
         "extra": ["extra-1", "extra-2"],
         "status_code": 500,
     }
@@ -84,7 +84,7 @@ def test_default_handle_starlette_http_exception_handling() -> None:
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert response.content == {
-        "detail": "litestar_exception",
+        "detail": "Internal Server Error",
         "status_code": 500,
     }
 
@@ -95,7 +95,7 @@ def test_default_handle_python_http_exception_handling() -> None:
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert response.content == {
-        "detail": repr(AttributeError("oops")),
+        "detail": "Internal Server Error",
         "status_code": HTTP_500_INTERNAL_SERVER_ERROR,
     }
 
@@ -164,7 +164,10 @@ def test_exception_handler_default_logging(
         client.app.logger = get_logger("litestar")
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        assert "Test debug exception" in response.text
+        if is_debug:
+            assert "Test debug exception" in response.text
+        else:
+            assert "Internal Server Error" in response.text
 
         if should_log:
             assert len(caplog.records) == 1
@@ -206,7 +209,10 @@ def test_exception_handler_struct_logging(
     with TestClient(app=app) as client, capture_logs() as cap_logs:
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        assert "Test debug exception" in response.text
+        if is_debug:
+            assert "Test debug exception" in response.text
+        else:
+            assert "Internal Server Error" in response.text
 
         if should_log:
             assert len(cap_logs) == 1
@@ -233,7 +239,7 @@ def test_traceback_truncate_default_logging(
         client.app.logger = get_logger("litestar")
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        assert "Test debug exception" in response.text
+        assert "Internal Server Error" in response.text
 
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == "ERROR"

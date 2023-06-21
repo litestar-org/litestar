@@ -109,9 +109,15 @@ def create_exception_response(exc: Exception) -> Response:
     Returns:
         Response: HTTP response constructed from exception details.
     """
+    status_code = getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
+    if status_code == HTTP_500_INTERNAL_SERVER_ERROR:
+        detail = "Internal Server Error"
+    else:
+        detail = getattr(exc, "detail", repr(exc))
+
     content = ExceptionResponseContent(
-        status_code=getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR),
-        detail=getattr(exc, "detail", repr(exc)),
+        status_code=status_code,
+        detail=detail,
         headers=getattr(exc, "headers", None),
         extra=getattr(exc, "extra", None),
     )
