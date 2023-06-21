@@ -2,18 +2,14 @@ from __future__ import annotations
 
 import re
 from abc import ABC, abstractmethod
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from decimal import Decimal
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable
 from uuid import UUID
 
-from pydantic.datetime_parse import (
-    parse_date,
-    parse_datetime,
-    parse_duration,
-    parse_time,
-)
+from dateutil.parser import parse as parse_datetime
+from pytimeparse.timeparse import timeparse as parse_time
 
 from litestar._kwargs import KwargsModel
 from litestar._signature import get_signature_model
@@ -25,6 +21,34 @@ if TYPE_CHECKING:
     from litestar.enums import ScopeType
     from litestar.handlers.base import BaseRouteHandler
     from litestar.types import Method, Receive, Scope, Send
+
+
+def _parse_datetime(value: str) -> datetime:
+    try:
+        return datetime.fromtimestamp(float(value), tz=timezone.utc)
+    except (ValueError, TypeError):
+        return parse_datetime(value)
+
+
+def _parse_date(value: str) -> date:
+    dt = _parse_datetime(value=value)
+    return date(year=dt.year, month=dt.month, day=dt.day)
+
+
+def _parse_time(value: str) -> time:
+    try:
+        return time.fromisoformat(value)
+    except ValueError:
+        dt = _parse_datetime(value)
+        return time(hour=dt.hour, minute=dt.minute, second=dt.second, microsecond=dt.microsecond, tzinfo=dt.tzinfo)
+
+
+def _parse_timedelta(value: str) -> timedelta:
+    try:
+        return timedelta(seconds=int(float(value)))
+    except ValueError:
+        return timedelta(seconds=parse_time(value))  # pyright: ignore
+
 
 param_match_regex = re.compile(r"{(.*?)}")
 
@@ -47,10 +71,10 @@ parsers_map: dict[Any, Callable[[Any], Any]] = {
     int: int,
     Decimal: Decimal,
     UUID: UUID,
-    date: parse_date,
-    datetime: parse_datetime,
-    time: parse_time,
-    timedelta: parse_duration,
+    date: _parse_date,
+    datetime: _parse_datetime,
+    time: _parse_time,
+    timedelta: _parse_timedelta,
 }
 
 

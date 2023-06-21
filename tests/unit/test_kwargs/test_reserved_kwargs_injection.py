@@ -1,5 +1,6 @@
 from typing import Any, List, Optional, Type, cast
 
+import pydantic
 import pytest
 from polyfactory.factories.pydantic_factory import ModelFactory
 from pydantic import BaseModel, Field
@@ -66,7 +67,9 @@ def test_application_state_injection(state_typing: Type[State]) -> None:
 
 class QueryParams(BaseModel):
     first: str
-    second: List[str] = Field(min_items=3)
+    second: List[str] = (
+        Field(min_items=3) if pydantic.VERSION.startswith("1") else Field(min_length=1)  # pyright: ignore
+    )
     third: Optional[int]
 
 

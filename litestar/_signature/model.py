@@ -14,7 +14,6 @@ from litestar.enums import ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
 from litestar.params import DependencyKwarg, KwargDefinition, ParameterKwarg
 from litestar.serialization import dec_hook
-from litestar.typing import FieldDefinition  # noqa: TCH
 from litestar.utils import make_non_optional_union
 from litestar.utils.dataclass import simple_asdict
 from litestar.utils.typing import unwrap_union
@@ -24,6 +23,7 @@ if TYPE_CHECKING:
 
     from litestar.connection import ASGIConnection
     from litestar.types import AnyCallable
+    from litestar.typing import FieldDefinition
     from litestar.utils.signature import ParsedSignature
 
 

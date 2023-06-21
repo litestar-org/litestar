@@ -1,17 +1,21 @@
 from typing import Generic, Optional, Type, TypeVar
 
-from pydantic import BaseModel
-from pydantic.generics import GenericModel
+from pydantic import VERSION, BaseModel
 
 from litestar import get
 from litestar.di import Provide
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
+if VERSION.startswith("1"):
+    from pydantic.generics import GenericModel
+else:
+    GenericModel = BaseModel
+
 T = TypeVar("T")
 
 
-class Store(GenericModel, Generic[T]):
+class Store(GenericModel, Generic[T]):  # type: ignore[misc]
     """Abstract store."""
 
     model: Type[T]
@@ -32,7 +36,7 @@ class DictStore(Store[Item]):
 
 
 async def get_item_store() -> DictStore:
-    return DictStore(model=Item)  # type: ignore
+    return DictStore(model=Item)
 
 
 def test_generic_model_injection() -> None:
