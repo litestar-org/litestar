@@ -9,9 +9,9 @@ from typing_extensions import Annotated
 
 from litestar._signature.field import SignatureField
 from litestar.params import DependencyKwarg
+from litestar.serialization import dec_hook
 from litestar.types.empty import Empty
 from litestar.utils.dataclass import simple_asdict
-from litestar.serialization import dec_hook
 
 from .base import SignatureModel
 

@@ -83,7 +83,6 @@ def test_path_params(params_dict: dict, should_raise: bool) -> None:
         response = client.get(
             f"{params_dict['version']}/{params_dict['service_id']}/{params_dict['user_id']}/{params_dict['order_id']}"
         )
-        print(response.text)
         if should_raise:
             assert response.status_code == HTTP_400_BAD_REQUEST, response.json()
         else:
