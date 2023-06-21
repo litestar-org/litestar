@@ -78,7 +78,7 @@ def test_renamed_field() -> None:
         assert data.bar == "hello"
         return data
 
-    with create_test_client(route_handlers=[handler]) as client:
+    with create_test_client(route_handlers=[handler], debug=True) as client:
         response = client.post("/", json={"baz": "hello"})
         assert response.json() == {"baz": "hello"}
 

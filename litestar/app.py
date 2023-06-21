@@ -8,7 +8,7 @@ from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Literal, Mapping, Sequence, TypedDict, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Mapping, Sequence, TypedDict, cast
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
@@ -39,7 +39,7 @@ from litestar.static_files.base import StaticFiles
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty
 from litestar.types.internal_types import PathParameterDefinition
-from litestar.utils import AsyncCallable, join_paths, unique, warn_deprecation
+from litestar.utils import AsyncCallable, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
 from litestar.utils.predicates import is_async_callable
 from litestar.utils.warnings import warn_pdb_on_exception
@@ -129,7 +129,6 @@ class Litestar(Router):
         "_lifespan_managers",
         "_debug",
         "_openapi_schema",
-        "_preferred_validation_backend",
         "after_exception",
         "allowed_hosts",
         "asgi_handler",
@@ -209,7 +208,6 @@ class Litestar(Router):
         websocket_class: type[WebSocket] | None = None,
         lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
         pdb_on_exception: bool | None = None,
-        _preferred_validation_backend: Literal["attrs", "pydantic"] | None = None,
     ) -> None:
         """Initialize a ``Litestar`` application.
 
@@ -305,13 +303,6 @@ class Litestar(Router):
         if pdb_on_exception is None:
             pdb_on_exception = os.getenv("LITESTAR_PDB", "0") == "1"
 
-        if _preferred_validation_backend is not None:
-            warn_deprecation(
-                version="2.0.0beta1",
-                kind="parameter",
-                deprecated_name="_preferred_validation_backend",
-            )
-
         config = AppConfig(
             after_exception=list(after_exception or []),
             after_request=after_request,
@@ -388,7 +379,6 @@ class Litestar(Router):
         self.on_startup = config.on_startup
         self.openapi_config = config.openapi_config
         self.openapi_schema_plugins = [p for p in config.plugins if isinstance(p, OpenAPISchemaPluginProtocol)]
-        self._preferred_validation_backend: Literal["attrs", "pydantic"] = _preferred_validation_backend or "pydantic"
         self.request_class = config.request_class or Request
         self.response_cache_config = config.response_cache_config
         self.serialization_plugins = [p for p in config.plugins if isinstance(p, SerializationPluginProtocol)]

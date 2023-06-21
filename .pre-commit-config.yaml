@@ -70,7 +70,7 @@ repos:
         exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures"
         additional_dependencies:
           [
-            polyfactory,
+            msgspec>=0.17.0,
             aiosqlite,
             annotated_types,
             async_timeout,
@@ -81,7 +81,6 @@ repos:
             beanie,
             beautifulsoup4,
             brotli,
-            cattrs,
             click,
             fakeredis>=2.10.2,
             fast-query-parsers,
@@ -92,13 +91,14 @@ repos:
             jsbeautifier,
             mako,
             mongomock_motor,
-            msgspec,
             multidict,
             opentelemetry-instrumentation-asgi,
             opentelemetry-sdk,
             oracledb,
             piccolo,
             picologging,
+            polyfactory,
+            prometheus_client,
             psycopg,
             pydantic,
             pytest,
@@ -121,7 +121,6 @@ repos:
             types-pyyaml,
             types-redis,
             uvicorn,
-            prometheus_client,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.317
@@ -130,7 +129,7 @@ repos:
         exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures"
         additional_dependencies:
           [
-            polyfactory,
+            msgspec>=0.17.0,
             aiosqlite,
             annotated_types,
             async_timeout,
@@ -141,7 +140,6 @@ repos:
             beanie,
             beautifulsoup4,
             brotli,
-            cattrs,
             click,
             fakeredis>=2.10.2,
             fast-query-parsers,
@@ -152,13 +150,14 @@ repos:
             jsbeautifier,
             mako,
             mongomock_motor,
-            msgspec,
             multidict,
             opentelemetry-instrumentation-asgi,
             opentelemetry-sdk,
             oracledb,
             piccolo,
             picologging,
+            polyfactory,
+            prometheus_client,
             psycopg,
             pydantic,
             pytest,
@@ -181,7 +180,6 @@ repos:
             types-pyyaml,
             types-redis,
             uvicorn,
-            prometheus_client,
           ]
   - repo: local
     hooks:

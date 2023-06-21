@@ -17,7 +17,7 @@ from typing import (
 
 from msgspec.json import Encoder as JsonEncoder
 
-from litestar._signature import create_signature_model
+from litestar._signature import SignatureModel
 from litestar.connection import WebSocket
 from litestar.dto.interface import HandlerContext
 from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
@@ -290,10 +290,9 @@ class websocket_listener(WebsocketRouteHandler):
             new_signature = create_handler_signature(
                 self._listener_context.listener_callback_signature.original_signature
             )
-            self.signature_model = create_signature_model(
+            self.signature_model = SignatureModel.create(
                 dependency_name_set=self.dependency_name_set,
                 fn=cast("AnyCallable", self.fn.value),
-                preferred_validation_backend=app._preferred_validation_backend,
                 parsed_signature=ParsedSignature.from_signature(new_signature, self.resolve_signature_namespace()),
             )
 

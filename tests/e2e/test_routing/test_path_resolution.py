@@ -245,9 +245,9 @@ def test_support_for_path_type_parameters() -> None:
     def lower_handler(string_param: str) -> str:
         return string_param
 
-    @get(path="/{string_param:str}/{parth_param:path}")
-    def upper_handler(string_param: str, parth_param: Path) -> str:
-        return string_param + str(parth_param)
+    @get(path="/{string_param:str}/{path_param:path}")
+    def upper_handler(string_param: str, path_param: Path) -> str:
+        return string_param + str(path_param)
 
     with create_test_client([lower_handler, upper_handler]) as client:
         response = client.get("/abc")
