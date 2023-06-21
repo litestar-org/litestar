@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 
 import pydantic
 
-from litestar._signature.models.pydantic_signature_model import PydanticSignatureModel
+from litestar._signature.models.msgspec_signature_model import MsgspecSignatureModel
 from litestar.constants import SKIP_VALIDATION_NAMES
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import DependencyKwarg
@@ -111,11 +111,7 @@ def _get_signature_model_type(
     preferred_validation_backend: Literal["pydantic", "attrs"],
     parsed_signature: ParsedSignature,
 ) -> type[SignatureModel]:
-    if preferred_validation_backend == "attrs" or _any_attrs_annotation(parsed_signature):
-        from litestar._signature.models.attrs_signature_model import AttrsSignatureModel
-
-        return AttrsSignatureModel
-    return PydanticSignatureModel
+    return MsgspecSignatureModel
 
 
 def _should_skip_validation(field_definition: FieldDefinition) -> bool:

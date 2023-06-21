@@ -1,18 +1,18 @@
 from dataclasses import dataclass
 from types import ModuleType
-from typing import Any, Callable, Iterable, List, Literal, Optional, Sequence
+from typing import Any, Callable, Iterable, List, Literal, Optional, Sequence, Union
 from unittest.mock import MagicMock
 
 import pytest
 from attr import define
 from pydantic import BaseModel
-from typing_extensions import TypedDict
+from typing_extensions import Annotated, TypedDict
 
 from litestar import get, post
 from litestar._signature import create_signature_model
 from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
-from litestar.params import Dependency, Parameter
+from litestar.params import Body, Dependency, Parameter
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import RequestFactory, TestClient, create_test_client
 from litestar.types.helper_types import OptionalSequence
@@ -56,10 +56,7 @@ def test_parses_values_from_connection_kwargs_raises(
         model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), a="not an int")
 
 
-@pytest.mark.parametrize("preferred_validation_backend", ("attrs", "pydantic"))
-def test_create_function_signature_model_parameter_parsing(
-    preferred_validation_backend: Literal["attrs", "pydantic"]
-) -> None:
+def test_create_function_signature_model_parameter_parsing() -> None:
     @get()
     def my_fn(a: int, b: str, c: Optional[bytes], d: bytes = b"123", e: Optional[dict] = None) -> None:
         pass
@@ -67,7 +64,7 @@ def test_create_function_signature_model_parameter_parsing(
     model = create_signature_model(
         fn=my_fn.fn.value,
         dependency_name_set=set(),
-        preferred_validation_backend=preferred_validation_backend,
+        preferred_validation_backend="attrs",
         parsed_signature=ParsedSignature.from_fn(my_fn.fn.value, {}),
     )
     fields = model.fields
@@ -118,21 +115,15 @@ def test_create_function_signature_model_ignore_return_annotation(
 
 
 @pytest.mark.parametrize(
-    "preferred_validation_backend, error_extra",
+    "preferred_validation_backend, error_message",
     (
-        (
-            "attrs",
-            [{"key": "dep", "message": "invalid literal for int() with base 10: 'thirteen'"}],
-        ),
-        (
-            "pydantic",
-            [{"key": "dep", "message": "value is not a valid integer"}],
-        ),
+        pytest.param("attrs", "invalid literal for int() with base 10: 'thirteen'", marks=pytest.mark.skip, id="attrs"),
+        pytest.param("pydantic", "value is not a valid integer", marks=pytest.mark.skip, id="pydantic"),
+        pytest.param("msgspec", "Expected `int`, got `str` - at `$.dep`", id="msgspec"),
     ),
 )
 def test_dependency_validation_failure_raises_500(
-    preferred_validation_backend: Literal["attrs", "pydantic"],
-    error_extra: Any,
+    preferred_validation_backend: Literal["attrs", "pydantic"], error_message: str
 ) -> None:
     dependencies = {"dep": Provide(lambda: "thirteen", sync_to_thread=False)}
 
@@ -145,44 +136,27 @@ def test_dependency_validation_failure_raises_500(
     ) as client:
         response = client.get("/?param=13")
 
-    assert response.json() == {
-        "detail": "Internal Server Error",
-        "extra": error_extra,
-        "status_code": HTTP_500_INTERNAL_SERVER_ERROR,
-    }
+    assert response.json() == {"detail": "Internal Server Error", "status_code": HTTP_500_INTERNAL_SERVER_ERROR}
 
 
-@pytest.mark.parametrize(
-    "preferred_validation_backend, error_extra",
-    (
-        (
-            "attrs",
-            [{"key": "param", "message": "invalid literal for int() with base 10: 'thirteen'", "source": "query"}],
-        ),
-    ),
-)
-def test_validation_failure_raises_400(
-    preferred_validation_backend: Literal["attrs", "pydantic"], error_extra: Any
-) -> None:
+def test_validation_failure_raises_400() -> None:
     dependencies = {"dep": Provide(lambda: 13, sync_to_thread=False)}
 
     @get("/")
     def test(dep: int, param: int, optional_dep: Optional[int] = Dependency()) -> None:
         ...
 
-    with create_test_client(
-        route_handlers=[test], dependencies=dependencies, _preferred_validation_backend=preferred_validation_backend
-    ) as client:
+    with create_test_client(route_handlers=[test], dependencies=dependencies) as client:
         response = client.get("/?param=thirteen")
 
     assert response.json() == {
         "detail": "Validation failed for GET http://testserver.local/?param=thirteen",
-        "extra": error_extra,
+        "extra": [{"key": "param", "message": "Expected `int`, got `str`", "source": "query"}],
         "status_code": 400,
     }
 
 
-def test_client_pydantic_backend_error_precedence_over_server_error() -> None:
+def test_client_backend_error_precedence_over_server_error() -> None:
     dependencies = {
         "dep": Provide(lambda: "thirteen", sync_to_thread=False),
         "optional_dep": Provide(lambda: "thirty-one", sync_to_thread=False),
@@ -192,14 +166,12 @@ def test_client_pydantic_backend_error_precedence_over_server_error() -> None:
     def test(dep: int, param: int, optional_dep: Optional[int] = Dependency()) -> None:
         ...
 
-    with create_test_client(
-        route_handlers=[test], dependencies=dependencies, _preferred_validation_backend="pydantic"
-    ) as client:
+    with create_test_client(route_handlers=[test], dependencies=dependencies) as client:
         response = client.get("/?param=thirteen")
 
     assert response.json() == {
         "detail": "Validation failed for GET http://testserver.local/?param=thirteen",
-        "extra": [{"key": "param", "message": "value is not a valid integer", "source": "query"}],
+        "extra": [{"key": "param", "message": "Expected `int`, got `str`", "source": "query"}],
         "status_code": 400,
     }
 
@@ -304,7 +276,7 @@ def test_validation_error_exception_key(preferred_validation_backend: Literal["a
         child: Child
         other_child: OtherChild
 
-    def fn(model: Parent) -> None:
+    def fn(data: Parent) -> None:
         pass
 
     model = create_signature_model(
@@ -316,13 +288,13 @@ def test_validation_error_exception_key(preferred_validation_backend: Literal["a
 
     with pytest.raises(ValidationException) as exc_info:
         model.parse_values_from_connection_kwargs(
-            connection=RequestFactory().get(), model={"child": {}, "other_child": {}}
+            connection=RequestFactory().get(), data={"child": {}, "other_child": {}}
         )
 
     assert isinstance(exc_info.value.extra, list)
-    assert exc_info.value.extra[0]["key"] == "model.child.val"
-    assert exc_info.value.extra[1]["key"] == "model.child.other_val"
-    assert exc_info.value.extra[2]["key"] == "model.other_child.val"
+    assert exc_info.value.extra[0]["key"] == "child.val"
+    assert exc_info.value.extra[1]["key"] == "child.other_val"
+    assert exc_info.value.extra[2]["key"] == "other_child.val"
 
 
 def test_invalid_input_pydantic() -> None:
@@ -515,3 +487,17 @@ def test_invalid_input_typed_dict() -> None:
             {"key": "int_header", "message": "value is not a valid integer", "source": "header"},
             {"key": "int_cookie", "message": "value is not a valid integer", "source": "cookie"},
         ]
+
+
+def test_union_constraint_handling() -> None:
+    mock = MagicMock()
+
+    @get("/")
+    def handler(param: Annotated[Union[str, List[str]], Body(max_length=3, max_items=3)]) -> None:
+        mock(param)
+
+    with create_test_client([handler]) as client:
+        response = client.get("/?param=foo")
+
+    assert response.status_code == 200
+    mock.assert_called_once_with("foo")
