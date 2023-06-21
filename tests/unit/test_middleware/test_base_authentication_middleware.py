@@ -72,7 +72,6 @@ def test_authentication_middleware_not_installed_raises_for_user_scope_http() ->
     client = create_test_client(route_handlers=[http_route_handler_user_scope])
     error_response = client.get("/", headers={"Authorization": "nope"})
     assert error_response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert error_response.json()["detail"] == "'user' is not defined in scope, install an AuthMiddleware to set it"
 
 
 def test_authentication_middleware_not_installed_raises_for_auth_scope_http() -> None:
@@ -83,7 +82,6 @@ def test_authentication_middleware_not_installed_raises_for_auth_scope_http() ->
     client = create_test_client(route_handlers=[http_route_handler_auth_scope])
     error_response = client.get("/", headers={"Authorization": "nope"})
     assert error_response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert error_response.json()["detail"] == "'auth' is not defined in scope, install an AuthMiddleware to set it"
 
 
 @websocket(path="/")

@@ -102,7 +102,6 @@ def test_read_only_fields():
         response = client.post("/person", json={"name": "peter", "age": 40, "email": "email_of_peter@example.com"})
 
     assert response.status_code == 500
-    assert "__init__() missing 1 required positional argument: 'id'" in response.json()["detail"]
 
 
 def test_dto_data():

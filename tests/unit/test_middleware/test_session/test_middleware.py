@@ -19,7 +19,7 @@ def test_session_middleware_not_installed_raises() -> None:
     with create_test_client(handler) as client:
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        assert response.json()["detail"] == "'session' is not defined in scope, install a SessionMiddleware to set it"
+        assert response.json()["detail"] == "Internal Server Error"
 
 
 def test_integration(session_backend_config: "BaseBackendConfig") -> None:

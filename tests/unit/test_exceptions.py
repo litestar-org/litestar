@@ -87,7 +87,7 @@ def test_create_exception_response_utility_non_http_exception() -> None:
     response = create_exception_response(exc)
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert response.media_type == MediaType.JSON
-    assert response.content == {"status_code": 500, "detail": "RuntimeError('yikes')"}
+    assert response.content == {"status_code": 500, "detail": "Internal Server Error"}
 
 
 def test_missing_dependency_exception() -> None:

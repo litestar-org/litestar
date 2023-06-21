@@ -146,7 +146,7 @@ def test_dependency_validation_failure_raises_500(
         response = client.get("/?param=13")
 
     assert response.json() == {
-        "detail": "A dependency failed validation for GET http://testserver.local/?param=13",
+        "detail": "Internal Server Error",
         "extra": error_extra,
         "status_code": HTTP_500_INTERNAL_SERVER_ERROR,
     }

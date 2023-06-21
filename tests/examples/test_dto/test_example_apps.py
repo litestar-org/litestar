@@ -11,7 +11,6 @@ def test_dto_data_problem_statement_app() -> None:
     with TestClient(app) as client:
         response = client.post("/person", json={"name": "John", "age": 30})
         assert response.status_code == 500
-        assert "missing 1 required positional argument: 'id'" in response.json()["detail"]
 
 
 def test_dto_data_usage_app() -> None:
