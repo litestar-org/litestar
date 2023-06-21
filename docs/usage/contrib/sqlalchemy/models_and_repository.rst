@@ -43,6 +43,7 @@ Both include a ``BigInteger`` based primary key
 and ``BigIntAuditBase`` includes an ``updated`` and ``created`` timestamp column.
 
 Models using these bases also include the following enhancements:
+
 * Auto-generated snake-case table name from class name
 * Pydantic BaseModel and Dict classes map to an optimized JSON type that is
 :class:`JSONB <sqlalchemy.dialects.postgresql.JSONB>` for the Postgres and
