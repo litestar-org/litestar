@@ -14,6 +14,7 @@ from ipaddress import (
 from pathlib import Path, PurePath
 from re import Pattern
 from typing import TYPE_CHECKING, Any, Callable, Mapping, TypeVar, overload
+from uuid import UUID
 
 import msgspec
 from pydantic import (
@@ -135,9 +136,14 @@ def dec_hook(type_: Any, value: Any) -> Any:  # pragma: no cover
     Returns:
         A ``msgspec``-supported type
     """
+
+    from litestar.datastructures.state import State
+
+    if isinstance(value, type_):
+        return value
     if issubclass(type_, BaseModel):
         return type_.parse_obj(value)
-    if issubclass(type_, (Path, PurePath)):
+    if issubclass(type_, (Path, PurePath, State, UUID)):
         return type_(value)
     raise TypeError(f"Unsupported type: {type(value)!r}")
 

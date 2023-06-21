@@ -79,10 +79,11 @@ def test_path_params(params_dict: dict, should_raise: bool) -> None:
         assert user_id
         assert order_id
 
-    with create_test_client(test_method) as client:
+    with create_test_client(test_method, debug=True) as client:
         response = client.get(
             f"{params_dict['version']}/{params_dict['service_id']}/{params_dict['user_id']}/{params_dict['order_id']}"
         )
+        print(response.text)
         if should_raise:
             assert response.status_code == HTTP_400_BAD_REQUEST, response.json()
         else:

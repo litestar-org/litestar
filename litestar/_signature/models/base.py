@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, ClassVar, Literal, Sequence, TypedDict, cast
+from abc import abstractmethod
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, Literal, Sequence, Set, TypedDict, cast
 
+from litestar._signature.field import SignatureField
 from litestar.enums import ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
 from litestar.params import ParameterKwarg
@@ -10,7 +11,6 @@ from litestar.params import ParameterKwarg
 if TYPE_CHECKING:
     from typing_extensions import NotRequired
 
-    from litestar._signature.field import SignatureField
     from litestar.connection import ASGIConnection
     from litestar.utils.signature import ParsedSignature
 
@@ -26,12 +26,12 @@ class ErrorMessage(TypedDict):
     source: NotRequired[Literal["cookie", "body", "header", "query"]]
 
 
-class SignatureModel(ABC):
+class SignatureModel:
     """Base model for Signature modelling."""
 
-    dependency_name_set: ClassVar[set[str]]
+    dependency_name_set: ClassVar[Set[str]]
     return_annotation: ClassVar[Any]
-    fields: ClassVar[dict[str, SignatureField]]
+    fields: ClassVar[Dict[str, SignatureField]]
 
     @classmethod
     def _create_exception(cls, connection: ASGIConnection, messages: list[ErrorMessage]) -> Exception:
