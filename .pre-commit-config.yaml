@@ -65,7 +65,7 @@ repos:
         exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures"
         additional_dependencies:
           [
-            "polyfactory>=2.3.2",
+            "git+https://github.com/jcrist/msgspec.git",
             aiosqlite,
             annotated_types,
             async_timeout,
@@ -87,13 +87,14 @@ repos:
             jsbeautifier,
             mako,
             mongomock_motor,
-            msgspec,
             multidict,
             opentelemetry-instrumentation-asgi,
             opentelemetry-sdk,
             oracledb,
             piccolo,
             picologging,
+            polyfactory,
+            prometheus_client,
             psycopg,
             pydantic,
             pytest,
@@ -116,7 +117,6 @@ repos:
             types-pyyaml,
             types-redis,
             uvicorn,
-            prometheus_client,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.316
@@ -125,7 +125,7 @@ repos:
         exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures"
         additional_dependencies:
           [
-            "polyfactory>=2.3.2",
+            "git+https://github.com/jcrist/msgspec.git",
             aiosqlite,
             annotated_types,
             async_timeout,
@@ -147,13 +147,14 @@ repos:
             jsbeautifier,
             mako,
             mongomock_motor,
-            msgspec,
             multidict,
             opentelemetry-instrumentation-asgi,
             opentelemetry-sdk,
             oracledb,
             piccolo,
             picologging,
+            polyfactory,
+            prometheus_client,
             psycopg,
             pydantic,
             pytest,
@@ -176,7 +177,6 @@ repos:
             types-pyyaml,
             types-redis,
             uvicorn,
-            prometheus_client,
           ]
   - repo: local
     hooks:

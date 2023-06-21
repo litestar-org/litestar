@@ -1,7 +1,8 @@
+# ruff: noqa: UP006
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, ClassVar, Literal, Sequence, TypedDict, cast
+from abc import abstractmethod
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, Sequence, Set, TypedDict, cast
 
 from litestar.enums import ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
@@ -14,7 +15,10 @@ if TYPE_CHECKING:
     from litestar.typing import FieldDefinition
     from litestar.utils.signature import ParsedSignature
 
-__all__ = ("SignatureModel",)
+__all__ = (
+    "ErrorMessage",
+    "SignatureModel",
+)
 
 
 class ErrorMessage(TypedDict):
@@ -26,10 +30,10 @@ class ErrorMessage(TypedDict):
     source: NotRequired[Literal["cookie", "body", "header", "query"]]
 
 
-class SignatureModel(ABC):
+class SignatureModel:
     """Base model for Signature modelling."""
 
-    dependency_name_set: ClassVar[set[str]]
+    dependency_name_set: ClassVar[Set[str]]
     return_annotation: ClassVar[Any]
     fields: ClassVar[dict[str, FieldDefinition]]
 
@@ -52,9 +56,7 @@ class SignatureModel(ABC):
             if ("key" in err_message and err_message["key"] not in cls.dependency_name_set) or "key" not in err_message
         ]:
             return ValidationException(detail=f"Validation failed for {method} {connection.url}", extra=client_errors)
-        return InternalServerException(
-            detail=f"A dependency failed validation for {method} {connection.url}", extra=messages
-        )
+        return InternalServerException()
 
     @classmethod
     def _build_error_message(cls, keys: Sequence[str], exc_msg: str, connection: ASGIConnection) -> ErrorMessage:
@@ -69,31 +71,24 @@ class SignatureModel(ABC):
             An ErrorMessage
         """
 
-        message: ErrorMessage = {"message": exc_msg}
+        message: ErrorMessage = {"message": exc_msg.split(" - ")[0]}
 
-        if len(keys) > 1:
-            key_start = 0
+        if not keys:
+            return message
 
-            if keys[0] == "data":
-                key_start = 1
-                message["source"] = "body"
+        message["key"] = key = ".".join(keys)
 
-            message["key"] = ".".join(keys[key_start:])
-        elif keys:
-            key = keys[0]
-            message["key"] = key
+        if key in connection.query_params:
+            message["source"] = cast("Literal['cookie', 'body', 'header', 'query']", "query")
 
-            if key in connection.query_params:
-                message["source"] = cast("Literal['cookie', 'body', 'header', 'query']", "query")
-
-            elif key in cls.fields and isinstance(cls.fields[key].kwarg_definition, ParameterKwarg):
-                if cast(ParameterKwarg, cls.fields[key].kwarg_definition).cookie:
-                    source = "cookie"
-                elif cast(ParameterKwarg, cls.fields[key].kwarg_definition).header:
-                    source = "header"
-                else:
-                    source = "query"
-                message["source"] = cast("Literal['cookie', 'body', 'header', 'query']", source)
+        elif key in cls.fields and isinstance(cls.fields[key].kwarg_definition, ParameterKwarg):
+            if cast(ParameterKwarg, cls.fields[key].kwarg_definition).cookie:
+                source = "cookie"
+            elif cast(ParameterKwarg, cls.fields[key].kwarg_definition).header:
+                source = "header"
+            else:
+                source = "query"
+            message["source"] = cast("Literal['cookie', 'body', 'header', 'query']", source)
 
         return message
 
@@ -121,16 +116,6 @@ class SignatureModel(ABC):
         for this.
 
         Returns: A dictionary of string keyed values.
-        """
-        raise NotImplementedError
-
-    @classmethod
-    @abstractmethod
-    def populate_field_definitions(cls) -> None:
-        """Populate the class signature fields.
-
-        Returns:
-            None.
         """
         raise NotImplementedError
 
