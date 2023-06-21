@@ -1063,6 +1063,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "sfermigier",
+      "name": "Stefane Fermigier",
+      "avatar_url": "https://avatars.githubusercontent.com/u/271079?v=4",
+      "profile": "http://fermigier.com/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
