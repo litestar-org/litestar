@@ -10,7 +10,7 @@ from starlette.responses import HTMLResponse, JSONResponse, PlainTextResponse
 from starlette.responses import Response as StarletteResponse
 
 from litestar import HttpMethod, Litestar, MediaType, Request, Response, get, route
-from litestar._signature import create_signature_model
+from litestar._signature import SignatureModel
 from litestar.background_tasks import BackgroundTask
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import Cookie, ResponseHeader
@@ -90,9 +90,8 @@ async def test_to_response_async_await(anyio_backend: str) -> None:
         return data
 
     person_instance = PersonFactory.build()
-    test_function.signature_model = create_signature_model(
+    test_function.signature_model = SignatureModel.create(
         fn=test_function.fn.value,
-        preferred_validation_backend="pydantic",
         dependency_name_set=set(),
         parsed_signature=ParsedSignature.from_fn(test_function.fn.value, {}),
     )

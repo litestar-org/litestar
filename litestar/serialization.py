@@ -14,9 +14,12 @@ from ipaddress import (
 from pathlib import Path, PurePath
 from re import Pattern
 from typing import TYPE_CHECKING, Any, Callable, Mapping, TypeVar, overload
+from uuid import UUID
 
 import msgspec
+from msgspec import ValidationError
 from pydantic import (
+    UUID1,
     BaseModel,
     ByteSize,
     ConstrainedBytes,
@@ -65,7 +68,7 @@ def _enc_constrained_date(date: ConstrainedDate) -> str:
     return date.isoformat()
 
 
-def _enc_pattern(pattern: Pattern) -> Any:
+def _enc_pattern(pattern: Pattern[str]) -> Any:
     return pattern.pattern
 
 
@@ -125,6 +128,35 @@ def default_serializer(value: Any, type_encoders: Mapping[Any, Callable[[Any], A
     raise TypeError(f"Unsupported type: {type(value)!r}")
 
 
+PydanticUUIDType = TypeVar("PydanticUUIDType", bound="UUID1")
+
+
+def _dec_pydantic_uuid(type_: type[PydanticUUIDType], val: Any) -> PydanticUUIDType:
+    if isinstance(val, str):
+        val = type_(val)
+    elif isinstance(val, (bytes, bytearray)):
+        try:
+            val = type_(val.decode())
+        except ValueError:
+            # 16 bytes in big-endian order as the bytes argument fail
+            # the above check
+            val = type_(bytes=val)
+    elif isinstance(val, UUID):
+        val = type_(str(val))
+
+    if not isinstance(val, type_):
+        raise ValidationError(f"Invalid UUID: {val!r}")
+
+    if type_._required_version != val.version:  # type:ignore[attr-defined]
+        raise ValidationError(f"Invalid UUID version: {val!r}")
+
+    return val
+
+
+def _dec_pydantic(type_: type[BaseModel], value: Any) -> BaseModel:
+    return type_.parse_obj(value)
+
+
 def dec_hook(type_: Any, value: Any) -> Any:  # pragma: no cover
     """Transform values non-natively supported by ``msgspec``
 
@@ -135,9 +167,16 @@ def dec_hook(type_: Any, value: Any) -> Any:  # pragma: no cover
     Returns:
         A ``msgspec``-supported type
     """
+
+    from litestar.datastructures.state import ImmutableState
+
+    if issubclass(type_, UUID1):
+        return _dec_pydantic_uuid(type_, value)
+    if isinstance(value, type_):
+        return value
     if issubclass(type_, BaseModel):
-        return type_.parse_obj(value)
-    if issubclass(type_, (Path, PurePath)):
+        return _dec_pydantic(type_, value)
+    if issubclass(type_, (Path, PurePath, ImmutableState, UUID)):
         return type_(value)
     raise TypeError(f"Unsupported type: {type(value)!r}")
 

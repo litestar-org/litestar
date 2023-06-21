@@ -541,31 +541,6 @@ files = [
 ]
 
 [[package]]
-name = "cattrs"
-version = "23.1.2"
-description = "Composable complex class support for attrs and dataclasses."
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "cattrs-23.1.2-py3-none-any.whl", hash = "sha256:b2bb14311ac17bed0d58785e5a60f022e5431aca3932e3fc5cc8ed8639de50a4"},
-    {file = "cattrs-23.1.2.tar.gz", hash = "sha256:db1c821b8c537382b2c7c66678c3790091ca0275ac486c76f3c8f3920e83c657"},
-]
-
-[package.dependencies]
-attrs = ">=20"
-exceptiongroup = {version = "*", markers = "python_version < \"3.11\""}
-typing_extensions = {version = ">=4.1.0", markers = "python_version < \"3.11\""}
-
-[package.extras]
-bson = ["pymongo (>=4.2.0,<5.0.0)"]
-cbor2 = ["cbor2 (>=5.4.6,<6.0.0)"]
-msgpack = ["msgpack (>=1.0.2,<2.0.0)"]
-orjson = ["orjson (>=3.5.2,<4.0.0)"]
-pyyaml = ["PyYAML (>=6.0,<7.0)"]
-tomlkit = ["tomlkit (>=0.11.4,<0.12.0)"]
-ujson = ["ujson (>=5.4.0,<6.0.0)"]
-
-[[package]]
 name = "certifi"
 version = "2023.5.7"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -4349,11 +4324,11 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 
 [extras]
 annotated-types = ["annotated-types"]
-attrs = ["attrs", "cattrs", "python-dateutil", "pytimeparse"]
+attrs = ["attrs"]
 brotli = ["brotli"]
 cli = ["click", "jsbeautifier", "rich", "rich-click", "uvicorn"]
 cryptography = ["cryptography"]
-full = ["alembic", "attrs", "brotli", "cattrs", "click", "cryptography", "jinja2", "jsbeautifier", "opentelemetry-instrumentation-asgi", "prometheus-client", "python-dateutil", "python-jose", "pytimeparse", "redis", "rich", "sqlalchemy", "structlog", "uvicorn"]
+full = ["alembic", "attrs", "brotli", "click", "cryptography", "jinja2", "jsbeautifier", "opentelemetry-instrumentation-asgi", "prometheus-client", "python-dateutil", "python-jose", "pytimeparse", "redis", "rich", "sqlalchemy", "structlog", "uvicorn"]
 jinja = ["jinja2"]
 jwt = ["cryptography", "python-jose"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
@@ -4368,4 +4343,4 @@ tortoise-orm = ["tortoise-orm"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "70f5c93f8dda8cc11bf8c1939968fe289983304abe84a221d88d3316e57f7104"
+content-hash = "850899772834e4726e6f195e57c6d43a84bb1a324f8b0f801df8fbe86ef73893"

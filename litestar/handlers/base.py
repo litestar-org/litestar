@@ -3,7 +3,7 @@ from __future__ import annotations
 from copy import copy
 from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
 
-from litestar._signature import create_signature_model
+from litestar._signature import SignatureModel
 from litestar.di import Provide
 from litestar.dto.interface import HandlerContext
 from litestar.exceptions import ImproperlyConfiguredException
@@ -18,7 +18,6 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from litestar import Litestar
-    from litestar._signature.models import SignatureModel
     from litestar.connection import ASGIConnection
     from litestar.controller import Controller
     from litestar.dto.interface import DTOInterface
@@ -421,10 +420,9 @@ class BaseRouteHandler:
     def _create_signature_model(self, app: Litestar) -> None:
         """Create signature model for handler function."""
         if not self.signature_model:
-            self.signature_model = create_signature_model(
+            self.signature_model = SignatureModel.create(
                 dependency_name_set=self.dependency_name_set,
                 fn=cast("AnyCallable", self.fn.value),
-                preferred_validation_backend=app._preferred_validation_backend,
                 parsed_signature=self.parsed_fn_signature,
                 has_data_dto=bool(self.resolve_dto()),
             )
@@ -433,10 +431,9 @@ class BaseRouteHandler:
         """Create signature models for dependency providers."""
         for provider in self.resolve_dependencies().values():
             if not getattr(provider, "signature_model", None):
-                provider.signature_model = create_signature_model(
+                provider.signature_model = SignatureModel.create(
                     dependency_name_set=self.dependency_name_set,
                     fn=provider.dependency.value,
-                    preferred_validation_backend=app._preferred_validation_backend,
                     parsed_signature=ParsedSignature.from_fn(
                         unwrap_partial(provider.dependency.value), self.resolve_signature_namespace()
                     ),
