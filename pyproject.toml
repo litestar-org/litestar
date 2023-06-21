@@ -79,6 +79,7 @@ annotated-types = { version = "*", optional = true }
 anyio = ">=3"
 attrs = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
+cattrs = { version = "*", optional = true }
 click = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
 fast-query-parsers = "*"
@@ -88,7 +89,7 @@ importlib-resources = { version = ">=5.12.0", python = "<3.9" }
 jinja2 = { version = ">=3.1.2", optional = true }
 jsbeautifier = { version = "*", optional = true }
 mako = { version = ">=1.2.4", optional = true }
-msgspec = ">=0.17.0"
+msgspec = { git = "https://github.com/jcrist/msgspec.git", branch = "main" }
 multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 picologging = { version = "*", optional = true }
@@ -118,6 +119,7 @@ attrs = "*"
 beanie = "*"
 beautifulsoup4 = "*"
 brotli = "*"
+cattrs = "*"
 click = "*"
 cryptography = "*"
 duckdb-engine = "*"
@@ -195,7 +197,7 @@ types-redis = "*"
 
 [tool.poetry.extras]
 annotated-types = ["annotated-types"]
-attrs = ["attrs"]
+attrs = ["attrs", "cattrs", "python-dateutil", "pytimeparse"]
 brotli = ["brotli"]
 cli = ["click", "rich", "rich-click", "jsbeautifier", "uvicorn"]
 cryptography = ["cryptography"]
@@ -214,6 +216,7 @@ full = [
     "alembic",
     "attrs",
     "brotli",
+    "cattrs",
     "click",
     "cryptography",
     "jinja2",
