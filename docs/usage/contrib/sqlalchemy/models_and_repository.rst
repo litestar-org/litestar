@@ -16,6 +16,7 @@ Features
 * Implements optimized methods for bulk inserts, updates, and deletes.
 * Integrated counts, pagination, sorting, filtering with ``LIKE``, ``IN``, and dates before and/or after.
 * Tested support for multiple database backends including:
+
   - SQLite via `aiosqlite <https://aiosqlite.omnilib.dev/en/stable/>`_ or `sqlite <https://docs.python.org/3/library/sqlite3.html>`_
   - Postgres via `asyncpg <https://magicstack.github.io/asyncpg/current/>`_ or `psycopg3 (async or sync) <https://www.psycopg.org/psycopg3/>`_
   - MySQL via `asyncmy <https://github.com/long2ice/asyncmy>`_
@@ -43,10 +44,11 @@ Both include a ``BigInteger`` based primary key
 and ``BigIntAuditBase`` includes an ``updated`` and ``created`` timestamp column.
 
 Models using these bases also include the following enhancements:
+
 * Auto-generated snake-case table name from class name
 * Pydantic BaseModel and Dict classes map to an optimized JSON type that is
-:class:`JSONB <sqlalchemy.dialects.postgresql.JSONB>` for the Postgres and
-:class:`JSON <sqlalchemy.types.JSON>` for other dialects.
+  :class:`JSONB <sqlalchemy.dialects.postgresql.JSONB>` for the Postgres and
+  :class:`JSON <sqlalchemy.types.JSON>` for other dialects.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :caption: sqlalchemy_declarative_models.py
