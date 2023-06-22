@@ -147,9 +147,7 @@ def _validate_dependencies(
 
     for parameter in parsed_signature.parameters.values():
         if isinstance(parameter.default, DependencyKwarg) and parameter.name not in dependency_name_set:
-            if not parameter.parsed_type.is_optional and (
-                isinstance(parameter.default, DependencyKwarg) and parameter.default.default is Empty
-            ):
+            if not parameter.parsed_type.is_optional and parameter.default.default is Empty:
                 raise ImproperlyConfiguredException(
                     f"Explicit dependency '{parameter.name}' for '{fn_name}' has no default value, "
                     f"or provided dependency."

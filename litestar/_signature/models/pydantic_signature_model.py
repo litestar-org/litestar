@@ -7,7 +7,7 @@ from pydantic import BaseConfig, BaseModel, ValidationError, create_model
 from pydantic.fields import FieldInfo, ModelField
 
 from litestar._signature.field import SignatureField
-from litestar._signature.models.base import SignatureModel
+from litestar._signature.models.base import ErrorMessage, SignatureModel
 from litestar.constants import UNDEFINED_SENTINELS
 from litestar.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from litestar.types import Empty
@@ -45,10 +45,8 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         try:
             signature = cls(**kwargs)
         except ValidationError as e:
-            raise cls._create_exception(
-                messages=[{"key": str(exc["loc"][-1]), "message": exc["msg"]} for exc in e.errors()],
-                connection=connection,
-            ) from e
+            messages = cls._get_error_messages(e, connection)
+            raise cls._create_exception(messages=messages, connection=connection) from e
 
         return signature.to_dict()
 
@@ -172,3 +170,15 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         model.dependency_name_set = dependency_names
         model.populate_signature_fields()
         return model
+
+    @classmethod
+    def _get_error_messages(cls, e: ValidationError, connection: ASGIConnection) -> list[ErrorMessage]:
+        """Get error messages from a ValidationError."""
+        messages: list[ErrorMessage] = []
+
+        for exc in e.errors():
+            keys = [str(loc) for loc in exc["loc"]]
+            message = super()._build_error_message(keys=keys, exc_msg=exc["msg"], connection=connection)
+            messages.append(message)
+
+        return messages
