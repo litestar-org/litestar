@@ -88,11 +88,10 @@ async def add_item(data: TodoType, state: State) -> TodoType:
 
 @put("/{item_title:str}")
 async def update_item(item_title: str, data: TodoType, state: State) -> TodoType:
-    async with sessionmaker(bind=state.engine) as session:
-        async with session.begin():
-            todo_item = await get_todo_by_title(item_title, session)
-            todo_item.title = data["title"]
-            todo_item.done = data["done"]
+    async with sessionmaker(bind=state.engine) as session, session.begin():
+        todo_item = await get_todo_by_title(item_title, session)
+        todo_item.title = data["title"]
+        todo_item.done = data["done"]
     return serialize_todo(todo_item)
 
 

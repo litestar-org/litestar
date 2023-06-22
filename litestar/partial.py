@@ -131,7 +131,7 @@ class Partial(Generic[T]):
             type(
                 _create_partial_type_name(item),
                 (item,),
-                {"__annotations__": field_definitions, **{k: None for k in field_definitions}},  # type: ignore[misc]
+                {"__annotations__": field_definitions, **{k: None for k in field_definitions}},
             )
         )
 

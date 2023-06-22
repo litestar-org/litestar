@@ -102,7 +102,7 @@ def docker_services() -> Generator[DockerServiceRegistry, None, None]:
     if sys.platform != "linux":
         pytest.skip("Docker not available on this platform")
 
-    registry = DockerServiceRegistry()
+    registry = DockerServiceRegistry()  # type: ignore[unreachable]
     try:
         yield registry
     finally:

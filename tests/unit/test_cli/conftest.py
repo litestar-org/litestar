@@ -88,7 +88,7 @@ def create_app_file(tmp_project_dir: Path, request: FixtureRequest) -> CreateApp
         tmp_app_file.write_text(content or APP_FILE_CONTENT)
 
         if directory:
-            request.addfinalizer(lambda: rmtree(directory))  # type: ignore[arg-type]
+            request.addfinalizer(lambda: rmtree(directory))
             request.addfinalizer(
                 lambda: _purge_module(
                     [directory, _path_to_dotted_path(tmp_app_file.relative_to(Path.cwd()))], tmp_app_file  # type: ignore[list-item]

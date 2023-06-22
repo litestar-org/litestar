@@ -181,7 +181,7 @@ def create_scope() -> Callable[..., Scope]:
         route_handler: RouteHandlerType | None = None,
         scheme: str = "http",
         server: tuple[str, int | None] | None = ("testserver", 80),
-        session: ScopeSession = None,
+        session: ScopeSession | None = None,
         state: dict[str, Any] | None = None,
         user: Any = None,
         **kwargs: dict[str, Any],
