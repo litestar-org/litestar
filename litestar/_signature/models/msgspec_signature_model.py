@@ -11,10 +11,10 @@ from litestar._signature.field import SignatureField
 from litestar.params import DependencyKwarg
 from litestar.serialization import dec_hook
 from litestar.types.empty import Empty
+from litestar.utils import make_non_optional_union
 from litestar.utils.dataclass import simple_asdict
 
 from .base import SignatureModel
-from ...utils import make_non_optional_union
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
@@ -114,9 +114,13 @@ class MsgspecSignatureModel(SignatureModel, Struct):
             else:
                 default = parameter.default if parameter.has_default else NODEFAULT
 
-            struct_fields.append(
-                (parameter.name, Annotated[annotation, Meta(extra=field_extra, **meta_kwargs)], default)
-            )
+            meta = Meta(extra=field_extra, **meta_kwargs)
+            if parameter.parsed_type.is_optional:
+                annotated_type = Optional[Annotated[make_non_optional_union(parameter.annotation), meta]]  # type: ignore[valid-type]
+            else:
+                annotated_type = Annotated[annotation, meta]
+            struct_fields.append((parameter.name, annotated_type, default))
+
             signature_fields[parameter.name] = SignatureField.create(
                 field_type=annotation,
                 name=parameter.name,
