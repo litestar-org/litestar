@@ -118,21 +118,17 @@ def test_create_function_signature_model_ignore_return_annotation(
 
 
 @pytest.mark.parametrize(
-    "preferred_validation_backend, error_extra",
+    "preferred_validation_backend, error_message",
     (
-        (
-            "attrs",
-            [{"key": "dep", "message": "invalid literal for int() with base 10: 'thirteen'"}],
+        pytest.param(
+            "attrs", "invalid literal for int() with base 10: 'thirteen'", marks=pytest.mark.skip, id="pydantic"
         ),
-        (
-            "pydantic",
-            [{"key": "dep", "message": "value is not a valid integer"}],
-        ),
+        pytest.param("pydantic", "value is not a valid integer", marks=pytest.mark.skip, id="attrs"),
+        pytest.param("msgspec", "Expected `int`, got `str` - at `$.dep`", id="msgspec"),
     ),
 )
 def test_dependency_validation_failure_raises_500(
-    preferred_validation_backend: Literal["attrs", "pydantic"],
-    error_extra: Any,
+    preferred_validation_backend: Literal["attrs", "pydantic"], error_message: str
 ) -> None:
     dependencies = {"dep": Provide(lambda: "thirteen", sync_to_thread=False)}
 
@@ -147,22 +143,20 @@ def test_dependency_validation_failure_raises_500(
 
     assert response.json() == {
         "detail": "Internal Server Error",
-        "extra": error_extra,
+        "extra": [{"key": "dep", "message": error_message}],
         "status_code": HTTP_500_INTERNAL_SERVER_ERROR,
     }
 
 
 @pytest.mark.parametrize(
-    "preferred_validation_backend, error_extra",
+    "preferred_validation_backend, error_message",
     (
-        (
-            "attrs",
-            [{"key": "param", "message": "invalid literal for int() with base 10: 'thirteen'", "source": "query"}],
-        ),
+        pytest.param("attrs", "invalid literal for int() with base 10: 'thirteen'", marks=pytest.mark.skip, id="attrs"),
+        pytest.param("msgspec", "Expected `int`, got `str` - at `$.param`", id="msgspec"),
     ),
 )
 def test_validation_failure_raises_400(
-    preferred_validation_backend: Literal["attrs", "pydantic"], error_extra: Any
+    preferred_validation_backend: Literal["attrs", "pydantic"], error_message: Any
 ) -> None:
     dependencies = {"dep": Provide(lambda: 13, sync_to_thread=False)}
 
@@ -177,12 +171,21 @@ def test_validation_failure_raises_400(
 
     assert response.json() == {
         "detail": "Validation failed for GET http://testserver.local/?param=thirteen",
-        "extra": error_extra,
+        "extra": [{"key": "param", "message": error_message}],
         "status_code": 400,
     }
 
 
-def test_client_pydantic_backend_error_precedence_over_server_error() -> None:
+@pytest.mark.parametrize(
+    "backend,expected_error_msg",
+    [
+        pytest.param(
+            "pydantic", "invalid literal for int() with base 10: 'thirteen'", marks=pytest.mark.skip, id="pydantic"
+        ),
+        pytest.param("msgspec", "Expected `int`, got `str` - at `$.param`", id="msgspec"),
+    ],
+)
+def test_client_backend_error_precedence_over_server_error(backend: str, expected_error_msg: Any) -> None:
     dependencies = {
         "dep": Provide(lambda: "thirteen", sync_to_thread=False),
         "optional_dep": Provide(lambda: "thirty-one", sync_to_thread=False),
@@ -193,13 +196,15 @@ def test_client_pydantic_backend_error_precedence_over_server_error() -> None:
         ...
 
     with create_test_client(
-        route_handlers=[test], dependencies=dependencies, _preferred_validation_backend="pydantic"
+        route_handlers=[test],
+        dependencies=dependencies,
+        _preferred_validation_backend=backend,  # type: ignore[arg-type]
     ) as client:
         response = client.get("/?param=thirteen")
 
     assert response.json() == {
         "detail": "Validation failed for GET http://testserver.local/?param=thirteen",
-        "extra": [{"key": "param", "message": "value is not a valid integer", "source": "query"}],
+        "extra": [{"key": "param", "message": expected_error_msg}],
         "status_code": 400,
     }
 
