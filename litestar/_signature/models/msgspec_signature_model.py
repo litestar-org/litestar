@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 from msgspec import NODEFAULT, Meta, Struct, ValidationError, convert, defstruct
 from msgspec.structs import asdict
@@ -14,6 +14,7 @@ from litestar.types.empty import Empty
 from litestar.utils.dataclass import simple_asdict
 
 from .base import SignatureModel
+from ...utils import make_non_optional_union
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
@@ -103,6 +104,12 @@ class MsgspecSignatureModel(SignatureModel, Struct):
                         )
                         if (v := getattr(kwargs_container, k))
                     }
+
+                    if kwargs_container.min_items:
+                        meta_kwargs["min_length"] = kwargs_container.min_items
+                    if kwargs_container.max_items:
+                        meta_kwargs["max_length"] = kwargs_container.max_items
+
                     default = NODEFAULT
             else:
                 default = parameter.default if parameter.has_default else NODEFAULT
