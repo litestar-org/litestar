@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from msgspec import NODEFAULT, Meta, Struct, ValidationError, convert, defstruct
 from msgspec.structs import asdict
@@ -13,8 +13,20 @@ from litestar.serialization import dec_hook
 from litestar.types.empty import Empty
 from litestar.utils import make_non_optional_union
 from litestar.utils.dataclass import simple_asdict
+from litestar.utils.typing import unwrap_union
 
 from .base import SignatureModel
+
+MSGSPEC_CONSTRAINT_FIELDS = (
+    "gt",
+    "ge",
+    "lt",
+    "le",
+    "multiple_of",
+    "pattern",
+    "min_length",
+    "max_length",
+)
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
@@ -90,20 +102,7 @@ class MsgspecSignatureModel(SignatureModel, Struct):
                 else:
                     param_dict = simple_asdict(kwargs_container)
                     field_extra.update(param_dict)
-                    meta_kwargs = {
-                        k: v
-                        for k in (
-                            "gt",
-                            "ge",
-                            "lt",
-                            "le",
-                            "multiple_of",
-                            "pattern",
-                            "min_length",
-                            "max_length",
-                        )
-                        if (v := getattr(kwargs_container, k))
-                    }
+                    meta_kwargs = {k: v for k in MSGSPEC_CONSTRAINT_FIELDS if (v := getattr(kwargs_container, k))}
 
                     if kwargs_container.min_items:
                         meta_kwargs["min_length"] = kwargs_container.min_items
@@ -117,6 +116,14 @@ class MsgspecSignatureModel(SignatureModel, Struct):
             meta = Meta(extra=field_extra, **meta_kwargs)
             if parameter.parsed_type.is_optional:
                 annotated_type = Optional[Annotated[make_non_optional_union(parameter.annotation), meta]]  # type: ignore[valid-type]
+            elif parameter.parsed_type.is_union and meta_kwargs.keys() & MSGSPEC_CONSTRAINT_FIELDS:
+                # unwrap inner types of a union and apply constraints to each individual type
+                # see https://github.com/jcrist/msgspec/issues/447
+                annotated_type = Union[
+                    tuple(
+                        Annotated[inner_type, meta] for inner_type in unwrap_union(parameter.annotation)
+                    )  # pyright: ignore
+                ]
             else:
                 annotated_type = Annotated[annotation, meta]
             struct_fields.append((parameter.name, annotated_type, default))

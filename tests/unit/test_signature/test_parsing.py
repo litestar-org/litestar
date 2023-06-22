@@ -1,18 +1,18 @@
 from dataclasses import dataclass
 from types import ModuleType
-from typing import Any, Callable, Iterable, List, Literal, Optional, Sequence
+from typing import Any, Callable, Iterable, List, Literal, Optional, Sequence, Union
 from unittest.mock import MagicMock
 
 import pytest
 from attr import define
 from pydantic import BaseModel
-from typing_extensions import TypedDict
+from typing_extensions import Annotated, TypedDict
 
 from litestar import get, post
 from litestar._signature import create_signature_model
 from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
-from litestar.params import Dependency, Parameter
+from litestar.params import Body, Dependency, Parameter
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import RequestFactory, TestClient, create_test_client
 from litestar.types.helper_types import OptionalSequence
@@ -515,3 +515,17 @@ def test_invalid_input_typed_dict() -> None:
             {"key": "int_header", "message": "value is not a valid integer", "source": "header"},
             {"key": "int_cookie", "message": "value is not a valid integer", "source": "cookie"},
         ]
+
+
+def test_union_constraint_handling() -> None:
+    mock = MagicMock()
+
+    @get("/")
+    def handler(param: Annotated[Union[str, List[str]], Body(max_length=3, max_items=3)]) -> None:
+        mock(param)
+
+    with create_test_client([handler]) as client:
+        response = client.get("/?param=foo")
+
+    assert response.status_code == 200
+    mock.assert_called_once_with("foo")
