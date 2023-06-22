@@ -4,6 +4,7 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, ClassVar, Dict, Literal, Sequence, Set, TypedDict, cast
 
+from litestar._signature.field import SignatureField  # noqa: TCH001
 from litestar.enums import ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
 from litestar.params import ParameterKwarg
@@ -11,7 +12,6 @@ from litestar.params import ParameterKwarg
 if TYPE_CHECKING:
     from typing_extensions import NotRequired
 
-    from litestar._signature.field import SignatureField
     from litestar.connection import ASGIConnection
     from litestar.utils.signature import ParsedSignature
 
