@@ -120,9 +120,7 @@ def test_create_function_signature_model_ignore_return_annotation(
 @pytest.mark.parametrize(
     "preferred_validation_backend, error_message",
     (
-        pytest.param(
-            "attrs", "invalid literal for int() with base 10: 'thirteen'", marks=pytest.mark.skip, id="attrs"
-        ),
+        pytest.param("attrs", "invalid literal for int() with base 10: 'thirteen'", marks=pytest.mark.skip, id="attrs"),
         pytest.param("pydantic", "value is not a valid integer", marks=pytest.mark.skip, id="pydantic"),
         pytest.param("msgspec", "Expected `int`, got `str` - at `$.dep`", id="msgspec"),
     ),
