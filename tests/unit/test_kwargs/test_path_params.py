@@ -79,7 +79,7 @@ def test_path_params(params_dict: dict, should_raise: bool) -> None:
         assert user_id
         assert order_id
 
-    with create_test_client(test_method, debug=True) as client:
+    with create_test_client(test_method) as client:
         response = client.get(
             f"{params_dict['version']}/{params_dict['service_id']}/{params_dict['user_id']}/{params_dict['order_id']}"
         )
