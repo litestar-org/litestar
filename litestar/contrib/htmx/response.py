@@ -134,7 +134,7 @@ class HXLocation(Response):
         source: str | None = None,
         event: str | None = None,
         target: str | None = None,
-        swap: ReSwapMethod = None,
+        swap: ReSwapMethod | None = None,
         hx_headers: dict[str, Any] | None = None,
         values: dict[str, str] | None = None,
         **kwargs: Any,

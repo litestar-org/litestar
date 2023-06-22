@@ -11,7 +11,7 @@ def test_caching_per_request() -> None:
         nonlocal value
         tmp = value
         value += 1
-        return tmp  # noqa: R504
+        return tmp
 
     async def second_dependency(first: int) -> int:
         return first + 5

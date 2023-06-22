@@ -53,7 +53,7 @@ class DependencyCleanupGroup:
         if isasyncgen(generator):
 
             async def wrapped_async() -> None:
-                await async_next(generator, None)  # type: ignore[arg-type]
+                await async_next(generator, None)
 
             return wrapped_async
 

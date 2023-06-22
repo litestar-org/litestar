@@ -108,7 +108,7 @@ _safe_generic_origin_map = {
     abc.AsyncIterable: t.AsyncIterable,
     abc.AsyncIterator: t.AsyncIterator,
     abc.Awaitable: t.Awaitable,
-    **{union_t: t.Union for union_t in UNION_TYPES},  # type:ignore[misc]
+    **{union_t: t.Union for union_t in UNION_TYPES},
 }
 """A mapping of types to equivalent types that are safe to be used as generics across all Python versions.
 
