@@ -245,7 +245,6 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                     setattr(existing, field_name, new_field_value)
             existing = self._attach_to_session(existing, strategy="merge")
             self.session.flush()
-            self.session.refresh(existing)
             self.session.expunge(existing)
         return existing, False
 
@@ -289,7 +288,6 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             # this will merge the inbound data to the instance we just put in the session
             instance = self._attach_to_session(data, strategy="merge")
             self.session.flush()
-            self.session.refresh(instance)
             self.session.expunge(instance)
             return instance
 
@@ -451,7 +449,6 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         with wrap_sqlalchemy_exception():
             instance = self._attach_to_session(data, strategy="merge")
             self.session.flush()
-            self.session.refresh(instance)
             self.session.expunge(instance)
             return instance
 
