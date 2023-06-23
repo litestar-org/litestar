@@ -286,6 +286,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             # this will merge the inbound data to the instance we just put in the session
             instance = await self._attach_to_session(data, strategy="merge")
             await self.session.flush()
+            await self.session.refresh(instance)
             self.session.expunge(instance)
             return instance
 
