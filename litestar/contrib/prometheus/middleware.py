@@ -39,15 +39,15 @@ class PrometheusMiddleware(AbstractMiddleware):
             config: An instance of :class:`PrometheusConfig <.contrib.prometheus.PrometheusConfig>`
         """
         super().__init__(app=app, scopes=config.scopes, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key)
-        self.config = config
-        self.labels = OrderedDict(self.config.labels) if self.config.labels is not None else None
-        self.kwargs = {}
+        self._config = config
+        self._labels = OrderedDict(self._config.labels) if self._config.labels is not None else None
+        self._kwargs = {}
 
-        if self.config.buckets is not None:
-            self.kwargs["buckets"] = self.config.buckets
+        if self._config.buckets is not None:
+            self._kwargs["buckets"] = self._config.buckets
 
     def request_count(self, labels: dict[str, str | int | float]) -> Counter:
-        metric_name = f"{self.config.prefix}_requests_total"
+        metric_name = f"{self._config.prefix}_requests_total"
         if metric_name not in PrometheusMiddleware._metrics:
             PrometheusMiddleware._metrics[metric_name] = Counter(
                 metric_name,
@@ -57,18 +57,18 @@ class PrometheusMiddleware(AbstractMiddleware):
         return PrometheusMiddleware._metrics[metric_name]  # type: ignore
 
     def request_time(self, labels: dict[str, str | int | float]) -> Histogram:
-        metric_name = f"{self.config.prefix}_request_duration_seconds"
+        metric_name = f"{self._config.prefix}_request_duration_seconds"
         if metric_name not in PrometheusMiddleware._metrics:
             PrometheusMiddleware._metrics[metric_name] = Histogram(
                 metric_name,
                 "Request duration, in seconds",
                 [*labels.keys()],
-                **self.kwargs,  # type: ignore
+                **self._kwargs,  # type: ignore
             )
         return PrometheusMiddleware._metrics[metric_name]  # type: ignore
 
     def requests_in_progress(self, labels: dict[str, str | int | float]) -> Gauge:
-        metric_name = f"{self.config.prefix}_requests_in_progress"
+        metric_name = f"{self._config.prefix}_requests_in_progress"
         if metric_name not in PrometheusMiddleware._metrics:
             PrometheusMiddleware._metrics[metric_name] = Gauge(
                 metric_name,
@@ -79,7 +79,7 @@ class PrometheusMiddleware(AbstractMiddleware):
         return PrometheusMiddleware._metrics[metric_name]  # type: ignore
 
     def requests_error_count(self, labels: dict[str, str | int | float]) -> Counter:
-        metric_name = f"{self.config.prefix}_requests_error_total"
+        metric_name = f"{self._config.prefix}_requests_error_total"
         if metric_name not in PrometheusMiddleware._metrics:
             PrometheusMiddleware._metrics[metric_name] = Counter(
                 metric_name,
@@ -92,10 +92,10 @@ class PrometheusMiddleware(AbstractMiddleware):
         """Get extra labels provided by the config and if they are callable, parse them."""
 
         extra_labels: dict[str, str | int | float] = {}
-        if self.labels is None:
+        if self._labels is None:
             return extra_labels
 
-        for key, value in self.labels.items():
+        for key, value in self._labels.items():
             if callable(value):
                 parsed_value = ""
                 try:
@@ -121,7 +121,7 @@ class PrometheusMiddleware(AbstractMiddleware):
             "method": request.method,
             "path": request.url.path,
             "status_code": 200,
-            "app_name": self.config.app_name,
+            "app_name": self._config.app_name,
         }
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
@@ -139,7 +139,7 @@ class PrometheusMiddleware(AbstractMiddleware):
         request: Request = Request(scope, receive)
         method = request.method
 
-        if self.config.exclude_http_methods and method in self.config.exclude_http_methods:
+        if self._config.exclude_http_methods and method in self._config.exclude_http_methods:
             await self.app(scope, receive, send)
             return
 
@@ -156,8 +156,8 @@ class PrometheusMiddleware(AbstractMiddleware):
             await self.app(scope, receive, wrapped_send)
         finally:
             extra = {}
-            if self.config.exemplars:
-                extra["exemplar"] = self.config.exemplars(request)
+            if self._config.exemplars:
+                extra["exemplar"] = self._config.exemplars(request)
 
             self.requests_in_progress(labels).labels(*label_values).dec()
 

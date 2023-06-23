@@ -31,14 +31,7 @@ __all__ = [
 
 
 class PrometheusController(Controller):
-    """Controller for Prometheus endpoints.
-    Example usage:
-
-        ```
-        prometheus_config = PrometheusConfig()
-        app = Litestar(route_handlers=[PrometheusController], middleware=[prometheus_config.middleware])
-        ```
-    """
+    """Controller for Prometheus endpoints."""
 
     path: str = "/metrics"
     """The path to expose the metrics on."""
