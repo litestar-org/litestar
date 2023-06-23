@@ -6,7 +6,7 @@ from typing import Any, AnyStr, Collection, ForwardRef, Mapping, TypeVar
 
 from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin
 
-from litestar.types.builtin_types import UNION_TYPES, NoneType
+from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.typing import get_instantiable_origin, get_safe_generic_origin, unwrap_annotation
 
 __all__ = ("ParsedType",)
@@ -116,7 +116,7 @@ class ParsedType:
     @property
     def is_union(self) -> bool:
         """Whether the annotation is a union type or not."""
-        return self.origin in UNION_TYPES
+        return self.origin in UnionTypes
 
     @property
     def is_optional(self) -> bool:
@@ -146,10 +146,10 @@ class ParsedType:
             Whether the annotation is a subtype of the given type(s).
         """
         if self.origin:
-            if self.origin in UNION_TYPES:
+            if self.origin in UnionTypes:
                 return all(t.is_subclass_of(cl) for t in self.inner_types)
 
-            return self.origin not in UNION_TYPES and issubclass(self.origin, cl)
+            return self.origin not in UnionTypes and issubclass(self.origin, cl)
 
         if self.annotation is AnyStr:
             return issubclass(str, cl) or issubclass(bytes, cl)
