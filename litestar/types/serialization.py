@@ -36,7 +36,15 @@ if TYPE_CHECKING:
 
     from litestar.types import DataclassProtocol
 
-__all__ = ("LitestarEncodableType",)
+__all__ = (
+    "LitestarEncodableType",
+    "EncodableBuiltinType",
+    "EncodableBuiltinCollectionType",
+    "EncodableStdLibType",
+    "EncodableStdLibIPType",
+    "EncodableMsgSpecType",
+    "EncodablePydanticType",
+)
 
 EncodableBuiltinType: TypeAlias = "None | bool | int | float | str | bytes | bytearray"
 EncodableBuiltinCollectionType: TypeAlias = "list | tuple | set | frozenset | dict | Collection"
