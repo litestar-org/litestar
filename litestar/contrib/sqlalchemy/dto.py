@@ -17,6 +17,7 @@ from sqlalchemy.orm import (
     RelationshipProperty,
 )
 
+from litestar.contrib.sqlalchemy.base import BigIntPrimaryKey
 from litestar.dto.factory.abc import AbstractDTOFactory
 from litestar.dto.factory.data_structures import FieldDefinition
 from litestar.dto.factory.field import DTO_FIELD_META_KEY, DTOField, Mark
@@ -26,8 +27,6 @@ from litestar.types.empty import Empty
 from litestar.typing import ParsedType
 from litestar.utils.helpers import get_fully_qualified_class_name
 from litestar.utils.signature import ParsedSignature
-
-from litestar.contrib.sqlalchemy.base import BigIntPrimaryKey
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Collection, Generator
