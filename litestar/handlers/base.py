@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from copy import copy
-from functools import partial
 from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
 
 from litestar._signature import create_signature_model
@@ -406,11 +405,6 @@ class BaseRouteHandler:
         1. ensure that the ``self`` argument is preserved by binding it using partial.
         2. ensure sync functions are wrapped in AsyncCallable for sync_to_thread handlers.
         """
-        from litestar.controller import Controller
-
-        if isinstance(self.owner, Controller) and not hasattr(self.fn.value, "func"):
-            self.fn.value = partial(self.fn.value, self.owner)
-
         for provider in self.resolve_dependencies().values():
             if not is_async_callable(provider.dependency.value):
                 provider.has_sync_callable = False

@@ -100,3 +100,25 @@ def test_controller_validation() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         Litestar(route_handlers=[BuggyController])
+
+
+def test_controller_subclassing() -> None:
+    class BaseController(Controller):
+        @get("/{id:int}")
+        async def test_get(self, id: int) -> str:
+            return f"{self.__class__.__name__} {id}"
+
+    class FooController(BaseController):
+        path = "/foo"
+
+    class BarController(BaseController):
+        path = "/bar"
+
+    with create_test_client([FooController, BarController], debug=True) as client:
+        response = client.get("/foo/123")
+        assert response.status_code == 200
+        assert response.text == "FooController 123"
+
+        response = client.get("/bar/123")
+        assert response.status_code == 200
+        assert response.text == "BarController 123"
