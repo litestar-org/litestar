@@ -560,3 +560,33 @@ async def test_no_type_hints(base: type[DeclarativeBase], connection_context: Co
     dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig()]]
     with pytest.raises(ImproperlyConfiguredException, match="No type information found for 'Model.field'"):
         await get_model_from_dto(dto_type, Model, connection_context, b"")
+
+
+@pytest.mark.parametrize("base_type", ["BigIntBase", "BigIntAuditBase", "UUIDBase", "UUIDAuditBase"])
+async def test_contrib_sqlalchemy_dto(
+    base_type: str, create_module: Callable[[str], ModuleType], connection_context: ConnectionContext
+) -> None:
+    module = create_module(
+        f"""
+from __future__ import annotations
+
+from litestar.contrib.sqlalchemy.base import {base_type}
+from sqlalchemy.orm import Mapped
+
+from litestar import Litestar, get
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+
+class {base_type}Model({base_type}):
+    val: Mapped[str]
+
+
+dto_type = SQLAlchemyDTO[{base_type}Model]
+    """
+    )
+    model = await get_model_from_dto(
+        module.dto_type,
+        vars(module)[f"{base_type}Model"],
+        connection_context,
+        b'{"val": "foo"}',
+    )
+    assert vars(model)["val"] == "foo"
