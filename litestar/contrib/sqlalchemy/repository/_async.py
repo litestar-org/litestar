@@ -243,6 +243,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                     setattr(existing, field_name, new_field_value)
             existing = await self._attach_to_session(existing, strategy="merge")
             await self.session.flush()
+            await self.session.refresh(existing)
             self.session.expunge(existing)
         return existing, False
 
@@ -448,6 +449,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         with wrap_sqlalchemy_exception():
             instance = await self._attach_to_session(data, strategy="merge")
             await self.session.flush()
+            await self.session.refresh(instance)
             self.session.expunge(instance)
             return instance
 
