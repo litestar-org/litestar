@@ -99,6 +99,7 @@ class UUIDPrimaryKey:
 class BigIntPrimaryKey:
     """BigInt Primary Key Field Mixin."""
 
+    id: Mapped[int]  # type: ignore[assignment] # pyright: ignore
     @declared_attr
     def id(cls) -> Mapped[int]:
         """BigInt Primary key column."""
