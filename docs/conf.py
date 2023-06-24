@@ -11,6 +11,8 @@ __all__ = ["setup", "update_html_context"]
 
 PY_CLASS = "py:class"
 PY_RE = r"py:.*"
+PY_METH = "py:meth"
+PY_OBJ = "py:obj"
 
 project = "Litestar"
 copyright = "2023, Litestar-Org"
@@ -82,12 +84,12 @@ nitpick_ignore = [
     (PY_CLASS, "ExternalType"),
     (PY_CLASS, "UserDefinedType"),
     (PY_CLASS, "_types.TypeDecorator"),
-    ("py:meth", "_types.TypeDecorator.process_bind_param"),
-    ("py:meth", "_types.TypeDecorator.process_result_value"),
-    ("py:meth", "type_engine"),
+    (PY_METH, "_types.TypeDecorator.process_bind_param"),
+    (PY_METH, "_types.TypeDecorator.process_result_value"),
+    (PY_METH, "type_engine"),
     # type vars and aliases / intentionally undocumented
     (PY_CLASS, "RouteHandlerType"),
-    ("py:obj", "litestar.security.base.AuthType"),
+    (PY_OBJ, "litestar.security.base.AuthType"),
     (PY_CLASS, "ControllerRouterHandler"),
     (PY_CLASS, "PathParameterDefinition"),
     (PY_CLASS, "BaseSessionBackendT"),
