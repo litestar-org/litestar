@@ -3,7 +3,8 @@ Contrib
 
 .. toctree::
 
-    open-telemetry
-    jwt
     htmx
+    jwt
+    open-telemetry
+    prometheus
     sqlalchemy/index

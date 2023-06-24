@@ -4389,7 +4389,7 @@ attrs = ["attrs", "cattrs", "python-dateutil", "pytimeparse"]
 brotli = ["brotli"]
 cli = ["click", "jsbeautifier", "rich", "rich-click", "uvicorn"]
 cryptography = ["cryptography"]
-full = ["alembic", "attrs", "brotli", "cattrs", "click", "cryptography", "jinja2", "jsbeautifier", "opentelemetry-instrumentation-asgi", "python-dateutil", "python-jose", "pytimeparse", "redis", "rich", "sqlalchemy", "structlog", "uvicorn"]
+full = ["alembic", "attrs", "brotli", "cattrs", "click", "cryptography", "jinja2", "jsbeautifier", "opentelemetry-instrumentation-asgi", "prometheus-client", "python-dateutil", "python-jose", "pytimeparse", "redis", "rich", "sqlalchemy", "structlog", "uvicorn"]
 jinja = ["jinja2"]
 jwt = ["cryptography", "python-jose"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
@@ -4404,4 +4404,4 @@ tortoise-orm = ["tortoise-orm"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "24bc794f2c3b47dd7b0735f2e2ea403acdf0532818acecbbb1eec87e5e09d4a8"
+content-hash = "be7bff6842b500f2a6ed7f349cfac934de75624b2ea0774ed914aec7cbd77b0f"
