@@ -53,7 +53,7 @@ class CORSConfig:
         self.allow_headers = [v.lower() for v in self.allow_headers]
 
     @cached_property
-    def allowed_origins_regex(self) -> Pattern:
+    def allowed_origins_regex(self) -> Pattern[str]:
         """Get or create a compiled regex for allowed origins.
 
         Returns:

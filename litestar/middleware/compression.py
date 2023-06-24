@@ -170,9 +170,8 @@ class CompressionMiddleware(AbstractMiddleware):
         Returns:
             An ASGI send function.
         """
-
-        buffer = BytesIO()
-        facade = CompressionFacade(buffer=buffer, compression_encoding=compression_encoding, config=self.config)
+        bytes_buffer = BytesIO()
+        facade = CompressionFacade(buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config)
 
         initial_message = Ref[Optional["HTTPResponseStartEvent"]](None)
         started = Ref[bool](False)
@@ -203,16 +202,16 @@ class CompressionMiddleware(AbstractMiddleware):
 
                         facade.write(body)
 
-                        message["body"] = buffer.getvalue()
-                        buffer.seek(0)
-                        buffer.truncate()
+                        message["body"] = bytes_buffer.getvalue()
+                        bytes_buffer.seek(0)
+                        bytes_buffer.truncate()
                         await send(initial_message.value)
                         await send(message)
 
                     elif len(body) >= self.config.minimum_size:
                         facade.write(body)
                         facade.close()
-                        body = buffer.getvalue()
+                        body = bytes_buffer.getvalue()
 
                         headers = MutableScopeHeaders(initial_message.value)
                         headers["Content-Encoding"] = compression_encoding
@@ -233,13 +232,13 @@ class CompressionMiddleware(AbstractMiddleware):
                     if not more_body:
                         facade.close()
 
-                    message["body"] = buffer.getvalue()
+                    message["body"] = bytes_buffer.getvalue()
 
-                    buffer.seek(0)
-                    buffer.truncate()
+                    bytes_buffer.seek(0)
+                    bytes_buffer.truncate()
 
                     if not more_body:
-                        buffer.close()
+                        bytes_buffer.close()
 
                     await send(message)
 

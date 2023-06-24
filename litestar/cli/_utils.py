@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Sequence, 
 
 from rich import get_console
 from rich.table import Table
-from typing_extensions import Concatenate, ParamSpec
+from typing_extensions import Concatenate, ParamSpec, get_type_hints
 
 from litestar import Litestar, __version__
 from litestar.middleware import DefineMiddleware
@@ -157,7 +157,7 @@ class LitestarGroup(Group):
         name: str | None = None,
         commands: dict[str, Command] | Sequence[Command] | None = None,
         **attrs: Any,
-    ):
+    ) -> None:
         """Init ``LitestarGroup``"""
         self.group_class = LitestarGroup
         super().__init__(name=name, commands=commands, **attrs)
@@ -196,7 +196,7 @@ class LitestarExtensionGroup(LitestarGroup):
         name: str | None = None,
         commands: dict[str, Command] | Sequence[Command] | None = None,
         **attrs: Any,
-    ):
+    ) -> None:
         """Init ``LitestarExtensionGroup``"""
         super().__init__(name=name, commands=commands, **attrs)
 
@@ -307,7 +307,9 @@ def _autodiscover_app(cwd: Path) -> LoadedApp:
         for attr, value in module.__dict__.items():
             if not callable(value):
                 continue
-            return_annotation = getattr(value, "__annotations__", {}).get("return")
+            return_annotation = (
+                get_type_hints(value, include_extras=True).get("return") if hasattr(value, "__annotations__") else None
+            )
             if not return_annotation:
                 continue
             if return_annotation in ("Litestar", Litestar):

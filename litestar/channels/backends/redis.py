@@ -68,6 +68,7 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
         return self.__pub_sub
 
     async def on_startup(self) -> None:
+        # this method should not do anything in this case
         pass
 
     async def on_shutdown(self) -> None:

@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any, Dict
 
 from pydantic import BaseConfig, BaseModel
 from typing_extensions import Annotated
@@ -20,7 +20,7 @@ class FormData(BaseModel):
 @post(path="/")
 async def handle_file_upload(
     data: Annotated[FormData, Body(media_type=RequestEncodingType.MULTI_PART)],
-) -> Dict:
+) -> Dict[str, Any]:
     cv_content = await data.cv.read()
     diploma_content = await data.diploma.read()
 

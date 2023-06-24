@@ -28,6 +28,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
+from __future__ import annotations
 
 from typing import (
     TYPE_CHECKING,
@@ -44,7 +45,9 @@ from typing import (
     Union,
 )
 
-from litestar.enums import ScopeType
+from pydantic import BaseModel
+
+from litestar.types.empty import EmptyType
 
 __all__ = (
     "ASGIApp",
@@ -95,15 +98,15 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    from pydantic import BaseModel
+    from typing_extensions import TypeAlias
 
     from litestar.app import Litestar
-    from litestar.types.empty import EmptyType
+    from litestar.enums import ScopeType
 
-    from .internal_types import RouteHandlerType
+    from .internal_types import LitestarType, RouteHandlerType
 
-Method = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD", "TRACE", "OPTIONS"]
-ScopeSession = Optional[Union["EmptyType", Dict[str, Any], "BaseModel"]]
+Method: TypeAlias = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD", "TRACE", "OPTIONS"]
+ScopeSession: TypeAlias = Optional[Union[EmptyType, Dict[str, Any], BaseModel]]
 
 
 class ASGIVersion(TypedDict):
@@ -116,49 +119,49 @@ class ASGIVersion(TypedDict):
 class HeaderScope(TypedDict):
     """Base class for ASGI-scopes that supports headers."""
 
-    headers: "RawHeaders"
+    headers: RawHeaders
 
 
 class BaseScope(HeaderScope):
     """Base ASGI-scope."""
 
-    app: "Litestar"
+    app: LitestarType
     asgi: ASGIVersion
     auth: Any
-    client: Optional[Tuple[str, int]]
-    extensions: Optional[Dict[str, Dict[object, object]]]
+    client: tuple[str, int] | None
+    extensions: dict[str, dict[object, object]] | None
     http_version: str
     path: str
-    path_params: Dict[str, str]
+    path_params: dict[str, str]
     query_string: bytes
     raw_path: bytes
     root_path: str
-    route_handler: "RouteHandlerType"
+    route_handler: RouteHandlerType
     scheme: str
-    server: Optional[Tuple[str, Optional[int]]]
+    server: tuple[str, int | None] | None
     session: ScopeSession
-    state: Dict[str, Any]
+    state: dict[str, Any]
     user: Any
 
 
 class HTTPScope(BaseScope):
     """HTTP-ASGI-scope."""
 
-    method: "Method"
+    method: Method
     type: Literal[ScopeType.HTTP]
 
 
 class WebSocketScope(BaseScope):
     """WebSocket-ASGI-scope."""
 
-    subprotocols: List[str]
+    subprotocols: list[str]
     type: Literal[ScopeType.WEBSOCKET]
 
 
 class LifeSpanScope(TypedDict):
     """Lifespan-ASGI-scope."""
 
-    app: "Litestar"
+    app: Litestar
     asgi: ASGIVersion
     type: Literal["lifespan"]
 
@@ -209,23 +212,23 @@ class WebSocketAcceptEvent(HeaderScope):
     """ASGI `websocket.accept` event."""
 
     type: Literal["websocket.accept"]
-    subprotocol: Optional[str]
+    subprotocol: str | None
 
 
 class WebSocketReceiveEvent(TypedDict):
     """ASGI `websocket.receive` event."""
 
     type: Literal["websocket.receive"]
-    bytes: Optional[bytes]
-    text: Optional[str]
+    bytes: bytes | None
+    text: str | None
 
 
 class WebSocketSendEvent(TypedDict):
     """ASGI `websocket.send` event."""
 
     type: Literal["websocket.send"]
-    bytes: Optional[bytes]
-    text: Optional[str]
+    bytes: bytes | None
+    text: str | None
 
 
 class WebSocketResponseStartEvent(HeaderScope):
@@ -255,7 +258,7 @@ class WebSocketCloseEvent(TypedDict):
 
     type: Literal["websocket.close"]
     code: int
-    reason: Optional[str]
+    reason: str | None
 
 
 class LifeSpanStartupEvent(TypedDict):
@@ -296,46 +299,46 @@ class LifeSpanShutdownFailedEvent(TypedDict):
     message: str
 
 
-HTTPReceiveMessage = Union[
+HTTPReceiveMessage: TypeAlias = Union[
     HTTPRequestEvent,
     HTTPDisconnectEvent,
 ]
-WebSocketReceiveMessage = Union[
+WebSocketReceiveMessage: TypeAlias = Union[
     WebSocketConnectEvent,
     WebSocketReceiveEvent,
     WebSocketDisconnectEvent,
 ]
-LifeSpanReceiveMessage = Union[
+LifeSpanReceiveMessage: TypeAlias = Union[
     LifeSpanStartupEvent,
     LifeSpanShutdownEvent,
 ]
-HTTPSendMessage = Union[
+HTTPSendMessage: TypeAlias = Union[
     HTTPResponseStartEvent,
     HTTPResponseBodyEvent,
     HTTPServerPushEvent,
     HTTPDisconnectEvent,
 ]
-WebSocketSendMessage = Union[
+WebSocketSendMessage: TypeAlias = Union[
     WebSocketAcceptEvent,
     WebSocketSendEvent,
     WebSocketResponseStartEvent,
     WebSocketResponseBodyEvent,
     WebSocketCloseEvent,
 ]
-LifeSpanSendMessage = Union[
+LifeSpanSendMessage: TypeAlias = Union[
     LifeSpanStartupCompleteEvent,
     LifeSpanStartupFailedEvent,
     LifeSpanShutdownCompleteEvent,
     LifeSpanShutdownFailedEvent,
 ]
-LifeSpanReceive = Callable[..., Awaitable[LifeSpanReceiveMessage]]
-LifeSpanSend = Callable[[LifeSpanSendMessage], Awaitable[None]]
-Message = Union[HTTPSendMessage, WebSocketSendMessage]
-ReceiveMessage = Union[HTTPReceiveMessage, WebSocketReceiveMessage]
-Scope = Union[HTTPScope, WebSocketScope]
-Receive = Callable[..., Awaitable[Union[HTTPReceiveMessage, WebSocketReceiveMessage]]]
-Send = Callable[[Message], Awaitable[None]]
-ASGIApp = Callable[[Scope, Receive, Send], Awaitable[None]]
-RawHeaders = Iterable[Tuple[bytes, bytes]]
-RawHeadersList = List[Tuple[bytes, bytes]]
-WebSocketMode = Literal["text", "binary"]
+LifeSpanReceive: TypeAlias = Callable[..., Awaitable[LifeSpanReceiveMessage]]
+LifeSpanSend: TypeAlias = Callable[[LifeSpanSendMessage], Awaitable[None]]
+Message: TypeAlias = Union[HTTPSendMessage, WebSocketSendMessage]
+ReceiveMessage: TypeAlias = Union[HTTPReceiveMessage, WebSocketReceiveMessage]
+Scope: TypeAlias = Union[HTTPScope, WebSocketScope]
+Receive: TypeAlias = Callable[..., Awaitable[Union[HTTPReceiveMessage, WebSocketReceiveMessage]]]
+Send: TypeAlias = Callable[[Message], Awaitable[None]]
+ASGIApp: TypeAlias = Callable[[Scope, Receive, Send], Awaitable[None]]
+RawHeaders: TypeAlias = Iterable[Tuple[bytes, bytes]]
+RawHeadersList: TypeAlias = List[Tuple[bytes, bytes]]
+WebSocketMode: TypeAlias = Literal["text", "binary"]

@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, ClassVar, TypedDict
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, Sequence, TypedDict, cast
 
 from litestar.enums import ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
+from litestar.params import ParameterKwarg
 
 if TYPE_CHECKING:
+    from typing_extensions import NotRequired
+
     from litestar._signature.field import SignatureField
     from litestar.connection import ASGIConnection
     from litestar.utils.signature import ParsedSignature
@@ -15,8 +18,12 @@ __all__ = ("SignatureModel",)
 
 
 class ErrorMessage(TypedDict):
-    key: str
+    # key may not be set in some cases, like when a query param is set but
+    # doesn't match the required length during `attrs` validation
+    # in this case, we don't show a key at all as it will be empty
+    key: NotRequired[str]
     message: str
+    source: NotRequired[Literal["cookie", "body", "header", "query"]]
 
 
 class SignatureModel(ABC):
@@ -40,12 +47,55 @@ class SignatureModel(ABC):
         """
         method = connection.method if hasattr(connection, "method") else ScopeType.WEBSOCKET  # pyright: ignore
         if client_errors := [
-            err_message for err_message in messages if err_message["key"] not in cls.dependency_name_set
+            err_message
+            for err_message in messages
+            if ("key" in err_message and err_message["key"] not in cls.dependency_name_set) or "key" not in err_message
         ]:
             return ValidationException(detail=f"Validation failed for {method} {connection.url}", extra=client_errors)
         return InternalServerException(
             detail=f"A dependency failed validation for {method} {connection.url}", extra=messages
         )
+
+    @classmethod
+    def _build_error_message(cls, keys: Sequence[str], exc_msg: str, connection: ASGIConnection) -> ErrorMessage:
+        """Build an error message.
+
+        Args:
+            keys: A list of keys.
+            exc_msg: A message.
+            connection: An ASGI connection instance.
+
+        Returns:
+            An ErrorMessage
+        """
+
+        message: ErrorMessage = {"message": exc_msg}
+
+        if len(keys) > 1:
+            key_start = 0
+
+            if keys[0] == "data":
+                key_start = 1
+                message["source"] = "body"
+
+            message["key"] = ".".join(keys[key_start:])
+        elif keys:
+            key = keys[0]
+            message["key"] = key
+
+            if key in connection.query_params:
+                message["source"] = cast("Literal['cookie', 'body', 'header', 'query']", "query")
+
+            elif key in cls.fields and isinstance(cls.fields[key].kwarg_model, ParameterKwarg):
+                if cast(ParameterKwarg, cls.fields[key].kwarg_model).cookie:
+                    source = "cookie"
+                elif cast(ParameterKwarg, cls.fields[key].kwarg_model).header:
+                    source = "header"
+                else:
+                    source = "query"
+                message["source"] = cast("Literal['cookie', 'body', 'header', 'query']", source)
+
+        return message
 
     @classmethod
     @abstractmethod

@@ -32,7 +32,9 @@ if TYPE_CHECKING:
 class MakoTemplate(TemplateProtocol):
     """Mako template, implementing ``TemplateProtocol``"""
 
-    def __init__(self, template: _MakoTemplate, template_callables: list[tuple[str, Callable[[dict[str, Any]], Any]]]):
+    def __init__(
+        self, template: _MakoTemplate, template_callables: list[tuple[str, Callable[[dict[str, Any]], Any]]]
+    ) -> None:
         """Initialize a template.
 
         Args:

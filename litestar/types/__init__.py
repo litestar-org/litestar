@@ -62,7 +62,6 @@ from .callable_types import (
 from .composite_types import (
     Dependencies,
     ExceptionHandlersMap,
-    MaybePartial,
     Middleware,
     ParametersMap,
     PathType,
@@ -73,7 +72,7 @@ from .composite_types import (
 )
 from .empty import Empty, EmptyType
 from .file_types import FileInfo, FileSystemProtocol
-from .helper_types import AnyIOBackend, OptionalSequence, SyncOrAsyncUnion
+from .helper_types import AnyIOBackend, MaybePartial, OptionalSequence, StreamType, SyncOrAsyncUnion
 from .internal_types import (
     ControllerRouterHandler,
     ReservedKwargs,
@@ -117,7 +116,6 @@ __all__ = (
     "HTTPScope",
     "HTTPSendMessage",
     "HTTPServerPushEvent",
-    "LifespanHook",
     "LifeSpanReceive",
     "LifeSpanReceiveMessage",
     "LifeSpanScope",
@@ -129,6 +127,8 @@ __all__ = (
     "LifeSpanStartupCompleteEvent",
     "LifeSpanStartupEvent",
     "LifeSpanStartupFailedEvent",
+    "LifespanHook",
+    "LitestarEncodableType",
     "Logger",
     "MaybePartial",
     "Message",
@@ -143,8 +143,8 @@ __all__ = (
     "ReceiveMessage",
     "ReservedKwargs",
     "ResponseCookies",
-    "ResponseType",
     "ResponseHeaders",
+    "ResponseType",
     "RouteHandlerMapItem",
     "RouteHandlerType",
     "Scope",
@@ -152,7 +152,7 @@ __all__ = (
     "Scopes",
     "Send",
     "Serializer",
-    "LitestarEncodableType",
+    "StreamType",
     "SyncOrAsyncUnion",
     "TypeEncodersMap",
     "TypedDictClass",

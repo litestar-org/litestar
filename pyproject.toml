@@ -336,6 +336,7 @@ ignore = [
     "D415",    # pydocstyle - first line should end with a period, question mark, or exclamation point
     "E501",    # pycodestyle line too long, handled by black
     "PLW2901", # pylint - for loop variable overwritten by assignment target
+    "RUF012",  # Ruff-specific rule - annotated with classvar
 ]
 line-length = 120
 src = ["litestar", "tests", "docs/examples"]

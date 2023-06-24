@@ -46,7 +46,7 @@ ResponseExtractorField = Literal["status_code", "headers", "body", "cookies"]
 class ExtractedRequestData(TypedDict, total=False):
     """Dictionary representing extracted request data."""
 
-    body: Coroutine
+    body: Coroutine[Any, Any, Any]
     client: tuple[str, int]
     content_type: tuple[str, dict[str, str]]
     cookies: dict[str, str]
@@ -88,7 +88,7 @@ class ConnectionDataExtractor:
         obfuscate_headers: set[str] | None = None,
         parse_body: bool = False,
         parse_query: bool = False,
-    ):
+    ) -> None:
         """Initialize ``ConnectionDataExtractor``
 
         Args:
@@ -305,7 +305,7 @@ class ResponseDataExtractor:
         extract_status_code: bool = True,
         obfuscate_cookies: set[str] | None = None,
         obfuscate_headers: set[str] | None = None,
-    ):
+    ) -> None:
         """Initialize ``ResponseDataExtractor`` with options.
 
         Args:

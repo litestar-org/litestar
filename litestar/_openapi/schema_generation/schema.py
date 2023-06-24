@@ -35,7 +35,7 @@ from uuid import UUID
 from _decimal import Decimal
 from msgspec.structs import fields as msgspec_struct_fields
 from polyfactory.utils.predicates import is_safe_subclass
-from typing_extensions import NotRequired, Required, get_args
+from typing_extensions import NotRequired, Required, get_args, get_type_hints
 
 from litestar._openapi.schema_generation.constrained_fields import (
     create_date_constrained_field_schema,
@@ -366,7 +366,7 @@ class SchemaCreator:
         plugins: list[OpenAPISchemaPluginProtocol] | None = None,
         schemas: dict[str, Schema] | None = None,
         prefer_alias: bool = True,
-    ):
+    ) -> None:
         """Instantiate a SchemaCreator.
 
         Args:
@@ -584,7 +584,7 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        field_type_hints = field_type.__annotations__
+        field_type_hints = get_type_hints(field_type, include_extras=True)
         model_config = getattr(field_type, "__config__", getattr(field_type, "model_config", Empty))
         if isinstance(model_config, dict):
             title = model_config.get("title")
@@ -620,7 +620,7 @@ class SchemaCreator:
         from attr import NOTHING
         from attrs import fields_dict
 
-        field_type_hints = field_type.__annotations__
+        field_type_hints = get_type_hints(field_type, include_extras=True)
         return Schema(
             required=sorted(
                 [
@@ -668,7 +668,7 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        field_type_hints = field_type.__annotations__
+        field_type_hints = get_type_hints(field_type, include_extras=True)
         return Schema(
             required=sorted(
                 [
@@ -696,7 +696,7 @@ class SchemaCreator:
             A schema instance.
         """
         annotations: dict[str, Any] = {}
-        for k, v in field_type.__annotations__.items():
+        for k, v in get_type_hints(field_type, include_extras=True).items():
             if get_origin(v) in (Required, NotRequired):
                 annotations[k] = get_args(v)[0]
             else:

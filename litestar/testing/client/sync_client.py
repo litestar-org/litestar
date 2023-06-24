@@ -35,7 +35,7 @@ T = TypeVar("T", bound=ASGIApp)
 
 
 class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
-    lifespan_handler: LifeSpanHandler
+    lifespan_handler: LifeSpanHandler[Any]
     exit_stack: ExitStack
 
     def __init__(
@@ -476,7 +476,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
     def websocket_connect(
         self,
         url: str,
-        subprotocols: OptionalSequence[str] = None,
+        subprotocols: OptionalSequence[str] | None = None,
         params: QueryParamTypes | None = None,
         headers: HeaderTypes | None = None,
         cookies: CookieTypes | None = None,

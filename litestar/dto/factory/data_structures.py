@@ -20,7 +20,7 @@ class DTOData(Generic[T]):
 
     __slots__ = ("_backend", "_data_as_builtins")
 
-    def __init__(self, backend: AbstractDTOBackend, data_as_builtins: Any) -> None:
+    def __init__(self, backend: AbstractDTOBackend[Any], data_as_builtins: Any) -> None:
         self._backend = backend
         self._data_as_builtins = data_as_builtins
 
@@ -52,7 +52,7 @@ class DTOData(Generic[T]):
         return self._data_as_builtins
 
 
-def _set_nested_dict_value(d: dict, keys: list[str], value: Any) -> None:
+def _set_nested_dict_value(d: dict[str, Any], keys: list[str], value: Any) -> None:
     if len(keys) == 1:
         d[keys[0]] = value
     else:

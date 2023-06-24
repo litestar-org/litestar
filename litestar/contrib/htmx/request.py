@@ -107,7 +107,7 @@ class HTMXRequest(Request):
 
     __slots__ = ("htmx",)
 
-    def __init__(self, scope: Scope, receive: Receive, send: Send):
+    def __init__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """Initialize :class:`HTMXRequest`"""
         super().__init__(scope=scope, receive=receive, send=send)
         self.htmx = HTMXDetails(self)

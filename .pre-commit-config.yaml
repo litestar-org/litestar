@@ -24,7 +24,7 @@ repos:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.272"
+    rev: "v0.0.275"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -59,10 +59,10 @@ repos:
       - id: slotscheck
         exclude: "test_*|docs"
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.3.0"
+    rev: "v1.4.0"
     hooks:
       - id: mypy
-        exclude: "test_apps|tools|docs|tests/examples"
+        exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures"
         additional_dependencies:
           [
             "polyfactory>=2.3.2",
@@ -118,10 +118,10 @@ repos:
             uvicorn,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.314
+    rev: v1.1.315
     hooks:
       - id: pyright
-        exclude: "test_apps|tools|docs|_openapi|tests/examples"
+        exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures"
         additional_dependencies:
           [
             "polyfactory>=2.3.2",

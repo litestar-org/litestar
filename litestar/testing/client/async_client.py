@@ -32,7 +32,7 @@ T = TypeVar("T", bound=ASGIApp)
 
 
 class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[misc]
-    lifespan_handler: LifeSpanHandler
+    lifespan_handler: LifeSpanHandler[Any]
     exit_stack: AsyncExitStack
 
     def __init__(
@@ -46,7 +46,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
         session_config: BaseBackendConfig | None = None,
         timeout: float | None = None,
         cookies: CookieTypes | None = None,
-    ):
+    ) -> None:
         """An Async client implementation providing a context manager for testing applications asynchronously.
 
         Args:

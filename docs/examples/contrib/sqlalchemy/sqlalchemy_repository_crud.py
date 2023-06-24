@@ -96,11 +96,11 @@ async def run_script() -> None:
     # 2) Let's update the Author record.
     console.print("2) Updating a record.")
     author.dod = datetime.strptime("1940-12-21", "%Y-%m-%d").date()
-    author = await update_author(author)
+    await update_author(author)
 
     # 3) Let's delete the record we just created.
     console.print("3) Removing a record.")
-    author = await remove_author(author_id)
+    await remove_author(author_id)
 
     # 4) Let's verify the record no longer exists.
     console.print("4) Select one or none.")

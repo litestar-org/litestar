@@ -133,4 +133,3 @@ class DTOInterface(Protocol):
         Raises:
             UnsupportedType: If the DTO type does not support the annotated type of ``parsed_type``.
         """
-        return

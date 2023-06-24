@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, cast
 from urllib.parse import quote
 
 from litestar.exceptions import ImproperlyConfiguredException
@@ -146,10 +146,10 @@ def get_headers(hx_headers: HtmxHeaderType) -> dict[str, Any]:
     response: dict[str, Any]
     key: str
     value: Any
+
     for key, value in hx_headers.items():
         if key in ["redirect", "refresh", "location", "replace_url"]:
-            response = htmx_headers_dict[key](value)
-            return response
+            return cast("dict[str, Any]", htmx_headers_dict[key](value))
         if value is not None:
             response = htmx_headers_dict[key](value)
             header.update(response)
