@@ -166,12 +166,12 @@ class Litestar(Router):
         self,
         route_handlers: OptionalSequence[ControllerRouterHandler] | None = None,
         *,
-        after_shutdown: OptionalSequence[LifespanHook] | None = None,
+        after_shutdown: OptionalSequence[Callable] | None = None,
         after_exception: OptionalSequence[AfterExceptionHookHandler] | None = None,
         after_request: AfterRequestHookHandler | None = None,
         after_response: AfterResponseHookHandler | None = None,
         allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
-        before_startup: OptionalSequence[LifespanHook] | None = None,
+        before_startup: OptionalSequence[Callable] | None = None,
         before_request: BeforeRequestHookHandler | None = None,
         before_send: OptionalSequence[BeforeMessageSendHookHandler] | None = None,
         cache_control: CacheControlHeader | None = None,
@@ -218,7 +218,7 @@ class Litestar(Router):
         """Initialize a ``Litestar`` application.
 
         Args:
-            after_shutdown: A sequence of :class:`LifespanHook <.types.LifespanHook>` called after application
+            after_shutdown: A sequence of :class:`Callable <typing.Callable>` called after application
                 shutdown.
             after_exception: A sequence of :class:`exception hook handlers <.types.AfterExceptionHookHandler>`. This
                 hook is called after an exception occurs. In difference to exception handlers, it is not meant to
@@ -230,7 +230,7 @@ class Litestar(Router):
             allowed_hosts: A sequence of allowed hosts, or an
                 :class:`AllowedHostsConfig <.config.allowed_hosts.AllowedHostsConfig>` instance. Enables the builtin
                 allowed hosts middleware.
-            before_startup: A sequence of :class:`LifespanHook <litestar.types.LifespanHook>` called before
+            before_startup: A sequence of :class:`Callable <typing.Callable>` called before
                 application startup.
             before_request: A sync or async function called immediately before calling the route handler. Receives the
                 :class:`Request <.connection.Request>` instance and any non-``None`` return value is used for the
