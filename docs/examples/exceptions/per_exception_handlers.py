@@ -28,8 +28,8 @@ def value_error_handler(request: Request, exc: ValueError) -> Response:
 
 
 @get("/validation-error")
-async def validation_error(some_query_param: str) -> None:
-    pass
+async def validation_error(some_query_param: str) -> str:
+    return some_query_param
 
 
 @get("/server-error")

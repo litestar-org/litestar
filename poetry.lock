@@ -2720,6 +2720,20 @@ pyyaml = ">=5.1"
 virtualenv = ">=20.10.0"
 
 [[package]]
+name = "prometheus-client"
+version = "0.17.0"
+description = "Python client for the Prometheus monitoring system."
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "prometheus_client-0.17.0-py3-none-any.whl", hash = "sha256:a77b708cf083f4d1a3fb3ce5c95b4afa32b9c521ae363354a4a910204ea095ce"},
+    {file = "prometheus_client-0.17.0.tar.gz", hash = "sha256:9c3b26f1535945e85b8934fb374678d263137b78ef85f305b1156c7c881cd11b"},
+]
+
+[package.extras]
+twisted = ["twisted"]
+
+[[package]]
 name = "proto-plus"
 version = "1.22.3"
 description = "Beautiful, Pythonic protocol buffers."
@@ -4380,6 +4394,7 @@ jinja = ["jinja2"]
 jwt = ["cryptography", "python-jose"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
+prometheus = ["prometheus-client"]
 redis = ["redis"]
 sqlalchemy = ["alembic", "sqlalchemy"]
 standard = ["click", "jinja2", "jsbeautifier", "rich", "rich-click", "uvicorn"]
@@ -4389,4 +4404,4 @@ tortoise-orm = ["tortoise-orm"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "6cbd7ca1e55abdb44d64d0dfd3b6472ec612beef0784d5a645c29e9baca8017c"
+content-hash = "24bc794f2c3b47dd7b0735f2e2ea403acdf0532818acecbbb1eec87e5e09d4a8"
