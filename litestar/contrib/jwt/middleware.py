@@ -36,7 +36,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         retrieve_user_handler: AsyncCallable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
         scopes: Scopes,
         token_secret: str,
-    ):
+    ) -> None:
         """Check incoming requests for an encoded token in the auth header specified, and if present retrieve the user
         from persistence using the provided function.
 
@@ -120,7 +120,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         retrieve_user_handler: AsyncCallable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
         scopes: Scopes,
         token_secret: str,
-    ):
+    ) -> None:
         """Check incoming requests for an encoded token in the auth header or cookie name specified, and if present
         retrieves the user from persistence using the provided function.
 

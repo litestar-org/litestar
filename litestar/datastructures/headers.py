@@ -391,12 +391,12 @@ class ETag(Header):
         raise ValueError("value must be set if documentation_only is false")
 
 
-class _MediaType:
+class MediaTypeHeader:
     """A helper class for ``Accept`` header parsing."""
 
     __slots__ = ("maintype", "subtype", "params", "_params_str")
 
-    def __init__(self, type_str: str):
+    def __init__(self, type_str: str) -> None:
         # preserve the original parameters, because the order might be
         # changed in the dict
         self._params_str = "".join(type_str.partition(";")[1:])
@@ -428,7 +428,7 @@ class _MediaType:
 
         return quality, specificity
 
-    def match(self, other: "_MediaType") -> bool:
+    def match(self, other: "MediaTypeHeader") -> bool:
         # Check parameters first, ignore the weight parameter 'q'.
         # Additional parameters on other are also ignored.
         for key, value in self.params.items():
@@ -451,8 +451,8 @@ class Accept:
 
     __slots__ = ("_accepted_types",)
 
-    def __init__(self, accept_value: str):
-        self._accepted_types = [_MediaType(t) for t in accept_value.split(",")]
+    def __init__(self, accept_value: str) -> None:
+        self._accepted_types = [MediaTypeHeader(t) for t in accept_value.split(",")]
         self._accepted_types.sort(key=lambda t: t.priority, reverse=True)
 
     def __len__(self) -> int:
@@ -477,7 +477,7 @@ class Accept:
             they are replaced with the corresponding part of the accepted type. Otherwise the
             provided type is returned as-is.
         """
-        types = [_MediaType(t) for t in provided_types]
+        types = [MediaTypeHeader(t) for t in provided_types]
 
         for accepted in self._accepted_types:
             for provided in types:

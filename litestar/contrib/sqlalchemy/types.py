@@ -93,7 +93,7 @@ class ORA_JSONB(TypeDecorator, SchemaType):  # type: ignore  # noqa: N801
     cache_ok = True
 
     @property
-    def python_type(self) -> type[dict]:
+    def python_type(self) -> type[dict[str, Any]]:
         return dict
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:

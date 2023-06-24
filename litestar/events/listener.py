@@ -19,7 +19,7 @@ class EventListener:
 
     fn: AsyncCallable[Any, Any]
 
-    def __init__(self, *event_ids: str):
+    def __init__(self, *event_ids: str) -> None:
         """Create a decorator for event handlers.
 
         Args:

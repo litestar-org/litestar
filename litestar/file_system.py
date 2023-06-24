@@ -55,7 +55,7 @@ class BaseLocalFileSystem(FileSystemProtocol):
 class FileSystemAdapter:
     """Wrapper around a ``FileSystemProtocol``, normalising its interface."""
 
-    def __init__(self, file_system: FileSystemProtocol):
+    def __init__(self, file_system: FileSystemProtocol) -> None:
         """Initialize an adapter from a given ``file_system``
 
         Args:

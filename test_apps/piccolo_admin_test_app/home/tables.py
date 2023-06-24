@@ -14,5 +14,5 @@ class Task(Table, db=DB):
     task_user = ForeignKey(BaseUser)
 
     @classmethod
-    def get_readable(cls):
+    def get_readable(cls) -> Readable:
         return Readable(template="%s", columns=[cls.task_user.username])

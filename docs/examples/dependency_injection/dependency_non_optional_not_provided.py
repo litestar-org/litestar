@@ -2,7 +2,7 @@ from typing import Any
 
 from typing_extensions import Annotated
 
-from litestar import get
+from litestar import Litestar, get
 from litestar.params import Dependency
 
 
@@ -15,7 +15,7 @@ def hello_world(non_optional_dependency: Annotated[int, Dependency()]) -> dict[s
     return {"hello": non_optional_dependency}
 
 
-# app = Litestar(route_handlers=[hello_world])
+app = Litestar(route_handlers=[hello_world])
 
 # ImproperlyConfiguredException: 500: Explicit dependency 'non_optional_dependency' for 'hello_world' has no default
 # value, or provided dependency.

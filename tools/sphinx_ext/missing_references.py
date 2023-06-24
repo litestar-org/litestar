@@ -6,7 +6,7 @@ import inspect
 import re
 from functools import cache
 from pathlib import Path
-from typing import TYPE_CHECKING, Generator
+from typing import TYPE_CHECKING, Any, Generator
 
 from docutils.utils import get_source_line
 
@@ -85,7 +85,7 @@ def on_warn_missing_reference(app: Sphinx, domain: str, node: Node) -> bool | No
     return None
 
 
-def on_missing_reference(app: Sphinx, env: BuildEnvironment, node: pending_xref, contnode: Element):
+def on_missing_reference(app: Sphinx, env: BuildEnvironment, node: pending_xref, contnode: Element) -> Any:
     if not hasattr(node, "attributes"):
         return None
 

@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 class MiddlewareWrapper:
     """Wrapper class that serves as the middleware entry point."""
 
-    def __init__(self, app: ASGIApp, config: SessionAuth):
+    def __init__(self, app: ASGIApp, config: SessionAuth[Any, Any]) -> None:
         """Wrap the SessionAuthMiddleware inside ExceptionHandlerMiddleware, and it wraps this inside SessionMiddleware.
         This allows the auth middleware to raise exceptions and still have the response handled, while having the
         session cleared.
@@ -80,7 +80,7 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
         exclude_opt_key: str,
         scopes: Scopes | None,
         retrieve_user_handler: AsyncCallable[[dict[str, Any], ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
-    ):
+    ) -> None:
         """Session based authentication middleware.
 
         Args:

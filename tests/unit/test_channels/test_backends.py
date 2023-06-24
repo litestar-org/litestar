@@ -78,7 +78,8 @@ async def test_get_history(
     channels_backend: ChannelsBackend, history_limit: int | None, expected_history_length: int
 ) -> None:
     if isinstance(channels_backend, RedisChannelsPubSubBackend):
-        pytest.skip()
+        pytest.skip("Redis pub/sub backend does not support history")
+
     messages = [str(i).encode() for i in range(100)]
     for message in messages:
         await channels_backend.publish(message, {"something"})
@@ -92,7 +93,7 @@ async def test_get_history(
 
 async def test_discards_history_entries(channels_backend: ChannelsBackend) -> None:
     if isinstance(channels_backend, RedisChannelsPubSubBackend):
-        pytest.skip()
+        pytest.skip("Redis pub/sub backend does not support history")
 
     for _ in range(20):
         await channels_backend.publish(b"foo", {"bar"})
