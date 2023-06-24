@@ -949,9 +949,10 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../templating.html">Templates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../exceptions.html">Exceptions and exception handling</a></li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="../index.html">Contrib</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../open-telemetry.html">Open Telemetry Instrumentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jwt.html">JWT Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../htmx.html">HTMX Request Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../open-telemetry.html">Open Telemetry Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../prometheus.html">Prometheus Instrumentation</a></li>
 <li class="toctree-l3 current active has-children"><a class="reference internal" href="index.html">SQLAlchemy</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l4 current active"><a class="current reference internal" href="#">SQLAlchemy Models &amp; Repository</a></li>
 <li class="toctree-l4"><a class="reference internal" href="plugins/index.html">Plugins</a></li>
@@ -1175,13 +1176,16 @@ an optional version with audit columns.</p></li>
 <li><p>Generic synchronous and asynchronous repositories for select, insert, update, and delete operations on SQLAlchemy models</p></li>
 <li><p>Implements optimized methods for bulk inserts, updates, and deletes.</p></li>
 <li><p>Integrated counts, pagination, sorting, filtering with <code class="docutils literal notranslate"><span class="pre">LIKE</span></code>, <code class="docutils literal notranslate"><span class="pre">IN</span></code>, and dates before and/or after.</p></li>
-<li><p>Tested support for multiple database backends including:
-- SQLite via <a class="reference external" href="https://aiosqlite.omnilib.dev/en/stable/">aiosqlite</a> or <a class="reference external" href="https://docs.python.org/3/library/sqlite3.html">sqlite</a>
-- Postgres via <a class="reference external" href="https://magicstack.github.io/asyncpg/current/">asyncpg</a> or <a class="reference external" href="https://www.psycopg.org/psycopg3/">psycopg3 (async or sync)</a>
-- MySQL via <a class="reference external" href="https://github.com/long2ice/asyncmy">asyncmy</a>
-- Oracle via <a class="reference external" href="https://oracle.github.io/python-oracledb/">oracledb</a>
-- Google Spanner via <a class="reference external" href="https://github.com/googleapis/python-spanner-sqlalchemy/">spanner-sqlalchemy</a>
-- DuckDB via <a class="reference external" href="https://github.com/Mause/duckdb_engine">duckdb_engine</a></p></li>
+<li><p>Tested support for multiple database backends including:</p>
+<ul>
+<li><p>SQLite via <a class="reference external" href="https://aiosqlite.omnilib.dev/en/stable/">aiosqlite</a> or <a class="reference external" href="https://docs.python.org/3/library/sqlite3.html">sqlite</a></p></li>
+<li><p>Postgres via <a class="reference external" href="https://magicstack.github.io/asyncpg/current/">asyncpg</a> or <a class="reference external" href="https://www.psycopg.org/psycopg3/">psycopg3 (async or sync)</a></p></li>
+<li><p>MySQL via <a class="reference external" href="https://github.com/long2ice/asyncmy">asyncmy</a></p></li>
+<li><p>Oracle via <a class="reference external" href="https://oracle.github.io/python-oracledb/">oracledb</a></p></li>
+<li><p>Google Spanner via <a class="reference external" href="https://github.com/googleapis/python-spanner-sqlalchemy/">spanner-sqlalchemy</a></p></li>
+<li><p>DuckDB via <a class="reference external" href="https://github.com/Mause/duckdb_engine">duckdb_engine</a></p></li>
+</ul>
+</li>
 </ul>
 </section>
 <section id="basic-use">
@@ -1201,11 +1205,13 @@ and <code class="docutils literal notranslate"><span class="pre">UUIDAuditBase</
 </ul>
 <p>Both include a <code class="docutils literal notranslate"><span class="pre">BigInteger</span></code> based primary key
 and <code class="docutils literal notranslate"><span class="pre">BigIntAuditBase</span></code> includes an <code class="docutils literal notranslate"><span class="pre">updated</span></code> and <code class="docutils literal notranslate"><span class="pre">created</span></code> timestamp column.</p>
-<p>Models using these bases also include the following enhancements:
-* Auto-generated snake-case table name from class name
-* Pydantic BaseModel and Dict classes map to an optimized JSON type that is
+<p>Models using these bases also include the following enhancements:</p>
+<ul class="simple">
+<li><p>Auto-generated snake-case table name from class name</p></li>
+<li><p>Pydantic BaseModel and Dict classes map to an optimized JSON type that is
 <a class="reference external" href="https://docs.sqlalchemy.org/en/20/dialects/postgresql.html#sqlalchemy.dialects.postgresql.JSONB" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONB</span></code></a> for the Postgres and
-<a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/type_basics.html#sqlalchemy.types.JSON" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSON</span></code></a> for other dialects.</p>
+<a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/type_basics.html#sqlalchemy.types.JSON" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSON</span></code></a> for other dialects.</p></li>
+</ul>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">sqlalchemy_declarative_models.py</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>

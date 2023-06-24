@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>stores &#8212; Litestar Framework</title>
+    <title>Prometheus Instrumentation &#8212; Litestar Framework</title>
   
   
   
@@ -49,13 +49,13 @@
     <script src="../../_static/copybutton.js"></script>
     <script src="../../_static/litestar-theme.js"></script>
     <script src="../../_static/design-tabs.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/stores/index';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'usage/contrib/prometheus';</script>
     <script src="../../_static/versioning.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="base" href="base.html" />
-    <link rel="prev" title="static_files" href="../static_files.html" />
+    <link rel="next" title="SQLAlchemy" href="sqlalchemy/index.html" />
+    <link rel="prev" title="Open Telemetry Instrumentation" href="open-telemetry.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -907,179 +907,179 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/the-litestar-app.html">The Litestar App</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/routing.html">Routing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/route-handlers.html">Route handlers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/parameters.html">Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/request-data.html">Request data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/responses.html">Responses</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/dependency-injection.html">Dependency Injection</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/dto/index.html">Data Transfer Object (DTO)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/dto/0-basic-use.html">Basic Use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/dto/1-dto-factory.html">DTO Factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/dto/2-dto-interface.html">DTO Interface</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Usage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../the-litestar-app.html">The Litestar App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../routing.html">Routing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../route-handlers.html">Route handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameters.html">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../request-data.html">Request data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../responses.html">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../dto/index.html">Data Transfer Object (DTO)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../dto/0-basic-use.html">Basic Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dto/1-dto-factory.html">DTO Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dto/2-dto-interface.html">DTO Interface</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/websockets.html">WebSockets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/channels.html">Channels</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/middleware/using-middleware.html">Using Middleware</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/middleware/builtin-middleware.html">Built-in middleware</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/middleware/creating-middleware.html">Creating Middleware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../websockets.html">WebSockets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../channels.html">Channels</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../middleware/using-middleware.html">Using Middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../middleware/builtin-middleware.html">Built-in middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../middleware/creating-middleware.html">Creating Middleware</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/security/security-backends.html">Security Backends</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/security/guards.html">Guards</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../security/security-backends.html">Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../security/guards.html">Guards</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/stores.html">Stores</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/testing.html">Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/plugins.html">Plugins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/events.html">Event Emitters and Listeners</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/openapi.html">OpenAPI integration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/caching.html">Caching</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/templating.html">Templates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/exceptions.html">Exceptions and exception handling</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/htmx.html">HTMX Request Class</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/jwt.html">JWT Security Backends</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/prometheus.html">Prometheus Instrumentation</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../usage/contrib/sqlalchemy/index.html">SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../usage/contrib/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../usage/contrib/sqlalchemy/plugins/index.html">Plugins</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/cli.html">CLI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/debugging.html">Debugging</a></li>
-</ul>
-</li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">API reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../app.html">app</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../background_tasks.html">background_tasks</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../channels/index.html">channels</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../channels/plugin.html">plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../channels/subscriber.html">subscriber</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../channels/backends/index.html">backends</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../channels/backends/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../channels/backends/memory.html">memory</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../channels/backends/redis.html">redis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../stores.html">Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../testing.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../plugins.html">Plugins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../events.html">Event Emitters and Listeners</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../openapi.html">OpenAPI integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../lifecycle-hooks.html">Life Cycle Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../caching.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../templating.html">Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Contrib</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="htmx.html">HTMX Request Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="open-telemetry.html">Open Telemetry Instrumentation</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Prometheus Instrumentation</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="sqlalchemy/index.html">SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sqlalchemy/plugins/index.html">Plugins</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../config.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../connection.html">connection</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../contrib/htmx.html">HTMX</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../contrib/jinja.html">jinja</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../contrib/jwt.html">jwt</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../contrib/mako.html">mako</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../contrib/msgspec.html">msgspec</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../contrib/opentelemetry.html">opentelemetry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../contrib/pydantic.html">pydantic</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../contrib/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../contrib/repository/abc.html">abc</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../contrib/repository/filters.html">filters</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../contrib/repository/exceptions.html">exceptions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../contrib/repository/testing.html">testing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../contrib/repository/handlers.html">handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli.html">CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging.html">Debugging</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../contrib/sqlalchemy/plugins.html">plugins</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../contrib/sqlalchemy/repository.html">repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../contrib/sqlalchemy/types.html">types</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../contrib/sqlalchemy/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../contrib/sqlalchemy/dto.html">DTO</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/app.html">app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/background_tasks.html">background_tasks</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/channels/index.html">channels</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/channels/plugin.html">plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/channels/subscriber.html">subscriber</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/channels/backends/index.html">backends</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/memory.html">memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/redis.html">redis</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../controller.html">controller</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../data_extractors.html">data_extractors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../datastructures.html">datastructures</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../di.html">di</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../dto/interface.html">interface</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../dto/factory/index.html">factory</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../dto/factory/abc.html">abc</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dto/factory/stdlib.html">stdlib</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dto/factory/types.html">types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/connection.html">connection</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/htmx.html">HTMX</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/msgspec.html">msgspec</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/pydantic.html">pydantic</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/contrib/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/repository/abc.html">abc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/repository/filters.html">filters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/repository/exceptions.html">exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/repository/testing.html">testing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/repository/handlers.html">handlers</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/repository.html">repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/types.html">types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/dto.html">DTO</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../enums.html">enums</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../events.html">events</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../exceptions.html">exceptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../logging/config.html">config</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../logging/picologging.html">picologging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../logging/standard.html">standard</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../middleware/allowed_hosts.html">allowed_hosts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../middleware/authentication.html">authentication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../middleware/compression.html">compression</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../middleware/cors.html">cors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../middleware/csrf.html">csrf</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../middleware/logging.html">logging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../middleware/session/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../middleware/session/client_side.html">client_side</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../middleware/session/server_side.html">server_side</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/data_extractors.html">data_extractors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/datastructures.html">datastructures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/di.html">di</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/interface.html">interface</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/dto/factory/index.html">factory</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/dto/factory/abc.html">abc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/dto/factory/stdlib.html">stdlib</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/dto/factory/types.html">types</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../openapi/openapi.html">openapi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../openapi/spec.html">spec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/enums.html">enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/events.html">events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/handlers.html">handlers</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/picologging.html">picologging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/standard.html">standard</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../pagination.html">pagination</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../params.html">params</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../partial.html">partial</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../plugins.html">plugins</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../response/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../response/file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../response/redirect.html">redirect</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../response/streaming.html">streaming</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../response/template.html">template</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/authentication.html">authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/compression.html">compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/cors.html">cors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/csrf.html">csrf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/logging.html">logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/rate_limit.html">rate_limit</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/client_side.html">client_side</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/server_side.html">server_side</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../router.html">router</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../routes.html">routes</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../serialization.html">serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../static_files.html">static_files</a></li>
-<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">stores</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="memory.html">memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html">redis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="registry.html">registry</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/openapi/openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/openapi/spec.html">spec</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../status_codes.html">status_code</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../template.html">template</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../testing.html">testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../types.html">types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../typing.html">typing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/pagination.html">pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/partial.html">partial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/plugins.html">plugins</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/response/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/response/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/response/redirect.html">redirect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/response/streaming.html">streaming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/response/template.html">template</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/router.html">router</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/routes.html">routes</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/security/session_auth.html">session_auth</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/static_files.html">static_files</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/registry.html">registry</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/status_codes.html">status_code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/template.html">template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/testing.html">testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/types.html">types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/typing.html">typing</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -1130,9 +1130,12 @@ document.write(`
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API reference</a></li>
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Usage</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">stores</li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Contrib</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Prometheus Instrumentation</li>
   </ul>
 </nav>
 </div>
@@ -1149,89 +1152,156 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="stores">
-<h1>stores<a class="headerlink" href="#stores" title="Permalink to this heading">#</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="base.html">base</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="base.html#litestar.stores.base.Store"><code class="docutils literal notranslate"><span class="pre">Store</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="base.html#litestar.stores.base.Store.set"><code class="docutils literal notranslate"><span class="pre">Store.set()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#litestar.stores.base.Store.get"><code class="docutils literal notranslate"><span class="pre">Store.get()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#litestar.stores.base.Store.delete"><code class="docutils literal notranslate"><span class="pre">Store.delete()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#litestar.stores.base.Store.delete_all"><code class="docutils literal notranslate"><span class="pre">Store.delete_all()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#litestar.stores.base.Store.exists"><code class="docutils literal notranslate"><span class="pre">Store.exists()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#litestar.stores.base.Store.expires_in"><code class="docutils literal notranslate"><span class="pre">Store.expires_in()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="base.html#litestar.stores.base.NamespacedStore"><code class="docutils literal notranslate"><span class="pre">NamespacedStore</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="base.html#litestar.stores.base.NamespacedStore.with_namespace"><code class="docutils literal notranslate"><span class="pre">NamespacedStore.with_namespace()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="base.html#litestar.stores.base.StorageObject"><code class="docutils literal notranslate"><span class="pre">StorageObject</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="base.html#litestar.stores.base.StorageObject.new"><code class="docutils literal notranslate"><span class="pre">StorageObject.new()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#litestar.stores.base.StorageObject.expired"><code class="docutils literal notranslate"><span class="pre">StorageObject.expired</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#litestar.stores.base.StorageObject.expires_in"><code class="docutils literal notranslate"><span class="pre">StorageObject.expires_in</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#litestar.stores.base.StorageObject.to_bytes"><code class="docutils literal notranslate"><span class="pre">StorageObject.to_bytes()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#litestar.stores.base.StorageObject.from_bytes"><code class="docutils literal notranslate"><span class="pre">StorageObject.from_bytes()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="file.html">file</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="file.html#litestar.stores.file.FileStore"><code class="docutils literal notranslate"><span class="pre">FileStore</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="file.html#litestar.stores.file.FileStore.__init__"><code class="docutils literal notranslate"><span class="pre">FileStore.__init__()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html#litestar.stores.file.FileStore.path"><code class="docutils literal notranslate"><span class="pre">FileStore.path</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html#litestar.stores.file.FileStore.with_namespace"><code class="docutils literal notranslate"><span class="pre">FileStore.with_namespace()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html#litestar.stores.file.FileStore.set"><code class="docutils literal notranslate"><span class="pre">FileStore.set()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html#litestar.stores.file.FileStore.get"><code class="docutils literal notranslate"><span class="pre">FileStore.get()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html#litestar.stores.file.FileStore.delete"><code class="docutils literal notranslate"><span class="pre">FileStore.delete()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html#litestar.stores.file.FileStore.delete_all"><code class="docutils literal notranslate"><span class="pre">FileStore.delete_all()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html#litestar.stores.file.FileStore.delete_expired"><code class="docutils literal notranslate"><span class="pre">FileStore.delete_expired()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html#litestar.stores.file.FileStore.exists"><code class="docutils literal notranslate"><span class="pre">FileStore.exists()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html#litestar.stores.file.FileStore.expires_in"><code class="docutils literal notranslate"><span class="pre">FileStore.expires_in()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="memory.html">memory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="memory.html#litestar.stores.memory.MemoryStore"><code class="docutils literal notranslate"><span class="pre">MemoryStore</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="memory.html#litestar.stores.memory.MemoryStore.__init__"><code class="docutils literal notranslate"><span class="pre">MemoryStore.__init__()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="memory.html#litestar.stores.memory.MemoryStore.set"><code class="docutils literal notranslate"><span class="pre">MemoryStore.set()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="memory.html#litestar.stores.memory.MemoryStore.get"><code class="docutils literal notranslate"><span class="pre">MemoryStore.get()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="memory.html#litestar.stores.memory.MemoryStore.delete"><code class="docutils literal notranslate"><span class="pre">MemoryStore.delete()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="memory.html#litestar.stores.memory.MemoryStore.delete_all"><code class="docutils literal notranslate"><span class="pre">MemoryStore.delete_all()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="memory.html#litestar.stores.memory.MemoryStore.delete_expired"><code class="docutils literal notranslate"><span class="pre">MemoryStore.delete_expired()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="memory.html#litestar.stores.memory.MemoryStore.exists"><code class="docutils literal notranslate"><span class="pre">MemoryStore.exists()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="memory.html#litestar.stores.memory.MemoryStore.expires_in"><code class="docutils literal notranslate"><span class="pre">MemoryStore.expires_in()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="redis.html">redis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="redis.html#litestar.stores.redis.RedisStore"><code class="docutils literal notranslate"><span class="pre">RedisStore</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#litestar.stores.redis.RedisStore.__init__"><code class="docutils literal notranslate"><span class="pre">RedisStore.__init__()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#litestar.stores.redis.RedisStore.with_client"><code class="docutils literal notranslate"><span class="pre">RedisStore.with_client()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#litestar.stores.redis.RedisStore.with_namespace"><code class="docutils literal notranslate"><span class="pre">RedisStore.with_namespace()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#litestar.stores.redis.RedisStore.set"><code class="docutils literal notranslate"><span class="pre">RedisStore.set()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#litestar.stores.redis.RedisStore.get"><code class="docutils literal notranslate"><span class="pre">RedisStore.get()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#litestar.stores.redis.RedisStore.delete"><code class="docutils literal notranslate"><span class="pre">RedisStore.delete()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#litestar.stores.redis.RedisStore.delete_all"><code class="docutils literal notranslate"><span class="pre">RedisStore.delete_all()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#litestar.stores.redis.RedisStore.exists"><code class="docutils literal notranslate"><span class="pre">RedisStore.exists()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#litestar.stores.redis.RedisStore.expires_in"><code class="docutils literal notranslate"><span class="pre">RedisStore.expires_in()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="registry.html">registry</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="registry.html#litestar.stores.registry.StoreRegistry"><code class="docutils literal notranslate"><span class="pre">StoreRegistry</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="registry.html#litestar.stores.registry.StoreRegistry.__init__"><code class="docutils literal notranslate"><span class="pre">StoreRegistry.__init__()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="registry.html#litestar.stores.registry.StoreRegistry.register"><code class="docutils literal notranslate"><span class="pre">StoreRegistry.register()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="registry.html#litestar.stores.registry.StoreRegistry.get"><code class="docutils literal notranslate"><span class="pre">StoreRegistry.get()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
+  <section id="prometheus-instrumentation">
+<h1>Prometheus Instrumentation<a class="headerlink" href="#prometheus-instrumentation" title="Permalink to this heading">#</a></h1>
+<p>Litestar includes optional Prometheus exporter that is exported from <code class="docutils literal notranslate"><span class="pre">litestar.contrib.prometheus</span></code>. To use
+this package, you should first install the required dependencies:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">as separate package</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>prometheus-client
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">as a Litestar extra</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>litestar<span class="o">[</span>prometheus<span class="o">]</span>
+</pre></div>
+</div>
+</div>
+<p>Once these requirements are satisfied, you can instrument your Litestar application:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Using the Prometheus Exporter</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.contrib.prometheus</span> <span class="kn">import</span> <span class="n">PrometheusConfig</span><span class="p">,</span> <span class="n">PrometheusController</span>
+
+<span class="c1"># Default app name and prefix is litestar.</span>
+<span class="n">prometheus_config</span> <span class="o">=</span> <span class="n">PrometheusConfig</span><span class="p">()</span>
+
+
+<span class="c1"># By default the metrics are available in prometheus format and the path is set to &#39;/metrics&#39;.</span>
+<span class="c1"># If you want to change the path and format you can do it by subclassing the PrometheusController class.</span>
+
+<span class="c1"># Creating the litestar app instance with our custom PrometheusConfig and PrometheusController.</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">PrometheusController</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">prometheus_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<p>You can also customize the configuration:</p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Configuring the Prometheus Exporter</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">litestar.contrib.prometheus</span> <span class="kn">import</span> <span class="n">PrometheusConfig</span><span class="p">,</span> <span class="n">PrometheusController</span>
+
+
+<span class="c1"># We can modify the path of our custom handler and override the metrics format by subclassing the PrometheusController.</span>
+<span class="k">class</span> <span class="nc">CustomPrometheusController</span><span class="p">(</span><span class="n">PrometheusController</span><span class="p">):</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/custom-path&quot;</span>
+    <span class="n">openmetrics_format</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<span class="c1"># Let&#39;s assume this as our extra custom labels which we want our metrics to have.</span>
+<span class="c1"># The values can be either a string or a callable that returns a string.</span>
+<span class="k">def</span> <span class="nf">custom_label_callable</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s2">&quot;v2.0&quot;</span>
+
+
+<span class="n">extra_labels</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;version_no&quot;</span><span class="p">:</span> <span class="n">custom_label_callable</span><span class="p">,</span>
+    <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;earth&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># Customizing the buckets for the histogram.</span>
+<span class="n">buckets</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+
+
+<span class="c1"># Adding exemplars to the metrics.</span>
+<span class="c1"># Note that this supported only in openmetrics format.</span>
+<span class="k">def</span> <span class="nf">custom_exemplar</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;trace_id&quot;</span><span class="p">:</span> <span class="s2">&quot;1234&quot;</span><span class="p">}</span>
+
+
+<span class="c1"># Creating the instance of PrometheusConfig with our own custom options.</span>
+<span class="c1"># The givenn options ara not necessary, you can use the default ones</span>
+<span class="c1"># as well by just creating a raw instance PrometheusConfig()</span>
+<span class="n">prometheus_config</span> <span class="o">=</span> <span class="n">PrometheusConfig</span><span class="p">(</span>
+    <span class="n">app_name</span><span class="o">=</span><span class="s2">&quot;litestar-example&quot;</span><span class="p">,</span>
+    <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;litestar&quot;</span><span class="p">,</span>
+    <span class="n">labels</span><span class="o">=</span><span class="n">extra_labels</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="n">buckets</span><span class="p">,</span>
+    <span class="n">exemplars</span><span class="o">=</span><span class="n">custom_exemplar</span><span class="p">,</span>
+    <span class="n">excluded_http_methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+
+
+<span class="c1"># Creating the litestar app instance with our custom PrometheusConfig and PrometheusController.</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">CustomPrometheusController</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">prometheus_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Configuring the Prometheus Exporter</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">litestar.contrib.prometheus</span> <span class="kn">import</span> <span class="n">PrometheusConfig</span><span class="p">,</span> <span class="n">PrometheusController</span>
+
+
+<span class="c1"># We can modify the path of our custom handler and override the metrics format by subclassing the PrometheusController.</span>
+<span class="k">class</span> <span class="nc">CustomPrometheusController</span><span class="p">(</span><span class="n">PrometheusController</span><span class="p">):</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/custom-path&quot;</span>
+    <span class="n">openmetrics_format</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<span class="c1"># Let&#39;s assume this as our extra custom labels which we want our metrics to have.</span>
+<span class="c1"># The values can be either a string or a callable that returns a string.</span>
+<span class="k">def</span> <span class="nf">custom_label_callable</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s2">&quot;v2.0&quot;</span>
+
+
+<span class="n">extra_labels</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;version_no&quot;</span><span class="p">:</span> <span class="n">custom_label_callable</span><span class="p">,</span>
+    <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;earth&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># Customizing the buckets for the histogram.</span>
+<span class="n">buckets</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+
+
+<span class="c1"># Adding exemplars to the metrics.</span>
+<span class="c1"># Note that this supported only in openmetrics format.</span>
+<span class="k">def</span> <span class="nf">custom_exemplar</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;trace_id&quot;</span><span class="p">:</span> <span class="s2">&quot;1234&quot;</span><span class="p">}</span>
+
+
+<span class="c1"># Creating the instance of PrometheusConfig with our own custom options.</span>
+<span class="c1"># The givenn options ara not necessary, you can use the default ones</span>
+<span class="c1"># as well by just creating a raw instance PrometheusConfig()</span>
+<span class="n">prometheus_config</span> <span class="o">=</span> <span class="n">PrometheusConfig</span><span class="p">(</span>
+    <span class="n">app_name</span><span class="o">=</span><span class="s2">&quot;litestar-example&quot;</span><span class="p">,</span>
+    <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;litestar&quot;</span><span class="p">,</span>
+    <span class="n">labels</span><span class="o">=</span><span class="n">extra_labels</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="n">buckets</span><span class="p">,</span>
+    <span class="n">exemplars</span><span class="o">=</span><span class="n">custom_exemplar</span><span class="p">,</span>
+    <span class="n">excluded_http_methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+
+
+<span class="c1"># Creating the litestar app instance with our custom PrometheusConfig and PrometheusController.</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">CustomPrometheusController</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">prometheus_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
 </div>
 </section>
 
@@ -1247,20 +1317,20 @@ document.write(`
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../static_files.html"
+       href="open-telemetry.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">static_files</p>
+        <p class="prev-next-title">Open Telemetry Instrumentation</p>
       </div>
     </a>
     <a class="right-next"
-       href="base.html"
+       href="sqlalchemy/index.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">base</p>
+        <p class="prev-next-title">SQLAlchemy</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

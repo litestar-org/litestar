@@ -949,9 +949,10 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../usage/templating.html">Templates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/exceptions.html">Exceptions and exception handling</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/jwt.html">JWT Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/htmx.html">HTMX Request Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/prometheus.html">Prometheus Instrumentation</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../usage/contrib/sqlalchemy/index.html">SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../usage/contrib/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../usage/contrib/sqlalchemy/plugins/index.html">Plugins</a></li>
@@ -1295,7 +1296,7 @@ arguments will be ignored.</p>
 <li><p><strong>key</strong> – Key for the cookie or a <a class="reference internal" href="../datastructures.html#litestar.datastructures.Cookie" title="litestar.datastructures.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cookie</span></code></a> instance.</p></li>
 <li><p><strong>value</strong> – Value for the cookie, if none given defaults to empty string.</p></li>
 <li><p><strong>max_age</strong> – Maximal age of the cookie before its invalidated.</p></li>
-<li><p><strong>expires</strong> – Expiration date as unix MS timestamp.</p></li>
+<li><p><strong>expires</strong> – Seconds from now until the cookie expires.</p></li>
 <li><p><strong>path</strong> – Path fragment that must exist in the request url for the cookie to be valid. Defaults to <code class="docutils literal notranslate"><span class="pre">/</span></code>.</p></li>
 <li><p><strong>domain</strong> – Domain for which the cookie is valid.</p></li>
 <li><p><strong>secure</strong> – Https is required for the cookie.</p></li>

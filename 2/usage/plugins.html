@@ -949,9 +949,10 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="templating.html">Templates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exceptions.html">Exceptions and exception handling</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="contrib/jwt.html">JWT Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="contrib/htmx.html">HTMX Request Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contrib/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contrib/prometheus.html">Prometheus Instrumentation</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="contrib/sqlalchemy/index.html">SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="contrib/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
 <li class="toctree-l4"><a class="reference internal" href="contrib/sqlalchemy/plugins/index.html">Plugins</a></li>
@@ -1292,7 +1293,7 @@ that annotation.</p>
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code> implementation example</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">DeclarativeBase</span>
 
@@ -1309,14 +1310,14 @@ that annotation.</p>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_type_dto_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">DeclarativeBase</span><span class="p">],</span> <span class="nb">type</span><span class="p">[</span><span class="n">SQLAlchemyDTO</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type_dto_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">DeclarativeBase</span><span class="p">],</span> <span class="nb">type</span><span class="p">[</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span> <span class="nf">supports_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_type</span><span class="p">:</span> <span class="n">ParsedType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">parsed_type</span><span class="o">.</span><span class="n">is_collection</span> <span class="ow">and</span> <span class="n">parsed_type</span><span class="o">.</span><span class="n">has_inner_subclass_of</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">)</span>
         <span class="p">)</span> <span class="ow">or</span> <span class="n">parsed_type</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">create_dto_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_type</span><span class="p">:</span> <span class="n">ParsedType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">SQLAlchemyDTO</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">create_dto_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_type</span><span class="p">:</span> <span class="n">ParsedType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
         <span class="c1"># assumes that the type is a container of SQLAlchemy models or a single SQLAlchemy model</span>
         <span class="k">for</span> <span class="n">inner_type</span> <span class="ow">in</span> <span class="n">parsed_type</span><span class="o">.</span><span class="n">inner_types</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">inner_type</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span>

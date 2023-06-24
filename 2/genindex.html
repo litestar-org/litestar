@@ -944,9 +944,10 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="usage/templating.html">Templates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/exceptions.html">Exceptions and exception handling</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="usage/contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/contrib/jwt.html">JWT Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/contrib/htmx.html">HTMX Request Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/contrib/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/contrib/prometheus.html">Prometheus Instrumentation</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="usage/contrib/sqlalchemy/index.html">SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="usage/contrib/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
 <li class="toctree-l4"><a class="reference internal" href="usage/contrib/sqlalchemy/plugins/index.html">Plugins</a></li>
@@ -1234,6 +1235,8 @@ document.write(`
 
       <ul>
         <li><a href="reference/params.html#litestar.params.DependencyKwarg.__hash__">(litestar.params.DependencyKwarg method)</a>
+</li>
+        <li><a href="reference/params.html#litestar.params.ParameterKwarg.__hash__">(litestar.params.ParameterKwarg method)</a>
 </li>
       </ul></li>
       <li><a href="reference/app.html#litestar.app.Litestar.__init__">__init__() (litestar.app.Litestar method)</a>
@@ -1578,6 +1581,8 @@ document.write(`
         <li><a href="reference/params.html#litestar.params.DependencyKwarg.__init__">(litestar.params.DependencyKwarg method)</a>
 </li>
         <li><a href="reference/params.html#litestar.params.KwargDefinition.__init__">(litestar.params.KwargDefinition method)</a>
+</li>
+        <li><a href="reference/params.html#litestar.params.ParameterKwarg.__init__">(litestar.params.ParameterKwarg method)</a>
 </li>
         <li><a href="reference/plugins.html#litestar.plugins.InitPluginProtocol.__init__">(litestar.plugins.InitPluginProtocol method)</a>
 </li>
@@ -2327,6 +2332,8 @@ document.write(`
       <li><a href="reference/controller.html#litestar.controller.Controller">Controller (class in litestar.controller)</a>
 </li>
       <li><a href="reference/datastructures.html#litestar.datastructures.Cookie">Cookie (class in litestar.datastructures)</a>
+</li>
+      <li><a href="reference/params.html#litestar.params.ParameterKwarg.cookie">cookie (litestar.params.ParameterKwarg attribute)</a>
 </li>
       <li><a href="reference/config.html#litestar.config.csrf.CSRFConfig.cookie_domain">cookie_domain (litestar.config.csrf.CSRFConfig attribute)</a>
 </li>
@@ -3443,6 +3450,8 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/datastructures.html#litestar.datastructures.Header">Header (class in litestar.datastructures)</a>
+</li>
+      <li><a href="reference/params.html#litestar.params.ParameterKwarg.header">header (litestar.params.ParameterKwarg attribute)</a>
 </li>
       <li><a href="reference/config.html#litestar.config.csrf.CSRFConfig.header_name">header_name (litestar.config.csrf.CSRFConfig attribute)</a>
 </li>
@@ -5250,6 +5259,8 @@ document.write(`
 </li>
       <li><a href="reference/params.html#litestar.params.Parameter">Parameter() (in module litestar.params)</a>
 </li>
+      <li><a href="reference/params.html#litestar.params.ParameterKwarg">ParameterKwarg (class in litestar.params)</a>
+</li>
       <li><a href="reference/config.html#litestar.config.app.AppConfig.parameters">parameters (litestar.config.app.AppConfig attribute)</a>
 
       <ul>
@@ -5362,10 +5373,10 @@ document.write(`
       </ul></li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool">pool (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool_logging_name">pool_logging_name (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool_logging_name">pool_logging_name (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
+</li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool_pre_ping">pool_pre_ping (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool_recycle">pool_recycle (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
@@ -5499,7 +5510,11 @@ document.write(`
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/datastructures.html#litestar.datastructures.URL.query">query (litestar.datastructures.URL attribute)</a>
+
+      <ul>
+        <li><a href="reference/params.html#litestar.params.ParameterKwarg.query">(litestar.params.ParameterKwarg attribute)</a>
 </li>
+      </ul></li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.query_cache_size">query_cache_size (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSessionConfig.query_cls">query_cls (litestar.contrib.sqlalchemy.plugins.GenericSessionConfig attribute)</a>
@@ -5716,6 +5731,8 @@ document.write(`
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.RequestBody.required">(litestar.openapi.spec.RequestBody attribute)</a>
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.required">(litestar.openapi.spec.Schema attribute)</a>
+</li>
+        <li><a href="reference/params.html#litestar.params.ParameterKwarg.required">(litestar.params.ParameterKwarg attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -6755,6 +6772,8 @@ document.write(`
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/params.html#litestar.params.ParameterKwarg.value_type">value_type (litestar.params.ParameterKwarg attribute)</a>
+</li>
       <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.CollectionFilter.values">values (litestar.contrib.repository.filters.CollectionFilter attribute)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Server.variables">variables (litestar.openapi.spec.Server attribute)</a>

@@ -949,9 +949,10 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../usage/templating.html">Templates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/exceptions.html">Exceptions and exception handling</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/jwt.html">JWT Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/htmx.html">HTMX Request Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/prometheus.html">Prometheus Instrumentation</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../usage/contrib/sqlalchemy/index.html">SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../usage/contrib/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../usage/contrib/sqlalchemy/plugins/index.html">Plugins</a></li>
@@ -1350,11 +1351,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 96</span>    <span class="c1"># 2) Let&#39;s update the Author record.</span>
 <span class="linenos"> 97</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;2) Updating a record.&quot;</span><span class="p">)</span>
 <span class="linenos"> 98</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1940-12-21&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
-<span class="linenos"> 99</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
+<span class="linenos"> 99</span>    <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
 <span class="linenos">100</span>
 <span class="linenos">101</span>    <span class="c1"># 3) Let&#39;s delete the record we just created.</span>
 <span class="linenos">102</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;3) Removing a record.&quot;</span><span class="p">)</span>
-<span class="linenos">103</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+<span class="linenos">103</span>    <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
 <span class="linenos">104</span>
 <span class="linenos">105</span>    <span class="c1"># 4) Let&#39;s verify the record no longer exists.</span>
 <span class="linenos">106</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;4) Select one or none.&quot;</span><span class="p">)</span>
@@ -1470,11 +1471,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 96</span>    <span class="c1"># 2) Let&#39;s update the Author record.</span>
 <span class="linenos"> 97</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;2) Updating a record.&quot;</span><span class="p">)</span>
 <span class="linenos"> 98</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1940-12-21&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
-<span class="linenos"> 99</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
+<span class="linenos"> 99</span>    <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
 <span class="linenos">100</span>
 <span class="linenos">101</span>    <span class="c1"># 3) Let&#39;s delete the record we just created.</span>
 <span class="linenos">102</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;3) Removing a record.&quot;</span><span class="p">)</span>
-<span class="linenos">103</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+<span class="linenos">103</span>    <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
 <span class="linenos">104</span>
 <span class="linenos">105</span>    <span class="c1"># 4) Let&#39;s verify the record no longer exists.</span>
 <span class="linenos">106</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;4) Select one or none.&quot;</span><span class="p">)</span>
@@ -1606,11 +1607,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 96</span>    <span class="c1"># 2) Let&#39;s update the Author record.</span>
 <span class="linenos"> 97</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;2) Updating a record.&quot;</span><span class="p">)</span>
 <span class="linenos"> 98</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1940-12-21&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
-<span class="linenos"> 99</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
+<span class="linenos"> 99</span>    <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
 <span class="linenos">100</span>
 <span class="linenos">101</span>    <span class="c1"># 3) Let&#39;s delete the record we just created.</span>
 <span class="linenos">102</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;3) Removing a record.&quot;</span><span class="p">)</span>
-<span class="linenos">103</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+<span class="linenos">103</span>    <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
 <span class="linenos">104</span>
 <span class="linenos">105</span>    <span class="c1"># 4) Let&#39;s verify the record no longer exists.</span>
 <span class="linenos">106</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;4) Select one or none.&quot;</span><span class="p">)</span>
@@ -1726,11 +1727,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 96</span>    <span class="c1"># 2) Let&#39;s update the Author record.</span>
 <span class="linenos"> 97</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;2) Updating a record.&quot;</span><span class="p">)</span>
 <span class="linenos"> 98</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1940-12-21&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
-<span class="linenos"> 99</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
+<span class="linenos"> 99</span>    <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
 <span class="linenos">100</span>
 <span class="linenos">101</span>    <span class="c1"># 3) Let&#39;s delete the record we just created.</span>
 <span class="linenos">102</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;3) Removing a record.&quot;</span><span class="p">)</span>
-<span class="linenos">103</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+<span class="linenos">103</span>    <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
 <span class="linenos">104</span>
 <span class="linenos">105</span>    <span class="c1"># 4) Let&#39;s verify the record no longer exists.</span>
 <span class="linenos">106</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;4) Select one or none.&quot;</span><span class="p">)</span>
@@ -1855,11 +1856,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 96</span>    <span class="c1"># 2) Let&#39;s update the Author record.</span>
 <span class="linenos"> 97</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;2) Updating a record.&quot;</span><span class="p">)</span>
 <span class="linenos"> 98</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1940-12-21&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
-<span class="linenos"> 99</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
+<span class="linenos"> 99</span>    <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
 <span class="linenos">100</span>
 <span class="linenos">101</span>    <span class="c1"># 3) Let&#39;s delete the record we just created.</span>
 <span class="linenos">102</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;3) Removing a record.&quot;</span><span class="p">)</span>
-<span class="linenos">103</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+<span class="linenos">103</span>    <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
 <span class="linenos">104</span>
 <span class="linenos">105</span>    <span class="c1"># 4) Let&#39;s verify the record no longer exists.</span>
 <span class="linenos">106</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;4) Select one or none.&quot;</span><span class="p">)</span>
@@ -1975,11 +1976,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 96</span>    <span class="c1"># 2) Let&#39;s update the Author record.</span>
 <span class="linenos"> 97</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;2) Updating a record.&quot;</span><span class="p">)</span>
 <span class="linenos"> 98</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1940-12-21&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
-<span class="linenos"> 99</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
+<span class="linenos"> 99</span>    <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
 <span class="linenos">100</span>
 <span class="linenos">101</span>    <span class="c1"># 3) Let&#39;s delete the record we just created.</span>
 <span class="linenos">102</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;3) Removing a record.&quot;</span><span class="p">)</span>
-<span class="linenos">103</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+<span class="linenos">103</span>    <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
 <span class="linenos">104</span>
 <span class="linenos">105</span>    <span class="c1"># 4) Let&#39;s verify the record no longer exists.</span>
 <span class="linenos">106</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;4) Select one or none.&quot;</span><span class="p">)</span>
@@ -2100,11 +2101,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 96</span>    <span class="c1"># 2) Let&#39;s update the Author record.</span>
 <span class="linenos"> 97</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;2) Updating a record.&quot;</span><span class="p">)</span>
 <span class="linenos"> 98</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1940-12-21&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
-<span class="linenos"> 99</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
+<span class="linenos"> 99</span>    <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
 <span class="linenos">100</span>
 <span class="linenos">101</span>    <span class="c1"># 3) Let&#39;s delete the record we just created.</span>
 <span class="linenos">102</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;3) Removing a record.&quot;</span><span class="p">)</span>
-<span class="linenos">103</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+<span class="linenos">103</span>    <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
 <span class="linenos">104</span>
 <span class="linenos">105</span>    <span class="c1"># 4) Let&#39;s verify the record no longer exists.</span>
 <span class="linenos">106</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;4) Select one or none.&quot;</span><span class="p">)</span>
@@ -2220,11 +2221,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 96</span>    <span class="c1"># 2) Let&#39;s update the Author record.</span>
 <span class="linenos"> 97</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;2) Updating a record.&quot;</span><span class="p">)</span>
 <span class="linenos"> 98</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1940-12-21&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
-<span class="linenos"> 99</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
+<span class="linenos"> 99</span>    <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
 <span class="linenos">100</span>
 <span class="linenos">101</span>    <span class="c1"># 3) Let&#39;s delete the record we just created.</span>
 <span class="linenos">102</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;3) Removing a record.&quot;</span><span class="p">)</span>
-<span class="linenos">103</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+<span class="linenos">103</span>    <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
 <span class="linenos">104</span>
 <span class="linenos">105</span>    <span class="c1"># 4) Let&#39;s verify the record no longer exists.</span>
 <span class="linenos">106</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;4) Select one or none.&quot;</span><span class="p">)</span>
@@ -2345,11 +2346,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 96</span>    <span class="c1"># 2) Let&#39;s update the Author record.</span>
 <span class="linenos"> 97</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;2) Updating a record.&quot;</span><span class="p">)</span>
 <span class="linenos"> 98</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1940-12-21&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
-<span class="linenos"> 99</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
+<span class="linenos"> 99</span>    <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
 <span class="linenos">100</span>
 <span class="linenos">101</span>    <span class="c1"># 3) Let&#39;s delete the record we just created.</span>
 <span class="linenos">102</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;3) Removing a record.&quot;</span><span class="p">)</span>
-<span class="linenos">103</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+<span class="linenos">103</span>    <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
 <span class="linenos">104</span>
 <span class="linenos">105</span>    <span class="c1"># 4) Let&#39;s verify the record no longer exists.</span>
 <span class="linenos">106</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;4) Select one or none.&quot;</span><span class="p">)</span>
@@ -2465,11 +2466,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 96</span>    <span class="c1"># 2) Let&#39;s update the Author record.</span>
 <span class="linenos"> 97</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;2) Updating a record.&quot;</span><span class="p">)</span>
 <span class="linenos"> 98</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1940-12-21&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
-<span class="linenos"> 99</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
+<span class="linenos"> 99</span>    <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
 <span class="linenos">100</span>
 <span class="linenos">101</span>    <span class="c1"># 3) Let&#39;s delete the record we just created.</span>
 <span class="linenos">102</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;3) Removing a record.&quot;</span><span class="p">)</span>
-<span class="linenos">103</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+<span class="linenos">103</span>    <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
 <span class="linenos">104</span>
 <span class="linenos">105</span>    <span class="c1"># 4) Let&#39;s verify the record no longer exists.</span>
 <span class="linenos">106</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;4) Select one or none.&quot;</span><span class="p">)</span>
