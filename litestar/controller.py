@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from copy import deepcopy
+from copy import copy, deepcopy
 from functools import partial
 from typing import TYPE_CHECKING, Any, Mapping, cast
 
@@ -181,12 +181,14 @@ class Controller:
         Returns:
             A list containing a copy of the route handlers defined on the controller
         """
+        from litestar import websocket_listener
 
         route_handlers: list[BaseRouteHandler] = []
 
         for field_name in set(dir(self)) - set(dir(Controller)):
             if (attr := getattr(self, field_name, None)) and isinstance(attr, BaseRouteHandler):
-                route_handler = deepcopy(attr)
+                # we are special casing here because the websocket_listener context cannot be deep copied without breaking
+                route_handler = deepcopy(attr) if not isinstance(attr, websocket_listener) else copy(attr)
                 route_handler.fn.value = partial(route_handler.fn.value, self)
                 route_handler.owner = self
                 route_handlers.append(route_handler)
