@@ -217,6 +217,7 @@ class Router:
                 else:
                     route = HTTPRoute(path=path, route_handlers=http_handlers)
                     self.routes.append(route)
+
                 routes.append(route)
 
             if websocket_handler := handlers_map.get("websocket"):
@@ -248,6 +249,7 @@ class Router:
                 route_map[route.path][
                     "websocket" if isinstance(route, WebSocketRoute) else "asgi"
                 ] = route.route_handler
+
         return route_map
 
     @classmethod
@@ -295,6 +297,7 @@ class Router:
         if isinstance(value, Router):
             if value.owner:
                 raise ImproperlyConfiguredException(f"Router with path {value.path} has already been registered")
+
             if value is self:
                 raise ImproperlyConfiguredException("Cannot register a router on itself")
 

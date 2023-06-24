@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from copy import copy
+from copy import copy, deepcopy
+from functools import partial
 from typing import TYPE_CHECKING, Any, Mapping, cast
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
@@ -11,7 +12,6 @@ from litestar.handlers.http_handlers import HTTPRouteHandler
 from litestar.handlers.websocket_handlers import WebsocketRouteHandler
 from litestar.types.empty import Empty
 from litestar.utils import AsyncCallable, normalize_path
-from litestar.utils.helpers import unwrap_partial
 
 __all__ = ("Controller",)
 
@@ -181,22 +181,17 @@ class Controller:
         Returns:
             A list containing a copy of the route handlers defined on the controller
         """
+        from litestar import websocket_listener
+
         route_handlers: list[BaseRouteHandler] = []
-        route_handler_fields = [
-            f_name
-            for f_name in dir(self)
-            if f_name not in dir(Controller) and isinstance(getattr(self, f_name), BaseRouteHandler)
-        ]
 
-        for f_name in route_handler_fields:
-            source_route_handler = cast("BaseRouteHandler", getattr(self, f_name))
-
-            route_handler = copy(source_route_handler)
-            if hasattr(route_handler.fn.value, "func"):
-                route_handler.fn.value = unwrap_partial(route_handler.fn.value)
-
-            route_handler.owner = self
-            route_handlers.append(route_handler)
+        for field_name in set(dir(self)) - set(dir(Controller)):
+            if (attr := getattr(self, field_name, None)) and isinstance(attr, BaseRouteHandler):
+                # we are special casing here because the websocket_listener context cannot be deep copied without breaking
+                route_handler = deepcopy(attr) if not isinstance(attr, websocket_listener) else copy(attr)
+                route_handler.fn.value = partial(route_handler.fn.value, self)
+                route_handler.owner = self
+                route_handlers.append(route_handler)
 
         self.validate_route_handlers(route_handlers=route_handlers)
 
