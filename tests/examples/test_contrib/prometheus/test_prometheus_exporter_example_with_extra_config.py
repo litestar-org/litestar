@@ -16,7 +16,7 @@ def clear_collectors() -> None:
     PrometheusMiddleware._metrics = {}
 
 
-def test_prometheus_exporter_example() -> None:
+def test_prometheus_exporter_with_extra_config_example() -> None:
     from docs.examples.contrib.prometheus.using_prometheus_exporter_with_extra_configs import app
 
     clear_collectors()
@@ -34,9 +34,7 @@ def test_prometheus_exporter_example() -> None:
         assert metrix_exporter_response.status_code == HTTP_200_OK
         metrics = metrix_exporter_response.content.decode()
 
-        print(metrics)
-
         assert (
-            """litestar_requests_in_progress{app_name="litestar-example",location="earth",method="GET",path="/custom-path",status_code="200",version_no="2.0"} 1.0"""
+            """litestar_requests_in_progress{app_name="litestar-example",location="earth",method="GET",path="/custom-path",status_code="200",version_no="v2.0"} 1.0"""
             in metrics
         )

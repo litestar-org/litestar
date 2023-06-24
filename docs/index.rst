@@ -39,6 +39,9 @@ Installation
     :ref:`StructLog <usage/the-litestar-app:using structlog>`
         :code:`pip install litestar[structlog]`
 
+    :doc:`Prometheus Instrumentation </usage/contrib/prometheus>`
+        :code:`pip install litestar[openetelemetry]`
+
     :doc:`Open Telemetry Instrumentation </usage/contrib/open-telemetry>`
         :code:`pip install litestar[openetelemetry]`
 
