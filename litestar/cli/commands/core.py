@@ -112,7 +112,8 @@ def run_command(
 
     env = cast(LitestarEnv, ctx.obj())
     app = env.app
-
+    for hook in app.before_startup:
+        hook()
     reload_dirs = env.reload_dirs or reload_dir
 
     host = env.host or host
@@ -125,43 +126,46 @@ def run_command(
     console.rule("[yellow]Starting server process", align="left")
 
     show_app_info(app)
-
-    if workers == 1 and not reload:
-        uvicorn.run(
-            app=env.app_path,
-            host=host,
-            port=port,
-            fd=fd,
-            uds=uds,
-            factory=env.is_app_factory,
-        )
-    else:
-        # invoke uvicorn in a subprocess to be able to use the --reload flag. see
-        # https://github.com/litestar-org/litestar/issues/1191 and https://github.com/encode/uvicorn/issues/1045
-        if sys.gettrace() is not None:
-            console.print(
-                "[yellow]Debugger detected. Breakpoints might not work correctly inside route handlers when running"
-                " with the --reload or --workers options[/]"
+    try:
+        if workers == 1 and not reload:
+            uvicorn.run(
+                app=env.app_path,
+                host=host,
+                port=port,
+                fd=fd,
+                uds=uds,
+                factory=env.is_app_factory,
             )
+        else:
+            # invoke uvicorn in a subprocess to be able to use the --reload flag. see
+            # https://github.com/litestar-org/litestar/issues/1191 and https://github.com/encode/uvicorn/issues/1045
+            if sys.gettrace() is not None:
+                console.print(
+                    "[yellow]Debugger detected. Breakpoints might not work correctly inside route handlers when running"
+                    " with the --reload or --workers options[/]"
+                )
 
-        process_args = {
-            "reload": reload,
-            "host": host,
-            "port": port,
-            "workers": workers,
-            "factory": env.is_app_factory,
-        }
-        if fd is not None:
-            process_args["fd"] = fd
-        if uds is not None:
-            process_args["uds"] = uds
-        if reload_dirs:
-            process_args["reload-dir"] = reload_dirs
+            process_args = {
+                "reload": reload,
+                "host": host,
+                "port": port,
+                "workers": workers,
+                "factory": env.is_app_factory,
+            }
+            if fd is not None:
+                process_args["fd"] = fd
+            if uds is not None:
+                process_args["uds"] = uds
+            if reload_dirs:
+                process_args["reload-dir"] = reload_dirs
 
-        subprocess.run(
-            [sys.executable, "-m", "uvicorn", env.app_path, *_convert_uvicorn_args(process_args)],  # noqa: S603
-            check=True,
-        )
+            subprocess.run(
+                [sys.executable, "-m", "uvicorn", env.app_path, *_convert_uvicorn_args(process_args)],  # noqa: S603
+                check=True,
+            )
+    finally:
+        for hook in app.after_shutdown:
+            hook()
 
 
 @command(name="routes")
