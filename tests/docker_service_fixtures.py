@@ -12,8 +12,8 @@ import asyncmy
 import asyncpg
 import oracledb
 import pytest
-from google.auth.credentials import AnonymousCredentials  # pyright: ignore
-from google.cloud import spanner  # pyright: ignore
+from google.auth.credentials import AnonymousCredentials
+from google.cloud import spanner
 from oracledb import DatabaseError, OperationalError
 from redis.asyncio import Redis as AsyncRedis
 from redis.exceptions import ConnectionError as RedisConnectionError
@@ -142,7 +142,7 @@ async def mysql_responsive(host: str) -> bool:
             await cursor.execute("select 1 as is_available")
             resp = await cursor.fetchone()
         return bool(resp[0] == 1)
-    except asyncmy.errors.OperationalError:  # pyright: ignore
+    except asyncmy.errors.OperationalError:
         return False
 
 
@@ -160,7 +160,7 @@ async def postgres_responsive(host: str) -> bool:
         return False
 
     try:
-        return (await conn.fetchrow("SELECT 1"))[0] == 1  # type: ignore
+        return (await conn.fetchrow("SELECT 1"))[0] == 1
     finally:
         await conn.close()
 
@@ -183,7 +183,7 @@ def oracle_responsive(host: str) -> bool:
             cursor.execute("SELECT 1 FROM dual")
             resp = cursor.fetchone()
         return bool(resp[0] == 1)
-    except (OperationalError, DatabaseError):  # pyright: ignore
+    except (OperationalError, DatabaseError):
         return False
 
 
@@ -200,17 +200,17 @@ def spanner_responsive(host: str) -> bool:
         instance = spanner_client.instance("test-instance")
         try:
             instance.create()
-        except Exception:  # pyright: ignore
+        except Exception:
             pass
         database = instance.database("test-database")
         try:
             database.create()
-        except Exception:  # pyright: ignore
+        except Exception:
             pass
         with database.snapshot() as snapshot:
             resp = list(snapshot.execute_sql("SELECT 1"))[0]
         return bool(resp[0] == 1)
-    except Exception:  # pyright: ignore
+    except Exception:
         return False
 
 

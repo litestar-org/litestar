@@ -29,7 +29,7 @@ class WebSocketTestSession:
 
     def __init__(
         self,
-        client: TestClient,
+        client: TestClient[Any],
         scope: WebSocketScope,
     ) -> None:
         self.client = client

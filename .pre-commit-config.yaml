@@ -24,7 +24,7 @@ repos:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.274"
+    rev: "v0.0.275"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -62,7 +62,7 @@ repos:
     rev: "v1.4.0"
     hooks:
       - id: mypy
-        exclude: "test_apps|tools|docs|tests/examples"
+        exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures"
         additional_dependencies:
           [
             "polyfactory>=2.3.2",
@@ -116,12 +116,13 @@ repos:
             types-pyyaml,
             types-redis,
             uvicorn,
+            prometheus_client,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.315
     hooks:
       - id: pyright
-        exclude: "test_apps|tools|docs|_openapi|tests/examples"
+        exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures"
         additional_dependencies:
           [
             "polyfactory>=2.3.2",
@@ -175,6 +176,7 @@ repos:
             types-pyyaml,
             types-redis,
             uvicorn,
+            prometheus_client,
           ]
   - repo: local
     hooks:

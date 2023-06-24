@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from copy import copy
-from functools import partial
 from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
 
 from litestar._signature import create_signature_model
@@ -9,7 +8,7 @@ from litestar._signature.field import SignatureField
 from litestar.di import Provide
 from litestar.dto.interface import HandlerContext
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.types import Dependencies, Empty, ExceptionHandlersMap, Guard, Middleware, TypeEncodersMap
+from litestar.types import Dependencies, Empty, ExceptionHandlersMap, Guard, MaybePartial, Middleware, TypeEncodersMap
 from litestar.utils import AsyncCallable, Ref, async_partial, get_name, normalize_path
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.predicates import is_async_callable
@@ -27,7 +26,6 @@ if TYPE_CHECKING:
     from litestar.plugins import SerializationPluginProtocol
     from litestar.router import Router
     from litestar.types import AnyCallable, AsyncAnyCallable, ExceptionHandler
-    from litestar.types.composite_types import MaybePartial
     from litestar.types.empty import EmptyType
 
 __all__ = ("BaseRouteHandler",)
@@ -407,11 +405,6 @@ class BaseRouteHandler:
         1. ensure that the ``self`` argument is preserved by binding it using partial.
         2. ensure sync functions are wrapped in AsyncCallable for sync_to_thread handlers.
         """
-        from litestar.controller import Controller
-
-        if isinstance(self.owner, Controller) and not hasattr(self.fn.value, "func"):
-            self.fn.value = partial(self.fn.value, self.owner)
-
         for provider in self.resolve_dependencies().values():
             if not is_async_callable(provider.dependency.value):
                 provider.has_sync_callable = False

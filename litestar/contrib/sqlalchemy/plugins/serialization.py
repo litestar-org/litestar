@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy.orm import DeclarativeBase
 
@@ -17,14 +17,14 @@ class SQLAlchemySerializationPlugin(SerializationPluginProtocol, _slots_base.Slo
     __slots__ = ()
 
     def __init__(self) -> None:
-        self._type_dto_map: dict[type[DeclarativeBase], type[SQLAlchemyDTO]] = {}
+        self._type_dto_map: dict[type[DeclarativeBase], type[SQLAlchemyDTO[Any]]] = {}
 
     def supports_type(self, parsed_type: ParsedType) -> bool:
         return (
             parsed_type.is_collection and parsed_type.has_inner_subclass_of(DeclarativeBase)
         ) or parsed_type.is_subclass_of(DeclarativeBase)
 
-    def create_dto_for_type(self, parsed_type: ParsedType) -> type[SQLAlchemyDTO]:
+    def create_dto_for_type(self, parsed_type: ParsedType) -> type[SQLAlchemyDTO[Any]]:
         # assumes that the type is a container of SQLAlchemy models or a single SQLAlchemy model
         for inner_type in parsed_type.inner_types:
             if inner_type.is_subclass_of(DeclarativeBase):

@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 import pytest
 from typing_extensions import Annotated
 
-from litestar import Controller, Litestar, get, post
+from litestar import Controller, Litestar, MediaType, get, post
 from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import Body, Dependency, Parameter
@@ -209,3 +209,20 @@ def test_dependency_nested_sequence() -> None:
         assert resp.json() == ["a", "b", "c"]
         resp = client.get("/obj", params={"seq": seq})
         assert resp.json() == ["a", "b", "c"]
+
+
+@pytest.mark.parametrize("backend", ("pydantic", "attrs"))
+def test_regex_validation(backend: Any) -> None:
+    # https://github.com/litestar-org/litestar/issues/1860
+    @get(path="/val_regex", media_type=MediaType.TEXT)
+    async def regex_val(text: Annotated[str, Parameter(title="a or b", pattern="[a|b]")]) -> str:
+        return f"str: {text}"
+
+    with create_test_client(route_handlers=[regex_val], _preferred_validation_backend=backend) as client:
+        for letter in ("a", "b"):
+            response = client.get(f"/val_regex?text={letter}")
+            assert response.status_code == HTTP_200_OK
+            assert response.text == f"str: {letter}"
+
+        response = client.get("/val_regex?text=c")
+        assert response.status_code == HTTP_400_BAD_REQUEST

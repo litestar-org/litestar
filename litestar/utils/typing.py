@@ -27,7 +27,7 @@ from typing import (
 
 from typing_extensions import Annotated, NotRequired, Required, TypeGuard, get_args, get_origin
 
-from litestar.types.builtin_types import UNION_TYPES, NoneType
+from litestar.types.builtin_types import NoneType, UnionTypes
 
 __all__ = (
     "annotation_is_iterable_of_type",
@@ -108,7 +108,7 @@ _safe_generic_origin_map = {
     abc.AsyncIterable: t.AsyncIterable,
     abc.AsyncIterator: t.AsyncIterator,
     abc.Awaitable: t.Awaitable,
-    **{union_t: t.Union for union_t in UNION_TYPES},
+    **{union_t: t.Union for union_t in UnionTypes},
 }
 """A mapping of types to equivalent types that are safe to be used as generics across all Python versions.
 

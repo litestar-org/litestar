@@ -7,5 +7,5 @@ from tests.unit.test_dto import MockDTO, Model
 
 
 async def test_create_dto_extractor() -> None:
-    extractor = create_dto_extractor(MockDTO)
+    extractor = create_dto_extractor(MockDTO)  # type: ignore
     assert await extractor(AsyncMock()) == Model(a=1, b="2")

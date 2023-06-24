@@ -59,8 +59,6 @@ if TYPE_CHECKING:
     from litestar.dto.interface import DTOInterface
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
-    from litestar.types import MaybePartial  # noqa: F401
-
 
 __all__ = ("HTTPRouteHandler", "route")
 

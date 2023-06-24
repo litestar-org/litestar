@@ -157,7 +157,7 @@ class LitestarGroup(Group):
         name: str | None = None,
         commands: dict[str, Command] | Sequence[Command] | None = None,
         **attrs: Any,
-    ):
+    ) -> None:
         """Init ``LitestarGroup``"""
         self.group_class = LitestarGroup
         super().__init__(name=name, commands=commands, **attrs)
@@ -196,7 +196,7 @@ class LitestarExtensionGroup(LitestarGroup):
         name: str | None = None,
         commands: dict[str, Command] | Sequence[Command] | None = None,
         **attrs: Any,
-    ):
+    ) -> None:
         """Init ``LitestarExtensionGroup``"""
         super().__init__(name=name, commands=commands, **attrs)
 

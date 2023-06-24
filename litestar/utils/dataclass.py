@@ -24,7 +24,7 @@ def extract_dataclass_fields(
     exclude_empty: bool = False,
     include: AbstractSet[str] | None = None,
     exclude: AbstractSet[str] | None = None,
-) -> tuple[Field, ...]:
+) -> tuple[Field[Any], ...]:
     """Extract dataclass fields.
 
     Args:
@@ -44,7 +44,7 @@ def extract_dataclass_fields(
     if common := (include & exclude):
         raise ValueError(f"Fields {common} are both included and excluded.")
 
-    dataclass_fields: Iterable[Field] = fields(dt)
+    dataclass_fields: Iterable[Field[Any]] = fields(dt)
     if exclude_none:
         dataclass_fields = (field for field in dataclass_fields if getattr(dt, field.name) is not None)
     if exclude_empty:

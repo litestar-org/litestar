@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import (
     IO,
     TYPE_CHECKING,
@@ -5,14 +7,10 @@ from typing import (
     AnyStr,
     Awaitable,
     Literal,
-    Optional,
     Protocol,
     TypedDict,
-    Union,
     overload,
 )
-
-from typing_extensions import NotRequired
 
 __all__ = ("FileInfo", "FileSystemProtocol")
 
@@ -20,6 +18,7 @@ __all__ = ("FileInfo", "FileSystemProtocol")
 if TYPE_CHECKING:
     from _typeshed import OpenBinaryMode, OpenTextMode
     from anyio import AsyncFile
+    from typing_extensions import NotRequired
 
     from litestar.types.composite_types import PathType
 
@@ -29,7 +28,7 @@ class FileInfo(TypedDict):
 
     created: float
     """Created time stamp, equal to 'stat_result.st_ctime'."""
-    destination: NotRequired[Optional[bytes]]
+    destination: NotRequired[bytes | None]
     """Output of loading a symbolic link."""
     gid: int
     """Group ID of owner."""
@@ -60,7 +59,7 @@ class FileSystemProtocol(Protocol):
     exported by the `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>` library.
     """
 
-    def info(self, path: "PathType", **kwargs: Any) -> Union[FileInfo, Awaitable[FileInfo]]:
+    def info(self, path: PathType, **kwargs: Any) -> FileInfo | Awaitable[FileInfo]:
         """Retrieve information about a given file path.
 
         Args:
@@ -75,27 +74,27 @@ class FileSystemProtocol(Protocol):
     @overload
     def open(
         self,
-        file: "PathType",
-        mode: "OpenBinaryMode",
+        file: PathType,
+        mode: OpenBinaryMode,
         buffering: int = -1,
-    ) -> Union[IO[bytes], Awaitable["AsyncFile[bytes]"]]:
+    ) -> IO[bytes] | Awaitable[AsyncFile[bytes]]:
         ...
 
     @overload
     def open(
         self,
-        file: "PathType",
-        mode: "OpenTextMode",
+        file: PathType,
+        mode: OpenTextMode,
         buffering: int = -1,
-    ) -> Union[IO[str], Awaitable["AsyncFile[str]"]]:
+    ) -> IO[str] | Awaitable[AsyncFile[str]]:
         ...
 
     def open(  # pyright: ignore
         self,
-        file: "PathType",
+        file: PathType,
         mode: str,
         buffering: int = -1,
-    ) -> Union[IO[AnyStr], Awaitable["AsyncFile[AnyStr]"]]:
+    ) -> IO[AnyStr] | Awaitable[AsyncFile[AnyStr]]:
         """Return a file-like object from the filesystem.
 
         Notes:

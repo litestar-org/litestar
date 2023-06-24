@@ -25,7 +25,7 @@ def test_client() -> TestClient:
     return TestClient(app=app)
 
 
-def test_health_check_with_fixture(test_client: TestClient):
+def test_health_check_with_fixture(test_client: TestClient) -> None:
     with test_client as client:
         response = client.get("/health-check")
         assert response.status_code == HTTP_200_OK

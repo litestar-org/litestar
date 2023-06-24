@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 from litestar.contrib.opentelemetry._utils import get_route_details_from_scope
 from litestar.contrib.opentelemetry.middleware import (
@@ -36,7 +36,9 @@ class OpenTelemetryConfig:
     Consult the [OpenTelemetry ASGI documentation](https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation/asgi/asgi.html) for more info about the configuration options.
     """
 
-    scope_span_details_extractor: Callable[[Scope], tuple[str, dict]] = field(default=get_route_details_from_scope)
+    scope_span_details_extractor: Callable[[Scope], tuple[str, dict[str, Any]]] = field(
+        default=get_route_details_from_scope
+    )
     """Callback which should return a string and a tuple, representing the desired default span name and a dictionary
     with any additional span attributes to set.
     """

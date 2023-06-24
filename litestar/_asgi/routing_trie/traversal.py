@@ -113,7 +113,7 @@ def parse_path_to_route(
     path: str,
     plain_routes: set[str],
     root_node: RouteTrieNode,
-) -> tuple[ASGIApp, RouteHandlerType, str, dict]:
+) -> tuple[ASGIApp, RouteHandlerType, str, dict[str, Any]]:
     """Given a scope object, retrieve the asgi_handlers and is_mount boolean values from correct trie node.
 
     Args:
