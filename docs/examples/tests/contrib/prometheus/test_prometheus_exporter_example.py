@@ -1,3 +1,5 @@
+from typing import Any, Dict
+
 from prometheus_client import REGISTRY
 
 from litestar import get
@@ -20,7 +22,7 @@ def test_prometheus_exporter_example() -> None:
     clear_collectors()
 
     @get("/test")
-    def home() -> dict:
+    def home() -> Dict[str, Any]:
         return {"hello": "world"}
 
     app.register(home)

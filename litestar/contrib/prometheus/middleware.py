@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import time
-from collections import OrderedDict
 from functools import wraps
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, cast
 
 from litestar.connection.request import Request
 from litestar.exceptions import MissingDependencyException
@@ -11,6 +10,7 @@ from litestar.middleware.base import AbstractMiddleware
 
 __all__ = ("PrometheusMiddleware",)
 
+from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
 try:
     import prometheus_client  # noqa: F401
@@ -29,9 +29,9 @@ if TYPE_CHECKING:
 class PrometheusMiddleware(AbstractMiddleware):
     """Prometheus Middleware."""
 
-    _metrics: dict[str, MetricWrapperBase] = {}
+    _metrics: ClassVar[dict[str, MetricWrapperBase]] = {}
 
-    def __init__(self, app: ASGIApp, config: PrometheusConfig):
+    def __init__(self, app: ASGIApp, config: PrometheusConfig) -> None:
         """Middleware that adds Prometheus instrumentation to the application.
 
         Args:
@@ -40,81 +40,78 @@ class PrometheusMiddleware(AbstractMiddleware):
         """
         super().__init__(app=app, scopes=config.scopes, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key)
         self._config = config
-        self._labels = OrderedDict(self._config.labels) if self._config.labels is not None else None
-        self._kwargs = {}
+        self._kwargs: dict[str, Any] = {}
 
         if self._config.buckets is not None:
             self._kwargs["buckets"] = self._config.buckets
 
     def request_count(self, labels: dict[str, str | int | float]) -> Counter:
         metric_name = f"{self._config.prefix}_requests_total"
+
         if metric_name not in PrometheusMiddleware._metrics:
             PrometheusMiddleware._metrics[metric_name] = Counter(
-                metric_name,
-                "Total requests",
-                [*labels.keys()],
+                name=metric_name,
+                documentation="Total requests",
+                labelnames=[*labels.keys()],
             )
-        return PrometheusMiddleware._metrics[metric_name]  # type: ignore
+
+        return cast("Counter", PrometheusMiddleware._metrics[metric_name])
 
     def request_time(self, labels: dict[str, str | int | float]) -> Histogram:
         metric_name = f"{self._config.prefix}_request_duration_seconds"
+
         if metric_name not in PrometheusMiddleware._metrics:
             PrometheusMiddleware._metrics[metric_name] = Histogram(
-                metric_name,
-                "Request duration, in seconds",
-                [*labels.keys()],
-                **self._kwargs,  # type: ignore
+                name=metric_name,
+                documentation="Request duration, in seconds",
+                labelnames=[*labels.keys()],
+                **self._kwargs,
             )
-        return PrometheusMiddleware._metrics[metric_name]  # type: ignore
+        return cast("Histogram", PrometheusMiddleware._metrics[metric_name])
 
     def requests_in_progress(self, labels: dict[str, str | int | float]) -> Gauge:
         metric_name = f"{self._config.prefix}_requests_in_progress"
+
         if metric_name not in PrometheusMiddleware._metrics:
             PrometheusMiddleware._metrics[metric_name] = Gauge(
-                metric_name,
-                "Total requests currently in progress",
-                [*labels.keys()],
+                name=metric_name,
+                documentation="Total requests currently in progress",
+                labelnames=[*labels.keys()],
                 multiprocess_mode="livesum",
             )
-        return PrometheusMiddleware._metrics[metric_name]  # type: ignore
+        return cast("Gauge", PrometheusMiddleware._metrics[metric_name])
 
     def requests_error_count(self, labels: dict[str, str | int | float]) -> Counter:
         metric_name = f"{self._config.prefix}_requests_error_total"
+
         if metric_name not in PrometheusMiddleware._metrics:
             PrometheusMiddleware._metrics[metric_name] = Counter(
-                metric_name,
-                "Total errors in requests",
-                [*labels.keys()],
+                name=metric_name,
+                documentation="Total errors in requests",
+                labelnames=[*labels.keys()],
             )
-        return PrometheusMiddleware._metrics[metric_name]  # type: ignore
+        return cast("Counter", PrometheusMiddleware._metrics[metric_name])
 
-    def _get_extra_labels(self, request: Request) -> dict[str, str | int | float]:
-        """Get extra labels provided by the config and if they are callable, parse them."""
+    def _get_extra_labels(self, request: Request[Any, Any, Any]) -> dict[str, str]:
+        """Get extra labels provided by the config and if they are callable, parse them.
 
-        extra_labels: dict[str, str | int | float] = {}
-        if self._labels is None:
-            return extra_labels
+        Args:
+        request: The request object.
 
-        for key, value in self._labels.items():
-            if callable(value):
-                parsed_value = ""
-                try:
-                    parsed_value = value(request)
-                finally:
-                    extra_labels[key] = str(parsed_value)
-            else:
-                extra_labels[key] = value
+        Returns:
+        A dictionary of extra labels.
+        """
 
-        return extra_labels
+        return {k: str(v(request) if callable(v) else v) for k, v in (self._config.labels or {}).items()}
 
-    def _get_default_labels(self, request: Request) -> dict[str, str | int | float]:
+    def _get_default_labels(self, request: Request[Any, Any, Any]) -> dict[str, str | int | float]:
         """Get default label values from the request.
 
-        Default:
-            - method
-            - path
-            - status_code
-            - app_name
+        Args:
+            request: The request object.
+
+        Returns:
+            A dictionary of default labels.
         """
 
         return {
@@ -136,38 +133,36 @@ class PrometheusMiddleware(AbstractMiddleware):
             None
         """
 
-        request: Request = Request(scope, receive)
-        method = request.method
+        request = Request[Any, Any, Any](scope, receive)
 
-        if self._config.exclude_http_methods and method in self._config.exclude_http_methods:
+        if self._config.excluded_http_methods and request.method in self._config.excluded_http_methods:
             await self.app(scope, receive, send)
             return
 
-        labels = self._get_default_labels(request)
-        extra_labels = self._get_extra_labels(request)
-        labels.update(extra_labels)
-        label_values = [*labels.values()]
+        labels = {**self._get_default_labels(request), **self._get_extra_labels(request)}
+
         request_span = {"start_time": time.perf_counter(), "end_time": 0, "duration": 0, "status_code": 200}
 
-        self.requests_in_progress(labels).labels(*label_values).inc()
         wrapped_send = self._get_wrapped_send(send, request_span)
+
+        self.requests_in_progress(labels).labels(*labels.values()).inc()
 
         try:
             await self.app(scope, receive, wrapped_send)
         finally:
-            extra = {}
+            extra: dict[str, Any] = {}
             if self._config.exemplars:
                 extra["exemplar"] = self._config.exemplars(request)
 
-            self.requests_in_progress(labels).labels(*label_values).dec()
+            self.requests_in_progress(labels).labels(*labels.values()).dec()
 
             labels["status_code"] = request_span["status_code"]
             label_values = [*labels.values()]
 
-            if request_span["status_code"] >= 500:
-                self.requests_error_count(labels).labels(*label_values).inc(**extra)  # type: ignore
+            if request_span["status_code"] >= HTTP_500_INTERNAL_SERVER_ERROR:
+                self.requests_error_count(labels).labels(*label_values).inc(**extra)
 
-            self.request_count(labels).labels(*label_values).inc(**extra)  # type: ignore
+            self.request_count(labels).labels(*label_values).inc(**extra)
             self.request_time(labels).labels(*label_values).observe(request_span["duration"], **extra)
 
     def _get_wrapped_send(self, send: Send, request_span: dict[str, float]) -> Callable:

@@ -1,9 +1,10 @@
-from litestar import Litestar
+from typing import Any, Dict
+
+from litestar import Litestar, Request
 from litestar.contrib.prometheus import PrometheusConfig, PrometheusController
 
 
-# If we want to modify the path of our custom handler and override the metrix format
-# we can do it by inheriting the PrometheusController class and overriding the path and format
+# We can modify the path of our custom handler and override the metrics format by subclassing the PrometheusController.
 class CustomPrometheusController(PrometheusController):
     path = "/custom-path"
     openmetrics_format = True
@@ -11,8 +12,8 @@ class CustomPrometheusController(PrometheusController):
 
 # Let's assume this as our extra custom labels which we want our metrics to have.
 # The values can be either a string or a callable that returns a string.
-def custom_label_callable(request):
-    return "2.0"
+def custom_label_callable(request: Request[Any, Any, Any]) -> str:
+    return "v2.0"
 
 
 extra_labels = {
@@ -24,8 +25,9 @@ extra_labels = {
 buckets = [0.1, 0.2, 0.3, 0.4, 0.5]
 
 
-# Adding the exemplars to the metrics which is supported only in openmetrics format.
-def custom_exemplar(request):
+# Adding exemplars to the metrics.
+# Note that this supported only in openmetrics format.
+def custom_exemplar(request: Request[Any, Any, Any]) -> Dict[str, str]:
     return {"trace_id": "1234"}
 
 
@@ -38,7 +40,7 @@ prometheus_config = PrometheusConfig(
     labels=extra_labels,
     buckets=buckets,
     exemplars=custom_exemplar,
-    exclude_http_methods=["POST"],
+    excluded_http_methods=["POST"],
 )
 
 

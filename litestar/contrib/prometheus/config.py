@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Callable, Mapping
+from typing import TYPE_CHECKING, Callable, Mapping, Sequence
 
 from litestar.contrib.prometheus.middleware import (
     PrometheusMiddleware,
@@ -20,7 +20,7 @@ except ImportError as e:
 
 if TYPE_CHECKING:
     from litestar.connection.request import Request
-    from litestar.types import Scopes
+    from litestar.types import Method, Scopes
 
 
 @dataclass
@@ -35,9 +35,9 @@ class PrometheusConfig:
     """A mapping of labels to add to the metrics. The values can be either a string or a callable that returns a string."""
     exemplars: Callable[[Request], dict] | None = field(default=None)
     """A callable that returns a list of exemplars to add to the metrics. Only supported in opementrics-text exposition format."""
-    buckets: list[str] | None = field(default=None)
+    buckets: list[str | float] | None = field(default=None)
     """A list of buckets to use for the histogram."""
-    exclude_http_methods: str | list[str] | None = field(default=None)
+    excluded_http_methods: Method | Sequence[Method] | None = field(default=None)
     """A list of http methods to exclude from the metrics."""
     exclude_unhandled_paths: bool = field(default=False)
     """Whether to ignore requests for unhandled paths from the metrics."""
@@ -49,9 +49,6 @@ class PrometheusConfig:
     """ASGI scopes processed by the middleware, if None both ``http`` and ``websocket`` will be processed."""
     middleware_class: type[PrometheusMiddleware] = field(default=PrometheusMiddleware)
     """The middleware class to use.
-
-    Should be a subclass of [PrometheusMiddleware]
-    [litestar.contrib.prometheus.PrometheusMiddleware].
     """
 
     @property

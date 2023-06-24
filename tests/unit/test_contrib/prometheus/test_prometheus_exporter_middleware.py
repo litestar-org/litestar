@@ -1,6 +1,7 @@
 import re
 import time
 from http.client import HTTPException
+from typing import Any
 
 from prometheus_client import REGISTRY
 
@@ -10,13 +11,13 @@ from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
 
-def create_config(**kwargs: dict) -> PrometheusConfig:
+def create_config(**kwargs: Any) -> PrometheusConfig:
     collectors = list(REGISTRY._collector_to_names.keys())
     for collector in collectors:
         REGISTRY.unregister(collector)
 
     PrometheusMiddleware._metrics = {}
-    return PrometheusConfig(**kwargs)  # type: ignore
+    return PrometheusConfig(**kwargs)
 
 
 def test_prometheus_exporter_metrics_with_http() -> None:
@@ -82,10 +83,14 @@ def test_prometheus_exporter_metrics_with_http() -> None:
             in metrics
         )
 
-        assert """litestar_requests_in_progress{app_name="litestar",method="GET",path="/error",status_code="200"} 0.0"""
+        assert (
+            """litestar_requests_in_progress{app_name="litestar",method="GET",path="/error",status_code="200"} 0.0"""
+            in metrics
+        )
 
         assert (
             """litestar_requests_in_progress{app_name="litestar",method="GET",path="/metrics",status_code="200"} 1.0"""
+            in metrics
         )
 
 
@@ -93,11 +98,11 @@ def test_prometheus_middleware_configurations() -> None:
     labels = {"foo": "bar", "baz": lambda a: "qux"}
 
     config = create_config(
-        app_name="litestar_test",  # type: ignore
-        prefix="litestar_rocks",  # type: ignore
+        app_name="litestar_test",
+        prefix="litestar_rocks",
         labels=labels,
-        buckets=[0.1, 0.5, 1.0],  # type: ignore
-        exclude_http_methods=["POST"],  # type: ignore
+        buckets=[0.1, 0.5, 1.0],
+        excluded_http_methods=["POST"],
     )
 
     @get("/test")
@@ -144,7 +149,7 @@ def test_prometheus_middleware_configurations() -> None:
 
 def test_prometheus_controller_configurations() -> None:
     config = create_config(
-        exemplars=lambda a: {"trace_id": "1234"},  # type: ignore
+        exemplars=lambda a: {"trace_id": "1234"},
     )
 
     class CustomPrometheusController(PrometheusController):
