@@ -52,7 +52,7 @@ of it when we are done. This context manager is added to the applicaton's ``life
     /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
-    :lines: 29-41,99
+    :lines: 29-39,98
 
 Application state
 +++++++++++++++++

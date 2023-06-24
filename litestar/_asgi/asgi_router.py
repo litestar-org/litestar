@@ -4,7 +4,7 @@ import re
 from collections import defaultdict
 from functools import lru_cache
 from traceback import format_exc
-from typing import TYPE_CHECKING, Pattern
+from typing import TYPE_CHECKING, Any, Pattern
 
 from litestar._asgi.routing_trie import validate_node
 from litestar._asgi.routing_trie.mapping import add_route_to_trie
@@ -84,7 +84,7 @@ class ASGIRouter:
         await asgi_app(scope, receive, send)
 
     @lru_cache(1024)  # noqa: B019
-    def handle_routing(self, path: str, method: Method | None) -> tuple[ASGIApp, RouteHandlerType, str, dict]:
+    def handle_routing(self, path: str, method: Method | None) -> tuple[ASGIApp, RouteHandlerType, str, dict[str, Any]]:
         """Handle routing for a given path / method combo. This method is meant to allow easy caching.
 
         Args:

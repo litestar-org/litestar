@@ -34,7 +34,7 @@ class BaseEventEmitterBackend(AsyncContextManager["BaseEventEmitterBackend"], AB
 
     listeners: defaultdict[str, set[EventListener]]
 
-    def __init__(self, listeners: Sequence[EventListener]):
+    def __init__(self, listeners: Sequence[EventListener]) -> None:
         """Create an event emitter instance.
 
         Args:
@@ -65,7 +65,7 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
 
     __slots__ = ("_queue", "_exit_stack", "_receive_stream", "_send_stream")
 
-    def __init__(self, listeners: Sequence[EventListener]):
+    def __init__(self, listeners: Sequence[EventListener]) -> None:
         """Create an event emitter instance.
 
         Args:

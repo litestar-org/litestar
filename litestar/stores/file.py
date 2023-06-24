@@ -29,7 +29,7 @@ class FileStore(NamespacedStore):
 
     __slots__ = {"path": "file path"}
 
-    def __init__(self, path: PathLike) -> None:
+    def __init__(self, path: PathLike[str]) -> None:
         """Initialize ``FileStorage``.
 
         Args:

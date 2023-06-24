@@ -155,7 +155,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         return Headers(self._headers)
 
     @property
-    def query_params(self) -> MultiDict:
+    def query_params(self) -> MultiDict[Any]:
         """Return the query parameters of this connection's ``Scope``.
 
         Returns:
