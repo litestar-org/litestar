@@ -61,6 +61,8 @@ class AppConfig:
     The final attribute values are used to instantiate the application object.
     """
 
+    after_shutdown: list[Callable] = field(default_factory=list)
+    """A list of :class:`Callable <typing.Callable>` called after application shutdown."""
     after_exception: list[AfterExceptionHookHandler] = field(default_factory=list)
     """An application level :class:`exception hook handler <.types.AfterExceptionHookHandler>` or list thereof.
 
@@ -79,6 +81,8 @@ class AppConfig:
     """
     allowed_hosts: list[str] | AllowedHostsConfig | None = field(default=None)
     """If set enables the builtin allowed hosts middleware."""
+    before_startup: list[Callable] = field(default_factory=list)
+    """A list of :class:`Callable <typing.Callable>` called before application startup."""
     before_request: BeforeRequestHookHandler | None = field(default=None)
     """A sync or async function called immediately before calling the route handler. Receives the
     :class:`Request <.connection.Request>` instance and any non-``None`` return value is used for the response,

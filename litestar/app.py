@@ -130,10 +130,12 @@ class Litestar(Router):
         "_debug",
         "_openapi_schema",
         "_preferred_validation_backend",
+        "after_shutdown",
         "after_exception",
         "allowed_hosts",
         "asgi_handler",
         "asgi_router",
+        "before_startup",
         "before_send",
         "compression_config",
         "cors_config",
@@ -164,10 +166,12 @@ class Litestar(Router):
         self,
         route_handlers: OptionalSequence[ControllerRouterHandler] | None = None,
         *,
+        after_shutdown: OptionalSequence[LifespanHook] | None = None,
         after_exception: OptionalSequence[AfterExceptionHookHandler] | None = None,
         after_request: AfterRequestHookHandler | None = None,
         after_response: AfterResponseHookHandler | None = None,
         allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
+        before_startup: OptionalSequence[LifespanHook] | None = None,
         before_request: BeforeRequestHookHandler | None = None,
         before_send: OptionalSequence[BeforeMessageSendHookHandler] | None = None,
         cache_control: CacheControlHeader | None = None,
@@ -214,6 +218,8 @@ class Litestar(Router):
         """Initialize a ``Litestar`` application.
 
         Args:
+            after_shutdown: A sequence of :class:`LifespanHook <.types.LifespanHook>` called after application
+                shutdown.
             after_exception: A sequence of :class:`exception hook handlers <.types.AfterExceptionHookHandler>`. This
                 hook is called after an exception occurs. In difference to exception handlers, it is not meant to
                 return a response - only to process the exception (e.g. log it, send it to Sentry etc.).
@@ -224,6 +230,8 @@ class Litestar(Router):
             allowed_hosts: A sequence of allowed hosts, or an
                 :class:`AllowedHostsConfig <.config.allowed_hosts.AllowedHostsConfig>` instance. Enables the builtin
                 allowed hosts middleware.
+            before_startup: A sequence of :class:`LifespanHook <litestar.types.LifespanHook>` called before
+                application startup.
             before_request: A sync or async function called immediately before calling the route handler. Receives the
                 :class:`Request <.connection.Request>` instance and any non-``None`` return value is used for the
                 response, bypassing the route handler.
@@ -313,10 +321,12 @@ class Litestar(Router):
             )
 
         config = AppConfig(
+            after_shutdown=list(after_shutdown or []),
             after_exception=list(after_exception or []),
             after_request=after_request,
             after_response=after_response,
             allowed_hosts=allowed_hosts if isinstance(allowed_hosts, AllowedHostsConfig) else list(allowed_hosts or []),
+            before_startup=list(before_startup or []),
             before_request=before_request,
             before_send=list(before_send or []),
             cache_control=cache_control,
@@ -373,10 +383,11 @@ class Litestar(Router):
         self.logger: Logger | None = None
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
         self.asgi_router = ASGIRouter(app=self)
-
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
+        self.after_shutdown = config.after_shutdown
         self.after_exception = [AsyncCallable(h) for h in config.after_exception]
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
+        self.before_startup = config.before_startup
         self.before_send = [AsyncCallable(h) for h in config.before_send]
         self.compression_config = config.compression_config
         self.cors_config = config.cors_config
