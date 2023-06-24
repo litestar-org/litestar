@@ -289,9 +289,18 @@ def _autodiscover_app(cwd: Path) -> LoadedApp:
     for file_path in _autodiscovery_paths(cwd):
         import_path = _path_to_dotted_path(file_path.relative_to(cwd))
         module = importlib.import_module(import_path)
+        app_paths: list[tuple[str, Any]] = [
+            ("app", getattr(module, "app", None)),
+            ("application", getattr(module, "application", None)),
+        ]
+
+        if getattr(module, "asgi", None) is not None:
+            app_paths.extend(
+                [("app", getattr(module.asgi, "app", None)), ("application", getattr(module.asgi, "application", None))]
+            )
 
         for attr, value in chain(
-            [("app", getattr(module, "app", None)), ("application", getattr(module, "application", None))],
+            app_paths,
             module.__dict__.items(),
         ):
             if isinstance(value, Litestar):
@@ -299,10 +308,16 @@ def _autodiscover_app(cwd: Path) -> LoadedApp:
                 console.print(f"Using Litestar app from [bright_blue]{app_string}")
                 return LoadedApp(app=value, app_path=app_string, is_factory=False)
 
-        if hasattr(module, "create_app"):
-            app_string = f"{import_path}:create_app"
-            console.print(f"Using Litestar factory [bright_blue]{app_string}")
-            return LoadedApp(app=module.create_app(), app_path=app_string, is_factory=True)
+        for factory_import_path, factory_module in chain(
+            [
+                (import_path, module),
+                (f"{import_path}.asgi", getattr(module, "asgi", None)),
+            ]
+        ):
+            if factory_module is not None and hasattr(factory_module, "create_app"):
+                app_string = f"{factory_import_path}:create_app"
+                console.print(f"Using Litestar factory [bright_blue]{app_string}")
+                return LoadedApp(app=factory_module.create_app(), app_path=app_string, is_factory=True)
 
         for attr, value in module.__dict__.items():
             if not callable(value):
