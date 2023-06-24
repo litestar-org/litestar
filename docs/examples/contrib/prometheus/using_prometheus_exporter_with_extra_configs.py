@@ -30,7 +30,7 @@ def custom_exemplar(request):
 
 
 # Creating the instance of PrometheusConfig with our own custom options.
-# The givenn options ara not neccessary, you can use the default ones
+# The givenn options ara not necessary, you can use the default ones
 # as well by just creating a raw instance PrometheusConfig()
 prometheus_config = PrometheusConfig(
     app_name="litestar-example",
@@ -42,5 +42,5 @@ prometheus_config = PrometheusConfig(
 )
 
 
-# Creating the litestar app intance with our custom PrometheusConfig and PrometheusController.
+# Creating the litestar app instance with our custom PrometheusConfig and PrometheusController.
 app = Litestar(route_handlers=[CustomPrometheusController], middleware=[prometheus_config.middleware])
