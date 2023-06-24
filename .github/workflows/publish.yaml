@@ -28,7 +28,7 @@ jobs:
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
       - name: Test
-        run: poetry run pytest tests/examples/test_hello_world.py
+        run: mv tests/examples/test_hello_world.py test_hello_world.py && poetry run pytest test_hello_world.py
   publish-release:
     needs:
       - test_minimal_app
