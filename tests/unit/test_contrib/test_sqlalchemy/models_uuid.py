@@ -6,7 +6,7 @@ from datetime import date, datetime
 from typing import List
 from uuid import UUID
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import FetchedValue, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
@@ -40,6 +40,15 @@ class UUIDEventLog(UUIDAuditBase):
     payload: Mapped[dict] = mapped_column(default={})  # pyright: ignore
 
 
+class UUIDModelWithFetchedValue(UUIDBase):
+    """The ModelWithFetchedValue UUIDBase."""
+
+    val: Mapped[int]
+    updated: Mapped[str] = mapped_column(
+        server_default=func.random(), onupdate=func.random(), server_onupdate=FetchedValue()
+    )
+
+
 class UUIDRule(UUIDAuditBase):
     """The rule domain object."""
 
@@ -71,6 +80,12 @@ class EventLogAsyncRepository(SQLAlchemyAsyncRepository[UUIDEventLog]):
     model_type = UUIDEventLog
 
 
+class ModelWithFetchedValueAsyncRepository(SQLAlchemyAsyncRepository[UUIDModelWithFetchedValue]):
+    """ModelWithFetchedValue repository."""
+
+    model_type = UUIDModelWithFetchedValue
+
+
 class AuthorSyncRepository(SQLAlchemySyncRepository[UUIDAuthor]):
     """Author repository."""
 
@@ -93,3 +108,9 @@ class RuleSyncRepository(SQLAlchemySyncRepository[UUIDRule]):
     """Rule repository."""
 
     model_type = UUIDRule
+
+
+class ModelWithFetchedValueSyncRepository(SQLAlchemySyncRepository[UUIDModelWithFetchedValue]):
+    """ModelWithFetchedValue repository."""
+
+    model_type = UUIDModelWithFetchedValue

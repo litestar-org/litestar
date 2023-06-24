@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import date, datetime
 from typing import List
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import FetchedValue, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from litestar.contrib.sqlalchemy.base import BigIntAuditBase, BigIntBase
@@ -40,6 +40,15 @@ class BigIntEventLog(BigIntAuditBase):
     payload: Mapped[dict] = mapped_column(default=lambda: {})  # pyright: ignore
 
 
+class BigIntModelWithFetchedValue(BigIntBase):
+    """The ModelWithFetchedValue BigIntBase."""
+
+    val: Mapped[int]
+    updated: Mapped[str] = mapped_column(
+        server_default=func.random(), onupdate=func.random(), server_onupdate=FetchedValue()
+    )
+
+
 class BigIntRule(BigIntAuditBase):
     """The rule domain object."""
 
@@ -71,6 +80,12 @@ class EventLogAsyncRepository(SQLAlchemyAsyncRepository[BigIntEventLog]):
     model_type = BigIntEventLog
 
 
+class ModelWithFetchedValueAsyncRepository(SQLAlchemyAsyncRepository[BigIntModelWithFetchedValue]):
+    """BigIntModelWithFetchedValue repository."""
+
+    model_type = BigIntModelWithFetchedValue
+
+
 class AuthorSyncRepository(SQLAlchemySyncRepository[BigIntAuthor]):
     """Author repository."""
 
@@ -93,3 +108,9 @@ class RuleSyncRepository(SQLAlchemySyncRepository[BigIntRule]):
     """Rule repository."""
 
     model_type = BigIntRule
+
+
+class ModelWithFetchedValueSyncRepository(SQLAlchemySyncRepository[BigIntModelWithFetchedValue]):
+    """ModelWithFetchedValue repository."""
+
+    model_type = BigIntModelWithFetchedValue
