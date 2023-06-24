@@ -10,6 +10,7 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
+    Union,
     cast,
 )
 from uuid import UUID
@@ -24,7 +25,6 @@ from litestar.datastructures import ImmutableState, MultiDict, State, UploadFile
 from litestar.exceptions import MissingDependencyException
 from litestar.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from litestar.types import Empty
-from litestar.utils import compact
 from litestar.utils.predicates import is_optional_union, is_union
 from litestar.utils.typing import get_origin_or_inner_type, make_non_optional_union, unwrap_union
 
@@ -49,7 +49,7 @@ if TYPE_CHECKING:
     from litestar.utils.signature import ParsedSignature
 
 __all__ = ("AttrsSignatureModel",)
-key_re = re.compile("@ attribute (.*)|'(.*)'")
+key_re = re.compile("@ (attribute|index) (.*)|'(.*)'")
 TRUE_SET = {"1", "true", "on", "t", "y", "yes"}
 FALSE_SET = {"0", "false", "off", "f", "n", "no"}
 
@@ -66,6 +66,11 @@ try:
     ]
 except ImportError:
     pydantic_hooks = []
+
+
+StructureException = Union[
+    cattrs.ClassValidationError, cattrs.IterableValidationError, ValueError, TypeError, AttributeError
+]
 
 
 def _pass_through_structure_hook(value: Any, _: type[Any]) -> Any:
@@ -238,33 +243,6 @@ class Converter(cattrs.Converter):
 _converter: Converter = Converter()
 
 
-def _extract_exceptions(e: Any) -> list[ErrorMessage]:
-    """Extracts and normalizes cattrs exceptions.
-
-    Args:
-        e: An ExceptionGroup - which is a py3.11 feature. We use hasattr instead of instance checks to avoid installing this.
-
-    Returns:
-        A list of normalized exception messages.
-    """
-    messages: list[ErrorMessage] = []
-    if hasattr(e, "exceptions"):
-        for exc in cast("list[Exception]", e.exceptions):
-            if hasattr(exc, "exceptions"):  # pragma: no cover
-                # cattrs raises an exception group, where each exception can potentially be an exception group.
-                # this case is not reproducible in any of our tests - and frankly I have no idea when it would occur,
-                # so this clause is defensive programming only.
-                messages.extend(_extract_exceptions(exc))
-                continue
-            if err_format := [
-                line
-                for line in traceback.format_exception(type(exc), value=exc, tb=exc.__traceback__)
-                if key_re.search(line)
-            ]:
-                messages.append({"key": key_re.findall(compact(err_format)[-1])[0][0].strip(), "message": str(exc)})
-    return messages
-
-
 def _create_validators(
     annotation: Any, kwargs_model: BodyKwarg | ParameterKwarg
 ) -> list[Callable[[Any, attrs.Attribute[Any], Any], Any]] | Callable[[Any, attrs.Attribute[Any], Any], Any]:
@@ -304,12 +282,120 @@ class AttrsSignatureModel(SignatureModel):
         try:
             signature = _converter.structure(obj=kwargs, cl=cls)
         except (cattrs.ClassValidationError, ValueError, TypeError, AttributeError) as e:
-            raise cls._create_exception(messages=_extract_exceptions(e), connection=connection) from e
+            raise cls._create_exception(messages=cls._extract_exceptions(e, connection), connection=connection) from e
 
         return cast("dict[str, Any]", _converter.unstructure(obj=signature))
 
     def to_dict(self) -> dict[str, Any]:
         return attrs.asdict(self)
+
+    @classmethod
+    def _extract_exceptions(cls, e: StructureException, connection: ASGIConnection) -> list[ErrorMessage]:
+        """Extracts and normalizes cattrs exceptions.
+
+        Args:
+            e: An ExceptionGroup - which is a py3.11 feature. We use hasattr instead of instance checks to avoid installing this.
+            connection: The connection instance.
+
+        Returns:
+            A list of normalized exception messages.
+        """
+
+        error_messages: list[ErrorMessage] = []
+
+        if isinstance(e, cattrs.ClassValidationError):
+            for exc in cast("list[StructureException]", e.exceptions):
+                if messages := cls._get_messages_from_traceback(exc, connection):
+                    error_messages.extend(messages)
+
+        return error_messages
+
+    @classmethod
+    def _get_messages_from_traceback(cls, exc: StructureException, connection: ASGIConnection) -> list[ErrorMessage]:
+        """Gets a message from an attrs validation error.
+
+        The key will be a dot-separated string of the attribute path that failed
+        validation. The message will be the error message from the exception (or the
+        last exception in the exception group, when applicable).
+
+        Args:
+            exc: The exception to get the message from
+            connection: The connection instance
+
+        Returns:
+            An error message
+        """
+
+        error_data = cls._get_data_from_exception(exc=exc)
+        return cls._get_error_messages(error_data=error_data, connection=connection)
+
+    @classmethod
+    def _get_data_from_exception(
+        cls, exc: StructureException, prefix: str = "", error_data: dict | None = None
+    ) -> dict[str, str]:
+        """Gets the keys from an attrs validation error.
+
+        Handles nested structures (e.g. a model attribute references another
+        model) by going through all exceptions in the exception group
+        """
+
+        error_data = error_data or {}
+
+        if isinstance(exc, (cattrs.ClassValidationError, cattrs.IterableValidationError)):
+            formatted_exception = traceback.format_exception_only(type(exc), value=exc)
+            key = cls._get_key_from_formatted_exception(formatted_exception)
+
+            new_prefix = f"{prefix}.{key}" if prefix else key
+
+            for sub_exc in cast("list[StructureException]", exc.exceptions):
+                error_data = cls._get_data_from_exception(sub_exc, new_prefix, error_data)
+        # when using attrs as the preferred backend validation but
+        # pydantic as the model, you can still get pydantic
+        # validation errors.
+        elif isinstance(exc, pydantic.ValidationError):
+            formatted_exception = traceback.format_exception_only(type(exc), value=exc)
+            key = cls._get_key_from_formatted_exception(formatted_exception)
+
+            for error in exc.errors():
+                error_key = ".".join([key, *[str(loc) for loc in error["loc"]]])
+                error_data[error_key] = error["msg"]
+        else:
+            formatted_exception = traceback.format_exception(type(exc), value=exc, tb=exc.__traceback__)
+            key = cls._get_key_from_formatted_exception(formatted_exception)
+            key = f"{prefix}.{key}" if prefix else key
+
+            error_data[key] = str(exc)
+
+        return error_data
+
+    @classmethod
+    def _get_key_from_formatted_exception(cls, formatted_exception: list[str]) -> str:
+        """Gets the key from a formatted exception."""
+        return next(
+            (key for line in formatted_exception if (match := key_re.findall(line)) and (key := match[0][1].strip())),
+            "",
+        )
+
+    @classmethod
+    def _get_error_messages(cls, error_data: dict[str, str], connection: ASGIConnection) -> list[ErrorMessage]:
+        """Build an error message.
+
+        Args:
+            error_data: A mapping of error location (dot-notated) to their error.
+            connection: An ASGI connection instance.
+
+        Returns:
+            An ErrorMessage
+        """
+
+        messages: list[ErrorMessage] = []
+
+        for key, error in error_data.items():
+            keys = key.split(".")
+            message = super()._build_error_message(keys=keys, exc_msg=error, connection=connection)
+            messages.append(message)
+
+        return messages
 
     @classmethod
     def populate_signature_fields(cls) -> None:

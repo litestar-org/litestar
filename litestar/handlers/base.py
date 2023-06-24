@@ -9,7 +9,7 @@ from litestar._signature.field import SignatureField
 from litestar.di import Provide
 from litestar.dto.interface import HandlerContext
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.types import Dependencies, Empty, ExceptionHandlersMap, Guard, Middleware, TypeEncodersMap
+from litestar.types import Dependencies, Empty, ExceptionHandlersMap, Guard, MaybePartial, Middleware, TypeEncodersMap
 from litestar.utils import AsyncCallable, Ref, async_partial, get_name, normalize_path
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.predicates import is_async_callable
@@ -27,7 +27,6 @@ if TYPE_CHECKING:
     from litestar.plugins import SerializationPluginProtocol
     from litestar.router import Router
     from litestar.types import AnyCallable, AsyncAnyCallable, ExceptionHandler
-    from litestar.types.composite_types import MaybePartial
     from litestar.types.empty import EmptyType
 
 __all__ = ("BaseRouteHandler",)

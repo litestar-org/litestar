@@ -26,16 +26,21 @@ from typing import (
     Sequence,
     Set,
     Tuple,
+    Union,
     cast,
+    get_origin,
 )
 from uuid import UUID
 
 from _decimal import Decimal
 from msgspec.structs import fields as msgspec_struct_fields
-from typing_extensions import get_args, get_type_hints
+from polyfactory.utils.predicates import is_safe_subclass
+from typing_extensions import NotRequired, Required, get_args, get_type_hints
 
 from litestar._openapi.schema_generation.constrained_fields import (
-    create_constrained_field_schema,
+    create_date_constrained_field_schema,
+    create_numerical_constrained_field_schema,
+    create_string_constrained_field_schema,
 )
 from litestar._openapi.schema_generation.examples import create_examples_for_field
 from litestar._openapi.schema_generation.utils import sort_schemas_and_references
@@ -203,7 +208,6 @@ try:
 except ImportError:
     PYDANTIC_TYPE_MAP = {}
 
-__all__ = ("create_schema",)
 
 KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "default": "default",
@@ -265,12 +269,8 @@ TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     time: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.DURATION),
     timedelta: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.DURATION),
     tuple: Schema(type=OpenAPIType.ARRAY),
-    # litestar types,
-    # the following is a hack -https://www.openapis.org/blog/2021/02/16/migrating-from-openapi-3-0-to-3-1-0
-    # the format for OA 3.1 is type + contentMediaType, for 3.0.* is type + format, we do both.
     UploadFile: Schema(
         type=OpenAPIType.STRING,
-        format="binary",  # type: ignore
         content_media_type="application/octet-stream",
     ),
     # pydantic types
@@ -304,7 +304,7 @@ def create_enum_schema(annotation: EnumMeta) -> Schema:
     return Schema(type=openapi_type, enum=enum_values)
 
 
-def iter_flat_literal_args(annotation: Any) -> Iterable[Any]:
+def _iter_flat_literal_args(annotation: Any) -> Iterable[Any]:
     """Iterate over the flattened arguments of a Literal.
 
     Args:
@@ -315,7 +315,7 @@ def iter_flat_literal_args(annotation: Any) -> Iterable[Any]:
     """
     for arg in get_args(annotation):
         if get_origin_or_inner_type(arg) is Literal:
-            yield from iter_flat_literal_args(arg)
+            yield from _iter_flat_literal_args(arg)
         else:
             yield arg
 
@@ -329,7 +329,7 @@ def create_literal_schema(annotation: Any) -> Schema:
     Returns:
         A schema instance.
     """
-    args = tuple(iter_flat_literal_args(annotation))
+    args = tuple(_iter_flat_literal_args(annotation))
     schema = copy(TYPE_MAP[type(args[0])])
     if len(args) > 1:
         schema.enum = args
@@ -338,7 +338,7 @@ def create_literal_schema(annotation: Any) -> Schema:
     return schema
 
 
-def create_schema_for_annotation(annotation: Any) -> Schema | None:
+def create_schema_for_annotation(annotation: Any) -> Schema:
     """Get a schema from the type mapping - if possible.
 
     Args:
@@ -354,662 +354,446 @@ def create_schema_for_annotation(annotation: Any) -> Schema | None:
     if isinstance(annotation, EnumMeta):
         return create_enum_schema(annotation)
 
-    return None
+    return Schema()
 
 
-def create_schema_for_optional_field(
-    field: SignatureField,
-    generate_examples: bool,
-    plugins: list[OpenAPISchemaPluginProtocol],
-    schemas: dict[str, Schema],
-    prefer_alias: bool,
-) -> Schema:
-    """Create a Schema for an optional SignatureField.
+class SchemaCreator:
+    __slots__ = ("generate_examples", "plugins", "schemas", "prefer_alias")
 
-    Args:
-        field: A signature field instance.
-        generate_examples: Whether to generate examples if none are given.
-        plugins: A list of plugins.
-        schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
-        prefer_alias: Whether to prefer the alias name for the schema.
+    def __init__(
+        self,
+        generate_examples: bool = False,
+        plugins: list[OpenAPISchemaPluginProtocol] | None = None,
+        schemas: dict[str, Schema] | None = None,
+        prefer_alias: bool = True,
+    ):
+        """Instantiate a SchemaCreator.
 
-    Returns:
-        A schema instance.
-    """
-    schema_or_reference = create_schema(
-        field=SignatureField.create(
-            field_type=make_non_optional_union(field.field_type),
-            name=field.name,
-            default_value=field.default_value,
-        ),
-        generate_examples=generate_examples,
-        plugins=plugins,
-        schemas=schemas,
-        prefer_alias=prefer_alias,
-    )
+        Args:
+            generate_examples: Whether to generate examples if none are given.
+            plugins: A list of plugins.
+            schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
+            prefer_alias: Whether to prefer the alias name for the schema.
+        """
+        self.generate_examples = generate_examples
+        self.plugins = plugins if plugins is not None else []
+        self.schemas = schemas if schemas is not None else {}
+        self.prefer_alias = prefer_alias
 
-    if isinstance(schema_or_reference, Schema) and isinstance(schema_or_reference.one_of, list):
-        result: list[Schema | Reference] = schema_or_reference.one_of
-    else:
-        result = [schema_or_reference]
+    @property
+    def not_generating_examples(self) -> SchemaCreator:
+        """Return a SchemaCreator with generate_examples set to False."""
+        if not self.generate_examples:
+            return self
+        new = copy(self)
+        new.generate_examples = False
+        return new
 
-    return Schema(
-        one_of=[
-            Schema(type=OpenAPIType.NULL),
-            *result,
-        ]
-    )
+    def for_field(self, field: SignatureField) -> Schema | Reference:
+        """Create a Schema for a given SignatureField.
 
+        Args:
+            field: A signature field instance.
 
-def create_schema_for_union_field(
-    field: SignatureField,
-    generate_examples: bool,
-    plugins: list[OpenAPISchemaPluginProtocol],
-    schemas: dict[str, Schema],
-    prefer_alias: bool,
-) -> Schema:
-    """Create a Schema for a union SignatureField.
+        Returns:
+            A schema instance.
+        """
+        result: Schema | Reference
+        if field.is_optional:
+            result = self.for_optional_field(field)
+        elif field.is_union:
+            result = self.for_union_field(field)
+        elif is_pydantic_model_class(field.field_type):
+            result = self.for_pydantic_model(field.field_type)
+        elif is_attrs_class(field.field_type):
+            result = self.for_attrs_class(field.field_type)
+        elif is_struct_class(field.field_type):
+            result = self.for_struct_class(field.field_type)
+        elif is_dataclass_class(field.field_type):
+            result = self.for_dataclass(field.field_type)
+        elif is_typed_dict(field.field_type):
+            result = self.for_typed_dict(field.field_type)
+        elif plugins_for_annotation := [
+            plugin for plugin in self.plugins if plugin.is_plugin_supported_type(field.field_type)
+        ]:
+            result = self.for_plugin(field, plugins_for_annotation[0])
+        elif is_pydantic_constrained_field(field.field_type) or (
+            isinstance(field.kwarg_model, (ParameterKwarg, BodyKwarg)) and field.kwarg_model.is_constrained
+        ):
+            result = self.for_constrained_field(field)
+        elif field.children and not field.is_generic:
+            result = self.for_object_type(field)
+        elif field.is_generic and (
+            get_origin_or_inner_type(field.field_type) in (ClassicPagination, CursorPagination, OffsetPagination)
+        ):
+            result = self.for_builtin_generics(field)
+        else:
+            result = create_schema_for_annotation(field.field_type)
 
-    Args:
-        field: A signature field instance.
-        generate_examples: Whether to generate examples if none are given.
-        plugins: A list of plugins.
-        schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
-        prefer_alias: Whether to prefer the alias name for the schema.
+        return self.process_schema_result(field, result) if isinstance(result, Schema) else result
 
-    Returns:
-        A schema instance.
-    """
-    return Schema(
-        one_of=sort_schemas_and_references(
-            [
-                create_schema(
-                    field=sub_field,
-                    generate_examples=generate_examples,
-                    plugins=plugins,
-                    schemas=schemas,
-                    prefer_alias=prefer_alias,
-                )
-                for sub_field in field.children or []
-            ]
-        )
-    )
+    def for_optional_field(self, field: SignatureField) -> Schema:
+        """Create a Schema for an optional SignatureField.
 
+        Args:
+            field: A signature field instance.
 
-def create_schema_for_object_type(
-    field: SignatureField,
-    generate_examples: bool,
-    plugins: list[OpenAPISchemaPluginProtocol],
-    schemas: dict[str, Schema],
-    prefer_alias: bool,
-) -> Schema:
-    """Create schema for object types (dict, Mapping, list, Sequence etc.) types.
-
-    Args:
-        field: A signature field instance.
-        generate_examples: Whether to generate examples if none are given.
-        plugins: A list of plugins.
-        schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
-        prefer_alias: Whether to prefer the alias name for the schema.
-
-    Returns:
-        A schema instance.
-    """
-    if field.is_mapping:
-        return Schema(
-            type=OpenAPIType.OBJECT,
-            additional_properties=(
-                create_schema(
-                    field=field.children[1],
-                    generate_examples=generate_examples,
-                    plugins=plugins,
-                    schemas=schemas,
-                    prefer_alias=prefer_alias,
-                )
-                if field.children and len(field.children) == 2
-                else None
-            ),
-        )
-
-    if field.is_non_string_sequence or field.is_non_string_iterable:
-        items = [
-            create_schema(
-                field=sub_field,
-                generate_examples=generate_examples,
-                plugins=plugins,
-                schemas=schemas,
-                prefer_alias=prefer_alias,
-            )
-            for sub_field in (field.children or ())
-        ]
-
-        return Schema(
-            type=OpenAPIType.ARRAY,
-            items=Schema(one_of=sort_schemas_and_references(items)) if len(items) > 1 else items[0],
-        )
-
-    if field.is_literal:
-        return create_literal_schema(field.field_type)
-
-    raise ImproperlyConfiguredException(
-        f"Parameter '{field.name}' with type '{field.field_type}' could not be mapped to an Open API type. "
-        f"This can occur if a user-defined generic type is resolved as a parameter. If '{field.name}' should "
-        "not be documented as a parameter, annotate it using the `Dependency` function, e.g., "
-        f"`{field.name}: ... = Dependency(...)`."
-    )
-
-
-def create_schema_for_builtin_generics(
-    field: SignatureField,
-    generate_examples: bool,
-    plugins: list[OpenAPISchemaPluginProtocol],
-    schemas: dict[str, Schema],
-    prefer_alias: bool,
-) -> Schema:
-    """Handle builtin generic types.
-
-    Args:
-        field: A signature field instance.
-        generate_examples: Whether to generate examples if none are given.
-        plugins: A list of plugins.
-        schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
-        prefer_alias: Whether to prefer the alias name for the schema.
-
-    Returns:
-        A schema instance.
-    """
-    origin = get_origin_or_inner_type(field.field_type)
-
-    if origin is ClassicPagination:
-        return Schema(
-            type=OpenAPIType.OBJECT,
-            properties={
-                "items": Schema(
-                    type=OpenAPIType.ARRAY,
-                    items=create_schema(
-                        field=field.children[0],  # type: ignore[index]
-                        generate_examples=generate_examples,
-                        plugins=plugins,
-                        schemas=schemas,
-                        prefer_alias=prefer_alias,
-                    ),
-                ),
-                "page_size": Schema(type=OpenAPIType.INTEGER, description="Number of items per page."),
-                "current_page": Schema(type=OpenAPIType.INTEGER, description="Current page number."),
-                "total_pages": Schema(type=OpenAPIType.INTEGER, description="Total number of pages."),
-            },
-        )
-
-    if origin is OffsetPagination:
-        return Schema(
-            type=OpenAPIType.OBJECT,
-            properties={
-                "items": Schema(
-                    type=OpenAPIType.ARRAY,
-                    items=create_schema(
-                        field=field.children[0],  # type: ignore[index]
-                        generate_examples=generate_examples,
-                        plugins=plugins,
-                        schemas=schemas,
-                        prefer_alias=prefer_alias,
-                    ),
-                ),
-                "limit": Schema(type=OpenAPIType.INTEGER, description="Maximal number of items to send."),
-                "offset": Schema(type=OpenAPIType.INTEGER, description="Offset from the beginning of the query."),
-                "total": Schema(type=OpenAPIType.INTEGER, description="Total number of items."),
-            },
-        )
-
-    cursor_schema = create_schema(
-        field=field.children[0],  # type: ignore[index]
-        generate_examples=False,
-        plugins=plugins,
-        schemas=schemas,
-        prefer_alias=prefer_alias,
-    )
-    cursor_schema.description = "Unique ID, designating the last identifier in the given data set. This value can be used to request the 'next' batch of records."
-
-    return Schema(
-        type=OpenAPIType.OBJECT,
-        properties={
-            "items": Schema(
-                type=OpenAPIType.ARRAY,
-                items=create_schema(
-                    field=field.children[1],  # type: ignore[index]
-                    generate_examples=generate_examples,
-                    plugins=plugins,
-                    schemas=schemas,
-                    prefer_alias=prefer_alias,
-                ),
-            ),
-            "cursor": cursor_schema,
-            "results_per_page": Schema(type=OpenAPIType.INTEGER, description="Maximal number of items to send."),
-        },
-    )
-
-
-def create_schema_for_pydantic_model(
-    field_type: type[BaseModel],
-    generate_examples: bool,
-    plugins: list[OpenAPISchemaPluginProtocol],
-    schemas: dict[str, Schema],
-    prefer_alias: bool,
-) -> Schema:
-    """Create a schema object for a given pydantic model class.
-
-    Args:
-        field_type: A pydantic model class.
-        generate_examples: Whether to generate examples if none are given.
-        plugins: A list of plugins.
-        schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
-        prefer_alias: Whether to prefer the alias over the field name.
-
-    Returns:
-        A schema instance.
-    """
-
-    field_type_hints = get_type_hints(field_type)
-    model_config = getattr(field_type, "__config__", getattr(field_type, "model_config", Empty))
-    title = getattr(model_config, "title", None) if not isinstance(model_config, dict) else model_config.get("title")
-    example = (
-        getattr(model_config, "example", None) if not isinstance(model_config, dict) else model_config.get("example")
-    )
-
-    def get_name(f: ModelField) -> str:
-        return (f.alias or f.name) if prefer_alias else f.name
-
-    return Schema(
-        required=sorted(get_name(field) for field in field_type.__fields__.values() if field.required),
-        properties={
-            get_name(f): create_schema(
-                field=SignatureField.create(
-                    field_type=field_type_hints[f.name], name=get_name(f), default_value=f.field_info
-                ),
-                generate_examples=generate_examples,
-                plugins=plugins,
-                schemas=schemas,
-                prefer_alias=prefer_alias,
-            )
-            for f in field_type.__fields__.values()
-        },
-        type=OpenAPIType.OBJECT,
-        title=title or _get_type_schema_name(field_type),
-        examples=[Example(example)] if example else None,
-    )
-
-
-def create_schema_for_attrs_class(
-    field_type: type[AttrsInstance],
-    generate_examples: bool,
-    plugins: list[OpenAPISchemaPluginProtocol],
-    schemas: dict[str, Schema],
-    prefer_alias: bool,
-) -> Schema:
-    """Create a schema object for a given attrs class.
-
-    Args:
-        field_type: An attrs class.
-        generate_examples: Whether to generate examples if none are given.
-        plugins: A list of plugins.
-        schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
-        prefer_alias: Whether to prefer the alias name for the schema.
-
-    Returns:
-        A schema instance.
-    """
-    from attr import NOTHING
-    from attrs import fields_dict
-
-    field_type_hints = get_type_hints(field_type)
-    return Schema(
-        required=sorted(
-            [
-                field_name
-                for field_name, attribute in fields_dict(field_type).items()
-                if attribute.default is NOTHING and not is_optional_union(field_type_hints[field_name])
-            ]
-        ),
-        properties={
-            k: create_schema(
-                field=SignatureField.create(field_type=v, name=k),
-                generate_examples=generate_examples,
-                plugins=plugins,
-                schemas=schemas,
-                prefer_alias=prefer_alias,
-            )
-            for k, v in field_type_hints.items()
-        },
-        type=OpenAPIType.OBJECT,
-        title=_get_type_schema_name(field_type),
-    )
-
-
-def create_schema_for_struct_class(
-    field_type: type[Struct],
-    generate_examples: bool,
-    plugins: list[OpenAPISchemaPluginProtocol],
-    schemas: dict[str, Schema],
-    prefer_alias: bool,
-) -> Schema:
-    """Create a schema object for a given msgspec.Struct class.
-
-    Args:
-        field_type: A msgspec.Struct class.
-        generate_examples: Whether to generate examples if none are given.
-        plugins: A list of plugins.
-        schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
-        prefer_alias: Whether to prefer the alias name for the schema.
-
-    Returns:
-        A schema instance.
-    """
-
-    return Schema(
-        required=sorted(
-            [
-                field.encode_name
-                for field in msgspec_struct_fields(field_type)
-                if field.required and not is_optional_union(field.type)
-            ]
-        ),
-        properties={
-            field.encode_name: create_schema(
-                field=SignatureField.create(field_type=field.type, name=field.encode_name),
-                generate_examples=generate_examples,
-                plugins=plugins,
-                schemas=schemas,
-                prefer_alias=prefer_alias,
-            )
-            for field in msgspec_struct_fields(field_type)
-        },
-        type=OpenAPIType.OBJECT,
-        title=_get_type_schema_name(field_type),
-    )
-
-
-def create_schema_for_dataclass(
-    field_type: type[DataclassProtocol],
-    generate_examples: bool,
-    plugins: list[OpenAPISchemaPluginProtocol],
-    schemas: dict[str, Schema],
-    prefer_alias: bool,
-) -> Schema:
-    """Create a schema object for a given dataclass class.
-
-    Args:
-        field_type: A dataclass class.
-        generate_examples: Whether to generate examples if none are given.
-        plugins: A list of plugins.
-        schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
-        prefer_alias: Whether to prefer the alias name for the schema.
-
-    Returns:
-        A schema instance.
-    """
-    field_type_hints = get_type_hints(field_type)
-    return Schema(
-        required=sorted(
-            [
-                field.name
-                for field in fields(field_type)
-                if (
-                    field.default is MISSING
-                    and field.default_factory is MISSING
-                    and not is_optional_union(field_type_hints[field.name])
-                )
-            ]
-        ),
-        properties={
-            k: create_schema(
-                field=SignatureField.create(field_type=v, name=k),
-                generate_examples=generate_examples,
-                plugins=plugins,
-                schemas=schemas,
-                prefer_alias=prefer_alias,
-            )
-            for k, v in field_type_hints.items()
-        },
-        type=OpenAPIType.OBJECT,
-        title=_get_type_schema_name(field_type),
-    )
-
-
-def create_schema_for_typed_dict(
-    field_type: TypedDictClass,
-    generate_examples: bool,
-    plugins: list[OpenAPISchemaPluginProtocol],
-    schemas: dict[str, Schema],
-    prefer_alias: bool,
-) -> Schema:
-    """Create a schema object for a given typed dict.
-
-    Args:
-        field_type: A typed-dict class.
-        generate_examples: Whether to generate examples if none are given.
-        plugins: A list of plugins.
-        schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
-        prefer_alias: Whether to prefer the alias name for the schema.
-
-    Returns:
-        A schema instance.
-    """
-    return Schema(
-        required=sorted(getattr(field_type, "__required_keys__", [])),
-        properties={
-            k: create_schema(
-                field=SignatureField.create(field_type=v, name=k),
-                generate_examples=generate_examples,
-                plugins=plugins,
-                schemas=schemas,
-                prefer_alias=prefer_alias,
-            )
-            for k, v in get_type_hints(field_type).items()
-        },
-        type=OpenAPIType.OBJECT,
-        title=_get_type_schema_name(field_type),
-    )
-
-
-def create_schema_for_plugin(
-    field: SignatureField,
-    generate_examples: bool,
-    plugins: list[OpenAPISchemaPluginProtocol],
-    schemas: dict[str, Schema],
-    prefer_alias: bool,
-    plugin: OpenAPISchemaPluginProtocol,
-) -> Schema | Reference:
-    """Create a schema using a plugin.
-
-    Args:
-        field: A signature field instance.
-        generate_examples: Whether to generate examples if none are given.
-        plugins: A list of plugins.
-        schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
-        prefer_alias: Whether to prefer the alias name for the schema.
-        plugin: A plugin for the field type.
-
-    Returns:
-        A schema instance.
-    """
-
-    schema: Schema | Reference = plugin.to_openapi_schema(field.field_type)
-    if isinstance(schema, SchemaDataContainer):
-        return create_schema(
-            field=SignatureField.create(
-                field_type=schema.data_container,
+        Returns:
+            A schema instance.
+        """
+        schema_or_reference = self.for_field(
+            SignatureField.create(
+                field_type=make_non_optional_union(field.field_type),
                 name=field.name,
                 default_value=field.default_value,
-                extra=field.extra,
-                kwarg_model=field.kwarg_model,
-            ),
-            generate_examples=generate_examples,
-            plugins=plugins,
-            schemas=schemas,
-            prefer_alias=prefer_alias,
-        )
-    return schema  # pragma: no cover
-
-
-def _process_schema_result(
-    field: SignatureField,
-    schema: Schema,
-    generate_examples: bool,
-    schemas: dict[str, Schema],
-) -> Schema | Reference:
-    if field.kwarg_model and field.is_const and not field.is_empty and schema.const is None:
-        schema.const = field.default_value
-
-    if field.kwarg_model:
-        for kwarg_model_key, schema_key in KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
-            if (value := getattr(field.kwarg_model, kwarg_model_key, Empty)) and (
-                not isinstance(value, Hashable) or value not in UNDEFINED_SENTINELS
-            ):
-                setattr(schema, schema_key, value)
-
-    if not schema.examples and generate_examples:
-        schema.examples = create_examples_for_field(field=field)
-
-    if schema.title and schema.type in (OpenAPIType.OBJECT, OpenAPIType.ARRAY):
-        if schema.title in schemas and hash(schemas[schema.title]) != hash(schema):
-            raise ImproperlyConfiguredException(
-                f"Two different schemas with the title {schema.title} have been defined.\n\n"
-                f"first: {encode_json(schemas[schema.title].to_schema()).decode()}\n"
-                f"second: {encode_json(schema.to_schema()).decode()}\n\n"
-                f"To fix this issue, either rename the base classes from which these titles are derived or manually"
-                f"set a 'title' kwarg in the route handler."
             )
-        schemas[schema.title] = schema
-        return Reference(ref=f"#/components/schemas/{schema.title}")
-    return schema
+        )
+        if isinstance(schema_or_reference, Schema) and isinstance(schema_or_reference.one_of, list):
+            result = schema_or_reference.one_of
+        else:
+            result = [schema_or_reference]
 
+        return Schema(one_of=[Schema(type=OpenAPIType.NULL), *result])
 
-def create_schema(
-    field: SignatureField,
-    generate_examples: bool,
-    plugins: list[OpenAPISchemaPluginProtocol],
-    schemas: dict[str, Schema],
-    prefer_alias: bool,
-) -> Schema | Reference:
-    """Create a Schema for a given SignatureField.
+    def for_union_field(self, field: SignatureField) -> Schema:
+        """Create a Schema for a union SignatureField.
 
-    Args:
-        field: A signature field instance.
-        generate_examples: Whether to generate examples if none are given.
-        plugins: A list of plugins.
-        schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
-        prefer_alias: Whether to prefer the alias name for the schema.
+        Args:
+            field: A signature field instance.
 
-    Returns:
-        A schema instance.
-    """
-    if field.is_optional:
-        result: Schema | Reference = create_schema_for_optional_field(
-            field=field,
-            generate_examples=generate_examples,
-            plugins=plugins,
-            schemas=schemas,
-            prefer_alias=prefer_alias,
+        Returns:
+            A schema instance.
+        """
+        return Schema(one_of=sort_schemas_and_references(list(map(self.for_field, field.children or []))))
+
+    def for_object_type(self, field: SignatureField) -> Schema:
+        """Create schema for object types (dict, Mapping, list, Sequence etc.) types.
+
+        Args:
+            field: A signature field instance.
+
+        Returns:
+            A schema instance.
+        """
+        if field.is_mapping:
+            return Schema(
+                type=OpenAPIType.OBJECT,
+                additional_properties=(
+                    self.for_field(field.children[1]) if field.children and len(field.children) == 2 else None
+                ),
+            )
+
+        if field.is_non_string_sequence or field.is_non_string_iterable:
+            items = list(map(self.for_field, field.children or ()))
+            return Schema(
+                type=OpenAPIType.ARRAY,
+                items=Schema(one_of=sort_schemas_and_references(items)) if len(items) > 1 else items[0],
+            )
+
+        if field.is_literal:
+            return create_literal_schema(field.field_type)
+
+        raise ImproperlyConfiguredException(
+            f"Parameter '{field.name}' with type '{field.field_type}' could not be mapped to an Open API type. "
+            f"This can occur if a user-defined generic type is resolved as a parameter. If '{field.name}' should "
+            "not be documented as a parameter, annotate it using the `Dependency` function, e.g., "
+            f"`{field.name}: ... = Dependency(...)`."
         )
 
-    elif field.is_union:
-        result = create_schema_for_union_field(
-            field=field,
-            generate_examples=generate_examples,
-            plugins=plugins,
-            schemas=schemas,
-            prefer_alias=prefer_alias,
+    def for_builtin_generics(self, field: SignatureField) -> Schema:
+        """Handle builtin generic types.
+
+        Args:
+            field: A signature field instance.
+
+        Returns:
+            A schema instance.
+        """
+        origin = get_origin_or_inner_type(field.field_type)
+        if origin is ClassicPagination:
+            return Schema(
+                type=OpenAPIType.OBJECT,
+                properties={
+                    "items": Schema(
+                        type=OpenAPIType.ARRAY,
+                        items=self.for_field(field.children[0]),  # type: ignore[index]
+                    ),
+                    "page_size": Schema(type=OpenAPIType.INTEGER, description="Number of items per page."),
+                    "current_page": Schema(type=OpenAPIType.INTEGER, description="Current page number."),
+                    "total_pages": Schema(type=OpenAPIType.INTEGER, description="Total number of pages."),
+                },
+            )
+
+        if origin is OffsetPagination:
+            return Schema(
+                type=OpenAPIType.OBJECT,
+                properties={
+                    "items": Schema(
+                        type=OpenAPIType.ARRAY,
+                        items=self.for_field(field.children[0]),  # type: ignore[index]
+                    ),
+                    "limit": Schema(type=OpenAPIType.INTEGER, description="Maximal number of items to send."),
+                    "offset": Schema(type=OpenAPIType.INTEGER, description="Offset from the beginning of the query."),
+                    "total": Schema(type=OpenAPIType.INTEGER, description="Total number of items."),
+                },
+            )
+
+        cursor_schema = self.not_generating_examples.for_field(field.children[0])  # type: ignore[index]
+        cursor_schema.description = "Unique ID, designating the last identifier in the given data set. This value can be used to request the 'next' batch of records."
+
+        return Schema(
+            type=OpenAPIType.OBJECT,
+            properties={
+                "items": Schema(
+                    type=OpenAPIType.ARRAY, items=self.for_field(field=field.children[1])  # type: ignore[index]
+                ),
+                "cursor": cursor_schema,
+                "results_per_page": Schema(type=OpenAPIType.INTEGER, description="Maximal number of items to send."),
+            },
         )
 
-    elif is_pydantic_model_class(annotation=field.field_type):
-        result = create_schema_for_pydantic_model(
-            field_type=field.field_type,
-            generate_examples=generate_examples,
-            plugins=plugins,
-            schemas=schemas,
-            prefer_alias=prefer_alias,
+    def for_plugin(self, field: SignatureField, plugin: OpenAPISchemaPluginProtocol) -> Schema | Reference:
+        """Create a schema using a plugin.
+
+        Args:
+            field: A signature field instance.
+            plugin: A plugin for the field type.
+
+        Returns:
+            A schema instance.
+        """
+        schema = plugin.to_openapi_schema(field.field_type)
+        if isinstance(schema, SchemaDataContainer):
+            return self.for_field(
+                SignatureField.create(
+                    field_type=schema.data_container,
+                    name=field.name,
+                    default_value=field.default_value,
+                    extra=field.extra,
+                    kwarg_model=field.kwarg_model,
+                )
+            )
+        return schema  # pragma: no cover
+
+    def for_pydantic_model(self, field_type: type[BaseModel]) -> Schema:
+        """Create a schema object for a given pydantic model class.
+
+        Args:
+            field_type: A pydantic model class.
+
+        Returns:
+            A schema instance.
+        """
+        field_type_hints = get_type_hints(field_type, include_extras=True)
+        model_config = getattr(field_type, "__config__", getattr(field_type, "model_config", Empty))
+        if isinstance(model_config, dict):
+            title = model_config.get("title")
+            example = model_config.get("example")
+        else:
+            title = getattr(model_config, "title", None)
+            example = getattr(model_config, "example", None)
+
+        return Schema(
+            required=sorted(self.get_field_name(field) for field in field_type.__fields__.values() if field.required),
+            properties={
+                self.get_field_name(f): self.for_field(
+                    SignatureField.create(
+                        field_type=field_type_hints[f.name], name=self.get_field_name(f), default_value=f.field_info
+                    )
+                )
+                for f in field_type.__fields__.values()
+            },
+            type=OpenAPIType.OBJECT,
+            title=title or _get_type_schema_name(field_type),
+            examples=[Example(example)] if example else None,
         )
 
-    elif is_attrs_class(annotation=field.field_type):
-        result = create_schema_for_attrs_class(
-            field_type=field.field_type,
-            generate_examples=generate_examples,
-            plugins=plugins,
-            schemas=schemas,
-            prefer_alias=prefer_alias,
+    def for_attrs_class(self, field_type: type[AttrsInstance]) -> Schema:
+        """Create a schema object for a given attrs class.
+
+        Args:
+            field_type: An attrs class.
+
+        Returns:
+            A schema instance.
+        """
+        from attr import NOTHING
+        from attrs import fields_dict
+
+        field_type_hints = get_type_hints(field_type, include_extras=True)
+        return Schema(
+            required=sorted(
+                [
+                    field_name
+                    for field_name, attribute in fields_dict(field_type).items()
+                    if attribute.default is NOTHING and not is_optional_union(field_type_hints[field_name])
+                ]
+            ),
+            properties={k: self.for_field(SignatureField.create(v, k)) for k, v in field_type_hints.items()},
+            type=OpenAPIType.OBJECT,
+            title=_get_type_schema_name(field_type),
         )
 
-    elif is_struct_class(annotation=field.field_type):
-        result = create_schema_for_struct_class(
-            field_type=field.field_type,
-            generate_examples=generate_examples,
-            plugins=plugins,
-            schemas=schemas,
-            prefer_alias=prefer_alias,
+    def for_struct_class(self, field_type: type[Struct]) -> Schema:
+        """Create a schema object for a given msgspec.Struct class.
+
+        Args:
+            field_type: A msgspec.Struct class.
+
+        Returns:
+            A schema instance.
+        """
+        return Schema(
+            required=sorted(
+                [
+                    field.encode_name
+                    for field in msgspec_struct_fields(field_type)
+                    if field.required and not is_optional_union(field.type)
+                ]
+            ),
+            properties={
+                field.encode_name: self.for_field(SignatureField.create(field.type, field.encode_name))
+                for field in msgspec_struct_fields(field_type)
+            },
+            type=OpenAPIType.OBJECT,
+            title=_get_type_schema_name(field_type),
         )
 
-    elif is_dataclass_class(annotation=field.field_type):
-        result = create_schema_for_dataclass(
-            field_type=field.field_type,
-            generate_examples=generate_examples,
-            plugins=plugins,
-            schemas=schemas,
-            prefer_alias=prefer_alias,
+    def for_dataclass(self, field_type: type[DataclassProtocol]) -> Schema:
+        """Create a schema object for a given dataclass class.
+
+        Args:
+            field_type: A dataclass class.
+
+        Returns:
+            A schema instance.
+        """
+        field_type_hints = get_type_hints(field_type, include_extras=True)
+        return Schema(
+            required=sorted(
+                [
+                    field.name
+                    for field in fields(field_type)
+                    if (
+                        field.default is MISSING
+                        and field.default_factory is MISSING
+                        and not is_optional_union(field_type_hints[field.name])
+                    )
+                ]
+            ),
+            properties={k: self.for_field(SignatureField.create(v, k)) for k, v in field_type_hints.items()},
+            type=OpenAPIType.OBJECT,
+            title=_get_type_schema_name(field_type),
         )
 
-    elif is_typed_dict(annotation=field.field_type):
-        result = create_schema_for_typed_dict(
-            field_type=field.field_type,
-            generate_examples=generate_examples,
-            plugins=plugins,
-            schemas=schemas,
-            prefer_alias=prefer_alias,
+    def for_typed_dict(self, field_type: TypedDictClass) -> Schema:
+        """Create a schema object for a given typed dict.
+
+        Args:
+            field_type: A typed-dict class.
+
+        Returns:
+            A schema instance.
+        """
+        annotations: dict[str, Any] = {}
+        for k, v in get_type_hints(field_type, include_extras=True).items():
+            if get_origin(v) in (Required, NotRequired):
+                annotations[k] = get_args(v)[0]
+            else:
+                annotations[k] = v
+
+        return Schema(
+            required=sorted(getattr(field_type, "__required_keys__", [])),
+            properties={k: self.for_field(SignatureField.create(v, k)) for k, v in annotations.items()},
+            type=OpenAPIType.OBJECT,
+            title=_get_type_schema_name(field_type),
         )
 
-    elif plugins_for_annotation := [plugin for plugin in plugins if plugin.is_plugin_supported_type(field.field_type)]:
-        result = create_schema_for_plugin(
-            field=field,
-            generate_examples=generate_examples,
-            plugins=plugins,
-            schemas=schemas,
-            prefer_alias=prefer_alias,
-            plugin=plugins_for_annotation[0],
-        )
+    def for_constrained_field(self, field: SignatureField) -> Schema:
+        """Create Schema for Pydantic Constrained fields (created using constr(), conint() and so forth, or by subclassing
+        Constrained*)
 
-    elif is_pydantic_constrained_field(field.field_type) or (
-        isinstance(field.kwarg_model, (ParameterKwarg, BodyKwarg)) and field.kwarg_model.is_constrained
-    ):
-        result = create_constrained_field_schema(
-            field_type=field.field_type,
-            children=field.children,
-            plugins=plugins,
-            schemas=schemas,
-            prefer_alias=prefer_alias,
-            kwargs_model=field.kwarg_model,  # type: ignore[arg-type]
-        )
+        Args:
+            field: A signature field instance.
 
-    elif field.children and not field.is_generic:
-        result = create_schema_for_object_type(
-            field=field,
-            generate_examples=generate_examples,
-            plugins=plugins,
-            schemas=schemas,
-            prefer_alias=prefer_alias,
-        )
+        Returns:
+            A schema instance.
+        """
+        kwargs_model = cast(Union[ParameterKwarg, BodyKwarg], field.kwarg_model)
+        if any(is_safe_subclass(field.field_type, t) for t in (int, float, Decimal)):
+            return create_numerical_constrained_field_schema(field.field_type, kwargs_model)
+        if any(is_safe_subclass(field.field_type, t) for t in (str, bytes)):  # type: ignore[arg-type]
+            return create_string_constrained_field_schema(field.field_type, kwargs_model)
+        if any(is_safe_subclass(field.field_type, t) for t in (date, datetime)):
+            return create_date_constrained_field_schema(field.field_type, kwargs_model)
+        return self.for_collection_constrained_field(field)
 
-    elif field.is_generic and (
-        get_origin_or_inner_type(field.field_type) in (ClassicPagination, CursorPagination, OffsetPagination)
-    ):
-        result = create_schema_for_builtin_generics(
-            field=field,
-            generate_examples=generate_examples,
-            plugins=plugins,
-            schemas=schemas,
-            prefer_alias=prefer_alias,
-        )
-    else:
-        result = create_schema_for_annotation(annotation=field.field_type) or Schema()
+    def for_collection_constrained_field(self, field: SignatureField) -> Schema:
+        """Create Schema from Constrained List/Set field.
 
-    if isinstance(result, Reference):
-        return result
+        Args:
+            field: A signature field instance.
 
-    return _process_schema_result(field=field, schema=result, generate_examples=generate_examples, schemas=schemas)
+        Returns:
+            A schema instance.
+        """
+        schema = Schema(type=OpenAPIType.ARRAY)
+        kwargs_model = cast(Union[ParameterKwarg, BodyKwarg], field.kwarg_model)
+        if kwargs_model.min_items:
+            schema.min_items = kwargs_model.min_items
+        if kwargs_model.max_items:
+            schema.max_items = kwargs_model.max_items
+        if any(is_safe_subclass(field.field_type, t) for t in (set, frozenset)):  # type: ignore[arg-type]
+            schema.unique_items = True
+
+        item_creator = self.not_generating_examples
+        if field.children:
+            items = list(map(item_creator.for_field, field.children))
+            if len(items) > 1:
+                schema.items = Schema(one_of=sort_schemas_and_references(items))
+            else:
+                schema.items = items[0]
+        else:
+            schema.items = item_creator.for_field(
+                SignatureField.create(field.field_type.item_type, f"{field.field_type.__name__}Field")
+            )
+        return schema
+
+    def get_field_name(self, field: ModelField) -> str:
+        """Get the preferred name for a model field.
+
+        Args:
+            field: A model field instance.
+
+        Returns:
+            The preferred name for the field.
+        """
+        return (field.alias or field.name) if self.prefer_alias else field.name
+
+    def process_schema_result(self, field: SignatureField, schema: Schema) -> Schema | Reference:
+        if field.kwarg_model and field.is_const and not field.is_empty and schema.const is None:
+            schema.const = field.default_value
+
+        if field.kwarg_model:
+            for kwarg_model_key, schema_key in KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
+                if (value := getattr(field.kwarg_model, kwarg_model_key, Empty)) and (
+                    not isinstance(value, Hashable) or value not in UNDEFINED_SENTINELS
+                ):
+                    setattr(schema, schema_key, value)
+
+        if not schema.examples and self.generate_examples:
+            schema.examples = create_examples_for_field(field)
+
+        if schema.title and schema.type in (OpenAPIType.OBJECT, OpenAPIType.ARRAY):
+            if schema.title in self.schemas and hash(self.schemas[schema.title]) != hash(schema):
+                raise ImproperlyConfiguredException(
+                    f"Two different schemas with the title {schema.title} have been defined.\n\n"
+                    f"first: {encode_json(self.schemas[schema.title].to_schema()).decode()}\n"
+                    f"second: {encode_json(schema.to_schema()).decode()}\n\n"
+                    f"To fix this issue, either rename the base classes from which these titles are derived or manually"
+                    f"set a 'title' kwarg in the route handler."
+                )
+
+            self.schemas[schema.title] = schema
+            return Reference(ref=f"#/components/schemas/{schema.title}")
+        return schema

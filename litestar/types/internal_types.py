@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -5,19 +7,14 @@ from typing import (
     Dict,
     Literal,
     NamedTuple,
-    Optional,
-    Type,
     Union,
 )
 
-from typing_extensions import TypeAlias
-
-from litestar.types import Method
-
 __all__ = (
     "AnyConnection",
-    "PathParameterDefinition",
     "ControllerRouterHandler",
+    "LitestarType",
+    "PathParameterDefinition",
     "PathParameterDefinition",
     "ReservedKwargs",
     "ResponseType",
@@ -27,6 +24,8 @@ __all__ = (
 
 
 if TYPE_CHECKING:
+    from typing_extensions import TypeAlias
+
     from litestar.app import Litestar
     from litestar.connection import ASGIConnection
     from litestar.controller import Controller
@@ -35,23 +34,23 @@ if TYPE_CHECKING:
     from litestar.handlers.websocket_handlers import WebsocketRouteHandler
     from litestar.response import Response
     from litestar.router import Router
-else:
-    Litestar = Any
-    ASGIConnection = Any
-    ASGIRouteHandler = Any
-    WebsocketRouteHandler = Any
-    HTTPRouteHandler = Any
-    Response = Any
-    Controller = Any
-    Router = Any
+    from litestar.types import Method
 
-AnyConnection: TypeAlias = "ASGIConnection[Any, Any, Any, Any]"
-ReservedKwargs = Literal["request", "socket", "headers", "query", "cookies", "state", "data"]
-LitestarType = Litestar
-RouteHandlerType = Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandler]
-ResponseType = Type[Response]
-ControllerRouterHandler = Union[Type[Controller], RouteHandlerType, Router, Callable[..., Any]]
-RouteHandlerMapItem = Dict[Union[Method, Literal["websocket", "asgi"]], RouteHandlerType]
+    AnyConnection: TypeAlias = ASGIConnection[Any, Any, Any, Any]
+    ReservedKwargs: TypeAlias = Literal["request", "socket", "headers", "query", "cookies", "state", "data"]
+    LitestarType: TypeAlias = Litestar
+    RouteHandlerType: TypeAlias = Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandler]
+    ResponseType: TypeAlias = type[Response]
+    ControllerRouterHandler: TypeAlias = Union[type[Controller], RouteHandlerType, Router, Callable[..., Any]]
+    RouteHandlerMapItem: TypeAlias = Dict[Union[Method, Literal["websocket", "asgi"]], RouteHandlerType]
+else:
+    AnyConnection: TypeAlias = Any
+    ReservedKwargs: TypeAlias = Any
+    LitestarType: TypeAlias = Any
+    RouteHandlerType: TypeAlias = Any
+    ResponseType: TypeAlias = Any
+    ControllerRouterHandler: TypeAlias = Any
+    RouteHandlerMapItem: TypeAlias = Any
 
 
 class PathParameterDefinition(NamedTuple):
@@ -59,5 +58,5 @@ class PathParameterDefinition(NamedTuple):
 
     name: str
     full: str
-    type: Type
-    parser: Optional[Callable[[str], Any]]
+    type: type
+    parser: Callable[[str], Any] | None

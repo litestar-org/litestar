@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from litestar._openapi.parameters import create_parameter_for_handler
 from litestar._openapi.request_body import create_request_body
 from litestar._openapi.responses import create_responses
+from litestar._openapi.schema_generation import SchemaCreator
 from litestar._openapi.utils import SEPARATORS_CLEANUP_PATTERN
 from litestar.openapi.spec.path_item import PathItem
 from litestar.utils.helpers import unwrap_partial
@@ -86,6 +87,8 @@ def create_path_item(
     path_item = PathItem()
     operation_ids: list[str] = []
 
+    request_schema_creator = SchemaCreator(create_examples, plugins, schemas, prefer_alias=True)
+    response_schema_creator = SchemaCreator(create_examples, plugins, schemas, prefer_alias=False)
     for http_method, handler_tuple in route.route_handler_map.items():
         route_handler, _ = handler_tuple
 
@@ -96,8 +99,7 @@ def create_path_item(
                     route_handler=route_handler,
                     handler_fields=handler_fields,
                     path_parameters=route.path_parameters,
-                    generate_examples=create_examples,
-                    schemas=schemas,
+                    schema_creator=request_schema_creator,
                 )
                 or None
             )
@@ -106,11 +108,7 @@ def create_path_item(
             request_body = None
             if "data" in handler_fields:
                 request_body = create_request_body(
-                    route_handler=route_handler,
-                    field=handler_fields["data"],
-                    generate_examples=create_examples,
-                    plugins=plugins,
-                    schemas=schemas,
+                    route_handler=route_handler, field=handler_fields["data"], schema_creator=request_schema_creator
                 )
             operation_id = route_handler.operation_id or operation_id_creator(
                 route_handler, http_method, route.path_components
@@ -125,9 +123,7 @@ def create_path_item(
                 responses=create_responses(
                     route_handler=route_handler,
                     raises_validation_error=raises_validation_error,
-                    generate_examples=create_examples,
-                    plugins=plugins,
-                    schemas=schemas,
+                    schema_creator=response_schema_creator,
                 ),
                 request_body=request_body,
                 parameters=parameters,  # type: ignore[arg-type]

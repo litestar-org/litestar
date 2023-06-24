@@ -31,12 +31,13 @@ from msgspec import Struct
 from typing_extensions import (
     ParamSpec,
     TypeGuard,
+    _AnnotatedAlias,
     get_args,
     is_typeddict,
 )
 
 from litestar.types import Empty
-from litestar.types.builtin_types import UNION_TYPES, NoneType
+from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.typing import get_origin_or_inner_type
 
 if TYPE_CHECKING:
@@ -237,7 +238,7 @@ def is_any(annotation: Any) -> TypeGuard[Any]:
     return (
         annotation is Any
         or getattr(annotation, "_name", "") == "typing.Any"
-        or (get_origin_or_inner_type(annotation) in UNION_TYPES and Any in get_args(annotation))
+        or (get_origin_or_inner_type(annotation) in UnionTypes and Any in get_args(annotation))
     )
 
 
@@ -250,7 +251,7 @@ def is_union(annotation: Any) -> bool:
     Returns:
         A boolean determining whether the type is :data:`Union typing.Union>`.
     """
-    return get_origin_or_inner_type(annotation) in UNION_TYPES
+    return get_origin_or_inner_type(annotation) in UnionTypes
 
 
 def is_optional_union(annotation: Any) -> TypeGuard[Any | None]:
@@ -265,7 +266,7 @@ def is_optional_union(annotation: Any) -> TypeGuard[Any | None]:
     """
     origin = get_origin_or_inner_type(annotation)
     return origin is Optional or (
-        get_origin_or_inner_type(annotation) in UNION_TYPES and NoneType in get_args(annotation)
+        get_origin_or_inner_type(annotation) in UnionTypes and NoneType in get_args(annotation)
     )
 
 
@@ -402,3 +403,15 @@ def is_sync_or_async_generator(obj: Any) -> TypeGuard[AnyGenerator]:
         A boolean.
     """
     return isgeneratorfunction(obj) or isasyncgenfunction(obj)
+
+
+def is_annotated_type(annotation: Any) -> bool:
+    """Check if the given annotation is an Annotated.
+
+    Args:
+        annotation: A type annotation
+
+    Returns:
+        A boolean.
+    """
+    return isinstance(annotation, _AnnotatedAlias) and getattr(annotation, "__args__", None) is not None

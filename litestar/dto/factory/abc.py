@@ -10,21 +10,26 @@ from litestar.typing import ParsedType
 from ._backends import MsgspecDTOBackend, PydanticDTOBackend
 from ._backends.abc import BackendContext
 from .config import DTOConfig
-from .data_structures import DTOData, FieldDefinition
 from .exc import InvalidAnnotation
-from .utils import parse_configs_from_annotation
+from .utils import (
+    parse_configs_from_annotation,
+    resolve_generic_wrapper_type,
+    resolve_model_type,
+)
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Collection, Generator
 
     from typing_extensions import Self
 
+    from litestar._openapi.schema_generation import SchemaCreator
     from litestar.dto.interface import HandlerContext
     from litestar.dto.types import ForType
     from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
 
     from ._backends import AbstractDTOBackend
+    from .data_structures import FieldDefinition
 
 __all__ = ("AbstractDTOFactory",)
 
@@ -130,24 +135,20 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
             handler_context: A :class:`HandlerContext <.HandlerContext>` instance. Provides information about the
                 handler and application of the DTO.
         """
-        if handler_context.parsed_type.is_subclass_of(DTOData):
-            parsed_type = handler_context.parsed_type.annotation.parsed_type
-        else:
-            parsed_type = handler_context.parsed_type
+        parsed_type = handler_context.parsed_type
+        model_type = resolve_model_type(parsed_type)
+        wrapper_attribute_name: str | None = None
 
-        if parsed_type.is_collection:
-            if len(parsed_type.inner_types) != 1:
-                raise InvalidAnnotation("AbstractDTOFactory only supports homogeneous collection types")
-            handler_type = parsed_type.inner_types[0]
-        else:
-            handler_type = parsed_type
+        if not model_type.is_subclass_of(cls.model_type):
+            resolved_generic_result = resolve_generic_wrapper_type(model_type, cls.model_type)
+            if resolved_generic_result is not None:
+                model_type, parsed_type, wrapper_attribute_name = resolved_generic_result
+            else:
+                raise InvalidAnnotation(
+                    f"DTO narrowed with '{cls.model_type}', handler type is '{parsed_type.annotation}'"
+                )
 
-        if not handler_type.is_subclass_of(cls.model_type):
-            raise InvalidAnnotation(
-                f"DTO narrowed with '{cls.model_type}', handler type is '{handler_context.parsed_type.annotation}'"
-            )
-
-        key = (handler_context.dto_for, handler_context.parsed_type, handler_context.request_encoding_type)
+        key = (handler_context.dto_for, parsed_type, handler_context.request_encoding_type)
         backend = cls._type_backend_map.get(key)
         if backend is None:
             backend_type: type[AbstractDTOBackend]
@@ -160,27 +161,27 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
                 backend_type = MsgspecDTOBackend
 
             backend_context = BackendContext(
-                cls.config,
-                handler_context.dto_for,
-                handler_context.parsed_type,
-                cls.generate_field_definitions,
-                cls.detect_nested_field,
-                handler_type.annotation,
+                dto_config=cls.config,
+                dto_for=handler_context.dto_for,
+                parsed_type=parsed_type,
+                field_definition_generator=cls.generate_field_definitions,
+                is_nested_field_predicate=cls.detect_nested_field,
+                model_type=model_type.annotation,
+                wrapper_attribute_name=wrapper_attribute_name,
             )
             backend = cls._type_backend_map.setdefault(key, backend_type(backend_context))
         cls._handler_backend_map[(handler_context.dto_for, handler_context.handler_id)] = backend
 
     @classmethod
     def create_openapi_schema(
-        cls, dto_for: ForType, handler_id: str, generate_examples: bool, schemas: dict[str, Schema], prefer_alias: bool
+        cls, dto_for: ForType, handler_id: str, schema_creator: SchemaCreator
     ) -> Reference | Schema:
         """Create an OpenAPI request body.
 
         Returns:
             OpenAPI request body.
         """
-        backend = cls._get_backend(dto_for, handler_id)
-        return backend.create_openapi_schema(generate_examples, schemas, prefer_alias)
+        return cls._get_backend(dto_for, handler_id).create_openapi_schema(schema_creator)
 
     @classmethod
     def _get_backend(cls, dto_for: ForType, handler_id: str) -> AbstractDTOBackend:

@@ -12,17 +12,24 @@ repos:
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: trailing-whitespace
+  - repo: https://github.com/python-poetry/poetry
+    rev: "1.5.0"
+    hooks:
+      - id: poetry-check
+      - id: poetry-lock
+        args: ["--no-update"]
   - repo: https://github.com/provinzkraut/unasyncd
-    rev: "v0.2.1"
+    rev: "v0.4.0"
     hooks:
       - id: unasyncd
+        additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.270"
+    rev: "v0.0.275"
     hooks:
       - id: ruff
         args: ["--fix"]
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.4
+    rev: v2.2.5
     hooks:
       - id: codespell
         exclude: "tests/openapi/typescript_converter/test_converter"
@@ -32,7 +39,7 @@ repos:
       - id: black
         args: [--config=./pyproject.toml]
   - repo: https://github.com/asottile/blacken-docs
-    rev: 1.13.0
+    rev: 1.14.0
     hooks:
       - id: blacken-docs
   - repo: https://github.com/pre-commit/mirrors-prettier
@@ -52,17 +59,19 @@ repos:
       - id: slotscheck
         exclude: "test_*|docs"
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.3.0"
+    rev: "v1.4.0"
     hooks:
       - id: mypy
-        exclude: "test_apps|tools|docs"
+        exclude: "test_apps|tools|docs|tests/examples"
         additional_dependencies:
           [
+            "polyfactory>=2.3.2",
             aiosqlite,
+            annotated_types,
             async_timeout,
             asyncmy,
             asyncpg,
-            psycopg,
+            asyncpg_stubs,
             attrs,
             beanie,
             beautifulsoup4,
@@ -85,8 +94,8 @@ repos:
             oracledb,
             piccolo,
             picologging,
+            psycopg,
             pydantic,
-            polyfactory,
             pytest,
             pytest-lazy-fixture,
             pytest-mock,
@@ -101,7 +110,6 @@ repos:
             starlette,
             structlog,
             tortoise-orm,
-            asyncpg_stubs,
             types-beautifulsoup4,
             types-freezegun,
             types-python-dateutil,
@@ -111,17 +119,19 @@ repos:
             prometheus_client,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.311
+    rev: v1.1.315
     hooks:
       - id: pyright
-        exclude: "test_apps|tools|docs|_openapi"
+        exclude: "test_apps|tools|docs|_openapi|tests/examples"
         additional_dependencies:
           [
+            "polyfactory>=2.3.2",
             aiosqlite,
+            annotated_types,
             async_timeout,
             asyncmy,
             asyncpg,
-            psycopg,
+            asyncpg_stubs,
             attrs,
             beanie,
             beautifulsoup4,
@@ -144,8 +154,8 @@ repos:
             oracledb,
             piccolo,
             picologging,
+            psycopg,
             pydantic,
-            polyfactory,
             pytest,
             pytest-lazy-fixture,
             pytest-mock,
@@ -160,7 +170,6 @@ repos:
             starlette,
             structlog,
             tortoise-orm,
-            asyncpg_stubs,
             types-beautifulsoup4,
             types-freezegun,
             types-python-dateutil,

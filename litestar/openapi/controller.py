@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from copy import copy
 from functools import cached_property
 from typing import TYPE_CHECKING, Callable, Literal
 
@@ -32,7 +31,7 @@ class OpenAPIController(Controller):
     """Base styling of the html body."""
     redoc_version: str = "next"
     """Redoc version to download from the CDN."""
-    swagger_ui_version: str = "4.15.5"
+    swagger_ui_version: str = "5.0.0"
     """SwaggerUI version to download from the CDN."""
     stoplight_elements_version: str = "7.7.5"
     """StopLight Elements version to download from the CDN."""
@@ -261,13 +260,6 @@ class OpenAPIController(Controller):
         """
         schema = self.get_schema_from_request(request)
 
-        # Note: Fix for Swagger rejection OpenAPI >=3.1
-        if not self._dumped_modified_schema:
-            schema_copy = copy(schema)
-            schema_copy.openapi = "3.0.3"
-
-            self._dumped_modified_schema = encode_json(schema_copy.to_schema()).decode("utf-8")
-
         head = f"""
           <head>
             <title>{schema.info.title}</title>
@@ -286,7 +278,7 @@ class OpenAPIController(Controller):
             <div id='swagger-container'/>
             <script type="text/javascript">
             const ui = SwaggerUIBundle({{
-                spec: {self._dumped_modified_schema},
+                spec: {encode_json(schema.to_schema()).decode("utf-8")},
                 dom_id: '#swagger-container',
                 deepLinking: true,
                 showExtensions: true,

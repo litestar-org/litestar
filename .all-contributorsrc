@@ -1054,6 +1054,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "floxay",
+      "name": "Huba Tuba",
+      "avatar_url": "https://avatars.githubusercontent.com/u/57007485?v=4",
+      "profile": "https://github.com/floxay",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "sfermigier",
+      "name": "Stefane Fermigier",
+      "avatar_url": "https://avatars.githubusercontent.com/u/271079?v=4",
+      "profile": "http://fermigier.com/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

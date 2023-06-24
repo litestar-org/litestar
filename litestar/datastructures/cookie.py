@@ -26,7 +26,7 @@ class Cookie:
     max_age: int | None = field(default=None)
     """Maximal age of the cookie before its invalidated."""
     expires: int | None = field(default=None)
-    """Expiration date as unix MS timestamp."""
+    """Seconds from now until the cookie expires."""
     domain: str | None = field(default=None)
     """Domain for which the cookie is valid."""
     secure: bool | None = field(default=None)

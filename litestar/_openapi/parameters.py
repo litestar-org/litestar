@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from litestar._openapi.schema_generation import create_schema
-from litestar._signature.field import SignatureField
 from litestar.constants import RESERVED_KWARGS
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
@@ -12,44 +10,16 @@ from litestar.openapi.spec.schema import Schema
 from litestar.params import DependencyKwarg, ParameterKwarg
 from litestar.types import Empty
 
-__all__ = (
-    "ParameterCollection",
-    "create_parameter",
-    "create_parameter_for_handler",
-    "create_path_parameter_schema",
-    "get_layered_parameter",
-    "get_recursive_handler_parameters",
-)
+__all__ = ("create_parameter_for_handler",)
 
 
 if TYPE_CHECKING:
+    from litestar._openapi.schema_generation import SchemaCreator
+    from litestar._signature.field import SignatureField
     from litestar.di import Provide
     from litestar.handlers.base import BaseRouteHandler
     from litestar.openapi.spec import Reference
     from litestar.types.internal_types import PathParameterDefinition
-
-
-def create_path_parameter_schema(
-    path_parameter: PathParameterDefinition,
-    field: SignatureField,
-    generate_examples: bool,
-    schemas: dict[str, Schema],
-) -> Schema | Reference:
-    """Create a path parameter from the given path_param definition."""
-    return create_schema(
-        field=SignatureField(
-            children=None,
-            default_value=field.default_value,
-            extra=field.extra,
-            field_type=path_parameter.type,
-            kwarg_model=field.kwarg_model,
-            name=field.name,
-        ),
-        generate_examples=generate_examples,
-        plugins=[],
-        schemas=schemas,
-        prefer_alias=True,
-    )
 
 
 class ParameterCollection:
@@ -100,10 +70,11 @@ def create_parameter(
     signature_field: SignatureField,
     parameter_name: str,
     path_parameters: tuple[PathParameterDefinition, ...],
-    generate_examples: bool,
-    schemas: dict[str, Schema],
+    schema_creator: SchemaCreator,
 ) -> Parameter:
     """Create an OpenAPI Parameter instance."""
+    from litestar._signature.field import SignatureField
+
     result: Schema | Reference | None = None
     kwargs_model = signature_field.kwarg_model if isinstance(signature_field.kwarg_model, ParameterKwarg) else None
 
@@ -111,10 +82,16 @@ def create_parameter(
         param_in = ParamType.PATH
         is_required = True
         path_parameter = [p for p in path_parameters if parameter_name in p.name][0]
-        result = create_path_parameter_schema(
-            field=signature_field, generate_examples=generate_examples, path_parameter=path_parameter, schemas=schemas
+        result = schema_creator.for_field(
+            SignatureField(
+                children=None,
+                default_value=signature_field.default_value,
+                extra=signature_field.extra,
+                field_type=path_parameter.type,
+                kwarg_model=signature_field.kwarg_model,
+                name=signature_field.name,
+            )
         )
-
     elif kwargs_model and kwargs_model.header:
         parameter_name = kwargs_model.header
         param_in = ParamType.HEADER
@@ -129,11 +106,9 @@ def create_parameter(
         parameter_name = kwargs_model.query if kwargs_model and kwargs_model.query else parameter_name
 
     if not result:
-        result = create_schema(
-            field=signature_field, generate_examples=generate_examples, plugins=[], schemas=schemas, prefer_alias=True
-        )
+        result = schema_creator.for_field(signature_field)
 
-    schema = result if isinstance(result, Schema) else schemas[result.value]
+    schema = result if isinstance(result, Schema) else schema_creator.schemas[result.value]
 
     return Parameter(
         description=schema.description,
@@ -150,8 +125,7 @@ def get_recursive_handler_parameters(
     dependency_providers: dict[str, Provide],
     route_handler: BaseRouteHandler,
     path_parameters: tuple[PathParameterDefinition, ...],
-    generate_examples: bool,
-    schemas: dict[str, Schema],
+    schema_creator: SchemaCreator,
 ) -> list[Parameter]:
     """Create and return parameters for a handler.
 
@@ -162,16 +136,19 @@ def get_recursive_handler_parameters(
     if field_name not in dependency_providers:
         return [
             create_parameter(
-                generate_examples=generate_examples,
+                signature_field=signature_field,
                 parameter_name=field_name,
                 path_parameters=path_parameters,
-                schemas=schemas,
-                signature_field=signature_field,
+                schema_creator=schema_creator,
             )
         ]
+
     dependency_fields = dependency_providers[field_name].signature_model.fields
     return create_parameter_for_handler(
-        route_handler, dependency_fields, path_parameters, generate_examples, schemas=schemas
+        route_handler=route_handler,
+        handler_fields=dependency_fields,
+        path_parameters=path_parameters,
+        schema_creator=schema_creator,
     )
 
 
@@ -180,8 +157,7 @@ def get_layered_parameter(
     signature_field: SignatureField,
     layered_parameters: dict[str, SignatureField],
     path_parameters: tuple[PathParameterDefinition, ...],
-    generate_examples: bool,
-    schemas: dict[str, Schema],
+    schema_creator: SchemaCreator,
 ) -> Parameter:
     """Create a layered parameter for a given signature model field.
 
@@ -197,19 +173,21 @@ def get_layered_parameter(
     if isinstance(field.kwarg_model, ParameterKwarg):
         parameter_name = field.kwarg_model.query or field.kwarg_model.header or field.kwarg_model.cookie or field_name
 
+    from litestar._signature.field import SignatureField
+
+    signature_field = SignatureField.create(
+        children=field.children,
+        default_value=default_value,
+        extra=field.extra,
+        field_type=field_type,
+        kwarg_model=field.kwarg_model,
+        name=field_name,
+    )
     return create_parameter(
-        signature_field=SignatureField.create(
-            children=field.children,
-            default_value=default_value,
-            extra=field.extra,
-            field_type=field_type,
-            kwarg_model=field.kwarg_model,
-            name=field_name,
-        ),
-        generate_examples=generate_examples,
+        signature_field=signature_field,
         parameter_name=parameter_name,
         path_parameters=path_parameters,
-        schemas=schemas,
+        schema_creator=schema_creator,
     )
 
 
@@ -217,12 +195,11 @@ def create_parameter_for_handler(
     route_handler: BaseRouteHandler,
     handler_fields: dict[str, SignatureField],
     path_parameters: tuple[PathParameterDefinition, ...],
-    generate_examples: bool,
-    schemas: dict[str, Schema],
+    schema_creator: SchemaCreator,
 ) -> list[Parameter]:
     """Create a list of path/query/header Parameter models for the given PathHandler."""
     parameters = ParameterCollection(route_handler=route_handler)
-    dependencies = route_handler.resolve_dependencies()
+    dependency_providers = route_handler.resolve_dependencies()
 
     layered_parameters = route_handler.resolve_layered_parameters()
 
@@ -237,29 +214,27 @@ def create_parameter_for_handler(
     )
 
     for field_name, signature_field in unique_handler_fields:
-        if isinstance(signature_field.kwarg_model, DependencyKwarg) and field_name not in dependencies:
+        if isinstance(signature_field.kwarg_model, DependencyKwarg) and field_name not in dependency_providers:
             # never document explicit dependencies
             continue
 
         for parameter in get_recursive_handler_parameters(
-            dependency_providers=dependencies,
             field_name=field_name,
-            generate_examples=generate_examples,
-            path_parameters=path_parameters,
-            route_handler=route_handler,
-            schemas=schemas,
             signature_field=signature_field,
+            dependency_providers=dependency_providers,
+            route_handler=route_handler,
+            path_parameters=path_parameters,
+            schema_creator=schema_creator,
         ):
             parameters.add(parameter)
 
     for field_name, signature_field in unique_layered_fields:
         parameters.add(
             create_parameter(
-                generate_examples=generate_examples,
+                signature_field=signature_field,
                 parameter_name=field_name,
                 path_parameters=path_parameters,
-                schemas=schemas,
-                signature_field=signature_field,
+                schema_creator=schema_creator,
             )
         )
 
@@ -267,11 +242,10 @@ def create_parameter_for_handler(
         parameters.add(
             get_layered_parameter(
                 field_name=field_name,
-                generate_examples=generate_examples,
+                signature_field=signature_field,
                 layered_parameters=layered_parameters,
                 path_parameters=path_parameters,
-                schemas=schemas,
-                signature_field=signature_field,
+                schema_creator=schema_creator,
             )
         )
 

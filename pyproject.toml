@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "litestar"
-version = "2.0.0alpha7"
+version = "2.0.0beta1"
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 authors = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
@@ -63,6 +63,7 @@ packages = [{ include = "litestar" }]
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
 alembic = { version = "*", optional = true }
+annotated-types = { version = "*", optional = true }
 anyio = ">=3"
 attrs = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
@@ -72,33 +73,36 @@ cryptography = { version = "*", optional = true }
 fast-query-parsers = "*"
 httpx = ">=0.22"
 importlib-metadata = { version = "*", python = "<3.10" }
+importlib-resources = { version = ">=5.12.0", python = "<3.9" }
 jinja2 = { version = ">=3.1.2", optional = true }
 jsbeautifier = { version = "*", optional = true }
 mako = { version = ">=1.2.4", optional = true }
-msgspec = "*"
+msgspec = ">=0.16.0"
 multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 picologging = { version = "*", optional = true }
-polyfactory = ">=2"
+polyfactory = ">=2.3.2"
 pydantic = "<2"
 python-dateutil = { version = "*", optional = true }
 python-jose = { version = "*", optional = true }
 pytimeparse = { version = "*", optional = true }
 pyyaml = "*"
-redis = { version = ">=4.4.4,!=4.5.0,!=4.5.1,!=4.5.2,!=4.5.3,!=4.5.5", optional = true, extras = ["hiredis"] }
+redis = { version = ">=4.4.4,!=4.5.0,!=4.5.1,!=4.5.2,!=4.5.3,!=4.5.5", optional = true, extras = [
+    "hiredis",
+] }
 rich = { version = ">=13.0.0", optional = true }
 rich-click = { version = "*", optional = true }
 sqlalchemy = { version = ">=2.0.12", optional = true }
 structlog = { version = "*", optional = true }
+tortoise-orm = { version = ">=0.17.0", optional = true }
 typing-extensions = "*"
-uvicorn = {extras = ["standard"], version = "^0.21.1", optional = true}
-importlib-resources = { version="^5.12.0", python = "<3.9" }
+uvicorn = { extras = ["standard"], version = ">=0.22.0", optional = true }
 prometheus-client = {version = "^0.17.0", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
-rich-click = "*"
 alembic = "*"
+annotated-types = "*"
 asyncmy = "*"
 asyncpg = "*"
 attrs = "*"
@@ -108,7 +112,8 @@ brotli = "*"
 cattrs = "*"
 click = "*"
 cryptography = "*"
-fakeredis = { extras = ["lua"], version = "2.11.0" }
+duckdb-engine = "*"
+fakeredis = { extras = ["lua"], version = "*" }
 freezegun = "*"
 fsspec = "*"
 greenlet = "*"
@@ -119,6 +124,7 @@ mako = "*"
 mongomock-motor = { version = "*", markers = "sys_platform != 'win32'" }
 opentelemetry-instrumentation-asgi = "*"
 opentelemetry-sdk = "*"
+oracledb = "*"
 piccolo = "*"
 picologging = "*"
 pre-commit = "*"
@@ -128,22 +134,21 @@ pytest-asyncio = "*"
 pytest-cov = "*"
 pytest-lazy-fixture = "*"
 pytest-mock = "*"
+pytest-rerunfailures = "*"
 python-dateutil = "*"
 python-dotenv = "*"
 python-jose = "*"
-oracledb = "*"
 pytimeparse = "*"
 redis = "*"
 rich = "*"
+rich-click = "*"
 sqlalchemy = ">=2.0"
+sqlalchemy-spanner = "*"
 starlette = "*"
 structlog = "*"
-tortoise-orm = ">=0.17.0"
+tortoise-orm = "*"
 trio = "*"
 uvicorn = "*"
-pytest-rerunfailures = "^11.1.2"
-duckdb-engine = "*"
-sqlalchemy-spanner = "*"
 prometheus-client = "^0.17.0"
 
 [tool.poetry.group.docs]
@@ -169,8 +174,6 @@ asyncpg-stubs = "*"
 black = "*"
 blacken-docs = "*"
 mypy = "*"
-pylint = "*"
-pylint-pydantic = "*"
 pyright = "*"
 ruff = '*'
 slotscheck = "*"
@@ -182,6 +185,7 @@ types-beautifulsoup4 = "*"
 types-python-dateutil = "*"
 
 [tool.poetry.extras]
+annotated-types = ["annotated-types"]
 attrs = ["attrs", "cattrs", "python-dateutil", "pytimeparse"]
 brotli = ["brotli"]
 cli = ["click", "rich", "rich-click", "jsbeautifier", "uvicorn"]
@@ -207,7 +211,7 @@ full = [
     "jinja2",
     "jsbeautifier",
     "opentelemetry-instrumentation-asgi",
-    "python-dateutill",
+    "python-dateutil",
     "python-jose",
     "pytimeparse",
     "redis",
@@ -275,13 +279,8 @@ markers = [
 include = ["litestar", "tests", "examples"]
 exclude = [
     "examples/plugins/sqlalchemy_plugin",
-    "litestar/contrib/sqlalchemy_1",
     "litestar/openapi",
-    "litestar/plugins",
-    "tests/contrib/sqlalchemy/test_dto.py",
-    "tests/contrib/sqlalchemy_1",
-    "tests/openapi",
-    "tests/plugins",
+    "tests/unit/test_contrib/test_sqlalchemy/test_dto.py",
 ]
 
 [tool.slotscheck]
@@ -289,7 +288,7 @@ strict-imports = false
 
 [tool.ruff]
 select = [
-    "A", # flake8-builtins
+    "A",   # flake8-builtins
     "B",   # flake8-bugbear
     "BLE", # flake8-blind-except
     "C4",  # flake8-comprehensions
@@ -326,21 +325,22 @@ select = [
 ]
 
 ignore = [
-    "A003",  # flake8-builtins - class attribute {name} is shadowing a python builtin
-    "B010",  # flake8-bugbear - do not call setattr with a constant attribute value
-    "D100",  # pydocstyle - missing docstring in public module
-    "D101",  # pydocstyle - missing docstring in public class
-    "D102",  # pydocstyle - missing docstring in public method
-    "D103",  # pydocstyle - missing docstring in public function
-    "D104",  # pydocstyle - missing docstring in public package
-    "D105",  # pydocstyle - missing docstring in magic method
-    "D106",  # pydocstyle - missing docstring in public nested class
-    "D107",  # pydocstyle - missing docstring in __init__
-    "D202",  # pydocstyle - no blank lines allowed after function docstring
-    "D205",  # pydocstyle - 1 blank line required between summary line and description
-    "D415",  # pydocstyle - first line should end with a period, question mark, or exclamation point
-    "E501",  # pycodestyle line too long, handled by black
-    "PLW2901"  # pylint - for loop variable overwritten by assignment target
+    "A003",    # flake8-builtins - class attribute {name} is shadowing a python builtin
+    "B010",    # flake8-bugbear - do not call setattr with a constant attribute value
+    "D100",    # pydocstyle - missing docstring in public module
+    "D101",    # pydocstyle - missing docstring in public class
+    "D102",    # pydocstyle - missing docstring in public method
+    "D103",    # pydocstyle - missing docstring in public function
+    "D104",    # pydocstyle - missing docstring in public package
+    "D105",    # pydocstyle - missing docstring in magic method
+    "D106",    # pydocstyle - missing docstring in public nested class
+    "D107",    # pydocstyle - missing docstring in __init__
+    "D202",    # pydocstyle - no blank lines allowed after function docstring
+    "D205",    # pydocstyle - 1 blank line required between summary line and description
+    "D415",    # pydocstyle - first line should end with a period, question mark, or exclamation point
+    "E501",    # pycodestyle line too long, handled by black
+    "PLW2901", # pylint - for loop variable overwritten by assignment target
+    "RUF012",  # Ruff-specific rule - annotated with classvar
 ]
 line-length = 120
 src = ["litestar", "tests", "docs/examples"]
@@ -359,7 +359,7 @@ classmethod-decorators = [
     "pydantic.validator",
     "sqlalchemy.ext.declarative.declared_attr",
     "sqlalchemy.orm.declared_attr.directive",
-    "sqlalchemy.orm.declared_attr"
+    "sqlalchemy.orm.declared_attr",
 ]
 
 [tool.ruff.isort]
@@ -426,10 +426,9 @@ known-first-party = ["litestar", "tests", "examples"]
 "test_apps/**/*.*" = ["D", "TRY", "EM", "S", "PTH"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
 
-
 [tool.unasyncd]
 add_editors_note = true
-
+ruff_fix = true
 
 [tool.unasyncd.files]
 "litestar/contrib/sqlalchemy/repository/_async.py" = "litestar/contrib/sqlalchemy/repository/_sync.py"

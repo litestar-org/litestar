@@ -20,6 +20,7 @@ from litestar.dto.factory.abc import AbstractDTOFactory
 from litestar.dto.factory.data_structures import FieldDefinition
 from litestar.dto.factory.field import DTO_FIELD_META_KEY, DTOField, Mark
 from litestar.dto.factory.utils import get_model_type_hints
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.empty import Empty
 from litestar.utils.helpers import get_fully_qualified_class_name
 from litestar.utils.signature import ParsedSignature
@@ -83,10 +84,15 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
 
         default, default_factory = _detect_defaults(elem)
 
-        if (parsed_type := model_type_hints[key]).origin is Mapped:
-            (parsed_type,) = parsed_type.inner_types
-        else:
-            raise NotImplementedError(f"Expected 'Mapped' origin, got: '{parsed_type.origin}'")
+        try:
+            if (parsed_type := model_type_hints[key]).origin is Mapped:
+                (parsed_type,) = parsed_type.inner_types
+            else:
+                raise NotImplementedError(f"Expected 'Mapped' origin, got: '{parsed_type.origin}'")
+        except KeyError as e:
+            raise ImproperlyConfiguredException(
+                f"No type information found for '{orm_descriptor}'. Has a type annotation been added to the column?"
+            ) from e
 
         return [
             FieldDefinition(

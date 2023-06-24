@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, NewType, TypeVar
 
-from msgspec import Struct, from_builtins
+from msgspec import Struct, convert
 
 from litestar.dto.factory._backends.abc import AbstractDTOBackend
 from litestar.serialization import decode_media_type
@@ -35,4 +35,4 @@ class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
         )
 
     def parse_builtins(self, builtins: Any, connection_context: ConnectionContext) -> Any:
-        return from_builtins(builtins, self.annotation)
+        return convert(builtins, self.annotation)

@@ -1,6 +1,6 @@
 <!-- markdownlint-disable -->
 <p align="center">
-  <img src="artwork/banner-light.svg" alt="Litestar Logo - Light" width="100%" height="auto" />
+  <img src="https://github.com/litestar-org/litestar/blob/ecb4412055710f78124710990584aa24fc6c9a55/artwork/banner-light.svg" alt="Litestar Logo - Light" width="100%" height="auto" />
 </p>
 <!-- markdownlint-restore -->
 
@@ -52,7 +52,7 @@ pip install litestar
 You can check out the alpha version by instead running
 
 ```shell
-pip install litestar==2.0.0alpha7
+pip install litestar==2.0.0beta1
 ```
 
 ## Quick Start

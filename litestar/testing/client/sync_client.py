@@ -47,6 +47,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
         backend: AnyIOBackend = "asyncio",
         backend_options: Mapping[str, Any] | None = None,
         session_config: BaseBackendConfig | None = None,
+        timeout: float | None = None,
         cookies: CookieTypes | None = None,
     ) -> None:
         """A client implementation providing a context manager for testing applications.
@@ -61,6 +62,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
             backend_options: ``anyio`` options.
             session_config: Configuration for Session Middleware class to create raw session cookies for request to the
                 route handlers.
+            timeout: Request timeout
             cookies: Cookies to set on the client.
         """
         BaseTestClient.__init__(
@@ -85,6 +87,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
                 raise_server_exceptions=raise_server_exceptions,
                 root_path=root_path,
             ),
+            timeout=timeout,
         )
 
     def __enter__(self) -> TestClient[T]:
@@ -473,7 +476,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
     def websocket_connect(
         self,
         url: str,
-        subprotocols: OptionalSequence[str] = None,
+        subprotocols: OptionalSequence[str] | None = None,
         params: QueryParamTypes | None = None,
         headers: HeaderTypes | None = None,
         cookies: CookieTypes | None = None,

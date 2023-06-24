@@ -20,7 +20,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-110-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-112-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -50,10 +50,10 @@ pip install litestar
 ```
 
 **Litestar 2.0 is coming out soon**, bringing many new features and improvements.
-You can check out the alpha version by instead running
+You can check out the beta version by instead running
 
 ```shell
-pip install litestar==2.0.0alpha7
+pip install litestar==2.0.0beta1
 ```
 
 ## Quick Start
@@ -425,6 +425,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/rseeley"><img src="https://avatars.githubusercontent.com/u/5397221?v=4?s=100" width="100px;" alt="Ryan Seeley"/><br /><sub><b>Ryan Seeley</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=rseeley" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ctrl-Felix"><img src="https://avatars.githubusercontent.com/u/62290842?v=4?s=100" width="100px;" alt="Felix"/><br /><sub><b>Felix</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=ctrl-Felix" title="Documentation">📖</a> <a href="https://github.com/litestar-org/litestar/issues?q=author%3Actrl-Felix" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://www.linkedin.com/in/gsakkis"><img src="https://avatars.githubusercontent.com/u/291289?v=4?s=100" width="100px;" alt="George Sakkis"/><br /><sub><b>George Sakkis</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=gsakkis" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/floxay"><img src="https://avatars.githubusercontent.com/u/57007485?v=4?s=100" width="100px;" alt="Huba Tuba"/><br /><sub><b>Huba Tuba</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=floxay" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://fermigier.com/"><img src="https://avatars.githubusercontent.com/u/271079?v=4?s=100" width="100px;" alt="Stefane Fermigier"/><br /><sub><b>Stefane Fermigier</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=sfermigier" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>

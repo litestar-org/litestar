@@ -51,7 +51,7 @@ def traverse_route_map(
             path_params.append(component)
             continue
 
-        if i != len(path_components) - 1:
+        if i != len(path_components) - 1 or not current_node.children:
             raise NotFoundException()
 
     if not current_node.asgi_handlers:

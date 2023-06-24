@@ -11,6 +11,8 @@ from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_304_NOT
 from litestar.utils.helpers import encode_headers, filter_cookies, get_enum_string_value
 
 if TYPE_CHECKING:
+    from typing import Optional
+
     from litestar.app import Litestar
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.connection import Request
@@ -191,7 +193,8 @@ class Response(Generic[T]):
         "response_type_encoders",
     )
 
-    type_encoders: TypeEncodersMap | None = None
+    content: T
+    type_encoders: Optional[TypeEncodersMap] = None  # noqa: UP007
 
     def __init__(
         self,
@@ -273,7 +276,7 @@ class Response(Generic[T]):
             key: Key for the cookie or a :class:`Cookie <.datastructures.Cookie>` instance.
             value: Value for the cookie, if none given defaults to empty string.
             max_age: Maximal age of the cookie before its invalidated.
-            expires: Expiration date as unix MS timestamp.
+            expires: Seconds from now until the cookie expires.
             path: Path fragment that must exist in the request url for the cookie to be valid. Defaults to ``/``.
             domain: Domain for which the cookie is valid.
             secure: Https is required for the cookie.

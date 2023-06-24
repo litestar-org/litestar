@@ -7,7 +7,7 @@ from anyio import CancelScope, create_task_group
 
 from litestar.enums import MediaType
 from litestar.response.base import ASGIResponse, Response
-from litestar.types.composite_types import StreamType
+from litestar.types.helper_types import StreamType
 from litestar.utils.helpers import filter_cookies, get_enum_string_value
 from litestar.utils.sync import AsyncIteratorWrapper
 
