@@ -5,7 +5,7 @@ import multiprocessing
 import os
 import subprocess
 import sys
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Callable, cast
 
 import uvicorn
 from rich.tree import Tree
@@ -122,12 +122,16 @@ def run_command(
 
     show_app_info(app)
     for hook in app.before_startup:
-        hook()
+        _call_before_startup_after_shutdown_hook(hook)
     try:
         _run_uvicorn(reload, reload_dirs, port, workers, host, fd, uds, env)
     finally:
         for hook in app.after_shutdown:
-            hook()
+            _call_before_startup_after_shutdown_hook(hook)
+
+
+def _call_before_startup_after_shutdown_hook(hook: Callable, *args: Any, **kwargs: Any) -> Any:
+    return hook(*args, **kwargs)
 
 
 def _run_uvicorn(
