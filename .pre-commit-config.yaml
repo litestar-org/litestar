@@ -62,7 +62,7 @@ repos:
     rev: "v1.4.0"
     hooks:
       - id: mypy
-        exclude: "test_apps|tools|docs|tests/examples"
+        exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures"
         additional_dependencies:
           [
             "polyfactory>=2.3.2",
@@ -121,7 +121,7 @@ repos:
     rev: v1.1.315
     hooks:
       - id: pyright
-        exclude: "test_apps|tools|docs|_openapi|tests/examples"
+        exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures"
         additional_dependencies:
           [
             "polyfactory>=2.3.2",

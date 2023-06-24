@@ -26,7 +26,7 @@ class OpenTelemetryInstrumentationMiddleware(AbstractMiddleware):
 
     __slots__ = ("open_telemetry_middleware",)
 
-    def __init__(self, app: ASGIApp, config: OpenTelemetryConfig):
+    def __init__(self, app: ASGIApp, config: OpenTelemetryConfig) -> None:
         """Middleware that adds OpenTelemetry instrumentation to the application.
 
         Args:

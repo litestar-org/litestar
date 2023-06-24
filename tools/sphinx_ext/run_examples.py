@@ -143,25 +143,25 @@ class LiteralInclude(LiteralIncludeOverride):
         cwd = Path.cwd()
         docs_dir = cwd / "docs"
         language = self.options.get("language")
-        file = Path(self.env.relfn2path(self.arguments[0])[1])
+        file_path = Path(self.env.relfn2path(self.arguments[0])[1])
 
-        if (language != "python" and file.suffix != ".py") or "no-run" in self.options:
+        if (language != "python" and file_path.suffix != ".py") or "no-run" in self.options:
             return super().run()
 
-        content = file.read_text()
+        content = file_path.read_text()
         clean_content, run_args = extract_run_args(content)
 
         if not run_args:
             return super().run()
 
-        tmp_file = self.env.tmp_examples_path / str(file.relative_to(docs_dir)).replace("/", "_")
+        tmp_file = self.env.tmp_examples_path / str(file_path.relative_to(docs_dir)).replace("/", "_")
 
         self.arguments[0] = "/" + str(tmp_file.relative_to(docs_dir))
         tmp_file.write_text(clean_content)
 
         nodes = super().run()
 
-        result = exec_examples(file.relative_to(cwd), run_args)
+        result = exec_examples(file_path.relative_to(cwd), run_args)
 
         nodes.append(
             admonition(

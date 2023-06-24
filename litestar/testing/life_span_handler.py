@@ -22,7 +22,7 @@ T = TypeVar("T", bound=BaseTestClient)
 class LifeSpanHandler(Generic[T]):
     __slots__ = "stream_send", "stream_receive", "client", "task"
 
-    def __init__(self, client: T):
+    def __init__(self, client: T) -> None:
         self.client = client
         self.stream_send = StapledObjectStream[Optional["LifeSpanSendMessage"]](*create_memory_object_stream(inf))
         self.stream_receive = StapledObjectStream["LifeSpanReceiveMessage"](*create_memory_object_stream(inf))

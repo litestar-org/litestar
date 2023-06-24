@@ -35,7 +35,7 @@ T = TypeVar("T", bound=ASGIApp)
 
 
 class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
-    lifespan_handler: LifeSpanHandler
+    lifespan_handler: LifeSpanHandler[Any]
     exit_stack: ExitStack
 
     def __init__(

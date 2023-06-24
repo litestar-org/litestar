@@ -30,7 +30,7 @@ class ASGIStreamingResponse(ASGIResponse):
 
     __slots__ = ("iterator",)
 
-    def __init__(self, *, iterator: StreamType, **kwargs: Any):
+    def __init__(self, *, iterator: StreamType, **kwargs: Any) -> None:
         """A low-level ASGI streaming response.
 
         Args:
@@ -111,7 +111,7 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
         headers: ResponseHeaders | None = None,
         media_type: MediaType | OpenAPIMediaType | str | None = None,
         status_code: int | None = None,
-    ):
+    ) -> None:
         """Initialize the response.
 
         Args:

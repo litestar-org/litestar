@@ -90,7 +90,7 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
     """Callable that creates an :class:`AsyncEngine <sqlalchemy.ext.asyncio.AsyncEngine>` instance or instance of its
     subclass.
     """
-    session_config: GenericSessionConfig
+    session_config: GenericSessionConfig[Any, Any, Any]
     """Configuration options for either the :class:`async_sessionmaker <sqlalchemy.ext.asyncio.async_sessionmaker>`
     or :class:`sessionmaker <sqlalchemy.orm.sessionmaker>`.
     """

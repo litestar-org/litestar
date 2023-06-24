@@ -16,14 +16,6 @@ if TYPE_CHECKING:
     from litestar.openapi.spec.security_requirement import SecurityRequirement
     from litestar.openapi.spec.tag import Tag
 
-try:
-    from pydantic.schema import schema as pydantic_schema_helper
-except ImportError:  # pragma: no cover
-
-    def pydantic_schema_helper(*args, **kwargs):  # type: ignore
-        ...
-
-
 __all__ = ("OpenAPI",)
 
 

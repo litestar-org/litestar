@@ -75,7 +75,7 @@ class BaseTestClient(Generic[T]):
         backend_options: Mapping[str, Any] | None = None,
         session_config: BaseBackendConfig | None = None,
         cookies: CookieTypes | None = None,
-    ):
+    ) -> None:
         if "." not in base_url:
             warn(
                 f"The base_url {base_url!r} might cause issues. Try adding a domain name such as .local: "
@@ -93,7 +93,7 @@ class BaseTestClient(Generic[T]):
         self.cookies = cookies
 
     @property
-    def session_backend(self) -> BaseSessionBackend:
+    def session_backend(self) -> BaseSessionBackend[Any]:
         if not self._session_backend:
             raise ImproperlyConfiguredException(
                 "Session has not been initialized for this TestClient instance. You can"

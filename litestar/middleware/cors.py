@@ -19,7 +19,7 @@ class CORSMiddleware(AbstractMiddleware):
 
     __slots__ = ("config",)
 
-    def __init__(self, app: ASGIApp, config: CORSConfig):
+    def __init__(self, app: ASGIApp, config: CORSConfig) -> None:
         """Middleware that adds CORS validation to the application.
 
         Args:

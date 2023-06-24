@@ -366,7 +366,7 @@ class SchemaCreator:
         plugins: list[OpenAPISchemaPluginProtocol] | None = None,
         schemas: dict[str, Schema] | None = None,
         prefer_alias: bool = True,
-    ):
+    ) -> None:
         """Instantiate a SchemaCreator.
 
         Args:

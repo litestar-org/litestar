@@ -52,7 +52,7 @@ async def delete_task(task_id: int) -> None:
         await task.remove()
 
 
-async def main():
+async def main() -> None:
     # Creating tables
     await BaseUser.create_table(if_not_exists=True)
     await SessionsBase.create_table(if_not_exists=True)

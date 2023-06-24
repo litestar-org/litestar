@@ -57,7 +57,7 @@ def _deref_schema_object(value: BaseSchemaObject, components: Components) -> Bas
     return value
 
 
-def _deref_dict(value: dict, components: Components) -> dict:
+def _deref_dict(value: dict[str, Any], components: Components) -> dict[str, Any]:
     for k, v in value.items():
         if isinstance(v, Reference):
             value[k] = deref_container(resolve_ref(v, components=components), components=components)
@@ -66,7 +66,7 @@ def _deref_dict(value: dict, components: Components) -> dict:
     return value
 
 
-def _deref_list(values: list, components: Components) -> list:
+def _deref_list(values: list[Any], components: Components) -> list[Any]:
     for i, value in enumerate(values):
         if isinstance(value, Reference):
             values[i] = deref_container(resolve_ref(value, components=components), components=components)

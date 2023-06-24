@@ -84,15 +84,16 @@ class SignatureModel(ABC):
             message["key"] = key
 
             if key in connection.query_params:
-                message["source"] = "query"
+                message["source"] = cast("Literal['cookie', 'body', 'header', 'query']", "query")
+
             elif key in cls.fields and isinstance(cls.fields[key].kwarg_model, ParameterKwarg):
-                message["source"] = (
-                    "cookie"
-                    if cast(ParameterKwarg, cls.fields[key].kwarg_model).cookie
-                    else "header"
-                    if cast(ParameterKwarg, cls.fields[key].kwarg_model).header
-                    else "query"
-                )
+                if cast(ParameterKwarg, cls.fields[key].kwarg_model).cookie:
+                    source = "cookie"
+                elif cast(ParameterKwarg, cls.fields[key].kwarg_model).header:
+                    source = "header"
+                else:
+                    source = "query"
+                message["source"] = cast("Literal['cookie', 'body', 'header', 'query']", source)
 
         return message
 
