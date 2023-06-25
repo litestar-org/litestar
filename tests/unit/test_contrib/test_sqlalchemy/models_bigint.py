@@ -44,8 +44,10 @@ class BigIntModelWithFetchedValue(BigIntBase):
     """The ModelWithFetchedValue BigIntBase."""
 
     val: Mapped[int]
-    updated: Mapped[str] = mapped_column(
-        String(length=250), server_default=func.random(), onupdate=func.random(), server_onupdate=FetchedValue()
+    updated: Mapped[datetime] = mapped_column(
+        server_default=func.current_timestamp(),
+        onupdate=func.current_timestamp(),
+        server_onupdate=FetchedValue(),
     )
 
 
