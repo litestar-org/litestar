@@ -7,11 +7,11 @@ from uuid import UUID, uuid4
 
 import pytest
 import sqlalchemy
-from sqlalchemy import func
-from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, declared_attr, mapped_column
+from sqlalchemy import ForeignKey, func
+from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, declared_attr, mapped_column, relationship
 from typing_extensions import Annotated
 
-from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO, parse_type_from_element
 from litestar.dto.factory import DTOConfig, DTOField, Mark
 from litestar.dto.factory.field import DTO_FIELD_META_KEY
 from litestar.dto.interface import ConnectionContext, HandlerContext
@@ -553,10 +553,76 @@ dto_type = SQLAlchemyDTO[A]
     assert vars(model)["c"] == [1, 2, 3]
 
 
-async def test_no_type_hints(base: type[DeclarativeBase], connection_context: ConnectionContext) -> None:
+async def test_no_type_hint_column(base: type[DeclarativeBase], connection_context: ConnectionContext) -> None:
     class Model(base):
-        field = mapped_column(sqlalchemy.String)
+        nullable_field = mapped_column(sqlalchemy.String)
+        not_nullable_field = mapped_column(sqlalchemy.String, nullable=False, default="")
 
     dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig()]]
-    with pytest.raises(ImproperlyConfiguredException, match="No type information found for 'Model.field'"):
-        await get_model_from_dto(dto_type, Model, connection_context, b"")
+    model = await get_model_from_dto(dto_type, Model, connection_context, b"{}")
+    assert model.nullable_field is None
+    assert model.not_nullable_field == ""
+
+
+async def test_no_type_hint_scalar_relationship_with_nullable_fk(
+    base: type[DeclarativeBase], connection_context: ConnectionContext
+) -> None:
+    class Child(base):
+        ...
+
+    class Model(base):
+        child_id = mapped_column(ForeignKey("child.id"))
+        child = relationship(Child)
+
+    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(exclude={"child_id"})]]
+    model = await get_model_from_dto(dto_type, Model, connection_context, b"{}")
+    assert model.child is None
+
+
+async def test_no_type_hint_scalar_relationship_with_not_nullable_fk(
+    base: type[DeclarativeBase], connection_context: ConnectionContext
+) -> None:
+    class Child(base):
+        ...
+
+    class Model(base):
+        child_id = mapped_column(ForeignKey("child.id"), nullable=False)
+        child = relationship(Child)
+
+    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(exclude={"child_id"})]]
+    model = await get_model_from_dto(dto_type, Model, connection_context, b'{"child": {}}')
+    assert isinstance(model.child, Child)
+
+
+async def test_no_type_hint_collection_relationship(
+    base: type[DeclarativeBase], connection_context: ConnectionContext
+) -> None:
+    class Child(base):
+        model_id = mapped_column(ForeignKey("model.id"))
+
+    class Model(base):
+        children = relationship(Child)
+
+    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig()]]
+    model = await get_model_from_dto(dto_type, Model, connection_context, b'{"children": []}')
+    assert model.children == []
+
+
+async def test_no_type_hint_collection_relationship_alt_collection_class(
+    base: type[DeclarativeBase], connection_context: ConnectionContext
+) -> None:
+    class Child(base):
+        model_id = mapped_column(ForeignKey("model.id"))
+
+    class Model(base):
+        children = relationship(Child, collection_class=set)
+
+    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig()]]
+    model = await get_model_from_dto(dto_type, Model, connection_context, b'{"children": []}')
+    assert model.children == set()
+
+
+def test_parse_type_from_element_failure() -> None:
+    with pytest.raises(ImproperlyConfiguredException) as exc:
+        parse_type_from_element(1)
+    assert str(exc.value) == "500: Unable to parse type from element '1'. Consider adding a type hint."

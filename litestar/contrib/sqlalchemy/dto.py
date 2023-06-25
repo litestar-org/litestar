@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import singledispatchmethod
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, Optional, TypeVar
 
 from sqlalchemy import Column, inspect, orm, sql
 from sqlalchemy.ext.associationproxy import AssociationProxy, AssociationProxyExtensionType
@@ -13,6 +13,7 @@ from sqlalchemy.orm import (
     Mapped,
     NotExtension,
     QueryableAttribute,
+    RelationshipDirection,
     RelationshipProperty,
 )
 
@@ -22,6 +23,7 @@ from litestar.dto.factory.field import DTO_FIELD_META_KEY, DTOField, Mark
 from litestar.dto.factory.utils import get_model_type_hints
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.empty import Empty
+from litestar.typing import ParsedType
 from litestar.utils.helpers import get_fully_qualified_class_name
 from litestar.utils.signature import ParsedSignature
 
@@ -29,8 +31,6 @@ if TYPE_CHECKING:
     from typing import Any, ClassVar, Collection, Generator
 
     from typing_extensions import TypeAlias
-
-    from litestar.typing import ParsedType
 
 __all__ = ("SQLAlchemyDTO",)
 
@@ -89,10 +89,8 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                 (parsed_type,) = parsed_type.inner_types
             else:
                 raise NotImplementedError(f"Expected 'Mapped' origin, got: '{parsed_type.origin}'")
-        except KeyError as e:
-            raise ImproperlyConfiguredException(
-                f"No type information found for '{orm_descriptor}'. Has a type annotation been added to the column?"
-            ) from e
+        except KeyError:
+            parsed_type = parse_type_from_element(elem)
 
         return [
             FieldDefinition(
@@ -221,6 +219,59 @@ def _detect_defaults(elem: ElementType) -> tuple[Any, Any]:
         else:
             raise ValueError("Unexpected default type")
     else:
-        if getattr(elem, "nullable", False):
+        if (
+            isinstance(elem, RelationshipProperty)
+            and detect_nullable_relationship(elem)
+            or getattr(elem, "nullable", False)
+        ):
             default = None
+
     return default, default_factory
+
+
+def parse_type_from_element(elem: ElementType) -> ParsedType:
+    """Parses a type from a SQLAlchemy element.
+
+    Args:
+        elem: The SQLAlchemy element to parse.
+
+    Returns:
+        ParsedType: The parsed type.
+
+    Raises:
+        ImproperlyConfiguredException: If the type cannot be parsed.
+    """
+
+    if isinstance(elem, Column):
+        if elem.nullable:
+            return ParsedType(Optional[elem.type.python_type])
+        return ParsedType(elem.type.python_type)
+
+    if isinstance(elem, RelationshipProperty):
+        if elem.direction in (RelationshipDirection.ONETOMANY, RelationshipDirection.MANYTOMANY):
+            collection_type = ParsedType(elem.collection_class or list)
+            return ParsedType(collection_type.safe_generic_origin[elem.mapper.class_])
+
+        if detect_nullable_relationship(elem):
+            return ParsedType(Optional[elem.mapper.class_])
+
+        return ParsedType(elem.mapper.class_)
+
+    raise ImproperlyConfiguredException(
+        f"Unable to parse type from element '{elem}'. Consider adding a type hint.",
+    )
+
+
+def detect_nullable_relationship(elem: RelationshipProperty) -> bool:
+    """Detects if a relationship is nullable.
+
+    This attempts to decide if we should allow a ``None`` default value for a relationship by looking at the
+    foreign key fields. If all foreign key fields are nullable, then we allow a ``None`` default value.
+
+    Args:
+        elem: The relationship to check.
+
+    Returns:
+        bool: ``True`` if the relationship is nullable, ``False`` otherwise.
+    """
+    return elem.direction == RelationshipDirection.MANYTOONE and all(c.nullable for c in elem.local_columns)
