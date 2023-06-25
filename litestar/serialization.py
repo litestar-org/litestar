@@ -17,6 +17,7 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping, TypeVar, overload
 from uuid import UUID
 
 import msgspec
+from msgspec import ValidationError
 from pydantic import (
     BaseModel,
     ByteSize,
@@ -25,7 +26,9 @@ from pydantic import (
     NameEmail,
     SecretField,
     StrictBool,
+    UUID1,
 )
+from pydantic import ValidationError as PydanticValidationError
 from pydantic.color import Color
 from pydantic.json import decimal_encoder
 
@@ -126,6 +129,36 @@ def default_serializer(value: Any, type_encoders: Mapping[Any, Callable[[Any], A
     raise TypeError(f"Unsupported type: {type(value)!r}")
 
 
+PydanticUUIDType = TypeVar("PydanticUUIDType", bound="UUID1")
+
+
+def _dec_pydantic_uuid(type_: type[PydanticUUIDType], val: Any) -> PydanticUUIDType:
+    if isinstance(val, str):
+        val = UUID(val)
+    elif isinstance(val, (bytes, bytearray)):
+        try:
+            val = UUID(val.decode())
+        except ValueError:
+            # 16 bytes in big-endian order as the bytes argument fail
+            # the above check
+            val = UUID(bytes=val.decode())
+
+    if not isinstance(val, (UUID, type_)):
+        raise ValidationError(f"Invalid UUID: {val!r}")
+
+    if type_._required_version != val.version:
+        raise ValidationError(f"Invalid UUID version: {val!r}")
+
+    return val
+
+
+def _dec_pydantic(type_: type[BaseModel], value: Any) -> BaseModel:
+    try:
+        return type_.parse_obj(value)
+    except PydanticValidationError as e:
+        raise ValidationError from e
+
+
 def dec_hook(type_: Any, value: Any) -> Any:  # pragma: no cover
     """Transform values non-natively supported by ``msgspec``
 
@@ -137,13 +170,15 @@ def dec_hook(type_: Any, value: Any) -> Any:  # pragma: no cover
         A ``msgspec``-supported type
     """
 
-    from litestar.datastructures.state import State
+    from litestar.datastructures.state import ImmutableState
 
+    if issubclass(type_, UUID1):
+        return _dec_pydantic_uuid(type_, value)
     if isinstance(value, type_):
         return value
     if issubclass(type_, BaseModel):
-        return type_.parse_obj(value)
-    if issubclass(type_, (Path, PurePath, State, UUID)):
+        return _dec_pydantic(type_, value)
+    if issubclass(type_, (Path, PurePath, ImmutableState, UUID)):
         return type_(value)
     raise TypeError(f"Unsupported type: {type(value)!r}")
 

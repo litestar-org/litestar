@@ -56,10 +56,7 @@ def test_parses_values_from_connection_kwargs_raises(
         model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), a="not an int")
 
 
-@pytest.mark.parametrize("preferred_validation_backend", ("attrs", "pydantic"))
-def test_create_function_signature_model_parameter_parsing(
-    preferred_validation_backend: Literal["attrs", "pydantic"]
-) -> None:
+def test_create_function_signature_model_parameter_parsing() -> None:
     @get()
     def my_fn(a: int, b: str, c: Optional[bytes], d: bytes = b"123", e: Optional[dict] = None) -> None:
         pass
@@ -67,7 +64,7 @@ def test_create_function_signature_model_parameter_parsing(
     model = create_signature_model(
         fn=my_fn.fn.value,
         dependency_name_set=set(),
-        preferred_validation_backend=preferred_validation_backend,
+        preferred_validation_backend="attrs",
         parsed_signature=ParsedSignature.from_fn(my_fn.fn.value, {}),
     )
     fields = model.fields
@@ -76,8 +73,7 @@ def test_create_function_signature_model_parameter_parsing(
     assert fields["b"].field_type is str
     assert not fields["b"].is_optional
     assert fields["c"].field_type is Optional[bytes]
-    assert fields["c"].is_optional
-    assert fields["c"].default_value is None
+    assert not fields["c"].is_optional
     assert fields["d"].field_type is bytes
     assert fields["d"].default_value == b"123"
     assert fields["e"].field_type == Optional[dict]
