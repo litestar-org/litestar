@@ -226,7 +226,7 @@ def _detect_defaults(elem: ElementType) -> tuple[Any, Any]:
                 return d.arg({})
 
         elif sqla_default.is_sequence:
-            default = sqla_default
+            pass
 
         else:
             raise ValueError("Unexpected default type")
