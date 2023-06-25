@@ -503,7 +503,8 @@ async def test_repo_fetched_value(model_with_fetched_value_repo: ModelWithFetche
     first_time = obj.updated
     assert first_time is not None
     assert obj.val == 1
-    await maybe_async(asyncio.sleep(1))
+    await maybe_async(model_with_fetched_value_repo.session.commit())
+    await maybe_async(asyncio.sleep(2))
     obj.val = 2
     obj = await maybe_async(model_with_fetched_value_repo.update(obj))
     assert obj.updated is not None
