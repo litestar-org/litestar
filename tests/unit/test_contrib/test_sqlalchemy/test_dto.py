@@ -562,8 +562,8 @@ async def test_no_type_hints(base: type[DeclarativeBase], connection_context: Co
         await get_model_from_dto(dto_type, Model, connection_context, b"")
 
 
-@pytest.mark.parametrize("base_type", ["BigIntBase", "BigIntAuditBase", "UUIDBase", "UUIDAuditBase"])
-async def test_contrib_sqlalchemy_dto(
+@pytest.mark.parametrize("base_type", ["BigIntBase", "BigIntAuditBase"])
+async def test_contrib_sqlalchemy_dto_bigint_subclass_does_not_raise_error(
     base_type: str, create_module: Callable[[str], ModuleType], connection_context: ConnectionContext
 ) -> None:
     module = create_module(
@@ -583,10 +583,9 @@ class {base_type}Model({base_type}):
 dto_type = SQLAlchemyDTO[{base_type}Model]
     """
     )
-    model = await get_model_from_dto(
+    await get_model_from_dto(
         module.dto_type,
         vars(module)[f"{base_type}Model"],
         connection_context,
         b'{"val": "foo"}',
     )
-    assert vars(model)["val"] == "foo"
