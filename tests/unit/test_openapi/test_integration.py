@@ -61,6 +61,16 @@ def test_openapi_json_not_allowed(person_controller: Type[Controller], pet_contr
         assert response.status_code == HTTP_404_NOT_FOUND
 
 
+def test_openapi_custom_path() -> None:
+    openapi_config = OpenAPIConfig(title="my title", version="1.0.0", path="/custom_schema_path")
+    with create_test_client([], openapi_config=openapi_config) as client:
+        response = client.get("/schema")
+        assert response.status_code == HTTP_404_NOT_FOUND
+
+        response = client.get("/custom_schema_path")
+        assert response.status_code == HTTP_200_OK
+
+
 def test_msgspec_schema_generation() -> None:
     class Lookup(msgspec.Struct):
         id: Annotated[

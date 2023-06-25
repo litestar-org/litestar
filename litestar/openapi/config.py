@@ -94,6 +94,11 @@ class OpenAPIConfig:
     """A set of the enabled documentation sites and schema download endpoints."""
     operation_id_creator: OperationIDCreator = default_operation_id_creator
     """A callable that generates unique operation ids"""
+    path: str = "/schema"
+    """Base path for the OpenAPI documentation endpoints."""
+
+    def __post_init__(self) -> None:
+        self.openapi_controller.path = self.path
 
     def to_openapi_schema(self) -> OpenAPI:
         """Return an ``OpenAPI`` instance from the values stored in ``self``.

@@ -346,7 +346,7 @@ def show_app_info(app: Litestar) -> None:  # pragma: no cover
 
     openapi_enabled = _format_is_enabled(app.openapi_config)
     if app.openapi_config:
-        openapi_enabled += f" path=[yellow]{app.openapi_config.openapi_controller.path}"
+        openapi_enabled += f" path=[yellow]{app.openapi_config.path}"
     table.add_row("OpenAPI", openapi_enabled)
 
     table.add_row("Compression", app.compression_config.backend if app.compression_config else "[red]Disabled")
