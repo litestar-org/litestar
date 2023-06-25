@@ -19,6 +19,7 @@ from uuid import UUID
 import msgspec
 from msgspec import ValidationError
 from pydantic import (
+    UUID1,
     BaseModel,
     ByteSize,
     ConstrainedBytes,
@@ -26,7 +27,6 @@ from pydantic import (
     NameEmail,
     SecretField,
     StrictBool,
-    UUID1,
 )
 from pydantic import ValidationError as PydanticValidationError
 from pydantic.color import Color
@@ -134,19 +134,21 @@ PydanticUUIDType = TypeVar("PydanticUUIDType", bound="UUID1")
 
 def _dec_pydantic_uuid(type_: type[PydanticUUIDType], val: Any) -> PydanticUUIDType:
     if isinstance(val, str):
-        val = UUID(val)
+        val = type_(val)
     elif isinstance(val, (bytes, bytearray)):
         try:
-            val = UUID(val.decode())
+            val = type_(val.decode())
         except ValueError:
             # 16 bytes in big-endian order as the bytes argument fail
             # the above check
-            val = UUID(bytes=val.decode())
+            val = type_(bytes=val)
+    elif isinstance(val, UUID):
+        val = type_(str(val))
 
-    if not isinstance(val, (UUID, type_)):
+    if not isinstance(val, type_):
         raise ValidationError(f"Invalid UUID: {val!r}")
 
-    if type_._required_version != val.version:
+    if type_._required_version != val.version:  # type:ignore[attr-defined]
         raise ValidationError(f"Invalid UUID version: {val!r}")
 
     return val
