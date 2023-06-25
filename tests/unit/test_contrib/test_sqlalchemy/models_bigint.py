@@ -45,7 +45,7 @@ class BigIntModelWithFetchedValue(BigIntBase):
 
     val: Mapped[int]
     updated: Mapped[str] = mapped_column(
-        server_default=func.random(), onupdate=func.random(), server_onupdate=FetchedValue()
+        String(length=250), server_default=func.random(), onupdate=func.random(), server_onupdate=FetchedValue()
     )
 
 
