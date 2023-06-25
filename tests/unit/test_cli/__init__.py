@@ -67,7 +67,7 @@ def after_shutdown_function() -> None:
 def create_app() -> Litestar:
     return Litestar(
         [],
-        before_startup=[before_startup_function],
-        after_shutdown=[after_shutdown_function],
+        on_cli_startup=[before_startup_function],
+        on_cli_shutdown=[after_shutdown_function],
     )
 """
