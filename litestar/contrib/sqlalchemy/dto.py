@@ -224,6 +224,7 @@ def _detect_defaults(elem: ElementType) -> tuple[Any, Any]:
                 return d.arg({})
 
         elif sqla_default.is_sequence:
+
             def default_factory(d: Any = sqla_default) -> Any:
                 return d.next_value()
 
