@@ -15,6 +15,7 @@ from litestar.exceptions import ImproperlyConfiguredException, ValidationExcepti
 from litestar.params import Body, Dependency, Parameter
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import RequestFactory, TestClient, create_test_client
+from litestar.types.empty import Empty
 from litestar.types.helper_types import OptionalSequence
 from litestar.utils.signature import ParsedSignature
 
@@ -73,7 +74,8 @@ def test_create_function_signature_model_parameter_parsing() -> None:
     assert fields["b"].field_type is str
     assert not fields["b"].is_optional
     assert fields["c"].field_type is Optional[bytes]
-    assert not fields["c"].is_optional
+    assert fields["c"].is_optional
+    assert fields["c"].default_value is Empty
     assert fields["d"].field_type is bytes
     assert fields["d"].default_value == b"123"
     assert fields["e"].field_type == Optional[dict]
