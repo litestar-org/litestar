@@ -121,16 +121,16 @@ def run_command(
     console.rule("[yellow]Starting server process", align="left")
 
     show_app_info(app)
-    for hook in app.before_startup:
-        _call_before_startup_after_shutdown_hook(hook)
+    for hook in app.on_cli_startup:
+        _call_on_cli_startup_shutdown_hook(hook)
     try:
         _run_uvicorn(reload, reload_dirs, port, workers, host, fd, uds, env)
     finally:
-        for hook in app.after_shutdown:
-            _call_before_startup_after_shutdown_hook(hook)
+        for hook in app.on_cli_shutdown:
+            _call_on_cli_startup_shutdown_hook(hook)
 
 
-def _call_before_startup_after_shutdown_hook(hook: Callable, *args: Any, **kwargs: Any) -> Any:
+def _call_on_cli_startup_shutdown_hook(hook: Callable, *args: Any, **kwargs: Any) -> Any:
     return hook(*args, **kwargs)
 
 
@@ -173,7 +173,7 @@ def _run_uvicorn(
             process_args["fd"] = fd
         if uds is not None:
             process_args["uds"] = uds
-        if reload:
+        if reload_dirs:
             process_args["reload-dir"] = reload_dirs
 
         subprocess.run(

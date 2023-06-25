@@ -130,12 +130,10 @@ class Litestar(Router):
         "_debug",
         "_openapi_schema",
         "_preferred_validation_backend",
-        "after_shutdown",
         "after_exception",
         "allowed_hosts",
         "asgi_handler",
         "asgi_router",
-        "before_startup",
         "before_send",
         "compression_config",
         "cors_config",
@@ -145,6 +143,8 @@ class Litestar(Router):
         "logger",
         "logging_config",
         "multipart_form_part_limit",
+        "on_cli_shutdown",
+        "on_cli_startup",
         "on_shutdown",
         "on_startup",
         "openapi_config",
@@ -166,12 +166,10 @@ class Litestar(Router):
         self,
         route_handlers: OptionalSequence[ControllerRouterHandler] | None = None,
         *,
-        after_shutdown: OptionalSequence[Callable] | None = None,
         after_exception: OptionalSequence[AfterExceptionHookHandler] | None = None,
         after_request: AfterRequestHookHandler | None = None,
         after_response: AfterResponseHookHandler | None = None,
         allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
-        before_startup: OptionalSequence[Callable] | None = None,
         before_request: BeforeRequestHookHandler | None = None,
         before_send: OptionalSequence[BeforeMessageSendHookHandler] | None = None,
         cache_control: CacheControlHeader | None = None,
@@ -190,6 +188,8 @@ class Litestar(Router):
         middleware: OptionalSequence[Middleware] | None = None,
         multipart_form_part_limit: int = 1000,
         on_app_init: OptionalSequence[OnAppInitHandler] | None = None,
+        on_cli_shutdown: OptionalSequence[Callable] | None = None,
+        on_cli_startup: OptionalSequence[Callable] | None = None,
         on_shutdown: OptionalSequence[LifespanHook] | None = None,
         on_startup: OptionalSequence[LifespanHook] | None = None,
         openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
@@ -218,8 +218,6 @@ class Litestar(Router):
         """Initialize a ``Litestar`` application.
 
         Args:
-            after_shutdown: A sequence of :class:`Callable <typing.Callable>` called after application
-                shutdown.
             after_exception: A sequence of :class:`exception hook handlers <.types.AfterExceptionHookHandler>`. This
                 hook is called after an exception occurs. In difference to exception handlers, it is not meant to
                 return a response - only to process the exception (e.g. log it, send it to Sentry etc.).
@@ -230,8 +228,6 @@ class Litestar(Router):
             allowed_hosts: A sequence of allowed hosts, or an
                 :class:`AllowedHostsConfig <.config.allowed_hosts.AllowedHostsConfig>` instance. Enables the builtin
                 allowed hosts middleware.
-            before_startup: A sequence of :class:`Callable <typing.Callable>` called before
-                application startup.
             before_request: A sync or async function called immediately before calling the route handler. Receives the
                 :class:`Request <.connection.Request>` instance and any non-``None`` return value is used for the
                 response, bypassing the route handler.
@@ -264,6 +260,8 @@ class Litestar(Router):
                 an instance of :class:`AppConfig <.config.app.AppConfig>` that will have been initially populated with
                 the parameters passed to :class:`Litestar <litestar.app.Litestar>`, and must return an instance of same.
                 If more than one handler is registered they are called in the order they are provided.
+            on_cli_shutdown: A sequence of :class:`Callable <typing.Callable>` called on CLI shutdown.
+            on_cli_startup: A sequence of :class:`Callable <typing.Callable>` called on CLI startup.
             on_shutdown: A sequence of :class:`LifespanHook <.types.LifespanHook>` called during application
                 shutdown.
             on_startup: A sequence of :class:`LifespanHook <litestar.types.LifespanHook>` called during
@@ -321,12 +319,10 @@ class Litestar(Router):
             )
 
         config = AppConfig(
-            after_shutdown=list(after_shutdown or []),
             after_exception=list(after_exception or []),
             after_request=after_request,
             after_response=after_response,
             allowed_hosts=allowed_hosts if isinstance(allowed_hosts, AllowedHostsConfig) else list(allowed_hosts or []),
-            before_startup=list(before_startup or []),
             before_request=before_request,
             before_send=list(before_send or []),
             cache_control=cache_control,
@@ -345,6 +341,8 @@ class Litestar(Router):
             logging_config=cast("BaseLoggingConfig | None", logging_config),
             middleware=list(middleware or []),
             multipart_form_part_limit=multipart_form_part_limit,
+            on_cli_shutdown=list(on_cli_shutdown or []),
+            on_cli_startup=list(on_cli_startup or []),
             on_shutdown=list(on_shutdown or []),
             on_startup=list(on_startup or []),
             openapi_config=openapi_config,
@@ -384,10 +382,8 @@ class Litestar(Router):
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
         self.asgi_router = ASGIRouter(app=self)
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
-        self.after_shutdown = config.after_shutdown
         self.after_exception = [AsyncCallable(h) for h in config.after_exception]
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
-        self.before_startup = config.before_startup
         self.before_send = [AsyncCallable(h) for h in config.before_send]
         self.compression_config = config.compression_config
         self.cors_config = config.cors_config
@@ -395,6 +391,8 @@ class Litestar(Router):
         self.event_emitter = config.event_emitter_backend(listeners=config.listeners)
         self.logging_config = config.logging_config
         self.multipart_form_part_limit = config.multipart_form_part_limit
+        self.on_cli_shutdown = config.on_cli_shutdown
+        self.on_cli_startup = config.on_cli_startup
         self.on_shutdown = config.on_shutdown
         self.on_startup = config.on_startup
         self.openapi_config = config.openapi_config
@@ -507,9 +505,8 @@ class Litestar(Router):
 
         It will be entered when the ``lifespan`` message has been received from the
         server, and exit after the ``asgi.shutdown`` message. During this period, it is
-        responsible for calling the ``before_startup``, ``after_startup``,
-        `on_startup``, ``before_shutdown``, ``on_shutdown`` and ``after_shutdown``
-        hooks, as well as custom lifespan managers.
+        responsible for calling the  ``after_startup``,
+        `on_startup``, ``before_shutdown``, and ``on_shutdown`` hooks, as well as custom lifespan managers.
         """
         async with AsyncExitStack() as exit_stack:
             for hook in self.on_shutdown[::-1]:
