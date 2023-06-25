@@ -140,7 +140,7 @@ class MsgspecSignatureModel(SignatureModel, Struct):
             f"{fn_name}_signature_model",
             struct_fields,
             bases=(MsgspecSignatureModel,),
-            module=fn_module or "",
+            module=fn_module,
             namespace={
                 "return_annotation": parsed_signature.return_type.annotation,
                 "dependency_name_set": dependency_names,
