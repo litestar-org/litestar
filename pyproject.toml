@@ -48,6 +48,19 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
     "Topic :: Software Development",
     "Typing :: Typed",
+    "Framework :: AsyncIO",
+#    Pending trove-classifiers#148
+#    "Framework :: Litestar",
+#    "Framework :: Litestar :: 2",
+    "Framework :: Pydantic",
+    "Framework :: Pydantic :: 1",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "Topic :: Internet",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 include = ["CHANGELOG.rst"]
 packages = [{ include = "litestar" }]

@@ -1,6 +1,7 @@
 """Unit tests for the SQLAlchemy Repository implementation."""
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime, timezone
 from typing import Any
 
@@ -19,9 +20,12 @@ from tests.unit.test_contrib.test_sqlalchemy.models_bigint import (
     AuthorSyncRepository,
     BigIntAuthor,
     BigIntBook,
+    BigIntModelWithFetchedValue,
     BigIntRule,
     BookAsyncRepository,
     BookSyncRepository,
+    ModelWithFetchedValueAsyncRepository,
+    ModelWithFetchedValueSyncRepository,
     RuleAsyncRepository,
     RuleSyncRepository,
 )
@@ -87,6 +91,15 @@ def book_repo(any_session: AsyncSession | Session) -> BookAsyncRepository | Book
     if isinstance(any_session, AsyncSession):
         return BookAsyncRepository(session=any_session)
     return BookSyncRepository(session=any_session)
+
+
+@pytest.fixture()
+def model_with_fetched_value_repo(
+    any_session: AsyncSession | Session,
+) -> ModelWithFetchedValueAsyncRepository | ModelWithFetchedValueSyncRepository:
+    if isinstance(any_session, AsyncSession):
+        return ModelWithFetchedValueAsyncRepository(session=any_session)
+    return ModelWithFetchedValueSyncRepository(session=any_session)
 
 
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorAsyncRepository) -> None:
@@ -477,3 +490,23 @@ async def test_repo_json_methods(
     assert new_created is True
     assert new_obj.id is not None
     assert new_obj.config == {"new": "object"}
+
+
+async def test_repo_fetched_value(model_with_fetched_value_repo: ModelWithFetchedValueAsyncRepository) -> None:
+    """Test SQLALchemy fetched value in various places.
+
+    Args:
+        model_with_fetched_value_repo (ModelWithFetchedValueAsyncRepository): The mock repository
+    """
+
+    obj = await maybe_async(model_with_fetched_value_repo.add(BigIntModelWithFetchedValue(val=1)))
+    first_time = obj.updated
+    assert first_time is not None
+    assert obj.val == 1
+    await maybe_async(model_with_fetched_value_repo.session.commit())
+    await maybe_async(asyncio.sleep(2))
+    obj.val = 2
+    obj = await maybe_async(model_with_fetched_value_repo.update(obj))
+    assert obj.updated is not None
+    assert obj.val == 2
+    assert obj.updated != first_time

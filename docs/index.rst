@@ -40,7 +40,7 @@ Installation
         :code:`pip install litestar[structlog]`
 
     :doc:`Prometheus Instrumentation </usage/contrib/prometheus>`
-        :code:`pip install litestar[openetelemetry]`
+        :code:`pip install litestar[prometheus]`
 
     :doc:`Open Telemetry Instrumentation </usage/contrib/open-telemetry>`
         :code:`pip install litestar[openetelemetry]`
@@ -54,19 +54,75 @@ Installation
     :doc:`Jinja Templating </usage/templating>`
         :code:`pip install litestar[jinja]`
 
-    Attrs
+    `Attrs <https://www.attrs.org>`_
         :code:`pip install litestar[attrs]`
 
     Standard Installation (includes CLI and Jinja templating):
         :code:`pip install litestar[standard]`
 
+    .. tip:: ``litestar[standard]`` includes everything you need to get started with Litestar, including
+        an ASGI web server. It has: ``click`` and ``rich`` for a great CLI experience, ``jinja2`` for templating,
+        ``jsbeautifier`` for keeping your Javascript tidy , and ``uvicorn`` for running your app.
+
     All Extras:
         :code:`pip install litestar[full]`
 
 
-
 Minimal Example
 ---------------
+
+At a minimum, make sure you have installed ``litestar[standard]``, which includes ``litestar``, the CLI, and uvicorn.
+
+First, create a file named ``app.py`` with the following contents:
+
+.. code-block:: python
+
+   from litestar import Litestar, get
+
+
+   @get("/")
+   async def index() -> str:
+       return "Hello, world!"
+
+
+   @get("/books/{book_id:int}")
+   async def get_book(book_id: int) -> JSONResponse:
+       return {"book_id": book_id}
+
+
+   app = Litestar([index, get_book])
+
+Then, run the following command:
+
+.. code-block:: shell
+
+    litestar run
+    # Or you can run Uvicorn directly:
+    uvicorn app:app --reload
+
+You can now visit ``http://localhost:8000/`` and ``http://localhost:8000/books/1`` in your browser and
+you should see the JSON responses of your two endpoints:
+
+.. code-block:: json
+
+   "Hello, world!"
+
+and
+
+.. code-block:: json
+
+   {"book_id": 1}
+
+.. tip:: You can also check out the automatically generated OpenAPI-based documentation at:
+
+    * ``http://localhost:8000/schema`` (for `ReDoc <https://redocly.com/redoc>`_),
+    * ``http://localhost:8000/schema/swagger`` (for `Swagger UI <https://swagger.io/>`_),
+    * ``http://localhost:8000/schema/elements`` (for `Stoplight Elements <https://stoplight.io/open-source/elements/>`_)
+
+You can check out a more in-depth tutorial in the :doc:`/tutorials/todo-app/index` section!
+
+Expanded Example
+----------------
 
 **Define your data model** using pydantic or any library based on it (for example ormar, beanie, SQLModel):
 

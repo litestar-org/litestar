@@ -279,7 +279,7 @@ def transfer_type_data(
     if isinstance(transfer_type, CollectionType):
         if transfer_type.has_nested:
             return transfer_nested_collection_type_data(
-                transfer_type.parsed_type.origin, transfer_type, dto_for, source_value
+                transfer_type.parsed_type.instantiable_origin, transfer_type, dto_for, source_value
             )
         return transfer_type.parsed_type.instantiable_origin(source_value)
     return source_value

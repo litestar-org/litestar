@@ -8,13 +8,12 @@ This document is an overview of the changes between version **1.51** and **2.0**
 For a detailed list of all changes, including changes between versions leading up to the
 2.0 release, consult the :doc:`/release-notes/changelog`.
 
+Starlite → Litestar
+-------------------
 
-
-Starlite -> Litestar
---------------------
-
-One of the biggest changes in version 2 is the renaming of the project from *Starlite*
-to *Litestar*.
+We're thrilled to introduce some exciting changes in our latest release, version 2!
+The most noteworthy transformation you will notice is the rebranding of our project, previously known as Starlite,
+now stepping into the limelight as Litestar.
 
 The name "Starlite" was chosen as an homage to `Starlette <https://www.starlette.io/>`_,
 the ASGI framework and toolkit Starlite was initially based on. Over the course of its
@@ -22,21 +21,24 @@ development, Starlite grew more independent and relied less on Starlette, up to 
 point were Starlette was officially removed as a dependency in November 2022, with the
 release of `v1.39.0 <https://github.com/starlite-api/starlite/releases/tag/v1.39.0>`_.
 
-After careful considerations, it was decided that with the release of 2.0, Starlite
+After careful consideration, it was decided that with the release of 2.0, Starlite
 would be renamed to Litestar. There were many factors contributing to this decision, but
 it was mainly driven by concerns from within and outside the community about the
-possible confusion of the names *Starlette* and *Starlite* which (not incidentally) bea
+possible confusion of the names *Starlette* and *Starlite* which - not incidentally - bore
 a lot of resemblance, which now had outlived its purpose.
 
 ****
 
-Aside from the name, Litestar 2.0 is a direct successor of Starlite 1, and the regular
-release cycle will continue. It was determined that making the first release under the
-new name 2.0 and continue with the version numbers from Starlite would cause the least
+Aside from the name, Litestar 2.0 is a direct successor of Starlite 1.x, and the regular
+release cycle will continue. It was determined that making the first 2.0 release under the
+new name and continuing with the version scheme from Starlite would cause the least
 friction. Following that decision, the first release under the new name was
 `v2.0.0alpha3 <https://github.com/litestar-org/litestar/releases/tag/v2.0.0alpha3>`_,
 following the last alpha release of Starlite 2.0,
 `v2.0.0alpha2 <https://github.com/litestar-org/litestar/releases/tag/v2.0.0alpha2>`_.
+
+.. # TODO: This reads odd - is alpha3 the first release under the new name, and alpha2 the last one without it? or
+    was it just a placeholder for last alpha release alpha7?
 
 .. note::
     The **1.51** release line is unaffected by this change
@@ -301,8 +303,8 @@ SQLAlchemy 2 only.
 TODO: Migration instructions
 
 .. seealso::
-    :doc:`/usage/contrib/sqlalchemy/index`
-    :doc:`/reference/contrib/sqlalchemy/index`
+    The :doc:`/usage/contrib/sqlalchemy/index` usage documentation and the
+    :doc:`/reference/contrib/sqlalchemy/index` API reference
 
 
 Removal of Pydantic models
@@ -312,9 +314,7 @@ Several Pydantic models used for configuration have been replaced with dataclass
 plain classes. If you relied on implicit data conversion from these models or subclassed
 them, you might need to adjust your code accordingly.
 
-.. seealso::
-
-    :ref:`change:2.0.0alpha1-replace pydantic models with dataclasses`
+.. seealso:: :ref:`change:2.0.0alpha1-replace pydantic models with dataclasses`
 
 
 Plugin protocols
@@ -360,8 +360,8 @@ should be changed to include an additional ``scope`` parameter.
 
 
 .. seealso::
-    :ref:`change:2.0.0alpha2-remove support for 2 argument form of`
-    :ref:`before_send`
+    :ref:`change:2.0.0alpha2-remove support for 2 argument form of` ``before_send`` and the
+    :ref:`before_send` API reference
 
 
 ``initial_state`` application parameter
@@ -411,9 +411,7 @@ stores as well as provide defaults.
     :language: python
     :caption: Using the registry
 
-.. seealso::
-
-    :doc:`/usage/stores`
+.. seealso:: The :doc:`/usage/stores` usage documentation
 
 
 Usage of the ``stores`` for caching and other integrations
@@ -498,7 +496,7 @@ For example, to define a DTO from a dataclass:
     :caption: Marking fields
 
 .. seealso::
-    :doc:`/usage/dto/index`
+    The :doc:`/usage/dto/index` usage documentation
 
 
 Application lifespan hooks
@@ -598,7 +596,7 @@ or
 
 
 .. seealso::
-    :doc:`/topics/sync-vs-async`
+    The :doc:`/topics/sync-vs-async` topic guide
 
 
 HTMX
@@ -608,8 +606,7 @@ Basic support for HTMX requests and responses was added with the
 ``litestar.contrib.htmx`` module.
 
 .. seealso::
-
-    :doc:`/usage/contrib/htmx`
+   The :doc:`/usage/contrib/htmx` usage documentation
 
 
 Event bus
@@ -621,15 +618,14 @@ features a simple in-memory, process-local backend.
 
 
 .. seealso::
-    :doc:`/usage/events`
-    :doc:`/reference/events`
+    The :doc:`/usage/events` usage documentation and the
+    :doc:`/reference/events` API reference
 
 
 SQLAlchemy Repository
 ---------------------
 
 TBD
-
 
 
 Enhanced WebSocket support
@@ -668,11 +664,11 @@ handlers, OOP based event dispatching, data iterators and more.
 
 
 .. seealso::
-    :ref:`change:2.0.0alpha3-enhanced websockets support`
-    :ref:`change:2.0.0alpha6-websockets: managing a socket's lifespan using a context manager in websocket listeners`
-    :ref:`change:2.0.0alpha6-websockets: messagepack support`
-    :ref:`change:2.0.0alpha6-websockets: data iterators`
-    :doc:`/usage/websockets`
+    * :ref:`change:2.0.0alpha3-enhanced websockets support`
+    * :ref:`change:2.0.0alpha6-websockets: managing a socket's lifespan using a context manager in websocket listeners`
+    * :ref:`change:2.0.0alpha6-websockets: messagepack support`
+    * :ref:`change:2.0.0alpha6-websockets: data iterators`
+    * The :doc:`/usage/websockets` usage documentation
 
 
 Attrs signature modelling
@@ -712,7 +708,7 @@ broadcast messages.
     :language: python
 
 .. seealso::
-    :doc:`channels </usage/channels>`
+    The :doc:`channels </usage/channels>` usage documentation
 
 
 Application lifespan context managers
