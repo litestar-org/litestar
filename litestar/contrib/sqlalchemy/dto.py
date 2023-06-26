@@ -216,6 +216,11 @@ def _detect_defaults(elem: ElementType) -> tuple[Any, Any]:
             def default_factory(d: Any = sqla_default) -> Any:
                 return d.arg({})
 
+        elif sqla_default.is_sequence:
+            # SQLAlchemy sequences represent server side defaults
+            # so we cannot infer a reasonable default value for
+            # them on the client side
+            pass
         else:
             raise ValueError("Unexpected default type")
     else:

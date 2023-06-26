@@ -329,3 +329,45 @@ def get_handler(data: Circle) -> Circle:
         response = client.post("/", json={"radius": 5})
         assert response.json() == {"id": 1, "radius": 5}
         assert module.DIAMETER == 10
+
+
+async def test_field_with_sequence_default_value(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from sqlalchemy import create_engine, Column, Integer, Sequence
+from sqlalchemy.orm import DeclarativeBase, Mapped, sessionmaker
+
+from litestar import Litestar, post
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.dto.factory import DTOConfig
+
+engine = create_engine('sqlite:///:memory:', echo=True)
+Session = sessionmaker(bind=engine, expire_on_commit=False)
+
+class Base(DeclarativeBase):
+    pass
+
+class Model(Base):
+    __tablename__ = "model"
+    id: Mapped[int] = Column(Integer, Sequence('model_id_seq', optional=False), primary_key=True)
+    val: Mapped[str]
+
+class ModelCreateDTO(SQLAlchemyDTO[Model]):
+    config = DTOConfig(exclude={"id"})
+
+ModelReturnDTO = SQLAlchemyDTO[Model]
+
+@post("/", dto=ModelCreateDTO, return_dto=ModelReturnDTO, sync_to_thread=False)
+def post_handler(data: Model) -> Model:
+    Base.metadata.create_all(engine)
+
+    with Session() as session:
+        session.add(data)
+        session.commit()
+
+    return data
+    """
+    )
+    with create_test_client(route_handlers=[module.post_handler], debug=True) as client:
+        response = client.post("/", json={"val": "value"})
+        assert response.json() == {"id": 1, "val": "value"}
