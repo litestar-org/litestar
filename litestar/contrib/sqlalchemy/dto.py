@@ -17,7 +17,6 @@ from sqlalchemy.orm import (
     RelationshipProperty,
 )
 
-from litestar.contrib.sqlalchemy.base import BigIntPrimaryKey
 from litestar.dto.factory.abc import AbstractDTOFactory
 from litestar.dto.factory.data_structures import FieldDefinition
 from litestar.dto.factory.field import DTO_FIELD_META_KEY, DTOField, Mark
@@ -218,10 +217,10 @@ def _detect_defaults(elem: ElementType) -> tuple[Any, Any]:
                 return d.arg({})
 
         elif sqla_default.is_sequence:
-
-            def default_factory(d: Any = sqla_default) -> Any:
-                return d.next_value()
-
+            # SQLAlchemy sequences represent server side defaults
+            # so we cannot infer a reasonable default value for
+            # them on the client side
+            pass
         else:
             raise ValueError("Unexpected default type")
     else:
