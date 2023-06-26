@@ -186,12 +186,6 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
         # includes SQLAlchemy names and other mapped class names in the forward reference resolution namespace
         namespace = {**SQLA_NS, **{m.class_.__name__: m.class_ for m in mapper.registry.mappers if m is not mapper}}
         model_type_hints = get_model_type_hints(model_type, namespace=namespace)
-
-        # add id field if model_type is a BigIntPrimaryKey
-        # declared_attr does not play well with type hinting and inheritance.
-        if issubclass(model_type, BigIntPrimaryKey):
-            model_type_hints["id"] = ParsedType(Mapped[int])
-
         model_name = get_fully_qualified_class_name(model_type)
 
         # the same hybrid property descriptor can be included in `all_orm_descriptors` multiple times, once
