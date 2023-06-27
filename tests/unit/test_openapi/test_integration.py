@@ -70,6 +70,9 @@ def test_openapi_custom_path() -> None:
         response = client.get("/custom_schema_path")
         assert response.status_code == HTTP_200_OK
 
+        response = client.get("/custom_schema_path/openapi.json")
+        assert response.status_code == HTTP_200_OK
+
 
 def test_msgspec_schema_generation() -> None:
     class Lookup(msgspec.Struct):
