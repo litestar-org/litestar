@@ -41,7 +41,7 @@ class OpenAPIConfig:
 
     create_examples: bool = field(default=False)
     """Generate examples using the pydantic-factories library."""
-    openapi_controller: type[OpenAPIController] = field(default_factory=lambda: OpenAPIController)
+    openapi_controller: type[OpenAPIController] | None = field(default=None)
     """Controller for generating OpenAPI routes.
 
     Must be subclass of :class:`OpenAPIController <litestar.openapi.controller.OpenAPIController>`.
@@ -98,7 +98,9 @@ class OpenAPIConfig:
     """Base path for the OpenAPI documentation endpoints."""
 
     def __post_init__(self) -> None:
-        self.openapi_controller.path = self.path
+        if not self.openapi_controller:
+            self.openapi_controller = type("OpenAPIController", (OpenAPIController,), {})
+            self.openapi_controller.path = self.path
 
     def to_openapi_schema(self) -> OpenAPI:
         """Return an ``OpenAPI`` instance from the values stored in ``self``.

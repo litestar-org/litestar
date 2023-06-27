@@ -435,7 +435,7 @@ class Litestar(Router):
             self.get_logger = self.logging_config.configure()
             self.logger = self.get_logger("litestar")
 
-        if self.openapi_config:
+        if self.openapi_config and self.openapi_config.openapi_controller:
             self.register(self.openapi_config.openapi_controller)
 
         for static_config in self.static_files_config:
