@@ -35,8 +35,7 @@ def _convert_uvicorn_args(args: dict[str, Any]) -> list[str]:
             if value:
                 process_args.append(f"--{arg}")
         elif isinstance(value, tuple):
-            for item in value:
-                process_args.append(f"--{arg}={item}")
+            process_args.extend(f"--{arg}={item}" for item in value)
         else:
             process_args.append(f"--{arg}={value}")
 
