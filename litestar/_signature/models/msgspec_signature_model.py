@@ -101,7 +101,7 @@ class MsgspecSignatureModel(SignatureModel, Struct):
                     default = kwargs_container.default if kwargs_container.default is not Empty else NODEFAULT
                 else:
                     param_dict = simple_asdict(kwargs_container)
-                    field_extra.update(param_dict)
+                    field_extra |= param_dict
                     meta_kwargs = {k: v for k in MSGSPEC_CONSTRAINT_FIELDS if (v := getattr(kwargs_container, k))}
 
                     if kwargs_container.min_items:
