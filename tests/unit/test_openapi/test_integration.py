@@ -8,7 +8,7 @@ from typing_extensions import Annotated
 from litestar import Controller, post
 from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.enums import OpenAPIMediaType
-from litestar.openapi import OpenAPIConfig
+from litestar.openapi import OpenAPIConfig, OpenAPIController
 from litestar.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from litestar.testing import create_test_client
 
@@ -71,6 +71,24 @@ def test_openapi_custom_path() -> None:
         assert response.status_code == HTTP_200_OK
 
         response = client.get("/custom_schema_path/openapi.json")
+        assert response.status_code == HTTP_200_OK
+
+
+def test_openapi_custom_path_avoids_override() -> None:
+    class CustomOpenAPIController(OpenAPIController):
+        path = "/custom_docs"
+
+    openapi_config = OpenAPIConfig(
+        title="my title", version="1.0.0", openapi_controller=CustomOpenAPIController, path="/custom_schema_path"
+    )
+    with create_test_client([], openapi_config=openapi_config) as client:
+        response = client.get("/custom_schema_path")
+        assert response.status_code == HTTP_404_NOT_FOUND
+
+        response = client.get("/custom_docs/openapi.json")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/custom_docs/openapi.json")
         assert response.status_code == HTTP_200_OK
 
 
