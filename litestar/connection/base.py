@@ -184,9 +184,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         """
         if self._cookies is Empty:
             cookies: dict[str, str] = {}
-            cookie_header = self.headers.get("cookie")
-
-            if cookie_header:
+            if cookie_header := self.headers.get("cookie"):
                 cookies = parse_cookie_string(cookie_header)
 
             self._cookies = self.scope["_cookies"] = cookies  # type: ignore[typeddict-unknown-key]

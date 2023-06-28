@@ -186,8 +186,7 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
         Returns:
             The session data
         """
-        cookie_keys = self.get_cookie_keys(connection)
-        if cookie_keys:
+        if cookie_keys := self.get_cookie_keys(connection):
             data = [connection.cookies[key].encode("utf-8") for key in cookie_keys]
             # If these exceptions occur, the session must remain empty so do nothing.
             with contextlib.suppress(InvalidTag, binascii.Error):

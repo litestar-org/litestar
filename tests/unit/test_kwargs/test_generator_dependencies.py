@@ -200,7 +200,7 @@ def test_generator_dependency_nested_error_during_cleanup(
 
     async def other_dependency(generator_dep: str) -> AsyncGenerator[str, None]:
         try:
-            yield generator_dep + ", world"
+            yield f"{generator_dep}, world"
         finally:
             cleanup_mock_no_raise()
 

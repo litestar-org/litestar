@@ -147,7 +147,8 @@ async def test_delete_all(store: Store) -> None:
 
     await store.delete_all()
 
-    assert not any([await store.get(key) for key in keys])
+    for key in keys:
+        assert await store.get(key) is None
 
 
 @pytest.mark.usefixtures("patch_storage_obj_frozen_datetime")
@@ -161,10 +162,13 @@ async def test_expires_in(store: Store, frozen_datetime: FrozenDateTimeFactory) 
     assert await store.expires_in("foo") == -1
 
     await store.set("foo", "bar", expires_in=10)
-    assert math.ceil(await store.expires_in("foo") / 10) * 10 == 10  # type: ignore[operator]
+    expiration = await store.expires_in("foo")
+    assert expiration is not None
+    assert math.ceil(expiration / 10) == 1
 
     frozen_datetime.tick(12)
-    assert await store.expires_in("foo") is None
+    expiration = await store.expires_in("foo")
+    assert expiration is None
 
 
 @patch("litestar.stores.redis.Redis")
@@ -205,8 +209,11 @@ async def test_redis_delete_all(redis_store: RedisStore) -> None:
 
     await redis_store.delete_all()
 
-    assert not any([await redis_store.get(key) for key in keys])
-    assert await redis_store._redis.get("test_key") == b"test_value"  # check it doesn't delete other values
+    for key in keys:
+        assert await redis_store.get(key) is None
+
+    stored_value = await redis_store._redis.get("test_key")
+    assert stored_value == b"test_value"  # check it doesn't delete other values
 
 
 async def test_redis_delete_all_no_namespace_raises(fake_redis: Redis) -> None:
@@ -253,7 +260,7 @@ def test_file_with_namespace(file_store: FileStore) -> None:
 @pytest.mark.parametrize("invalid_char", string.punctuation)
 def test_file_with_namespace_invalid_namespace_char(file_store: FileStore, invalid_char: str) -> None:
     with pytest.raises(ValueError):
-        file_store.with_namespace("foo" + invalid_char)
+        file_store.with_namespace(f"foo{invalid_char}")
 
 
 @pytest.fixture(params=["redis_store", "file_store"])
@@ -310,8 +317,11 @@ async def test_memory_delete_expired(
     frozen_datetime.tick(1)
     await store.delete_expired()
 
-    assert not any([await store.exists(key) for key in expect_expired])
-    assert all([await store.exists(key) for key in expect_not_expired])
+    for key in expect_expired:
+        assert await store.get(key) is None
+
+    for key in expect_not_expired:
+        assert await store.get(key) is not None
 
 
 def test_registry_get(memory_store: MemoryStore) -> None:

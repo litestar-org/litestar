@@ -13,10 +13,7 @@ def find_index(target_list: list[T], predicate: Callable[[T], bool]) -> int:
 
     List elements can be dicts or classes
     """
-    for i, element in enumerate(target_list):
-        if predicate(element):
-            return i
-    return -1
+    return next((i for i, element in enumerate(target_list) if predicate(element)), -1)
 
 
 def unique(value: Sequence[T]) -> list[T]:

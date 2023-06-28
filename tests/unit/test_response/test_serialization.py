@@ -90,4 +90,4 @@ def test_response_validation_of_unknown_media_types(
             response.render(content, media_type=media_type)
     else:
         rendered = response.render(content, media_type=media_type)
-        assert rendered == (content.encode("utf-8") if not isinstance(content, bytes) else content)
+        assert rendered == (content if isinstance(content, bytes) else content.encode("utf-8"))

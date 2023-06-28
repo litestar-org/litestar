@@ -173,6 +173,4 @@ class RedisStore(NamespacedStore):
         expiry time was set, return ``None``.
         """
         ttl = await self._redis.ttl(self._make_key(key))
-        if ttl == -2:
-            return None
-        return ttl
+        return None if ttl == -2 else ttl

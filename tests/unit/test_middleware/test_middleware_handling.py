@@ -76,8 +76,7 @@ def test_custom_middleware_processing(middleware: Any) -> None:
         while hasattr(cur, "app"):
             unpacked_middleware.append(cur)
             cur = cast("ASGIApp", cur.app)
-        else:
-            unpacked_middleware.append(cur)
+        unpacked_middleware.append(cur)
         assert len(unpacked_middleware) == 4
 
         middleware_instance = unpacked_middleware[1]

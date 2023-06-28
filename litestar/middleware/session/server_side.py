@@ -137,8 +137,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         Returns:
             The current session data
         """
-        session_id = connection.cookies.get(self.config.key)
-        if session_id:
+        if session_id := connection.cookies.get(self.config.key):
             store = self.config.get_store_from_app(connection.scope["app"])
             data = await self.get(session_id, store=store)
             if data is not None:

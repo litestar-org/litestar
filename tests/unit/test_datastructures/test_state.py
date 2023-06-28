@@ -16,7 +16,7 @@ def test_state_immutable_mapping(state_class: type[ImmutableState]) -> None:
     assert len(state) == 3
     assert "first" in state
     assert state["first"] == 1
-    assert [(k, v) for k, v in state.items()] == [("first", 1), ("second", 2), ("third", 3)]
+    assert list(state.items()) == [("first", 1), ("second", 2), ("third", 3)]
     assert state
     assert isinstance(state.mutable_copy(), State)
     del state_dict["first"]

@@ -48,7 +48,7 @@ class PydanticDTO(AbstractDTOFactory[T], Generic[T]):
 
                 return _model_field.default
 
-            field_def = FieldDefinition(
+            yield FieldDefinition(
                 name=key,
                 default=determine_default(parsed_type, model_field),
                 parsed_type=parsed_type,
@@ -57,8 +57,6 @@ class PydanticDTO(AbstractDTOFactory[T], Generic[T]):
                 unique_model_name=get_fully_qualified_class_name(model_type),
                 dto_for=None,
             )
-
-            yield field_def
 
     @classmethod
     def detect_nested_field(cls, parsed_type: ParsedType) -> bool:

@@ -30,8 +30,7 @@ def test_allowed_hosts_middleware() -> None:
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
         cur = cast("Any", cur.app)
-    else:
-        unpacked_middleware.append(cur)
+    unpacked_middleware.append(cur)
 
     assert len(unpacked_middleware) == 4
     allowed_hosts_middleware = cast("Any", unpacked_middleware[1])

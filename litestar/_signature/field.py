@@ -140,7 +140,7 @@ class SignatureField:
         if isinstance(self.kwarg_model, ParameterKwarg) and self.kwarg_model.required is not None:
             return self.kwarg_model.required
 
-        return not (self.is_optional or self.is_any) and (self.is_empty or self.default_value is None)
+        return not self.is_optional and not self.is_any and (self.is_empty or self.default_value is None)
 
     @property
     def is_literal(self) -> bool:

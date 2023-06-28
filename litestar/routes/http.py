@@ -195,16 +195,15 @@ class HTTPRoute(BaseRoute):
 
         if cleanup_group:
             async with cleanup_group:
-                if route_handler.has_sync_callable:
-                    data = route_handler.fn.value(**parsed_kwargs)
-                else:
-                    data = await route_handler.fn.value(**parsed_kwargs)
-
+                data = (
+                    route_handler.fn.value(**parsed_kwargs)
+                    if route_handler.has_sync_callable
+                    else await route_handler.fn.value(**parsed_kwargs)
+                )
+        elif route_handler.has_sync_callable:
+            data = route_handler.fn.value(**parsed_kwargs)
         else:
-            if route_handler.has_sync_callable:
-                data = route_handler.fn.value(**parsed_kwargs)
-            else:
-                data = await route_handler.fn.value(**parsed_kwargs)
+            data = await route_handler.fn.value(**parsed_kwargs)
 
         return data, cleanup_group
 

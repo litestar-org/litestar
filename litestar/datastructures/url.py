@@ -173,13 +173,14 @@ class URL:
         path = scope.get("root_path", "") + scope["path"]
         query_string = scope.get("query_string", b"")
 
-        # # we use iteration here because it's faster, and headers might not yet be cached
-        # # in the scope
-        host = ""
-        for header_name, header_value in scope.get("headers", []):
-            if header_name == b"host":
-                host = header_value.decode("latin-1")
-                break
+        host = next(
+            (
+                header_value.decode("latin-1")
+                for header_name, header_value in scope.get("headers", [])
+                if header_name == b"host"
+            ),
+            "",
+        )
         if server and not host:
             host, port = server
             default_port = _DEFAULT_SCHEME_PORTS[scheme]

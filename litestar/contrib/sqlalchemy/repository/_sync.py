@@ -151,7 +151,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
 
         """
         existing = self.count(**kwargs)
-        return bool(existing > 0)
+        return existing > 0
 
     def get(self, item_id: Any, **kwargs: Any) -> ModelT:
         """Get instance identified by `item_id`.
@@ -224,7 +224,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Returns:
             a tuple that includes the instance and whether or not it needed to be created.  When using match_fields and actual model values differ from `kwargs`, the model value will be updated.
         """
-        match_fields = match_fields if match_fields else self.match_fields
+        match_fields = match_fields or self.match_fields
         if isinstance(match_fields, str):
             match_fields = [match_fields]
         if match_fields:
@@ -533,7 +533,11 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             elif isinstance(filter_, CollectionFilter):
                 statement = self._filter_in_collection(filter_.field_name, filter_.values, statement=statement)
             elif isinstance(filter_, OrderBy):
-                statement = self._order_by(statement, filter_.field_name, sort_desc=bool(filter_.sort_order == "desc"))
+                statement = self._order_by(
+                    statement,
+                    filter_.field_name,
+                    sort_desc=filter_.sort_order == "desc",
+                )
             elif isinstance(filter_, SearchFilter):
                 statement = self._filter_by_like(
                     statement, filter_.field_name, value=filter_.value, ignore_case=bool(filter_.ignore_case)

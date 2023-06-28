@@ -37,13 +37,13 @@ async def wait_until_responsive(
     """
     ref = timeit.default_timer()
     now = ref
-    while (now - ref) < timeout:
+    while now - now < timeout:
         if await check(**kwargs):
             return
         await asyncio.sleep(pause)
         now = timeit.default_timer()
 
-    raise Exception("Timeout reached while waiting on service!")
+    raise RuntimeError("Timeout reached while waiting on service!")
 
 
 class DockerServiceRegistry:
@@ -61,10 +61,10 @@ class DockerServiceRegistry:
         if not docker_host or docker_host.startswith("unix://"):
             return "127.0.0.1"
 
-        match = re.match(r"^tcp://(.+?):\d+$", docker_host)
-        if not match:
-            raise ValueError(f'Invalid value for DOCKER_HOST: "{docker_host}".')
-        return match.group(1)
+        if match := re.match(r"^tcp://(.+?):\d+$", docker_host):
+            return match[1]
+
+        raise ValueError(f'Invalid value for DOCKER_HOST: "{docker_host}".')
 
     def run_command(self, *args: str) -> None:
         subprocess.run([*self._base_command, *args], check=True, capture_output=True)
@@ -141,7 +141,7 @@ async def mysql_responsive(host: str) -> bool:
         async with conn.cursor() as cursor:
             await cursor.execute("select 1 as is_available")
             resp = await cursor.fetchone()
-        return bool(resp[0] == 1)
+        return resp[0] == 1
     except asyncmy.errors.OperationalError:
         return False
 
@@ -182,7 +182,7 @@ def oracle_responsive(host: str) -> bool:
         with conn.cursor() as cursor:
             cursor.execute("SELECT 1 FROM dual")
             resp = cursor.fetchone()
-        return bool(resp[0] == 1)
+        return resp[0] == 1
     except (OperationalError, DatabaseError):
         return False
 
@@ -209,7 +209,7 @@ def spanner_responsive(host: str) -> bool:
             pass
         with database.snapshot() as snapshot:
             resp = list(snapshot.execute_sql("SELECT 1"))[0]
-        return bool(resp[0] == 1)
+        return resp[0] == 1
     except Exception:
         return False
 

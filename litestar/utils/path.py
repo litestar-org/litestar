@@ -19,7 +19,7 @@ def normalize_path(path: str) -> str:
         Path string
     """
     path = path.strip("/")
-    path = "/" + path
+    path = f"/{path}"
     return multi_slash_pattern.sub("/", path)
 
 

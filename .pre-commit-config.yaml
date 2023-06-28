@@ -59,7 +59,7 @@ repos:
       - id: slotscheck
         exclude: "test_*|docs"
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.4.0"
+    rev: "v1.4.1"
     hooks:
       - id: mypy
         exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures"
@@ -119,7 +119,7 @@ repos:
             prometheus_client,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.315
+    rev: v1.1.316
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures"

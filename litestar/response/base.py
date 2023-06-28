@@ -76,13 +76,12 @@ class ASGIResponse:
         """
         body = body.encode() if isinstance(body, str) else body
         status_code = status_code or HTTP_200_OK
-        cookies = cookies or []
         encoded_headers = encoded_headers or []
         headers = headers or {}
         media_type = get_enum_string_value(media_type or MediaType.JSON)
 
-        status_allows_body = not (
-            status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or status_code < HTTP_200_OK
+        status_allows_body = (
+            status_code not in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} and status_code >= HTTP_200_OK
         )
 
         if not status_allows_body or is_head_response:
@@ -111,6 +110,7 @@ class ASGIResponse:
         self.background = background
         self.body = body
         self.content_length = content_length
+        cookies = cookies or []
         self.encoded_headers = encode_headers(headers.items(), cookies, encoded_headers)
         self.encoding = encoding
         self.is_head_response = is_head_response
