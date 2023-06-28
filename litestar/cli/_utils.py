@@ -343,7 +343,7 @@ def show_app_info(app: Litestar) -> None:  # pragma: no cover
         table.add_row("Allowed hosts", ", ".join(allowed_hosts.allowed_hosts))
 
     openapi_enabled = _format_is_enabled(app.openapi_config)
-    if app.openapi_config and app.openapi_config.openapi_controller:
+    if app.openapi_config:
         openapi_enabled += f" path=[yellow]{app.openapi_config.openapi_controller.path}"
     table.add_row("OpenAPI", openapi_enabled)
 

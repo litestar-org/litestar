@@ -120,7 +120,6 @@ def test_allows_customization_of_path() -> None:
 
     assert app.openapi_config
     assert app.openapi_config.path == "/custom_schema_path"
-    assert app.openapi_config.openapi_controller
     assert app.openapi_config.openapi_controller.path == "/custom_schema_path"
 
 
