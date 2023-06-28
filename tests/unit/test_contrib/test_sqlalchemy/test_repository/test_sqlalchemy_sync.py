@@ -264,11 +264,12 @@ def test_sqlalchemy_repo_get_or_create_member_existing(
     attach_to_session_mock = MagicMock(return_value=mock_instance)
     monkeypatch.setattr(mock_repo, "_execute", execute_mock)
     monkeypatch.setattr(mock_repo, "_attach_to_session", attach_to_session_mock)
-    instance, created = mock_repo.get_or_create(id="instance-id")
+    instance, created = mock_repo.get_or_create(id="instance-id", upsert=False)
     assert instance is mock_instance
     assert created is False
     mock_repo.session.expunge.assert_called_with(mock_instance)
     mock_repo.session.merge.assert_not_called()
+    mock_repo.session.refresh.assert_not_called()
 
 
 def test_sqlalchemy_repo_get_or_create_member_existing_upsert(
@@ -288,6 +289,7 @@ def test_sqlalchemy_repo_get_or_create_member_existing_upsert(
     mock_repo.session.expunge.assert_called_with(mock_instance)
     mock_repo._attach_to_session.assert_called_once()
     mock_repo.session.flush.assert_called_once()
+    mock_repo.session.refresh.assert_called_once_with(mock_instance)
 
 
 def test_sqlalchemy_repo_get_or_create_member_existing_no_upsert(
@@ -304,6 +306,7 @@ def test_sqlalchemy_repo_get_or_create_member_existing_no_upsert(
     assert created is False
     mock_repo.session.expunge.assert_called_once_with(mock_instance)
     mock_repo.session.add.assert_not_called()
+    mock_repo.session.refresh.assert_not_called()
 
 
 def test_sqlalchemy_repo_get_or_create_member_created(
@@ -319,6 +322,7 @@ def test_sqlalchemy_repo_get_or_create_member_created(
     assert created is True
     mock_repo.session.expunge.assert_called_with(instance)
     mock_repo.session.add.assert_called_once_with(instance)
+    mock_repo.session.refresh.assert_called_once_with(instance)
 
 
 def test_sqlalchemy_repo_get_one_or_none_member(mock_repo: SQLAlchemySyncRepository, monkeypatch: MonkeyPatch) -> None:
@@ -469,6 +473,7 @@ def test_sqlalchemy_repo_update(mock_repo: SQLAlchemySyncRepository, monkeypatch
     mock_repo.session.flush.assert_called_once()
     mock_repo.session.expunge.assert_called_once_with(mock_instance)
     mock_repo.session.commit.assert_not_called()
+    mock_repo.session.refresh.assert_called_once_with(mock_instance)
 
 
 def test_sqlalchemy_repo_upsert(mock_repo: SQLAlchemySyncRepository) -> None:
@@ -481,6 +486,7 @@ def test_sqlalchemy_repo_upsert(mock_repo: SQLAlchemySyncRepository) -> None:
     mock_repo.session.flush.assert_called_once()
     mock_repo.session.expunge.assert_called_once_with(mock_instance)
     mock_repo.session.commit.assert_not_called()
+    mock_repo.session.refresh.assert_called_once_with(mock_instance)
 
 
 def test_attach_to_session_unexpected_strategy_raises_valueerror(
