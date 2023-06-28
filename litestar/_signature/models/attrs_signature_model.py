@@ -245,7 +245,7 @@ def _create_validators(
     annotation: Any, kwargs_model: BodyKwarg | ParameterKwarg
 ) -> list[Callable[[Any, attrs.Attribute[Any], Any], Any]] | Callable[[Any, attrs.Attribute[Any], Any], Any]:
     validators: list[Callable[[Any, attrs.Attribute[Any], Any], Any]] = [
-        validator(value)
+        validator(value)  # type: ignore[operator]
         for value, validator in [
             (kwargs_model.gt, attrs.validators.gt),
             (kwargs_model.ge, attrs.validators.ge),

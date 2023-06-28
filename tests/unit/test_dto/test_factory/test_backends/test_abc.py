@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, Generator, List, Tuple, Union
 
 import pytest
 
@@ -75,11 +75,14 @@ def fx_field_definitions(data_model_type: type[Model]) -> list[FieldDefinition]:
 
 @pytest.fixture(name="context")
 def fx_context(data_model_type: type[Model], field_definitions: list[FieldDefinition]) -> BackendContext:
+    def _generator(_: Any) -> Generator[FieldDefinition, None, None]:
+        yield from field_definitions
+
     return BackendContext(
         dto_config=DTOConfig(),
         dto_for="data",
         parsed_type=ParsedType(data_model_type),
-        field_definition_generator=lambda _: iter(field_definitions),
+        field_definition_generator=_generator,
         is_nested_field_predicate=lambda parsed_type: parsed_type.is_subclass_of((Model, Model2)),
         model_type=data_model_type,
         wrapper_attribute_name=None,
@@ -263,7 +266,7 @@ def test_parse_model_respects_field_definition_dto_for(
     object.__setattr__(field_definitions[0], "dto_for", "data")
     object.__setattr__(field_definitions[1], "dto_for", "return")
     backend.context.dto_for = dto_for  # type:ignore[misc]
-    backend.context.field_definition_generator = lambda _: iter(field_definitions)
+    backend.context.field_definition_generator = lambda _: iter(field_definitions)  # type: ignore
     transfer_field_defs = backend.parse_model(None, exclude=set())
     assert len(transfer_field_defs) == 1
     assert transfer_field_defs[0].dto_for == dto_for

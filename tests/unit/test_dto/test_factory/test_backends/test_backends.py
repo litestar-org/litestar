@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from types import ModuleType
-from typing import TYPE_CHECKING, Callable, List, Optional
+from typing import TYPE_CHECKING, Callable, List, Optional, cast
 
 import pytest
 from msgspec import Struct, to_builtins
@@ -84,7 +84,7 @@ def fx_connection_context() -> ConnectionContext:
 
 
 def _destructure(model: BaseModel | Struct) -> dict[str, Any]:
-    return model.dict() if isinstance(model, BaseModel) else to_builtins(model)
+    return cast("dict[str, Any]", model.dict() if isinstance(model, BaseModel) else to_builtins(model))
 
 
 def test_backend_parse_raw_json(backend: AbstractDTOBackend, connection_context: ConnectionContext) -> None:

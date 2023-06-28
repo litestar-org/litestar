@@ -90,8 +90,7 @@ class ASGIResponse:
                     "response content is not supported for HEAD responses and responses with a status code "
                     "that does not allow content (304, 204, < 200)"
                 )
-            else:
-                body = b""
+            body = b""
 
         encoded_headers.append(
             (

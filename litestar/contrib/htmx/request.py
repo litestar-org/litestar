@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from functools import cached_property
 from typing import TYPE_CHECKING, Any
 from urllib.parse import unquote, urlsplit, urlunsplit
@@ -23,15 +24,16 @@ class HTMXDetails:
         """Initialize :class:`HTMXDetails`"""
         self.request = request
 
-    def _get_header_value(self, name: str) -> str | None:
+    def _get_header_value(self, name: HTMXHeaders) -> str | None:
         """Parse request header
 
         Check for uri encoded header and unquotes it in readable format.
         """
-        value = self.request.headers.get(name) or None
-        if value and self.request.headers.get(f"{name}-URI-AutoEncoded") == "true":
-            return unquote(value)
-        return value
+
+        if value := self.request.headers.get(name.value.lower()):
+            is_uri_encoded = self.request.headers.get(f"{name.value.lower()}-uri-autoencoded") == "true"
+            return unquote(value) if is_uri_encoded else value
+        return None
 
     def __bool__(self) -> bool:
         """Check if request is sent by an HTMX client."""
@@ -93,13 +95,10 @@ class HTMXDetails:
 
         This value is added by ``event-header`` extension of HTMX to the ``Triggering-Event`` header to requests.
         """
-        value = self._get_header_value(HTMXHeaders.TRIGGERING_EVENT)
-        if value is not None:
-            try:
-                value = decode_json(value)
-            except SerializationException:
-                value = None
-        return value
+        if value := self._get_header_value(HTMXHeaders.TRIGGERING_EVENT):
+            with suppress(SerializationException):
+                return decode_json(value)
+        return None
 
 
 class HTMXRequest(Request):

@@ -93,7 +93,6 @@ def test_current_url_set() -> None:
 def test_current_url_set_url_encoded() -> None:
     @get("/")
     def handler(request: HTMXRequest) -> Optional[str]:
-        assert request.htmx.current_url == "https://example.com/?"
         return request.htmx.current_url
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
@@ -277,7 +276,6 @@ def test_triggering_event_bad_json() -> None:
 def test_triggering_event_good_json() -> None:
     @get("/")
     def handler(request: HTMXRequest) -> Any:
-        assert request.htmx.triggering_event == {"target": None}
         return request.htmx.triggering_event
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest, debug=True) as client:

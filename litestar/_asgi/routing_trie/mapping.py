@@ -87,7 +87,7 @@ def add_route_to_trie(
 
     has_path_parameters = bool(route.path_parameters)
 
-    if is_mount := hasattr(route, "route_handler") and getattr(route.route_handler, "is_mount", False):
+    if (route_handler := getattr(route, "route_handler", None)) and getattr(route_handler, "is_mount", False):
         current_node = add_mount_route(
             current_node=current_node,
             mount_routes=mount_routes,

@@ -197,7 +197,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         """
         extensions: dict[str, dict[Any, Any]] = self.scope.get("extensions") or {}
         if "http.response.push" in extensions:
-            raw_headers: list[tuple[bytes, bytes], ...] = []
+            raw_headers: list[tuple[bytes, bytes]] = []
             for name in SERVER_PUSH_HEADERS:
                 raw_headers.extend(
                     (name.encode("latin-1"), value.encode("latin-1")) for value in self.headers.getall(name, [])

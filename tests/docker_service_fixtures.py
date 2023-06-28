@@ -63,8 +63,8 @@ class DockerServiceRegistry:
 
         if match := re.match(r"^tcp://(.+?):\d+$", docker_host):
             return match[1]
-        else:
-            raise ValueError(f'Invalid value for DOCKER_HOST: "{docker_host}".')
+
+        raise ValueError(f'Invalid value for DOCKER_HOST: "{docker_host}".')
 
     def run_command(self, *args: str) -> None:
         subprocess.run([*self._base_command, *args], check=True, capture_output=True)
