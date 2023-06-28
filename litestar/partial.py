@@ -105,13 +105,12 @@ class Partial(Generic[T]):
         """
         import pydantic
 
-        field_definitions: dict[str, tuple[Any, None]] = {}
-        for field_name, field_type in _extract_type_hints(item):
-            if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__:
-                field_definitions[field_name] = (Optional[field_type], None)
-            else:
-                field_definitions[field_name] = (field_type, None)
-
+        field_definitions: dict[str, tuple[Any, None]] = {
+            field_name: (Optional[field_type], None)
+            if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__
+            else (field_type, None)
+            for field_name, field_type in _extract_type_hints(item)
+        }
         cls._models[item] = pydantic.create_model(
             _create_partial_type_name(item), __base__=item, **field_definitions  # pyright: ignore
         )  # type: ignore
@@ -120,13 +119,12 @@ class Partial(Generic[T]):
     def _create_partial_attrs_model(cls, item: type[attrs.AttrsInstance]) -> None:
         import attrs
 
-        field_definitions: dict[str, Any] = {}
-        for field_name, field_type in _extract_type_hints(item):
-            if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__:
-                field_definitions[field_name] = Optional[field_type]
-            else:
-                field_definitions[field_name] = field_type
-
+        field_definitions: dict[str, Any] = {
+            field_name: Optional[field_type]
+            if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__
+            else field_type
+            for field_name, field_type in _extract_type_hints(item)
+        }
         cls._models[item] = attrs.define(
             type(
                 _create_partial_type_name(item),
@@ -161,12 +159,12 @@ class Partial(Generic[T]):
         Args:
             item: A :class:`TypedDict <typing.TypeDict>` class.
         """
-        field_definitions: dict[str, Any] = {}
-        for field_name, field_type in _extract_type_hints(item):
-            if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__:
-                field_definitions[field_name] = Optional[field_type]
-            else:
-                field_definitions[field_name] = field_type
+        field_definitions: dict[str, Any] = {
+            field_name: Optional[field_type]
+            if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__
+            else field_type
+            for field_name, field_type in _extract_type_hints(item)
+        }
         cls._models[item] = TypedDict(_create_partial_type_name(item), field_definitions, total=False)  # type: ignore
 
     @classmethod

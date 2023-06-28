@@ -659,12 +659,14 @@ class Litestar(Router):
         )
         passed_parameters = set(path_parameters.keys())
 
-        selected_route = routes[-1]
-        for route in routes:
-            if passed_parameters.issuperset({param.name for param in route.path_parameters}):
-                selected_route = route
-                break
-
+        selected_route = next(
+            (
+                route
+                for route in routes
+                if passed_parameters.issuperset({param.name for param in route.path_parameters})
+            ),
+            routes[-1],
+        )
         for component in selected_route.path_components:
             if isinstance(component, PathParameterDefinition):
                 val = path_parameters.get(component.name)
@@ -725,10 +727,9 @@ class Litestar(Router):
         Returns:
             A dictionary of router handlers and lists of paths as strings
         """
-        route_map: dict[str, list[str]] = {}
-        for handler, routes in self.asgi_router.route_mapping.items():
-            route_map[handler] = [route.path for route in routes]
-
+        route_map: dict[str, list[str]] = {
+            handler: [route.path for route in routes] for handler, routes in self.asgi_router.route_mapping.items()
+        }
         return route_map
 
     def _create_asgi_handler(self) -> ASGIApp:

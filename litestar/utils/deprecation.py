@@ -50,9 +50,12 @@ def warn_deprecation(
     else:
         parts.append(f"{access_type} deprecated {kind} {deprecated_name!r}")
 
-    parts.append(f"Deprecated in litestar {version}")
-    parts.append(f"This {kind} will be removed in {removal_in or 'the next major version'}")
-
+    parts.extend(
+        (
+            f"Deprecated in litestar {version}",
+            f"This {kind} will be removed in {removal_in or 'the next major version'}",
+        )
+    )
     if alternative:
         parts.append(f"Use {alternative!r} instead")
 

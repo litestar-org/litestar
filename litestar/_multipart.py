@@ -123,7 +123,7 @@ def parse_multipart_form(body: bytes, boundary: bytes, multipart_form_part_limit
             line_index = line_end_index + 2
             colon_index = form_line.index(":")
             current_idx = colon_index + 2
-            form_header_field = form_line[0:colon_index].lower()
+            form_header_field = form_line[:colon_index].lower()
             form_header_value, form_parameters = parse_content_header(form_line[current_idx:])
 
             if form_header_field == "content-disposition":

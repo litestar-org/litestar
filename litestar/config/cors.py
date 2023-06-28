@@ -112,9 +112,9 @@ class CORSConfig:
         if self.allow_methods:
             headers["Access-Control-Allow-Methods"] = ", ".join(
                 sorted(
-                    set(self.allow_methods)
-                    if not self.is_allow_all_methods
-                    else {"DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"}
+                    {"DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"}
+                    if self.is_allow_all_methods
+                    else set(self.allow_methods)
                 )
             )
         return headers

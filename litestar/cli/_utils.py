@@ -322,9 +322,7 @@ def _autodiscover_app(cwd: Path) -> LoadedApp:
 
 def _format_is_enabled(value: Any) -> str:
     """Return a coloured string `"Enabled" if ``value`` is truthy, else "Disabled"."""
-    if value:
-        return "[green]Enabled[/]"
-    return "[red]Disabled[/]"
+    return "[green]Enabled[/]" if value else "[red]Disabled[/]"
 
 
 def show_app_info(app: Litestar) -> None:  # pragma: no cover
@@ -356,12 +354,10 @@ def show_app_info(app: Litestar) -> None:  # pragma: no cover
 
     if app.static_files_config:
         static_files_configs = app.static_files_config
-        static_files_info = []
-        for static_files in static_files_configs:
-            static_files_info.append(
-                f"path=[yellow]{static_files.path}[/] dirs=[yellow]{', '.join(map(str, static_files.directories))}[/] "
-                f"html_mode={_format_is_enabled(static_files.html_mode)}",
-            )
+        static_files_info = [
+            f"path=[yellow]{static_files.path}[/] dirs=[yellow]{', '.join(map(str, static_files.directories))}[/] html_mode={_format_is_enabled(static_files.html_mode)}"
+            for static_files in static_files_configs
+        ]
         table.add_row("Static files", "\n".join(static_files_info))
 
     middlewares = []

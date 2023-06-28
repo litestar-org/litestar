@@ -63,7 +63,7 @@ class FirstController(Controller):
         assert socket
         assert isinstance(first, int)
         assert isinstance(second, dict)
-        assert third is False
+        assert not third
         await socket.close()
 
 
@@ -93,7 +93,7 @@ def test_function_dependency_injection() -> None:
         msg = await socket.receive_json()
         assert msg
         assert isinstance(first, int)
-        assert second is False
+        assert not second
         assert isinstance(third, str)
         await socket.close()
 

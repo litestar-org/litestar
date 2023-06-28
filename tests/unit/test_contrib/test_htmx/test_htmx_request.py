@@ -101,7 +101,7 @@ def test_current_url_set_url_encoded() -> None:
             "/",
             headers={
                 HTMXHeaders.CURRENT_URL.value: "https%3A%2F%2Fexample.com%2F%3F",
-                HTMXHeaders.CURRENT_URL.value + "-URI-AutoEncoded": "true",
+                f"{HTMXHeaders.CURRENT_URL.value}-URI-AutoEncoded": "true",
             },
         )
         assert response.text == "https://example.com/?"
@@ -280,12 +280,12 @@ def test_triggering_event_good_json() -> None:
         assert request.htmx.triggering_event == {"target": None}
         return request.htmx.triggering_event
 
-    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest, debug=True) as client:
         response = client.get(
             "/",
             headers={
                 HTMXHeaders.TRIGGERING_EVENT.value: "%7B%22target%22%3A%20null%7D",
-                HTMXHeaders.TRIGGERING_EVENT.value + "-uri-autoencoded": "true",
+                f"{HTMXHeaders.TRIGGERING_EVENT.value}-uri-autoencoded": "true",
             },
         )
         assert response.text == '{"target":null}'

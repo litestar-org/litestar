@@ -101,7 +101,7 @@ def test_media_type(media_type: Union[MediaType, str], tmp_path: Path) -> None:
 )
 @pytest.mark.skipif(sys.platform == "win32", reason="mimetypes.guess_types is unreliable on windows")
 def test_media_type_inferred(extension: str, expected_type: MediaType, tmp_path: Path) -> None:
-    tpl_name = "hello" + extension
+    tpl_name = f"hello{extension}"
     (tmp_path / tpl_name).write_text("hello")
 
     @get("/")

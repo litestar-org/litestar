@@ -95,10 +95,9 @@ def create_frame_html(frame: FrameInfo, collapsed: bool) -> str:
     """
     frame_tpl = (tpl_dir / "frame.html").read_text()
 
-    code_lines: list[str] = []
-    for idx, line in enumerate(frame.code_context or []):
-        code_lines.append(create_line_html(line, frame.lineno, frame.index or 0, idx))  # pyright: ignore
-
+    code_lines: list[str] = [
+        create_line_html(line, frame.lineno, frame.index or 0, idx) for idx, line in enumerate(frame.code_context or [])
+    ]
     data = {
         "file": escape(frame.filename),
         "line": frame.lineno,
@@ -120,10 +119,7 @@ def create_exception_html(exc: BaseException, line_limit: int) -> str:
         A string containing HTML representation of the execution frames related to the exception.
     """
     frames = getinnerframes(exc.__traceback__, line_limit) if exc.__traceback__ else []
-    result = []
-    for idx, frame in enumerate(reversed(frames)):
-        result.append(create_frame_html(frame=frame, collapsed=idx > 0))
-
+    result = [create_frame_html(frame=frame, collapsed=idx > 0) for idx, frame in enumerate(reversed(frames))]
     return "".join(result)
 
 

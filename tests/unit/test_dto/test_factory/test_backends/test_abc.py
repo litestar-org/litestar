@@ -79,7 +79,7 @@ def fx_context(data_model_type: type[Model], field_definitions: list[FieldDefini
         dto_config=DTOConfig(),
         dto_for="data",
         parsed_type=ParsedType(data_model_type),
-        field_definition_generator=lambda _: (f for f in field_definitions),
+        field_definition_generator=lambda _: iter(field_definitions),
         is_nested_field_predicate=lambda parsed_type: parsed_type.is_subclass_of((Model, Model2)),
         model_type=data_model_type,
         wrapper_attribute_name=None,
@@ -253,7 +253,7 @@ def test_create_collection_type_nested_union(backend: AbstractDTOBackend) -> Non
     assert len(inner_types) == len(inner_type.parsed_type.inner_types)
     for inner_type in inner_types:
         assert isinstance(inner_type, SimpleType)
-        assert bool(inner_type.nested_field_info) is True
+        assert bool(inner_type.nested_field_info)
 
 
 @pytest.mark.parametrize("dto_for", ["data", "return"])
@@ -263,7 +263,7 @@ def test_parse_model_respects_field_definition_dto_for(
     object.__setattr__(field_definitions[0], "dto_for", "data")
     object.__setattr__(field_definitions[1], "dto_for", "return")
     backend.context.dto_for = dto_for  # type:ignore[misc]
-    backend.context.field_definition_generator = lambda _: (f for f in field_definitions)  # type:ignore[misc]
+    backend.context.field_definition_generator = lambda _: iter(field_definitions)
     transfer_field_defs = backend.parse_model(None, exclude=set())
     assert len(transfer_field_defs) == 1
     assert transfer_field_defs[0].dto_for == dto_for

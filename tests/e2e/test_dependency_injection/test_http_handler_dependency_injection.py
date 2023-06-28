@@ -63,7 +63,7 @@ def first_controller() -> Type[Controller]:
         def test_method(self, first: int, second: dict, third: bool) -> None:
             assert isinstance(first, int)
             assert isinstance(second, dict)
-            assert third is False
+            assert not third
 
     return FirstController
 
@@ -90,7 +90,7 @@ def test_function_dependency_injection() -> None:
     )
     def test_function(first: int, second: bool, third: str) -> None:
         assert isinstance(first, int)
-        assert second is False
+        assert not second
         assert isinstance(third, str)
 
     with create_test_client(

@@ -15,9 +15,7 @@ def _normalize_key(key: str) -> str:
     if "_" in key:
         components = key.split("_")
         return components[0] + "".join(component.title() for component in components[1:])
-    if key == "ref":
-        return "$ref"
-    return key
+    return "$ref" if key == "ref" else key
 
 
 def _normalize_value(value: Any) -> Any:
@@ -29,9 +27,7 @@ def _normalize_value(value: Any) -> Any:
         return {_normalize_value(k): _normalize_value(v) for k, v in value.items() if v is not None}
     if isinstance(value, list):
         return [_normalize_value(v) for v in value]
-    if isinstance(value, Enum):
-        return value.value
-    return value
+    return value.value if isinstance(value, Enum) else value
 
 
 @dataclass

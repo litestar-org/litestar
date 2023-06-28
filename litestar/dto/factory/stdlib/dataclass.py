@@ -40,7 +40,7 @@ class DataclassDTO(AbstractDTOFactory[T], Generic[T]):
 
             default_factory = dc_field.default_factory if dc_field.default_factory is not MISSING else None
 
-            field_def = FieldDefinition(
+            yield FieldDefinition(
                 name=key,
                 parsed_type=parsed_type,
                 default=default,
@@ -49,8 +49,6 @@ class DataclassDTO(AbstractDTOFactory[T], Generic[T]):
                 unique_model_name=get_fully_qualified_class_name(model_type),
                 dto_for=None,
             )
-
-            yield field_def
 
     @classmethod
     def detect_nested_field(cls, parsed_type: ParsedType) -> bool:

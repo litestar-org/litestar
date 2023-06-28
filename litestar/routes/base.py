@@ -164,8 +164,7 @@ class BaseRoute(ABC):
 
         components = [component for component in path.split("/") if component]
         for component in components:
-            param_match = param_match_regex.fullmatch(component)
-            if param_match:
+            if param_match := param_match_regex.fullmatch(component):
                 param = param_match.group(1)
                 cls._validate_path_parameter(param)
                 param_name, param_type = (p.strip() for p in param.split(":"))

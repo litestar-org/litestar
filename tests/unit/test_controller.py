@@ -80,7 +80,7 @@ def test_controller_with_websocket_handler() -> None:
 
     client = create_test_client(route_handlers=MyController)
 
-    with client.websocket_connect(test_path + "/socket") as ws:
+    with client.websocket_connect(f"{test_path}/socket") as ws:
         ws.send_json({"data": "123"})
         data = ws.receive_json()
         assert data

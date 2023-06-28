@@ -54,9 +54,7 @@ def on_warn_missing_reference(app: Sphinx, domain: str, node: Node) -> bool | No
     attributes = node.attributes  # type: ignore[attr-defined]
     target = attributes["reftarget"]
 
-    reference_target_source_obj = attributes.get("py:class", attributes.get("py:meth", attributes.get("py:func")))
-
-    if reference_target_source_obj:
+    if reference_target_source_obj := attributes.get("py:class", attributes.get("py:meth", attributes.get("py:func"))):
         global_names = get_module_global_imports(attributes["py:module"], reference_target_source_obj)
 
         if target in global_names:

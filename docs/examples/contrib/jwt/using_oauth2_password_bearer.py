@@ -48,26 +48,14 @@ oauth2_auth = OAuth2PasswordBearerAuth[User](
 @post("/login")
 async def login_handler(request: "Request[Any, Any, Any]", data: "User") -> "Response[OAuth2Login]":
     MOCK_DB[str(data.id)] = data
-    # if we do not define a response body, the login process will return a standard OAuth2 login response.  Note the `Response[OAuth2Login]` return type.
-    response = oauth2_auth.login(identifier=str(data.id))
-
-    # you can do whatever you want to update the response instance here
-    # e.g. response.set_cookie(...)
-
-    return response
+    return oauth2_auth.login(identifier=str(data.id))
 
 
 @post("/login_custom")
 async def login_custom_response_handler(data: "User") -> "Response[User]":
     MOCK_DB[str(data.id)] = data
 
-    # If you'd like to define a custom response body, use the `response_body` parameter.  Note the `Response[User]` return type.
-    response = oauth2_auth.login(identifier=str(data.id), response_body=data)
-
-    # you can do whatever you want to update the response instance here
-    # e.g. response.set_cookie(...)
-
-    return response
+    return oauth2_auth.login(identifier=str(data.id), response_body=data)
 
 
 # We also have some other routes, for example:

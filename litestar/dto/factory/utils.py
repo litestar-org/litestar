@@ -41,8 +41,7 @@ def get_model_type_hints(model_type: type[Any], namespace: dict[str, Any] | None
     namespace = namespace or {}
     namespace.update(vars(typing))
     namespace.update({"TypeEncodersMap": TypeEncodersMap})
-    model_module = getmodule(model_type)
-    if model_module:
+    if model_module := getmodule(model_type):
         namespace.update(vars(model_module))
     return {k: ParsedType(v) for k, v in get_type_hints(model_type, localns=namespace).items()}
 

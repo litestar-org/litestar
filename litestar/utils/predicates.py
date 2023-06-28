@@ -319,9 +319,7 @@ def is_attrs_class(annotation: Any) -> TypeGuard[type[attrs.AttrsInstance]]:  # 
     Returns:
         A typeguard determining whether the type is an attrs class.
     """
-    if attrs is not Empty:  # type: ignore[comparison-overlap]
-        return attrs.has(annotation)  # pyright: ignore
-    return False  # pragma: no cover
+    return attrs.has(annotation) if attrs is not Empty else False  # type: ignore[comparison-overlap]
 
 
 def is_pydantic_constrained_field(

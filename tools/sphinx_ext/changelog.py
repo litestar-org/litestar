@@ -111,12 +111,21 @@ class ChangelogDirective(SphinxDirective):
             term += title
             target_id = f"{version}-{nodes.fully_normalize_name(title[0].astext())}"
             term += nodes.reference(
-                "#", "#", refuri="#" + target_id, internal=True, classes=["headerlink"], ids=[target_id]
+                "#",
+                "#",
+                refuri=f"#{target_id}",
+                internal=True,
+                classes=["headerlink"],
+                ids=[target_id],
             )
 
-            reference_id = "change:" + target_id
+            reference_id = f"change:{target_id}"
             domain.anonlabels[reference_id] = self.env.docname, target_id
-            domain.labels[reference_id] = self.env.docname, target_id, "Change: " + clean_astext(title[0])
+            domain.labels[reference_id] = (
+                self.env.docname,
+                target_id,
+                f"Change: {clean_astext(title[0])}",
+            )
 
             if change_node.attributes["breaking"]:
                 breaking_notice = nodes.inline("breaking", "breaking")

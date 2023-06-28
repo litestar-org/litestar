@@ -59,7 +59,6 @@ class StoreRegistry:
         Returns:
             A :class:`Store <.base.Store>`
         """
-        store = self._stores.get(name)
-        if not store:
-            store = self._stores[name] = self._default_factory(name)
-        return store
+        if not self._stores.get(name):
+            self._stores[name] = self._default_factory(name)
+        return self._stores[name]

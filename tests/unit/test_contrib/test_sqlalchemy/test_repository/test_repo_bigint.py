@@ -273,13 +273,12 @@ async def test_repo_delete_many_method(author_repo: AuthorAsyncRepository) -> No
     Args:
         author_repo (AuthorAsyncRepository): The author mock repository
     """
-    data_to_insert = []
-    for chunk in range(0, 1000):
-        data_to_insert.append(
-            BigIntAuthor(
-                name="author name %d" % chunk,
-            )
+    data_to_insert = [
+        BigIntAuthor(
+            name="author name %d" % chunk,
         )
+        for chunk in range(1000)
+    ]
     _ = await maybe_async(author_repo.add_many(data_to_insert))
     all_objs = await maybe_async(author_repo.list())
     ids_to_delete = [existing_obj.id for existing_obj in all_objs]
@@ -414,10 +413,7 @@ async def test_repo_filter_search(author_repo: AuthorAsyncRepository) -> None:
     existing_obj = await maybe_async(author_repo.list(SearchFilter(field_name="name", value="GATH", ignore_case=False)))
     # sqlite & mysql are case insensitive by default with a `LIKE`
     dialect = author_repo.session.bind.dialect.name if author_repo.session.bind else "default"
-    if dialect in {"sqlite", "mysql"}:
-        expected_objs = 1
-    else:
-        expected_objs = 0
+    expected_objs = 1 if dialect in {"sqlite", "mysql"} else 0
     assert len(existing_obj) == expected_objs
     existing_obj = await maybe_async(author_repo.list(SearchFilter(field_name="name", value="GATH", ignore_case=True)))
     assert existing_obj[0].name == "Agatha Christie"

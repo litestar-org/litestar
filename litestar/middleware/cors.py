@@ -41,12 +41,10 @@ class CORSMiddleware(AbstractMiddleware):
             None
         """
         headers = Headers.from_scope(scope=scope)
-        origin = headers.get("origin")
-
-        if not origin:
-            await self.app(scope, receive, send)
-        else:
+        if origin := headers.get("origin"):
             await self.app(scope, receive, self.send_wrapper(send=send, origin=origin, has_cookie="cookie" in headers))
+        else:
+            await self.app(scope, receive, send)
 
     def send_wrapper(self, send: Send, origin: str, has_cookie: bool) -> Send:
         """Wrap ``send`` to ensure that state is not disconnected.

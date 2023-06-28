@@ -108,17 +108,13 @@ class ORA_JSONB(TypeDecorator, SchemaType):  # type: ignore  # noqa: N801
         return dialect.type_descriptor(ORA_BLOB())
 
     def process_bind_param(self, value: Any, dialect: Dialect) -> Any | None:
-        if value is None:
-            return value
-        return encode_json(value)
+        return value if value is None else encode_json(value)
 
     def process_result_value(self, value: bytes | None, dialect: Dialect) -> Any | None:
-        if value is None:
-            return value
-        return decode_json(value)
+        return value if value is None else decode_json(value)
 
     def _should_create_constraint(self, compiler: Any, **kw: Any) -> bool:
-        return bool(compiler.dialect.name == "oracle")
+        return compiler.dialect.name == "oracle"
 
     def _variant_mapping_for_set_table(self, column: Any) -> dict | None:
         if column.type._variant_mapping:

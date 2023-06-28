@@ -695,13 +695,10 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        annotations: dict[str, Any] = {}
-        for k, v in get_type_hints(field_type, include_extras=True).items():
-            if get_origin(v) in (Required, NotRequired):
-                annotations[k] = get_args(v)[0]
-            else:
-                annotations[k] = v
-
+        annotations: dict[str, Any] = {
+            k: get_args(v)[0] if get_origin(v) in (Required, NotRequired) else v
+            for k, v in get_type_hints(field_type, include_extras=True).items()
+        }
         return Schema(
             required=sorted(getattr(field_type, "__required_keys__", [])),
             properties={k: self.for_field(SignatureField.create(v, k)) for k, v in annotations.items()},

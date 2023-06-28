@@ -55,7 +55,6 @@ if TYPE_CHECKING:
     from litestar.config.response_cache import CACHE_FOREVER
     from litestar.connection import Request
     from litestar.datastructures import CacheControlHeader, ETag
-    from litestar.datastructures.headers import Header
     from litestar.dto.interface import DTOInterface
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
@@ -299,10 +298,14 @@ class HTTPRouteHandler(BaseRouteHandler):
         Returns:
             The default :class:`Response <.response.Response>` class for the route handler.
         """
-        for layer in list(reversed(self.ownership_layers)):
-            if layer.response_class is not None:
-                return layer.response_class
-        return Response
+        return next(
+            (
+                layer.response_class
+                for layer in list(reversed(self.ownership_layers))
+                if layer.response_class is not None
+            ),
+            Response,
+        )
 
     def resolve_response_headers(self) -> frozenset[ResponseHeader]:
         """Return all header parameters in the scope of the handler function.
@@ -323,8 +326,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 else:
                     resolved_response_headers.update({h.name: h for h in layer_response_headers})
             for extra_header in ("cache_control", "etag"):
-                header_model: Header | None = getattr(layer, extra_header, None)
-                if header_model:
+                if header_model := getattr(layer, extra_header, None):
                     resolved_response_headers[header_model.HEADER_NAME] = ResponseHeader(
                         name=header_model.HEADER_NAME,
                         value=header_model.to_header(),

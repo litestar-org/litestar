@@ -38,7 +38,7 @@ def create_parameter_definition(
     Returns:
         A ParameterDefinition tuple.
     """
-    default_value = signature_field.default_value if not signature_field.is_empty else None
+    default_value = None if signature_field.is_empty else signature_field.default_value
     kwargs_model = signature_field.kwarg_model if isinstance(signature_field.kwarg_model, ParameterKwarg) else None
 
     field_alias = kwargs_model.query if kwargs_model and kwargs_model.query else field_name
@@ -60,7 +60,9 @@ def create_parameter_definition(
         field_alias=field_alias,
         default_value=default_value,
         is_required=signature_field.is_required
-        and (default_value is None and not (signature_field.is_optional or signature_field.is_any)),
+        and default_value is None
+        and not signature_field.is_optional
+        and not signature_field.is_any,
         is_sequence=signature_field.is_non_string_sequence,
     )
 

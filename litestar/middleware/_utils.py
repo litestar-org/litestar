@@ -57,8 +57,9 @@ def should_bypass_middleware(
     if exclude_opt_key and scope["route_handler"].opt.get(exclude_opt_key):
         return True
 
-    if exclude_path_pattern and exclude_path_pattern.findall(
-        scope["path"] if not getattr(scope.get("route_handler", {}), "is_mount", False) else scope["raw_path"].decode()
-    ):
-        return True
-    return False
+    return bool(
+        exclude_path_pattern
+        and exclude_path_pattern.findall(
+            scope["raw_path"].decode() if getattr(scope.get("route_handler", {}), "is_mount", False) else scope["path"]
+        )
+    )

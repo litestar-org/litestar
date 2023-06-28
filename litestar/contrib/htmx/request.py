@@ -29,7 +29,7 @@ class HTMXDetails:
         Check for uri encoded header and unquotes it in readable format.
         """
         value = self.request.headers.get(name) or None
-        if value and self.request.headers.get(name + "-URI-AutoEncoded") == "true":
+        if value and self.request.headers.get(f"{name}-URI-AutoEncoded") == "true":
             return unquote(value)
         return value
 

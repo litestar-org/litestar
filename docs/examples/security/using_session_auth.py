@@ -56,13 +56,7 @@ memory_store = MemoryStore()
 async def retrieve_user_handler(
     session: Dict[str, Any], connection: "ASGIConnection[Any, Any, Any, Any]"
 ) -> Optional[User]:
-    # we retrieve the user instance based on session data
-
-    user_id = session.get("user_id")
-    if user_id:
-        return MOCK_DB.get(user_id)
-
-    return None
+    return MOCK_DB.get(user_id) if (user_id := session.get("user_id")) else None
 
 
 @post("/login")

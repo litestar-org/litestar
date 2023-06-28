@@ -128,23 +128,22 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             RuntimeError: if the stream is already consumed
         """
         if self._body is Empty:
-            if self.is_connected:
-                while event := await self.receive():
-                    if event["type"] == "http.request":
-                        if event["body"]:
-                            yield event["body"]
-
-                        if not event.get("more_body", False):
-                            break
-
-                    if event["type"] == "http.disconnect":
-                        raise InternalServerException("client disconnected prematurely")
-
-                self.is_connected = False
-                yield b""
-
-            else:
+            if not self.is_connected:
                 raise InternalServerException("stream consumed")
+            while event := await self.receive():
+                if event["type"] == "http.request":
+                    if event["body"]:
+                        yield event["body"]
+
+                    if not event.get("more_body", False):
+                        break
+
+                if event["type"] == "http.disconnect":
+                    raise InternalServerException("client disconnected prematurely")
+
+            self.is_connected = False
+            yield b""
+
         else:
             yield self._body
             yield b""
@@ -168,22 +167,22 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         Returns:
             A FormMultiDict instance
         """
-        if self._form is Empty:
-            content_type, options = self.content_type
-            if content_type == RequestEncodingType.MULTI_PART:
-                self._form = self.scope["_form"] = form_values = parse_multipart_form(  # type: ignore[typeddict-unknown-key]
-                    body=await self.body(),
-                    boundary=options.get("boundary", "").encode(),
-                    multipart_form_part_limit=self.app.multipart_form_part_limit,
-                )
-                return FormMultiDict(form_values)
-            if content_type == RequestEncodingType.URL_ENCODED:
-                self._form = self.scope["_form"] = form_values = parse_url_encoded_form_data(  # type: ignore[typeddict-unknown-key]
-                    await self.body(),
-                )
-                return FormMultiDict(form_values)
-            return FormMultiDict()
-        return FormMultiDict(self._form)
+        if self._form is not Empty:
+            return FormMultiDict(self._form)
+        content_type, options = self.content_type
+        if content_type == RequestEncodingType.MULTI_PART:
+            self._form = self.scope["_form"] = form_values = parse_multipart_form(  # type: ignore[typeddict-unknown-key]
+                body=await self.body(),
+                boundary=options.get("boundary", "").encode(),
+                multipart_form_part_limit=self.app.multipart_form_part_limit,
+            )
+            return FormMultiDict(form_values)
+        if content_type == RequestEncodingType.URL_ENCODED:
+            self._form = self.scope["_form"] = form_values = parse_url_encoded_form_data(  # type: ignore[typeddict-unknown-key]
+                await self.body(),
+            )
+            return FormMultiDict(form_values)
+        return FormMultiDict()
 
     async def send_push_promise(self, path: str) -> None:
         """Send a push promise.
@@ -198,8 +197,9 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         """
         extensions: dict[str, dict[Any, Any]] = self.scope.get("extensions") or {}
         if "http.response.push" in extensions:
-            raw_headers = []
+            raw_headers: list[tuple[bytes, bytes], ...] = []
             for name in SERVER_PUSH_HEADERS:
-                for value in self.headers.getall(name, []):
-                    raw_headers.append((name.encode("latin-1"), value.encode("latin-1")))
+                raw_headers.extend(
+                    (name.encode("latin-1"), value.encode("latin-1")) for value in self.headers.getall(name, [])
+                )
             await self.send({"type": "http.response.push", "path": path, "headers": raw_headers})

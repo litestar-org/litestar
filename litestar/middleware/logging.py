@@ -161,9 +161,7 @@ class LoggingMiddleware(AbstractMiddleware):
     def _serialize_value(self, serializer: Serializer | None, value: Any) -> Any:
         if not self.is_struct_logger and isinstance(value, (dict, list, tuple, set)):
             value = encode_json(value, serializer)
-        if isinstance(value, bytes):
-            return value.decode("utf-8")
-        return value
+        return value.decode("utf-8") if isinstance(value, bytes) else value
 
     async def extract_request_data(self, request: Request) -> dict[str, Any]:
         """Create a dictionary of values for the message.

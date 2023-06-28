@@ -188,7 +188,7 @@ class Controller:
         for field_name in set(dir(self)) - set(dir(Controller)):
             if (attr := getattr(self, field_name, None)) and isinstance(attr, BaseRouteHandler):
                 # we are special casing here because the websocket_listener context cannot be deep copied without breaking
-                route_handler = deepcopy(attr) if not isinstance(attr, websocket_listener) else copy(attr)
+                route_handler = copy(attr) if isinstance(attr, websocket_listener) else deepcopy(attr)
                 route_handler.fn.value = partial(route_handler.fn.value, self)
                 route_handler.owner = self
                 route_handlers.append(route_handler)
