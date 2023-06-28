@@ -43,7 +43,7 @@ async def wait_until_responsive(
         await asyncio.sleep(pause)
         now = timeit.default_timer()
 
-    raise Exception("Timeout reached while waiting on service!")
+    raise RuntimeError("Timeout reached while waiting on service!")
 
 
 class DockerServiceRegistry:

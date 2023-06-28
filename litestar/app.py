@@ -650,8 +650,6 @@ class Litestar(Router):
             raise NoRouteMatchFoundException(f"Route {name} can not be found")
 
         allow_str_instead = {datetime, date, time, timedelta, float, Path}
-        output: list[str] = []
-
         routes = sorted(
             self.asgi_router.route_mapping[handler_index["identifier"]],
             key=lambda r: len(r.path_parameters),
@@ -667,11 +665,12 @@ class Litestar(Router):
             ),
             routes[-1],
         )
+        output: list[str] = []
         for component in selected_route.path_components:
             if isinstance(component, PathParameterDefinition):
                 val = path_parameters.get(component.name)
-                if not (
-                    isinstance(val, component.type) or (component.type in allow_str_instead and isinstance(val, str))
+                if not isinstance(val, component.type) and (
+                    component.type not in allow_str_instead or not isinstance(val, str)
                 ):
                     raise NoRouteMatchFoundException(
                         f"Received type for path parameter {component.name} doesn't match declared type {component.type}"

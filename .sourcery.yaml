@@ -1,17 +1,16 @@
 ignore:
-  - .git
-  - venv
-  - .venv
-  - env
-  - .env
-  - .tox
-  - node_modules
-  - vendor
-  - docs/_static
+  - .tox/
+  - .venv/
+  - dist/
+  - docs/_build/
+  - docs/_static/
+  - node_modules/
+  - vendor/
+  - venv/
 
 rule_settings:
   enable: [default]
-  disable: []
+  disable: [dont-import-test-modules]
   rule_types:
     - refactoring
     - suggestion
