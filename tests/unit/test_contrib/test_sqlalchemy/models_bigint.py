@@ -62,14 +62,18 @@ bigint_item_tag = Table(
 class BigIntItem(BigIntBase):
     name: Mapped[str] = mapped_column(String(), unique=True)
     description: Mapped[str | None]
-    tags: Mapped[list[BigIntTag]] = relationship(secondary=lambda: bigint_item_tag, back_populates="items")
+    tags: Mapped[List[BigIntTag]] = relationship(  # noqa: UP006
+        secondary=lambda: bigint_item_tag, back_populates="items"
+    )
 
 
 class BigIntTag(BigIntBase):
     """The event log domain object."""
 
     name: Mapped[str] = mapped_column(String(50), unique=True)
-    items: Mapped[list[BigIntItem]] = relationship(secondary=lambda: bigint_item_tag, back_populates="tags")
+    items: Mapped[List[BigIntItem]] = relationship(  # noqa: UP006
+        secondary=lambda: bigint_item_tag, back_populates="tags"
+    )
 
 
 class BigIntRule(BigIntAuditBase):
