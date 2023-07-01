@@ -17,7 +17,6 @@ async def index(request: "Request") -> JSONResponse:
 
 starlette_app = asgi(path="/some/sub-path", is_mount=True)(
     Starlette(
-        debug=True,
         routes=[
             Route("/", index),
             Route("/abc/", index),

@@ -27,7 +27,9 @@ class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
 
     def create_transfer_model_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
         fqn_uid: str = self._gen_unique_name_id(unique_name)
-        return _create_struct_for_field_definitions(fqn_uid, field_definitions)
+        struct = _create_struct_for_field_definitions(fqn_uid, field_definitions)
+        setattr(struct, "__schema_name__", unique_name)
+        return struct
 
     def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> Struct | Collection[Struct]:
         return decode_media_type(  # type:ignore[no-any-return]
