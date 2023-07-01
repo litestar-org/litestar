@@ -647,6 +647,8 @@ async def test_lazy_load(item_repo: ItemAsyncRepository, tag_repo: TagAsyncRepos
     new_items = await maybe_async(
         item_repo.add_many([UUIDItem(name="The first item"), UUIDItem(name="The second item")])
     )
+    await maybe_async(item_repo.session.commit())
+    await maybe_async(tag_repo.session.commit())
     assert len(new_items) > 0
     first_item_id = new_items[0].id
     new_items[1].id
@@ -654,6 +656,9 @@ async def test_lazy_load(item_repo: ItemAsyncRepository, tag_repo: TagAsyncRepos
     update_data.update({"id": first_item_id})  # type: ignore
     tags_to_add = await maybe_async(tag_repo.list(CollectionFilter("name", update_data.pop("tag_names", []))))
     assert len(tags_to_add) > 0
+    assert tags_to_add[0].id is not None
     update_data.update({"tags": tags_to_add})  # type: ignore
     updated_obj = await maybe_async(item_repo.update(UUIDItem(**update_data)))
+    await maybe_async(item_repo.session.commit())
     assert len(updated_obj.tags) > 0
+    assert updated_obj.tags[0].name == "A new tag"
