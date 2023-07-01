@@ -17,11 +17,11 @@ async def create_concert(data: Concert) -> Concert:
     return data
 
 
-@get("/studio", return_dto=PiccoloDTO[RecordingStudio])
+@get("/studio", return_dto=PiccoloDTO[RecordingStudio], sync_to_thread=False)
 def retrieve_studio() -> RecordingStudio:
     return studio
 
 
-@get("/venues", return_dto=PiccoloDTO[Venue])
+@get("/venues", return_dto=PiccoloDTO[Venue], sync_to_thread=False)
 def retrieve_venues() -> List[Venue]:
     return venues

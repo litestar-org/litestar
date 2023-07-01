@@ -136,6 +136,7 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
         """
         if isinstance(channels, str):
             channels = [channels]
+
         data = self.encode_data(data)
         try:
             self._pub_queue.put_nowait((data, list(channels)))  # type: ignore[union-attr]

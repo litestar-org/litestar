@@ -25,4 +25,4 @@ async def handler(db_session: AsyncSession, db_engine: AsyncEngine) -> Tuple[int
 
 config = SQLAlchemyAsyncConfig(connection_string="sqlite+aiosqlite:///async.sqlite")
 plugin = SQLAlchemyInitPlugin(config=config)
-app = Litestar(route_handlers=[handler], plugins=[plugin], debug=True)
+app = Litestar(route_handlers=[handler], plugins=[plugin])

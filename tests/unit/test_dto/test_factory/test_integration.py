@@ -33,7 +33,7 @@ def test_url_encoded_form_data() -> None:
     def handler(data: User = Body(media_type=RequestEncodingType.URL_ENCODED)) -> User:
         return data
 
-    with create_test_client(route_handlers=[handler], debug=True) as client:
+    with create_test_client(route_handlers=[handler]) as client:
         response = client.post(
             "/",
             content=b"id=1&name=John&age=42&read_only=whoops",
@@ -57,7 +57,7 @@ async def test_multipart_encoded_form_data() -> None:
     async def handler(data: Payload = Body(media_type=RequestEncodingType.MULTI_PART)) -> bytes:
         return await data.forbidden.read()
 
-    with create_test_client(route_handlers=[handler], debug=True) as client:
+    with create_test_client(route_handlers=[handler]) as client:
         response = client.post(
             "/",
             files={"file": b"abc123", "forbidden": b"123abc"},
@@ -78,7 +78,7 @@ def test_renamed_field() -> None:
         assert data.bar == "hello"
         return data
 
-    with create_test_client(route_handlers=[handler], debug=True) as client:
+    with create_test_client(route_handlers=[handler]) as client:
         response = client.post("/", json={"baz": "hello"})
         assert response.json() == {"baz": "hello"}
 
@@ -122,7 +122,7 @@ def test_fields_alias_generator(
         assert data.SPAM == instance.SPAM
         return data
 
-    with create_test_client(route_handlers=[handler], debug=True) as client:
+    with create_test_client(route_handlers=[handler]) as client:
         response_callback = client.post("/", json=data)
         assert all(response_callback.json()[f] == data[f] for f in tested_fields)
 
@@ -139,7 +139,7 @@ def test_dto_data_injection() -> None:
         assert isinstance(data.create_instance(), Foo)
         return data.create_instance()
 
-    with create_test_client(route_handlers=[handler], debug=True) as client:
+    with create_test_client(route_handlers=[handler]) as client:
         response = client.post("/", json={"bar": "hello"})
         assert response.json() == {"bar": "hello"}
 
@@ -175,7 +175,7 @@ def handler(data: DTOData[Bar]) -> Dict[str, Any]:
 """
     )
 
-    with create_test_client(route_handlers=[module.handler], debug=True) as client:
+    with create_test_client(route_handlers=[module.handler]) as client:
         resp = client.post("/", json={"foo": {"bar": "hello"}})
         assert resp.status_code == 201
         assert resp.json() == {"foo": {"bar": "hello"}}
@@ -214,7 +214,7 @@ def handler(data: DTOData[Bar]) -> Dict[str, Any]:
 """
     )
 
-    with create_test_client(route_handlers=[module.handler], debug=True) as client:
+    with create_test_client(route_handlers=[module.handler]) as client:
         resp = client.post("/", json={"foo": {"bar": "hello"}})
         assert resp.status_code == 201
         assert resp.json() == {"foo": {"bar": "hello", "baz": "world"}}
@@ -231,7 +231,7 @@ def test_dto_data_with_url_encoded_form_data() -> None:
     def handler(data: DTOData[User] = Body(media_type=RequestEncodingType.URL_ENCODED)) -> User:
         return data.create_instance()
 
-    with create_test_client(route_handlers=[handler], debug=True) as client:
+    with create_test_client(route_handlers=[handler]) as client:
         response = client.post(
             "/",
             content=b"id=1&name=John&age=42&read_only=whoops",
@@ -254,7 +254,7 @@ def test_dto_data_with_patch_request() -> None:
     def handler(data: DTOData[User]) -> User:
         return data.update_instance(User(name="John", age=42))
 
-    with create_test_client(route_handlers=[handler], debug=True) as client:
+    with create_test_client(route_handlers=[handler]) as client:
         response = client.patch("/", json={"age": 41, "read_only": "whoops"})
         assert response.json() == {"name": "John", "age": 41, "read_only": "read-only"}
 
@@ -272,7 +272,7 @@ def test_dto_openapi_model_name_collision() -> None:
     def handler(data: Bar) -> Bar:
         return data
 
-    with create_test_client(route_handlers=[handler], debug=True) as client:
+    with create_test_client(route_handlers=[handler]) as client:
         response = client.get("/schema/openapi.json")
         schemas = list(response.json()["components"]["schemas"].values())
         assert len(schemas) == 2
@@ -298,7 +298,7 @@ def test_url_encoded_form_data_patch_request() -> None:
     def handler(data: DTOData[User] = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict[str, Any]:
         return data.as_builtins()  # type:ignore[no-any-return]
 
-    with create_test_client(route_handlers=[handler], debug=True) as client:
+    with create_test_client(route_handlers=[handler]) as client:
         response = client.post(
             "/",
             content=b"name=John&read_only=whoops",
@@ -317,7 +317,7 @@ def test_dto_with_generic_sequence_annotations() -> None:
     def handler(data: Sequence[User]) -> Sequence[User]:
         return data
 
-    with create_test_client(route_handlers=[handler], debug=True) as client:
+    with create_test_client(route_handlers=[handler]) as client:
         response = client.post("/", json=[{"name": "John", "age": 42}])
         assert response.json() == [{"name": "John", "age": 42}]
 
@@ -335,7 +335,7 @@ def test_dto_private_fields() -> None:
         mock.received_data = data.as_builtins()
         return data.create_instance(_baz=42)
 
-    with create_test_client(route_handlers=[handler], debug=True) as client:
+    with create_test_client(route_handlers=[handler]) as client:
         response = client.post("/", json={"bar": "hello", "_baz": "world"})
         assert response.status_code == 201
         assert response.json() == {"bar": "hello"}
@@ -356,7 +356,7 @@ def test_dto_private_fields_disabled() -> None:
     def handler(data: Foo) -> Foo:
         return data
 
-    with create_test_client(route_handlers=[handler], debug=True) as client:
+    with create_test_client(route_handlers=[handler]) as client:
         response = client.post("/", json={"bar": "hello", "_baz": 42})
         assert response.status_code == 201
         assert response.json() == {"bar": "hello", "_baz": 42}
@@ -375,7 +375,7 @@ def test_dto_concrete_builtin_collection_types() -> None:
     def handler(data: Foo) -> Foo:
         return data
 
-    with create_test_client(route_handlers=[handler], debug=True) as client:
+    with create_test_client(route_handlers=[handler]) as client:
         response = client.post("/", json={"bar": {"a": 1, "b": [1, 2, 3]}, "baz": [4, 5, 6]})
         assert response.status_code == 201
         assert response.json() == {"bar": {"a": 1, "b": [1, 2, 3]}, "baz": [4, 5, 6]}
@@ -408,7 +408,7 @@ def handler() -> ClassicPagination[User]:
         total_pages=20,
     )
 
-app = Litestar(route_handlers=[handler], debug=True)
+app = Litestar(route_handlers=[handler])
 """
     )
     with TestClient(app=module.app) as client:
@@ -450,7 +450,7 @@ def handler() -> CursorPagination[UUID, User]:
         cursor=uuid,
     )
 
-app = Litestar(route_handlers=[handler], debug=True)
+app = Litestar(route_handlers=[handler])
 """
     )
     with TestClient(app=module.app) as client:
@@ -489,7 +489,7 @@ def handler() -> OffsetPagination[User]:
         total=20,
     )
 
-app = Litestar(route_handlers=[handler], debug=True)
+app = Litestar(route_handlers=[handler])
 """
     )
     with TestClient(app=module.app) as client:

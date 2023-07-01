@@ -4036,13 +4036,13 @@ files = [
 
 [[package]]
 name = "types-redis"
-version = "4.6.0.0"
+version = "4.6.0.1"
 description = "Typing stubs for redis"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-redis-4.6.0.0.tar.gz", hash = "sha256:4ad588026d89ba72eae29b6276448ea117d77e5e4df258c0429d274da652ef9c"},
-    {file = "types_redis-4.6.0.0-py3-none-any.whl", hash = "sha256:528038f32a0a2642e00d9c80dd95879a348ced6071bb747c746c0cb1ad06426c"},
+    {file = "types-redis-4.6.0.1.tar.gz", hash = "sha256:1254d525de7a45e2efaacb6969e67ad1dd5cc359a092022200583a3f04868669"},
+    {file = "types_redis-4.6.0.1-py3-none-any.whl", hash = "sha256:88ceb79c27f2084ad6f0b8514f8fcd8a740811f07c25f3fef5c9e843fc6c60a2"},
 ]
 
 [package.dependencies]
@@ -4409,4 +4409,4 @@ tortoise-orm = ["tortoise-orm"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "be7bff6842b500f2a6ed7f349cfac934de75624b2ea0774ed914aec7cbd77b0f"
+content-hash = "a7a33ee9e32b2a05db0c0ed52b208b45bbba48ba12f372bea8206d02572bc522"
