@@ -6,7 +6,7 @@ from datetime import date, datetime
 from typing import List
 from uuid import UUID
 
-from sqlalchemy import FetchedValue, ForeignKey, String, func
+from sqlalchemy import Column, FetchedValue, ForeignKey, String, Table, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
@@ -51,6 +51,29 @@ class UUIDModelWithFetchedValue(UUIDBase):
     )
 
 
+uuid_item_tag = Table(
+    "uuid_item_tag",
+    UUIDBase.metadata,
+    Column("item_id", ForeignKey("item.id"), primary_key=True),
+    Column("tag_id", ForeignKey("tag.id"), primary_key=True),
+)
+
+
+class UUIDItem(UUIDBase):
+    name: Mapped[str] = mapped_column(String(), unique=True)
+    description: Mapped[str | None]
+    tags: Mapped[list[UUIDTag]] = relationship(
+        secondary=uuid_item_tag, back_populates="items", lazy="noload"  # <-- here be problems
+    )
+
+
+class UUIDTag(UUIDAuditBase):
+    """The event log domain object."""
+
+    name: Mapped[str] = mapped_column(String(50), unique=True)
+    items: Mapped[list[UUIDItem]] = relationship(secondary=uuid_item_tag, back_populates="tags", lazy="noload")
+
+
 class UUIDRule(UUIDAuditBase):
     """The rule domain object."""
 
@@ -88,6 +111,18 @@ class ModelWithFetchedValueAsyncRepository(SQLAlchemyAsyncRepository[UUIDModelWi
     model_type = UUIDModelWithFetchedValue
 
 
+class TagAsyncRepository(SQLAlchemyAsyncRepository[UUIDTag]):
+    """Tag repository."""
+
+    model_type = UUIDTag
+
+
+class ItemAsyncRepository(SQLAlchemyAsyncRepository[UUIDItem]):
+    """Item repository."""
+
+    model_type = UUIDItem
+
+
 class AuthorSyncRepository(SQLAlchemySyncRepository[UUIDAuthor]):
     """Author repository."""
 
@@ -116,3 +151,15 @@ class ModelWithFetchedValueSyncRepository(SQLAlchemySyncRepository[UUIDModelWith
     """ModelWithFetchedValue repository."""
 
     model_type = UUIDModelWithFetchedValue
+
+
+class TagSyncRepository(SQLAlchemySyncRepository[UUIDTag]):
+    """Tag repository."""
+
+    model_type = UUIDTag
+
+
+class ItemSyncRepository(SQLAlchemySyncRepository[UUIDItem]):
+    """Item repository."""
+
+    model_type = UUIDItem

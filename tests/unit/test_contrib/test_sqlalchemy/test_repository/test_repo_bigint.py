@@ -20,14 +20,20 @@ from tests.unit.test_contrib.test_sqlalchemy.models_bigint import (
     AuthorSyncRepository,
     BigIntAuthor,
     BigIntBook,
+    BigIntItem,
     BigIntModelWithFetchedValue,
     BigIntRule,
+    BigIntTag,
     BookAsyncRepository,
     BookSyncRepository,
+    ItemAsyncRepository,
+    ItemSyncRepository,
     ModelWithFetchedValueAsyncRepository,
     ModelWithFetchedValueSyncRepository,
     RuleAsyncRepository,
     RuleSyncRepository,
+    TagAsyncRepository,
+    TagSyncRepository,
 )
 
 from .helpers import maybe_async, update_raw_records
@@ -100,6 +106,20 @@ def model_with_fetched_value_repo(
     if isinstance(any_session, AsyncSession):
         return ModelWithFetchedValueAsyncRepository(session=any_session)
     return ModelWithFetchedValueSyncRepository(session=any_session)
+
+
+@pytest.fixture()
+def tag_repo(any_session: AsyncSession | Session) -> TagAsyncRepository | TagSyncRepository:
+    if isinstance(any_session, AsyncSession):
+        return TagAsyncRepository(session=any_session)
+    return TagSyncRepository(session=any_session)
+
+
+@pytest.fixture()
+def item_repo(any_session: AsyncSession | Session) -> ItemAsyncRepository | ItemSyncRepository:
+    if isinstance(any_session, AsyncSession):
+        return ItemAsyncRepository(session=any_session)
+    return ItemSyncRepository(session=any_session)
 
 
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorAsyncRepository) -> None:
@@ -506,3 +526,28 @@ async def test_repo_fetched_value(model_with_fetched_value_repo: ModelWithFetche
     assert obj.updated is not None
     assert obj.val == 2
     assert obj.updated != first_time
+
+
+async def test_lazy_load(item_repo: ItemAsyncRepository, tag_repo: TagAsyncRepository) -> None:
+    """Test SQLALchemy fetched value in various places.
+
+    Args:
+        item_repo (ItemAsyncRepository): The item mock repository
+        tag_repo (TagAsyncRepository): The tag mock repository
+    """
+
+    tag_obj = await maybe_async(tag_repo.add(BigIntTag(name="A new tag")))
+    assert tag_obj
+    new_items = await maybe_async(
+        item_repo.add_many([BigIntItem(name="The first item"), BigIntItem(name="The second item")])
+    )
+    assert len(new_items) > 0
+    first_item_id = new_items[0].id
+    new_items[1].id
+    update_data = {"name": "A modified Name", "tag_names": ["A new tag"]}
+    update_data.update({"id": first_item_id})  # type: ignore
+    tags_to_add = await maybe_async(tag_repo.list(CollectionFilter("name", update_data.pop("tag_names", []))))
+    assert len(tags_to_add) > 0
+    update_data.update({"tags": tags_to_add})  # type: ignore
+    updated_obj = await maybe_async(item_repo.update(BigIntItem(**update_data)))
+    assert len(updated_obj.tags) > 0

@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import date, datetime
 from typing import List
 
-from sqlalchemy import FetchedValue, ForeignKey, String, func
+from sqlalchemy import Column, FetchedValue, ForeignKey, String, Table, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from litestar.contrib.sqlalchemy.base import BigIntAuditBase, BigIntBase
@@ -51,6 +51,29 @@ class BigIntModelWithFetchedValue(BigIntBase):
     )
 
 
+bigint_item_tag = Table(
+    "uuid_item_tag",
+    BigIntBase.metadata,
+    Column("item_id", ForeignKey("item.id"), primary_key=True),
+    Column("tag_id", ForeignKey("tag.id"), primary_key=True),
+)
+
+
+class BigIntItem(BigIntBase):
+    name: Mapped[str] = mapped_column(String(), unique=True)
+    description: Mapped[str | None]
+    tags: Mapped[list[BigIntTag]] = relationship(
+        secondary=bigint_item_tag, back_populates="items", lazy="noload"  # <-- here be problems
+    )
+
+
+class BigIntTag(BigIntBase):
+    """The event log domain object."""
+
+    name: Mapped[str] = mapped_column(String(50), unique=True)
+    items: Mapped[list[BigIntItem]] = relationship(secondary=bigint_item_tag, back_populates="tags", lazy="noload")
+
+
 class BigIntRule(BigIntAuditBase):
     """The rule domain object."""
 
@@ -88,6 +111,18 @@ class ModelWithFetchedValueAsyncRepository(SQLAlchemyAsyncRepository[BigIntModel
     model_type = BigIntModelWithFetchedValue
 
 
+class TagAsyncRepository(SQLAlchemyAsyncRepository[BigIntTag]):
+    """Tag repository."""
+
+    model_type = BigIntTag
+
+
+class ItemAsyncRepository(SQLAlchemyAsyncRepository[BigIntItem]):
+    """Item repository."""
+
+    model_type = BigIntItem
+
+
 class AuthorSyncRepository(SQLAlchemySyncRepository[BigIntAuthor]):
     """Author repository."""
 
@@ -116,3 +151,15 @@ class ModelWithFetchedValueSyncRepository(SQLAlchemySyncRepository[BigIntModelWi
     """ModelWithFetchedValue repository."""
 
     model_type = BigIntModelWithFetchedValue
+
+
+class TagSyncRepository(SQLAlchemySyncRepository[BigIntTag]):
+    """Tag repository."""
+
+    model_type = BigIntTag
+
+
+class ItemSyncRepository(SQLAlchemySyncRepository[BigIntItem]):
+    """Item repository."""
+
+    model_type = BigIntItem
