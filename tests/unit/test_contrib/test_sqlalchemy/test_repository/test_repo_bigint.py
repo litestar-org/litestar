@@ -555,7 +555,7 @@ async def test_lazy_load(item_repo: ItemAsyncRepository, tag_repo: TagAsyncRepos
     assert len(tags_to_add) > 0
     assert tags_to_add[0].id is not None
     update_data["tags"] = tags_to_add
-    updated_obj = await maybe_async(item_repo.update(BigIntItem(**update_data)))
+    updated_obj = await maybe_async(item_repo.update(BigIntItem(**update_data), auto_refresh=False))
     await maybe_async(item_repo.session.commit())
     assert len(updated_obj.tags) > 0
     assert updated_obj.tags[0].name == "A new tag"
