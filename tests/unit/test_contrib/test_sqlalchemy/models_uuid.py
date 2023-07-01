@@ -63,16 +63,14 @@ uuid_item_tag = Table(
 class UUIDItem(UUIDBase):
     name: Mapped[str] = mapped_column(String(), unique=True)
     description: Mapped[str | None]
-    tags: Mapped[list[UUIDTag]] = relationship(
-        secondary=lambda: uuid_item_tag, back_populates="items", lazy="noload"  # <-- here be problems
-    )
+    tags: Mapped[list[UUIDTag]] = relationship(secondary=lambda: uuid_item_tag, back_populates="items")
 
 
 class UUIDTag(UUIDAuditBase):
     """The event log domain object."""
 
     name: Mapped[str] = mapped_column(String(50), unique=True)
-    items: Mapped[list[UUIDItem]] = relationship(secondary=lambda: uuid_item_tag, back_populates="tags", lazy="noload")
+    items: Mapped[list[UUIDItem]] = relationship(secondary=lambda: uuid_item_tag, back_populates="tags")
 
 
 class UUIDRule(UUIDAuditBase):
