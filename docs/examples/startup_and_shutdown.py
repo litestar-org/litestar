@@ -1,9 +1,8 @@
 from typing import cast
-
-from pydantic import BaseSettings
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from litestar import Litestar
+from pydantic_settings import BaseSettings
 
 
 class AppSettings(BaseSettings):

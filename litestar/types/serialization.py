@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from pydantic_extra_types.color import Color
 
 if TYPE_CHECKING:
     from collections import deque
@@ -31,7 +32,6 @@ if TYPE_CHECKING:
         SecretField,
         StrictBool,
     )
-    from pydantic.color import Color
     from typing_extensions import TypeAlias
 
     from litestar.types import DataclassProtocol

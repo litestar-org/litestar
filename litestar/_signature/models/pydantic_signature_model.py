@@ -3,8 +3,9 @@ from __future__ import annotations
 from dataclasses import asdict
 from typing import TYPE_CHECKING, Any
 
-from pydantic import BaseConfig, BaseModel, ValidationError, create_model
-from pydantic.fields import FieldInfo, ModelField
+from pydantic import BaseModel, ValidationError, create_model, ConfigDict
+from pydantic.fields import FieldInfo
+from pydantic_core.core_schema import ModelField
 
 from litestar._signature.field import SignatureField
 from litestar._signature.models.base import ErrorMessage, SignatureModel
@@ -23,9 +24,8 @@ __all__ = ("PydanticSignatureModel",)
 class PydanticSignatureModel(SignatureModel, BaseModel):
     """Model that represents a function signature that uses a pydantic specific type or types."""
 
-    class Config(BaseConfig):
-        copy_on_model_validation = "none"
-        arbitrary_types_allowed = True
+    # TODO (Pydantic v2): copy_on_model_validation="none" is not recognized here?
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
     def parse_values_from_connection_kwargs(cls, connection: ASGIConnection, **kwargs: Any) -> dict[str, Any]:
@@ -56,7 +56,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
 
         Returns: A dictionary of string keyed values.
         """
-        return {key: self.__getattribute__(key) for key in self.__fields__}
+        return {key: self.__getattribute__(key) for key in self.model_fields}
 
     @classmethod
     def signature_field_from_model_field(cls, model_field: ModelField) -> SignatureField:
@@ -68,6 +68,8 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         Returns:
             A SignatureField
         """
+        # TODO (Pydantic v2): ModelField from pydantic_core has many changes, none of the attributes
+        #                     seem to be available.
         children = (
             tuple(cls.signature_field_from_model_field(sub_field) for sub_field in model_field.sub_fields)
             if model_field.sub_fields
@@ -92,7 +94,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
             children=children,
             default_value=default_value,
             extra=model_field.field_info.extra or {},
-            field_type=model_field.annotation if model_field.annotation is not Empty else Any,
+            field_type=model_field.__annotations__ if model_field.__annotations__ is not Empty else Any,  # unsure of this
             kwarg_model=kwarg_model,
             name=model_field.name,
         )
@@ -104,7 +106,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         Returns:
             None.
         """
-        cls.fields = {k: cls.signature_field_from_model_field(v) for k, v in cls.__fields__.items()}
+        cls.fields = {k: cls.signature_field_from_model_field(v) for k, v in cls.model_fields.items()}
 
     @classmethod
     def create(

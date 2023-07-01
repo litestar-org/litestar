@@ -2,7 +2,7 @@ from datetime import date
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from pydantic import BaseModel as _BaseModel
+from pydantic import ConfigDict, BaseModel as _BaseModel, TypeAdapter
 from pydantic import parse_obj_as
 from sqlalchemy import ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
@@ -24,9 +24,7 @@ if TYPE_CHECKING:
 
 class BaseModel(_BaseModel):
     """Extend Pydantic's BaseModel to enable ORM mode"""
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # the SQLAlchemy base includes a declarative model for you to use in your models.
@@ -53,7 +51,7 @@ class BookModel(UUIDAuditBase):
 
 
 class Author(BaseModel):
-    id: UUID | None
+    id: UUID | None = None
     name: str
     dob: date | None = None
 
@@ -116,6 +114,7 @@ class AuthorController(Controller):
     """Author CRUD"""
 
     dependencies = {"authors_repo": Provide(provide_authors_repo)}
+    model_config = ConfigDict(from_attributes=True)
 
     @get(path="/authors")
     async def list_authors(
@@ -125,8 +124,9 @@ class AuthorController(Controller):
     ) -> OffsetPagination[Author]:
         """List authors."""
         results, total = await authors_repo.list_and_count(limit_offset)
+        type_adapter = TypeAdapter(list[Author])
         return OffsetPagination[Author](
-            items=parse_obj_as(list[Author], results),
+            items=type_adapter.validate_python(results),
             total=total,
             limit=limit_offset.limit,
             offset=limit_offset.offset,
@@ -140,10 +140,10 @@ class AuthorController(Controller):
     ) -> Author:
         """Create a new author."""
         obj = await authors_repo.add(
-            AuthorModel(**data.dict(exclude_unset=True, by_alias=False, exclude_none=True)),
+            AuthorModel(**data.model_dump(exclude_unset=True, by_alias=False, exclude_none=True)),
         )
         await authors_repo.session.commit()
-        return Author.from_orm(obj)
+        return Author.model_validate(obj)
 
     # we override the authors_repo to use the version that joins the Books in
     @get(path="/authors/{author_id:uuid}", dependencies={"authors_repo": Provide(provide_author_details_repo)})
@@ -157,7 +157,7 @@ class AuthorController(Controller):
     ) -> Author:
         """Get an existing author."""
         obj = await authors_repo.get(author_id)
-        return Author.from_orm(obj)
+        return Author.model_validate(obj)
 
     @patch(
         path="/authors/{author_id:uuid}",
@@ -173,11 +173,11 @@ class AuthorController(Controller):
         ),
     ) -> Author:
         """Update an author."""
-        raw_obj = data.dict(exclude_unset=True, by_alias=False, exclude_none=True)
+        raw_obj = data.model_dump(exclude_unset=True, by_alias=False, exclude_none=True)
         raw_obj.update({"id": author_id})
         obj = await authors_repo.update(AuthorModel(**raw_obj))
         await authors_repo.session.commit()
-        return Author.from_orm(obj)
+        return Author.model_validate(obj)
 
     @delete(path="/authors/{author_id:uuid}")
     async def delete_author(
@@ -188,7 +188,7 @@ class AuthorController(Controller):
             description="The author to delete.",
         ),
     ) -> None:
-        """Delete a author from the system."""
+        """Delete an author from the system."""
         _ = await authors_repo.delete(author_id)
         await authors_repo.session.commit()
 

@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.utils.signature import ParsedSignature
 
-__all__ = ("SignatureModel",)
+__all__ = ("SignatureModel", "ErrorMessage")
 
 
 class ErrorMessage(TypedDict):

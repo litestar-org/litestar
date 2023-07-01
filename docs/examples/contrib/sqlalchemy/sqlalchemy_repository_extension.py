@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
 from pydantic import BaseModel as _BaseModel
-from pydantic import parse_obj_as
+from pydantic import ConfigDict, TypeAdapter
 from sqlalchemy.orm import Mapped, declarative_mixin, mapped_column
 from sqlalchemy.types import String
 
@@ -24,9 +24,7 @@ if TYPE_CHECKING:
 
 class BaseModel(_BaseModel):
     """Extend Pydantic's BaseModel to enable ORM mode"""
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # we are going to add a simple "slug" to our model that is a URL safe surrogate key to
@@ -44,9 +42,9 @@ class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
     """Extends the repository to include slug model features.."""
 
     async def get_available_slug(
-        self,
-        value_to_slugify: str,
-        **kwargs: Any,
+            self,
+            value_to_slugify: str,
+            **kwargs: Any,
     ) -> str:
         """Get a unique slug for the supplied value.
 
@@ -90,9 +88,9 @@ class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
         return re.sub(r"[-\s]+", "-", value).strip("-_")
 
     async def _is_slug_unique(
-        self,
-        slug: str,
-        **kwargs: Any,
+            self,
+            slug: str,
+            **kwargs: Any,
     ) -> bool:
         return await self.get_one_or_none(slug=slug) is None
 
@@ -112,7 +110,7 @@ class BlogPostRepository(SQLAlchemyAsyncSlugRepository[BlogPost]):
 
 
 class BlogPostDTO(BaseModel):
-    id: UUID | None
+    id: UUID | None = None
     slug: str
     title: str
     content: str
@@ -145,34 +143,35 @@ async def on_startup() -> None:
 
 @get(path="/")
 async def get_blogs(
-    blog_post_repo: BlogPostRepository,
+        blog_post_repo: BlogPostRepository,
 ) -> list[BlogPostDTO]:
     """Interact with SQLAlchemy engine and session."""
     objs = await blog_post_repo.list()
-    return parse_obj_as(list[BlogPostDTO], objs)
+    type_adapter = TypeAdapter(list[BlogPostDTO])
+    return type_adapter.validate_python(objs)
 
 
 @get(path="/{post_slug:str}")
 async def get_blog_details(
-    post_slug: str,
-    blog_post_repo: BlogPostRepository,
+        post_slug: str,
+        blog_post_repo: BlogPostRepository,
 ) -> BlogPostDTO:
     """Interact with SQLAlchemy engine and session."""
     obj = await blog_post_repo.get_one(slug=post_slug)
-    return BlogPostDTO.from_orm(obj)
+    return BlogPostDTO.model_validate(obj)
 
 
 @post(path="/")
 async def create_blog(
-    blog_post_repo: BlogPostRepository,
-    data: BlogPostCreate,
+        blog_post_repo: BlogPostRepository,
+        data: BlogPostCreate,
 ) -> BlogPostDTO:
     """Create a new blog post."""
-    _data = data.dict(exclude_unset=True, by_alias=False, exclude_none=True)
+    _data = data.model_dump(exclude_unset=True, by_alias=False, exclude_none=True)
     _data["slug"] = await blog_post_repo.get_available_slug(_data["title"])
     obj = await blog_post_repo.add(BlogPost(**_data))
     await blog_post_repo.session.commit()
-    return BlogPostDTO.from_orm(obj)
+    return BlogPostDTO.model_validate(obj)
 
 
 app = Litestar(

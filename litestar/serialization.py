@@ -16,6 +16,7 @@ from re import Pattern
 from typing import TYPE_CHECKING, Any, Callable, Mapping, TypeVar, overload
 
 import msgspec
+# TODO: ConstrainedBytes, ConstrainedDate, SecretField
 from pydantic import (
     BaseModel,
     ByteSize,
@@ -25,12 +26,12 @@ from pydantic import (
     SecretField,
     StrictBool,
 )
-from pydantic.color import Color
 from pydantic.json import decimal_encoder
 
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
 from litestar.types import Empty, Serializer
+from pydantic_extra_types.color import Color
 
 if TYPE_CHECKING:
     from litestar.types import TypeEncodersMap
@@ -50,7 +51,7 @@ T = TypeVar("T")
 
 
 def _enc_base_model(model: BaseModel) -> Any:
-    return model.dict()
+    return model.model_dump()
 
 
 def _enc_byte_size(bytes_: ByteSize) -> int:
@@ -136,7 +137,7 @@ def dec_hook(type_: Any, value: Any) -> Any:  # pragma: no cover
         A ``msgspec``-supported type
     """
     if issubclass(type_, BaseModel):
-        return type_.parse_obj(value)
+        return type_.model_validate(value)
     if issubclass(type_, (Path, PurePath)):
         return type_(value)
     raise TypeError(f"Unsupported type: {type(value)!r}")

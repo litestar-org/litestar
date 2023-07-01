@@ -19,7 +19,8 @@ from typing import (
 )
 
 from multidict import CIMultiDict, CIMultiDictProxy, MultiMapping
-from pydantic import BaseModel, Extra, Field, ValidationError, validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
+from pydantic_core.core_schema import FieldValidationInfo
 from typing_extensions import Annotated
 
 from litestar._multipart import parse_content_header
@@ -28,7 +29,6 @@ from litestar.datastructures.multi_dicts import MultiMixin
 from litestar.exceptions import ImproperlyConfiguredException
 
 __all__ = ("Accept", "CacheControlHeader", "ETag", "Header", "Headers", "MutableScopeHeaders")
-
 
 if TYPE_CHECKING:
     from litestar.types.asgi_types import (
@@ -231,19 +231,21 @@ class MutableScopeHeaders(MutableMapping):
         return iter(h[0].decode("latin-1") for h in self.headers)
 
 
+def alias_generator(field_name: str) -> str:
+    """Generate field-aliases by replacing dashes with underscores in header-names."""
+    return field_name.replace("_", "-")
+
+
 class Header(BaseModel, ABC):
     """An abstract type for HTTP headers."""
 
     HEADER_NAME: ClassVar[str] = ""
 
-    class Config:
-        allow_population_by_field_name = True
-        extra = Extra.forbid
-
-        @classmethod
-        def alias_generator(cls, field_name: str) -> str:
-            """Generate field-aliases by replacing dashes with underscores in header-names."""
-            return field_name.replace("_", "-")
+    model_config = ConfigDict(
+        populate_by_name=True,
+        extra="forbid",
+        alias_generator=alias_generator
+    )
 
     documentation_only: bool = False
     """Defines the header instance as for OpenAPI documentation purpose only."""
@@ -308,7 +310,7 @@ class CacheControlHeader(Header):
 
         cc_items = [
             key if isinstance(value, bool) else f"{key}={value}"
-            for key, value in self.dict(
+            for key, value in self.model_dump(
                 exclude_unset=True,
                 exclude_none=True,
                 by_alias=True,
@@ -380,8 +382,8 @@ class ETag(Header):
         except ValidationError as exc:
             raise ImproperlyConfiguredException from exc
 
-    @validator("value", always=True)
-    def validate_value(cls, value: Any, values: Dict[str, Any]) -> Any:
+    @field_validator("value")
+    def validate_value(cls, value: Any, values: Dict[str, Any], info: FieldValidationInfo) -> Any:
         """Ensure that either value is set or the instance is for ``documentation_only``."""
         if values.get("documentation_only") or value is not None:
             return value
