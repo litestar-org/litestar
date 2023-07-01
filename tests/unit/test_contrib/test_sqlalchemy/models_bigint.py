@@ -52,7 +52,7 @@ class BigIntModelWithFetchedValue(BigIntBase):
 
 
 bigint_item_tag = Table(
-    "uuid_item_tag",
+    "bigint_item_tag",
     BigIntBase.metadata,
     Column("item_id", ForeignKey("item.id"), primary_key=True),
     Column("tag_id", ForeignKey("tag.id"), primary_key=True),
