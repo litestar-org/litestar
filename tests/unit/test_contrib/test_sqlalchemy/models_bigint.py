@@ -54,8 +54,8 @@ class BigIntModelWithFetchedValue(BigIntBase):
 bigint_item_tag = Table(
     "bigint_item_tag",
     BigIntBase.metadata,
-    Column("item_id", ForeignKey("bigint_item.id"), primary_key=True),
-    Column("tag_id", ForeignKey("bigint_tag.id"), primary_key=True),
+    Column("item_id", ForeignKey("big_int_item.id"), primary_key=True),
+    Column("tag_id", ForeignKey("big_int_tag.id"), primary_key=True),
 )
 
 
