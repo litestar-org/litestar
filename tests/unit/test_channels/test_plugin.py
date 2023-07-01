@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from secrets import token_hex
-from typing import cast
+from typing import Generator, cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -20,6 +20,16 @@ from litestar.types.asgi_types import WebSocketMode
 from .util import get_from_stream
 
 
+@pytest.fixture(scope="session")
+def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()
+
+
 @pytest.fixture(
     params=[
         pytest.param("memory_backend", id="memory"),
@@ -28,9 +38,6 @@ from .util import get_from_stream
     ]
 )
 def channels_backend(request: FixtureRequest) -> ChannelsBackend:
-    if "redis" in request.param:
-        pytest.skip("Redis tests are failing")
-
     return cast(ChannelsBackend, request.getfixturevalue(request.param))
 
 
@@ -67,7 +74,7 @@ def test_plugin_dependency_signature_namespace(memory_backend: MemoryChannelsBac
 
 
 @pytest.mark.flaky(reruns=5)
-async def wtest_pub_sub_wait_published(channels_backend: ChannelsBackend) -> None:
+async def test_pub_sub_wait_published(channels_backend: ChannelsBackend) -> None:
     async with ChannelsPlugin(backend=channels_backend, channels=["something"]) as plugin:
         subscriber = await plugin.subscribe("something")
         await plugin.wait_published(b"foo", "something")
