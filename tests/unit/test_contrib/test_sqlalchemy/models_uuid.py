@@ -9,6 +9,7 @@ from uuid import UUID
 from sqlalchemy import Column, FetchedValue, ForeignKey, String, Table, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from litestar.contrib.sqlalchemy import base
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
 from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository, SQLAlchemySyncRepository
 
@@ -53,7 +54,7 @@ class UUIDModelWithFetchedValue(UUIDBase):
 
 uuid_item_tag = Table(
     "uuid_item_tag",
-    UUIDBase.metadata,
+    base.orm_registry.metadata,
     Column("item_id", ForeignKey("uuid_item.id"), primary_key=True),
     Column("tag_id", ForeignKey("uuid_tag.id"), primary_key=True),
 )
@@ -63,7 +64,7 @@ class UUIDItem(UUIDBase):
     name: Mapped[str] = mapped_column(String(), unique=True)
     description: Mapped[str | None]
     tags: Mapped[list[UUIDTag]] = relationship(
-        secondary=uuid_item_tag, back_populates="items", lazy="noload"  # <-- here be problems
+        secondary=lambda: uuid_item_tag, back_populates="items", lazy="noload"  # <-- here be problems
     )
 
 
@@ -71,7 +72,7 @@ class UUIDTag(UUIDAuditBase):
     """The event log domain object."""
 
     name: Mapped[str] = mapped_column(String(50), unique=True)
-    items: Mapped[list[UUIDItem]] = relationship(secondary=uuid_item_tag, back_populates="tags", lazy="noload")
+    items: Mapped[list[UUIDItem]] = relationship(secondary=lambda: uuid_item_tag, back_populates="tags", lazy="noload")
 
 
 class UUIDRule(UUIDAuditBase):

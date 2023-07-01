@@ -20,13 +20,13 @@ from sqlalchemy.orm import Session, sessionmaker
 from litestar.contrib.repository.exceptions import RepositoryError
 from litestar.contrib.repository.filters import BeforeAfter, CollectionFilter, OrderBy, SearchFilter
 from litestar.contrib.sqlalchemy import base
-from tests.unit.test_contrib.test_sqlalchemy.models_bigint import ItemSyncRepository
 from tests.unit.test_contrib.test_sqlalchemy.models_uuid import (
     AuthorAsyncRepository,
     AuthorSyncRepository,
     BookAsyncRepository,
     BookSyncRepository,
     ItemAsyncRepository,
+    ItemSyncRepository,
     ModelWithFetchedValueAsyncRepository,
     ModelWithFetchedValueSyncRepository,
     RuleAsyncRepository,
