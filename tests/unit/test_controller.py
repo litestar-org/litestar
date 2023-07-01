@@ -55,7 +55,7 @@ async def test_controller_http_method(
         def test_method(self) -> return_annotation:
             return return_value
 
-    with create_test_client(MyController, debug=True) as client:
+    with create_test_client(MyController) as client:
         response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
         if return_value:
@@ -114,7 +114,7 @@ def test_controller_subclassing() -> None:
     class BarController(BaseController):
         path = "/bar"
 
-    with create_test_client([FooController, BarController], debug=True) as client:
+    with create_test_client([FooController, BarController]) as client:
         response = client.get("/foo/123")
         assert response.status_code == 200
         assert response.text == "FooController 123"

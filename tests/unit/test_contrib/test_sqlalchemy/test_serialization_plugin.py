@@ -49,7 +49,6 @@ def get_a() -> A:
     with create_test_client(
         route_handlers=[module.post_handler, module.get_handler, module.get_a],
         plugins=[SQLAlchemySerializationPlugin()],
-        debug=True,
     ) as client:
         response = client.post("/a", json={"id": 1, "a": "test"})
         assert response.status_code == 201

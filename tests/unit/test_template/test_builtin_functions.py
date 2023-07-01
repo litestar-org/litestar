@@ -31,7 +31,7 @@ def test_jinja_url_for(tmp_path: Path) -> None:
         pass
 
     with create_test_client(
-        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config, debug=True
+        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
     ) as client:
         Path(tmp_path / "tpl.html").write_text("{{ url_for('simple') }}")
 

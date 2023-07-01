@@ -59,9 +59,7 @@ jobs:
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
       - name: Test
         if: ${{ !inputs.coverage }}
-        run: |
-          source $VENV
-          pytest
+        run: poetry run pytest docs/examples tests
       - name: Test with coverage
         if: inputs.coverage
         run: poetry run pytest docs/examples tests --cov=litestar --cov-report=xml
