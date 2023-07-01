@@ -54,8 +54,8 @@ class UUIDModelWithFetchedValue(UUIDBase):
 uuid_item_tag = Table(
     "uuid_item_tag",
     UUIDBase.metadata,
-    Column("item_id", ForeignKey("item.id"), primary_key=True),
-    Column("tag_id", ForeignKey("tag.id"), primary_key=True),
+    Column("item_id", ForeignKey("uuid_item.id"), primary_key=True),
+    Column("tag_id", ForeignKey("uuid_tag.id"), primary_key=True),
 )
 
 
