@@ -8,10 +8,11 @@ from typing_extensions import Annotated
 
 from litestar.dto.factory.abc import AbstractDTOFactory
 from litestar.dto.factory.data_structures import FieldDefinition
-from litestar.dto.factory.field import DTOField
+from litestar.dto.factory.field import DTOField, Mark
 from litestar.exceptions import MissingDependencyException
 from litestar.types import Empty
 from litestar.typing import ParsedType
+from litestar.utils.helpers import get_fully_qualified_class_name
 
 try:
     import piccolo  # noqa: F401
@@ -22,6 +23,8 @@ from piccolo.columns import Column, column_types
 from piccolo.table import Table
 
 T = TypeVar("T", bound=Table)
+
+__all__ = ("PiccoloDTO",)
 
 
 def _parse_piccolo_type(column: Column, extra: dict[str, Any]) -> ParsedType:
@@ -73,17 +76,17 @@ def _create_column_extra(column: Column) -> dict[str, Any]:
     return extra
 
 
-class PiccolDTO(AbstractDTOFactory[T], Generic[T]):
+class PiccoloDTO(AbstractDTOFactory[T], Generic[T]):
     @classmethod
     def generate_field_definitions(cls, model_type: type[Table]) -> Generator[FieldDefinition, None, None]:
-        unique_model_name = f"{model_type.__module__}.{model_type.__qualname__}.{model_type.__name__}"
+        unique_model_name = get_fully_qualified_class_name(model_type)
 
-        for column in model_type._meta.non_default_columns:
+        for column in model_type._meta.columns:
             yield FieldDefinition(
                 default=None if not column._meta.required else Empty,
                 default_factory=Empty,
                 # TODO: is there a better way of handling this?
-                dto_field=DTOField(),
+                dto_field=DTOField(mark=Mark.READ_ONLY if column._meta.primary_key else None),
                 dto_for=None,
                 name=column._meta.name,
                 parsed_type=_parse_piccolo_type(column, _create_column_extra(column)),

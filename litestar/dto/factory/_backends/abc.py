@@ -330,8 +330,8 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         )
 
     def create_openapi_schema(self, schema_creator: SchemaCreator) -> Reference | Schema:
-        """Create a RequestBody model for the given RouteHandler or return None."""
-        return schema_creator.for_field(SignatureField.create(self.annotation))
+        """Create an openAPI schema for the given DTO."""
+        return schema_creator.for_field(SignatureField.create(self.annotation), dto_for=self.context.dto_for)
 
     def _create_transfer_type(
         self, parsed_type: ParsedType, exclude: AbstractSet[str], field_name: str, unique_name: str, nested_depth: int
