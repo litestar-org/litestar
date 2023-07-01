@@ -30,7 +30,7 @@ services:
     image: redis:latest
     restart: always
     ports:
-      - "6379:6379"
+      - "6397:6379" # use a non-standard port here
   spanner:
     image: gcr.io/cloud-spanner-emulator/emulator:latest
     ports:
