@@ -83,7 +83,7 @@ class PiccoloDTO(AbstractDTOFactory[T], Generic[T]):
 
         for column in model_type._meta.columns:
             yield FieldDefinition(
-                default=None if not column._meta.required else Empty,
+                default=Empty if column._meta.required else None,
                 default_factory=Empty,
                 # TODO: is there a better way of handling this?
                 dto_field=DTOField(mark=Mark.READ_ONLY if column._meta.primary_key else None),
