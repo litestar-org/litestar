@@ -292,9 +292,7 @@ def _get_type_schema_name(value: Any, dto_for: ForType | None) -> str:
     name = cast("str", getattr(value, "__schema_name__", value.__name__))
     if dto_for == "data":
         return f"{name}RequestBody"
-    if dto_for == "return":
-        return f"{name}ResponseBody"
-    return name
+    return f"{name}ResponseBody" if dto_for == "return" else name
 
 
 def create_enum_schema(annotation: EnumMeta) -> Schema:
