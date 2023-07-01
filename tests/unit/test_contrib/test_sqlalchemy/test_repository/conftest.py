@@ -292,7 +292,7 @@ def engine(request: FixtureRequest) -> Engine:
 
 @pytest.fixture()
 def session(engine: Engine) -> Generator[Session, None, None]:
-    session = sessionmaker(bind=engine)()
+    session = sessionmaker(bind=engine, expire_on_commit=False)()
     try:
         yield session
     finally:
@@ -402,7 +402,7 @@ def async_engine(request: FixtureRequest) -> AsyncEngine:
 
 @pytest.fixture()
 async def async_session(async_engine: AsyncEngine) -> AsyncGenerator[AsyncSession, None]:
-    session = async_sessionmaker(bind=async_engine)()
+    session = async_sessionmaker(bind=async_engine, expire_on_commit=False)()
     try:
         yield session
     finally:
