@@ -24,6 +24,6 @@ def test_optional_request_body_url_encoded() -> None:
     def test_method(data: Optional[Form] = Body(media_type=RequestEncodingType.URL_ENCODED)) -> None:
         assert data is None
 
-    with create_test_client(test_method, debug=True) as client:
+    with create_test_client(test_method) as client:
         response = client.post("/test", data={})
         assert response.status_code == HTTP_201_CREATED

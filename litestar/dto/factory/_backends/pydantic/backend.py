@@ -26,7 +26,9 @@ class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):
 
     def create_transfer_model_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[BaseModel]:
         fqn_uid: str = self._gen_unique_name_id(unique_name)
-        return _create_model_for_field_definitions(fqn_uid, field_definitions)
+        model = _create_model_for_field_definitions(fqn_uid, field_definitions)
+        setattr(model, "__schema_name__", unique_name)
+        return model
 
     def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> BaseModel | Collection[BaseModel]:
         return decode_media_type(  # type:ignore[no-any-return]

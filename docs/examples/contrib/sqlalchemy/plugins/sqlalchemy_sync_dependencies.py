@@ -26,4 +26,4 @@ def handler(db_session: Session, db_engine: Engine) -> Tuple[int, int]:
 
 config = SQLAlchemySyncConfig(connection_string="sqlite:///sync.sqlite")
 plugin = SQLAlchemyInitPlugin(config=config)
-app = Litestar(route_handlers=[handler], plugins=[plugin], debug=True)
+app = Litestar(route_handlers=[handler], plugins=[plugin])
