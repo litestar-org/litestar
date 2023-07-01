@@ -189,7 +189,7 @@ def test_to_response_returning_redirect_response_from_redirect() -> None:
     def redirect_handler() -> None:
         raise AssertionError("this endpoint should not be reached")
 
-    with create_test_client(route_handlers=[redirect_handler, proxy_handler], debug=True) as client:
+    with create_test_client(route_handlers=[redirect_handler, proxy_handler]) as client:
         response = client.get("/test")
         assert response.status_code == HTTP_200_OK
         assert response.json() == {"message": "redirected by before request hook"}

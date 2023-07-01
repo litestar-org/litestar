@@ -278,7 +278,7 @@ def test_triggering_event_good_json() -> None:
     def handler(request: HTMXRequest) -> Any:
         return request.htmx.triggering_event
 
-    with create_test_client(route_handlers=[handler], request_class=HTMXRequest, debug=True) as client:
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get(
             "/",
             headers={

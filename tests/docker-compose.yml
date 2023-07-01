@@ -27,7 +27,8 @@ services:
       APP_USER_PASSWORD: super-secret
       APP_USER: app
   redis:
-    image: redis
+    image: redis:latest
+    restart: always
     ports:
       - "6397:6379" # use a non-standard port here
   spanner:

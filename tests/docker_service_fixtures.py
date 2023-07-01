@@ -37,7 +37,7 @@ async def wait_until_responsive(
     """
     ref = timeit.default_timer()
     now = ref
-    while now - now < timeout:
+    while (now - ref) < timeout:  # sourcery skip
         if await check(**kwargs):
             return
         await asyncio.sleep(pause)
@@ -67,7 +67,10 @@ class DockerServiceRegistry:
         raise ValueError(f'Invalid value for DOCKER_HOST: "{docker_host}".')
 
     def run_command(self, *args: str) -> None:
-        subprocess.run([*self._base_command, *args], check=True, capture_output=True)
+        if sys.platform == "darwin":
+            subprocess.call([*self._base_command, *args], shell=True)
+        else:
+            subprocess.run([*self._base_command, *args], check=True, capture_output=True)
 
     async def start(
         self,
@@ -99,7 +102,7 @@ class DockerServiceRegistry:
 
 @pytest.fixture(scope="session")
 def docker_services() -> Generator[DockerServiceRegistry, None, None]:
-    if sys.platform != "linux":
+    if sys.platform not in ("linux", "darwin"):
         pytest.skip("Docker not available on this platform")
 
     registry = DockerServiceRegistry()
