@@ -121,7 +121,7 @@ def test_sqlalchemy_repo_add(mock_repo: SQLAlchemySyncRepository) -> None:
     assert instance is mock_instance
     mock_repo.session.add.assert_called_once_with(mock_instance)
     mock_repo.session.flush.assert_called_once()
-    mock_repo.session.refresh.assert_called_once_with(mock_instance)
+    mock_repo.session.refresh.assert_called_once_with(mock_instance, attribute_names=None, with_for_update=None)
     mock_repo.session.expunge.assert_called_once_with(mock_instance)
     mock_repo.session.commit.assert_not_called()
 
@@ -289,7 +289,7 @@ def test_sqlalchemy_repo_get_or_create_member_existing_upsert(
     mock_repo.session.expunge.assert_called_with(mock_instance)
     mock_repo._attach_to_session.assert_called_once()
     mock_repo.session.flush.assert_called_once()
-    mock_repo.session.refresh.assert_called_once_with(mock_instance)
+    mock_repo.session.refresh.assert_called_once_with(mock_instance, attribute_names=None, with_for_update=None)
 
 
 def test_sqlalchemy_repo_get_or_create_member_existing_no_upsert(
@@ -473,7 +473,7 @@ def test_sqlalchemy_repo_update(mock_repo: SQLAlchemySyncRepository, monkeypatch
     mock_repo.session.flush.assert_called_once()
     mock_repo.session.expunge.assert_called_once_with(mock_instance)
     mock_repo.session.commit.assert_not_called()
-    mock_repo.session.refresh.assert_called_once_with(mock_instance)
+    mock_repo.session.refresh.assert_called_once_with(mock_instance, attribute_names=None, with_for_update=None)
 
 
 def test_sqlalchemy_repo_upsert(mock_repo: SQLAlchemySyncRepository) -> None:
@@ -486,7 +486,7 @@ def test_sqlalchemy_repo_upsert(mock_repo: SQLAlchemySyncRepository) -> None:
     mock_repo.session.flush.assert_called_once()
     mock_repo.session.expunge.assert_called_once_with(mock_instance)
     mock_repo.session.commit.assert_not_called()
-    mock_repo.session.refresh.assert_called_once_with(mock_instance)
+    mock_repo.session.refresh.assert_called_once_with(mock_instance, attribute_names=None, with_for_update=None)
 
 
 def test_attach_to_session_unexpected_strategy_raises_valueerror(
