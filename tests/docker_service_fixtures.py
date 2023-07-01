@@ -37,7 +37,7 @@ async def wait_until_responsive(
     """
     ref = timeit.default_timer()
     now = ref
-    while now - now < timeout:
+    while (now - ref) < timeout:  # sourcery skip
         if await check(**kwargs):
             return
         await asyncio.sleep(pause)
