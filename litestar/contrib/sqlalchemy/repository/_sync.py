@@ -430,14 +430,10 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         return self._list_and_count_window(*filters, **kwargs)
 
     def _expunge(self, instance: ModelT, auto_expunge: bool) -> None:
-        if auto_expunge:
-            return self.session.expunge(instance)
-        return None
+        return self.session.expunge(instance) if auto_expunge else None
 
     def _flush_or_commit(self, auto_commit: bool) -> None:
-        if auto_commit:
-            return self.session.commit()
-        return self.session.flush()
+        return self.session.commit() if auto_commit else self.session.flush()
 
     def _refresh(
         self,
