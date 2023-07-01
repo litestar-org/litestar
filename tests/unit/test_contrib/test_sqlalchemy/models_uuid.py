@@ -61,8 +61,8 @@ uuid_item_tag = Table(
 
 
 class UUIDItem(UUIDBase):
-    name: Mapped[str] = mapped_column(String(), unique=True)  # pyright: ignore
-    description: Mapped[str] = mapped_column(String(100), nullable=True)  # pyright: ignore
+    name: Mapped[str] = mapped_column(String(length=50), unique=True)  # pyright: ignore
+    description: Mapped[str] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
     tags: Mapped[List[UUIDTag]] = relationship(  # pyright: ignore  # noqa: UP
         secondary=lambda: uuid_item_tag, back_populates="items"
     )
@@ -71,7 +71,7 @@ class UUIDItem(UUIDBase):
 class UUIDTag(UUIDAuditBase):
     """The event log domain object."""
 
-    name: Mapped[str] = mapped_column(String(50), unique=True)  # pyright: ignore
+    name: Mapped[str] = mapped_column(String(length=50), unique=True)  # pyright: ignore
     items: Mapped[List[UUIDItem]] = relationship(  # pyright: ignore  # noqa: UP
         secondary=lambda: uuid_item_tag, back_populates="tags"
     )

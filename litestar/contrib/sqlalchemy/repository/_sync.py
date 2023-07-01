@@ -80,14 +80,14 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Returns:
             The added instance.
         """
-        _auto_commit = kwargs.pop("auto_commit", self.auto_commit)
-        _auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
-        _auto_refresh = kwargs.pop("auto_refresh", self.auto_refresh)
+        auto_commit = kwargs.pop("auto_commit", self.auto_commit)
+        auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
+        auto_refresh = kwargs.pop("auto_refresh", self.auto_refresh)
         with wrap_sqlalchemy_exception():
             instance = self._attach_to_session(data)
-            self._flush_or_commit(auto_commit=_auto_commit)
-            self._refresh(instance, auto_refresh=_auto_refresh)
-            self._expunge(instance, auto_expunge=_auto_expunge)
+            self._flush_or_commit(auto_commit=auto_commit)
+            self._refresh(instance, auto_refresh=auto_refresh)
+            self._expunge(instance, auto_expunge=auto_expunge)
             return instance
 
     def add_many(
@@ -104,13 +104,13 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Returns:
             The added instances.
         """
-        _auto_commit = kwargs.pop("auto_commit", self.auto_commit)
-        _auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
+        auto_commit = kwargs.pop("auto_commit", self.auto_commit)
+        auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
         with wrap_sqlalchemy_exception():
             self.session.add_all(data)
-            self._flush_or_commit(auto_commit=_auto_commit)
+            self._flush_or_commit(auto_commit=auto_commit)
             for datum in data:
-                self._expunge(datum, auto_expunge=_auto_expunge)
+                self._expunge(datum, auto_expunge=auto_expunge)
             return data
 
     def delete(
@@ -130,13 +130,13 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Raises:
             NotFoundError: If no instance found identified by ``item_id``.
         """
-        _auto_commit = kwargs.pop("auto_commit", self.auto_commit)
-        _auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
+        auto_commit = kwargs.pop("auto_commit", self.auto_commit)
+        auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
         with wrap_sqlalchemy_exception():
             instance = self.get(item_id)
             self.session.delete(instance)
-            self._flush_or_commit(auto_commit=_auto_commit)
-            self._expunge(instance, auto_expunge=_auto_expunge)
+            self._flush_or_commit(auto_commit=auto_commit)
+            self._expunge(instance, auto_expunge=auto_expunge)
             return instance
 
     def delete_many(
@@ -154,8 +154,8 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             The deleted instances.
 
         """
-        _auto_commit = kwargs.pop("auto_commit", self.auto_commit)
-        _auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
+        auto_commit = kwargs.pop("auto_commit", self.auto_commit)
+        auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
         with wrap_sqlalchemy_exception():
             instances: list[ModelT] = []
             chunk_size = 450
@@ -178,9 +178,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                     self.session.execute(
                         delete(self.model_type).where(getattr(self.model_type, self.id_attribute).in_(chunk))
                     )
-            self._flush_or_commit(auto_commit=_auto_commit)
+            self._flush_or_commit(auto_commit=auto_commit)
             for instance in instances:
-                self._expunge(instance, auto_expunge=_auto_expunge)
+                self._expunge(instance, auto_expunge=auto_expunge)
             return instances
 
     def exists(self, **kwargs: Any) -> bool:
@@ -209,13 +209,13 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Raises:
             NotFoundError: If no instance found identified by `item_id`.
         """
-        _auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
+        auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
         with wrap_sqlalchemy_exception():
             statement = kwargs.pop("statement", self.statement)
             statement = self._filter_select_by_kwargs(statement=statement, **{self.id_attribute: item_id})
             instance = (self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
-            self._expunge(instance, auto_expunge=_auto_expunge)
+            self._expunge(instance, auto_expunge=auto_expunge)
             return instance
 
     def get_one(self, **kwargs: Any) -> ModelT:
@@ -230,13 +230,13 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Raises:
             NotFoundError: If no instance found identified by `item_id`.
         """
-        _auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
+        auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
         with wrap_sqlalchemy_exception():
             statement = kwargs.pop("statement", self.statement)
             statement = self._filter_select_by_kwargs(statement=statement, **kwargs)
             instance = (self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
-            self._expunge(instance, auto_expunge=_auto_expunge)
+            self._expunge(instance, auto_expunge=auto_expunge)
             return instance
 
     def get_one_or_none(self, **kwargs: Any) -> ModelT | None:
@@ -248,13 +248,13 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Returns:
             The retrieved instance or None
         """
-        _auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
+        auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
         with wrap_sqlalchemy_exception():
             statement = kwargs.pop("statement", self.statement)
             statement = self._filter_select_by_kwargs(statement=statement, **kwargs)
             instance = (self._execute(statement)).scalar_one_or_none()
             if instance:
-                self._expunge(instance, auto_expunge=_auto_expunge)
+                self._expunge(instance, auto_expunge=auto_expunge)
             return instance  # type: ignore
 
     def get_or_create(
@@ -277,9 +277,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Returns:
             a tuple that includes the instance and whether or not it needed to be created.  When using match_fields and actual model values differ from `kwargs`, the model value will be updated.
         """
-        _auto_commit = kwargs.pop("auto_commit", self.auto_commit)
-        _auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
-        _auto_refresh = kwargs.pop("auto_refresh", self.auto_refresh)
+        auto_commit = kwargs.pop("auto_commit", self.auto_commit)
+        auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
+        auto_refresh = kwargs.pop("auto_refresh", self.auto_refresh)
         match_fields = match_fields or self.match_fields
         if isinstance(match_fields, str):
             match_fields = [match_fields]
@@ -300,11 +300,11 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                 if field and field != new_field_value:
                     setattr(existing, field_name, new_field_value)
             existing = self._attach_to_session(existing, strategy="merge")
-            self._flush_or_commit(auto_commit=_auto_commit)
+            self._flush_or_commit(auto_commit=auto_commit)
             self._refresh(
-                existing, attribute_names=attribute_names, with_for_update=with_for_update, auto_refresh=_auto_refresh
+                existing, attribute_names=attribute_names, with_for_update=with_for_update, auto_refresh=auto_refresh
             )
-            self._expunge(existing, auto_expunge=_auto_expunge)
+            self._expunge(existing, auto_expunge=auto_expunge)
         return existing, False
 
     def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
@@ -349,20 +349,20 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Raises:
             NotFoundError: If no instance found with same identifier as `data`.
         """
-        _auto_commit = kwargs.pop("auto_commit", self.auto_commit)
-        _auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
-        _auto_refresh = kwargs.pop("auto_refresh", self.auto_refresh)
+        auto_commit = kwargs.pop("auto_commit", self.auto_commit)
+        auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
+        auto_refresh = kwargs.pop("auto_refresh", self.auto_refresh)
         with wrap_sqlalchemy_exception():
             item_id = self.get_id_attribute_value(data)
             # this will raise for not found, and will put the item in the session
             self.get(item_id)
             # this will merge the inbound data to the instance we just put in the session
             instance = self._attach_to_session(data, strategy="merge")
-            self._flush_or_commit(auto_commit=_auto_commit)
+            self._flush_or_commit(auto_commit=auto_commit)
             self._refresh(
-                instance, attribute_names=attribute_names, with_for_update=with_for_update, auto_refresh=_auto_refresh
+                instance, attribute_names=attribute_names, with_for_update=with_for_update, auto_refresh=auto_refresh
             )
-            self._expunge(instance, auto_expunge=_auto_expunge)
+            self._expunge(instance, auto_expunge=auto_expunge)
             return instance
 
     def update_many(
@@ -387,8 +387,8 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Raises:
             NotFoundError: If no instance found with same identifier as `data`.
         """
-        _auto_commit = kwargs.pop("auto_commit", self.auto_commit)
-        _auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
+        auto_commit = kwargs.pop("auto_commit", self.auto_commit)
+        auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
         data_to_update: list[dict[str, Any]] = [v.to_dict() if isinstance(v, self.model_type) else v for v in data]  # type: ignore
         with wrap_sqlalchemy_exception():
             if self._dialect.update_executemany_returning and self._dialect.name != "oracle":
@@ -400,15 +400,15 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                         # https://github.com/sqlalchemy/sqlalchemy/discussions/9925
                     )
                 )
-                self._flush_or_commit(auto_commit=_auto_commit)
+                self._flush_or_commit(auto_commit=auto_commit)
                 for instance in instances:
-                    self._expunge(instance, auto_expunge=_auto_expunge)
+                    self._expunge(instance, auto_expunge=auto_expunge)
                 return instances
             self.session.execute(
                 update(self.model_type),
                 data_to_update,
             )
-            self._flush_or_commit(auto_commit=_auto_commit)
+            self._flush_or_commit(auto_commit=auto_commit)
             return data
 
     def list_and_count(
@@ -462,7 +462,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Returns:
             Count of records returned by query using an analytical window function, ignoring pagination.
         """
-        _auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
+        auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
         statement = kwargs.pop("statement", self.statement)
         statement = statement.add_columns(over(sql_func.count(self.get_id_attribute_value(self.model_type))))
         statement = self._apply_filters(*filters, statement=statement)
@@ -472,7 +472,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             count: int = 0
             instances: list[ModelT] = []
             for i, (instance, count_value) in enumerate(result):
-                self._expunge(instance, auto_expunge=_auto_expunge)
+                self._expunge(instance, auto_expunge=auto_expunge)
                 instances.append(instance)
                 if i == 0:
                     count = count_value
@@ -492,7 +492,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Returns:
             Count of records returned by query using 2 queries, ignoring pagination.
         """
-        _auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
+        auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
         statement = kwargs.pop("statement", self.statement)
         statement = self._apply_filters(*filters, statement=statement)
         statement = self._filter_select_by_kwargs(statement, **kwargs)
@@ -506,7 +506,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             result = self._execute(statement)
             instances: list[ModelT] = []
             for (instance,) in result:
-                self._expunge(instance, auto_expunge=_auto_expunge)
+                self._expunge(instance, auto_expunge=auto_expunge)
                 instances.append(instance)
             return instances, count
 
@@ -520,7 +520,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Returns:
             The list of instances, after filtering applied.
         """
-        _auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
+        auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
         statement = kwargs.pop("statement", self.statement)
         statement = self._apply_filters(*filters, statement=statement)
         statement = self._filter_select_by_kwargs(statement, **kwargs)
@@ -529,7 +529,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             result = self._execute(statement)
             instances = list(result.scalars())
             for instance in instances:
-                self._expunge(instance, auto_expunge=_auto_expunge)
+                self._expunge(instance, auto_expunge=auto_expunge)
             return instances
 
     def upsert(
@@ -558,16 +558,16 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Raises:
             NotFoundError: If no instance found with same identifier as `data`.
         """
-        _auto_commit = kwargs.pop("auto_commit", self.auto_commit)
-        _auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
-        _auto_refresh = kwargs.pop("auto_refresh", self.auto_refresh)
+        auto_commit = kwargs.pop("auto_commit", self.auto_commit)
+        auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
+        auto_refresh = kwargs.pop("auto_refresh", self.auto_refresh)
         with wrap_sqlalchemy_exception():
             instance = self._attach_to_session(data, strategy="merge")
-            self._flush_or_commit(auto_commit=_auto_commit)
+            self._flush_or_commit(auto_commit=auto_commit)
             self._refresh(
-                instance, attribute_names=attribute_names, with_for_update=with_for_update, auto_refresh=_auto_refresh
+                instance, attribute_names=attribute_names, with_for_update=with_for_update, auto_refresh=auto_refresh
             )
-            self._expunge(instance, auto_expunge=_auto_expunge)
+            self._expunge(instance, auto_expunge=auto_expunge)
             return instance
 
     def filter_collection_by_kwargs(  # type:ignore[override]

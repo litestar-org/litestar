@@ -60,8 +60,8 @@ bigint_item_tag = Table(
 
 
 class BigIntItem(BigIntBase):
-    name: Mapped[str] = mapped_column(String(50), unique=True)  # pyright: ignore
-    description: Mapped[str] = mapped_column(String(100), nullable=True)  # pyright: ignore
+    name: Mapped[str] = mapped_column(String(length=50), unique=True)  # pyright: ignore
+    description: Mapped[str] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
     tags: Mapped[List[BigIntTag]] = relationship(  # pyright: ignore  # noqa: UP
         secondary=lambda: bigint_item_tag, back_populates="items"
     )
@@ -70,7 +70,7 @@ class BigIntItem(BigIntBase):
 class BigIntTag(BigIntBase):
     """The event log domain object."""
 
-    name: Mapped[str] = mapped_column(String(50), unique=True)  # pyright: ignore
+    name: Mapped[str] = mapped_column(String(length=50), unique=True)  # pyright: ignore
     items: Mapped[List[BigIntItem]] = relationship(  # pyright: ignore  # noqa: UP
         secondary=lambda: bigint_item_tag, back_populates="tags"
     )
