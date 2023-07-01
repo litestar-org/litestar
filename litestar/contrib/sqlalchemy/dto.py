@@ -94,13 +94,13 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
 
         return [
             FieldDefinition(
-                name=key,
                 default=default,
-                parsed_type=parsed_type,
                 default_factory=default_factory,
                 dto_field=elem.info.get(DTO_FIELD_META_KEY, DTOField()),
-                unique_model_name=model_name,
                 dto_for=None,
+                name=key,
+                parsed_type=parsed_type,
+                unique_model_name=model_name,
             )
         ]
 
