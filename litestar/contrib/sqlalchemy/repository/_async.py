@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, Literal, cast
+from typing import TYPE_CHECKING, Any, Generic, Iterable, Literal, cast
 
 from sqlalchemy import Result, Select, delete, over, select, text, update
 from sqlalchemy import func as sql_func
@@ -36,7 +36,8 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         *,
         statement: Select[tuple[ModelT]] | None = None,
         session: AsyncSession,
-        expunge: bool = False,
+        auto_expunge: bool = False,
+        auto_refresh: bool = False,
         **kwargs: Any,
     ) -> None:
         """Repository pattern for SQLAlchemy models.
@@ -44,12 +45,14 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         Args:
             statement: To facilitate customization of the underlying select query.
             session: Session managing the unit-of-work for the operation.
-            expunge: Remove object from session before returning.
+            auto_expunge: Remove object from session before returning.
+            auto_refresh: Refresh object from session before returning.
             **kwargs: Additional arguments.
 
         """
         super().__init__(**kwargs)
-        self.expunge = expunge
+        self.auto_expunge = auto_expunge
+        self.auto_refresh = auto_refresh
         self.session = session
         self.statement = statement if statement is not None else select(self.model_type)
         if not self.session.bind:
@@ -57,10 +60,6 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             # narrow down the types
             raise ValueError("Session improperly configure")
         self._dialect = self.session.bind.dialect
-
-    def _expunge(self, instance: ModelT) -> None:
-        if self.expunge:
-            self.session.expunge(instance)
 
     async def add(self, data: ModelT) -> ModelT:
         """Add `data` to the collection.
@@ -74,7 +73,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         with wrap_sqlalchemy_exception():
             instance = await self._attach_to_session(data)
             await self.session.flush()
-            await self.session.refresh(instance)
+            await self._refresh(instance)
             self._expunge(instance)
             return instance
 
@@ -223,13 +222,20 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             return instance  # type: ignore
 
     async def get_or_create(
-        self, match_fields: list[str] | str | None = None, upsert: bool = True, **kwargs: Any
+        self,
+        match_fields: list[str] | str | None = None,
+        upsert: bool = True,
+        attribute_names: Iterable[str] | None = None,
+        with_for_update: bool | None = None,
+        **kwargs: Any,
     ) -> tuple[ModelT, bool]:
         """Get instance identified by ``kwargs`` or create if it doesn't exist.
 
         Args:
             match_fields: a list of keys to use to match the existing model.  When empty, all fields are matched.
             upsert: When using match_fields and actual model values differ from `kwargs`, perform an update operation on the model.
+            attribute_names: an iterable of attribute names to pass into the ``update`` method.
+            with_for_update: indicating FOR UPDATE should be used, or may be a dictionary containing flags to indicate a more specific set of FOR UPDATE flags for the SELECT
             **kwargs: Identifier of the instance to be retrieved.
 
         Returns:
@@ -256,7 +262,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                     setattr(existing, field_name, new_field_value)
             existing = await self._attach_to_session(existing, strategy="merge")
             await self.session.flush()
-            await self.session.refresh(existing)
+            await self._refresh(existing, attribute_names=attribute_names, with_for_update=with_for_update)
             self._expunge(existing)
         return existing, False
 
@@ -280,19 +286,26 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         results = await self._execute(statement)
         return results.scalar_one()  # type: ignore
 
-    async def update(self, data: ModelT) -> ModelT:
+    async def update(
+        self,
+        data: ModelT,
+        attribute_names: Iterable[str] | None = None,
+        with_for_update: bool | None = None,
+    ) -> ModelT:
         """Update instance with the attribute values present on `data`.
 
         Args:
             data: An instance that should have a value for `self.id_attribute` that exists in the
                 collection.
-
+            attribute_names: an iterable of attribute names to pass into the ``update`` method.
+            with_for_update: indicating FOR UPDATE should be used, or may be a dictionary containing flags to indicate a more specific set of FOR UPDATE flags for the SELECT
         Returns:
             The updated instance.
 
         Raises:
             NotFoundError: If no instance found with same identifier as `data`.
         """
+
         with wrap_sqlalchemy_exception():
             item_id = self.get_id_attribute_value(data)
             # this will raise for not found, and will put the item in the session
@@ -300,7 +313,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             # this will merge the inbound data to the instance we just put in the session
             instance = await self._attach_to_session(data, strategy="merge")
             await self.session.flush()
-            await self.session.refresh(instance)
+            await self._refresh(instance, attribute_names=attribute_names, with_for_update=with_for_update)
             self._expunge(instance)
             return instance
 
@@ -360,6 +373,19 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         if self._dialect.name in {"spanner", "spanner+spanner"}:
             return await self._list_and_count_basic(*filters, **kwargs)
         return await self._list_and_count_window(*filters, **kwargs)
+
+    def _expunge(self, instance: ModelT) -> None:
+        if self.auto_expunge:
+            self.session.expunge(instance)
+
+    async def _refresh(
+        self,
+        instance: ModelT,
+        attribute_names: Iterable[str] | None = None,
+        with_for_update: bool | None = None,
+    ) -> None:
+        if self.auto_refresh:
+            await self.session.refresh(instance, attribute_names=attribute_names, with_for_update=with_for_update)
 
     async def _list_and_count_window(
         self,
@@ -442,7 +468,12 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                 self._expunge(instance)
             return instances
 
-    async def upsert(self, data: ModelT) -> ModelT:
+    async def upsert(
+        self,
+        data: ModelT,
+        attribute_names: Iterable[str] | None = None,
+        with_for_update: bool | None = None,
+    ) -> ModelT:
         """Update or create instance.
 
         Updates instance with the attribute values present on `data`, or creates a new instance if
@@ -452,7 +483,8 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             data: Instance to update existing, or be created. Identifier used to determine if an
                 existing instance exists is the value of an attribute on `data` named as value of
                 `self.id_attribute`.
-
+            attribute_names: an iterable of attribute names to pass into the ``update`` method.
+            with_for_update: indicating FOR UPDATE should be used, or may be a dictionary containing flags to indicate a more specific set of FOR UPDATE flags for the SELECT
         Returns:
             The updated or created instance.
 
@@ -462,7 +494,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         with wrap_sqlalchemy_exception():
             instance = await self._attach_to_session(data, strategy="merge")
             await self.session.flush()
-            await self.session.refresh(instance)
+            await self._refresh(instance, attribute_names=attribute_names, with_for_update=with_for_update)
             self._expunge(instance)
             return instance
 
