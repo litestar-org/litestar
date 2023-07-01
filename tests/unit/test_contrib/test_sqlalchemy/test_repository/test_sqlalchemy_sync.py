@@ -322,7 +322,7 @@ def test_sqlalchemy_repo_get_or_create_member_created(
     assert created is True
     mock_repo.session.expunge.assert_called_with(instance)
     mock_repo.session.add.assert_called_once_with(instance)
-    mock_repo.session.refresh.assert_called_once_with(instance)
+    mock_repo.session.refresh.assert_called_once_with(instance, attribute_names=None, with_for_update=None)
 
 
 def test_sqlalchemy_repo_get_one_or_none_member(mock_repo: SQLAlchemySyncRepository, monkeypatch: MonkeyPatch) -> None:
