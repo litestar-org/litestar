@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from secrets import token_hex
-from typing import Generator, cast
+from typing import cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -18,16 +18,6 @@ from litestar.testing import TestClient, create_test_client
 from litestar.types.asgi_types import WebSocketMode
 
 from .util import get_from_stream
-
-
-@pytest.fixture(scope="session")
-def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:
-        loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()
 
 
 @pytest.fixture(
