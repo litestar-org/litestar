@@ -15,6 +15,7 @@ from litestar.channels.backends.base import ChannelsBackend
 
 if TYPE_CHECKING:
     from redis.asyncio import Redis
+    from redis.asyncio.client import PubSub
 
 _resource_path = importlib_resources.files("litestar.channels.backends")
 _PUBSUB_PUBLISH_SCRIPT = (_resource_path / "_redis_pubsub_publish.lua").read_text()
@@ -57,11 +58,18 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
         super().__init__(
             redis=redis, stream_sleep_no_subscriptions=stream_sleep_no_subscriptions, key_prefix=key_prefix
         )
-        self._pub_sub = self._redis.pubsub()
+        self.__pub_sub: PubSub | None = None
         self._publish_script = self._redis.register_script(_PUBSUB_PUBLISH_SCRIPT)
 
+    @property
+    def _pub_sub(self) -> PubSub:
+        if self.__pub_sub is None:
+            self.__pub_sub = self._redis.pubsub()
+        return self.__pub_sub
+
     async def on_startup(self) -> None:
-        await self._pub_sub.ping()
+        # this method should not do anything in this case
+        pass
 
     async def on_shutdown(self) -> None:
         await self._pub_sub.reset()
@@ -94,10 +102,13 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
                 await asyncio.sleep(self._stream_sleep_no_subscriptions)  # no subscriptions found so we sleep a bit
                 continue
 
-            if message := await self._pub_sub.get_message(ignore_subscribe_messages=True, timeout=None):  # type: ignore
-                channel = message["channel"].decode()
-                data = message["data"]
-                yield channel, data
+            message = await self._pub_sub.get_message(ignore_subscribe_messages=True, timeout=None)  # type: ignore[arg-type]
+            if message is None:
+                continue
+
+            channel = message["channel"].decode()
+            data = message["data"]
+            yield channel, data
 
     async def get_history(self, channel: str, limit: int | None = None) -> list[bytes]:
         """Not implemented"""

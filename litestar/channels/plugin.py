@@ -102,7 +102,10 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
         if isinstance(data, bytes):
             return data
 
-        return data.encode() if isinstance(data, str) else self._encode_json(data)
+        if isinstance(data, str):
+            return data.encode()
+
+        return self._encode_json(data)
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         """Plugin hook. Set up a ``channels`` dependency, add route handlers and register application hooks"""
@@ -136,7 +139,6 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
         """
         if isinstance(channels, str):
             channels = [channels]
-
         data = self.encode_data(data)
         try:
             self._pub_queue.put_nowait((data, list(channels)))  # type: ignore[union-attr]
@@ -230,7 +232,7 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
             if not channel_subscribers:
                 channels_to_unsubscribe.add(channel)
 
-        if all(subscriber not in queues for queues in self._channels.values()):
+        if not any(subscriber in queues for queues in self._channels.values()):
             await subscriber.put(None)  # this will stop any running task or generator by breaking the inner loop
             if subscriber.is_running:
                 await subscriber.stop()
