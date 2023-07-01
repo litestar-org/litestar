@@ -60,8 +60,8 @@ bigint_item_tag = Table(
 
 
 class BigIntItem(BigIntBase):
-    name: Mapped[str] = mapped_column(String(), unique=True)  # pyright: ignore
-    description: Mapped[str | None]  # pyright: ignore
+    name: Mapped[str] = mapped_column(String(50), unique=True)  # pyright: ignore
+    description: Mapped[str] = mapped_column(String(100), optional=True)  # pyright: ignore
     tags: Mapped[List[BigIntTag]] = relationship(  # pyright: ignore  # noqa: UP
         secondary=lambda: bigint_item_tag, back_populates="items"
     )
