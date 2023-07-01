@@ -62,7 +62,7 @@ uuid_item_tag = Table(
 
 class UUIDItem(UUIDBase):
     name: Mapped[str] = mapped_column(String(), unique=True)  # pyright: ignore
-    description: Mapped[str] = mapped_column(String(100), optional=True)  # pyright: ignore
+    description: Mapped[str] = mapped_column(String(100), nullable=True)  # pyright: ignore
     tags: Mapped[List[UUIDTag]] = relationship(  # pyright: ignore  # noqa: UP
         secondary=lambda: uuid_item_tag, back_populates="items"
     )
