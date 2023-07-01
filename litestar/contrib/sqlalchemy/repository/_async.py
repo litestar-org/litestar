@@ -31,16 +31,25 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
 
     match_fields: list[str] | str | None = None
 
-    def __init__(self, *, statement: Select[tuple[ModelT]] | None = None, session: AsyncSession, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *,
+        statement: Select[tuple[ModelT]] | None = None,
+        session: AsyncSession,
+        expunge: bool = False,
+        **kwargs: Any,
+    ) -> None:
         """Repository pattern for SQLAlchemy models.
 
         Args:
             statement: To facilitate customization of the underlying select query.
             session: Session managing the unit-of-work for the operation.
+            expunge: Remove object from session before returning.
             **kwargs: Additional arguments.
 
         """
         super().__init__(**kwargs)
+        self.expunge = expunge
         self.session = session
         self.statement = statement if statement is not None else select(self.model_type)
         if not self.session.bind:
@@ -48,6 +57,10 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             # narrow down the types
             raise ValueError("Session improperly configure")
         self._dialect = self.session.bind.dialect
+
+    def _expunge(self, instance: ModelT) -> None:
+        if self.expunge:
+            self.session.expunge(instance)
 
     async def add(self, data: ModelT) -> ModelT:
         """Add `data` to the collection.
@@ -62,7 +75,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             instance = await self._attach_to_session(data)
             await self.session.flush()
             await self.session.refresh(instance)
-            self.session.expunge(instance)
+            self._expunge(instance)
             return instance
 
     async def add_many(self, data: list[ModelT]) -> list[ModelT]:
@@ -79,7 +92,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             self.session.add_all(data)
             await self.session.flush()
             for datum in data:
-                self.session.expunge(datum)
+                self._expunge(datum)
             return data
 
     async def delete(self, item_id: Any) -> ModelT:
@@ -98,7 +111,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             instance = await self.get(item_id)
             await self.session.delete(instance)
             await self.session.flush()
-            self.session.expunge(instance)
+            self._expunge(instance)
             return instance
 
     async def delete_many(self, item_ids: list[Any]) -> list[ModelT]:
@@ -135,7 +148,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                     )
             await self.session.flush()
             for instance in instances:
-                self.session.expunge(instance)
+                self._expunge(instance)
             return instances
 
     async def exists(self, **kwargs: Any) -> bool:
@@ -169,7 +182,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             statement = self._filter_select_by_kwargs(statement=statement, **{self.id_attribute: item_id})
             instance = (await self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
-            self.session.expunge(instance)
+            self._expunge(instance)
             return instance
 
     async def get_one(self, **kwargs: Any) -> ModelT:
@@ -189,7 +202,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             statement = self._filter_select_by_kwargs(statement=statement, **kwargs)
             instance = (await self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
-            self.session.expunge(instance)
+            self._expunge(instance)
             return instance
 
     async def get_one_or_none(self, **kwargs: Any) -> ModelT | None:
@@ -206,7 +219,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             statement = self._filter_select_by_kwargs(statement=statement, **kwargs)
             instance = (await self._execute(statement)).scalar_one_or_none()
             if instance:
-                self.session.expunge(instance)
+                self._expunge(instance)
             return instance  # type: ignore
 
     async def get_or_create(
@@ -244,7 +257,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             existing = await self._attach_to_session(existing, strategy="merge")
             await self.session.flush()
             await self.session.refresh(existing)
-            self.session.expunge(existing)
+            self._expunge(existing)
         return existing, False
 
     async def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
@@ -288,7 +301,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             instance = await self._attach_to_session(data, strategy="merge")
             await self.session.flush()
             await self.session.refresh(instance)
-            self.session.expunge(instance)
+            self._expunge(instance)
             return instance
 
     async def update_many(self, data: list[ModelT]) -> list[ModelT]:
@@ -321,7 +334,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                 )
                 await self.session.flush()
                 for instance in instances:
-                    self.session.expunge(instance)
+                    self._expunge(instance)
                 return instances
             await self.session.execute(
                 update(self.model_type),
@@ -371,7 +384,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             count: int = 0
             instances: list[ModelT] = []
             for i, (instance, count_value) in enumerate(result):
-                self.session.expunge(instance)
+                self._expunge(instance)
                 instances.append(instance)
                 if i == 0:
                     count = count_value
@@ -404,7 +417,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             result = await self._execute(statement)
             instances: list[ModelT] = []
             for (instance,) in result:
-                self.session.expunge(instance)
+                self._expunge(instance)
                 instances.append(instance)
             return instances, count
 
@@ -426,7 +439,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             result = await self._execute(statement)
             instances = list(result.scalars())
             for instance in instances:
-                self.session.expunge(instance)
+                self._expunge(instance)
             return instances
 
     async def upsert(self, data: ModelT) -> ModelT:
@@ -450,7 +463,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             instance = await self._attach_to_session(data, strategy="merge")
             await self.session.flush()
             await self.session.refresh(instance)
-            self.session.expunge(instance)
+            self._expunge(instance)
             return instance
 
     def filter_collection_by_kwargs(  # type:ignore[override]

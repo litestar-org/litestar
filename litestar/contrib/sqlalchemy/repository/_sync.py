@@ -33,16 +33,25 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
 
     match_fields: list[str] | str | None = None
 
-    def __init__(self, *, statement: Select[tuple[ModelT]] | None = None, session: Session, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *,
+        statement: Select[tuple[ModelT]] | None = None,
+        session: Session,
+        expunge: bool = False,
+        **kwargs: Any,
+    ) -> None:
         """Repository pattern for SQLAlchemy models.
 
         Args:
             statement: To facilitate customization of the underlying select query.
             session: Session managing the unit-of-work for the operation.
+            expunge: Remove object from session before returning.
             **kwargs: Additional arguments.
 
         """
         super().__init__(**kwargs)
+        self.expunge = expunge
         self.session = session
         self.statement = statement if statement is not None else select(self.model_type)
         if not self.session.bind:
@@ -50,6 +59,10 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             # narrow down the types
             raise ValueError("Session improperly configure")
         self._dialect = self.session.bind.dialect
+
+    def _expunge(self, instance: ModelT) -> None:
+        if self.expunge:
+            self.session.expunge(instance)
 
     def add(self, data: ModelT) -> ModelT:
         """Add `data` to the collection.
@@ -64,7 +77,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             instance = self._attach_to_session(data)
             self.session.flush()
             self.session.refresh(instance)
-            self.session.expunge(instance)
+            self._expunge(instance)
             return instance
 
     def add_many(self, data: list[ModelT]) -> list[ModelT]:
@@ -81,7 +94,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             self.session.add_all(data)
             self.session.flush()
             for datum in data:
-                self.session.expunge(datum)
+                self._expunge(datum)
             return data
 
     def delete(self, item_id: Any) -> ModelT:
@@ -100,7 +113,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             instance = self.get(item_id)
             self.session.delete(instance)
             self.session.flush()
-            self.session.expunge(instance)
+            self._expunge(instance)
             return instance
 
     def delete_many(self, item_ids: list[Any]) -> list[ModelT]:
@@ -137,7 +150,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                     )
             self.session.flush()
             for instance in instances:
-                self.session.expunge(instance)
+                self._expunge(instance)
             return instances
 
     def exists(self, **kwargs: Any) -> bool:
@@ -171,7 +184,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             statement = self._filter_select_by_kwargs(statement=statement, **{self.id_attribute: item_id})
             instance = (self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
-            self.session.expunge(instance)
+            self._expunge(instance)
             return instance
 
     def get_one(self, **kwargs: Any) -> ModelT:
@@ -191,7 +204,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             statement = self._filter_select_by_kwargs(statement=statement, **kwargs)
             instance = (self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
-            self.session.expunge(instance)
+            self._expunge(instance)
             return instance
 
     def get_one_or_none(self, **kwargs: Any) -> ModelT | None:
@@ -208,7 +221,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             statement = self._filter_select_by_kwargs(statement=statement, **kwargs)
             instance = (self._execute(statement)).scalar_one_or_none()
             if instance:
-                self.session.expunge(instance)
+                self._expunge(instance)
             return instance  # type: ignore
 
     def get_or_create(
@@ -246,7 +259,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             existing = self._attach_to_session(existing, strategy="merge")
             self.session.flush()
             self.session.refresh(existing)
-            self.session.expunge(existing)
+            self._expunge(existing)
         return existing, False
 
     def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
@@ -290,7 +303,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             instance = self._attach_to_session(data, strategy="merge")
             self.session.flush()
             self.session.refresh(instance)
-            self.session.expunge(instance)
+            self._expunge(instance)
             return instance
 
     def update_many(self, data: list[ModelT]) -> list[ModelT]:
@@ -323,7 +336,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                 )
                 self.session.flush()
                 for instance in instances:
-                    self.session.expunge(instance)
+                    self._expunge(instance)
                 return instances
             self.session.execute(
                 update(self.model_type),
@@ -373,7 +386,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             count: int = 0
             instances: list[ModelT] = []
             for i, (instance, count_value) in enumerate(result):
-                self.session.expunge(instance)
+                self._expunge(instance)
                 instances.append(instance)
                 if i == 0:
                     count = count_value
@@ -406,7 +419,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             result = self._execute(statement)
             instances: list[ModelT] = []
             for (instance,) in result:
-                self.session.expunge(instance)
+                self._expunge(instance)
                 instances.append(instance)
             return instances, count
 
@@ -428,7 +441,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             result = self._execute(statement)
             instances = list(result.scalars())
             for instance in instances:
-                self.session.expunge(instance)
+                self._expunge(instance)
             return instances
 
     def upsert(self, data: ModelT) -> ModelT:
@@ -452,7 +465,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             instance = self._attach_to_session(data, strategy="merge")
             self.session.flush()
             self.session.refresh(instance)
-            self.session.expunge(instance)
+            self._expunge(instance)
             return instance
 
     def filter_collection_by_kwargs(  # type:ignore[override]
