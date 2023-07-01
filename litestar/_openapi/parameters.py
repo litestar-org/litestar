@@ -166,7 +166,7 @@ def get_layered_parameter(
     layer_field = layered_parameters[field_name]
 
     field = signature_field if signature_field.is_parameter_field else layer_field
-    default_value = signature_field.default_value if not signature_field.is_empty else layer_field.default_value
+    default_value = layer_field.default_value if signature_field.is_empty else signature_field.default_value
     field_type = signature_field.field_type if signature_field is not Empty else layer_field.field_type  # type: ignore
 
     parameter_name = field_name

@@ -26,13 +26,14 @@ class SQLAlchemySerializationPlugin(SerializationPluginProtocol, _slots_base.Slo
 
     def create_dto_for_type(self, parsed_type: ParsedType) -> type[SQLAlchemyDTO[Any]]:
         # assumes that the type is a container of SQLAlchemy models or a single SQLAlchemy model
-        for inner_type in parsed_type.inner_types:
-            if inner_type.is_subclass_of(DeclarativeBase):
-                annotation = inner_type.annotation
-                break
-        else:
-            annotation = parsed_type.annotation
-
+        annotation = next(
+            (
+                inner_type.annotation
+                for inner_type in parsed_type.inner_types
+                if inner_type.is_subclass_of(DeclarativeBase)
+            ),
+            parsed_type.annotation,
+        )
         if annotation in self._type_dto_map:
             return self._type_dto_map[annotation]
 

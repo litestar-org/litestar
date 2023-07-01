@@ -24,15 +24,12 @@ __all__ = (
 
 def _as_string(value: Any) -> str:
     if isinstance(value, str):
-        return '"' + value + '"'
+        return f'"{value}"'
 
     if isinstance(value, bool):
         return "true" if value else "false"
 
-    if value is None:
-        return "null"
-
-    return str(value)
+    return "null" if value is None else str(value)
 
 
 class TypeScriptElement(ABC):

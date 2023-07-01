@@ -63,7 +63,7 @@ def get_litestar_scope_state(scope: Scope, key: str, default: Any = None, pop: b
         Value mapped to ``key`` in internal connection scope namespace.
     """
     namespace = scope["state"].setdefault(SCOPE_STATE_NAMESPACE, {})
-    return namespace.get(key, default) if not pop else namespace.pop(key, default)
+    return namespace.pop(key, default) if pop else namespace.get(key, default)
 
 
 def set_litestar_scope_state(scope: Scope, key: str, value: Any) -> None:

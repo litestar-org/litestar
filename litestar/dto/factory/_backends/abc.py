@@ -370,7 +370,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
     ) -> CollectionType:
         inner_types = parsed_type.inner_types
         inner_type = self._create_transfer_type(
-            parsed_type=ParsedType(Any) if not inner_types else inner_types[0],
+            parsed_type=inner_types[0] if inner_types else ParsedType(Any),
             exclude=exclude,
             field_name="0",
             unique_name=_enumerate_name(unique_name, 0),
@@ -385,14 +385,14 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
     ) -> MappingType:
         inner_types = parsed_type.inner_types
         key_type = self._create_transfer_type(
-            parsed_type=ParsedType(Any) if not inner_types else inner_types[0],
+            parsed_type=inner_types[0] if inner_types else ParsedType(Any),
             exclude=exclude,
             field_name="0",
             unique_name=_enumerate_name(unique_name, 0),
             nested_depth=nested_depth,
         )
         value_type = self._create_transfer_type(
-            parsed_type=ParsedType(Any) if not inner_types else inner_types[1],
+            parsed_type=inner_types[1] if inner_types else ParsedType(Any),
             exclude=exclude,
             field_name="1",
             unique_name=_enumerate_name(unique_name, 1),

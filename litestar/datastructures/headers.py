@@ -91,12 +91,9 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
             A list of tuples contain the header and header-value as bytes
         """
         # Since ``Headers`` are immutable, this can be cached
-        header_list = self._header_list
-        if not header_list:
-            header_list = self._header_list = _encode_headers(
-                (key, value) for key in set(self) for value in self.getall(key)
-            )
-        return header_list
+        if not self._header_list:
+            self._header_list = _encode_headers((key, value) for key in set(self) for value in self.getall(key))
+        return self._header_list
 
 
 class MutableScopeHeaders(MutableMapping):
@@ -212,13 +209,12 @@ class MutableScopeHeaders(MutableMapping):
         """Set a header in the scope, overwriting duplicates."""
         name_encoded = key.lower().encode("latin-1")
         value_encoded = value.encode("latin-1")
-        indices = self._find_indices(key)
-        if not indices:
-            self.headers.append((name_encoded, value_encoded))
-        else:
+        if indices := self._find_indices(key):
             for i in indices[1:]:
                 del self.headers[i]
             self.headers[indices[0]] = (name_encoded, value_encoded)
+        else:
+            self.headers.append((name_encoded, value_encoded))
 
     def __delitem__(self, key: str) -> None:
         """Delete all headers matching ``name``"""
@@ -310,12 +306,15 @@ class CacheControlHeader(Header):
     def _get_header_value(self) -> str:
         """Get the header value as string."""
 
-        cc_items = []
-        for key, value in self.dict(
-            exclude_unset=True, exclude_none=True, by_alias=True, exclude={"documentation_only"}
-        ).items():
-            cc_items.append(key if isinstance(value, bool) else f"{key}={value}")
-
+        cc_items = [
+            key if isinstance(value, bool) else f"{key}={value}"
+            for key, value in self.dict(
+                exclude_unset=True,
+                exclude_none=True,
+                by_alias=True,
+                exclude={"documentation_only"},
+            ).items()
+        ]
         return ", ".join(cc_items)
 
     @classmethod
@@ -364,9 +363,7 @@ class ETag(Header):
 
     def _get_header_value(self) -> str:
         value = f'"{self.value}"'
-        if self.weak:
-            return f"W/{value}"
-        return value
+        return f"W/{value}" if self.weak else value
 
     @classmethod
     def from_header(cls, header_value: str) -> "ETag":
@@ -429,21 +426,12 @@ class MediaTypeHeader:
         return quality, specificity
 
     def match(self, other: "MediaTypeHeader") -> bool:
-        # Check parameters first, ignore the weight parameter 'q'.
-        # Additional parameters on other are also ignored.
-        for key, value in self.params.items():
-            if key != "q" and value != other.params.get(key):
-                return False
-
-        # Then check if the subtypes match, ignoring the wildcard '*'
-        if self.subtype != "*" and other.subtype != "*" and self.subtype != other.subtype:
-            return False
-
-        # Lastly check the main type, also ignoring the wildcard '*'
-        if self.maintype != "*" and other.maintype != "*" and self.maintype != other.maintype:
-            return False
-
-        return True
+        return next(
+            (False for key, value in self.params.items() if key != "q" and value != other.params.get(key)),
+            False
+            if self.subtype != "*" and other.subtype != "*" and self.subtype != other.subtype
+            else self.maintype == "*" or other.maintype == "*" or self.maintype == other.maintype,
+        )
 
 
 class Accept:

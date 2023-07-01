@@ -109,7 +109,7 @@ class Template(Response[bytes]):
         if not media_type:
             suffixes = PurePath(self.template_name).suffixes
             for suffix in suffixes:
-                if _type := guess_type("name" + suffix)[0]:
+                if _type := guess_type(f"name{suffix}")[0]:
                     media_type = _type
                     break
             else:

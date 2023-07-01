@@ -189,9 +189,7 @@ def test_listener_return_none() -> None:
 def test_listener_return_optional_none() -> None:
     @websocket_listener("/")
     def handler(data: str) -> Optional[str]:
-        if data == "hello":
-            return "world"
-        return None
+        return "world" if data == "hello" else None
 
     client = create_test_client([handler])
     with client.websocket_connect("/") as ws:

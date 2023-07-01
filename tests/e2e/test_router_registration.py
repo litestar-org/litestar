@@ -59,9 +59,21 @@ def test_register_controller_on_different_routers(controller: Type[Controller]) 
     second_router = Router(path="/second", route_handlers=[controller])
     third_router = Router(path="/third", route_handlers=[controller])
 
-    assert first_router.routes[0].route_handlers[0].owner.owner is first_router  # type: ignore
-    assert second_router.routes[0].route_handlers[0].owner.owner is second_router  # type: ignore
-    assert third_router.routes[0].route_handlers[0].owner.owner is third_router  # type: ignore
+    for router in (first_router, second_router, third_router):
+        for route in router.routes:
+            if hasattr(route, "route_handlers"):
+                for route_handler in [
+                    handler
+                    for handler in route.route_handlers  # pyright: ignore
+                    if handler.handler_name != "options_handler"
+                ]:
+                    assert route_handler.owner is not None
+                    assert route_handler.owner.owner is not None
+                    assert route_handler.owner.owner is router
+            else:
+                assert route.route_handler.owner is not None  # pyright: ignore
+                assert route.route_handler.owner.owner is not None  # pyright: ignore
+                assert route.route_handler.owner.owner is router  # pyright: ignore
 
 
 def test_register_with_router_instance(controller: Type[Controller]) -> None:

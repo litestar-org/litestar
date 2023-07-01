@@ -89,9 +89,9 @@ class ParsedType:
             return False
 
         if self.origin:
-            return bool(self.origin == other.origin and self.inner_types == other.inner_types)
+            return self.origin == other.origin and self.inner_types == other.inner_types
 
-        return bool(self.annotation == other.annotation)
+        return self.annotation == other.annotation  # type: ignore[no-any-return]
 
     @property
     def is_forward_ref(self) -> bool:

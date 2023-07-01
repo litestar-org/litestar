@@ -650,8 +650,6 @@ class Litestar(Router):
             raise NoRouteMatchFoundException(f"Route {name} can not be found")
 
         allow_str_instead = {datetime, date, time, timedelta, float, Path}
-        output: list[str] = []
-
         routes = sorted(
             self.asgi_router.route_mapping[handler_index["identifier"]],
             key=lambda r: len(r.path_parameters),
@@ -659,17 +657,20 @@ class Litestar(Router):
         )
         passed_parameters = set(path_parameters.keys())
 
-        selected_route = routes[-1]
-        for route in routes:
-            if passed_parameters.issuperset({param.name for param in route.path_parameters}):
-                selected_route = route
-                break
-
+        selected_route = next(
+            (
+                route
+                for route in routes
+                if passed_parameters.issuperset({param.name for param in route.path_parameters})
+            ),
+            routes[-1],
+        )
+        output: list[str] = []
         for component in selected_route.path_components:
             if isinstance(component, PathParameterDefinition):
                 val = path_parameters.get(component.name)
-                if not (
-                    isinstance(val, component.type) or (component.type in allow_str_instead and isinstance(val, str))
+                if not isinstance(val, component.type) and (
+                    component.type not in allow_str_instead or not isinstance(val, str)
                 ):
                     raise NoRouteMatchFoundException(
                         f"Received type for path parameter {component.name} doesn't match declared type {component.type}"
@@ -725,10 +726,9 @@ class Litestar(Router):
         Returns:
             A dictionary of router handlers and lists of paths as strings
         """
-        route_map: dict[str, list[str]] = {}
-        for handler, routes in self.asgi_router.route_mapping.items():
-            route_map[handler] = [route.path for route in routes]
-
+        route_map: dict[str, list[str]] = {
+            handler: [route.path for route in routes] for handler, routes in self.asgi_router.route_mapping.items()
+        }
         return route_map
 
     def _create_asgi_handler(self) -> ASGIApp:

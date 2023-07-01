@@ -50,12 +50,10 @@ def normalize_typescript_namespace(value: str, allow_quoted: bool) -> str:
     Returns:
         A normalized value
     """
-    if not allow_quoted and not (value[0].isalpha() or value[0] in {"_", "$"}):
+    if not allow_quoted and not value[0].isalpha() and value[0] not in {"_", "$"}:
         raise ValueError(f"invalid typescript namespace {value}")
     if allow_quoted:
-        if allowed_key_re.fullmatch(value):
-            return value
-        return f'"{value}"'
+        return value if allowed_key_re.fullmatch(value) else f'"{value}"'
     return invalid_namespace_re.sub("", value)
 
 

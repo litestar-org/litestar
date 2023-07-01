@@ -151,7 +151,7 @@ def test_path_param_type_resolution(param_type_name: str, param_type_class: Any,
             assert test == value
 
     with create_test_client(handler) as client:
-        response = client.get("/some/test/path/" + str(value))
+        response = client.get(f"/some/test/path/{value!s}")
         assert response.status_code == HTTP_200_OK, response.json()
 
 

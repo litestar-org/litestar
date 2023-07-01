@@ -114,14 +114,13 @@ def test_run_command(
     else:
         fd = None
 
-    if web_concurrency is not None:
-        if set_in_env:
-            monkeypatch.setenv("WEB_CONCURRENCY", str(web_concurrency))
-        else:
-            args.extend(["--web-concurrency", str(web_concurrency)])
-    else:
+    if web_concurrency is None:
         web_concurrency = 1
 
+    elif set_in_env:
+        monkeypatch.setenv("WEB_CONCURRENCY", str(web_concurrency))
+    else:
+        args.extend(["--web-concurrency", str(web_concurrency)])
     if reload_dir is not None:
         if set_in_env:
             monkeypatch.setenv("LITESTAR_RELOAD_DIRS", ",".join(reload_dir))

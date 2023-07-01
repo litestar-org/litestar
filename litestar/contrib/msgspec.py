@@ -33,9 +33,7 @@ class MsgspecDTO(AbstractDTOFactory[T], Generic[T]):
         msgspec_fields = {f.name: f for f in cast("inspect.StructType", inspect.type_info(model_type)).fields}
 
         def default_or_empty(value: Any) -> Any:
-            if value is NODEFAULT:
-                return Empty
-            return value
+            return Empty if value is NODEFAULT else value
 
         for key, parsed_type in get_model_type_hints(model_type).items():
             msgspec_field = msgspec_fields[key]
@@ -45,7 +43,7 @@ class MsgspecDTO(AbstractDTOFactory[T], Generic[T]):
             else:
                 dto_field = DTOField()
 
-            field_def = FieldDefinition(
+            yield FieldDefinition(
                 name=key,
                 default=default_or_empty(msgspec_field.default),
                 parsed_type=parsed_type,
@@ -54,8 +52,6 @@ class MsgspecDTO(AbstractDTOFactory[T], Generic[T]):
                 unique_model_name=get_fully_qualified_class_name(model_type),
                 dto_for=None,
             )
-
-            yield field_def
 
     @classmethod
     def detect_nested_field(cls, parsed_type: ParsedType) -> bool:

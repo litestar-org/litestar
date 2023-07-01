@@ -22,7 +22,7 @@ async def test_request_factory_empty_body() -> None:
 def test_request_factory_no_cookie_header() -> None:
     headers: Dict[str, str] = {}
     RequestFactory._create_cookie_header(headers)
-    assert headers == {}
+    assert not headers
 
 
 def test_request_factory_str_cookie_header() -> None:

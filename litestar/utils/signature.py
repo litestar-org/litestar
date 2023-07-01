@@ -95,10 +95,14 @@ class ParsedParameter:
     @property
     def kwarg_container(self) -> ParameterKwarg | BodyKwarg | DependencyKwarg | None:
         """A kwarg container, if any"""
-        for value in (*self.metadata, self.default):
-            if isinstance(value, (ParameterKwarg, BodyKwarg, DependencyKwarg)):
-                return value
-        return None
+        return next(
+            (
+                value
+                for value in (*self.metadata, self.default)
+                if isinstance(value, (ParameterKwarg, BodyKwarg, DependencyKwarg))
+            ),
+            None,
+        )
 
     @property
     def metadata(self) -> tuple[Any, ...]:

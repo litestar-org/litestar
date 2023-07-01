@@ -31,8 +31,7 @@ def validate_node(node: RouteTrieNode) -> None:
         node.is_mount
         and node.children
         and any(
-            v
-            for v in chain.from_iterable(
+            chain.from_iterable(
                 list(child.path_parameters.values())
                 if isinstance(child.path_parameters, dict)
                 else child.path_parameters

@@ -56,7 +56,7 @@ class FileStore(NamespacedStore):
 
     def _write_sync(self, target_file: Path, storage_obj: StorageObject) -> None:
         try:
-            tmp_file_fd, tmp_file_name = mkstemp(dir=self.path, prefix=target_file.name + ".tmp")
+            tmp_file_fd, tmp_file_name = mkstemp(dir=self.path, prefix=f"{target_file.name}.tmp")
             renamed = False
             try:
                 try:

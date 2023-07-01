@@ -233,7 +233,7 @@ class KwargsModel:
             layered_parameter = layered_parameters[field_name]
             field = signature_field if signature_field.is_parameter_field else layered_parameter
             default_value = (
-                signature_field.default_value if not signature_field.is_empty else layered_parameter.default_value
+                layered_parameter.default_value if signature_field.is_empty else signature_field.default_value
             )
 
             param_definitions.add(
@@ -309,10 +309,10 @@ class KwargsModel:
         data_signature_field = signature_fields.get("data")
 
         media_type: RequestEncodingType | str | None = None
-        if data_signature_field and isinstance(data_signature_field.kwarg_model, BodyKwarg):
-            media_type = data_signature_field.kwarg_model.media_type
-
         if data_signature_field:
+            if isinstance(data_signature_field.kwarg_model, BodyKwarg):
+                media_type = data_signature_field.kwarg_model.media_type
+
             if media_type in (RequestEncodingType.MULTI_PART, RequestEncodingType.URL_ENCODED):
                 expected_form_data = (media_type, data_signature_field, data_dto)
             elif data_dto:
@@ -467,8 +467,11 @@ class KwargsModel:
                     f"Make sure to use distinct keys for your dependencies, path parameters and aliased parameters."
                 )
 
-        used_reserved_kwargs = {*parameter_names, *path_parameters, *dependency_keys}.intersection(RESERVED_KWARGS)
-        if used_reserved_kwargs:
+        if used_reserved_kwargs := {
+            *parameter_names,
+            *path_parameters,
+            *dependency_keys,
+        }.intersection(RESERVED_KWARGS):
             raise ImproperlyConfiguredException(
                 f"Reserved kwargs ({', '.join(RESERVED_KWARGS)}) cannot be used for dependencies and parameter arguments. "
                 f"The following kwargs have been used: {', '.join(used_reserved_kwargs)}"

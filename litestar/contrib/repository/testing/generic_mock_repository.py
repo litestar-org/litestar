@@ -74,8 +74,8 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
         now = now or self._now()
         if self._model_has_updated_at:
             data.updated_at = now  # type:ignore[attr-defined]
-        if self._model_has_updated_at and do_created:
-            data.created_at = now  # type:ignore[attr-defined]
+            if do_created:
+                data.created_at = now  # type:ignore[attr-defined]
         return data
 
     async def add(self, data: ModelT) -> ModelT:
@@ -191,7 +191,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
             a tuple that includes the instance and whether it needed to be created.
 
         """
-        match_fields = match_fields if match_fields else self.match_fields
+        match_fields = match_fields or self.match_fields
         if isinstance(match_fields, str):
             match_fields = [match_fields]
         if match_fields:
@@ -429,8 +429,8 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         now = now or self._now()
         if self._model_has_updated_at:
             data.updated_at = now  # type:ignore[attr-defined]
-        if self._model_has_updated_at and do_created:
-            data.created_at = now  # type:ignore[attr-defined]
+            if do_created:
+                data.created_at = now  # type:ignore[attr-defined]
         return data
 
     def add(self, data: ModelT) -> ModelT:
@@ -501,8 +501,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         """
         instances: list[ModelT] = []
         for item_id in item_ids:
-            obj = self.get_one_or_none(**{self.id_attribute: item_id})
-            if obj:
+            if obj := self.get_one_or_none(**{self.id_attribute: item_id}):
                 obj = self.delete(obj.id)
                 instances.append(obj)
         return instances
@@ -546,7 +545,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
             a tuple that includes the instance and whether it needed to be created.
 
         """
-        match_fields = match_fields if match_fields else self.match_fields
+        match_fields = match_fields or self.match_fields
         if isinstance(match_fields, str):
             match_fields = [match_fields]
         if match_fields:
@@ -557,8 +556,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
             }
         else:
             match_filter = kwargs
-        existing = self.get_one_or_none(**match_filter)
-        if existing:
+        if existing := self.get_one_or_none(**match_filter):
             for field_name, new_field_value in kwargs.items():
                 field = getattr(existing, field_name, None)
                 if field and field != new_field_value:
@@ -664,9 +662,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
             NotFoundError: If no instance found with same identifier as ``data``.
         """
         item_id = self.get_id_attribute_value(data)
-        if item_id in self.collection:
-            return self.update(data)
-        return self.add(data)
+        return self.update(data) if item_id in self.collection else self.add(data)
 
     def list_and_count(
         self,

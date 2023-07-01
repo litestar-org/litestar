@@ -58,12 +58,12 @@ def get_exception_handler(exception_handlers: ExceptionHandlersMap, exc: Excepti
     status_code: int | None = getattr(exc, "status_code", None)
     if status_code and (exception_handler := exception_handlers.get(status_code)):
         return exception_handler
-    for cls in getmro(type(exc)):
-        if cls in exception_handlers:
-            return exception_handlers[cast("Type[Exception]", cls)]
-    if not hasattr(exc, "status_code") and HTTP_500_INTERNAL_SERVER_ERROR in exception_handlers:
-        return exception_handlers[HTTP_500_INTERNAL_SERVER_ERROR]
-    return None
+    return next(
+        (exception_handlers[cast("Type[Exception]", cls)] for cls in getmro(type(exc)) if cls in exception_handlers),
+        exception_handlers[HTTP_500_INTERNAL_SERVER_ERROR]
+        if not hasattr(exc, "status_code") and HTTP_500_INTERNAL_SERVER_ERROR in exception_handlers
+        else None,
+    )
 
 
 @dataclass

@@ -57,9 +57,7 @@ try:
     import pydantic
 
     def _structure_base_model(value: Any, cls: type[pydantic.BaseModel]) -> pydantic.BaseModel:
-        if isinstance(value, pydantic.BaseModel):
-            return value
-        return cls(**value)
+        return value if isinstance(value, pydantic.BaseModel) else cls(**value)
 
     pydantic_hooks: list[tuple[type[Any], Callable[[Any, type[Any]], Any]]] = [
         (pydantic.BaseModel, _structure_base_model),
@@ -246,22 +244,24 @@ _converter: Converter = Converter()
 def _create_validators(
     annotation: Any, kwargs_model: BodyKwarg | ParameterKwarg
 ) -> list[Callable[[Any, attrs.Attribute[Any], Any], Any]] | Callable[[Any, attrs.Attribute[Any], Any], Any]:
-    validators: list[Callable[[Any, attrs.Attribute[Any], Any], Any]] = []
-
-    for value, validator in [
-        (kwargs_model.gt, attrs.validators.gt),
-        (kwargs_model.ge, attrs.validators.ge),
-        (kwargs_model.lt, attrs.validators.lt),
-        (kwargs_model.le, attrs.validators.le),
-        (kwargs_model.min_length, attrs.validators.min_len),
-        (kwargs_model.max_length, attrs.validators.max_len),
-        (kwargs_model.min_items, attrs.validators.min_len),
-        (kwargs_model.max_items, attrs.validators.max_len),
-        (kwargs_model.pattern, partial(attrs.validators.matches_re, flags=0)),
-    ]:
-        if value is not None:
-            validators.append(validator(value))  # type: ignore
-
+    validators: list[Callable[[Any, attrs.Attribute[Any], Any], Any]] = [
+        validator(value)  # type: ignore[operator]
+        for value, validator in [
+            (kwargs_model.gt, attrs.validators.gt),
+            (kwargs_model.ge, attrs.validators.ge),
+            (kwargs_model.lt, attrs.validators.lt),
+            (kwargs_model.le, attrs.validators.le),
+            (kwargs_model.min_length, attrs.validators.min_len),
+            (kwargs_model.max_length, attrs.validators.max_len),
+            (kwargs_model.min_items, attrs.validators.min_len),
+            (kwargs_model.max_items, attrs.validators.max_len),
+            (
+                kwargs_model.pattern,
+                partial(attrs.validators.matches_re, flags=0),
+            ),
+        ]
+        if value is not None
+    ]
     if is_optional_union(annotation):
         annotation = make_non_optional_union(annotation)
         instance_of_validator = attrs.validators.instance_of(
@@ -427,7 +427,7 @@ class AttrsSignatureModel(SignatureModel):
             if kwargs_container := parameter.kwarg_container:
                 if isinstance(kwargs_container, DependencyKwarg):
                     attribute = attr.attrib(
-                        type=annotation if not kwargs_container.skip_validation else Any,
+                        type=Any if kwargs_container.skip_validation else annotation,
                         default=kwargs_container.default if kwargs_container.default is not Empty else None,
                         metadata={
                             "kwargs_model": kwargs_container,

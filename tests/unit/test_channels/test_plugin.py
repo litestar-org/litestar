@@ -149,7 +149,7 @@ async def test_subscribe(
 ) -> None:
     plugin = ChannelsPlugin(
         backend=memory_backend,
-        channels=["foo", "bar"] if not arbitrary_channels_allowed else None,
+        channels=None if arbitrary_channels_allowed else ["foo", "bar"],
         arbitrary_channels_allowed=arbitrary_channels_allowed,
     )
     memory_backend.subscribe = async_mock  # type: ignore[method-assign]
@@ -175,7 +175,7 @@ async def test_start_subscription(
 ) -> None:
     plugin = ChannelsPlugin(
         backend=memory_backend,
-        channels=["foo", "bar"] if not arbitrary_channels_allowed else None,
+        channels=None if arbitrary_channels_allowed else ["foo", "bar"],
         arbitrary_channels_allowed=arbitrary_channels_allowed,
     )
     memory_backend.subscribe = async_mock  # type: ignore[method-assign]
@@ -244,7 +244,7 @@ async def test_unsubscribe(
     subscriber_1 = await plugin.subscribe(channels=channels)
     subscriber_2 = await plugin.subscribe(channels=channels)
 
-    await plugin.unsubscribe(subscriber_1, channels=channels if not unsubscribe_all else None)
+    await plugin.unsubscribe(subscriber_1, channels=None if unsubscribe_all else channels)
 
     if isinstance(channels, str):
         channels = [channels]

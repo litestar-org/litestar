@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from types import ModuleType
-from typing import TYPE_CHECKING, Callable, List, Optional
+from typing import TYPE_CHECKING, Callable, List, Optional, cast
 
 import pytest
 from msgspec import Struct, to_builtins
@@ -84,9 +84,7 @@ def fx_connection_context() -> ConnectionContext:
 
 
 def _destructure(model: BaseModel | Struct) -> dict[str, Any]:
-    if isinstance(model, BaseModel):
-        return model.dict()
-    return to_builtins(model)  # type:ignore[no-any-return]
+    return cast("dict[str, Any]", model.dict() if isinstance(model, BaseModel) else to_builtins(model))
 
 
 def test_backend_parse_raw_json(backend: AbstractDTOBackend, connection_context: ConnectionContext) -> None:
@@ -191,7 +189,7 @@ def test_backend_model_name_uniqueness(backend_type: type[AbstractDTOBackend], b
             dto_for=None,
         ),
     )
-    for i in range(100):
+    for _ in range(100):
         model_class = backend.create_transfer_model_type("some_module.SomeModel", fd)
         model_name = model_class.__name__
         assert model_name not in unique_names

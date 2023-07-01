@@ -107,7 +107,7 @@ def test_invalid_csrf_token(get_handler: HTTPRouteHandler, post_handler: HTTPRou
         csrf_token: Optional[str] = response.cookies.get("csrftoken")
         assert csrf_token is not None
 
-        response = client.post("/", headers={"x-csrftoken": csrf_token + "invalid"})
+        response = client.post("/", headers={"x-csrftoken": f"{csrf_token}invalid"})
         assert response.status_code == HTTP_403_FORBIDDEN
         assert response.json() == {"detail": "CSRF token verification failed", "status_code": 403}
 
@@ -192,7 +192,7 @@ def test_csrf_form_parsing(engine: Any, template: str, tmp_path: Path) -> None:
         ),
         csrf_config=CSRFConfig(secret=str(urandom(10))),
     ) as client:
-        url = str(client.base_url) + "/"
+        url = f"{client.base_url!s}/"
         Path(tmp_path / "abc.html").write_text(
             f'<html><body><div><form action="{url}" method="post">{template}</form></div></body></html>'
         )
