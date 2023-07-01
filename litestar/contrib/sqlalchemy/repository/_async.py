@@ -431,9 +431,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         return self.session.expunge(instance) if auto_expunge else None
 
     async def _flush_or_commit(self, auto_commit: bool) -> None:
-        if auto_commit:
-            return await self.session.commit()
-        return await self.session.flush()
+        return await self.session.commit() if auto_commit else await self.session.flush()
 
     async def _refresh(
         self,
@@ -442,11 +440,11 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         attribute_names: Iterable[str] | None = None,
         with_for_update: bool | None = None,
     ) -> None:
-        if auto_refresh:
-            return await self.session.refresh(
-                instance, attribute_names=attribute_names, with_for_update=with_for_update
-            )
-        return None
+        return (
+            await self.session.refresh(instance, attribute_names=attribute_names, with_for_update=with_for_update)
+            if auto_refresh
+            else None
+        )
 
     async def _list_and_count_window(
         self,

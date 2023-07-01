@@ -442,9 +442,11 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         attribute_names: Iterable[str] | None = None,
         with_for_update: bool | None = None,
     ) -> None:
-        if auto_refresh:
-            return self.session.refresh(instance, attribute_names=attribute_names, with_for_update=with_for_update)
-        return None
+        return (
+            self.session.refresh(instance, attribute_names=attribute_names, with_for_update=with_for_update)
+            if auto_refresh
+            else None
+        )
 
     def _list_and_count_window(
         self,
