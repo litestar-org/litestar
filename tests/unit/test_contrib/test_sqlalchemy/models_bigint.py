@@ -43,8 +43,8 @@ class BigIntEventLog(BigIntAuditBase):
 class BigIntModelWithFetchedValue(BigIntBase):
     """The ModelWithFetchedValue BigIntBase."""
 
-    val: Mapped[int]
-    updated: Mapped[datetime] = mapped_column(
+    val: Mapped[int]  # pyright: ignore
+    updated: Mapped[datetime] = mapped_column(  # pyright: ignore
         server_default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
         server_onupdate=FetchedValue(),
@@ -60,9 +60,9 @@ bigint_item_tag = Table(
 
 
 class BigIntItem(BigIntBase):
-    name: Mapped[str] = mapped_column(String(), unique=True)
-    description: Mapped[str | None]
-    tags: Mapped[List[BigIntTag]] = relationship(  # noqa: UP006
+    name: Mapped[str] = mapped_column(String(), unique=True)  # pyright: ignore
+    description: Mapped[str | None]  # pyright: ignore
+    tags: Mapped[List[BigIntTag]] = relationship(  # pyright: ignore  # noqa: UP
         secondary=lambda: bigint_item_tag, back_populates="items"
     )
 
@@ -70,8 +70,8 @@ class BigIntItem(BigIntBase):
 class BigIntTag(BigIntBase):
     """The event log domain object."""
 
-    name: Mapped[str] = mapped_column(String(50), unique=True)
-    items: Mapped[List[BigIntItem]] = relationship(  # noqa: UP006
+    name: Mapped[str] = mapped_column(String(50), unique=True)  # pyright: ignore
+    items: Mapped[List[BigIntItem]] = relationship(  # pyright: ignore  # noqa: UP
         secondary=lambda: bigint_item_tag, back_populates="tags"
     )
 

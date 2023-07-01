@@ -44,8 +44,8 @@ class UUIDEventLog(UUIDAuditBase):
 class UUIDModelWithFetchedValue(UUIDBase):
     """The ModelWithFetchedValue UUIDBase."""
 
-    val: Mapped[int]
-    updated: Mapped[datetime] = mapped_column(
+    val: Mapped[int]  # pyright: ignore
+    updated: Mapped[datetime] = mapped_column(  # pyright: ignore
         server_default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
         server_onupdate=FetchedValue(),
@@ -61,16 +61,20 @@ uuid_item_tag = Table(
 
 
 class UUIDItem(UUIDBase):
-    name: Mapped[str] = mapped_column(String(), unique=True)
-    description: Mapped[str | None]
-    tags: Mapped[List[UUIDTag]] = relationship(secondary=lambda: uuid_item_tag, back_populates="items")  # noqa: UP006
+    name: Mapped[str] = mapped_column(String(), unique=True)  # pyright: ignore
+    description: Mapped[str | None]  # pyright: ignore
+    tags: Mapped[List[UUIDTag]] = relationship(  # pyright: ignore  # noqa: UP
+        secondary=lambda: uuid_item_tag, back_populates="items"
+    )
 
 
 class UUIDTag(UUIDAuditBase):
     """The event log domain object."""
 
-    name: Mapped[str] = mapped_column(String(50), unique=True)
-    items: Mapped[List[UUIDItem]] = relationship(secondary=lambda: uuid_item_tag, back_populates="tags")  # noqa: UP006
+    name: Mapped[str] = mapped_column(String(50), unique=True)  # pyright: ignore
+    items: Mapped[List[UUIDItem]] = relationship(  # pyright: ignore  # noqa: UP
+        secondary=lambda: uuid_item_tag, back_populates="tags"
+    )
 
 
 class UUIDRule(UUIDAuditBase):
