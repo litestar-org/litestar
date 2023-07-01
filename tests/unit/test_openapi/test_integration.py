@@ -74,21 +74,47 @@ def test_openapi_custom_path() -> None:
         assert response.status_code == HTTP_200_OK
 
 
+def test_openapi_normalizes_custom_path() -> None:
+    openapi_config = OpenAPIConfig(title="my title", version="1.0.0", path="custom_schema_path")
+    with create_test_client([], openapi_config=openapi_config) as client:
+        response = client.get("/custom_schema_path/openapi.json")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/custom_schema_path/openapi.json")
+        assert response.status_code == HTTP_200_OK
+
+
 def test_openapi_custom_path_avoids_override() -> None:
     class CustomOpenAPIController(OpenAPIController):
         path = "/custom_docs"
 
-    openapi_config = OpenAPIConfig(
-        title="my title", version="1.0.0", openapi_controller=CustomOpenAPIController, path="/custom_schema_path"
-    )
+    openapi_config = OpenAPIConfig(title="my title", version="1.0.0", openapi_controller=CustomOpenAPIController)
     with create_test_client([], openapi_config=openapi_config) as client:
-        response = client.get("/custom_schema_path")
+        response = client.get("/schema")
         assert response.status_code == HTTP_404_NOT_FOUND
 
         response = client.get("/custom_docs/openapi.json")
         assert response.status_code == HTTP_200_OK
 
         response = client.get("/custom_docs/openapi.json")
+        assert response.status_code == HTTP_200_OK
+
+
+def test_openapi_custom_path_overrides_custom_controller_path() -> None:
+    class CustomOpenAPIController(OpenAPIController):
+        path = "/custom_docs"
+
+    openapi_config = OpenAPIConfig(
+        title="my title", version="1.0.0", openapi_controller=CustomOpenAPIController, path="/override_docs_path"
+    )
+    with create_test_client([], openapi_config=openapi_config) as client:
+        response = client.get("/custom_docs")
+        assert response.status_code == HTTP_404_NOT_FOUND
+
+        response = client.get("/override_docs_path/openapi.json")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/override_docs_path/openapi.json")
         assert response.status_code == HTTP_200_OK
 
 
