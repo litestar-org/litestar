@@ -355,7 +355,8 @@ def show_app_info(app: Litestar) -> None:  # pragma: no cover
     if app.static_files_config:
         static_files_configs = app.static_files_config
         static_files_info = [
-            f"path=[yellow]{static_files.path}[/] dirs=[yellow]{', '.join(map(str, static_files.directories))}[/] html_mode={_format_is_enabled(static_files.html_mode)}"
+            f"path=[yellow]{static_files.path}[/] dirs=[yellow]{', '.join(map(str, static_files.directories))}[/] "
+            f"html_mode={_format_is_enabled(static_files.html_mode)}"
             for static_files in static_files_configs
         ]
         table.add_row("Static files", "\n".join(static_files_info))
