@@ -184,7 +184,7 @@ async def test_repo_created_updated(author_repo: AuthorAsyncRepository) -> None:
 
     author.books.append(BigIntBook(title="Testing"))
     author = await maybe_async(author_repo.update(author))
-    assert author.updated_at == original_update_dt
+    assert author.updated_at > original_update_dt
 
 
 async def test_repo_list_method(raw_authors_bigint: list[dict[str, Any]], author_repo: AuthorAsyncRepository) -> None:
