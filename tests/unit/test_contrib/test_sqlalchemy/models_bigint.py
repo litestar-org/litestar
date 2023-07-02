@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import date, datetime
 from typing import List
 
-from sqlalchemy import FetchedValue, ForeignKey, String, func
+from sqlalchemy import Column, FetchedValue, ForeignKey, String, Table, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from litestar.contrib.sqlalchemy.base import BigIntAuditBase, BigIntBase
@@ -43,11 +43,36 @@ class BigIntEventLog(BigIntAuditBase):
 class BigIntModelWithFetchedValue(BigIntBase):
     """The ModelWithFetchedValue BigIntBase."""
 
-    val: Mapped[int]
-    updated: Mapped[datetime] = mapped_column(
+    val: Mapped[int]  # pyright: ignore
+    updated: Mapped[datetime] = mapped_column(  # pyright: ignore
         server_default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
         server_onupdate=FetchedValue(),
+    )
+
+
+bigint_item_tag = Table(
+    "bigint_item_tag",
+    BigIntBase.metadata,
+    Column("item_id", ForeignKey("big_int_item.id"), primary_key=True),
+    Column("tag_id", ForeignKey("big_int_tag.id"), primary_key=True),
+)
+
+
+class BigIntItem(BigIntBase):
+    name: Mapped[str] = mapped_column(String(length=50))  # pyright: ignore
+    description: Mapped[str] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
+    tags: Mapped[List[BigIntTag]] = relationship(  # pyright: ignore  # noqa: UP
+        secondary=lambda: bigint_item_tag, back_populates="items"
+    )
+
+
+class BigIntTag(BigIntBase):
+    """The event log domain object."""
+
+    name: Mapped[str] = mapped_column(String(length=50))  # pyright: ignore
+    items: Mapped[List[BigIntItem]] = relationship(  # pyright: ignore  # noqa: UP
+        secondary=lambda: bigint_item_tag, back_populates="tags"
     )
 
 
@@ -88,6 +113,18 @@ class ModelWithFetchedValueAsyncRepository(SQLAlchemyAsyncRepository[BigIntModel
     model_type = BigIntModelWithFetchedValue
 
 
+class TagAsyncRepository(SQLAlchemyAsyncRepository[BigIntTag]):
+    """Tag repository."""
+
+    model_type = BigIntTag
+
+
+class ItemAsyncRepository(SQLAlchemyAsyncRepository[BigIntItem]):
+    """Item repository."""
+
+    model_type = BigIntItem
+
+
 class AuthorSyncRepository(SQLAlchemySyncRepository[BigIntAuthor]):
     """Author repository."""
 
@@ -116,3 +153,15 @@ class ModelWithFetchedValueSyncRepository(SQLAlchemySyncRepository[BigIntModelWi
     """ModelWithFetchedValue repository."""
 
     model_type = BigIntModelWithFetchedValue
+
+
+class TagSyncRepository(SQLAlchemySyncRepository[BigIntTag]):
+    """Tag repository."""
+
+    model_type = BigIntTag
+
+
+class ItemSyncRepository(SQLAlchemySyncRepository[BigIntItem]):
+    """Item repository."""
+
+    model_type = BigIntItem
