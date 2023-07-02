@@ -101,10 +101,9 @@ nitpick_ignore = [
     (PY_CLASS, "EmptyType"),
     # intentionally undocumented
     (PY_CLASS, "NoneType"),
-    (PY_CLASS, "litestar._signature.field.SignatureField"),
+    (PY_CLASS, "litestar._signature.field.ParsedType"),
     (PY_CLASS, "litestar.utils.signature.ParsedType"),
     (PY_CLASS, "litestar.utils.signature.ParsedSignature"),
-    (PY_CLASS, "litestar.utils.signature.ParsedParameter"),
     (PY_CLASS, "litestar.utils.sync.AsyncCallable"),
     (PY_CLASS, "BacklogStrategy"),
     (PY_CLASS, "ExceptionT"),

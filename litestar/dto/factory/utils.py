@@ -41,9 +41,14 @@ def get_model_type_hints(model_type: type[Any], namespace: dict[str, Any] | None
     namespace = namespace or {}
     namespace.update(vars(typing))
     namespace.update({"TypeEncodersMap": TypeEncodersMap})
+
     if model_module := getmodule(model_type):
         namespace.update(vars(model_module))
-    return {k: ParsedType(v) for k, v in get_type_hints(model_type, localns=namespace).items()}
+
+    return {
+        k: ParsedType.from_kwarg(annotation=v, name=k)
+        for k, v in get_type_hints(model_type, localns=namespace, include_extras=True).items()
+    }
 
 
 def parse_configs_from_annotation(parsed_type: ParsedType) -> tuple[DTOConfig, ...]:
@@ -118,7 +123,7 @@ def resolve_generic_wrapper_type(
                 # the inner type of the collection type is the type var, so we need to specialize the
                 # collection type with the DTO supported type.
                 specialized_annotation = attr_type.safe_generic_origin[model_type.annotation]
-                return model_type, ParsedType(specialized_annotation), attr
+                return model_type, ParsedType.from_annotation(specialized_annotation), attr
             return model_type, inner_type, attr
 
     return None

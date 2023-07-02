@@ -10,8 +10,7 @@ from litestar.openapi.spec.schema import Schema
 if TYPE_CHECKING:
     from _decimal import Decimal
 
-    from litestar.params import BodyKwarg, ParameterKwarg
-
+    from litestar.params import KwargDefinition
 
 __all__ = (
     "create_date_constrained_field_schema",
@@ -22,7 +21,7 @@ __all__ = (
 
 def create_numerical_constrained_field_schema(
     field_type: type[int] | type[float] | type[Decimal],
-    kwargs_model: ParameterKwarg | BodyKwarg,
+    kwargs_model: KwargDefinition,
 ) -> Schema:
     """Create Schema from Constrained Int/Float/Decimal field."""
     schema = Schema(type=OpenAPIType.INTEGER if issubclass(field_type, int) else OpenAPIType.NUMBER)
@@ -41,7 +40,7 @@ def create_numerical_constrained_field_schema(
 
 def create_date_constrained_field_schema(
     field_type: type[date] | type[datetime],
-    kwargs_model: ParameterKwarg | BodyKwarg,
+    kwargs_model: KwargDefinition,
 ) -> Schema:
     """Create Schema from Constrained Date Field."""
     schema = Schema(
@@ -69,7 +68,7 @@ def create_date_constrained_field_schema(
 
 def create_string_constrained_field_schema(
     field_type: type[str] | type[bytes],
-    kwargs_model: ParameterKwarg | BodyKwarg,
+    kwargs_model: KwargDefinition,
 ) -> Schema:
     """Create Schema from Constrained Str/Bytes field."""
     schema = Schema(type=OpenAPIType.STRING)

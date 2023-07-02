@@ -330,7 +330,7 @@ def get_handler(data: Circle) -> Circle:
         assert module.DIAMETER == 10
 
 
-async def test_field_with_sequence_default_value(create_module: Callable[[str], ModuleType]) -> None:
+async def test_field_with_sequence_default(create_module: Callable[[str], ModuleType]) -> None:
     module = create_module(
         """
 from sqlalchemy import create_engine, Column, Integer, Sequence

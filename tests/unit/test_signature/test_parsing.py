@@ -71,18 +71,18 @@ def test_create_function_signature_model_parameter_parsing(
         parsed_signature=ParsedSignature.from_fn(my_fn.fn.value, {}),
     )
     fields = model.fields
-    assert fields["a"].field_type is int
+    assert fields["a"].annotation is int
     assert not fields["a"].is_optional
-    assert fields["b"].field_type is str
+    assert fields["b"].annotation is str
     assert not fields["b"].is_optional
-    assert fields["c"].field_type is Optional[bytes]
+    assert fields["c"].annotation is Optional[bytes]
     assert fields["c"].is_optional
-    assert fields["c"].default_value is None
-    assert fields["d"].field_type is bytes
-    assert fields["d"].default_value == b"123"
-    assert fields["e"].field_type == Optional[dict]
+    assert fields["c"].default is None
+    assert fields["d"].annotation is bytes
+    assert fields["d"].default == b"123"
+    assert fields["e"].annotation == Optional[dict]
     assert fields["e"].is_optional
-    assert fields["e"].default_value is None
+    assert fields["e"].default is None
 
 
 @pytest.mark.parametrize("preferred_validation_backend", ("attrs", "pydantic"))
@@ -245,7 +245,7 @@ def test_parse_optional_sequence_from_connection_kwargs(query: str, exp: Any) ->
 
 
 @pytest.mark.parametrize("preferred_validation_backend", ("attrs", "pydantic"))
-def test_signature_field_is_non_string_iterable(preferred_validation_backend: Literal["attrs", "pydantic"]) -> None:
+def test_parsed_type_is_non_string_iterable(preferred_validation_backend: Literal["attrs", "pydantic"]) -> None:
     def fn(a: Iterable[int], b: Optional[Iterable[int]]) -> None:
         pass
 
@@ -261,7 +261,7 @@ def test_signature_field_is_non_string_iterable(preferred_validation_backend: Li
 
 
 @pytest.mark.parametrize("preferred_validation_backend", ("attrs", "pydantic"))
-def test_signature_field_is_non_string_sequence(preferred_validation_backend: Literal["attrs", "pydantic"]) -> None:
+def test_parsed_type_is_non_string_sequence(preferred_validation_backend: Literal["attrs", "pydantic"]) -> None:
     def fn(a: Sequence[int], b: OptionalSequence[int]) -> None:
         pass
 

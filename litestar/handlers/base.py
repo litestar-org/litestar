@@ -4,15 +4,15 @@ from copy import copy
 from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
 
 from litestar._signature import create_signature_model
-from litestar._signature.field import SignatureField
 from litestar.di import Provide
 from litestar.dto.interface import HandlerContext
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Dependencies, Empty, ExceptionHandlersMap, Guard, MaybePartial, Middleware, TypeEncodersMap
+from litestar.typing import ParsedType
 from litestar.utils import AsyncCallable, Ref, async_partial, get_name, normalize_path
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.predicates import is_async_callable
-from litestar.utils.signature import ParsedSignature, infer_request_encoding_from_parameter
+from litestar.utils.signature import ParsedSignature, infer_request_encoding_from_parsed_type
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -104,7 +104,7 @@ class BaseRouteHandler:
         self._resolved_dependencies: dict[str, Provide] | EmptyType = Empty
         self._resolved_dto: type[DTOInterface] | None | EmptyType = Empty
         self._resolved_guards: list[Guard] | EmptyType = Empty
-        self._resolved_layered_parameters: dict[str, SignatureField] | EmptyType = Empty
+        self._resolved_layered_parameters: dict[str, ParsedType] | EmptyType = Empty
         self._resolved_return_dto: type[DTOInterface] | None | EmptyType = Empty
         self._resolved_signature_namespace: dict[str, Any] | EmptyType = Empty
         self._resolved_type_encoders: TypeEncodersMap | EmptyType = Empty
@@ -212,7 +212,7 @@ class BaseRouteHandler:
                     self._resolved_type_encoders.update(type_encoders)
         return cast("TypeEncodersMap", self._resolved_type_encoders)
 
-    def resolve_layered_parameters(self) -> dict[str, SignatureField]:
+    def resolve_layered_parameters(self) -> dict[str, ParsedType]:
         """Return all parameters declared above the handler."""
         if self._resolved_layered_parameters is Empty:
             parameter_kwargs: dict[str, ParameterKwarg] = {}
@@ -221,13 +221,13 @@ class BaseRouteHandler:
                 parameter_kwargs.update(getattr(layer, "parameters", {}) or {})
 
             self._resolved_layered_parameters = {
-                key: SignatureField.create(
-                    name=key, field_type=parameter.value_type, default_value=parameter.default, kwarg_model=parameter
+                key: ParsedType.from_kwarg(
+                    name=key, annotation=parameter.annotation, default=parameter.default, kwarg_model=parameter
                 )
                 for key, parameter in parameter_kwargs.items()
             }
 
-        return cast("dict[str, SignatureField]", self._resolved_layered_parameters)
+        return cast("dict[str, ParsedType]", self._resolved_layered_parameters)
 
     def resolve_guards(self) -> list[Guard]:
         """Return all guards in the handlers scope, starting from highest to current layer."""
@@ -362,12 +362,17 @@ class BaseRouteHandler:
         if (dto := self.resolve_dto()) and (data_parameter := self.parsed_fn_signature.parameters.get("data")):
             dto.on_registration(
                 HandlerContext(
-                    "data", str(self), data_parameter.parsed_type, infer_request_encoding_from_parameter(data_parameter)
+                    dto_for="data",
+                    handler_id=str(self),
+                    parsed_type=data_parameter,
+                    request_encoding_type=infer_request_encoding_from_parsed_type(data_parameter),
                 )
             )
 
         if return_dto := self.resolve_return_dto():
-            return_dto.on_registration(HandlerContext("return", str(self), self.parsed_fn_signature.return_type))
+            return_dto.on_registration(
+                HandlerContext(dto_for="return", handler_id=str(self), parsed_type=self.parsed_fn_signature.return_type)
+            )
 
     async def authorize_connection(self, connection: ASGIConnection) -> None:
         """Ensure the connection is authorized by running all the route guards in scope."""
@@ -450,8 +455,8 @@ class BaseRouteHandler:
 
         if (data_param := self.parsed_fn_signature.parameters.get("data")) and self.resolve_dto() is None:
             for plugin in plugins:
-                if plugin.supports_type(data_param.parsed_type):
-                    self._set_dto(plugin.create_dto_for_type(data_param.parsed_type))
+                if plugin.supports_type(data_param):
+                    self._set_dto(plugin.create_dto_for_type(data_param))
                     break
 
     def __str__(self) -> str:

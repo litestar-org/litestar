@@ -12,12 +12,12 @@ __all__ = ("create_request_body",)
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
-    from litestar._signature.field import SignatureField
     from litestar.handlers import BaseRouteHandler
+    from litestar.typing import ParsedType
 
 
 def create_request_body(
-    route_handler: BaseRouteHandler, field: SignatureField, schema_creator: SchemaCreator
+    route_handler: BaseRouteHandler, field: ParsedType, schema_creator: SchemaCreator
 ) -> RequestBody | None:
     """Create a RequestBody model for the given RouteHandler or return None."""
     media_type: RequestEncodingType | str = RequestEncodingType.JSON

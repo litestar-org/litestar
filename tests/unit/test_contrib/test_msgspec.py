@@ -40,5 +40,5 @@ def test_detect_nested_field() -> None:
     class NotStruct:
         pass
 
-    assert MsgspecDTO.detect_nested_field(ParsedType(TestStruct)) is True
-    assert MsgspecDTO.detect_nested_field(ParsedType(NotStruct)) is False
+    assert MsgspecDTO.detect_nested_field(ParsedType.from_annotation(TestStruct)) is True
+    assert MsgspecDTO.detect_nested_field(ParsedType.from_annotation(NotStruct)) is False

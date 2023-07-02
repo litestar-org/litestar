@@ -1,12 +1,17 @@
-from typing import AsyncGenerator, Callable
+from __future__ import annotations
+
+from typing import AsyncGenerator, Callable, get_args
 
 import pytest
+from _decimal import Decimal
+from piccolo.columns import Column, column_types
 from piccolo.conf.apps import Finder
-from piccolo.table import create_db_tables, drop_db_tables
+from piccolo.table import Table, create_db_tables, drop_db_tables
 from piccolo.testing.model_builder import ModelBuilder
+from polyfactory.utils.predicates import is_annotated
 
 from litestar import Litestar
-from litestar.contrib.piccolo.dto import PiccoloDTO
+from litestar.contrib.piccolo import PiccoloDTO
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from litestar.testing import create_test_client
 
@@ -56,6 +61,34 @@ async def test_create_piccolo_table_instance(scaffold_piccolo: Callable, anyio_b
         assert response.status_code == HTTP_201_CREATED
 
 
+@pytest.mark.parametrize(
+    "piccolo_type, py_type, meta_data_key",
+    (
+        (column_types.Decimal, Decimal, None),
+        (column_types.Numeric, Decimal, None),
+        (column_types.Email, str, "max_length"),
+        (column_types.Varchar, str, "max_length"),
+        (column_types.JSON, str, "format"),
+        (column_types.JSONB, str, "format"),
+        (column_types.Text, str, "format"),
+    ),
+)
+def test_piccolo_dto_type_conversion(piccolo_type: type[Column], py_type: type, meta_data_key: str | None) -> None:
+    class _Table(Table):
+        field = piccolo_type(required=True, help_text="my column")
+
+    field_defs = list(PiccoloDTO.generate_field_definitions(_Table))
+    assert len(field_defs) == 2
+    field_def = field_defs[1]
+    assert is_annotated(field_def.raw)
+    assert field_def.annotation is py_type
+    metadata = get_args(field_def.raw)[1]
+
+    assert metadata.extra.get("description", "")
+    if meta_data_key:
+        assert metadata.extra.get(meta_data_key, "") or getattr(metadata, meta_data_key, None)
+
+
 def test_piccolo_dto_openapi_spec_generation() -> None:
     app = Litestar(route_handlers=[retrieve_studio, retrieve_venues, create_concert], dto=PiccoloDTO)
     schema = app.openapi_schema
@@ -89,7 +122,9 @@ def test_piccolo_dto_openapi_spec_generation() -> None:
         == "#/components/schemas/tests.unit.test_contrib.test_piccolo_orm.tables.Venue"
     )
 
-    concert_schema = schema.components.schemas["tests.unit.test_contrib.test_piccolo_orm.tables.ConcertRequestBody"]  # type: ignore
+    concert_schema = schema.components.schemas[  # type: ignore
+        "tests.unit.test_contrib.test_piccolo_orm.tables.ConcertRequestBody"
+    ]
     assert concert_schema
     assert concert_schema.to_schema() == {
         "properties": {
@@ -102,7 +137,9 @@ def test_piccolo_dto_openapi_spec_generation() -> None:
         "type": "object",
     }
 
-    record_studio_schema = schema.components.schemas["tests.unit.test_contrib.test_piccolo_orm.tables.RecordingStudioResponseBody"]  # type: ignore
+    record_studio_schema = schema.components.schemas[  # type: ignore
+        "tests.unit.test_contrib.test_piccolo_orm.tables.RecordingStudioResponseBody"
+    ]
     assert record_studio_schema
     assert record_studio_schema.to_schema() == {
         "properties": {

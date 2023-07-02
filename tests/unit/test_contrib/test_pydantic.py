@@ -41,8 +41,8 @@ def test_detect_nested_field() -> None:
     class NotModel:
         pass
 
-    assert PydanticDTO.detect_nested_field(ParsedType(TestModel)) is True
-    assert PydanticDTO.detect_nested_field(ParsedType(NotModel)) is False
+    assert PydanticDTO.detect_nested_field(ParsedType.from_annotation(TestModel)) is True
+    assert PydanticDTO.detect_nested_field(ParsedType.from_annotation(NotModel)) is False
 
 
 def test_generate_field_definitions_from_beanie_models(create_module: Callable[[str], ModuleType]) -> None:

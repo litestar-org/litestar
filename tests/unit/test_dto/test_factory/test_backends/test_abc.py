@@ -52,19 +52,23 @@ def fx_data_model(data_model_type: type[Model]) -> Model:
 @pytest.fixture(name="field_definitions")
 def fx_field_definitions(data_model_type: type[Model]) -> list[FieldDefinition]:
     return [
-        FieldDefinition(
-            name="a",
-            default=Empty,
-            parsed_type=ParsedType(int),
+        FieldDefinition.from_parsed_type(
+            parsed_type=ParsedType.from_kwarg(
+                annotation=int,
+                name="a",
+                default=Empty,
+            ),
             default_factory=None,
             dto_field=DTOField(),
             unique_model_name="some_module.SomeModel",
             dto_for=None,
         ),
-        FieldDefinition(
-            name="b",
-            default=Empty,
-            parsed_type=ParsedType(str),
+        FieldDefinition.from_parsed_type(
+            parsed_type=ParsedType.from_kwarg(
+                annotation=str,
+                name="b",
+                default=Empty,
+            ),
             default_factory=None,
             dto_field=DTOField(),
             unique_model_name="some_module.SomeModel",
@@ -81,7 +85,7 @@ def fx_context(data_model_type: type[Model], field_definitions: list[FieldDefini
     return BackendContext(
         dto_config=DTOConfig(),
         dto_for="data",
-        parsed_type=ParsedType(data_model_type),
+        parsed_type=ParsedType.from_annotation(data_model_type),
         field_definition_generator=_generator,
         is_nested_field_predicate=lambda parsed_type: parsed_type.is_subclass_of((Model, Model2)),
         model_type=data_model_type,
@@ -145,11 +149,11 @@ def create_transfer_type(
 @pytest.mark.parametrize(
     ("parsed_type", "should_have_nested", "has_nested_field_info"),
     [
-        (ParsedType(Union[Model, None]), True, (True, False)),
-        (ParsedType(Union[Model, str]), True, (True, False)),
-        (ParsedType(Union[Model, int]), True, (True, False)),
-        (ParsedType(Union[Model, Model2]), True, (True, True)),
-        (ParsedType(Union[int, str]), False, (False, False)),
+        (ParsedType.from_annotation(Union[Model, None]), True, (True, False)),
+        (ParsedType.from_annotation(Union[Model, str]), True, (True, False)),
+        (ParsedType.from_annotation(Union[Model, int]), True, (True, False)),
+        (ParsedType.from_annotation(Union[Model, Model2]), True, (True, True)),
+        (ParsedType.from_annotation(Union[int, str]), False, (False, False)),
     ],
 )
 def test_create_transfer_type_union(
@@ -171,13 +175,13 @@ def test_create_transfer_type_union(
 @pytest.mark.parametrize(
     ("parsed_type", "should_have_nested", "has_nested_field_info"),
     [
-        (ParsedType(Tuple[Model, None]), True, (True, False)),
-        (ParsedType(Tuple[Model, str]), True, (True, False)),
-        (ParsedType(Tuple[Model, int]), True, (True, False)),
-        (ParsedType(Tuple[Model, Model2]), True, (True, True)),
-        (ParsedType(Tuple[int, str]), False, (False, False)),
-        (ParsedType(Tuple[Model, ...]), True, (True,)),
-        (ParsedType(Tuple[int, ...]), False, (False,)),
+        (ParsedType.from_annotation(Tuple[Model, None]), True, (True, False)),
+        (ParsedType.from_annotation(Tuple[Model, str]), True, (True, False)),
+        (ParsedType.from_annotation(Tuple[Model, int]), True, (True, False)),
+        (ParsedType.from_annotation(Tuple[Model, Model2]), True, (True, True)),
+        (ParsedType.from_annotation(Tuple[int, str]), False, (False, False)),
+        (ParsedType.from_annotation(Tuple[Model, ...]), True, (True,)),
+        (ParsedType.from_annotation(Tuple[int, ...]), False, (False,)),
     ],
 )
 def test_create_transfer_type_tuple(
@@ -206,11 +210,11 @@ def test_create_transfer_type_tuple(
 @pytest.mark.parametrize(
     ("parsed_type", "should_have_nested", "has_nested_field_info"),
     [
-        (ParsedType(Dict[Model, None]), True, (True, False)),
-        (ParsedType(Dict[Model, str]), True, (True, False)),
-        (ParsedType(Dict[Model, int]), True, (True, False)),
-        (ParsedType(Dict[Model, Model2]), True, (True, True)),
-        (ParsedType(Dict[int, str]), False, (False, False)),
+        (ParsedType.from_annotation(Dict[Model, None]), True, (True, False)),
+        (ParsedType.from_annotation(Dict[Model, str]), True, (True, False)),
+        (ParsedType.from_annotation(Dict[Model, int]), True, (True, False)),
+        (ParsedType.from_annotation(Dict[Model, Model2]), True, (True, True)),
+        (ParsedType.from_annotation(Dict[int, str]), False, (False, False)),
     ],
 )
 def test_create_transfer_type_mapping(
@@ -231,7 +235,10 @@ def test_create_transfer_type_mapping(
 
 @pytest.mark.parametrize(
     ("parsed_type", "should_have_nested", "has_nested_field_info"),
-    [(ParsedType(List[Model]), True, True), (ParsedType(List[int]), False, False)],
+    [
+        (ParsedType.from_annotation(List[Model]), True, True),
+        (ParsedType.from_annotation(List[int]), False, False),
+    ],
 )
 def test_create_transfer_type_collection(
     parsed_type: ParsedType, should_have_nested: bool, has_nested_field_info: bool, backend: AbstractDTOBackend
@@ -245,7 +252,7 @@ def test_create_transfer_type_collection(
 
 
 def test_create_collection_type_nested_union(backend: AbstractDTOBackend) -> None:
-    parsed_type = ParsedType(List[Union[Model, Model2]])
+    parsed_type = ParsedType.from_annotation(List[Union[Model, Model2]])
     transfer_type = create_transfer_type(backend, parsed_type)
     assert isinstance(transfer_type, CollectionType)
     assert transfer_type.has_nested is True

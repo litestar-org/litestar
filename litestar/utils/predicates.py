@@ -57,8 +57,9 @@ except ImportError:  # pragma: no cover
     attrs = Empty  # type: ignore
 
 __all__ = (
-    "is_async_callable",
+    "is_annotated_type",
     "is_any",
+    "is_async_callable",
     "is_attrs_class",
     "is_class_and_subclass",
     "is_class_var",

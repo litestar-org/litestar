@@ -109,7 +109,9 @@ def test_config_assigned_via_subclassing() -> None:
 
 async def test_from_bytes(request_factory: RequestFactory) -> None:
     dto_type = DataclassDTO[Model]
-    dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Model)))
+    dto_type.on_registration(
+        HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType.from_annotation(Model))
+    )
     conn_ctx = ConnectionContext(handler_id="handler", request_encoding_type="application/json")
     assert dto_type(conn_ctx).bytes_to_data_type(b'{"a":1,"b":"two"}') == Model(a=1, b="two")
 
@@ -117,7 +119,9 @@ async def test_from_bytes(request_factory: RequestFactory) -> None:
 def test_config_field_rename() -> None:
     config = DTOConfig(rename_fields={"a": "z"})
     dto_type = DataclassDTO[Annotated[Model, config]]
-    dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Model)))
+    dto_type.on_registration(
+        HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType.from_annotation(Model))
+    )
     field_definitions = get_backend(dto_type).parsed_field_definitions
     assert field_definitions[0].serialization_name == "z"
 
@@ -136,7 +140,7 @@ def test_form_encoded_data_uses_pydantic_backend(request_encoding_type: RequestE
         HandlerContext(
             handler_id="handler",
             dto_for="data",
-            parsed_type=ParsedType(Model),
+            parsed_type=ParsedType.from_annotation(Model),
             request_encoding_type=request_encoding_type,
         )
     )
@@ -148,7 +152,9 @@ def test_raises_invalid_annotation_for_non_homogenous_collection_types() -> None
 
     with pytest.raises(InvalidAnnotation):
         dto_type.on_registration(
-            HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Tuple[Model, str]))
+            HandlerContext(
+                handler_id="handler", dto_for="data", parsed_type=ParsedType.from_annotation(Tuple[Model, str])
+            )
         )
 
 
@@ -161,7 +167,7 @@ def test_raises_invalid_annotation_for_mismatched_types() -> None:
 
     with pytest.raises(InvalidAnnotation):
         dto_type.on_registration(
-            HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(OtherModel))
+            HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType.from_annotation(OtherModel))
         )
 
 
@@ -172,13 +178,17 @@ def test_sub_types_supported() -> None:
     class SubType(Model):
         c: int
 
-    dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(SubType)))
+    dto_type.on_registration(
+        HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType.from_annotation(SubType))
+    )
     assert dto_type._handler_backend_map[("data", "handler")].parsed_field_definitions[-1].name == "c"
 
 
 def test_create_openapi_schema(monkeypatch: MonkeyPatch) -> None:
     dto_type = DataclassDTO[Model]
-    dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Model)))
+    dto_type.on_registration(
+        HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType.from_annotation(Model))
+    )
 
     with patch("litestar.dto.factory._backends.abc.AbstractDTOBackend.create_openapi_schema") as mock:
         schema_creator = SchemaCreator()

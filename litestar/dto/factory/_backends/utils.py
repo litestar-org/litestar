@@ -73,7 +73,7 @@ def should_mark_private(field_definition: FieldDefinition, underscore_fields_pri
         field_definition: defined DTO field
         underscore_fields_private: whether fields prefixed with an underscore should be marked as private.
     """
-    return (
+    return bool(
         underscore_fields_private and field_definition.dto_field.mark is None and field_definition.name.startswith("_")
     )
 
@@ -205,21 +205,11 @@ def transfer_instance_data(
     unstructured_data = {}
     source_is_mapping = isinstance(source_instance, Mapping)
 
-    if source_is_mapping:
+    def has(source: Any, key: str) -> bool:
+        return key in source if source_is_mapping else hasattr(source, key)
 
-        def has(source: Any, key: str) -> bool:
-            return key in source
-
-        def get(source: Any, key: str) -> Any:
-            return source[key]
-
-    else:
-
-        def has(source: Any, key: str) -> bool:
-            return hasattr(source, key)
-
-        def get(source: Any, key: str) -> Any:
-            return getattr(source, key)
+    def get(source: Any, key: str) -> Any:
+        return source[key] if source_is_mapping else getattr(source, key)
 
     def filter_missing(value: Any) -> bool:
         return value is UNSET

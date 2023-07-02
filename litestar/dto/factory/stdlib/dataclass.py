@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import MISSING, fields
+from dataclasses import MISSING, fields, replace
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar.dto.factory.abc import AbstractDTOFactory
@@ -40,10 +40,12 @@ class DataclassDTO(AbstractDTOFactory[T], Generic[T]):
 
             default_factory = dc_field.default_factory if dc_field.default_factory is not MISSING else None
 
-            yield FieldDefinition(
-                name=key,
-                parsed_type=parsed_type,
-                default=default,
+            yield FieldDefinition.from_parsed_type(
+                parsed_type=replace(
+                    parsed_type,
+                    name=key,
+                    default=default,
+                ),
                 default_factory=default_factory,
                 dto_field=dc_field.metadata.get(DTO_FIELD_META_KEY, DTOField()),
                 unique_model_name=get_fully_qualified_class_name(model_type),

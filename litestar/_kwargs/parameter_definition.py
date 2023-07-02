@@ -9,13 +9,13 @@ __all__ = ("ParameterDefinition", "create_parameter_definition", "merge_paramete
 
 
 if TYPE_CHECKING:
-    from litestar._signature.field import SignatureField
+    from litestar.typing import ParsedType
 
 
 class ParameterDefinition(NamedTuple):
     """Tuple defining a kwarg representing a request parameter."""
 
-    default_value: Any
+    default: Any
     field_alias: str
     field_name: str
     is_required: bool
@@ -24,22 +24,22 @@ class ParameterDefinition(NamedTuple):
 
 
 def create_parameter_definition(
-    signature_field: SignatureField,
+    parsed_type: ParsedType,
     field_name: str,
     path_parameters: set[str],
 ) -> ParameterDefinition:
-    """Create a ParameterDefinition for the given SignatureField.
+    """Create a ParameterDefinition for the given ParsedType.
 
     Args:
-        signature_field: SignatureField instance.
+        parsed_type: ParsedType instance.
         field_name: The field's name.
         path_parameters: A set of path parameter names.
 
     Returns:
         A ParameterDefinition tuple.
     """
-    default_value = None if signature_field.is_empty else signature_field.default_value
-    kwargs_model = signature_field.kwarg_model if isinstance(signature_field.kwarg_model, ParameterKwarg) else None
+    default = None if not parsed_type.has_default else parsed_type.default
+    kwargs_model = parsed_type.kwarg_model if isinstance(parsed_type.kwarg_model, ParameterKwarg) else None
 
     field_alias = kwargs_model.query if kwargs_model and kwargs_model.query else field_name
     param_type = ParamType.QUERY
@@ -58,12 +58,12 @@ def create_parameter_definition(
         param_type=param_type,
         field_name=field_name,
         field_alias=field_alias,
-        default_value=default_value,
-        is_required=signature_field.is_required
-        and default_value is None
-        and not signature_field.is_optional
-        and not signature_field.is_any,
-        is_sequence=signature_field.is_non_string_sequence,
+        default=default,
+        is_required=parsed_type.is_required
+        and default is None
+        and not parsed_type.is_optional
+        and not parsed_type.is_any,
+        is_sequence=parsed_type.is_non_string_sequence,
     )
 
 
