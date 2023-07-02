@@ -66,7 +66,7 @@ def touch_updated_timestamp(session: Session, *_: Any) -> None:
     """
     for instance in session.dirty:
         if hasattr(instance, "updated_at"):
-            instance.updated = (datetime.now(timezone.utc),)
+            instance.updated_at = datetime.now(timezone.utc)
 
 
 @runtime_checkable
