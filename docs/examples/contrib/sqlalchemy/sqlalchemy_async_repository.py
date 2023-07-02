@@ -2,8 +2,8 @@ from datetime import date
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from pydantic import ConfigDict, BaseModel as _BaseModel, TypeAdapter
-from pydantic import parse_obj_as
+from pydantic import BaseModel as _BaseModel
+from pydantic import ConfigDict, TypeAdapter
 from sqlalchemy import ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
@@ -24,6 +24,7 @@ if TYPE_CHECKING:
 
 class BaseModel(_BaseModel):
     """Extend Pydantic's BaseModel to enable ORM mode"""
+
     model_config = ConfigDict(from_attributes=True)
 
 

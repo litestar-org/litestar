@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Union
 
 from msgspec import UNSET, UnsetType
-from pydantic import ConfigDict, BaseModel, create_model
+from pydantic import BaseModel, ConfigDict, create_model
 from pydantic.fields import FieldInfo
 
 from litestar.dto.factory._backends.utils import create_transfer_model_type_annotation

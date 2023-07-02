@@ -16,6 +16,7 @@ from re import Pattern
 from typing import TYPE_CHECKING, Any, Callable, Mapping, TypeVar, overload
 
 import msgspec
+
 # TODO: ConstrainedBytes, ConstrainedDate, SecretField
 from pydantic import (
     BaseModel,
@@ -27,11 +28,11 @@ from pydantic import (
     StrictBool,
 )
 from pydantic.json import decimal_encoder
+from pydantic_extra_types.color import Color
 
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
 from litestar.types import Empty, Serializer
-from pydantic_extra_types.color import Color
 
 if TYPE_CHECKING:
     from litestar.types import TypeEncodersMap

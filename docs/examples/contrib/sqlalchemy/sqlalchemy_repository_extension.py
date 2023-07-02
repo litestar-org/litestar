@@ -24,6 +24,7 @@ if TYPE_CHECKING:
 
 class BaseModel(_BaseModel):
     """Extend Pydantic's BaseModel to enable ORM mode"""
+
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -42,9 +43,9 @@ class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
     """Extends the repository to include slug model features.."""
 
     async def get_available_slug(
-            self,
-            value_to_slugify: str,
-            **kwargs: Any,
+        self,
+        value_to_slugify: str,
+        **kwargs: Any,
     ) -> str:
         """Get a unique slug for the supplied value.
 
@@ -88,9 +89,9 @@ class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
         return re.sub(r"[-\s]+", "-", value).strip("-_")
 
     async def _is_slug_unique(
-            self,
-            slug: str,
-            **kwargs: Any,
+        self,
+        slug: str,
+        **kwargs: Any,
     ) -> bool:
         return await self.get_one_or_none(slug=slug) is None
 
@@ -143,7 +144,7 @@ async def on_startup() -> None:
 
 @get(path="/")
 async def get_blogs(
-        blog_post_repo: BlogPostRepository,
+    blog_post_repo: BlogPostRepository,
 ) -> list[BlogPostDTO]:
     """Interact with SQLAlchemy engine and session."""
     objs = await blog_post_repo.list()
@@ -153,8 +154,8 @@ async def get_blogs(
 
 @get(path="/{post_slug:str}")
 async def get_blog_details(
-        post_slug: str,
-        blog_post_repo: BlogPostRepository,
+    post_slug: str,
+    blog_post_repo: BlogPostRepository,
 ) -> BlogPostDTO:
     """Interact with SQLAlchemy engine and session."""
     obj = await blog_post_repo.get_one(slug=post_slug)
@@ -163,8 +164,8 @@ async def get_blog_details(
 
 @post(path="/")
 async def create_blog(
-        blog_post_repo: BlogPostRepository,
-        data: BlogPostCreate,
+    blog_post_repo: BlogPostRepository,
+    data: BlogPostCreate,
 ) -> BlogPostDTO:
     """Create a new blog post."""
     _data = data.model_dump(exclude_unset=True, by_alias=False, exclude_none=True)

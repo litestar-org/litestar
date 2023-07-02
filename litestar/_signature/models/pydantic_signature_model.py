@@ -3,9 +3,8 @@ from __future__ import annotations
 from dataclasses import asdict
 from typing import TYPE_CHECKING, Any
 
-from pydantic import BaseModel, ValidationError, create_model, ConfigDict
+from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 from pydantic.fields import FieldInfo
-from pydantic_core.core_schema import ModelField
 
 from litestar._signature.field import SignatureField
 from litestar._signature.models.base import ErrorMessage, SignatureModel
@@ -15,6 +14,8 @@ from litestar.types import Empty
 from litestar.utils.predicates import is_pydantic_constrained_field
 
 if TYPE_CHECKING:
+    from pydantic_core.core_schema import ModelField
+
     from litestar.connection import ASGIConnection
     from litestar.utils.signature import ParsedSignature
 
@@ -94,7 +95,9 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
             children=children,
             default_value=default_value,
             extra=model_field.field_info.extra or {},
-            field_type=model_field.__annotations__ if model_field.__annotations__ is not Empty else Any,  # unsure of this
+            field_type=model_field.__annotations__
+            if model_field.__annotations__ is not Empty
+            else Any,  # unsure of this
             kwarg_model=kwarg_model,
             name=model_field.name,
         )

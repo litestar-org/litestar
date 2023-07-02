@@ -241,11 +241,7 @@ class Header(BaseModel, ABC):
 
     HEADER_NAME: ClassVar[str] = ""
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        extra="forbid",
-        alias_generator=alias_generator
-    )
+    model_config = ConfigDict(populate_by_name=True, extra="forbid", alias_generator=alias_generator)
 
     documentation_only: bool = False
     """Defines the header instance as for OpenAPI documentation purpose only."""
