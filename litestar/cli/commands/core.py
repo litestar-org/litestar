@@ -72,13 +72,14 @@ def info_command(app: Litestar) -> None:
 @option("--host", help="Server under this host", default="127.0.0.1", show_default=True)
 @option(
     "-fd",
+    "--fd",
     "--file-descriptor",
     help="Bind to a socket from this file descriptor.",
     type=int,
     default=None,
     show_default=True,
 )
-@option("-uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
+@option("-uds", "--uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
 @option("-d", "--debug", help="Run app in debug mode", is_flag=True)
 @option("-pdb", "--use_pdb", help="Drop into PDB on an exception", is_flag=True)
 @option("-rd", "--reload-dir", help="Directories to watch for file changes", multiple=True)
