@@ -69,6 +69,7 @@ from litestar.utils.typing import get_origin_or_inner_type, make_non_optional_un
 if TYPE_CHECKING:
     from msgspec import Struct
 
+    from litestar.dto.types import ForType
     from litestar.plugins import OpenAPISchemaPluginProtocol
 
     try:
@@ -278,16 +279,20 @@ TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
 }
 
 
-def _get_type_schema_name(value: Any) -> str:
+def _get_type_schema_name(value: Any, dto_for: ForType | None) -> str:
     """Extract the schema name from a data container.
 
     Args:
         value: A data container
+        dto_for: The type of DTO to create the schema for.
 
     Returns:
         A string
     """
-    return cast("str", getattr(value, "__schema_name__", value.__name__))
+    name = cast("str", getattr(value, "__schema_name__", value.__name__))
+    if dto_for == "data":
+        return f"{name}RequestBody"
+    return f"{name}ResponseBody" if dto_for == "return" else name
 
 
 def create_enum_schema(annotation: EnumMeta) -> Schema:
@@ -358,7 +363,7 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
 
 
 class SchemaCreator:
-    __slots__ = ("generate_examples", "plugins", "schemas", "prefer_alias")
+    __slots__ = ("generate_examples", "plugins", "schemas", "prefer_alias", "dto_for")
 
     def __init__(
         self,
@@ -389,11 +394,12 @@ class SchemaCreator:
         new.generate_examples = False
         return new
 
-    def for_field(self, field: SignatureField) -> Schema | Reference:
+    def for_field(self, field: SignatureField, dto_for: ForType | None = None) -> Schema | Reference:
         """Create a Schema for a given SignatureField.
 
         Args:
             field: A signature field instance.
+            dto_for: The type of DTO to create the schema for.
 
         Returns:
             A schema instance.
@@ -404,15 +410,15 @@ class SchemaCreator:
         elif field.is_union:
             result = self.for_union_field(field)
         elif is_pydantic_model_class(field.field_type):
-            result = self.for_pydantic_model(field.field_type)
+            result = self.for_pydantic_model(field.field_type, dto_for)
         elif is_attrs_class(field.field_type):
-            result = self.for_attrs_class(field.field_type)
+            result = self.for_attrs_class(field.field_type, dto_for)
         elif is_struct_class(field.field_type):
-            result = self.for_struct_class(field.field_type)
+            result = self.for_struct_class(field.field_type, dto_for)
         elif is_dataclass_class(field.field_type):
-            result = self.for_dataclass(field.field_type)
+            result = self.for_dataclass(field.field_type, dto_for)
         elif is_typed_dict(field.field_type):
-            result = self.for_typed_dict(field.field_type)
+            result = self.for_typed_dict(field.field_type, dto_for)
         elif plugins_for_annotation := [
             plugin for plugin in self.plugins if plugin.is_plugin_supported_type(field.field_type)
         ]:
@@ -575,11 +581,12 @@ class SchemaCreator:
             )
         return schema  # pragma: no cover
 
-    def for_pydantic_model(self, field_type: type[BaseModel]) -> Schema:
+    def for_pydantic_model(self, field_type: type[BaseModel], dto_for: ForType | None) -> Schema:
         """Create a schema object for a given pydantic model class.
 
         Args:
             field_type: A pydantic model class.
+            dto_for: The type of DTO to generate a schema for.
 
         Returns:
             A schema instance.
@@ -604,15 +611,16 @@ class SchemaCreator:
                 for f in field_type.__fields__.values()
             },
             type=OpenAPIType.OBJECT,
-            title=title or _get_type_schema_name(field_type),
+            title=title or _get_type_schema_name(field_type, dto_for),
             examples=[Example(example)] if example else None,
         )
 
-    def for_attrs_class(self, field_type: type[AttrsInstance]) -> Schema:
+    def for_attrs_class(self, field_type: type[AttrsInstance], dto_for: ForType | None) -> Schema:
         """Create a schema object for a given attrs class.
 
         Args:
             field_type: An attrs class.
+            dto_for: The type of DTO to generate a schema for.
 
         Returns:
             A schema instance.
@@ -631,14 +639,15 @@ class SchemaCreator:
             ),
             properties={k: self.for_field(SignatureField.create(v, k)) for k, v in field_type_hints.items()},
             type=OpenAPIType.OBJECT,
-            title=_get_type_schema_name(field_type),
+            title=_get_type_schema_name(field_type, dto_for),
         )
 
-    def for_struct_class(self, field_type: type[Struct]) -> Schema:
+    def for_struct_class(self, field_type: type[Struct], dto_for: ForType | None) -> Schema:
         """Create a schema object for a given msgspec.Struct class.
 
         Args:
             field_type: A msgspec.Struct class.
+            dto_for: The type of DTO to generate a schema for.
 
         Returns:
             A schema instance.
@@ -656,14 +665,15 @@ class SchemaCreator:
                 for field in msgspec_struct_fields(field_type)
             },
             type=OpenAPIType.OBJECT,
-            title=_get_type_schema_name(field_type),
+            title=_get_type_schema_name(field_type, dto_for),
         )
 
-    def for_dataclass(self, field_type: type[DataclassProtocol]) -> Schema:
+    def for_dataclass(self, field_type: type[DataclassProtocol], dto_for: ForType | None) -> Schema:
         """Create a schema object for a given dataclass class.
 
         Args:
             field_type: A dataclass class.
+            dto_for: The type of DTO to generate a schema for.
 
         Returns:
             A schema instance.
@@ -683,14 +693,15 @@ class SchemaCreator:
             ),
             properties={k: self.for_field(SignatureField.create(v, k)) for k, v in field_type_hints.items()},
             type=OpenAPIType.OBJECT,
-            title=_get_type_schema_name(field_type),
+            title=_get_type_schema_name(field_type, dto_for),
         )
 
-    def for_typed_dict(self, field_type: TypedDictClass) -> Schema:
+    def for_typed_dict(self, field_type: TypedDictClass, dto_for: ForType | None) -> Schema:
         """Create a schema object for a given typed dict.
 
         Args:
             field_type: A typed-dict class.
+            dto_for: The type of DTO to generate a schema for.
 
         Returns:
             A schema instance.
@@ -703,7 +714,7 @@ class SchemaCreator:
             required=sorted(getattr(field_type, "__required_keys__", [])),
             properties={k: self.for_field(SignatureField.create(v, k)) for k, v in annotations.items()},
             type=OpenAPIType.OBJECT,
-            title=_get_type_schema_name(field_type),
+            title=_get_type_schema_name(field_type, dto_for),
         )
 
     def for_constrained_field(self, field: SignatureField) -> Schema:
