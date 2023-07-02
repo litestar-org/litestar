@@ -116,7 +116,7 @@ Options
 +=======================================+=================================+================================================================+
 | ``-r``\ , ``--reload``                | ``LITESTAR_RELOAD``             | Reload the application when files in its directory are changed |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``--reload-dir``                      | ``LITESTAR_RELOAD_DIRS``        | Specify directories to watch for reload.                       |
+| ``-rd``\ , ``--reload-dir``           | ``LITESTAR_RELOAD_DIRS``        | Specify directories to watch for reload.                       |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
 | ``-p``\ , ``--port``                  | ``LITESTAR_PORT``               | Bind the the server to this port [default: 8000]               |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
@@ -124,18 +124,18 @@ Options
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
 | ``--host``                            | ``LITESTAR_HOST``               | Bind the server to this host [default: 127.0.0.1]              |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``--fd``\ , ``--file-descriptor``     | ``LITESTAR_FILE_DESCRIPTOR``    | Bind to a socket from this file descriptor.                    |
+| ``-fd``\ , ``--file-descriptor``      | ``LITESTAR_FILE_DESCRIPTOR``    | Bind to a socket from this file descriptor.                    |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``--uds``\ , ``--unix-domain-socket`` | ``LITESTAR_UNIX_DOMAIN_SOCKET`` | Bind to a UNIX domain socket.                                  |
+| ``-uds``\ , ``--unix-domain-socket``  | ``LITESTAR_UNIX_DOMAIN_SOCKET`` | Bind to a UNIX domain socket.                                  |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``--debug``                           | ``LITESTAR_DEBUG``              | Run the application in debug mode                              |
+| ``-d``\ , ``--debug``                 | ``LITESTAR_DEBUG``              | Run the application in debug mode                              |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``--pdb``                             | ``LITESTAR_PDB``                | Drop into the Python debugger when an exception occurs         |
+| ``-pdb``\ , ``--use_pdb``             | ``LITESTAR_PDB``                | Drop into the Python debugger when an exception occurs         |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
 
 
-``--reload-dir``
-++++++++++++++++
+``-rd`` | ``--reload-dir``
+++++++++++++++++++++++++++
 
 The ``--reload-dir`` flag can be used to specify directories to watch for changes. If specified, the ``--reload`` flag
 is implied. Multiple directories can be specified by passing the flag multiple times:
@@ -150,8 +150,8 @@ To set via environment variable, use a comma-separated list:
 
    LITESTAR_RELOAD_DIRS=.,../other-library/src
 
-info
-^^^^
+``info``
+^^^^^^^^
 
 The ``info`` command displays useful information about the selected application and its configuration
 
@@ -307,3 +307,9 @@ This can be achieved by adding the special ``app`` parameter to your CLI functio
    @click.command()
    def my_command(app: Litestar) -> None:
        ...
+
+
+CLI Reference
+-------------
+
+Learn more by visiting the :doc:`Litestar CLI Click API Reference </reference/cli>`.
