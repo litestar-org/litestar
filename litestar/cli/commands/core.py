@@ -71,24 +71,24 @@ def info_command(app: Litestar) -> None:
 )
 @option("--host", help="Server under this host", default="127.0.0.1", show_default=True)
 @option(
-    "--fd",
+    "-fd",
     "--file-descriptor",
     help="Bind to a socket from this file descriptor.",
     type=int,
     default=None,
     show_default=True,
 )
-@option("--uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
-@option("--debug", help="Run app in debug mode", is_flag=True)
-@option("--pdb", "use_pdb", help="Drop into PDB on an exception", is_flag=True)
-@option("--reload-dir", help="Directories to watch for file changes", multiple=True)
+@option("-uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
+@option("-d", "--debug", help="Run app in debug mode", is_flag=True)
+@option("-pdb", "use_pdb", help="Drop into PDB on an exception", is_flag=True)
+@option("-rd", "--reload-dir", help="Directories to watch for file changes", multiple=True)
 def run_command(
     reload: bool,
     port: int,
     web_concurrency: int,
     host: str,
-    fd: int | None,
-    uds: str | None,
+    file_descriptor: int | None,
+    unix_domain_socket: str | None,
     debug: bool,
     reload_dir: tuple[str, ...],
     use_pdb: bool,
@@ -116,8 +116,8 @@ def run_command(
 
     host = env.host or host
     port = env.port if env.port is not None else port
-    fd = env.fd if env.fd is not None else fd
-    uds = env.uds or uds
+    fd = env.fd if env.fd is not None else file_descriptor
+    uds = env.uds or unix_domain_socket
     reload = env.reload or reload or bool(reload_dirs)
     workers = env.web_concurrency or web_concurrency
 
