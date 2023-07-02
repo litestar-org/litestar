@@ -1,7 +1,6 @@
 from typing import Generic, Optional, Type, TypeVar
 
 from pydantic import BaseModel
-from pydantic.generics import GenericModel
 
 from litestar import get
 from litestar.di import Provide
@@ -11,7 +10,7 @@ from litestar.testing import create_test_client
 T = TypeVar("T")
 
 
-class Store(GenericModel, Generic[T]):
+class Store(BaseModel, Generic[T]):
     """Abstract store."""
 
     model: Type[T]
