@@ -38,7 +38,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         *,
         statement: Select[tuple[ModelT]] | None = None,
         session: Session,
-        auto_expunge: bool = True,
+        auto_expunge: bool = False,
         auto_refresh: bool = True,
         auto_commit: bool = False,
         **kwargs: Any,
