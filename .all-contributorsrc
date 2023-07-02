@@ -1084,6 +1084,15 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "jaykv",
+      "name": "Jay",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18240054?v=4",
+      "profile": "https://github.com/jaykv",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
