@@ -9,7 +9,6 @@ import pytest
 from litestar.dto.factory import DTOField
 from litestar.dto.factory.data_structures import FieldDefinition
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
-from litestar.types.empty import Empty
 from litestar.typing import ParsedType
 from litestar.utils.helpers import get_fully_qualified_class_name
 
@@ -31,28 +30,31 @@ def fx_dto_type() -> type[DataclassDTO[Model]]:
 def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> None:
     fqdn = get_fully_qualified_class_name(Model)
     assert list(dto_type.generate_field_definitions(Model)) == [
-        FieldDefinition(
-            name="a",
-            parsed_type=ParsedType(int),
-            default=Empty,
+        FieldDefinition.from_parsed_type(
+            parsed_type=ParsedType.from_kwarg(
+                name="a",
+                annotation=int,
+            ),
             default_factory=None,
             unique_model_name=fqdn,
             dto_field=DTOField(),
             dto_for=None,
         ),
-        FieldDefinition(
-            name="b",
-            parsed_type=ParsedType(str),
-            default="b",
+        FieldDefinition.from_parsed_type(
+            parsed_type=ParsedType.from_kwarg(
+                name="b",
+                annotation=str,
+            ),
             default_factory=None,
             unique_model_name=fqdn,
             dto_field=DTOField(),
             dto_for=None,
         ),
-        FieldDefinition(
-            name="c",
-            parsed_type=ParsedType(list[int]),
-            default=Empty,
+        FieldDefinition.from_parsed_type(
+            parsed_type=ParsedType.from_kwarg(
+                name="c",
+                annotation=list[int],
+            ),
             default_factory=list,
             unique_model_name=fqdn,
             dto_field=DTOField(),
@@ -64,28 +66,31 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
 def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> None:
     fqdn = get_fully_qualified_class_name(Model)
     assert list(dto_type.generate_field_definitions(Model)) == [
-        FieldDefinition(
-            name="a",
-            parsed_type=ParsedType(int),
-            default=Empty,
+        FieldDefinition.from_parsed_type(
+            parsed_type=ParsedType.from_kwarg(
+                name="a",
+                annotation=int,
+            ),
             default_factory=None,
             unique_model_name=fqdn,
             dto_field=DTOField(),
             dto_for=None,
         ),
-        FieldDefinition(
-            name="b",
-            parsed_type=ParsedType(str),
-            default="b",
+        FieldDefinition.from_parsed_type(
+            parsed_type=ParsedType.from_kwarg(
+                name="b",
+                annotation=str,
+            ),
             default_factory=None,
             unique_model_name=fqdn,
             dto_field=DTOField(),
             dto_for=None,
         ),
-        FieldDefinition(
-            name="c",
-            parsed_type=ParsedType(List[int]),
-            default=Empty,
+        FieldDefinition.from_parsed_type(
+            parsed_type=ParsedType.from_kwarg(
+                name="c",
+                annotation=List[int],
+            ),
             default_factory=list,
             unique_model_name=fqdn,
             dto_field=DTOField(),
@@ -95,5 +100,5 @@ def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> 
 
 
 def test_dataclass_detect_nested(dto_type: type[DataclassDTO[Model]]) -> None:
-    assert dto_type.detect_nested_field(ParsedType(Model)) is True
-    assert dto_type.detect_nested_field(ParsedType(int)) is False
+    assert dto_type.detect_nested_field(ParsedType.from_annotation(Model)) is True
+    assert dto_type.detect_nested_field(ParsedType.from_annotation(int)) is False

@@ -33,6 +33,7 @@ class HandlerContext:
 
     def __init__(
         self,
+        *,
         dto_for: ForType,
         handler_id: str,
         parsed_type: ParsedType,

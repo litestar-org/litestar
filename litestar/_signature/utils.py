@@ -22,7 +22,8 @@ if TYPE_CHECKING:
     from typing_extensions import TypeAlias
 
     from litestar._signature.models.base import SignatureModel
-    from litestar.utils.signature import ParsedParameter, ParsedSignature
+    from litestar.typing import ParsedType
+    from litestar.utils.signature import ParsedSignature
 
 __all__ = (
     "create_signature_model",
@@ -89,8 +90,7 @@ def get_signature_model(value: Any) -> type[SignatureModel]:
 
 
 def _any_attrs_annotation(parsed_signature: ParsedSignature) -> bool:
-    for parameter in parsed_signature.parameters.values():
-        parsed_type = parameter.parsed_type
+    for parsed_type in parsed_signature.parameters.values():
         if any(is_attrs_class(t.annotation) for t in parsed_type.inner_types) or is_attrs_class(parsed_type.annotation):
             return True
     return False
@@ -117,14 +117,14 @@ def _get_signature_model_type(
     return PydanticSignatureModel
 
 
-def _should_skip_validation(parameter: ParsedParameter) -> bool:
+def _should_skip_validation(parsed_type: ParsedType) -> bool:
     """Whether the parameter should skip validation.
 
     Returns:
         A boolean indicating whether the parameter should be validated.
     """
-    return parameter.name in SKIP_VALIDATION_NAMES or (
-        isinstance(parameter.default, DependencyKwarg) and parameter.default.skip_validation
+    return parsed_type.name in SKIP_VALIDATION_NAMES or (
+        isinstance(parsed_type.kwarg_model, DependencyKwarg) and parsed_type.kwarg_model.skip_validation
     )
 
 
@@ -147,7 +147,7 @@ def _validate_dependencies(
 
     for parameter in parsed_signature.parameters.values():
         if isinstance(parameter.default, DependencyKwarg) and parameter.name not in dependency_name_set:
-            if not parameter.parsed_type.is_optional and parameter.default.default is Empty:
+            if not parameter.is_optional and parameter.default.default is Empty:
                 raise ImproperlyConfiguredException(
                     f"Explicit dependency '{parameter.name}' for '{fn_name}' has no default value, "
                     f"or provided dependency."

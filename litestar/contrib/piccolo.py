@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import Any, Generator, Generic, Optional, TypeVar
 
 from _decimal import Decimal
@@ -43,9 +44,6 @@ def _parse_piccolo_type(column: Column, extra: dict[str, Any]) -> ParsedType:
     elif isinstance(column, column_types.Text):
         column_type = str
         meta = Meta(extra={**extra, "format": "text-area"})
-    elif isinstance(column, column_types.Secret):
-        column_type = str
-        meta = Meta(extra={"secret": True})
     else:
         column_type = column.value_type
         meta = Meta(extra=extra)
@@ -53,25 +51,17 @@ def _parse_piccolo_type(column: Column, extra: dict[str, Any]) -> ParsedType:
     if not column._meta.required:
         column_type = Optional[column_type]
 
-    return ParsedType(Annotated[column_type, meta])
+    return ParsedType.from_annotation(Annotated[column_type, meta])
 
 
 def _create_column_extra(column: Column) -> dict[str, Any]:
     extra: dict[str, Any] = {}
 
     if column._meta.help_text:
-        extra["help_text"] = column._meta.help_text
+        extra["description"] = column._meta.help_text
 
     if column._meta.get_choices_dict():
-        extra["choices"] = column._meta.get_choices_dict()
-
-    if column._meta.db_column_name != column._meta.name:
-        extra["alias"] = column._meta.db_column_name
-
-    if isinstance(column, column_types.ForeignKey):
-        extra["foreign_key"] = True
-        extra["to"] = column._foreign_key_meta.resolved_references._meta.tablename
-        extra["target_column"] = column._foreign_key_meta.resolved_target_column._meta.name
+        extra["enum"] = column._meta.get_choices_dict()
 
     return extra
 
@@ -82,15 +72,16 @@ class PiccoloDTO(AbstractDTOFactory[T], Generic[T]):
         unique_model_name = get_fully_qualified_class_name(model_type)
 
         for column in model_type._meta.columns:
-            yield FieldDefinition(
+            yield replace(
+                FieldDefinition.from_parsed_type(
+                    parsed_type=_parse_piccolo_type(column, _create_column_extra(column)),
+                    dto_field=DTOField(mark=Mark.READ_ONLY if column._meta.primary_key else None),
+                    unique_model_name=unique_model_name,
+                    default_factory=Empty,
+                    dto_for=None,
+                ),
                 default=Empty if column._meta.required else None,
-                default_factory=Empty,
-                # TODO: is there a better way of handling this?
-                dto_field=DTOField(mark=Mark.READ_ONLY if column._meta.primary_key else None),
-                dto_for=None,
                 name=column._meta.name,
-                parsed_type=_parse_piccolo_type(column, _create_column_extra(column)),
-                unique_model_name=unique_model_name,
             )
 
     @classmethod

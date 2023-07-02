@@ -7,7 +7,6 @@ import secrets
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Final, Generic, TypeVar, cast
 
-from litestar._signature.field import SignatureField
 from litestar.dto.factory import DTOData, Mark
 from litestar.typing import ParsedType
 from litestar.utils.helpers import get_fully_qualified_class_name
@@ -168,7 +167,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
 
             try:
                 transfer_type = self._create_transfer_type(
-                    field_definition.parsed_type,
+                    field_definition,
                     exclude,
                     field_definition.name,
                     field_definition.unique_name(),
@@ -331,7 +330,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
 
     def create_openapi_schema(self, schema_creator: SchemaCreator) -> Reference | Schema:
         """Create an openAPI schema for the given DTO."""
-        return schema_creator.for_field(SignatureField.create(self.annotation), dto_for=self.context.dto_for)
+        return schema_creator.for_field(ParsedType.from_annotation(self.annotation), dto_for=self.context.dto_for)
 
     def _create_transfer_type(
         self, parsed_type: ParsedType, exclude: AbstractSet[str], field_name: str, unique_name: str, nested_depth: int
@@ -370,7 +369,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
     ) -> CollectionType:
         inner_types = parsed_type.inner_types
         inner_type = self._create_transfer_type(
-            parsed_type=inner_types[0] if inner_types else ParsedType(Any),
+            parsed_type=inner_types[0] if inner_types else ParsedType.from_annotation(Any),
             exclude=exclude,
             field_name="0",
             unique_name=_enumerate_name(unique_name, 0),
@@ -385,14 +384,14 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
     ) -> MappingType:
         inner_types = parsed_type.inner_types
         key_type = self._create_transfer_type(
-            parsed_type=inner_types[0] if inner_types else ParsedType(Any),
+            parsed_type=inner_types[0] if inner_types else ParsedType.from_annotation(Any),
             exclude=exclude,
             field_name="0",
             unique_name=_enumerate_name(unique_name, 0),
             nested_depth=nested_depth,
         )
         value_type = self._create_transfer_type(
-            parsed_type=inner_types[1] if inner_types else ParsedType(Any),
+            parsed_type=inner_types[1] if inner_types else ParsedType.from_annotation(Any),
             exclude=exclude,
             field_name="1",
             unique_name=_enumerate_name(unique_name, 1),

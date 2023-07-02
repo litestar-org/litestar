@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from litestar.utils.signature import ParsedParameter
+from litestar.typing import ParsedType
 
 if TYPE_CHECKING:
     from typing import Any, Callable
@@ -62,7 +62,7 @@ def _set_nested_dict_value(d: dict[str, Any], keys: list[str], value: Any) -> No
 
 
 @dataclass(frozen=True)
-class FieldDefinition(ParsedParameter):
+class FieldDefinition(ParsedType):
     """A model field representation for purposes of generating a DTO backend model type."""
 
     __slots__ = (
@@ -94,3 +94,44 @@ class FieldDefinition(ParsedParameter):
 
     def unique_name(self) -> str:
         return f"{self.unique_model_name}.{self.name}"
+
+    @classmethod
+    def from_parsed_type(
+        cls,
+        parsed_type: ParsedType,
+        unique_model_name: str,
+        default_factory: Callable[[], Any] | None,
+        dto_field: DTOField,
+        dto_for: ForType | None,
+    ) -> FieldDefinition:
+        """Create a :class:`FieldDefinition` from a :class:`ParsedType`.
+
+        Args:
+            parsed_type: A :class:`ParsedType` to create a :class:`FieldDefinition` from.
+            unique_model_name: The unique name of the model.
+            default_factory: Default factory function, if any.
+            dto_field: DTOField instance.
+            dto_for: DTO type.
+
+        Returns:
+            A :class:`FieldDefinition` instance.
+        """
+        return FieldDefinition(
+            annotation=parsed_type.annotation,
+            args=parsed_type.args,
+            default=parsed_type.default,
+            extra=parsed_type.extra,
+            inner_types=parsed_type.inner_types,
+            instantiable_origin=parsed_type.instantiable_origin,
+            kwarg_model=parsed_type.kwarg_model,
+            metadata=parsed_type.metadata,
+            name=parsed_type.name,
+            origin=parsed_type.origin,
+            raw=parsed_type.raw,
+            safe_generic_origin=parsed_type.safe_generic_origin,
+            type_wrappers=parsed_type.type_wrappers,
+            unique_model_name=unique_model_name,
+            default_factory=default_factory,
+            dto_field=dto_field,
+            dto_for=dto_for,
+        )

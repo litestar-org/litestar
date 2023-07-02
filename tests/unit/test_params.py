@@ -26,7 +26,7 @@ def test_parsing_of_parameter_as_annotated(backend: Any) -> None:
 
 
 @pytest.mark.parametrize("backend", ("pydantic", "attrs"))
-def test_parsing_of_parameter_as_default_value(backend: Any) -> None:
+def test_parsing_of_parameter_as_default(backend: Any) -> None:
     @get(path="/")
     def handler(param: str = Parameter(min_length=1)) -> str:
         return param
@@ -54,7 +54,7 @@ def test_parsing_of_body_as_annotated(backend: Any) -> None:
 
 
 @pytest.mark.parametrize("backend", ("pydantic", "attrs"))
-def test_parsing_of_body_as_default_value(backend: Any) -> None:
+def test_parsing_of_body_as_default(backend: Any) -> None:
     @post(path="/")
     def handler(data: List[str] = Body(min_items=1)) -> List[str]:
         return data
@@ -79,7 +79,7 @@ def test_parsing_of_dependency_as_annotated(backend: Any) -> None:
 
 
 @pytest.mark.parametrize("backend", ("pydantic", "attrs"))
-def test_parsing_of_dependency_as_default_value(backend: Any) -> None:
+def test_parsing_of_dependency_as_default(backend: Any) -> None:
     @get(path="/", dependencies={"dep": Provide(lambda: None, sync_to_thread=False)})
     def handler(dep: int = Dependency(skip_validation=True)) -> int:
         return dep
@@ -173,7 +173,7 @@ def test_dependency_skip_validation() -> None:
         assert skipped_resp.json() == {"value": "str"}
 
 
-def test_dependency_skip_validation_with_default_value() -> None:
+def test_dependency_skip_validation_with_default() -> None:
     @get("/skipped")
     def skipped(value: int = Dependency(default=1, skip_validation=True)) -> Dict[str, int]:
         return {"value": value}

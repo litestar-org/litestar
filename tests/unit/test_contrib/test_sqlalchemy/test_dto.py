@@ -76,10 +76,18 @@ async def get_model_from_dto(
     raw: bytes,
 ) -> Any:
     dto_type.on_registration(
-        HandlerContext(handler_id=connection_context.handler_id, dto_for="data", parsed_type=ParsedType(annotation))
+        HandlerContext(
+            handler_id=connection_context.handler_id,
+            dto_for="data",
+            parsed_type=ParsedType.from_annotation(annotation),
+        )
     )
     dto_type.on_registration(
-        HandlerContext(handler_id=connection_context.handler_id, dto_for="return", parsed_type=ParsedType(annotation))
+        HandlerContext(
+            handler_id=connection_context.handler_id,
+            dto_for="return",
+            parsed_type=ParsedType.from_annotation(annotation),
+        )
     )
     return dto_type(connection_context).bytes_to_data_type(raw)
 

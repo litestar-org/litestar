@@ -10,8 +10,8 @@ from litestar.params import ParameterKwarg
 if TYPE_CHECKING:
     from typing_extensions import NotRequired
 
-    from litestar._signature.field import SignatureField
     from litestar.connection import ASGIConnection
+    from litestar.typing import ParsedType
     from litestar.utils.signature import ParsedSignature
 
 __all__ = ("SignatureModel",)
@@ -31,7 +31,7 @@ class SignatureModel(ABC):
 
     dependency_name_set: ClassVar[set[str]]
     return_annotation: ClassVar[Any]
-    fields: ClassVar[dict[str, SignatureField]]
+    fields: ClassVar[dict[str, ParsedType]]
 
     @classmethod
     def _create_exception(cls, connection: ASGIConnection, messages: list[ErrorMessage]) -> Exception:
@@ -126,7 +126,7 @@ class SignatureModel(ABC):
 
     @classmethod
     @abstractmethod
-    def populate_signature_fields(cls) -> None:
+    def populate_parsed_types(cls) -> None:
         """Populate the class signature fields.
 
         Returns:

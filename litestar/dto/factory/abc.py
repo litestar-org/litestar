@@ -59,7 +59,7 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
         self.connection_context = connection_context
 
     def __class_getitem__(cls, annotation: Any) -> type[Self]:
-        parsed_type = ParsedType(annotation)
+        parsed_type = ParsedType.from_annotation(annotation)
 
         if (parsed_type.is_optional and len(parsed_type.args) > 2) or (
             parsed_type.is_union and not parsed_type.is_optional

@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING, Any
 from pydantic import BaseConfig, BaseModel, ValidationError, create_model
 from pydantic.fields import FieldInfo, ModelField
 
-from litestar._signature.field import SignatureField
 from litestar._signature.models.base import ErrorMessage, SignatureModel
 from litestar.constants import UNDEFINED_SENTINELS
-from litestar.params import BodyKwarg, DependencyKwarg, ParameterKwarg
+from litestar.params import DependencyKwarg, KwargDefinition
 from litestar.types import Empty
+from litestar.typing import ParsedType
 from litestar.utils.predicates import is_pydantic_constrained_field
 
 if TYPE_CHECKING:
@@ -59,52 +59,48 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         return {key: self.__getattribute__(key) for key in self.__fields__}
 
     @classmethod
-    def signature_field_from_model_field(cls, model_field: ModelField) -> SignatureField:
-        """Create a SignatureField instance from a pydantic ModelField.
+    def parsed_type_from_model_field(cls, model_field: ModelField) -> ParsedType:
+        """Create a ParsedType instance from a pydantic ModelField.
 
         Args:
             model_field: A pydantic ModelField instance.
 
         Returns:
-            A SignatureField
+            A ParsedType
         """
-        children = (
-            tuple(cls.signature_field_from_model_field(sub_field) for sub_field in model_field.sub_fields)
+        inner_types = (
+            tuple(cls.parsed_type_from_model_field(sub_field) for sub_field in model_field.sub_fields)
             if model_field.sub_fields
             else None
         )
 
-        default_value = (
-            model_field.field_info.default if model_field.field_info.default not in UNDEFINED_SENTINELS else Empty
-        )
+        default = model_field.field_info.default if model_field.field_info.default not in UNDEFINED_SENTINELS else Empty
 
-        kwarg_model: ParameterKwarg | DependencyKwarg | BodyKwarg | None = model_field.field_info.extra.pop(
-            "kwargs_model", None
-        )
+        kwarg_model: KwargDefinition | DependencyKwarg | None = model_field.field_info.extra.pop("kwargs_model", None)
         if kwarg_model:
-            default_value = kwarg_model.default
+            default = kwarg_model.default
 
-        elif isinstance(default_value, (ParameterKwarg, DependencyKwarg, BodyKwarg)):
-            kwarg_model = default_value
-            default_value = default_value.default
+        elif isinstance(default, (KwargDefinition, DependencyKwarg)):
+            kwarg_model = default
+            default = default.default
 
-        return SignatureField.create(
-            children=children,
-            default_value=default_value,
+        return ParsedType.from_kwarg(
+            inner_types=inner_types,
+            default=default,
             extra=model_field.field_info.extra or {},
-            field_type=model_field.annotation if model_field.annotation is not Empty else Any,
+            annotation=model_field.annotation,
             kwarg_model=kwarg_model,
             name=model_field.name,
         )
 
     @classmethod
-    def populate_signature_fields(cls) -> None:
+    def populate_parsed_types(cls) -> None:
         """Populate the class signature fields.
 
         Returns:
             None.
         """
-        cls.fields = {k: cls.signature_field_from_model_field(v) for k, v in cls.__fields__.items()}
+        cls.fields = {k: cls.parsed_type_from_model_field(v) for k, v in cls.__fields__.items()}
 
     @classmethod
     def create(
@@ -131,26 +127,26 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         field_definitions: dict[str, tuple[Any, Any]] = {}
 
         for parameter in parsed_signature.parameters.values():
-            field_type = type_overrides.get(parameter.name, parameter.parsed_type.annotation)
+            field_type = type_overrides.get(parameter.name, parameter.annotation)
 
-            if kwargs_container := parameter.kwarg_container:
-                if isinstance(kwargs_container, DependencyKwarg):
+            if kwarg_model := parameter.kwarg_model:
+                if isinstance(kwarg_model, DependencyKwarg):
                     field_info = FieldInfo(
-                        default=kwargs_container.default if kwargs_container.default is not Empty else None,
-                        kwargs_model=kwargs_container,
+                        default=kwarg_model.default if kwarg_model.default is not Empty else None,
+                        kwargs_model=kwarg_model,
                         parsed_parameter=parameter,
                     )
-                    if kwargs_container.skip_validation:
+                    if kwarg_model.skip_validation:
                         field_type = Any
                 else:
-                    kwargs: dict[str, Any] = {k: v for k, v in asdict(kwargs_container).items() if v is not Empty}
+                    kwargs: dict[str, Any] = {k: v for k, v in asdict(kwarg_model).items() if v is not Empty}
 
                     if "pattern" in kwargs:
                         kwargs["regex"] = kwargs["pattern"]
 
                     field_info = FieldInfo(
                         **kwargs,
-                        kwargs_model=kwargs_container,
+                        kwargs_model=kwarg_model,
                         parsed_parameter=parameter,
                     )
             else:
@@ -160,7 +156,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
                     field_type = parameter.default
                 elif parameter.has_default:
                     field_info.default = parameter.default
-                elif parameter.parsed_type.is_optional:
+                elif parameter.is_optional:
                     field_info.default = None
 
             field_definitions[parameter.name] = (field_type, field_info)
@@ -173,7 +169,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         )
         model.return_annotation = parsed_signature.return_type.annotation
         model.dependency_name_set = dependency_names
-        model.populate_signature_fields()
+        model.populate_parsed_types()
         return model
 
     @classmethod

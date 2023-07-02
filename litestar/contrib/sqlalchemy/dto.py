@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from functools import singledispatchmethod
-from typing import TYPE_CHECKING, Generic, Optional, TypeVar
+from typing import TYPE_CHECKING, Collection, Generic, Optional, TypeVar
 
 from sqlalchemy import Column, inspect, orm, sql
 from sqlalchemy.ext.associationproxy import AssociationProxy, AssociationProxyExtensionType
@@ -28,15 +29,15 @@ from litestar.utils.helpers import get_fully_qualified_class_name
 from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Collection, Generator
+    from typing import Any, ClassVar, Generator
 
     from typing_extensions import TypeAlias
 
 __all__ = ("SQLAlchemyDTO",)
 
 T = TypeVar("T", bound="DeclarativeBase | Collection[DeclarativeBase]")
-ElementType: TypeAlias = "Column[Any] | RelationshipProperty[Any]"
 
+ElementType: TypeAlias = "Column[Any] | RelationshipProperty[Any]"
 SQLA_NS = {**vars(orm), **vars(sql)}
 
 
@@ -93,13 +94,15 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
             parsed_type = parse_type_from_element(elem)
 
         return [
-            FieldDefinition(
-                default=default,
+            FieldDefinition.from_parsed_type(
+                parsed_type=replace(
+                    parsed_type,
+                    name=key,
+                    default=default,
+                ),
                 default_factory=default_factory,
                 dto_field=elem.info.get(DTO_FIELD_META_KEY, DTOField()),
                 dto_for=None,
-                name=key,
-                parsed_type=parsed_type,
                 unique_model_name=model_name,
             )
         ]
@@ -123,10 +126,12 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
             raise NotImplementedError(f"Expected 'AssociationProxy' origin, got: '{parsed_type.origin}'")
 
         return [
-            FieldDefinition(
-                name=key,
-                default=Empty,
-                parsed_type=parsed_type,
+            FieldDefinition.from_parsed_type(
+                parsed_type=replace(
+                    parsed_type,
+                    name=key,
+                    default=Empty,
+                ),
                 default_factory=None,
                 dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.READ_ONLY)),
                 unique_model_name=model_name,
@@ -150,10 +155,12 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
         getter_sig = ParsedSignature.from_fn(orm_descriptor.fget, {})
 
         field_defs = [
-            FieldDefinition(
-                name=orm_descriptor.__name__,
-                default=Empty,
-                parsed_type=getter_sig.return_type,
+            FieldDefinition.from_parsed_type(
+                parsed_type=replace(
+                    getter_sig.return_type,
+                    name=orm_descriptor.__name__,
+                    default=Empty,
+                ),
                 default_factory=None,
                 dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.READ_ONLY)),
                 unique_model_name=model_name,
@@ -164,10 +171,12 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
         if orm_descriptor.fset is not None:
             setter_sig = ParsedSignature.from_fn(orm_descriptor.fset, {})
             field_defs.append(
-                FieldDefinition(
-                    name=orm_descriptor.__name__,
-                    default=Empty,
-                    parsed_type=next(iter(setter_sig.parameters.values())).parsed_type,
+                FieldDefinition.from_parsed_type(
+                    parsed_type=replace(
+                        next(iter(setter_sig.parameters.values())),
+                        name=orm_descriptor.__name__,
+                        default=Empty,
+                    ),
                     default_factory=None,
                     dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.WRITE_ONLY)),
                     unique_model_name=model_name,
@@ -249,18 +258,18 @@ def parse_type_from_element(elem: ElementType) -> ParsedType:
 
     if isinstance(elem, Column):
         if elem.nullable:
-            return ParsedType(Optional[elem.type.python_type])
-        return ParsedType(elem.type.python_type)
+            return ParsedType.from_annotation(Optional[elem.type.python_type])
+        return ParsedType.from_annotation(elem.type.python_type)
 
     if isinstance(elem, RelationshipProperty):
         if elem.direction in (RelationshipDirection.ONETOMANY, RelationshipDirection.MANYTOMANY):
-            collection_type = ParsedType(elem.collection_class or list)
-            return ParsedType(collection_type.safe_generic_origin[elem.mapper.class_])
+            collection_type = ParsedType.from_annotation(elem.collection_class or list)
+            return ParsedType.from_annotation(collection_type.safe_generic_origin[elem.mapper.class_])
 
         if detect_nullable_relationship(elem):
-            return ParsedType(Optional[elem.mapper.class_])
+            return ParsedType.from_annotation(Optional[elem.mapper.class_])
 
-        return ParsedType(elem.mapper.class_)
+        return ParsedType.from_annotation(elem.mapper.class_)
 
     raise ImproperlyConfiguredException(
         f"Unable to parse type from element '{elem}'. Consider adding a type hint.",
