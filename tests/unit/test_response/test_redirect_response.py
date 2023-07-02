@@ -81,7 +81,7 @@ def test_redirect_response_html_media_type() -> None:
 
 def test_redirect_response_media_type_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        ASGIRedirectResponse(path="/", media_type="application/json")
+        ASGIRedirectResponse(path="/", media_type="application/mspgpack")
 
 
 @pytest.mark.parametrize(
