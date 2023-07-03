@@ -208,7 +208,7 @@ class ParsedType:
 
     @classmethod
     def _extract_metada(
-        cls, annotation: Any, name: str | None, default: Any, instance: ParsedType, extra: dict[str, Any] | None
+        cls, annotation: Any, name: str | None, default: Any, metadata: tuple[Any, ...], extra: dict[str, Any] | None
     ) -> tuple[KwargDefinition | None, dict[str, Any]]:
         from litestar.dto.factory.abc import AbstractDTOFactory
 
@@ -225,10 +225,8 @@ class ParsedType:
         if any(isinstance(arg, KwargDefinition) for arg in get_args(annotation)):
             return [arg for arg in get_args(annotation) if isinstance(arg, KwargDefinition)][0], extra or {}
 
-        if instance.is_annotated:
-            return _create_metadata_from_type(
-                metadata=instance.metadata, model=model, annotation=annotation, extra=extra
-            )
+        if metadata:
+            return _create_metadata_from_type(metadata=metadata, model=model, annotation=annotation, extra=extra)
 
         return None, {}
 
@@ -415,6 +413,14 @@ class ParsedType:
             elif any(isinstance(v, (KwargDefinition, DependencyKwarg)) for v in metadata):
                 kwargs["kwarg_model"] = [v for v in metadata if isinstance(v, (KwargDefinition, DependencyKwarg))][0]
                 metadata = tuple([v for v in metadata if not isinstance(v, (KwargDefinition, DependencyKwarg))])
+            else:
+                kwargs["kwarg_model"], kwargs["extra"] = cls._extract_metada(
+                    annotation=annotation,
+                    name=kwargs.get("name", ""),
+                    default=kwargs.get("default", Empty),
+                    metadata=metadata,
+                    extra=kwargs.get("extra", {}),
+                )
 
         kwargs.setdefault("annotation", unwrapped)
         kwargs.setdefault("args", args)
@@ -430,13 +436,16 @@ class ParsedType:
         kwargs.setdefault("safe_generic_origin", get_safe_generic_origin(origin, unwrapped))
         kwargs.setdefault("type_wrappers", wrappers)
 
-        return ParsedType(**kwargs)
+        instance = ParsedType(**kwargs)
+        if not instance.has_default and instance.kwarg_model:
+            return replace(instance, default=instance.kwarg_model)
+        return instance
 
     @classmethod
     def from_kwarg(
         cls,
         annotation: Any,
-        name: str = "",
+        name: str,
         default: Any = Empty,
         inner_types: tuple[ParsedType, ...] | None = None,
         kwarg_model: KwargDefinition | DependencyKwarg | None = None,
@@ -455,22 +464,21 @@ class ParsedType:
         Returns:
             ParsedType instance.
         """
-        instance = cls.from_annotation(annotation)
 
-        if not kwarg_model and isinstance(default, (KwargDefinition, DependencyKwarg)):
-            kwarg_model = default
-            default = kwarg_model.default
-
-        if not kwarg_model:
-            kwarg_model, extra = cls._extract_metada(
-                annotation=annotation, name=name, default=default, instance=instance, extra=extra
-            )
-
-        inner_types = inner_types or instance.inner_types
-        if kwarg_model and default is Empty:
-            default = kwarg_model.default
-
-        return replace(instance, name=name, default=default, inner_types=inner_types, extra=extra)
+        return cls.from_annotation(
+            annotation,
+            name=name,
+            **{
+                k: v
+                for k, v in {
+                    "inner_types": inner_types,
+                    "kwarg_model": kwarg_model,
+                    "extra": extra,
+                    "default": default,
+                }.items()
+                if v
+            },
+        )
 
     @classmethod
     def from_parameter(cls, parameter: Parameter, fn_type_hints: dict[str, Any]) -> ParsedType:

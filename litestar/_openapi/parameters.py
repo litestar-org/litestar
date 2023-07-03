@@ -82,7 +82,7 @@ def create_parameter(
         param_in = ParamType.PATH
         is_required = True
         path_parameter = [p for p in path_parameters if parameter_name in p.name][0]
-        result = schema_creator.for_field(replace(parsed_type, annotation=path_parameter.type))
+        result = schema_creator.for_parsed_type(replace(parsed_type, annotation=path_parameter.type))
     elif kwargs_model and kwargs_model.header:
         parameter_name = kwargs_model.header
         param_in = ParamType.HEADER
@@ -97,7 +97,7 @@ def create_parameter(
         parameter_name = kwargs_model.query if kwargs_model and kwargs_model.query else parameter_name
 
     if not result:
-        result = schema_creator.for_field(parsed_type)
+        result = schema_creator.for_parsed_type(parsed_type)
 
     schema = result if isinstance(result, Schema) else schema_creator.schemas[result.value]
 

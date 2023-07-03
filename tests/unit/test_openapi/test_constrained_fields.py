@@ -24,7 +24,7 @@ from .utils import (
 
 @pytest.mark.parametrize("annotation", constrained_collection)
 def test_create_collection_constrained_field_schema(annotation: Any) -> None:
-    schema = SchemaCreator().for_collection_constrained_field(ParsedType.from_kwarg(annotation))
+    schema = SchemaCreator().for_collection_constrained_field(ParsedType.from_annotation(annotation))
     assert schema.type == OpenAPIType.ARRAY
     assert schema.items.type == OpenAPIType.INTEGER  # type: ignore[union-attr]
     assert schema.min_items == annotation.min_items
@@ -68,7 +68,7 @@ def test_create_string_constrained_field_schema(annotation: Any) -> None:
 
 @pytest.mark.parametrize("annotation", constrained_numbers)
 def test_create_numerical_constrained_field_schema(annotation: Any) -> None:
-    parsed_type = ParsedType.from_kwarg(annotation)
+    parsed_type = ParsedType.from_annotation(annotation)
 
     assert isinstance(parsed_type.kwarg_model, KwargDefinition)
     schema = create_numerical_constrained_field_schema(parsed_type.annotation, parsed_type.kwarg_model)
@@ -82,7 +82,7 @@ def test_create_numerical_constrained_field_schema(annotation: Any) -> None:
 
 @pytest.mark.parametrize("annotation", constrained_dates)
 def test_create_date_constrained_field_schema(annotation: Any) -> None:
-    parsed_type = ParsedType.from_kwarg(annotation)
+    parsed_type = ParsedType.from_annotation(annotation)
 
     assert isinstance(parsed_type.kwarg_model, KwargDefinition)
     schema = create_date_constrained_field_schema(parsed_type.annotation, parsed_type.kwarg_model)
@@ -98,5 +98,5 @@ def test_create_date_constrained_field_schema(annotation: Any) -> None:
     "annotation", [*constrained_numbers, *constrained_collection, *constrained_string, *constrained_dates]
 )
 def test_create_constrained_field_schema(annotation: Any) -> None:
-    schema = SchemaCreator().for_constrained_field(ParsedType.from_kwarg(annotation))
+    schema = SchemaCreator().for_constrained_field(ParsedType.from_annotation(annotation))
     assert schema
