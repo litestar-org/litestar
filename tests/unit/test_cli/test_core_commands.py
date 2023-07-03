@@ -244,7 +244,7 @@ def test_run_command_pdb(
     app_path = f"{path.stem}:create_app"
 
     with pytest.warns(LitestarWarning):
-        result = runner.invoke(cli_command, ["--app", app_path, "run", "--use_pdb"])
+        result = runner.invoke(cli_command, ["--app", app_path, "run", "--use-pdb"])
 
     assert result.exit_code == 0
     assert os.getenv("LITESTAR_PDB") == "1"
