@@ -96,7 +96,7 @@ def test_request_body_generation_with_dto() -> None:
     schema_creator = SchemaCreator(generate_examples=False)
     create_request_body(
         route_handler=handler,
-        field=ParsedType.from_kwarg(Dict[str, Any]),
+        field=ParsedType.from_annotation(Dict[str, Any]),
         schema_creator=schema_creator,
     )
 

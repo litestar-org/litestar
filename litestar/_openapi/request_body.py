@@ -27,6 +27,6 @@ def create_request_body(
     if dto := route_handler.resolve_dto():
         schema = dto.create_openapi_schema("data", str(route_handler), schema_creator)
     else:
-        schema = schema_creator.for_field(field)
+        schema = schema_creator.for_parsed_type(field)
 
     return RequestBody(required=True, content={media_type: OpenAPIMediaType(schema=schema)})
