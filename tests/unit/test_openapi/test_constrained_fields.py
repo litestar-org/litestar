@@ -33,7 +33,7 @@ def test_create_collection_constrained_field_schema(annotation: Any) -> None:
 
 def test_create_collection_constrained_field_schema_sub_fields() -> None:
     for pydantic_fn in (conlist, conset):
-        parsed_type = ParsedType.from_kwarg(pydantic_fn(Union[str, int], min_items=1, max_items=10))  # type: ignore
+        parsed_type = ParsedType.from_annotation(pydantic_fn(Union[str, int], min_items=1, max_items=10))  # type: ignore
         schema = SchemaCreator().for_collection_constrained_field(parsed_type)
         assert schema.type == OpenAPIType.ARRAY
         expected = {
@@ -53,8 +53,8 @@ def test_create_collection_constrained_field_schema_sub_fields() -> None:
 def test_create_string_constrained_field_schema(annotation: Any) -> None:
     parsed_type = ParsedType.from_annotation(annotation)
 
-    assert isinstance(parsed_type.kwarg_model, KwargDefinition)
-    schema = create_string_constrained_field_schema(parsed_type.annotation, parsed_type.kwarg_model)
+    assert isinstance(parsed_type.kwarg_definition, KwargDefinition)
+    schema = create_string_constrained_field_schema(parsed_type.annotation, parsed_type.kwarg_definition)
     assert schema.type == OpenAPIType.STRING
     assert schema.min_length == annotation.min_length
     assert schema.max_length == annotation.max_length
@@ -70,8 +70,8 @@ def test_create_string_constrained_field_schema(annotation: Any) -> None:
 def test_create_numerical_constrained_field_schema(annotation: Any) -> None:
     parsed_type = ParsedType.from_annotation(annotation)
 
-    assert isinstance(parsed_type.kwarg_model, KwargDefinition)
-    schema = create_numerical_constrained_field_schema(parsed_type.annotation, parsed_type.kwarg_model)
+    assert isinstance(parsed_type.kwarg_definition, KwargDefinition)
+    schema = create_numerical_constrained_field_schema(parsed_type.annotation, parsed_type.kwarg_definition)
     assert schema.type == OpenAPIType.INTEGER if issubclass(annotation, int) else OpenAPIType.NUMBER
     assert schema.exclusive_minimum == annotation.gt
     assert schema.minimum == annotation.ge
@@ -84,8 +84,8 @@ def test_create_numerical_constrained_field_schema(annotation: Any) -> None:
 def test_create_date_constrained_field_schema(annotation: Any) -> None:
     parsed_type = ParsedType.from_annotation(annotation)
 
-    assert isinstance(parsed_type.kwarg_model, KwargDefinition)
-    schema = create_date_constrained_field_schema(parsed_type.annotation, parsed_type.kwarg_model)
+    assert isinstance(parsed_type.kwarg_definition, KwargDefinition)
+    schema = create_date_constrained_field_schema(parsed_type.annotation, parsed_type.kwarg_definition)
     assert schema.type == OpenAPIType.STRING
     assert schema.format == OpenAPIFormat.DATE
     assert (date.fromtimestamp(schema.exclusive_minimum) if schema.exclusive_minimum else None) == annotation.gt

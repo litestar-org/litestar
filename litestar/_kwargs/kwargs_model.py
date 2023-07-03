@@ -232,7 +232,7 @@ class KwargsModel:
         ):
             layered_parameter = layered_parameters[field_name]
             field = parsed_type if parsed_type.is_parameter_field else layered_parameter
-            default = layered_parameter.default if layered_parameter.has_default else parsed_type.default
+            default = parsed_type.default if parsed_type.has_default else layered_parameter.default
 
             param_definitions.add(
                 create_parameter_definition(
@@ -241,7 +241,7 @@ class KwargsModel:
                         default=default,
                         inner_types=field.inner_types,
                         annotation=field.annotation,
-                        kwarg_model=field.kwarg_model,
+                        kwarg_definition=field.kwarg_definition,
                         extra=field.extra,
                     ),
                     field_name=field_name,
@@ -308,8 +308,8 @@ class KwargsModel:
 
         media_type: RequestEncodingType | str | None = None
         if data_parsed_type:
-            if isinstance(data_parsed_type.kwarg_model, BodyKwarg):
-                media_type = data_parsed_type.kwarg_model.media_type
+            if isinstance(data_parsed_type.kwarg_definition, BodyKwarg):
+                media_type = data_parsed_type.kwarg_definition.media_type
 
             if media_type in (RequestEncodingType.MULTI_PART, RequestEncodingType.URL_ENCODED):
                 expected_form_data = (media_type, data_parsed_type, data_dto)
@@ -448,8 +448,8 @@ class KwargsModel:
             *(
                 k
                 for k, f in parsed_types.items()
-                if isinstance(f.kwarg_model, ParameterKwarg)
-                and (f.kwarg_model.header or f.kwarg_model.query or f.kwarg_model.cookie)
+                if isinstance(f.kwarg_definition, ParameterKwarg)
+                and (f.kwarg_definition.header or f.kwarg_definition.query or f.kwarg_definition.cookie)
             ),
             *list(layered_parameters.keys()),
         }

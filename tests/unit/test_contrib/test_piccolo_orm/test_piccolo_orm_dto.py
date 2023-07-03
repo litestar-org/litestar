@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import AsyncGenerator, Callable, get_args
+from typing import AsyncGenerator, Callable
 
 import pytest
 from _decimal import Decimal
@@ -9,6 +9,7 @@ from piccolo.conf.apps import Finder
 from piccolo.table import Table, create_db_tables, drop_db_tables
 from piccolo.testing.model_builder import ModelBuilder
 from polyfactory.utils.predicates import is_annotated
+from typing_extensions import get_args
 
 from litestar import Litestar
 from litestar.contrib.piccolo import PiccoloDTO

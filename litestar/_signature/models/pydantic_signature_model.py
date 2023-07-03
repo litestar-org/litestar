@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseConfig, BaseModel, ValidationError, create_model
@@ -8,7 +8,7 @@ from pydantic.fields import FieldInfo, ModelField
 
 from litestar._signature.models.base import ErrorMessage, SignatureModel
 from litestar.constants import UNDEFINED_SENTINELS
-from litestar.params import DependencyKwarg, KwargDefinition
+from litestar.params import DependencyKwarg
 from litestar.types import Empty
 from litestar.typing import ParsedType
 from litestar.utils.predicates import is_pydantic_constrained_field
@@ -76,20 +76,11 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
 
         default = model_field.field_info.default if model_field.field_info.default not in UNDEFINED_SENTINELS else Empty
 
-        kwarg_model: KwargDefinition | DependencyKwarg | None = model_field.field_info.extra.pop("kwargs_model", None)
-        if kwarg_model:
-            default = kwarg_model.default
-
-        elif isinstance(default, (KwargDefinition, DependencyKwarg)):
-            kwarg_model = default
-            default = default.default
-
         return ParsedType.from_kwarg(
             inner_types=inner_types,
             default=default,
             extra=model_field.field_info.extra or {},
             annotation=model_field.annotation,
-            kwarg_model=kwarg_model,
             name=model_field.name,
         )
 
@@ -100,7 +91,15 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         Returns:
             None.
         """
-        cls.fields = {k: cls.parsed_type_from_model_field(v) for k, v in cls.__fields__.items()}
+        cls.fields = {}
+
+        for field_name, field in cls.__fields__.items():
+            parsed_type = field.field_info.extra.pop("parsed_type")
+            default = field.field_info.default if field.field_info.default not in UNDEFINED_SENTINELS else Empty
+            if parsed_type.is_optional and default is Empty:
+                default = None
+
+            cls.fields[field_name] = replace(parsed_type, default=default)
 
     @classmethod
     def create(
@@ -129,28 +128,28 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         for parameter in parsed_signature.parameters.values():
             field_type = type_overrides.get(parameter.name, parameter.annotation)
 
-            if kwarg_model := parameter.kwarg_model:
-                if isinstance(kwarg_model, DependencyKwarg):
+            if kwarg_definition := parameter.kwarg_definition:
+                if isinstance(kwarg_definition, DependencyKwarg):
                     field_info = FieldInfo(
-                        default=kwarg_model.default if kwarg_model.default is not Empty else None,
-                        kwargs_model=kwarg_model,
-                        parsed_parameter=parameter,
+                        default=kwarg_definition.default if kwarg_definition.default is not Empty else None,
+                        kwarg_definition=kwarg_definition,
+                        parsed_type=parameter,
                     )
-                    if kwarg_model.skip_validation:
+                    if kwarg_definition.skip_validation:
                         field_type = Any
                 else:
-                    kwargs: dict[str, Any] = {k: v for k, v in asdict(kwarg_model).items() if v is not Empty}
+                    kwargs: dict[str, Any] = {k: v for k, v in asdict(kwarg_definition).items() if v is not Empty}
 
                     if "pattern" in kwargs:
                         kwargs["regex"] = kwargs["pattern"]
 
                     field_info = FieldInfo(
                         **kwargs,
-                        kwargs_model=kwarg_model,
-                        parsed_parameter=parameter,
+                        kwarg_definition=kwarg_definition,
+                        parsed_type=parameter,
                     )
             else:
-                field_info = FieldInfo(default=..., parsed_parameter=parameter)
+                field_info = FieldInfo(default=..., parsed_type=parameter)
 
                 if is_pydantic_constrained_field(parameter.default):
                     field_type = parameter.default

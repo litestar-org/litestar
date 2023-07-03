@@ -90,10 +90,10 @@ def get_signature_model(value: Any) -> type[SignatureModel]:
 
 
 def _any_attrs_annotation(parsed_signature: ParsedSignature) -> bool:
-    for parsed_type in parsed_signature.parameters.values():
-        if any(is_attrs_class(t.annotation) for t in parsed_type.inner_types) or is_attrs_class(parsed_type.annotation):
-            return True
-    return False
+    return any(
+        any(is_attrs_class(t.annotation) for t in parsed_type.inner_types) or is_attrs_class(parsed_type.annotation)
+        for parsed_type in parsed_signature.parameters.values()
+    )
 
 
 def _create_type_overrides(parsed_signature: ParsedSignature, has_data_dto: bool) -> dict[str, Any]:
@@ -124,7 +124,7 @@ def _should_skip_validation(parsed_type: ParsedType) -> bool:
         A boolean indicating whether the parameter should be validated.
     """
     return parsed_type.name in SKIP_VALIDATION_NAMES or (
-        isinstance(parsed_type.kwarg_model, DependencyKwarg) and parsed_type.kwarg_model.skip_validation
+        isinstance(parsed_type.kwarg_definition, DependencyKwarg) and parsed_type.kwarg_definition.skip_validation
     )
 
 
@@ -146,8 +146,8 @@ def _validate_dependencies(
     dependency_names: set[str] = set()
 
     for parameter in parsed_signature.parameters.values():
-        if isinstance(parameter.default, DependencyKwarg) and parameter.name not in dependency_name_set:
-            if not parameter.is_optional and parameter.default.default is Empty:
+        if isinstance(parameter.kwarg_definition, DependencyKwarg) and parameter.name not in dependency_name_set:
+            if not parameter.is_optional and parameter.default is Empty:
                 raise ImproperlyConfiguredException(
                     f"Explicit dependency '{parameter.name}' for '{fn_name}' has no default value, "
                     f"or provided dependency."

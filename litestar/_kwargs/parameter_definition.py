@@ -38,20 +38,22 @@ def create_parameter_definition(
     Returns:
         A ParameterDefinition tuple.
     """
-    default = None if not parsed_type.has_default else parsed_type.default
-    kwargs_model = parsed_type.kwarg_model if isinstance(parsed_type.kwarg_model, ParameterKwarg) else None
+    default = parsed_type.default if parsed_type.has_default else None
+    kwarg_definition = (
+        parsed_type.kwarg_definition if isinstance(parsed_type.kwarg_definition, ParameterKwarg) else None
+    )
 
-    field_alias = kwargs_model.query if kwargs_model and kwargs_model.query else field_name
+    field_alias = kwarg_definition.query if kwarg_definition and kwarg_definition.query else field_name
     param_type = ParamType.QUERY
 
     if field_name in path_parameters:
         field_alias = field_name
         param_type = ParamType.PATH
-    elif kwargs_model and kwargs_model.header:
-        field_alias = kwargs_model.header
+    elif kwarg_definition and kwarg_definition.header:
+        field_alias = kwarg_definition.header
         param_type = ParamType.HEADER
-    elif kwargs_model and kwargs_model.cookie:
-        field_alias = kwargs_model.cookie
+    elif kwarg_definition and kwarg_definition.cookie:
+        field_alias = kwarg_definition.cookie
         param_type = ParamType.COOKIE
 
     return ParameterDefinition(

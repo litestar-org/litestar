@@ -221,9 +221,7 @@ class BaseRouteHandler:
                 parameter_kwargs.update(getattr(layer, "parameters", {}) or {})
 
             self._resolved_layered_parameters = {
-                key: ParsedType.from_kwarg(
-                    name=key, annotation=parameter.annotation, default=parameter.default, kwarg_model=parameter
-                )
+                key: ParsedType.from_kwarg(name=key, annotation=parameter.annotation, kwarg_definition=parameter)
                 for key, parameter in parameter_kwargs.items()
             }
 

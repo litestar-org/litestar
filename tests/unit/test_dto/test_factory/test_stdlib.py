@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import ClassVar, List
+from unittest.mock import ANY
 
 import pytest
 
@@ -29,74 +30,102 @@ def fx_dto_type() -> type[DataclassDTO[Model]]:
 @pytest.mark.skipif(sys.version_info > (3, 8), reason="generic builtin collection")
 def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> None:
     fqdn = get_fully_qualified_class_name(Model)
-    assert list(dto_type.generate_field_definitions(Model)) == [
-        FieldDefinition.from_parsed_type(
-            parsed_type=ParsedType.from_kwarg(
-                name="a",
-                annotation=int,
+    expected = [
+        replace(
+            FieldDefinition.from_parsed_type(
+                parsed_type=ParsedType.from_kwarg(
+                    name="a",
+                    annotation=int,
+                ),
+                default_factory=None,
+                unique_model_name=fqdn,
+                dto_field=DTOField(),
+                dto_for=None,
             ),
-            default_factory=None,
-            unique_model_name=fqdn,
-            dto_field=DTOField(),
-            dto_for=None,
+            metadata=ANY,
+            type_wrappers=ANY,
+            raw=ANY,
         ),
-        FieldDefinition.from_parsed_type(
-            parsed_type=ParsedType.from_kwarg(
-                name="b",
-                annotation=str,
+        replace(
+            FieldDefinition.from_parsed_type(
+                parsed_type=ParsedType.from_kwarg(name="b", annotation=str, default="b"),
+                default_factory=None,
+                unique_model_name=fqdn,
+                dto_field=DTOField(),
+                dto_for=None,
             ),
-            default_factory=None,
-            unique_model_name=fqdn,
-            dto_field=DTOField(),
-            dto_for=None,
+            metadata=ANY,
+            type_wrappers=ANY,
+            raw=ANY,
         ),
-        FieldDefinition.from_parsed_type(
-            parsed_type=ParsedType.from_kwarg(
-                name="c",
-                annotation=list[int],
+        replace(
+            FieldDefinition.from_parsed_type(
+                parsed_type=ParsedType.from_kwarg(
+                    name="c",
+                    annotation=list[int],
+                ),
+                default_factory=list,
+                unique_model_name=fqdn,
+                dto_field=DTOField(),
+                dto_for=None,
             ),
-            default_factory=list,
-            unique_model_name=fqdn,
-            dto_field=DTOField(),
-            dto_for=None,
+            metadata=ANY,
+            type_wrappers=ANY,
+            raw=ANY,
         ),
     ]
+    for field_def, exp in zip(dto_type.generate_field_definitions(Model), expected):
+        assert field_def == exp
 
 
 def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> None:
     fqdn = get_fully_qualified_class_name(Model)
-    assert list(dto_type.generate_field_definitions(Model)) == [
-        FieldDefinition.from_parsed_type(
-            parsed_type=ParsedType.from_kwarg(
-                name="a",
-                annotation=int,
+    expected = [
+        replace(
+            FieldDefinition.from_parsed_type(
+                parsed_type=ParsedType.from_kwarg(
+                    name="a",
+                    annotation=int,
+                ),
+                default_factory=None,
+                unique_model_name=fqdn,
+                dto_field=DTOField(),
+                dto_for=None,
             ),
-            default_factory=None,
-            unique_model_name=fqdn,
-            dto_field=DTOField(),
-            dto_for=None,
+            metadata=ANY,
+            type_wrappers=ANY,
+            raw=ANY,
         ),
-        FieldDefinition.from_parsed_type(
-            parsed_type=ParsedType.from_kwarg(
-                name="b",
-                annotation=str,
+        replace(
+            FieldDefinition.from_parsed_type(
+                parsed_type=ParsedType.from_kwarg(name="b", annotation=str, default="b"),
+                default_factory=None,
+                unique_model_name=fqdn,
+                dto_field=DTOField(),
+                dto_for=None,
             ),
-            default_factory=None,
-            unique_model_name=fqdn,
-            dto_field=DTOField(),
-            dto_for=None,
+            metadata=ANY,
+            type_wrappers=ANY,
+            raw=ANY,
         ),
-        FieldDefinition.from_parsed_type(
-            parsed_type=ParsedType.from_kwarg(
-                name="c",
-                annotation=List[int],
+        replace(
+            FieldDefinition.from_parsed_type(
+                parsed_type=ParsedType.from_kwarg(
+                    name="c",
+                    annotation=List[int],
+                ),
+                default_factory=list,
+                unique_model_name=fqdn,
+                dto_field=DTOField(),
+                dto_for=None,
             ),
-            default_factory=list,
-            unique_model_name=fqdn,
-            dto_field=DTOField(),
-            dto_for=None,
+            metadata=ANY,
+            type_wrappers=ANY,
+            raw=ANY,
         ),
     ]
+    for field_def, exp in zip(dto_type.generate_field_definitions(Model), expected):
+        assert field_def == exp
 
 
 def test_dataclass_detect_nested(dto_type: type[DataclassDTO[Model]]) -> None:

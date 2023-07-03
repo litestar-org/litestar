@@ -34,7 +34,6 @@ from uuid import UUID
 
 from _decimal import Decimal
 from msgspec.structs import fields as msgspec_struct_fields
-from polyfactory.utils.predicates import is_safe_subclass
 from typing_extensions import NotRequired, Required, get_args, get_type_hints
 
 from litestar._openapi.schema_generation.constrained_fields import (
@@ -57,6 +56,7 @@ from litestar.types import DataclassProtocol, Empty, TypedDictClass
 from litestar.typing import ParsedType
 from litestar.utils.predicates import (
     is_attrs_class,
+    is_class_and_subclass,
     is_dataclass_class,
     is_optional_union,
     is_pydantic_constrained_field,
@@ -210,7 +210,7 @@ except ImportError:
     PYDANTIC_TYPE_MAP = {}
 
 
-KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
+KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "default": "default",
     "multiple_of": "multipleOf",
     "ge": "minimum",
@@ -424,7 +424,8 @@ class SchemaCreator:
         ]:
             result = self.for_plugin(parsed_type, plugins_for_annotation[0])
         elif is_pydantic_constrained_field(parsed_type.annotation) or (
-            isinstance(parsed_type.kwarg_model, (ParameterKwarg, BodyKwarg)) and parsed_type.kwarg_model.is_constrained
+            isinstance(parsed_type.kwarg_definition, (ParameterKwarg, BodyKwarg))
+            and parsed_type.kwarg_definition.is_constrained
         ):
             result = self.for_constrained_field(parsed_type)
         elif parsed_type.inner_types and not parsed_type.is_generic:
@@ -580,7 +581,7 @@ class SchemaCreator:
                     name=parsed_type.name,
                     default=parsed_type.default,
                     extra=parsed_type.extra,
-                    kwarg_model=parsed_type.kwarg_model,
+                    kwarg_definition=parsed_type.kwarg_definition,
                 )
             )
         return schema  # pragma: no cover
@@ -731,13 +732,13 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        kwargs_model = cast(Union[ParameterKwarg, BodyKwarg], field.kwarg_model)
-        if any(is_safe_subclass(field.annotation, t) for t in (int, float, Decimal)):
-            return create_numerical_constrained_field_schema(field.annotation, kwargs_model)
-        if any(is_safe_subclass(field.annotation, t) for t in (str, bytes)):  # type: ignore[arg-type]
-            return create_string_constrained_field_schema(field.annotation, kwargs_model)
-        if any(is_safe_subclass(field.annotation, t) for t in (date, datetime)):
-            return create_date_constrained_field_schema(field.annotation, kwargs_model)
+        kwarg_definition = cast(Union[ParameterKwarg, BodyKwarg], field.kwarg_definition)
+        if any(is_class_and_subclass(field.annotation, t) for t in (int, float, Decimal)):
+            return create_numerical_constrained_field_schema(field.annotation, kwarg_definition)
+        if any(is_class_and_subclass(field.annotation, t) for t in (str, bytes)):  # type: ignore[arg-type]
+            return create_string_constrained_field_schema(field.annotation, kwarg_definition)
+        if any(is_class_and_subclass(field.annotation, t) for t in (date, datetime)):
+            return create_date_constrained_field_schema(field.annotation, kwarg_definition)
         return self.for_collection_constrained_field(field)
 
     def for_collection_constrained_field(self, parsed_type: ParsedType) -> Schema:
@@ -750,12 +751,12 @@ class SchemaCreator:
             A schema instance.
         """
         schema = Schema(type=OpenAPIType.ARRAY)
-        kwargs_model = cast(Union[ParameterKwarg, BodyKwarg], parsed_type.kwarg_model)
-        if kwargs_model.min_items:
-            schema.min_items = kwargs_model.min_items
-        if kwargs_model.max_items:
-            schema.max_items = kwargs_model.max_items
-        if any(is_safe_subclass(parsed_type.annotation, t) for t in (set, frozenset)):  # type: ignore[arg-type]
+        kwarg_definition = cast(Union[ParameterKwarg, BodyKwarg], parsed_type.kwarg_definition)
+        if kwarg_definition.min_items:
+            schema.min_items = kwarg_definition.min_items
+        if kwarg_definition.max_items:
+            schema.max_items = kwarg_definition.max_items
+        if any(is_class_and_subclass(parsed_type.annotation, t) for t in (set, frozenset)):  # type: ignore[arg-type]
             schema.unique_items = True
 
         item_creator = self.not_generating_examples
@@ -783,12 +784,12 @@ class SchemaCreator:
         return (parsed_type.alias or parsed_type.name) if self.prefer_alias else parsed_type.name
 
     def process_schema_result(self, field: ParsedType, schema: Schema) -> Schema | Reference:
-        if field.kwarg_model and field.is_const and field.has_default and schema.const is None:
+        if field.kwarg_definition and field.is_const and field.has_default and schema.const is None:
             schema.const = field.default
 
-        if field.kwarg_model:
-            for kwarg_model_key, schema_key in KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
-                if (value := getattr(field.kwarg_model, kwarg_model_key, Empty)) and (
+        if field.kwarg_definition:
+            for kwarg_definition_key, schema_key in KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
+                if (value := getattr(field.kwarg_definition, kwarg_definition_key, Empty)) and (
                     not isinstance(value, Hashable) or value not in UNDEFINED_SENTINELS
                 ):
                     setattr(schema, schema_key, value)

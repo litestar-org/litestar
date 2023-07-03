@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sys
 import typing
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain
 from typing import Any
@@ -12,6 +12,7 @@ from typing_extensions import Self, get_type_hints
 from litestar import connection, datastructures, types
 from litestar.enums import RequestEncodingType
 from litestar.params import BodyKwarg
+from litestar.types import Empty
 from litestar.typing import ParsedType
 
 if typing.TYPE_CHECKING:
@@ -110,9 +111,12 @@ class ParsedSignature:
             for name, parameter in signature.parameters.items()
             if name not in ("self", "cls")
         )
+
+        return_type = ParsedType.from_annotation(fn_type_hints.get("return", Any))
+
         return cls(
             parameters={p.name: p for p in parameters},
-            return_type=ParsedType.from_annotation(fn_type_hints.get("return", Any)),
+            return_type=return_type if "return" in fn_type_hints else replace(return_type, annotation=Empty),
             original_signature=signature,
         )
 
@@ -148,8 +152,8 @@ def infer_request_encoding_from_parsed_type(parsed_type: ParsedType) -> RequestE
     Returns:
         The inferred request encoding type.
     """
-    if parsed_type.kwarg_model and isinstance(parsed_type.kwarg_model, BodyKwarg):
-        return parsed_type.kwarg_model.media_type
+    if parsed_type.kwarg_definition and isinstance(parsed_type.kwarg_definition, BodyKwarg):
+        return parsed_type.kwarg_definition.media_type
     if isinstance(parsed_type.default, BodyKwarg):
         return parsed_type.default.media_type
     return RequestEncodingType.JSON
