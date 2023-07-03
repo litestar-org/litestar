@@ -412,7 +412,11 @@ class ParsedType:
                 kwargs["kwarg_model"] = kwargs.pop("default")
             elif any(isinstance(v, (KwargDefinition, DependencyKwarg)) for v in metadata):
                 kwargs["kwarg_model"] = [v for v in metadata if isinstance(v, (KwargDefinition, DependencyKwarg))][0]
-                metadata = tuple([v for v in metadata if not isinstance(v, (KwargDefinition, DependencyKwarg))])
+                metadata = tuple(
+                    v
+                    for v in metadata
+                    if not isinstance(v, (KwargDefinition, DependencyKwarg))
+                )
             else:
                 kwargs["kwarg_model"], kwargs["extra"] = cls._extract_metada(
                     annotation=annotation,
