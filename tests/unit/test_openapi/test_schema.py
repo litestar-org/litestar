@@ -11,7 +11,7 @@ from typing_extensions import Annotated
 
 from litestar import Controller, MediaType, get
 from litestar._openapi.schema_generation.schema import (
-    KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
+    KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     SchemaCreator,
     create_schema_for_annotation,
 )
@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 
 def test_process_schema_result() -> None:
     test_str = "abc"
-    kwarg_model = ParameterKwarg(
+    kwarg_definition = ParameterKwarg(
         examples=[Example(value=1)],
         external_docs=ExternalDocumentation(url="https://example.com/docs"),
         content_encoding="utf-8",
@@ -54,13 +54,13 @@ def test_process_schema_result() -> None:
         max_length=1,
         pattern="^[a-z]$",
     )
-    field = ParsedType.from_annotation(annotation=str, kwarg_model=kwarg_model)
+    field = ParsedType.from_annotation(annotation=str, kwarg_definition=kwarg_definition)
     schema = SchemaCreator().for_parsed_type(field)
 
     assert schema.title  # type: ignore
     assert schema.const == test_str  # type: ignore
-    for signature_key, schema_key in KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
-        assert getattr(schema, schema_key) == getattr(kwarg_model, signature_key)
+    for signature_key, schema_key in KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
+        assert getattr(schema, schema_key) == getattr(kwarg_definition, signature_key)
 
 
 def test_dependency_schema_generation() -> None:
@@ -174,7 +174,7 @@ def test_title_validation() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         schema_creator.for_parsed_type(
-            ParsedType.from_kwarg(name="Person", annotation=Pet, kwarg_model=BodyKwarg(title="Person"))
+            ParsedType.from_kwarg(name="Person", annotation=Pet, kwarg_definition=BodyKwarg(title="Person"))
         )
 
 

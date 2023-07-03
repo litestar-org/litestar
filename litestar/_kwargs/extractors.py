@@ -301,8 +301,8 @@ def create_multipart_extractor(
         An extractor function.
     """
     body_kwarg_multipart_form_part_limit: int | None = None
-    if parsed_type.kwarg_model and isinstance(parsed_type.kwarg_model, BodyKwarg):
-        body_kwarg_multipart_form_part_limit = parsed_type.kwarg_model.multipart_form_part_limit
+    if parsed_type.kwarg_definition and isinstance(parsed_type.kwarg_definition, BodyKwarg):
+        body_kwarg_multipart_form_part_limit = parsed_type.kwarg_definition.multipart_form_part_limit
 
     async def extract_multipart(
         connection: Request[Any, Any, Any],

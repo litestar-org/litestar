@@ -151,7 +151,7 @@ class ParsedType:
         "extra",
         "inner_types",
         "instantiable_origin",
-        "kwarg_model",
+        "kwarg_definition",
         "metadata",
         "name",
         "origin",
@@ -185,7 +185,7 @@ class ParsedType:
     """Default value of the field."""
     extra: dict[str, Any]
     """A mapping of extra values."""
-    kwarg_model: KwargDefinition | DependencyKwarg | None
+    kwarg_definition: KwargDefinition | DependencyKwarg | None
     """Kwarg Parameter."""
     name: str
     """Field name."""
@@ -285,12 +285,12 @@ class ParsedType:
     @property
     def is_parameter_field(self) -> bool:
         """Check if the field type is a parameter kwarg value."""
-        return self.kwarg_model is not None and isinstance(self.kwarg_model, ParameterKwarg)
+        return self.kwarg_definition is not None and isinstance(self.kwarg_definition, ParameterKwarg)
 
     @property
     def is_const(self) -> bool:
         """Check if the field is defined as constant value."""
-        return bool(self.kwarg_model and getattr(self.kwarg_model, "const", False))
+        return bool(self.kwarg_definition and getattr(self.kwarg_definition, "const", False))
 
     @property
     def is_required(self) -> bool:
@@ -300,8 +300,8 @@ class ParsedType:
         if NotRequired in self.type_wrappers:  # type: ignore[comparison-overlap]
             return False
 
-        if isinstance(self.kwarg_model, ParameterKwarg) and self.kwarg_model.required is not None:
-            return self.kwarg_model.required
+        if isinstance(self.kwarg_definition, ParameterKwarg) and self.kwarg_definition.required is not None:
+            return self.kwarg_definition.required
 
         return not self.is_optional and not self.is_any and (not self.has_default or self.default is None)
 
@@ -407,14 +407,18 @@ class ParsedType:
 
         args = () if origin is abc.Callable else get_args(unwrapped)
 
-        if not kwargs.get("kwarg_model"):
+        if not kwargs.get("kwarg_definition"):
             if isinstance(kwargs.get("default"), (KwargDefinition, DependencyKwarg)):
-                kwargs["kwarg_model"] = kwargs.pop("default")
+                kwargs["kwarg_definition"] = kwargs.pop("default")
             elif any(isinstance(v, (KwargDefinition, DependencyKwarg)) for v in metadata):
-                kwargs["kwarg_model"] = [v for v in metadata if isinstance(v, (KwargDefinition, DependencyKwarg))][0]
-                metadata = tuple([v for v in metadata if not isinstance(v, (KwargDefinition, DependencyKwarg))])
+                kwargs["kwarg_definition"] = [v for v in metadata if isinstance(v, (KwargDefinition, DependencyKwarg))][
+                    0
+                ]
+                metadata = tuple(v for v in metadata if not isinstance(v, (KwargDefinition, DependencyKwarg)))
+            elif (extra := kwargs.get("extra", {})) and "kwarg_definition" in extra:
+                kwargs["kwarg_definition"] = extra.pop("kwarg_definition")
             else:
-                kwargs["kwarg_model"], kwargs["extra"] = cls._extract_metada(
+                kwargs["kwarg_definition"], kwargs["extra"] = cls._extract_metada(
                     annotation=annotation,
                     name=kwargs.get("name", ""),
                     default=kwargs.get("default", Empty),
@@ -428,7 +432,7 @@ class ParsedType:
         kwargs.setdefault("extra", {})
         kwargs.setdefault("inner_types", tuple(ParsedType.from_annotation(arg) for arg in args))
         kwargs.setdefault("instantiable_origin", get_instantiable_origin(origin, unwrapped))
-        kwargs.setdefault("kwarg_model", None)
+        kwargs.setdefault("kwarg_definition", None)
         kwargs.setdefault("metadata", metadata)
         kwargs.setdefault("name", "")
         kwargs.setdefault("origin", origin)
@@ -437,8 +441,8 @@ class ParsedType:
         kwargs.setdefault("type_wrappers", wrappers)
 
         instance = ParsedType(**kwargs)
-        if not instance.has_default and instance.kwarg_model:
-            return replace(instance, default=instance.kwarg_model)
+        if not instance.has_default and instance.kwarg_definition:
+            return replace(instance, default=instance.kwarg_definition)
         return instance
 
     @classmethod
@@ -448,7 +452,7 @@ class ParsedType:
         name: str,
         default: Any = Empty,
         inner_types: tuple[ParsedType, ...] | None = None,
-        kwarg_model: KwargDefinition | DependencyKwarg | None = None,
+        kwarg_definition: KwargDefinition | DependencyKwarg | None = None,
         extra: dict[str, Any] | None = None,
     ) -> ParsedType:
         """Create a new ParsedType instance.
@@ -458,7 +462,7 @@ class ParsedType:
             name: Field name.
             default: A default value.
             inner_types: A tuple of ParsedType instances representing the inner types, if any.
-            kwarg_model: Kwarg Parameter.
+            kwarg_definition: Kwarg Parameter.
             extra: A mapping of extra values.
 
         Returns:
@@ -472,7 +476,7 @@ class ParsedType:
                 k: v
                 for k, v in {
                     "inner_types": inner_types,
-                    "kwarg_model": kwarg_model,
+                    "kwarg_definition": kwarg_definition,
                     "extra": extra,
                     "default": default,
                 }.items()

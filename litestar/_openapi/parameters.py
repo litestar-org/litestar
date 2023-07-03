@@ -76,25 +76,27 @@ def create_parameter(
     """Create an OpenAPI Parameter instance."""
 
     result: Schema | Reference | None = None
-    kwargs_model = parsed_type.kwarg_model if isinstance(parsed_type.kwarg_model, ParameterKwarg) else None
+    kwarg_definition = (
+        parsed_type.kwarg_definition if isinstance(parsed_type.kwarg_definition, ParameterKwarg) else None
+    )
 
     if any(path_param.name == parameter_name for path_param in path_parameters):
         param_in = ParamType.PATH
         is_required = True
         path_parameter = [p for p in path_parameters if parameter_name in p.name][0]
         result = schema_creator.for_parsed_type(replace(parsed_type, annotation=path_parameter.type))
-    elif kwargs_model and kwargs_model.header:
-        parameter_name = kwargs_model.header
+    elif kwarg_definition and kwarg_definition.header:
+        parameter_name = kwarg_definition.header
         param_in = ParamType.HEADER
         is_required = parsed_type.is_required
-    elif kwargs_model and kwargs_model.cookie:
-        parameter_name = kwargs_model.cookie
+    elif kwarg_definition and kwarg_definition.cookie:
+        parameter_name = kwarg_definition.cookie
         param_in = ParamType.COOKIE
         is_required = parsed_type.is_required
     else:
         is_required = parsed_type.is_required
         param_in = ParamType.QUERY
-        parameter_name = kwargs_model.query if kwargs_model and kwargs_model.query else parameter_name
+        parameter_name = kwarg_definition.query if kwarg_definition and kwarg_definition.query else parameter_name
 
     if not result:
         result = schema_creator.for_parsed_type(parsed_type)
@@ -161,15 +163,17 @@ def get_layered_parameter(
     annotation = parsed_type.annotation if parsed_type is not Empty else layer_field.annotation
 
     parameter_name = field_name
-    if isinstance(field.kwarg_model, ParameterKwarg):
-        parameter_name = field.kwarg_model.query or field.kwarg_model.header or field.kwarg_model.cookie or field_name
+    if isinstance(field.kwarg_definition, ParameterKwarg):
+        parameter_name = (
+            field.kwarg_definition.query or field.kwarg_definition.header or field.kwarg_definition.cookie or field_name
+        )
 
     parsed_type = ParsedType.from_kwarg(
         inner_types=field.inner_types,
         default=default,
         extra=field.extra,
         annotation=annotation,
-        kwarg_model=field.kwarg_model,
+        kwarg_definition=field.kwarg_definition,
         name=field_name,
     )
     return create_parameter(
@@ -203,7 +207,7 @@ def create_parameter_for_handler(
     )
 
     for field_name, parsed_type in unique_handler_fields:
-        if isinstance(parsed_type.kwarg_model, DependencyKwarg) and field_name not in dependency_providers:
+        if isinstance(parsed_type.kwarg_definition, DependencyKwarg) and field_name not in dependency_providers:
             # never document explicit dependencies
             continue
 

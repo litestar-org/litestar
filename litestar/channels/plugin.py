@@ -102,10 +102,7 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
         if isinstance(data, bytes):
             return data
 
-        if isinstance(data, str):
-            return data.encode()
-
-        return self._encode_json(data)
+        return data.encode() if isinstance(data, str) else self._encode_json(data)
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         """Plugin hook. Set up a ``channels`` dependency, add route handlers and register application hooks"""

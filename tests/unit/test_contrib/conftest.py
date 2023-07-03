@@ -47,6 +47,7 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]
             metadata=ANY,
             type_wrappers=ANY,
             raw=ANY,
+            kwarg_definition=ANY,
         ),
         replace(
             FieldDefinition.from_parsed_type(
@@ -62,6 +63,7 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]
             metadata=ANY,
             type_wrappers=ANY,
             raw=ANY,
+            kwarg_definition=ANY,
         ),
         replace(
             FieldDefinition.from_parsed_type(
@@ -78,6 +80,7 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]
             metadata=ANY,
             type_wrappers=ANY,
             raw=ANY,
+            kwarg_definition=ANY,
         ),
         replace(
             FieldDefinition.from_parsed_type(
@@ -93,5 +96,6 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]
             metadata=ANY,
             type_wrappers=ANY,
             raw=ANY,
+            kwarg_definition=ANY,
         ),
     ]

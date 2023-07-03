@@ -21,8 +21,8 @@ def create_request_body(
 ) -> RequestBody | None:
     """Create a RequestBody model for the given RouteHandler or return None."""
     media_type: RequestEncodingType | str = RequestEncodingType.JSON
-    if isinstance(field.kwarg_model, BodyKwarg) and field.kwarg_model.media_type:
-        media_type = field.kwarg_model.media_type
+    if isinstance(field.kwarg_definition, BodyKwarg) and field.kwarg_definition.media_type:
+        media_type = field.kwarg_definition.media_type
 
     if dto := route_handler.resolve_dto():
         schema = dto.create_openapi_schema("data", str(route_handler), schema_creator)

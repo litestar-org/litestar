@@ -222,7 +222,7 @@ class BaseRouteHandler:
 
             self._resolved_layered_parameters = {
                 key: ParsedType.from_kwarg(
-                    name=key, annotation=parameter.annotation, default=parameter.default, kwarg_model=parameter
+                    name=key, annotation=parameter.annotation, default=parameter.default, kwarg_definition=parameter
                 )
                 for key, parameter in parameter_kwargs.items()
             }

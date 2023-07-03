@@ -133,7 +133,7 @@ class TransferFieldDefinition(FieldDefinition):
             instantiable_origin=field_definition.instantiable_origin,
             is_excluded=is_excluded,
             is_partial=is_partial,
-            kwarg_model=field_definition.kwarg_model,
+            kwarg_definition=field_definition.kwarg_definition,
             metadata=field_definition.metadata,
             name=field_definition.name,
             origin=field_definition.origin,

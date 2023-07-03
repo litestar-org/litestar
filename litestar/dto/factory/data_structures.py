@@ -123,7 +123,7 @@ class FieldDefinition(ParsedType):
             extra=parsed_type.extra,
             inner_types=parsed_type.inner_types,
             instantiable_origin=parsed_type.instantiable_origin,
-            kwarg_model=parsed_type.kwarg_model,
+            kwarg_definition=parsed_type.kwarg_definition,
             metadata=parsed_type.metadata,
             name=parsed_type.name,
             origin=parsed_type.origin,

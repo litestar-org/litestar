@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 import traceback
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from datetime import date, datetime, time, timedelta, timezone
 from functools import lru_cache, partial
 from pathlib import PurePath
@@ -24,7 +24,6 @@ from litestar.datastructures import ImmutableState, MultiDict, State, UploadFile
 from litestar.exceptions import MissingDependencyException
 from litestar.params import DependencyKwarg, KwargDefinition
 from litestar.types import Empty
-from litestar.typing import ParsedType
 from litestar.utils.predicates import is_optional_union, is_union
 from litestar.utils.typing import get_origin_or_inner_type, make_non_optional_union, unwrap_union
 
@@ -242,21 +241,21 @@ _converter: Converter = Converter()
 
 
 def _create_validators(
-    annotation: Any, kwargs_model: KwargDefinition
+    annotation: Any, kwarg_definition: KwargDefinition
 ) -> list[Callable[[Any, attrs.Attribute[Any], Any], Any]] | Callable[[Any, attrs.Attribute[Any], Any], Any]:
     validators: list[Callable[[Any, attrs.Attribute[Any], Any], Any]] = [
         validator(value)  # type: ignore[operator]
         for value, validator in [
-            (kwargs_model.gt, attrs.validators.gt),
-            (kwargs_model.ge, attrs.validators.ge),
-            (kwargs_model.lt, attrs.validators.lt),
-            (kwargs_model.le, attrs.validators.le),
-            (kwargs_model.min_length, attrs.validators.min_len),
-            (kwargs_model.max_length, attrs.validators.max_len),
-            (kwargs_model.min_items, attrs.validators.min_len),
-            (kwargs_model.max_items, attrs.validators.max_len),
+            (kwarg_definition.gt, attrs.validators.gt),
+            (kwarg_definition.ge, attrs.validators.ge),
+            (kwarg_definition.lt, attrs.validators.lt),
+            (kwarg_definition.le, attrs.validators.le),
+            (kwarg_definition.min_length, attrs.validators.min_len),
+            (kwarg_definition.max_length, attrs.validators.max_len),
+            (kwarg_definition.min_items, attrs.validators.min_len),
+            (kwarg_definition.max_items, attrs.validators.max_len),
             (
-                kwargs_model.pattern,
+                kwarg_definition.pattern,
                 partial(attrs.validators.matches_re, flags=0),
             ),
         ]
@@ -399,16 +398,17 @@ class AttrsSignatureModel(SignatureModel):
 
     @classmethod
     def populate_parsed_types(cls) -> None:
-        cls.fields = {
-            k: ParsedType.from_kwarg(
-                annotation=attribute.type,
-                name=k,
+        cls.fields = {}
+
+        for key, attribute in attrs.fields_dict(cls).items():
+            metadata = dict(attribute.metadata)
+            parsed_type = metadata.pop("parsed_type")
+            cls.fields[key] = replace(
+                parsed_type,
+                name=key,
                 default=attribute.default if attribute.default is not attr.NOTHING else Empty,
-                kwarg_model=attribute.metadata.get("kwargs_model", None) if attribute.metadata else None,
-                extra=attribute.metadata or None,
+                extra=metadata,
             )
-            for k, attribute in attrs.fields_dict(cls).items()
-        }
 
     @classmethod
     def create(
@@ -424,31 +424,35 @@ class AttrsSignatureModel(SignatureModel):
         for parameter in parsed_signature.parameters.values():
             annotation = type_overrides.get(parameter.name, parameter.annotation)
 
-            if kwarg_model := parameter.kwarg_model:
-                if isinstance(kwarg_model, DependencyKwarg):
+            if kwarg_definition := parameter.kwarg_definition:
+                if isinstance(kwarg_definition, DependencyKwarg):
                     attribute = attr.attrib(
-                        type=Any if kwarg_model.skip_validation else annotation,
-                        default=kwarg_model.default if kwarg_model.default is not Empty else None,
+                        type=Any if kwarg_definition.skip_validation else annotation,
+                        default=kwarg_definition.default if kwarg_definition.default is not Empty else None,
                         metadata={
-                            "kwargs_model": kwarg_model,
-                            "parsed_parameter": parameter,
+                            "kwarg_definition": kwarg_definition,
+                            "parsed_type": parameter,
                         },
                     )
                 else:
                     attribute = attr.attrib(
                         type=annotation,
                         metadata={
-                            **asdict(kwarg_model),
-                            "kwargs_model": kwarg_model,
-                            "parsed_parameter": parameter,
+                            **asdict(kwarg_definition),
+                            "kwarg_definition": kwarg_definition,
+                            "parsed_type": parameter,
                         },
-                        default=kwarg_model.default if kwarg_model.default is not Empty else attr.NOTHING,
-                        validator=_create_validators(annotation=annotation, kwargs_model=kwarg_model),
+                        default=kwarg_definition.default if kwarg_definition.default is not Empty else attr.NOTHING,
+                        validator=_create_validators(annotation=annotation, kwarg_definition=kwarg_definition),
                     )
             elif parameter.has_default:
-                attribute = attr.attrib(type=annotation, default=parameter.default)
+                attribute = attr.attrib(type=annotation, default=parameter.default, metadata={"parsed_type": parameter})
             else:
-                attribute = attr.attrib(type=annotation, default=None if parameter.is_optional else attr.NOTHING)
+                attribute = attr.attrib(
+                    type=annotation,
+                    default=None if parameter.is_optional else attr.NOTHING,
+                    metadata={"parsed_type": parameter},
+                )
 
             attributes[parameter.name] = attribute
 

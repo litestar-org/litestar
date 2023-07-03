@@ -148,8 +148,8 @@ def infer_request_encoding_from_parsed_type(parsed_type: ParsedType) -> RequestE
     Returns:
         The inferred request encoding type.
     """
-    if parsed_type.kwarg_model and isinstance(parsed_type.kwarg_model, BodyKwarg):
-        return parsed_type.kwarg_model.media_type
+    if parsed_type.kwarg_definition and isinstance(parsed_type.kwarg_definition, BodyKwarg):
+        return parsed_type.kwarg_definition.media_type
     if isinstance(parsed_type.default, BodyKwarg):
         return parsed_type.default.media_type
     return RequestEncodingType.JSON
