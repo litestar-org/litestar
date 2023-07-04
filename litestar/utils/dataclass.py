@@ -83,7 +83,11 @@ def extract_dataclass_items(
 
 
 def simple_asdict(
-    obj: DataclassProtocol, exclude_none: bool = False, exclude_empty: bool = False, convert_nested: bool = True
+    obj: DataclassProtocol,
+    exclude_none: bool = False,
+    exclude_empty: bool = False,
+    convert_nested: bool = True,
+    exclude: set[str] | None = None,
 ) -> dict[str, Any]:
     """Convert a dataclass to a dictionary.
 
@@ -96,12 +100,13 @@ def simple_asdict(
         exclude_none: Whether to exclude None values.
         exclude_empty: Whether to exclude Empty values.
         convert_nested: Whether to recursively convert nested dataclasses.
+        exclude: An iterable of fields to exclude.
 
     Returns:
         A dictionary of key/value pairs.
     """
     ret = {}
-    for field in extract_dataclass_fields(obj, exclude_none, exclude_empty):
+    for field in extract_dataclass_fields(obj, exclude_none, exclude_empty, exclude=exclude):
         value = getattr(obj, field.name)
         if is_dataclass_instance(value) and convert_nested:
             ret[field.name] = simple_asdict(value, exclude_none, exclude_empty)

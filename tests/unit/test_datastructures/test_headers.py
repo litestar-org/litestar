@@ -1,7 +1,7 @@
-from typing import TYPE_CHECKING, List, Optional
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, List, Optional, Union
 
 import pytest
-from pydantic import ValidationError
 from pytest import FixtureRequest
 
 from litestar import MediaType
@@ -274,7 +274,7 @@ def test_cache_control_from_header_single_value() -> None:
     assert header_dict == {"no-cache": True}
 
 
-@pytest.mark.parametrize("invalid_value", ["x=y=z", "x, ", "no-cache=10"])
+@pytest.mark.parametrize("invalid_value", ["x=y=z", "x, ", "no-cache=10", "invalid-header=10"])
 def test_cache_control_from_header_invalid_value(invalid_value: str) -> None:
     with pytest.raises(ImproperlyConfiguredException):
         CacheControlHeader.from_header(invalid_value)
@@ -286,20 +286,29 @@ def test_cache_control_header_prevent_storing() -> None:
     assert header_dict == {"no-store": True}
 
 
+def test_cache_control_header_unsupported_type_annotation() -> None:
+    @dataclass
+    class InvalidCacheControlHeader(CacheControlHeader):
+        unsupported_type: Union[int, str] = "foo"
+
+    with pytest.raises(ImproperlyConfiguredException):
+        InvalidCacheControlHeader.from_header("unsupported_type")
+
+
 def test_etag_documentation_only() -> None:
     assert ETag(documentation_only=True).value is None
 
 
 def test_etag_no_value() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         ETag()
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         ETag(weak=True)
 
 
 def test_etag_non_ascii() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         ETag(value="f↓o")
 
 
