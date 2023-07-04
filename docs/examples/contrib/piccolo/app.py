@@ -2,17 +2,13 @@ import asyncio
 import typing as t
 
 import uvicorn
-from piccolo.apps.user.tables import BaseUser
 from piccolo.columns import Boolean, Varchar
 from piccolo.table import Table, create_db_tables
-from piccolo_admin.endpoints import create_admin
-from piccolo_api.session_auth.tables import SessionsBase
 
-from litestar import Litestar, MediaType, asgi, delete, get, patch, post
+from litestar import Litestar, MediaType, delete, get, patch, post
 from litestar.contrib.piccolo.dto import PiccoloDTO
 from litestar.dto.factory import DTOConfig, DTOData
 from litestar.exceptions import NotFoundException
-from litestar.types import Receive, Scope, Send
 
 from .piccolo_conf import DB
 
@@ -26,14 +22,8 @@ class Task(Table, db=DB):
     completed = Boolean(default=False)
 
 
-# mounting Piccolo Admin
-@asgi("/admin/", is_mount=True)
-async def admin(scope: "Scope", receive: "Receive", send: "Send") -> None:
-    await create_admin(tables=[Task])(scope, receive, send)
-
-
 class PatchDTO(PiccoloDTO[Task]):
-    """Don't allow client to set the id, and allow partial updates."""
+    """Allow partial updates."""
 
     config = DTOConfig(exclude={"id"}, partial=True)
 
@@ -87,24 +77,11 @@ async def delete_task(task_id: int) -> None:
 
 async def main():
     # Tables creating
-    await create_db_tables(BaseUser, SessionsBase, Task, if_not_exists=True)
-
-    # Creating admin users
-    if not await BaseUser.exists().where(BaseUser.email == "admin@test.com"):
-        user = BaseUser(
-            username="piccolo",
-            password="piccolo123",
-            email="admin@test.com",
-            admin=True,
-            active=True,
-            superuser=True,
-        )
-        await user.save()
+    await create_db_tables(Task, if_not_exists=True)
 
 
 app = Litestar(
     route_handlers=[
-        admin,
         tasks,
         create_task,
         delete_task,
