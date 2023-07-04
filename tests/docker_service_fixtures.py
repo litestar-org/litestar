@@ -102,7 +102,7 @@ class DockerServiceRegistry:
 
 @pytest.fixture(scope="session")
 def docker_services() -> Generator[DockerServiceRegistry, None, None]:
-    if sys.platform not in ("linux", "darwin"):
+    if sys.platform not in ("linux", "darwin") or os.environ.get("SKIP_DOCKER_TESTS"):
         pytest.skip("Docker not available on this platform")
 
     registry = DockerServiceRegistry()
