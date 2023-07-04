@@ -1093,6 +1093,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "sinisaos",
+      "name": "sinisaos",
+      "avatar_url": "https://avatars.githubusercontent.com/u/30960668?v=4",
+      "profile": "https://github.com/sinisaos",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
