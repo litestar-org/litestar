@@ -325,7 +325,7 @@ def create_multipart_extractor(
         if field_definition.is_non_string_sequence:
             return list(form_values.values())
         if field_definition.is_simple_type and field_definition.annotation is UploadFile and form_values:
-            return [v for v in form_values.values() if isinstance(v, UploadFile)][0]
+            return next(v for v in form_values.values() if isinstance(v, UploadFile))
 
         if not form_values and is_data_optional:
             return None

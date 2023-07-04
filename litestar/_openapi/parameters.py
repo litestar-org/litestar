@@ -83,7 +83,7 @@ def create_parameter(
     if any(path_param.name == parameter_name for path_param in path_parameters):
         param_in = ParamType.PATH
         is_required = True
-        path_parameter = [p for p in path_parameters if parameter_name in p.name][0]
+        path_parameter = next(p for p in path_parameters if parameter_name in p.name)
         result = schema_creator.for_field_definition(replace(field_definition, annotation=path_parameter.type))
     elif kwarg_definition and kwarg_definition.header:
         parameter_name = kwarg_definition.header

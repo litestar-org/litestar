@@ -204,7 +204,7 @@ class FieldDefinition:
         return hash((self.name, self.raw, self.annotation, self.origin, self.inner_types))
 
     @classmethod
-    def _extract_metada(
+    def _extract_metadata(
         cls, annotation: Any, name: str | None, default: Any, metadata: tuple[Any, ...], extra: dict[str, Any] | None
     ) -> tuple[KwargDefinition | None, dict[str, Any]]:
         from litestar.dto.factory.abc import AbstractDTOFactory
@@ -213,14 +213,11 @@ class FieldDefinition:
         if isinstance(default, FieldInfo):
             return _create_metadata_from_type(metadata=[default], model=model, annotation=annotation, extra=extra)
 
-        if is_pydantic_constrained_field(annotation):
-            return _create_metadata_from_type(metadata=[annotation], model=model, annotation=annotation, extra=extra)
-
-        if isinstance(annotation, AbstractDTOFactory):
+        if is_pydantic_constrained_field(annotation) or isinstance(annotation, AbstractDTOFactory):
             return _create_metadata_from_type(metadata=[annotation], model=model, annotation=annotation, extra=extra)
 
         if any(isinstance(arg, KwargDefinition) for arg in get_args(annotation)):
-            return [arg for arg in get_args(annotation) if isinstance(arg, KwargDefinition)][0], extra or {}
+            return next(arg for arg in get_args(annotation) if isinstance(arg, KwargDefinition)), extra or {}
 
         if metadata:
             return _create_metadata_from_type(metadata=metadata, model=model, annotation=annotation, extra=extra)
@@ -416,7 +413,7 @@ class FieldDefinition:
             elif (extra := kwargs.get("extra", {})) and "kwarg_definition" in extra:
                 kwargs["kwarg_definition"] = extra.pop("kwarg_definition")
             else:
-                kwargs["kwarg_definition"], kwargs["extra"] = cls._extract_metada(
+                kwargs["kwarg_definition"], kwargs["extra"] = cls._extract_metadata(
                     annotation=annotation,
                     name=kwargs.get("name", ""),
                     default=kwargs.get("default", Empty),
@@ -479,7 +476,7 @@ class FieldDefinition:
                     "extra": extra,
                     "default": default,
                 }.items()
-                if v
+                if v is not None
             },
         )
 
