@@ -187,12 +187,13 @@ mypy = "*"
 pyright = "*"
 ruff = '*'
 slotscheck = "*"
+sourcery = "*"
+types-beautifulsoup4 = "*"
 types-freezegun = "*"
+types-python-dateutil = "*"
 types-python-jose = "*"
 types-pyyaml = "*"
 types-redis = "*"
-types-beautifulsoup4 = "*"
-types-python-dateutil = "*"
 
 [tool.poetry.extras]
 annotated-types = ["annotated-types"]
