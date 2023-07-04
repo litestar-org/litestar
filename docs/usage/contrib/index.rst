@@ -7,4 +7,5 @@ Contrib
     jwt
     open-telemetry
     prometheus
+    piccolo
     sqlalchemy/index
