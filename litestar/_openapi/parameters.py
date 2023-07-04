@@ -13,7 +13,7 @@ from litestar.types import Empty
 
 __all__ = ("create_parameter_for_handler",)
 
-from litestar.typing import ParsedType
+from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
@@ -68,7 +68,7 @@ class ParameterCollection:
 
 
 def create_parameter(
-    parsed_type: ParsedType,
+    field_definition: FieldDefinition,
     parameter_name: str,
     path_parameters: tuple[PathParameterDefinition, ...],
     schema_creator: SchemaCreator,
@@ -77,29 +77,29 @@ def create_parameter(
 
     result: Schema | Reference | None = None
     kwarg_definition = (
-        parsed_type.kwarg_definition if isinstance(parsed_type.kwarg_definition, ParameterKwarg) else None
+        field_definition.kwarg_definition if isinstance(field_definition.kwarg_definition, ParameterKwarg) else None
     )
 
     if any(path_param.name == parameter_name for path_param in path_parameters):
         param_in = ParamType.PATH
         is_required = True
         path_parameter = [p for p in path_parameters if parameter_name in p.name][0]
-        result = schema_creator.for_parsed_type(replace(parsed_type, annotation=path_parameter.type))
+        result = schema_creator.for_field_definition(replace(field_definition, annotation=path_parameter.type))
     elif kwarg_definition and kwarg_definition.header:
         parameter_name = kwarg_definition.header
         param_in = ParamType.HEADER
-        is_required = parsed_type.is_required
+        is_required = field_definition.is_required
     elif kwarg_definition and kwarg_definition.cookie:
         parameter_name = kwarg_definition.cookie
         param_in = ParamType.COOKIE
-        is_required = parsed_type.is_required
+        is_required = field_definition.is_required
     else:
-        is_required = parsed_type.is_required
+        is_required = field_definition.is_required
         param_in = ParamType.QUERY
         parameter_name = kwarg_definition.query if kwarg_definition and kwarg_definition.query else parameter_name
 
     if not result:
-        result = schema_creator.for_parsed_type(parsed_type)
+        result = schema_creator.for_field_definition(field_definition)
 
     schema = result if isinstance(result, Schema) else schema_creator.schemas[result.value]
 
@@ -114,7 +114,7 @@ def create_parameter(
 
 def get_recursive_handler_parameters(
     field_name: str,
-    parsed_type: ParsedType,
+    field_definition: FieldDefinition,
     dependency_providers: dict[str, Provide],
     route_handler: BaseRouteHandler,
     path_parameters: tuple[PathParameterDefinition, ...],
@@ -129,7 +129,7 @@ def get_recursive_handler_parameters(
     if field_name not in dependency_providers:
         return [
             create_parameter(
-                parsed_type=parsed_type,
+                field_definition=field_definition,
                 parameter_name=field_name,
                 path_parameters=path_parameters,
                 schema_creator=schema_creator,
@@ -147,8 +147,8 @@ def get_recursive_handler_parameters(
 
 def get_layered_parameter(
     field_name: str,
-    parsed_type: ParsedType,
-    layered_parameters: dict[str, ParsedType],
+    field_definition: FieldDefinition,
+    layered_parameters: dict[str, FieldDefinition],
     path_parameters: tuple[PathParameterDefinition, ...],
     schema_creator: SchemaCreator,
 ) -> Parameter:
@@ -158,9 +158,9 @@ def get_layered_parameter(
     """
     layer_field = layered_parameters[field_name]
 
-    field = parsed_type if parsed_type.is_parameter_field else layer_field
-    default = layer_field.default if parsed_type.has_default else parsed_type.default
-    annotation = parsed_type.annotation if parsed_type is not Empty else layer_field.annotation
+    field = field_definition if field_definition.is_parameter_field else layer_field
+    default = layer_field.default if field_definition.has_default else field_definition.default
+    annotation = field_definition.annotation if field_definition is not Empty else layer_field.annotation
 
     parameter_name = field_name
     if isinstance(field.kwarg_definition, ParameterKwarg):
@@ -168,7 +168,7 @@ def get_layered_parameter(
             field.kwarg_definition.query or field.kwarg_definition.header or field.kwarg_definition.cookie or field_name
         )
 
-    parsed_type = ParsedType.from_kwarg(
+    field_definition = FieldDefinition.from_kwarg(
         inner_types=field.inner_types,
         default=default,
         extra=field.extra,
@@ -177,7 +177,7 @@ def get_layered_parameter(
         name=field_name,
     )
     return create_parameter(
-        parsed_type=parsed_type,
+        field_definition=field_definition,
         parameter_name=parameter_name,
         path_parameters=path_parameters,
         schema_creator=schema_creator,
@@ -186,7 +186,7 @@ def get_layered_parameter(
 
 def create_parameter_for_handler(
     route_handler: BaseRouteHandler,
-    handler_fields: dict[str, ParsedType],
+    handler_fields: dict[str, FieldDefinition],
     path_parameters: tuple[PathParameterDefinition, ...],
     schema_creator: SchemaCreator,
 ) -> list[Parameter]:
@@ -206,14 +206,14 @@ def create_parameter_for_handler(
         (k, v) for k, v in handler_fields.items() if k not in RESERVED_KWARGS and k in layered_parameters
     )
 
-    for field_name, parsed_type in unique_handler_fields:
-        if isinstance(parsed_type.kwarg_definition, DependencyKwarg) and field_name not in dependency_providers:
+    for field_name, field_definition in unique_handler_fields:
+        if isinstance(field_definition.kwarg_definition, DependencyKwarg) and field_name not in dependency_providers:
             # never document explicit dependencies
             continue
 
         for parameter in get_recursive_handler_parameters(
             field_name=field_name,
-            parsed_type=parsed_type,
+            field_definition=field_definition,
             dependency_providers=dependency_providers,
             route_handler=route_handler,
             path_parameters=path_parameters,
@@ -221,21 +221,21 @@ def create_parameter_for_handler(
         ):
             parameters.add(parameter)
 
-    for field_name, parsed_type in unique_layered_fields:
+    for field_name, field_definition in unique_layered_fields:
         parameters.add(
             create_parameter(
-                parsed_type=parsed_type,
+                field_definition=field_definition,
                 parameter_name=field_name,
                 path_parameters=path_parameters,
                 schema_creator=schema_creator,
             )
         )
 
-    for field_name, parsed_type in intersection_fields:
+    for field_name, field_definition in intersection_fields:
         parameters.add(
             get_layered_parameter(
                 field_name=field_name,
-                parsed_type=parsed_type,
+                field_definition=field_definition,
                 layered_parameters=layered_parameters,
                 path_parameters=path_parameters,
                 schema_creator=schema_creator,

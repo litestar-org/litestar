@@ -397,14 +397,14 @@ class AttrsSignatureModel(SignatureModel):
         return messages
 
     @classmethod
-    def populate_parsed_types(cls) -> None:
+    def populate_field_definitions(cls) -> None:
         cls.fields = {}
 
         for key, attribute in attrs.fields_dict(cls).items():
             metadata = dict(attribute.metadata)
-            parsed_type = metadata.pop("parsed_type")
+            field_definition = metadata.pop("field_definition")
             cls.fields[key] = replace(
-                parsed_type,
+                field_definition,
                 name=key,
                 default=attribute.default if attribute.default is not attr.NOTHING else Empty,
                 extra=metadata,
@@ -431,7 +431,7 @@ class AttrsSignatureModel(SignatureModel):
                         default=kwarg_definition.default if kwarg_definition.default is not Empty else None,
                         metadata={
                             "kwarg_definition": kwarg_definition,
-                            "parsed_type": parameter,
+                            "field_definition": parameter,
                         },
                     )
                 else:
@@ -440,18 +440,20 @@ class AttrsSignatureModel(SignatureModel):
                         metadata={
                             **asdict(kwarg_definition),
                             "kwarg_definition": kwarg_definition,
-                            "parsed_type": parameter,
+                            "field_definition": parameter,
                         },
                         default=kwarg_definition.default if kwarg_definition.default is not Empty else attr.NOTHING,
                         validator=_create_validators(annotation=annotation, kwarg_definition=kwarg_definition),
                     )
             elif parameter.has_default:
-                attribute = attr.attrib(type=annotation, default=parameter.default, metadata={"parsed_type": parameter})
+                attribute = attr.attrib(
+                    type=annotation, default=parameter.default, metadata={"field_definition": parameter}
+                )
             else:
                 attribute = attr.attrib(
                     type=annotation,
                     default=None if parameter.is_optional else attr.NOTHING,
-                    metadata={"parsed_type": parameter},
+                    metadata={"field_definition": parameter},
                 )
 
             attributes[parameter.name] = attribute
@@ -465,5 +467,5 @@ class AttrsSignatureModel(SignatureModel):
         )
         model.return_annotation = parsed_signature.return_type.annotation  # pyright: ignore
         model.dependency_name_set = dependency_names  # pyright: ignore
-        model.populate_parsed_types()  # pyright: ignore
+        model.populate_field_definitions()  # pyright: ignore
         return model

@@ -20,7 +20,7 @@ except ImportError:
 
 
 if TYPE_CHECKING:
-    from litestar.typing import ParsedType
+    from litestar.typing import FieldDefinition
 
 
 Factory.seed_random(10)
@@ -43,7 +43,7 @@ def _normalize_example_value(value: Any) -> Any:
     return value
 
 
-def _create_field_meta(field: ParsedType) -> FieldMeta:
+def _create_field_meta(field: FieldDefinition) -> FieldMeta:
     return FieldMeta.from_type(
         annotation=field.annotation,
         constraints={"constant": field.is_const},
@@ -53,7 +53,7 @@ def _create_field_meta(field: ParsedType) -> FieldMeta:
     )
 
 
-def create_examples_for_field(field: ParsedType) -> list[Example]:
+def create_examples_for_field(field: FieldDefinition) -> list[Example]:
     """Create an OpenAPI Example instance.
 
     Args:

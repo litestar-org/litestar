@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from typing_extensions import TypeAlias
 
     from litestar._signature.models.base import SignatureModel
-    from litestar.typing import ParsedType
+    from litestar.typing import FieldDefinition
     from litestar.utils.signature import ParsedSignature
 
 __all__ = (
@@ -91,8 +91,9 @@ def get_signature_model(value: Any) -> type[SignatureModel]:
 
 def _any_attrs_annotation(parsed_signature: ParsedSignature) -> bool:
     return any(
-        any(is_attrs_class(t.annotation) for t in parsed_type.inner_types) or is_attrs_class(parsed_type.annotation)
-        for parsed_type in parsed_signature.parameters.values()
+        any(is_attrs_class(t.annotation) for t in field_definition.inner_types)
+        or is_attrs_class(field_definition.annotation)
+        for field_definition in parsed_signature.parameters.values()
     )
 
 
@@ -117,14 +118,15 @@ def _get_signature_model_type(
     return PydanticSignatureModel
 
 
-def _should_skip_validation(parsed_type: ParsedType) -> bool:
+def _should_skip_validation(field_definition: FieldDefinition) -> bool:
     """Whether the parameter should skip validation.
 
     Returns:
         A boolean indicating whether the parameter should be validated.
     """
-    return parsed_type.name in SKIP_VALIDATION_NAMES or (
-        isinstance(parsed_type.kwarg_definition, DependencyKwarg) and parsed_type.kwarg_definition.skip_validation
+    return field_definition.name in SKIP_VALIDATION_NAMES or (
+        isinstance(field_definition.kwarg_definition, DependencyKwarg)
+        and field_definition.kwarg_definition.skip_validation
     )
 
 

@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from litestar._kwargs.parameter_definition import ParameterDefinition
     from litestar.connection import ASGIConnection, Request
     from litestar.dto.interface import DTOInterface
-    from litestar.typing import ParsedType
+    from litestar.typing import FieldDefinition
 
 __all__ = (
     "body_extractor",
@@ -288,12 +288,12 @@ async def msgpack_extractor(connection: Request[Any, Any, Any]) -> Any:
 
 
 def create_multipart_extractor(
-    parsed_type: ParsedType, is_data_optional: bool, dto_type: type[DTOInterface] | None
+    field_definition: FieldDefinition, is_data_optional: bool, dto_type: type[DTOInterface] | None
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create a multipart form-data extractor.
 
     Args:
-        parsed_type: A ParsedType instance.
+        field_definition: A FieldDefinition instance.
         is_data_optional: Boolean dictating whether the field is optional.
         dto_type: The DTO type, if configured for handler.
 
@@ -301,8 +301,8 @@ def create_multipart_extractor(
         An extractor function.
     """
     body_kwarg_multipart_form_part_limit: int | None = None
-    if parsed_type.kwarg_definition and isinstance(parsed_type.kwarg_definition, BodyKwarg):
-        body_kwarg_multipart_form_part_limit = parsed_type.kwarg_definition.multipart_form_part_limit
+    if field_definition.kwarg_definition and isinstance(field_definition.kwarg_definition, BodyKwarg):
+        body_kwarg_multipart_form_part_limit = field_definition.kwarg_definition.multipart_form_part_limit
 
     async def extract_multipart(
         connection: Request[Any, Any, Any],
@@ -322,9 +322,9 @@ def create_multipart_extractor(
             )
         )
 
-        if parsed_type.is_non_string_sequence:
+        if field_definition.is_non_string_sequence:
             return list(form_values.values())
-        if parsed_type.is_simple_type and parsed_type.annotation is UploadFile and form_values:
+        if field_definition.is_simple_type and field_definition.annotation is UploadFile and form_values:
             return [v for v in form_values.values() if isinstance(v, UploadFile)][0]
 
         if not form_values and is_data_optional:
@@ -385,11 +385,11 @@ def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any]
     """
 
     if kwargs_model.expected_form_data:
-        media_type, parsed_type, dto_type = kwargs_model.expected_form_data
+        media_type, field_definition, dto_type = kwargs_model.expected_form_data
 
         if media_type == RequestEncodingType.MULTI_PART:
             data_extractor = create_multipart_extractor(
-                parsed_type=parsed_type,
+                field_definition=field_definition,
                 is_data_optional=kwargs_model.is_data_optional,
                 dto_type=dto_type,
             )

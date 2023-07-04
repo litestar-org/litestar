@@ -53,7 +53,7 @@ from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagin
 from litestar.params import BodyKwarg, ParameterKwarg
 from litestar.serialization import encode_json
 from litestar.types import DataclassProtocol, Empty, TypedDictClass
-from litestar.typing import ParsedType
+from litestar.typing import FieldDefinition
 from litestar.utils.predicates import (
     is_attrs_class,
     is_class_and_subclass,
@@ -394,65 +394,68 @@ class SchemaCreator:
         new.generate_examples = False
         return new
 
-    def for_parsed_type(self, parsed_type: ParsedType, dto_for: ForType | None = None) -> Schema | Reference:
-        """Create a Schema for a given ParsedType.
+    def for_field_definition(
+        self, field_definition: FieldDefinition, dto_for: ForType | None = None
+    ) -> Schema | Reference:
+        """Create a Schema for a given FieldDefinition.
 
         Args:
-            parsed_type: A signature field instance.
+            field_definition: A signature field instance.
             dto_for: The type of DTO to create the schema for.
 
         Returns:
             A schema instance.
         """
         result: Schema | Reference
-        if parsed_type.is_optional:
-            result = self.for_optional_field(parsed_type)
-        elif parsed_type.is_union:
-            result = self.for_union_field(parsed_type)
-        elif is_pydantic_model_class(parsed_type.annotation):
-            result = self.for_pydantic_model(parsed_type.annotation, dto_for)
-        elif is_attrs_class(parsed_type.annotation):
-            result = self.for_attrs_class(parsed_type.annotation, dto_for)
-        elif is_struct_class(parsed_type.annotation):
-            result = self.for_struct_class(parsed_type.annotation, dto_for)
-        elif is_dataclass_class(parsed_type.annotation):
-            result = self.for_dataclass(parsed_type.annotation, dto_for)
-        elif is_typed_dict(parsed_type.annotation):
-            result = self.for_typed_dict(parsed_type.annotation, dto_for)
+        if field_definition.is_optional:
+            result = self.for_optional_field(field_definition)
+        elif field_definition.is_union:
+            result = self.for_union_field(field_definition)
+        elif is_pydantic_model_class(field_definition.annotation):
+            result = self.for_pydantic_model(field_definition.annotation, dto_for)
+        elif is_attrs_class(field_definition.annotation):
+            result = self.for_attrs_class(field_definition.annotation, dto_for)
+        elif is_struct_class(field_definition.annotation):
+            result = self.for_struct_class(field_definition.annotation, dto_for)
+        elif is_dataclass_class(field_definition.annotation):
+            result = self.for_dataclass(field_definition.annotation, dto_for)
+        elif is_typed_dict(field_definition.annotation):
+            result = self.for_typed_dict(field_definition.annotation, dto_for)
         elif plugins_for_annotation := [
-            plugin for plugin in self.plugins if plugin.is_plugin_supported_type(parsed_type.annotation)
+            plugin for plugin in self.plugins if plugin.is_plugin_supported_type(field_definition.annotation)
         ]:
-            result = self.for_plugin(parsed_type, plugins_for_annotation[0])
-        elif is_pydantic_constrained_field(parsed_type.annotation) or (
-            isinstance(parsed_type.kwarg_definition, (ParameterKwarg, BodyKwarg))
-            and parsed_type.kwarg_definition.is_constrained
+            result = self.for_plugin(field_definition, plugins_for_annotation[0])
+        elif is_pydantic_constrained_field(field_definition.annotation) or (
+            isinstance(field_definition.kwarg_definition, (ParameterKwarg, BodyKwarg))
+            and field_definition.kwarg_definition.is_constrained
         ):
-            result = self.for_constrained_field(parsed_type)
-        elif parsed_type.inner_types and not parsed_type.is_generic:
-            result = self.for_object_type(parsed_type)
-        elif parsed_type.is_generic and (
-            get_origin_or_inner_type(parsed_type.annotation) in (ClassicPagination, CursorPagination, OffsetPagination)
+            result = self.for_constrained_field(field_definition)
+        elif field_definition.inner_types and not field_definition.is_generic:
+            result = self.for_object_type(field_definition)
+        elif field_definition.is_generic and (
+            get_origin_or_inner_type(field_definition.annotation)
+            in (ClassicPagination, CursorPagination, OffsetPagination)
         ):
-            result = self.for_builtin_generics(parsed_type)
+            result = self.for_builtin_generics(field_definition)
         else:
-            result = create_schema_for_annotation(parsed_type.annotation)
+            result = create_schema_for_annotation(field_definition.annotation)
 
-        return self.process_schema_result(parsed_type, result) if isinstance(result, Schema) else result
+        return self.process_schema_result(field_definition, result) if isinstance(result, Schema) else result
 
-    def for_optional_field(self, parsed_type: ParsedType) -> Schema:
-        """Create a Schema for an optional ParsedType.
+    def for_optional_field(self, field_definition: FieldDefinition) -> Schema:
+        """Create a Schema for an optional FieldDefinition.
 
         Args:
-            parsed_type: A signature field instance.
+            field_definition: A signature field instance.
 
         Returns:
             A schema instance.
         """
-        schema_or_reference = self.for_parsed_type(
-            ParsedType.from_kwarg(
-                annotation=make_non_optional_union(parsed_type.annotation),
-                name=parsed_type.name,
-                default=parsed_type.default,
+        schema_or_reference = self.for_field_definition(
+            FieldDefinition.from_kwarg(
+                annotation=make_non_optional_union(field_definition.annotation),
+                name=field_definition.name,
+                default=field_definition.default,
             )
         )
         if isinstance(schema_or_reference, Schema) and isinstance(schema_or_reference.one_of, list):
@@ -462,72 +465,72 @@ class SchemaCreator:
 
         return Schema(one_of=[Schema(type=OpenAPIType.NULL), *result])
 
-    def for_union_field(self, parsed_type: ParsedType) -> Schema:
-        """Create a Schema for a union ParsedType.
+    def for_union_field(self, field_definition: FieldDefinition) -> Schema:
+        """Create a Schema for a union FieldDefinition.
 
         Args:
-            parsed_type: A signature field instance.
+            field_definition: A signature field instance.
 
         Returns:
             A schema instance.
         """
         return Schema(
-            one_of=sort_schemas_and_references(list(map(self.for_parsed_type, parsed_type.inner_types or [])))
+            one_of=sort_schemas_and_references(list(map(self.for_field_definition, field_definition.inner_types or [])))
         )
 
-    def for_object_type(self, parsed_type: ParsedType) -> Schema:
+    def for_object_type(self, field_definition: FieldDefinition) -> Schema:
         """Create schema for object types (dict, Mapping, list, Sequence etc.) types.
 
         Args:
-            parsed_type: A signature field instance.
+            field_definition: A signature field instance.
 
         Returns:
             A schema instance.
         """
-        if parsed_type.is_mapping:
+        if field_definition.is_mapping:
             return Schema(
                 type=OpenAPIType.OBJECT,
                 additional_properties=(
-                    self.for_parsed_type(parsed_type.inner_types[1])
-                    if parsed_type.inner_types and len(parsed_type.inner_types) == 2
+                    self.for_field_definition(field_definition.inner_types[1])
+                    if field_definition.inner_types and len(field_definition.inner_types) == 2
                     else None
                 ),
             )
 
-        if parsed_type.is_non_string_sequence or parsed_type.is_non_string_iterable:
-            items = list(map(self.for_parsed_type, parsed_type.inner_types or ()))
+        if field_definition.is_non_string_sequence or field_definition.is_non_string_iterable:
+            items = list(map(self.for_field_definition, field_definition.inner_types or ()))
             return Schema(
                 type=OpenAPIType.ARRAY,
                 items=Schema(one_of=sort_schemas_and_references(items)) if len(items) > 1 else items[0],
             )
 
-        if parsed_type.is_literal:
-            return create_literal_schema(parsed_type.annotation)
+        if field_definition.is_literal:
+            return create_literal_schema(field_definition.annotation)
 
         raise ImproperlyConfiguredException(
-            f"Parameter '{parsed_type.name}' with type '{parsed_type.annotation}' could not be mapped to an Open API type. "
-            f"This can occur if a user-defined generic type is resolved as a parameter. If '{parsed_type.name}' should "
+            f"Parameter '{field_definition.name}' with type '{field_definition.annotation}' could not be mapped to an Open API type. "
+            f"This can occur if a user-defined generic type is resolved as a parameter. If '{field_definition.name}' should "
             "not be documented as a parameter, annotate it using the `Dependency` function, e.g., "
-            f"`{parsed_type.name}: ... = Dependency(...)`."
+            f"`{field_definition.name}: ... = Dependency(...)`."
         )
 
-    def for_builtin_generics(self, parsed_type: ParsedType) -> Schema:
+    def for_builtin_generics(self, field_definition: FieldDefinition) -> Schema:
         """Handle builtin generic types.
 
         Args:
-            parsed_type: A signature field instance.
+            field_definition: A signature field instance.
 
         Returns:
             A schema instance.
         """
-        origin = get_origin_or_inner_type(parsed_type.annotation)
+        origin = get_origin_or_inner_type(field_definition.annotation)
         if origin is ClassicPagination:
             return Schema(
                 type=OpenAPIType.OBJECT,
                 properties={
                     "items": Schema(
                         type=OpenAPIType.ARRAY,
-                        items=self.for_parsed_type(parsed_type.inner_types[0]),
+                        items=self.for_field_definition(field_definition.inner_types[0]),
                     ),
                     "page_size": Schema(type=OpenAPIType.INTEGER, description="Number of items per page."),
                     "current_page": Schema(type=OpenAPIType.INTEGER, description="Current page number."),
@@ -541,7 +544,7 @@ class SchemaCreator:
                 properties={
                     "items": Schema(
                         type=OpenAPIType.ARRAY,
-                        items=self.for_parsed_type(parsed_type.inner_types[0]),
+                        items=self.for_field_definition(field_definition.inner_types[0]),
                     ),
                     "limit": Schema(type=OpenAPIType.INTEGER, description="Maximal number of items to send."),
                     "offset": Schema(type=OpenAPIType.INTEGER, description="Offset from the beginning of the query."),
@@ -549,39 +552,40 @@ class SchemaCreator:
                 },
             )
 
-        cursor_schema = self.not_generating_examples.for_parsed_type(parsed_type.inner_types[0])
+        cursor_schema = self.not_generating_examples.for_field_definition(field_definition.inner_types[0])
         cursor_schema.description = "Unique ID, designating the last identifier in the given data set. This value can be used to request the 'next' batch of records."
 
         return Schema(
             type=OpenAPIType.OBJECT,
             properties={
                 "items": Schema(
-                    type=OpenAPIType.ARRAY, items=self.for_parsed_type(parsed_type=parsed_type.inner_types[1])
+                    type=OpenAPIType.ARRAY,
+                    items=self.for_field_definition(field_definition=field_definition.inner_types[1]),
                 ),
                 "cursor": cursor_schema,
                 "results_per_page": Schema(type=OpenAPIType.INTEGER, description="Maximal number of items to send."),
             },
         )
 
-    def for_plugin(self, parsed_type: ParsedType, plugin: OpenAPISchemaPluginProtocol) -> Schema | Reference:
+    def for_plugin(self, field_definition: FieldDefinition, plugin: OpenAPISchemaPluginProtocol) -> Schema | Reference:
         """Create a schema using a plugin.
 
         Args:
-            parsed_type: A signature field instance.
+            field_definition: A signature field instance.
             plugin: A plugin for the field type.
 
         Returns:
             A schema instance.
         """
-        schema = plugin.to_openapi_schema(parsed_type.annotation)
+        schema = plugin.to_openapi_schema(field_definition.annotation)
         if isinstance(schema, SchemaDataContainer):
-            return self.for_parsed_type(
-                ParsedType.from_kwarg(
+            return self.for_field_definition(
+                FieldDefinition.from_kwarg(
                     annotation=schema.data_container,
-                    name=parsed_type.name,
-                    default=parsed_type.default,
-                    extra=parsed_type.extra,
-                    kwarg_definition=parsed_type.kwarg_definition,
+                    name=field_definition.name,
+                    default=field_definition.default,
+                    extra=field_definition.extra,
+                    kwarg_definition=field_definition.kwarg_definition,
                 )
             )
         return schema  # pragma: no cover
@@ -608,8 +612,8 @@ class SchemaCreator:
         return Schema(
             required=sorted(self.get_field_name(field) for field in annotation.__fields__.values() if field.required),
             properties={
-                self.get_field_name(f): self.for_parsed_type(
-                    ParsedType.from_kwarg(
+                self.get_field_name(f): self.for_field_definition(
+                    FieldDefinition.from_kwarg(
                         annotation=annotation_hints[f.name], name=self.get_field_name(f), default=f.field_info
                     )
                 )
@@ -642,7 +646,9 @@ class SchemaCreator:
                     if attribute.default is NOTHING and not is_optional_union(annotation_hints[field_name])
                 ]
             ),
-            properties={k: self.for_parsed_type(ParsedType.from_kwarg(v, k)) for k, v in annotation_hints.items()},
+            properties={
+                k: self.for_field_definition(FieldDefinition.from_kwarg(v, k)) for k, v in annotation_hints.items()
+            },
             type=OpenAPIType.OBJECT,
             title=_get_type_schema_name(annotation, dto_for),
         )
@@ -666,7 +672,7 @@ class SchemaCreator:
                 ]
             ),
             properties={
-                field.encode_name: self.for_parsed_type(ParsedType.from_kwarg(field.type, field.encode_name))
+                field.encode_name: self.for_field_definition(FieldDefinition.from_kwarg(field.type, field.encode_name))
                 for field in msgspec_struct_fields(annotation)
             },
             type=OpenAPIType.OBJECT,
@@ -696,7 +702,9 @@ class SchemaCreator:
                     )
                 ]
             ),
-            properties={k: self.for_parsed_type(ParsedType.from_kwarg(v, k)) for k, v in annotation_hints.items()},
+            properties={
+                k: self.for_field_definition(FieldDefinition.from_kwarg(v, k)) for k, v in annotation_hints.items()
+            },
             type=OpenAPIType.OBJECT,
             title=_get_type_schema_name(annotation, dto_for),
         )
@@ -717,12 +725,12 @@ class SchemaCreator:
         }
         return Schema(
             required=sorted(getattr(annotation, "__required_keys__", [])),
-            properties={k: self.for_parsed_type(ParsedType.from_kwarg(v, k)) for k, v in annotations.items()},
+            properties={k: self.for_field_definition(FieldDefinition.from_kwarg(v, k)) for k, v in annotations.items()},
             type=OpenAPIType.OBJECT,
             title=_get_type_schema_name(annotation, dto_for),
         )
 
-    def for_constrained_field(self, field: ParsedType) -> Schema:
+    def for_constrained_field(self, field: FieldDefinition) -> Schema:
         """Create Schema for Pydantic Constrained fields (created using constr(), conint() and so forth, or by subclassing
         Constrained*)
 
@@ -741,49 +749,51 @@ class SchemaCreator:
             return create_date_constrained_field_schema(field.annotation, kwarg_definition)
         return self.for_collection_constrained_field(field)
 
-    def for_collection_constrained_field(self, parsed_type: ParsedType) -> Schema:
+    def for_collection_constrained_field(self, field_definition: FieldDefinition) -> Schema:
         """Create Schema from Constrained List/Set field.
 
         Args:
-            parsed_type: A signature field instance.
+            field_definition: A signature field instance.
 
         Returns:
             A schema instance.
         """
         schema = Schema(type=OpenAPIType.ARRAY)
-        kwarg_definition = cast(Union[ParameterKwarg, BodyKwarg], parsed_type.kwarg_definition)
+        kwarg_definition = cast(Union[ParameterKwarg, BodyKwarg], field_definition.kwarg_definition)
         if kwarg_definition.min_items:
             schema.min_items = kwarg_definition.min_items
         if kwarg_definition.max_items:
             schema.max_items = kwarg_definition.max_items
-        if any(is_class_and_subclass(parsed_type.annotation, t) for t in (set, frozenset)):  # type: ignore[arg-type]
+        if any(is_class_and_subclass(field_definition.annotation, t) for t in (set, frozenset)):  # type: ignore[arg-type]
             schema.unique_items = True
 
         item_creator = self.not_generating_examples
-        if parsed_type.inner_types:
-            items = list(map(item_creator.for_parsed_type, parsed_type.inner_types))
+        if field_definition.inner_types:
+            items = list(map(item_creator.for_field_definition, field_definition.inner_types))
             if len(items) > 1:
                 schema.items = Schema(one_of=sort_schemas_and_references(items))
             else:
                 schema.items = items[0]
         else:
-            schema.items = item_creator.for_parsed_type(
-                ParsedType.from_kwarg(parsed_type.annotation.item_type, f"{parsed_type.annotation.__name__}Field")
+            schema.items = item_creator.for_field_definition(
+                FieldDefinition.from_kwarg(
+                    field_definition.annotation.item_type, f"{field_definition.annotation.__name__}Field"
+                )
             )
         return schema
 
-    def get_field_name(self, parsed_type: ModelField) -> str:
+    def get_field_name(self, field_definition: ModelField) -> str:
         """Get the preferred name for a model field.
 
         Args:
-            parsed_type: A model field instance.
+            field_definition: A model field instance.
 
         Returns:
             The preferred name for the field.
         """
-        return (parsed_type.alias or parsed_type.name) if self.prefer_alias else parsed_type.name
+        return (field_definition.alias or field_definition.name) if self.prefer_alias else field_definition.name
 
-    def process_schema_result(self, field: ParsedType, schema: Schema) -> Schema | Reference:
+    def process_schema_result(self, field: FieldDefinition, schema: Schema) -> Schema | Reference:
         if field.kwarg_definition and field.is_const and field.has_default and schema.const is None:
             schema.const = field.default
 

@@ -245,7 +245,7 @@ def test_parse_optional_sequence_from_connection_kwargs(query: str, exp: Any) ->
 
 
 @pytest.mark.parametrize("preferred_validation_backend", ("attrs", "pydantic"))
-def test_parsed_type_is_non_string_iterable(preferred_validation_backend: Literal["attrs", "pydantic"]) -> None:
+def test_field_definition_is_non_string_iterable(preferred_validation_backend: Literal["attrs", "pydantic"]) -> None:
     def fn(a: Iterable[int], b: Optional[Iterable[int]]) -> None:
         pass
 
@@ -261,7 +261,7 @@ def test_parsed_type_is_non_string_iterable(preferred_validation_backend: Litera
 
 
 @pytest.mark.parametrize("preferred_validation_backend", ("attrs", "pydantic"))
-def test_parsed_type_is_non_string_sequence(preferred_validation_backend: Literal["attrs", "pydantic"]) -> None:
+def test_field_definition_is_non_string_sequence(preferred_validation_backend: Literal["attrs", "pydantic"]) -> None:
     def fn(a: Sequence[int], b: OptionalSequence[int]) -> None:
         pass
 

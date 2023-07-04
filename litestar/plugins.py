@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from litestar.config.app import AppConfig
     from litestar.dto.interface import DTOInterface
     from litestar.openapi.spec import Schema
-    from litestar.typing import ParsedType
+    from litestar.typing import FieldDefinition
 
 __all__ = ("SerializationPluginProtocol", "InitPluginProtocol", "OpenAPISchemaPluginProtocol", "PluginProtocol")
 
@@ -65,22 +65,22 @@ class SerializationPluginProtocol(Protocol):
 
     __slots__ = ()
 
-    def supports_type(self, parsed_type: ParsedType) -> bool:
+    def supports_type(self, field_definition: FieldDefinition) -> bool:
         """Given a value of indeterminate type, determine if this value is supported by the plugin.
 
         Args:
-            parsed_type: A parsed type.
+            field_definition: A parsed type.
 
         Returns:
             Whether the type is supported by the plugin.
         """
         raise NotImplementedError()
 
-    def create_dto_for_type(self, parsed_type: ParsedType) -> type[DTOInterface]:
+    def create_dto_for_type(self, field_definition: FieldDefinition) -> type[DTOInterface]:
         """Given a parsed type, create a DTO class.
 
         Args:
-            parsed_type: A parsed type.
+            field_definition: A parsed type.
 
         Returns:
             A DTO class.

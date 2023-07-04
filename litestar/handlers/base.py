@@ -8,11 +8,11 @@ from litestar.di import Provide
 from litestar.dto.interface import HandlerContext
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Dependencies, Empty, ExceptionHandlersMap, Guard, MaybePartial, Middleware, TypeEncodersMap
-from litestar.typing import ParsedType
+from litestar.typing import FieldDefinition
 from litestar.utils import AsyncCallable, Ref, async_partial, get_name, normalize_path
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.predicates import is_async_callable
-from litestar.utils.signature import ParsedSignature, infer_request_encoding_from_parsed_type
+from litestar.utils.signature import ParsedSignature, infer_request_encoding_from_field_definition
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -104,7 +104,7 @@ class BaseRouteHandler:
         self._resolved_dependencies: dict[str, Provide] | EmptyType = Empty
         self._resolved_dto: type[DTOInterface] | None | EmptyType = Empty
         self._resolved_guards: list[Guard] | EmptyType = Empty
-        self._resolved_layered_parameters: dict[str, ParsedType] | EmptyType = Empty
+        self._resolved_layered_parameters: dict[str, FieldDefinition] | EmptyType = Empty
         self._resolved_return_dto: type[DTOInterface] | None | EmptyType = Empty
         self._resolved_signature_namespace: dict[str, Any] | EmptyType = Empty
         self._resolved_type_encoders: TypeEncodersMap | EmptyType = Empty
@@ -212,7 +212,7 @@ class BaseRouteHandler:
                     self._resolved_type_encoders.update(type_encoders)
         return cast("TypeEncodersMap", self._resolved_type_encoders)
 
-    def resolve_layered_parameters(self) -> dict[str, ParsedType]:
+    def resolve_layered_parameters(self) -> dict[str, FieldDefinition]:
         """Return all parameters declared above the handler."""
         if self._resolved_layered_parameters is Empty:
             parameter_kwargs: dict[str, ParameterKwarg] = {}
@@ -221,11 +221,11 @@ class BaseRouteHandler:
                 parameter_kwargs.update(getattr(layer, "parameters", {}) or {})
 
             self._resolved_layered_parameters = {
-                key: ParsedType.from_kwarg(name=key, annotation=parameter.annotation, kwarg_definition=parameter)
+                key: FieldDefinition.from_kwarg(name=key, annotation=parameter.annotation, kwarg_definition=parameter)
                 for key, parameter in parameter_kwargs.items()
             }
 
-        return cast("dict[str, ParsedType]", self._resolved_layered_parameters)
+        return cast("dict[str, FieldDefinition]", self._resolved_layered_parameters)
 
     def resolve_guards(self) -> list[Guard]:
         """Return all guards in the handlers scope, starting from highest to current layer."""
@@ -362,14 +362,16 @@ class BaseRouteHandler:
                 HandlerContext(
                     dto_for="data",
                     handler_id=str(self),
-                    parsed_type=data_parameter,
-                    request_encoding_type=infer_request_encoding_from_parsed_type(data_parameter),
+                    field_definition=data_parameter,
+                    request_encoding_type=infer_request_encoding_from_field_definition(data_parameter),
                 )
             )
 
         if return_dto := self.resolve_return_dto():
             return_dto.on_registration(
-                HandlerContext(dto_for="return", handler_id=str(self), parsed_type=self.parsed_fn_signature.return_type)
+                HandlerContext(
+                    dto_for="return", handler_id=str(self), field_definition=self.parsed_fn_signature.return_type
+                )
             )
 
     async def authorize_connection(self, connection: ASGIConnection) -> None:

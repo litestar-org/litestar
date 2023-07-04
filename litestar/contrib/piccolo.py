@@ -8,11 +8,11 @@ from msgspec import Meta
 from typing_extensions import Annotated
 
 from litestar.dto.factory.abc import AbstractDTOFactory
-from litestar.dto.factory.data_structures import FieldDefinition
+from litestar.dto.factory.data_structures import DTOFieldDefinition
 from litestar.dto.factory.field import DTOField, Mark
 from litestar.exceptions import MissingDependencyException
 from litestar.types import Empty
-from litestar.typing import ParsedType
+from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_fully_qualified_class_name
 
 try:
@@ -28,7 +28,7 @@ T = TypeVar("T", bound=Table)
 __all__ = ("PiccoloDTO",)
 
 
-def _parse_piccolo_type(column: Column, extra: dict[str, Any]) -> ParsedType:
+def _parse_piccolo_type(column: Column, extra: dict[str, Any]) -> FieldDefinition:
     if isinstance(column, (column_types.Decimal, column_types.Numeric)):
         column_type: Any = Decimal
         meta = Meta(extra=extra)
@@ -51,7 +51,7 @@ def _parse_piccolo_type(column: Column, extra: dict[str, Any]) -> ParsedType:
     if not column._meta.required:
         column_type = Optional[column_type]
 
-    return ParsedType.from_annotation(Annotated[column_type, meta])
+    return FieldDefinition.from_annotation(Annotated[column_type, meta])
 
 
 def _create_column_extra(column: Column) -> dict[str, Any]:
@@ -68,13 +68,13 @@ def _create_column_extra(column: Column) -> dict[str, Any]:
 
 class PiccoloDTO(AbstractDTOFactory[T], Generic[T]):
     @classmethod
-    def generate_field_definitions(cls, model_type: type[Table]) -> Generator[FieldDefinition, None, None]:
+    def generate_field_definitions(cls, model_type: type[Table]) -> Generator[DTOFieldDefinition, None, None]:
         unique_model_name = get_fully_qualified_class_name(model_type)
 
         for column in model_type._meta.columns:
             yield replace(
-                FieldDefinition.from_parsed_type(
-                    parsed_type=_parse_piccolo_type(column, _create_column_extra(column)),
+                DTOFieldDefinition.from_field_definition(
+                    field_definition=_parse_piccolo_type(column, _create_column_extra(column)),
                     dto_field=DTOField(mark=Mark.READ_ONLY if column._meta.primary_key else None),
                     unique_model_name=unique_model_name,
                     default_factory=Empty,
@@ -85,5 +85,5 @@ class PiccoloDTO(AbstractDTOFactory[T], Generic[T]):
             )
 
     @classmethod
-    def detect_nested_field(cls, parsed_type: ParsedType) -> bool:
-        return parsed_type.is_subclass_of(Table)
+    def detect_nested_field(cls, field_definition: FieldDefinition) -> bool:
+        return field_definition.is_subclass_of(Table)

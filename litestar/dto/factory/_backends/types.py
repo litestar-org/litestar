@@ -3,14 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from litestar.dto.factory.data_structures import FieldDefinition
+from litestar.dto.factory.data_structures import DTOFieldDefinition
 
 if TYPE_CHECKING:
     from typing import Any
 
     from typing_extensions import Self, TypeAlias
 
-    from litestar.typing import ParsedType
+    from litestar.typing import FieldDefinition
 
 
 @dataclass(frozen=True)
@@ -27,9 +27,9 @@ class NestedFieldInfo:
 class TransferType:
     """Type for representing model types for data transfer."""
 
-    __slots__ = ("parsed_type",)
+    __slots__ = ("field_definition",)
 
-    parsed_type: ParsedType
+    field_definition: FieldDefinition
 
 
 @dataclass(frozen=True)
@@ -90,7 +90,7 @@ class MappingType(CompositeType):
 
 
 @dataclass(frozen=True)
-class TransferFieldDefinition(FieldDefinition):
+class TransferDTOFieldDefinition(DTOFieldDefinition):
     __slots__ = (
         "default_factory",
         "dto_field",
@@ -113,9 +113,9 @@ class TransferFieldDefinition(FieldDefinition):
     """Whether the field should be excluded from transfer."""
 
     @classmethod
-    def from_field_definition(
+    def from_dto_field_definition(
         cls,
-        field_definition: FieldDefinition,
+        field_definition: DTOFieldDefinition,
         transfer_type: TransferType,
         serialization_name: str,
         is_partial: bool,
@@ -146,5 +146,5 @@ class TransferFieldDefinition(FieldDefinition):
         )
 
 
-FieldDefinitionsType: TypeAlias = "tuple[TransferFieldDefinition, ...]"
+FieldDefinitionsType: TypeAlias = "tuple[TransferDTOFieldDefinition, ...]"
 """Generic representation of names and types."""

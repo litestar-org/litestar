@@ -6,11 +6,11 @@
 .. changelog:: 2.0.0beta1
     :date: 2023/06/16
 
-    .. change:: Expose ``ParsedType`` as public API
+    .. change:: Expose ``FieldDefinition`` as public API
         :type: feature
         :pr: 1677, 1567
 
-        Expose the previously private :class:`litestar.typing.ParsedType`. This is
+        Expose the previously private :class:`litestar.typing.FieldDefinition`. This is
         mainly indented for usage with
         :meth:`litestar.plugins.SerializationPluginProtocol.supports_type`
 
@@ -260,13 +260,13 @@
         This was fixed memoizing the value of ``deep_copy`` when state is created, and
         reusing it on subsequent copies.
 
-    .. change:: ``ParsedType.is_subclass_of(X)`` ``True`` for union if all union types are subtypes of ``X``
+    .. change:: ``FieldDefinition.is_subclass_of(X)`` ``True`` for union if all union types are subtypes of ``X``
         :type: bugfix
         :pr: 1690
         :issue: 1652
 
-        When :class:`~litestar.typing.ParsedType` was introduced,
-        :meth:`~litestar.typing.ParsedType.is_subclass_of` any union was deliberately
+        When :class:`~litestar.typing.FieldDefinition` was introduced,
+        :meth:`~litestar.typing.FieldDefinition.is_subclass_of` any union was deliberately
         left to return ``False`` with the intention of waiting for some use-cases to
         arrive.
 

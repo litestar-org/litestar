@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Final, Generic, TypeVar, cast
 
 from litestar.dto.factory import DTOData, Mark
-from litestar.typing import ParsedType
+from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_fully_qualified_class_name
 
 from .types import (
@@ -17,7 +17,7 @@ from .types import (
     MappingType,
     NestedFieldInfo,
     SimpleType,
-    TransferFieldDefinition,
+    TransferDTOFieldDefinition,
     TupleType,
     UnionType,
 )
@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 
     from litestar._openapi.schema_generation import SchemaCreator
     from litestar.dto.factory import DTOConfig
-    from litestar.dto.factory.data_structures import FieldDefinition
+    from litestar.dto.factory.data_structures import DTOFieldDefinition
     from litestar.dto.interface import ConnectionContext
     from litestar.dto.types import ForType
     from litestar.openapi.spec import Reference, Schema
@@ -57,7 +57,7 @@ class BackendContext:
         "field_definition_generator",
         "is_nested_field_predicate",
         "model_type",
-        "parsed_type",
+        "field_definition",
         "wrapper_attribute_name",
     )
 
@@ -65,9 +65,9 @@ class BackendContext:
         self,
         dto_config: DTOConfig,
         dto_for: ForType,
-        parsed_type: ParsedType,
-        field_definition_generator: Callable[[Any], Generator[FieldDefinition, None, None]],
-        is_nested_field_predicate: Callable[[ParsedType], bool],
+        field_definition: FieldDefinition,
+        field_definition_generator: Callable[[Any], Generator[DTOFieldDefinition, None, None]],
+        is_nested_field_predicate: Callable[[FieldDefinition], bool],
         model_type: type[Any],
         wrapper_attribute_name: str | None,
     ) -> None:
@@ -76,7 +76,7 @@ class BackendContext:
         Args:
             dto_config: DTO config.
             dto_for: "data" or "return"
-            parsed_type: Parsed type.
+            field_definition: Parsed type.
             field_definition_generator: Generator that produces
                 :class:`FieldDefinition <.dto.factory.types.FieldDefinition>` instances given ``model_type``.
             is_nested_field_predicate: Function that detects if a field is nested.
@@ -86,11 +86,11 @@ class BackendContext:
         """
         self.config: Final[DTOConfig] = dto_config
         self.dto_for: Final[ForType] = dto_for
-        self.parsed_type: Final[ParsedType] = parsed_type
+        self.field_definition: Final[FieldDefinition] = field_definition
         self.field_definition_generator: Final[
-            Callable[[Any], Generator[FieldDefinition, None, None]]
+            Callable[[Any], Generator[DTOFieldDefinition, None, None]]
         ] = field_definition_generator
-        self.is_nested_field_predicate: Final[Callable[[ParsedType], bool]] = is_nested_field_predicate
+        self.is_nested_field_predicate: Final[Callable[[FieldDefinition], bool]] = is_nested_field_predicate
         self.model_type: Final[type[Any]] = model_type
         self.wrapper_attribute_name = wrapper_attribute_name
 
@@ -125,11 +125,11 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             get_fully_qualified_class_name(context.model_type), self.parsed_field_definitions
         )
         self.dto_data_type: type[DTOData] | None = None
-        if context.parsed_type.is_subclass_of(DTOData):
-            self.dto_data_type = context.parsed_type.annotation
-            annotation = self.context.parsed_type.inner_types[0].annotation
+        if context.field_definition.is_subclass_of(DTOData):
+            self.dto_data_type = context.field_definition.annotation
+            annotation = self.context.field_definition.inner_types[0].annotation
         else:
-            annotation = context.parsed_type.annotation
+            annotation = context.field_definition.annotation
         self.annotation = build_annotation_for_backend(annotation, self.transfer_model_type)
 
     def parse_model(self, model_type: Any, exclude: AbstractSet[str], nested_depth: int = 0) -> FieldDefinitionsType:
@@ -183,7 +183,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             else:
                 serialization_name = field_definition.name
 
-            transfer_field_definition = TransferFieldDefinition.from_field_definition(
+            transfer_field_definition = TransferDTOFieldDefinition.from_dto_field_definition(
                 field_definition=field_definition,
                 serialization_name=serialization_name,
                 transfer_type=transfer_type,
@@ -247,7 +247,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
                     self.parse_builtins(builtins, connection_context),
                     self.parsed_field_definitions,
                     "data",
-                    self.context.parsed_type,
+                    self.context.field_definition,
                 ),
             )
         return self.transfer_data_from_builtins(self.parse_builtins(builtins, connection_context))
@@ -262,7 +262,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             Instance or collection of ``model_type`` instances.
         """
         return transfer_data(
-            self.context.model_type, builtins, self.parsed_field_definitions, "data", self.context.parsed_type
+            self.context.model_type, builtins, self.parsed_field_definitions, "data", self.context.field_definition
         )
 
     def populate_data_from_raw(self, raw: bytes, connection_context: ConnectionContext) -> Any:
@@ -283,7 +283,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
                     self.parse_raw(raw, connection_context),
                     self.parsed_field_definitions,
                     "data",
-                    self.context.parsed_type,
+                    self.context.field_definition,
                 ),
             )
         return transfer_data(
@@ -291,7 +291,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             self.parse_raw(raw, connection_context),
             self.parsed_field_definitions,
             "data",
-            self.context.parsed_type,
+            self.context.field_definition,
         )
 
     def encode_data(self, data: Any, connection_context: ConnectionContext) -> LitestarEncodableType:
@@ -313,7 +313,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
                     source_data=getattr(data, self.context.wrapper_attribute_name),
                     field_definitions=self.parsed_field_definitions,
                     dto_for="return",
-                    parsed_type=self.context.parsed_type,
+                    field_definition=self.context.field_definition,
                 ),
             )
             # cast() here because we take for granted that whatever ``data`` is, it must be something
@@ -325,119 +325,126 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             source_data=data,
             field_definitions=self.parsed_field_definitions,
             dto_for="return",
-            parsed_type=self.context.parsed_type,
+            field_definition=self.context.field_definition,
         )
 
     def create_openapi_schema(self, schema_creator: SchemaCreator) -> Reference | Schema:
         """Create an openAPI schema for the given DTO."""
-        return schema_creator.for_parsed_type(ParsedType.from_annotation(self.annotation), dto_for=self.context.dto_for)
+        return schema_creator.for_field_definition(
+            FieldDefinition.from_annotation(self.annotation), dto_for=self.context.dto_for
+        )
 
     def _create_transfer_type(
-        self, parsed_type: ParsedType, exclude: AbstractSet[str], field_name: str, unique_name: str, nested_depth: int
+        self,
+        field_definition: FieldDefinition,
+        exclude: AbstractSet[str],
+        field_name: str,
+        unique_name: str,
+        nested_depth: int,
     ) -> CompositeType | SimpleType:
         exclude = _filter_exclude(exclude, field_name)
 
-        if parsed_type.is_union:
-            return self._create_union_type(parsed_type, exclude, unique_name, nested_depth)
+        if field_definition.is_union:
+            return self._create_union_type(field_definition, exclude, unique_name, nested_depth)
 
-        if parsed_type.is_tuple:
-            if len(parsed_type.inner_types) == 2 and parsed_type.inner_types[1].annotation is Ellipsis:
-                return self._create_collection_type(parsed_type, exclude, unique_name, nested_depth)
-            return self._create_tuple_type(parsed_type, exclude, unique_name, nested_depth)
+        if field_definition.is_tuple:
+            if len(field_definition.inner_types) == 2 and field_definition.inner_types[1].annotation is Ellipsis:
+                return self._create_collection_type(field_definition, exclude, unique_name, nested_depth)
+            return self._create_tuple_type(field_definition, exclude, unique_name, nested_depth)
 
-        if parsed_type.is_mapping:
-            return self._create_mapping_type(parsed_type, exclude, unique_name, nested_depth)
+        if field_definition.is_mapping:
+            return self._create_mapping_type(field_definition, exclude, unique_name, nested_depth)
 
-        if parsed_type.is_non_string_collection:
-            return self._create_collection_type(parsed_type, exclude, unique_name, nested_depth)
+        if field_definition.is_non_string_collection:
+            return self._create_collection_type(field_definition, exclude, unique_name, nested_depth)
 
         transfer_model: NestedFieldInfo | None = None
-        if self.context.is_nested_field_predicate(parsed_type):
+        if self.context.is_nested_field_predicate(field_definition):
             if nested_depth == self.context.config.max_nested_depth:
                 raise NestedDepthExceededError()
 
-            nested_field_definitions = self.parse_model(parsed_type.annotation, exclude, nested_depth + 1)
+            nested_field_definitions = self.parse_model(field_definition.annotation, exclude, nested_depth + 1)
             transfer_model = NestedFieldInfo(
                 model=self.create_transfer_model_type(unique_name, nested_field_definitions),
                 field_definitions=nested_field_definitions,
             )
 
-        return SimpleType(parsed_type, nested_field_info=transfer_model)
+        return SimpleType(field_definition, nested_field_info=transfer_model)
 
     def _create_collection_type(
-        self, parsed_type: ParsedType, exclude: AbstractSet[str], unique_name: str, nested_depth: int
+        self, field_definition: FieldDefinition, exclude: AbstractSet[str], unique_name: str, nested_depth: int
     ) -> CollectionType:
-        inner_types = parsed_type.inner_types
+        inner_types = field_definition.inner_types
         inner_type = self._create_transfer_type(
-            parsed_type=inner_types[0] if inner_types else ParsedType.from_annotation(Any),
+            field_definition=inner_types[0] if inner_types else FieldDefinition.from_annotation(Any),
             exclude=exclude,
             field_name="0",
             unique_name=_enumerate_name(unique_name, 0),
             nested_depth=nested_depth,
         )
         return CollectionType(
-            parsed_type=parsed_type, inner_type=inner_type, has_nested=_determine_has_nested(inner_type)
+            field_definition=field_definition, inner_type=inner_type, has_nested=_determine_has_nested(inner_type)
         )
 
     def _create_mapping_type(
-        self, parsed_type: ParsedType, exclude: AbstractSet[str], unique_name: str, nested_depth: int
+        self, field_definition: FieldDefinition, exclude: AbstractSet[str], unique_name: str, nested_depth: int
     ) -> MappingType:
-        inner_types = parsed_type.inner_types
+        inner_types = field_definition.inner_types
         key_type = self._create_transfer_type(
-            parsed_type=inner_types[0] if inner_types else ParsedType.from_annotation(Any),
+            field_definition=inner_types[0] if inner_types else FieldDefinition.from_annotation(Any),
             exclude=exclude,
             field_name="0",
             unique_name=_enumerate_name(unique_name, 0),
             nested_depth=nested_depth,
         )
         value_type = self._create_transfer_type(
-            parsed_type=inner_types[1] if inner_types else ParsedType.from_annotation(Any),
+            field_definition=inner_types[1] if inner_types else FieldDefinition.from_annotation(Any),
             exclude=exclude,
             field_name="1",
             unique_name=_enumerate_name(unique_name, 1),
             nested_depth=nested_depth,
         )
         return MappingType(
-            parsed_type=parsed_type,
+            field_definition=field_definition,
             key_type=key_type,
             value_type=value_type,
             has_nested=_determine_has_nested(key_type) or _determine_has_nested(value_type),
         )
 
     def _create_tuple_type(
-        self, parsed_type: ParsedType, exclude: AbstractSet[str], unique_name: str, nested_depth: int
+        self, field_definition: FieldDefinition, exclude: AbstractSet[str], unique_name: str, nested_depth: int
     ) -> TupleType:
         inner_types = tuple(
             self._create_transfer_type(
-                parsed_type=inner_type,
+                field_definition=inner_type,
                 exclude=exclude,
                 field_name=str(i),
                 unique_name=_enumerate_name(unique_name, i),
                 nested_depth=nested_depth,
             )
-            for i, inner_type in enumerate(parsed_type.inner_types)
+            for i, inner_type in enumerate(field_definition.inner_types)
         )
         return TupleType(
-            parsed_type=parsed_type,
+            field_definition=field_definition,
             inner_types=inner_types,
             has_nested=any(_determine_has_nested(t) for t in inner_types),
         )
 
     def _create_union_type(
-        self, parsed_type: ParsedType, exclude: AbstractSet[str], unique_name: str, nested_depth: int
+        self, field_definition: FieldDefinition, exclude: AbstractSet[str], unique_name: str, nested_depth: int
     ) -> UnionType:
         inner_types = tuple(
             self._create_transfer_type(
-                parsed_type=inner_type,
+                field_definition=inner_type,
                 exclude=exclude,
                 field_name=str(i),
                 unique_name=_enumerate_name(unique_name, i),
                 nested_depth=nested_depth,
             )
-            for i, inner_type in enumerate(parsed_type.inner_types)
+            for i, inner_type in enumerate(field_definition.inner_types)
         )
         return UnionType(
-            parsed_type=parsed_type,
+            field_definition=field_definition,
             inner_types=inner_types,
             has_nested=any(_determine_has_nested(t) for t in inner_types),
         )

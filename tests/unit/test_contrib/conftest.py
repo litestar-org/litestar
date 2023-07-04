@@ -7,9 +7,9 @@ from unittest.mock import ANY
 import pytest
 
 from litestar.dto.factory import DTOField, Mark
-from litestar.dto.factory.data_structures import FieldDefinition
+from litestar.dto.factory.data_structures import DTOFieldDefinition
 from litestar.types.empty import Empty
-from litestar.typing import ParsedType
+from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
     from typing import Callable
@@ -21,10 +21,10 @@ def int_factory() -> Callable[[], int]:
 
 
 @pytest.fixture
-def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]:
+def expected_field_defs(int_factory: Callable[[], int]) -> list[DTOFieldDefinition]:
     return [
-        FieldDefinition.from_parsed_type(
-            parsed_type=ParsedType.from_kwarg(
+        DTOFieldDefinition.from_field_definition(
+            field_definition=FieldDefinition.from_kwarg(
                 annotation=int,
                 name="a",
             ),
@@ -34,8 +34,8 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]
             dto_for=None,
         ),
         replace(
-            FieldDefinition.from_parsed_type(
-                parsed_type=ParsedType.from_kwarg(
+            DTOFieldDefinition.from_field_definition(
+                field_definition=FieldDefinition.from_kwarg(
                     annotation=int,
                     name="b",
                 ),
@@ -50,8 +50,8 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]
             kwarg_definition=ANY,
         ),
         replace(
-            FieldDefinition.from_parsed_type(
-                parsed_type=ParsedType.from_kwarg(
+            DTOFieldDefinition.from_field_definition(
+                field_definition=FieldDefinition.from_kwarg(
                     annotation=int,
                     name="c",
                 ),
@@ -66,8 +66,8 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]
             kwarg_definition=ANY,
         ),
         replace(
-            FieldDefinition.from_parsed_type(
-                parsed_type=ParsedType.from_kwarg(
+            DTOFieldDefinition.from_field_definition(
+                field_definition=FieldDefinition.from_kwarg(
                     annotation=int,
                     name="d",
                     default=1,
@@ -83,8 +83,8 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[FieldDefinition]
             kwarg_definition=ANY,
         ),
         replace(
-            FieldDefinition.from_parsed_type(
-                parsed_type=ParsedType.from_kwarg(
+            DTOFieldDefinition.from_field_definition(
+                field_definition=FieldDefinition.from_kwarg(
                     annotation=int,
                     name="e",
                 ),

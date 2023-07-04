@@ -107,7 +107,7 @@ class KwargDefinition:
     upper_case: bool | None = field(default=None)
     """Constrict a string value to be upper case."""
     format: str | None = field(default=None)
-    """Constrict a string value to be upper case."""
+    """Specify the format to which a string value should be converted."""
     enum: Sequence[Any] | None = field(default=None)
     """A sequence of valid values."""
 

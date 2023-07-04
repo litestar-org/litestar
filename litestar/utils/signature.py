@@ -13,7 +13,7 @@ from litestar import connection, datastructures, types
 from litestar.enums import RequestEncodingType
 from litestar.params import BodyKwarg
 from litestar.types import Empty
-from litestar.typing import ParsedType
+from litestar.typing import FieldDefinition
 
 if typing.TYPE_CHECKING:
     from litestar.types import AnyCallable
@@ -34,7 +34,7 @@ This allows users to include these names within an `if TYPE_CHECKING:` block in 
 __all__ = (
     "get_fn_type_hints",
     "ParsedSignature",
-    "infer_request_encoding_from_parsed_type",
+    "infer_request_encoding_from_field_definition",
 )
 
 
@@ -85,9 +85,9 @@ class ParsedSignature:
 
     __slots__ = ("parameters", "return_type", "original_signature")
 
-    parameters: dict[str, ParsedType]
+    parameters: dict[str, FieldDefinition]
     """A mapping of parameter names to ParsedSignatureParameter instances."""
-    return_type: ParsedType
+    return_type: FieldDefinition
     """The return annotation of the callable."""
     original_signature: Signature
     """The raw signature as returned by :func:`inspect.signature`"""
@@ -107,12 +107,12 @@ class ParsedSignature:
         fn_type_hints = get_fn_type_hints(fn, namespace=signature_namespace)
 
         parameters = tuple(
-            ParsedType.from_parameter(parameter=parameter, fn_type_hints=fn_type_hints)
+            FieldDefinition.from_parameter(parameter=parameter, fn_type_hints=fn_type_hints)
             for name, parameter in signature.parameters.items()
             if name not in ("self", "cls")
         )
 
-        return_type = ParsedType.from_annotation(fn_type_hints.get("return", Any))
+        return_type = FieldDefinition.from_annotation(fn_type_hints.get("return", Any))
 
         return cls(
             parameters={p.name: p for p in parameters},
@@ -143,17 +143,17 @@ class ParsedSignature:
         return cls.from_fn(fn, signature_namespace)
 
 
-def infer_request_encoding_from_parsed_type(parsed_type: ParsedType) -> RequestEncodingType | str:
+def infer_request_encoding_from_field_definition(field_definition: FieldDefinition) -> RequestEncodingType | str:
     """Infer the request encoding type from a parsed type.
 
     Args:
-        parsed_type: The parsed parameter to infer the request encoding type from.
+        field_definition: The parsed parameter to infer the request encoding type from.
 
     Returns:
         The inferred request encoding type.
     """
-    if parsed_type.kwarg_definition and isinstance(parsed_type.kwarg_definition, BodyKwarg):
-        return parsed_type.kwarg_definition.media_type
-    if isinstance(parsed_type.default, BodyKwarg):
-        return parsed_type.default.media_type
+    if field_definition.kwarg_definition and isinstance(field_definition.kwarg_definition, BodyKwarg):
+        return field_definition.kwarg_definition.media_type
+    if isinstance(field_definition.default, BodyKwarg):
+        return field_definition.default.media_type
     return RequestEncodingType.JSON

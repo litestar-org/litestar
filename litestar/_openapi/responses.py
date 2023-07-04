@@ -26,7 +26,7 @@ from litestar.response import (
 )
 from litestar.response.base import ASGIResponse
 from litestar.types.builtin_types import NoneType
-from litestar.typing import ParsedType
+from litestar.typing import FieldDefinition
 from litestar.utils import get_enum_string_value, get_name
 
 if TYPE_CHECKING:
@@ -98,7 +98,7 @@ def create_success_response(  # noqa: C901
         if dto := route_handler.resolve_return_dto():
             result = dto.create_openapi_schema("return", str(route_handler), schema_creator)
         else:
-            result = schema_creator.for_parsed_type(ParsedType.from_annotation(return_annotation))
+            result = schema_creator.for_field_definition(FieldDefinition.from_annotation(return_annotation))
 
         schema = result if isinstance(result, Schema) else schema_creator.schemas[result.value]
 
@@ -158,8 +158,8 @@ def create_success_response(  # noqa: C901
         header = OpenAPIHeader()
         for attribute_name, attribute_value in ((k, v) for k, v in asdict(response_header).items() if v is not None):
             if attribute_name == "value":
-                header.schema = no_examples_schema_creator.for_parsed_type(
-                    ParsedType.from_annotation(type(attribute_value))
+                header.schema = no_examples_schema_creator.for_field_definition(
+                    FieldDefinition.from_annotation(type(attribute_value))
                 )
             elif attribute_name != "documentation_only":
                 setattr(header, attribute_name, attribute_value)
@@ -220,7 +220,9 @@ def create_additional_responses(
     schema_creator = copy(schema_creator)
     for status_code, additional_response in route_handler.responses.items():
         schema_creator.generate_examples = additional_response.generate_examples
-        schema = schema_creator.for_parsed_type(ParsedType.from_annotation(additional_response.data_container))
+        schema = schema_creator.for_field_definition(
+            FieldDefinition.from_annotation(additional_response.data_container)
+        )
         yield str(status_code), OpenAPIResponse(
             description=additional_response.description,
             content={additional_response.media_type: OpenAPIMediaType(schema=schema)},

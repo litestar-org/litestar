@@ -29,7 +29,7 @@ from litestar.utils.typing import (
     unwrap_annotation,
 )
 
-__all__ = ("ParsedType",)
+__all__ = ("FieldDefinition",)
 
 T = TypeVar("T", bound=KwargDefinition)
 
@@ -142,8 +142,8 @@ def _create_metadata_from_type(
 
 
 @dataclass(frozen=True)
-class ParsedType:
-    """Represents a type annotation."""
+class FieldDefinition:
+    """Represents a function parameter or type annotation."""
 
     __slots__ = (
         "annotation",
@@ -180,8 +180,8 @@ class ParsedType:
 
     This is to serve safely rebuilding a generic outer type with different args at runtime.
     """
-    inner_types: tuple[ParsedType, ...]
-    """The type's generic args parsed as ``ParsedType``, if applicable."""
+    inner_types: tuple[FieldDefinition, ...]
+    """The type's generic args parsed as ``FieldDefinition``, if applicable."""
     default: Any
     """Default value of the field."""
     extra: dict[str, Any]
@@ -192,7 +192,7 @@ class ParsedType:
     """Field name."""
 
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, ParsedType):
+        if not isinstance(other, FieldDefinition):
             return False
 
         if self.origin:
@@ -387,17 +387,17 @@ class ParsedType:
         return any(t.is_subclass_of(cl) for t in self.inner_types)
 
     @classmethod
-    def from_annotation(cls, annotation: Any, **kwargs: Any) -> ParsedType:
-        """Initialize ParsedType.
+    def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:
+        """Initialize FieldDefinition.
 
         Args:
             annotation: The type annotation. This should be extracted from the return of
                 ``get_type_hints(..., include_extras=True)`` so that forward references are resolved and recursive
                 ``Annotated`` types are flattened.
-            **kwargs: Additional keyword arguments to pass to the ``ParsedType`` constructor.
+            **kwargs: Additional keyword arguments to pass to the ``FieldDefinition`` constructor.
 
         Returns:
-            ParsedType
+            FieldDefinition
         """
 
         unwrapped, metadata, wrappers = unwrap_annotation(annotation if annotation is not Empty else Any)
@@ -428,7 +428,7 @@ class ParsedType:
         kwargs.setdefault("args", args)
         kwargs.setdefault("default", Empty)
         kwargs.setdefault("extra", {})
-        kwargs.setdefault("inner_types", tuple(ParsedType.from_annotation(arg) for arg in args))
+        kwargs.setdefault("inner_types", tuple(FieldDefinition.from_annotation(arg) for arg in args))
         kwargs.setdefault("instantiable_origin", get_instantiable_origin(origin, unwrapped))
         kwargs.setdefault("kwarg_definition", None)
         kwargs.setdefault("metadata", metadata)
@@ -438,7 +438,7 @@ class ParsedType:
         kwargs.setdefault("safe_generic_origin", get_safe_generic_origin(origin, unwrapped))
         kwargs.setdefault("type_wrappers", wrappers)
 
-        instance = ParsedType(**kwargs)
+        instance = FieldDefinition(**kwargs)
         if not instance.has_default and instance.kwarg_definition:
             return replace(instance, default=instance.kwarg_definition.default)
 
@@ -450,22 +450,22 @@ class ParsedType:
         annotation: Any,
         name: str,
         default: Any = Empty,
-        inner_types: tuple[ParsedType, ...] | None = None,
+        inner_types: tuple[FieldDefinition, ...] | None = None,
         kwarg_definition: KwargDefinition | DependencyKwarg | None = None,
         extra: dict[str, Any] | None = None,
-    ) -> ParsedType:
-        """Create a new ParsedType instance.
+    ) -> FieldDefinition:
+        """Create a new FieldDefinition instance.
 
         Args:
             annotation: The type of the kwarg.
             name: Field name.
             default: A default value.
-            inner_types: A tuple of ParsedType instances representing the inner types, if any.
+            inner_types: A tuple of FieldDefinition instances representing the inner types, if any.
             kwarg_definition: Kwarg Parameter.
             extra: A mapping of extra values.
 
         Returns:
-            ParsedType instance.
+            FieldDefinition instance.
         """
 
         return cls.from_annotation(
@@ -484,7 +484,7 @@ class ParsedType:
         )
 
     @classmethod
-    def from_parameter(cls, parameter: Parameter, fn_type_hints: dict[str, Any]) -> ParsedType:
+    def from_parameter(cls, parameter: Parameter, fn_type_hints: dict[str, Any]) -> FieldDefinition:
         """Initialize ParsedSignatureParameter.
 
         Args:
@@ -512,7 +512,7 @@ class ParsedType:
                 "`litestar.datastructures.State`."
             )
 
-        return ParsedType.from_kwarg(
+        return FieldDefinition.from_kwarg(
             annotation=annotation,
             name=parameter.name,
             default=Empty if parameter.default is Signature.empty else parameter.default,

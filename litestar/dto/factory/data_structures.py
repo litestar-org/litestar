@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from litestar.typing import ParsedType
+from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
     from typing import Any, Callable
@@ -62,7 +62,7 @@ def _set_nested_dict_value(d: dict[str, Any], keys: list[str], value: Any) -> No
 
 
 @dataclass(frozen=True)
-class FieldDefinition(ParsedType):
+class DTOFieldDefinition(FieldDefinition):
     """A model field representation for purposes of generating a DTO backend model type."""
 
     __slots__ = (
@@ -96,18 +96,18 @@ class FieldDefinition(ParsedType):
         return f"{self.unique_model_name}.{self.name}"
 
     @classmethod
-    def from_parsed_type(
+    def from_field_definition(
         cls,
-        parsed_type: ParsedType,
+        field_definition: FieldDefinition,
         unique_model_name: str,
         default_factory: Callable[[], Any] | None,
         dto_field: DTOField,
         dto_for: ForType | None,
-    ) -> FieldDefinition:
-        """Create a :class:`FieldDefinition` from a :class:`ParsedType`.
+    ) -> DTOFieldDefinition:
+        """Create a :class:`FieldDefinition` from a :class:`FieldDefinition`.
 
         Args:
-            parsed_type: A :class:`ParsedType` to create a :class:`FieldDefinition` from.
+            field_definition: A :class:`FieldDefinition` to create a :class:`FieldDefinition` from.
             unique_model_name: The unique name of the model.
             default_factory: Default factory function, if any.
             dto_field: DTOField instance.
@@ -116,20 +116,20 @@ class FieldDefinition(ParsedType):
         Returns:
             A :class:`FieldDefinition` instance.
         """
-        return FieldDefinition(
-            annotation=parsed_type.annotation,
-            args=parsed_type.args,
-            default=parsed_type.default,
-            extra=parsed_type.extra,
-            inner_types=parsed_type.inner_types,
-            instantiable_origin=parsed_type.instantiable_origin,
-            kwarg_definition=parsed_type.kwarg_definition,
-            metadata=parsed_type.metadata,
-            name=parsed_type.name,
-            origin=parsed_type.origin,
-            raw=parsed_type.raw,
-            safe_generic_origin=parsed_type.safe_generic_origin,
-            type_wrappers=parsed_type.type_wrappers,
+        return DTOFieldDefinition(
+            annotation=field_definition.annotation,
+            args=field_definition.args,
+            default=field_definition.default,
+            extra=field_definition.extra,
+            inner_types=field_definition.inner_types,
+            instantiable_origin=field_definition.instantiable_origin,
+            kwarg_definition=field_definition.kwarg_definition,
+            metadata=field_definition.metadata,
+            name=field_definition.name,
+            origin=field_definition.origin,
+            raw=field_definition.raw,
+            safe_generic_origin=field_definition.safe_generic_origin,
+            type_wrappers=field_definition.type_wrappers,
             unique_model_name=unique_model_name,
             default_factory=default_factory,
             dto_field=dto_field,

@@ -9,7 +9,7 @@ __all__ = ("ParameterDefinition", "create_parameter_definition", "merge_paramete
 
 
 if TYPE_CHECKING:
-    from litestar.typing import ParsedType
+    from litestar.typing import FieldDefinition
 
 
 class ParameterDefinition(NamedTuple):
@@ -24,23 +24,23 @@ class ParameterDefinition(NamedTuple):
 
 
 def create_parameter_definition(
-    parsed_type: ParsedType,
+    field_definition: FieldDefinition,
     field_name: str,
     path_parameters: set[str],
 ) -> ParameterDefinition:
-    """Create a ParameterDefinition for the given ParsedType.
+    """Create a ParameterDefinition for the given FieldDefinition.
 
     Args:
-        parsed_type: ParsedType instance.
+        field_definition: FieldDefinition instance.
         field_name: The field's name.
         path_parameters: A set of path parameter names.
 
     Returns:
         A ParameterDefinition tuple.
     """
-    default = parsed_type.default if parsed_type.has_default else None
+    default = field_definition.default if field_definition.has_default else None
     kwarg_definition = (
-        parsed_type.kwarg_definition if isinstance(parsed_type.kwarg_definition, ParameterKwarg) else None
+        field_definition.kwarg_definition if isinstance(field_definition.kwarg_definition, ParameterKwarg) else None
     )
 
     field_alias = kwarg_definition.query if kwarg_definition and kwarg_definition.query else field_name
@@ -61,11 +61,11 @@ def create_parameter_definition(
         field_name=field_name,
         field_alias=field_alias,
         default=default,
-        is_required=parsed_type.is_required
+        is_required=field_definition.is_required
         and default is None
-        and not parsed_type.is_optional
-        and not parsed_type.is_any,
-        is_sequence=parsed_type.is_non_string_sequence,
+        and not field_definition.is_optional
+        and not field_definition.is_any,
+        is_sequence=field_definition.is_non_string_sequence,
     )
 
 
