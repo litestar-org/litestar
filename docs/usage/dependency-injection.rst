@@ -364,7 +364,7 @@ Depending on your application design, it is possible to have a dependency declar
 :class:`Provide <.di.Provide>` function that has a default value. If the dependency isn't provided for the route, the
 default should be used by the function.
 
-.. literalinclude:: /examples/dependency_injection/dependency_default_value_with_dependency_fn.py
+.. literalinclude:: /examples/dependency_injection/dependency_with_default.py
     :caption: Dependency with default value
     :language: python
 
@@ -375,7 +375,7 @@ parameter.
 
 By declaring the parameter to be a dependency, Litestar knows to exclude it from the docs:
 
-.. literalinclude:: /examples/dependency_injection/dependency_default_value_with_dependency_fn.py
+.. literalinclude:: /examples/dependency_injection/dependency_with_dependency_fn_and_default.py
     :caption: Dependency with default value
     :language: python
 

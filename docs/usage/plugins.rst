@@ -62,13 +62,13 @@ that are otherwise unsupported by the framework.
 Implementations of these plugins must define the following methods.
 
 :meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <litestar.plugins.SerializationPluginProtocol>`
-------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
 
 The method takes a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and returns a :class:`bool`
 indicating whether the plugin supports serialization for that type.
 
 :meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[DTOInterface]: <litestar.plugins.SerializationPluginProtocol.create_dto_for_type>`
-----------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 This method accepts a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and must return a
 :class:`DTOInterface <litestar.dto.interface.DTOInterface>` implementation that can be used to serialize and deserialize
