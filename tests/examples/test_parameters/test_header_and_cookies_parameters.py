@@ -10,12 +10,14 @@ from litestar.testing import TestClient
 
 def test_header_and_cookie_parameters() -> None:
     with TestClient(app=app) as client:
-        assert client.get("/users/1").status_code == HTTP_400_BAD_REQUEST
+        response = client.get("/users/1")
+        assert response.status_code == HTTP_400_BAD_REQUEST
         client.cookies["my-cookie-param"] = "bar"
 
-        assert client.get("/users/1", headers={"X-API-KEY": "foo"}).status_code == HTTP_401_UNAUTHORIZED
+        response = client.get("/users/1", headers={"X-API-KEY": "foo"})
+        assert response.status_code == HTTP_401_UNAUTHORIZED
         client.cookies["my-cookie-param"] = "cookie-secret"
 
-        res = client.get("/users/1", headers={"X-API-KEY": "super-secret-secret"})
-        assert res.status_code == HTTP_200_OK
-        assert res.json() == {"id": 1, "name": "John Doe"}
+        response = client.get("/users/1", headers={"X-API-KEY": "super-secret-secret"})
+        assert response.status_code == HTTP_200_OK
+        assert response.json() == {"id": 1, "name": "John Doe"}

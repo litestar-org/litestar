@@ -25,14 +25,20 @@ from tests.unit.test_contrib.test_sqlalchemy.models_uuid import (
     AuthorSyncRepository,
     BookAsyncRepository,
     BookSyncRepository,
+    ItemAsyncRepository,
+    ItemSyncRepository,
     ModelWithFetchedValueAsyncRepository,
     ModelWithFetchedValueSyncRepository,
     RuleAsyncRepository,
     RuleSyncRepository,
+    TagAsyncRepository,
+    TagSyncRepository,
     UUIDAuthor,
     UUIDBook,
+    UUIDItem,
     UUIDModelWithFetchedValue,
     UUIDRule,
+    UUIDTag,
 )
 
 from .helpers import maybe_async, update_raw_records
@@ -190,6 +196,20 @@ def book_repo(any_session: AsyncSession | Session) -> BookAsyncRepository | Book
 
 
 @pytest.fixture()
+def tag_repo(any_session: AsyncSession | Session) -> TagAsyncRepository | TagSyncRepository:
+    if isinstance(any_session, AsyncSession):
+        return TagAsyncRepository(session=any_session)
+    return TagSyncRepository(session=any_session)
+
+
+@pytest.fixture()
+def item_repo(any_session: AsyncSession | Session) -> ItemAsyncRepository | ItemSyncRepository:
+    if isinstance(any_session, AsyncSession):
+        return ItemAsyncRepository(session=any_session)
+    return ItemSyncRepository(session=any_session)
+
+
+@pytest.fixture()
 def model_with_fetched_value_repo(
     any_session: AsyncSession | Session,
 ) -> ModelWithFetchedValueAsyncRepository | ModelWithFetchedValueSyncRepository:
@@ -260,7 +280,7 @@ async def test_repo_created_updated(author_repo: AuthorAsyncRepository) -> None:
 
     author.books.append(UUIDBook(title="Testing"))
     author = await maybe_async(author_repo.update(author))
-    assert author.updated_at == original_update_dt
+    assert author.updated_at > original_update_dt
 
 
 async def test_repo_list_method(
@@ -612,3 +632,36 @@ async def test_repo_fetched_value(model_with_fetched_value_repo: ModelWithFetche
     assert obj.updated is not None
     assert obj.val == 2
     assert obj.updated != first_time
+
+
+async def test_lazy_load(item_repo: ItemAsyncRepository, tag_repo: TagAsyncRepository) -> None:
+    """Test SQLALchemy fetched value in various places.
+
+    Args:
+        item_repo (ItemAsyncRepository): The item mock repository
+        tag_repo (TagAsyncRepository): The tag mock repository
+    """
+
+    tag_obj = await maybe_async(tag_repo.add(UUIDTag(name="A new tag")))
+    assert tag_obj
+    new_items = await maybe_async(
+        item_repo.add_many([UUIDItem(name="The first item"), UUIDItem(name="The second item")])
+    )
+    await maybe_async(item_repo.session.commit())
+    await maybe_async(tag_repo.session.commit())
+    assert len(new_items) > 0
+    first_item_id = new_items[0].id
+    new_items[1].id
+    update_data = {
+        "name": "A modified Name",
+        "tag_names": ["A new tag"],
+        "id": first_item_id,
+    }
+    tags_to_add = await maybe_async(tag_repo.list(CollectionFilter("name", update_data.pop("tag_names", []))))  # type: ignore
+    assert len(tags_to_add) > 0
+    assert tags_to_add[0].id is not None
+    update_data["tags"] = tags_to_add
+    updated_obj = await maybe_async(item_repo.update(UUIDItem(**update_data), auto_refresh=False))
+    await maybe_async(item_repo.session.commit())
+    assert len(updated_obj.tags) > 0
+    assert updated_obj.tags[0].name == "A new tag"

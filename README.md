@@ -18,7 +18,7 @@
 | Meta      |     | [![Litestar Project](https://img.shields.io/badge/Litestar%20Org-%E2%AD%90%20Litestar-202235.svg?logo=python&labelColor=202235&color=edb641&logoColor=edb641)](https://github.com/litestar-org/litestar) [![types - Mypy](https://img.shields.io/badge/types-Mypy-202235.svg?logo=python&labelColor=202235&color=edb641&logoColor=edb641)](https://github.com/python/mypy) [![License - MIT](https://img.shields.io/badge/license-MIT-202235.svg?logo=python&labelColor=202235&color=edb641&logoColor=edb641)](https://spdx.org/licenses/) [![Litestar Sponsors](https://img.shields.io/badge/Sponsor-%E2%9D%A4-%23edb641.svg?&logo=github&logoColor=edb641&labelColor=202235)](https://github.com/sponsors/litestar-org) [![linting - Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json&labelColor=202235)](https://github.com/astral-sh/ruff) [![code style - Black](https://img.shields.io/badge/code%20style-black-000000.svg?logo=python&labelColor=202235&logoColor=edb641)](https://github.com/psf/black) |
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-113-202235.svg?labelColor=202235&color=edb641)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-115-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -423,6 +423,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/r4gesingh47"><img src="https://avatars.githubusercontent.com/u/71139938?v=4?s=100" width="100px;" alt="r4ge"/><br /><sub><b>r4ge</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=r4gesingh47" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=r4gesingh47" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jaykv"><img src="https://avatars.githubusercontent.com/u/18240054?v=4?s=100" width="100px;" alt="Jay"/><br /><sub><b>Jay</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=jaykv" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/sinisaos"><img src="https://avatars.githubusercontent.com/u/30960668?v=4?s=100" width="100px;" alt="sinisaos"/><br /><sub><b>sinisaos</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=sinisaos" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>

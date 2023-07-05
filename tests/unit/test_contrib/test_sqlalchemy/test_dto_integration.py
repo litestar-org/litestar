@@ -128,7 +128,6 @@ def test_fields_alias_generator_sqlalchemy(
 
     with create_test_client(
         route_handlers=[post_handler, get_handler],
-        debug=True,
     ) as client:
         response_callback = client.get("/")
         assert response_callback.json() == json_data
@@ -190,7 +189,7 @@ def get_handler() -> User:
 """
     )
 
-    with create_test_client(route_handlers=[module.get_handler], debug=True) as client:
+    with create_test_client(route_handlers=[module.get_handler]) as client:
         response = client.get("/")
         assert response.json() == {"id": 1, "keywords": ["bar", "baz"]}
 
@@ -230,7 +229,7 @@ def get_handler() -> Interval:
 """
     )
 
-    with create_test_client(route_handlers=[module.get_handler], debug=True) as client:
+    with create_test_client(route_handlers=[module.get_handler]) as client:
         response = client.get("/")
         assert response.json() == {"id": 1, "start": 1, "end": 3, "length": 2}
 
@@ -275,7 +274,7 @@ def get_handler() -> Interval:
 """
     )
 
-    with create_test_client(route_handlers=[module.get_handler], debug=True) as client:
+    with create_test_client(route_handlers=[module.get_handler]) as client:
         response = client.get("/")
         assert response.json() == {"id": 1, "start": 1, "end": 3, "length": 2}
 
@@ -325,13 +324,13 @@ def get_handler(data: Circle) -> Circle:
 """
     )
 
-    with create_test_client(route_handlers=[module.get_handler], debug=True) as client:
+    with create_test_client(route_handlers=[module.get_handler]) as client:
         response = client.post("/", json={"radius": 5})
         assert response.json() == {"id": 1, "radius": 5}
         assert module.DIAMETER == 10
 
 
-async def test_field_with_sequence_default_value(create_module: Callable[[str], ModuleType]) -> None:
+async def test_field_with_sequence_default(create_module: Callable[[str], ModuleType]) -> None:
     module = create_module(
         """
 from sqlalchemy import create_engine, Column, Integer, Sequence
@@ -368,6 +367,6 @@ def post_handler(data: Model) -> Model:
     return data
     """
     )
-    with create_test_client(route_handlers=[module.post_handler], debug=True) as client:
+    with create_test_client(route_handlers=[module.post_handler]) as client:
         response = client.post("/", json={"val": "value"})
         assert response.json() == {"id": 1, "val": "value"}

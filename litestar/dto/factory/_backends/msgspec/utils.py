@@ -10,7 +10,7 @@ from litestar.types import Empty
 if TYPE_CHECKING:
     from typing import Any
 
-    from litestar.dto.factory._backends.types import FieldDefinitionsType, TransferFieldDefinition
+    from litestar.dto.factory._backends.types import FieldDefinitionsType, TransferDTOFieldDefinition
 
 
 MsgspecField = NewType("MsgspecField", type)
@@ -18,7 +18,7 @@ StructT = TypeVar("StructT", bound=Struct)
 T = TypeVar("T")
 
 
-def _create_msgspec_field(field_definition: TransferFieldDefinition) -> MsgspecField:
+def _create_msgspec_field(field_definition: TransferDTOFieldDefinition) -> MsgspecField:
     kws: dict[str, Any] = {}
     if field_definition.is_partial:
         kws["default"] = UNSET

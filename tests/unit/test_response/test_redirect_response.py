@@ -81,7 +81,7 @@ def test_redirect_response_html_media_type() -> None:
 
 def test_redirect_response_media_type_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        ASGIRedirectResponse(path="/", media_type="application/json")
+        ASGIRedirectResponse(path="/", media_type="application/mspgpack")
 
 
 @pytest.mark.parametrize(
@@ -99,7 +99,9 @@ def test_redirect_dynamic_status_code(status_code: Optional[int], expected_statu
     def handler() -> Redirect:
         return Redirect(path="/something-else", status_code=status_code)  # type: ignore[arg-type]
 
-    with create_test_client([handler], debug=True) as client:
+    with create_test_client(
+        [handler],
+    ) as client:
         res = client.get("/", follow_redirects=False)
         assert res.status_code == expected_status_code
 

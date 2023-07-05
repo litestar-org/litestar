@@ -20,7 +20,7 @@ except ImportError:
 
 
 if TYPE_CHECKING:
-    from litestar._signature.field import SignatureField
+    from litestar.typing import FieldDefinition
 
 
 Factory.seed_random(10)
@@ -43,17 +43,17 @@ def _normalize_example_value(value: Any) -> Any:
     return value
 
 
-def _create_field_meta(field: SignatureField) -> FieldMeta:
+def _create_field_meta(field: FieldDefinition) -> FieldMeta:
     return FieldMeta.from_type(
-        annotation=field.field_type,
+        annotation=field.annotation,
         constraints={"constant": field.is_const},
-        default=field.default_value if field.default_value is not Empty else Null,
+        default=field.default if field.default is not Empty else Null,
         name=field.name,
         random=Factory.__random__,
     )
 
 
-def create_examples_for_field(field: SignatureField) -> list[Example]:
+def create_examples_for_field(field: FieldDefinition) -> list[Example]:
     """Create an OpenAPI Example instance.
 
     Args:
@@ -63,7 +63,7 @@ def create_examples_for_field(field: SignatureField) -> list[Example]:
         A list including a single example.
     """
     try:
-        field_meta = _create_field_meta(replace(field, field_type=_normalize_example_value(field.field_type)))
+        field_meta = _create_field_meta(replace(field, annotation=_normalize_example_value(field.annotation)))
         value = Factory.get_field_value(field_meta)
         return [Example(description=f"Example {field.name} value", value=value)]
     except ParameterException:

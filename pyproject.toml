@@ -11,7 +11,6 @@ authors = [
 ]
 maintainers = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
-    "Peter Schutt <peter.github@proton.me>",
     "Cody Fincher <cody.fincher@gmail.com>",
     "Janek Nouvertné <provinzkraut@posteo.de>",
     "Jacob Coffee <jacob@z7x.org>",
@@ -101,9 +100,7 @@ python-dateutil = { version = "*", optional = true }
 python-jose = { version = "*", optional = true }
 pytimeparse = { version = "*", optional = true }
 pyyaml = "*"
-redis = { version = ">=4.4.4,!=4.5.0,!=4.5.1,!=4.5.2,!=4.5.3,!=4.5.5", optional = true, extras = [
-    "hiredis",
-] }
+redis = { version = ">=4.4.4, <4.5.0", optional = true, extras = ["hiredis"] }
 rich = { version = ">=13.0.0", optional = true }
 rich-click = { version = "*", optional = true }
 sqlalchemy = { version = ">=2.0.12", optional = true }
@@ -153,7 +150,7 @@ python-dateutil = "*"
 python-dotenv = "*"
 python-jose = "*"
 pytimeparse = "*"
-redis = "*"
+redis = ">=4.4.4, <4.5.0"
 rich = "*"
 rich-click = "*"
 sqlalchemy = ">=2.0"
@@ -190,12 +187,13 @@ mypy = "*"
 pyright = "*"
 ruff = '*'
 slotscheck = "*"
+sourcery = "*"
+types-beautifulsoup4 = "*"
 types-freezegun = "*"
+types-python-dateutil = "*"
 types-python-jose = "*"
 types-pyyaml = "*"
 types-redis = "*"
-types-beautifulsoup4 = "*"
-types-python-dateutil = "*"
 
 [tool.poetry.extras]
 annotated-types = ["annotated-types"]

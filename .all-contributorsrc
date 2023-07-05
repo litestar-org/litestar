@@ -1084,6 +1084,24 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "jaykv",
+      "name": "Jay",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18240054?v=4",
+      "profile": "https://github.com/jaykv",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "sinisaos",
+      "name": "sinisaos",
+      "avatar_url": "https://avatars.githubusercontent.com/u/30960668?v=4",
+      "profile": "https://github.com/sinisaos",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

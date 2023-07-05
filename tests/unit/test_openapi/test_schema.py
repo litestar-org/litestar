@@ -11,11 +11,10 @@ from typing_extensions import Annotated
 
 from litestar import Controller, MediaType, get
 from litestar._openapi.schema_generation.schema import (
-    KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
+    KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     SchemaCreator,
     create_schema_for_annotation,
 )
-from litestar._signature.field import SignatureField
 from litestar._signature.models.pydantic_signature_model import PydanticSignatureModel
 from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.di import Provide
@@ -26,6 +25,7 @@ from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.schema import Schema
 from litestar.params import BodyKwarg, Parameter, ParameterKwarg
 from litestar.testing import create_test_client
+from litestar.typing import FieldDefinition
 from tests import Person, Pet
 
 if TYPE_CHECKING:
@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 
 def test_process_schema_result() -> None:
     test_str = "abc"
-    kwarg_model = ParameterKwarg(
+    kwarg_definition = ParameterKwarg(
         examples=[Example(value=1)],
         external_docs=ExternalDocumentation(url="https://example.com/docs"),
         content_encoding="utf-8",
@@ -54,13 +54,13 @@ def test_process_schema_result() -> None:
         max_length=1,
         pattern="^[a-z]$",
     )
-    field = SignatureField.create(field_type=str, kwarg_model=kwarg_model)
-    schema = SchemaCreator().for_field(field)
+    field = FieldDefinition.from_annotation(annotation=str, kwarg_definition=kwarg_definition)
+    schema = SchemaCreator().for_field_definition(field)
 
     assert schema.title  # type: ignore
     assert schema.const == test_str  # type: ignore
-    for signature_key, schema_key in KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
-        assert getattr(schema, schema_key) == getattr(kwarg_model, signature_key)
+    for signature_key, schema_key in KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
+        assert getattr(schema, schema_key) == getattr(kwarg_definition, signature_key)
 
 
 def test_dependency_schema_generation() -> None:
@@ -102,7 +102,7 @@ def test_dependency_schema_generation() -> None:
         }
 
 
-def test_get_schema_for_field_type_enum() -> None:
+def test_get_schema_for_annotation_enum() -> None:
     class Opts(str, Enum):
         opt1 = "opt1"
         opt2 = "opt2"
@@ -111,7 +111,7 @@ def test_get_schema_for_field_type_enum() -> None:
         opt: Opts
 
     schema = create_schema_for_annotation(
-        annotation=PydanticSignatureModel.signature_field_from_model_field(M.__fields__["opt"]).field_type
+        annotation=PydanticSignatureModel.field_definition_from_model_field(M.__fields__["opt"]).annotation
     )
     assert schema
     assert schema.enum == ["opt1", "opt2"]
@@ -128,7 +128,9 @@ def test_handling_of_literals() -> None:
         composite: Literal[ValueType, ConstType]
 
     schemas: Dict[str, Schema] = {}
-    result = SchemaCreator(schemas=schemas).for_field(SignatureField.create(name="", field_type=DataclassWithLiteral))
+    result = SchemaCreator(schemas=schemas).for_field_definition(
+        FieldDefinition.from_kwarg(name="", annotation=DataclassWithLiteral)
+    )
     assert isinstance(result, Reference)
 
     schema = schemas["DataclassWithLiteral"]
@@ -164,15 +166,15 @@ def test_title_validation() -> None:
     schemas: Dict[str, Schema] = {}
     schema_creator = SchemaCreator(schemas=schemas)
 
-    schema_creator.for_field(SignatureField.create(name="Person", field_type=Person))
+    schema_creator.for_field_definition(FieldDefinition.from_kwarg(name="Person", annotation=Person))
     assert schemas.get("Person")
 
-    schema_creator.for_field(SignatureField.create(name="Pet", field_type=Pet))
+    schema_creator.for_field_definition(FieldDefinition.from_kwarg(name="Pet", annotation=Pet))
     assert schemas.get("Pet")
 
     with pytest.raises(ImproperlyConfiguredException):
-        schema_creator.for_field(
-            SignatureField.create(name="Person", field_type=Pet, kwarg_model=BodyKwarg(title="Person"))
+        schema_creator.for_field_definition(
+            FieldDefinition.from_kwarg(name="Person", annotation=Pet, kwarg_definition=BodyKwarg(title="Person"))
         )
 
 
@@ -192,7 +194,7 @@ class Foo(BaseModel):
 """
     )
     schemas: Dict[str, Schema] = {}
-    SchemaCreator(schemas=schemas).for_field(SignatureField.create(module.Foo))
+    SchemaCreator(schemas=schemas).for_field_definition(FieldDefinition.from_annotation(module.Foo))
     schema = schemas["Foo"]
     assert schema.properties and "foo" in schema.properties
 
@@ -214,7 +216,7 @@ class Foo:
 """
     )
     schemas: Dict[str, Schema] = {}
-    SchemaCreator(schemas=schemas).for_field(SignatureField.create(module.Foo))
+    SchemaCreator(schemas=schemas).for_field_definition(FieldDefinition.from_annotation(module.Foo))
     schema = schemas["Foo"]
     assert schema.properties and "foo" in schema.properties
 
@@ -237,7 +239,7 @@ class Foo(TypedDict):
 """
     )
     schemas: Dict[str, Schema] = {}
-    SchemaCreator(schemas=schemas).for_field(SignatureField.create(module.Foo))
+    SchemaCreator(schemas=schemas).for_field_definition(FieldDefinition.from_annotation(module.Foo))
     schema = schemas["Foo"]
     assert schema.properties and all(key in schema.properties for key in ("foo", "bar", "baz"))
 
@@ -247,7 +249,7 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
         id: Annotated[str, msgspec.Meta(max_length=16, examples=["example"], description="description", title="title")]
 
     schemas: Dict[str, Schema] = {}
-    SchemaCreator(schemas=schemas).for_field(SignatureField.create(name="Lookup", field_type=Lookup))
+    SchemaCreator(schemas=schemas).for_field_definition(FieldDefinition.from_kwarg(name="Lookup", annotation=Lookup))
     schema = schemas["Lookup"]
 
     assert schema.properties["id"].type == OpenAPIType.STRING  # type: ignore
@@ -262,7 +264,7 @@ def test_create_schema_for_pydantic_field() -> None:
         value: str = Field(title="title", description="description", example="example", max_length=16)
 
     schemas: Dict[str, Schema] = {}
-    SchemaCreator(schemas=schemas).for_field(SignatureField.create(name="Model", field_type=Model))
+    SchemaCreator(schemas=schemas).for_field_definition(FieldDefinition.from_kwarg(name="Model", annotation=Model))
     schema = schemas["Model"]
 
     assert schema.properties["value"].description == "description"  # type: ignore
@@ -285,7 +287,9 @@ def test_annotated_types() -> None:
         constrainted_is_digit: Annotated[str, annotated_types.IsDigits]
 
     schemas: Dict[str, Schema] = {}
-    SchemaCreator(schemas=schemas).for_field(SignatureField.create(name="MyDataclass", field_type=MyDataclass))
+    SchemaCreator(schemas=schemas).for_field_definition(
+        FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass)
+    )
     schema = schemas["MyDataclass"]
 
     assert schema.properties["constrained_int"].exclusive_minimum == 1  # type: ignore

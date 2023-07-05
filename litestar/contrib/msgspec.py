@@ -1,20 +1,21 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generic, TypeVar, cast
+from dataclasses import replace
+from typing import TYPE_CHECKING, Collection, Generic, TypeVar, cast
 
 from msgspec import NODEFAULT, Struct, inspect
 
 from litestar.dto.factory.abc import AbstractDTOFactory
-from litestar.dto.factory.data_structures import FieldDefinition
+from litestar.dto.factory.data_structures import DTOFieldDefinition
 from litestar.dto.factory.field import DTO_FIELD_META_KEY, DTOField
 from litestar.dto.factory.utils import get_model_type_hints
 from litestar.types.empty import Empty
 from litestar.utils.helpers import get_fully_qualified_class_name
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Collection, Generator
+    from typing import Any, ClassVar, Generator
 
-    from litestar.typing import ParsedType
+    from litestar.typing import FieldDefinition
 
 __all__ = ("MsgspecDTO",)
 
@@ -29,30 +30,28 @@ class MsgspecDTO(AbstractDTOFactory[T], Generic[T]):
     model_type: ClassVar[type[Struct]]
 
     @classmethod
-    def generate_field_definitions(cls, model_type: type[Struct]) -> Generator[FieldDefinition, None, None]:
+    def generate_field_definitions(cls, model_type: type[Struct]) -> Generator[DTOFieldDefinition, None, None]:
         msgspec_fields = {f.name: f for f in cast("inspect.StructType", inspect.type_info(model_type)).fields}
 
         def default_or_empty(value: Any) -> Any:
             return Empty if value is NODEFAULT else value
 
-        for key, parsed_type in get_model_type_hints(model_type).items():
+        for key, field_definition in get_model_type_hints(model_type).items():
             msgspec_field = msgspec_fields[key]
+            dto_field = (field_definition.extra or {}).pop(DTO_FIELD_META_KEY, DTOField())
 
-            if isinstance(msgspec_field.type, inspect.Metadata):
-                dto_field = (msgspec_field.type.extra or {}).get(DTO_FIELD_META_KEY, DTOField())
-            else:
-                dto_field = DTOField()
-
-            yield FieldDefinition(
-                name=key,
+            yield replace(
+                DTOFieldDefinition.from_field_definition(
+                    field_definition=field_definition,
+                    dto_field=dto_field,
+                    unique_model_name=get_fully_qualified_class_name(model_type),
+                    default_factory=default_or_empty(msgspec_field.default_factory),
+                    dto_for=None,
+                ),
                 default=default_or_empty(msgspec_field.default),
-                parsed_type=parsed_type,
-                default_factory=default_or_empty(msgspec_field.default_factory),
-                dto_field=dto_field,
-                unique_model_name=get_fully_qualified_class_name(model_type),
-                dto_for=None,
+                name=key,
             )
 
     @classmethod
-    def detect_nested_field(cls, parsed_type: ParsedType) -> bool:
-        return parsed_type.is_subclass_of(Struct)
+    def detect_nested_field(cls, field_definition: FieldDefinition) -> bool:
+        return field_definition.is_subclass_of(Struct)

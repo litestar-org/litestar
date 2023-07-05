@@ -5,9 +5,9 @@ from typing import Any, ForwardRef, List, Optional, Tuple, Union
 import pytest
 from typing_extensions import Annotated
 
-from litestar.typing import ParsedType
+from litestar.typing import FieldDefinition
 
-from .test_utils.test_signature import T, _check_parsed_type, parsed_type_int, test_type_hints
+from .test_utils.test_signature import T, _check_field_definition, field_definition_int, test_type_hints
 
 
 @pytest.mark.parametrize(
@@ -21,9 +21,6 @@ from .test_utils.test_signature import T, _check_parsed_type, parsed_type_int, t
                 "origin": None,
                 "args": (),
                 "metadata": (),
-                "is_annotated": False,
-                "is_required": False,
-                "is_not_required": False,
                 "safe_generic_origin": None,
                 "inner_types": (),
             },
@@ -36,11 +33,8 @@ from .test_utils.test_signature import T, _check_parsed_type, parsed_type_int, t
                 "origin": list,
                 "args": (int,),
                 "metadata": (),
-                "is_annotated": False,
-                "is_required": False,
-                "is_not_required": False,
                 "safe_generic_origin": List,
-                "inner_types": (parsed_type_int,),
+                "inner_types": (field_definition_int,),
             },
         ),
         (
@@ -51,9 +45,6 @@ from .test_utils.test_signature import T, _check_parsed_type, parsed_type_int, t
                 "origin": None,
                 "args": (),
                 "metadata": ("foo",),
-                "is_annotated": True,
-                "is_required": False,
-                "is_not_required": False,
                 "safe_generic_origin": None,
                 "inner_types": (),
             },
@@ -66,11 +57,8 @@ from .test_utils.test_signature import T, _check_parsed_type, parsed_type_int, t
                 "origin": list,
                 "args": (int,),
                 "metadata": ("foo",),
-                "is_annotated": True,
-                "is_required": False,
-                "is_not_required": False,
                 "safe_generic_origin": List,
-                "inner_types": (parsed_type_int,),
+                "inner_types": (field_definition_int,),
             },
         ),
         (
@@ -81,9 +69,6 @@ from .test_utils.test_signature import T, _check_parsed_type, parsed_type_int, t
                 "origin": None,
                 "args": (),
                 "metadata": (),
-                "is_annotated": False,
-                "is_required": True,
-                "is_not_required": False,
                 "safe_generic_origin": None,
                 "inner_types": (),
             },
@@ -96,11 +81,8 @@ from .test_utils.test_signature import T, _check_parsed_type, parsed_type_int, t
                 "origin": list,
                 "args": (int,),
                 "metadata": (),
-                "is_annotated": False,
-                "is_required": True,
-                "is_not_required": False,
                 "safe_generic_origin": List,
-                "inner_types": (parsed_type_int,),
+                "inner_types": (field_definition_int,),
             },
         ),
         (
@@ -111,9 +93,6 @@ from .test_utils.test_signature import T, _check_parsed_type, parsed_type_int, t
                 "origin": None,
                 "args": (),
                 "metadata": (),
-                "is_annotated": False,
-                "is_required": False,
-                "is_not_required": True,
                 "safe_generic_origin": None,
                 "inner_types": (),
             },
@@ -126,11 +105,8 @@ from .test_utils.test_signature import T, _check_parsed_type, parsed_type_int, t
                 "origin": list,
                 "args": (int,),
                 "metadata": (),
-                "is_annotated": False,
-                "is_required": False,
-                "is_not_required": True,
                 "safe_generic_origin": List,
-                "inner_types": (parsed_type_int,),
+                "inner_types": (field_definition_int,),
             },
         ),
         (
@@ -141,9 +117,6 @@ from .test_utils.test_signature import T, _check_parsed_type, parsed_type_int, t
                 "origin": None,
                 "args": (),
                 "metadata": ("foo",),
-                "is_annotated": True,
-                "is_required": True,
-                "is_not_required": False,
                 "safe_generic_origin": None,
                 "inner_types": (),
             },
@@ -156,22 +129,19 @@ from .test_utils.test_signature import T, _check_parsed_type, parsed_type_int, t
                 "origin": list,
                 "args": (int,),
                 "metadata": ("foo",),
-                "is_annotated": True,
-                "is_required": True,
-                "is_not_required": False,
                 "safe_generic_origin": List,
-                "inner_types": (parsed_type_int,),
+                "inner_types": (field_definition_int,),
             },
         ),
     ],
 )
-def test_parsed_type_from_annotation(annotation: Any, expected: dict[str, Any]) -> None:
-    """Test ParsedType.from_annotation."""
-    _check_parsed_type(ParsedType(annotation), expected)
+def test_field_definition_from_annotation(annotation: Any, expected: dict[str, Any]) -> None:
+    """Test FieldDefinition.from_annotation."""
+    _check_field_definition(FieldDefinition.from_annotation(annotation), expected)
 
 
-def test_parsed_type_from_union_annotation() -> None:
-    """Test ParsedType.from_annotation for Union."""
+def test_field_definition_from_union_annotation() -> None:
+    """Test FieldDefinition.from_annotation for Union."""
     annotation = Union[int, List[int]]
     expected = {
         "raw": annotation,
@@ -179,78 +149,74 @@ def test_parsed_type_from_union_annotation() -> None:
         "origin": Union,
         "args": (int, List[int]),
         "metadata": (),
-        "is_annotated": False,
-        "is_required": False,
-        "is_not_required": False,
         "safe_generic_origin": Union,
-        "inner_types": (ParsedType(int), ParsedType(List[int])),
+        "inner_types": (FieldDefinition.from_annotation(int), FieldDefinition.from_annotation(List[int])),
     }
-    _check_parsed_type(ParsedType(annotation), expected)
+    _check_field_definition(FieldDefinition.from_annotation(annotation), expected)
 
 
 @pytest.mark.parametrize("value", ["int", ForwardRef("int")])
-def test_parsed_type_is_forward_ref_predicate(value: Any) -> None:
-    """Test ParsedType with ForwardRef."""
-    parsed_type = ParsedType(value)
-    assert parsed_type.is_forward_ref is True
-    assert parsed_type.annotation == value
-    assert parsed_type.origin is None
-    assert parsed_type.args == ()
-    assert parsed_type.metadata == ()
-    assert parsed_type.is_annotated is False
-    assert parsed_type.is_required is False
-    assert parsed_type.is_not_required is False
-    assert parsed_type.safe_generic_origin is None
-    assert parsed_type.inner_types == ()
+def test_field_definition_is_forward_ref_predicate(value: Any) -> None:
+    """Test FieldDefinition with ForwardRef."""
+    field_definition = FieldDefinition.from_annotation(value)
+    assert field_definition.is_forward_ref is True
+    assert field_definition.annotation == value
+    assert field_definition.origin is None
+    assert field_definition.args == ()
+    assert field_definition.metadata == ()
+    assert field_definition.is_annotated is False
+    assert field_definition.is_required is True
+    assert field_definition.safe_generic_origin is None
+    assert field_definition.inner_types == ()
 
 
-def test_parsed_type_is_type_var_predicate() -> None:
-    """Test ParsedType.is_type_var."""
-    assert ParsedType(int).is_type_var is False
-    assert ParsedType(T).is_type_var is True
-    assert ParsedType(Union[int, T]).is_type_var is False
+def test_field_definition_is_type_var_predicate() -> None:
+    """Test FieldDefinition.is_type_var."""
+    assert FieldDefinition.from_annotation(int).is_type_var is False
+    assert FieldDefinition.from_annotation(T).is_type_var is True
+    assert FieldDefinition.from_annotation(Union[int, T]).is_type_var is False
 
 
-def test_parsed_type_is_union_predicate() -> None:
-    """Test ParsedType.is_union."""
-    assert ParsedType(int).is_union is False
-    assert ParsedType(Optional[int]).is_union is True
-    assert ParsedType(Union[int, None]).is_union is True
-    assert ParsedType(Union[int, str]).is_union is True
+def test_field_definition_is_union_predicate() -> None:
+    """Test FieldDefinition.is_union."""
+    assert FieldDefinition.from_annotation(int).is_union is False
+    assert FieldDefinition.from_annotation(Optional[int]).is_union is True
+    assert FieldDefinition.from_annotation(Union[int, None]).is_union is True
+    assert FieldDefinition.from_annotation(Union[int, str]).is_union is True
 
 
-def test_parsed_type_is_optional_predicate() -> None:
-    """Test ParsedType.is_optional."""
-    assert ParsedType(int).is_optional is False
-    assert ParsedType(Optional[int]).is_optional is True
-    assert ParsedType(Union[int, None]).is_optional is True
-    assert ParsedType(Union[int, None, str]).is_optional is True
-    assert ParsedType(Union[int, str]).is_optional is False
+def test_field_definition_is_optional_predicate() -> None:
+    """Test FieldDefinition.is_optional."""
+    assert FieldDefinition.from_annotation(int).is_optional is False
+    assert FieldDefinition.from_annotation(Optional[int]).is_optional is True
+    assert FieldDefinition.from_annotation(Union[int, None]).is_optional is True
+    assert FieldDefinition.from_annotation(Union[int, None, str]).is_optional is True
+    assert FieldDefinition.from_annotation(Union[int, str]).is_optional is False
 
 
-def test_parsed_type_is_subclass_of() -> None:
-    """Test ParsedType.is_type_of."""
-    assert ParsedType(bool).is_subclass_of(int) is True
-    assert ParsedType(bool).is_subclass_of(str) is False
-    assert ParsedType(Union[int, str]).is_subclass_of(int) is False
-    assert ParsedType(List[int]).is_subclass_of(list) is True
-    assert ParsedType(List[int]).is_subclass_of(int) is False
-    assert ParsedType(Optional[int]).is_subclass_of(int) is False
-    assert ParsedType(Union[bool, int]).is_subclass_of(int) is True
+def test_field_definition_is_subclass_of() -> None:
+    """Test FieldDefinition.is_type_of."""
+    assert FieldDefinition.from_annotation(bool).is_subclass_of(int) is True
+    assert FieldDefinition.from_annotation(bool).is_subclass_of(str) is False
+    assert FieldDefinition.from_annotation(Union[int, str]).is_subclass_of(int) is False
+    assert FieldDefinition.from_annotation(List[int]).is_subclass_of(list) is True
+    assert FieldDefinition.from_annotation(List[int]).is_subclass_of(int) is False
+    assert FieldDefinition.from_annotation(Optional[int]).is_subclass_of(int) is False
+    assert FieldDefinition.from_annotation(Union[bool, int]).is_subclass_of(int) is True
 
 
-def test_parsed_type_has_inner_subclass_of() -> None:
-    """Test ParsedType.has_type_of."""
-    assert ParsedType(List[int]).has_inner_subclass_of(int) is True
-    assert ParsedType(List[int]).has_inner_subclass_of(str) is False
-    assert ParsedType(List[Union[int, str]]).has_inner_subclass_of(int) is False
+def test_field_definition_has_inner_subclass_of() -> None:
+    """Test FieldDefinition.has_type_of."""
+    assert FieldDefinition.from_annotation(List[int]).has_inner_subclass_of(int) is True
+    assert FieldDefinition.from_annotation(List[int]).has_inner_subclass_of(str) is False
+    assert FieldDefinition.from_annotation(List[Union[int, str]]).has_inner_subclass_of(int) is False
 
 
-def test_parsed_type_equality() -> None:
-    assert ParsedType(int) == ParsedType(int)
-    assert ParsedType(int) == ParsedType(Annotated[int, "meta"])
-    assert ParsedType(int) != int
-    assert ParsedType(List[int]) == ParsedType(List[int])
-    assert ParsedType(List[int]) != ParsedType(List[str])
-    assert ParsedType(List[str]) != ParsedType(Tuple[str])
-    assert ParsedType(Optional[str]) == ParsedType(Union[str, None])
+def test_field_definition_equality() -> None:
+    assert FieldDefinition.from_annotation(int) == FieldDefinition.from_annotation(int)
+    assert FieldDefinition.from_annotation(int) == FieldDefinition.from_annotation(Annotated[int, "meta"])
+    assert FieldDefinition.from_annotation(int) != int
+    assert FieldDefinition.from_annotation(List[int]) == FieldDefinition.from_annotation(List[int])
+    assert FieldDefinition.from_annotation(List[int]) != FieldDefinition.from_annotation(List[str])
+    assert FieldDefinition.from_annotation(List[str]) != FieldDefinition.from_annotation(Tuple[str])
+    assert FieldDefinition.from_annotation(Optional[str]) == FieldDefinition.from_annotation(Union[str, None])

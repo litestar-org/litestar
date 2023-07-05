@@ -8,7 +8,7 @@ from typing_extensions import Annotated
 from litestar import Controller, post
 from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.enums import OpenAPIMediaType
-from litestar.openapi import OpenAPIConfig
+from litestar.openapi import OpenAPIConfig, OpenAPIController
 from litestar.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from litestar.testing import create_test_client
 
@@ -41,7 +41,7 @@ def test_openapi_yaml_not_allowed(person_controller: Type[Controller], pet_contr
     openapi_config = DEFAULT_OPENAPI_CONFIG
     openapi_config.enabled_endpoints.discard("openapi.yaml")
 
-    with create_test_client([person_controller, pet_controller], openapi_config=openapi_config, debug=True) as client:
+    with create_test_client([person_controller, pet_controller], openapi_config=openapi_config) as client:
         assert client.app.openapi_schema
         openapi_schema = client.app.openapi_schema
         assert openapi_schema.paths
@@ -59,6 +59,63 @@ def test_openapi_json_not_allowed(person_controller: Type[Controller], pet_contr
         assert openapi_schema.paths
         response = client.get("/schema/openapi.json")
         assert response.status_code == HTTP_404_NOT_FOUND
+
+
+def test_openapi_custom_path() -> None:
+    openapi_config = OpenAPIConfig(title="my title", version="1.0.0", path="/custom_schema_path")
+    with create_test_client([], openapi_config=openapi_config) as client:
+        response = client.get("/schema")
+        assert response.status_code == HTTP_404_NOT_FOUND
+
+        response = client.get("/custom_schema_path")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/custom_schema_path/openapi.json")
+        assert response.status_code == HTTP_200_OK
+
+
+def test_openapi_normalizes_custom_path() -> None:
+    openapi_config = OpenAPIConfig(title="my title", version="1.0.0", path="custom_schema_path")
+    with create_test_client([], openapi_config=openapi_config) as client:
+        response = client.get("/custom_schema_path/openapi.json")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/custom_schema_path/openapi.json")
+        assert response.status_code == HTTP_200_OK
+
+
+def test_openapi_custom_path_avoids_override() -> None:
+    class CustomOpenAPIController(OpenAPIController):
+        path = "/custom_docs"
+
+    openapi_config = OpenAPIConfig(title="my title", version="1.0.0", openapi_controller=CustomOpenAPIController)
+    with create_test_client([], openapi_config=openapi_config) as client:
+        response = client.get("/schema")
+        assert response.status_code == HTTP_404_NOT_FOUND
+
+        response = client.get("/custom_docs/openapi.json")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/custom_docs/openapi.json")
+        assert response.status_code == HTTP_200_OK
+
+
+def test_openapi_custom_path_overrides_custom_controller_path() -> None:
+    class CustomOpenAPIController(OpenAPIController):
+        path = "/custom_docs"
+
+    openapi_config = OpenAPIConfig(
+        title="my title", version="1.0.0", openapi_controller=CustomOpenAPIController, path="/override_docs_path"
+    )
+    with create_test_client([], openapi_config=openapi_config) as client:
+        response = client.get("/custom_docs")
+        assert response.status_code == HTTP_404_NOT_FOUND
+
+        response = client.get("/override_docs_path/openapi.json")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/override_docs_path/openapi.json")
+        assert response.status_code == HTTP_200_OK
 
 
 def test_msgspec_schema_generation() -> None:

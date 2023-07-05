@@ -61,16 +61,16 @@ that are otherwise unsupported by the framework.
 
 Implementations of these plugins must define the following methods.
 
-:meth:`supports_type(self, parsed_type: ParsedType) -> bool: <litestar.plugins.SerializationPluginProtocol>`
-------------------------------------------------------------------------------------------------------------
+:meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <litestar.plugins.SerializationPluginProtocol>`
+----------------------------------------------------------------------------------------------------------------------
 
-The method takes a :class:`ParsedType <litestar.typing.ParsedType>` instance as an argument and returns a :class:`bool`
+The method takes a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and returns a :class:`bool`
 indicating whether the plugin supports serialization for that type.
 
-:meth:`create_dto_for_type(self, parsed_type: ParsedType) -> type[DTOInterface]: <litestar.plugins.SerializationPluginProtocol.create_dto_for_type>`
-----------------------------------------------------------------------------------------------------------------------------------------------------
+:meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[DTOInterface]: <litestar.plugins.SerializationPluginProtocol.create_dto_for_type>`
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-This method accepts a :class:`ParsedType <litestar.typing.ParsedType>` instance as an argument and must return a
+This method accepts a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and must return a
 :class:`DTOInterface <litestar.dto.interface.DTOInterface>` implementation that can be used to serialize and deserialize
 the type.
 
@@ -88,12 +88,12 @@ The following example shows the actual implementation of the ``SerializationPlug
    :language: python
    :caption: ``SerializationPluginProtocol`` implementation example
 
-:meth:`supports_type(self, parsed_type: ParsedType) -> bool: <litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.supports_type>`
+:meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.supports_type>`
 returns a :class:`bool` indicating whether the plugin supports serialization for the given type. Specifically, we return
 ``True`` if the parsed type is either a collection of SQLAlchemy models or a single SQLAlchemy model.
 
-:meth:`create_dto_for_type(self, parsed_type: ParsedType) -> type[DTOInterface]: <litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type>`
-takes a :class:`ParsedType <litestar.typing.ParsedType>` instance as an argument and returns a
+:meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[DTOInterface]: <litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type>`
+takes a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and returns a
 :class:`SQLAlchemyDTO <litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO>` subclass and includes some logic that may be
 interesting to potential serialization plugin authors.
 

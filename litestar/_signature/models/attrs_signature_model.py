@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 import traceback
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from datetime import date, datetime, time, timedelta, timezone
 from functools import lru_cache, partial
 from pathlib import PurePath
@@ -18,12 +18,11 @@ from uuid import UUID
 from _decimal import Decimal
 from typing_extensions import get_args
 
-from litestar._signature.field import SignatureField
 from litestar._signature.models.base import ErrorMessage, SignatureModel
 from litestar.connection import ASGIConnection, Request, WebSocket
 from litestar.datastructures import ImmutableState, MultiDict, State, UploadFile
 from litestar.exceptions import MissingDependencyException
-from litestar.params import BodyKwarg, DependencyKwarg, ParameterKwarg
+from litestar.params import DependencyKwarg, KwargDefinition
 from litestar.types import Empty
 from litestar.utils.predicates import is_optional_union, is_union
 from litestar.utils.typing import get_origin_or_inner_type, make_non_optional_union, unwrap_union
@@ -242,21 +241,21 @@ _converter: Converter = Converter()
 
 
 def _create_validators(
-    annotation: Any, kwargs_model: BodyKwarg | ParameterKwarg
+    annotation: Any, kwarg_definition: KwargDefinition
 ) -> list[Callable[[Any, attrs.Attribute[Any], Any], Any]] | Callable[[Any, attrs.Attribute[Any], Any], Any]:
     validators: list[Callable[[Any, attrs.Attribute[Any], Any], Any]] = [
         validator(value)  # type: ignore[operator]
         for value, validator in [
-            (kwargs_model.gt, attrs.validators.gt),
-            (kwargs_model.ge, attrs.validators.ge),
-            (kwargs_model.lt, attrs.validators.lt),
-            (kwargs_model.le, attrs.validators.le),
-            (kwargs_model.min_length, attrs.validators.min_len),
-            (kwargs_model.max_length, attrs.validators.max_len),
-            (kwargs_model.min_items, attrs.validators.min_len),
-            (kwargs_model.max_items, attrs.validators.max_len),
+            (kwarg_definition.gt, attrs.validators.gt),
+            (kwarg_definition.ge, attrs.validators.ge),
+            (kwarg_definition.lt, attrs.validators.lt),
+            (kwarg_definition.le, attrs.validators.le),
+            (kwarg_definition.min_length, attrs.validators.min_len),
+            (kwarg_definition.max_length, attrs.validators.max_len),
+            (kwarg_definition.min_items, attrs.validators.min_len),
+            (kwarg_definition.max_items, attrs.validators.max_len),
             (
-                kwargs_model.pattern,
+                kwarg_definition.pattern,
                 partial(attrs.validators.matches_re, flags=0),
             ),
         ]
@@ -398,17 +397,18 @@ class AttrsSignatureModel(SignatureModel):
         return messages
 
     @classmethod
-    def populate_signature_fields(cls) -> None:
-        cls.fields = {
-            k: SignatureField.create(
-                field_type=attribute.type,
-                name=k,
-                default_value=attribute.default if attribute.default is not attr.NOTHING else Empty,
-                kwarg_model=attribute.metadata.get("kwargs_model", None) if attribute.metadata else None,
-                extra=attribute.metadata or None,
+    def populate_field_definitions(cls) -> None:
+        cls.fields = {}
+
+        for key, attribute in attrs.fields_dict(cls).items():
+            metadata = dict(attribute.metadata)
+            field_definition = metadata.pop("field_definition")
+            cls.fields[key] = replace(
+                field_definition,
+                name=key,
+                default=attribute.default if attribute.default is not attr.NOTHING else Empty,
+                extra=metadata,
             )
-            for k, attribute in attrs.fields_dict(cls).items()
-        }
 
     @classmethod
     def create(
@@ -422,34 +422,38 @@ class AttrsSignatureModel(SignatureModel):
         attributes: dict[str, Any] = {}
 
         for parameter in parsed_signature.parameters.values():
-            annotation = type_overrides.get(parameter.name, parameter.parsed_type.annotation)
+            annotation = type_overrides.get(parameter.name, parameter.annotation)
 
-            if kwargs_container := parameter.kwarg_container:
-                if isinstance(kwargs_container, DependencyKwarg):
+            if kwarg_definition := parameter.kwarg_definition:
+                if isinstance(kwarg_definition, DependencyKwarg):
                     attribute = attr.attrib(
-                        type=Any if kwargs_container.skip_validation else annotation,
-                        default=kwargs_container.default if kwargs_container.default is not Empty else None,
+                        type=Any if kwarg_definition.skip_validation else annotation,
+                        default=kwarg_definition.default if kwarg_definition.default is not Empty else None,
                         metadata={
-                            "kwargs_model": kwargs_container,
-                            "parsed_parameter": parameter,
+                            "kwarg_definition": kwarg_definition,
+                            "field_definition": parameter,
                         },
                     )
                 else:
                     attribute = attr.attrib(
                         type=annotation,
                         metadata={
-                            **asdict(kwargs_container),
-                            "kwargs_model": kwargs_container,
-                            "parsed_parameter": parameter,
+                            **asdict(kwarg_definition),
+                            "kwarg_definition": kwarg_definition,
+                            "field_definition": parameter,
                         },
-                        default=kwargs_container.default if kwargs_container.default is not Empty else attr.NOTHING,
-                        validator=_create_validators(annotation=annotation, kwargs_model=kwargs_container),
+                        default=kwarg_definition.default if kwarg_definition.default is not Empty else attr.NOTHING,
+                        validator=_create_validators(annotation=annotation, kwarg_definition=kwarg_definition),
                     )
             elif parameter.has_default:
-                attribute = attr.attrib(type=annotation, default=parameter.default)
+                attribute = attr.attrib(
+                    type=annotation, default=parameter.default, metadata={"field_definition": parameter}
+                )
             else:
                 attribute = attr.attrib(
-                    type=annotation, default=None if parameter.parsed_type.is_optional else attr.NOTHING
+                    type=annotation,
+                    default=None if parameter.is_optional else attr.NOTHING,
+                    metadata={"field_definition": parameter},
                 )
 
             attributes[parameter.name] = attribute
@@ -463,5 +467,5 @@ class AttrsSignatureModel(SignatureModel):
         )
         model.return_annotation = parsed_signature.return_type.annotation  # pyright: ignore
         model.dependency_name_set = dependency_names  # pyright: ignore
-        model.populate_signature_fields()  # pyright: ignore
+        model.populate_field_definitions()  # pyright: ignore
         return model

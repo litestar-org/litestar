@@ -6,11 +6,11 @@ from pydantic import BaseConfig, BaseModel
 from litestar import Controller, Litestar, post
 from litestar._openapi.request_body import create_request_body
 from litestar._openapi.schema_generation import SchemaCreator
-from litestar._signature.field import SignatureField
 from litestar.datastructures.upload_file import UploadFile
 from litestar.dto.interface import DTOInterface
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
+from litestar.typing import FieldDefinition
 
 
 class FormData(BaseModel):
@@ -96,7 +96,7 @@ def test_request_body_generation_with_dto() -> None:
     schema_creator = SchemaCreator(generate_examples=False)
     create_request_body(
         route_handler=handler,
-        field=SignatureField.create(Dict[str, Any]),
+        field=FieldDefinition.from_annotation(Dict[str, Any]),
         schema_creator=schema_creator,
     )
 

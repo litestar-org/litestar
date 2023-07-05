@@ -10,6 +10,7 @@ contrib
     mako
     msgspec
     opentelemetry
+    piccolo
     pydantic
     repository/index
     sqlalchemy/index

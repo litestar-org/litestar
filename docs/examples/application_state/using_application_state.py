@@ -39,4 +39,4 @@ def get_handler(state: State, request: Request, dep: Any) -> None:
     logger.info("state value in handler from `Request`: %s", request.app.state.value)
 
 
-app = Litestar(route_handlers=[get_handler], on_startup=[set_state_on_startup], debug=True)
+app = Litestar(route_handlers=[get_handler], on_startup=[set_state_on_startup])

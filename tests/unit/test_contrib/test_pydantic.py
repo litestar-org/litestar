@@ -7,8 +7,8 @@ from typing_extensions import Annotated
 
 from litestar.contrib.pydantic import PydanticDTO
 from litestar.dto.factory import dto_field
-from litestar.dto.factory.data_structures import FieldDefinition
-from litestar.typing import ParsedType
+from litestar.dto.factory.data_structures import DTOFieldDefinition
+from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 def test_field_definition_generation(
-    int_factory: Callable[[], int], expected_field_defs: list[FieldDefinition]
+    int_factory: Callable[[], int], expected_field_defs: list[DTOFieldDefinition]
 ) -> None:
     class TestModel(BaseModel):
         a: int
@@ -41,8 +41,8 @@ def test_detect_nested_field() -> None:
     class NotModel:
         pass
 
-    assert PydanticDTO.detect_nested_field(ParsedType(TestModel)) is True
-    assert PydanticDTO.detect_nested_field(ParsedType(NotModel)) is False
+    assert PydanticDTO.detect_nested_field(FieldDefinition.from_annotation(TestModel)) is True
+    assert PydanticDTO.detect_nested_field(FieldDefinition.from_annotation(NotModel)) is False
 
 
 def test_generate_field_definitions_from_beanie_models(create_module: Callable[[str], ModuleType]) -> None:

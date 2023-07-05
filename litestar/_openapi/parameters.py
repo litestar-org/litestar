@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import TYPE_CHECKING
 
 from litestar.constants import RESERVED_KWARGS
@@ -12,10 +13,10 @@ from litestar.types import Empty
 
 __all__ = ("create_parameter_for_handler",)
 
+from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
-    from litestar._signature.field import SignatureField
     from litestar.di import Provide
     from litestar.handlers.base import BaseRouteHandler
     from litestar.openapi.spec import Reference
@@ -67,46 +68,38 @@ class ParameterCollection:
 
 
 def create_parameter(
-    signature_field: SignatureField,
+    field_definition: FieldDefinition,
     parameter_name: str,
     path_parameters: tuple[PathParameterDefinition, ...],
     schema_creator: SchemaCreator,
 ) -> Parameter:
     """Create an OpenAPI Parameter instance."""
-    from litestar._signature.field import SignatureField
 
     result: Schema | Reference | None = None
-    kwargs_model = signature_field.kwarg_model if isinstance(signature_field.kwarg_model, ParameterKwarg) else None
+    kwarg_definition = (
+        field_definition.kwarg_definition if isinstance(field_definition.kwarg_definition, ParameterKwarg) else None
+    )
 
     if any(path_param.name == parameter_name for path_param in path_parameters):
         param_in = ParamType.PATH
         is_required = True
-        path_parameter = [p for p in path_parameters if parameter_name in p.name][0]
-        result = schema_creator.for_field(
-            SignatureField(
-                children=None,
-                default_value=signature_field.default_value,
-                extra=signature_field.extra,
-                field_type=path_parameter.type,
-                kwarg_model=signature_field.kwarg_model,
-                name=signature_field.name,
-            )
-        )
-    elif kwargs_model and kwargs_model.header:
-        parameter_name = kwargs_model.header
+        path_parameter = next(p for p in path_parameters if parameter_name in p.name)
+        result = schema_creator.for_field_definition(replace(field_definition, annotation=path_parameter.type))
+    elif kwarg_definition and kwarg_definition.header:
+        parameter_name = kwarg_definition.header
         param_in = ParamType.HEADER
-        is_required = signature_field.is_required
-    elif kwargs_model and kwargs_model.cookie:
-        parameter_name = kwargs_model.cookie
+        is_required = field_definition.is_required
+    elif kwarg_definition and kwarg_definition.cookie:
+        parameter_name = kwarg_definition.cookie
         param_in = ParamType.COOKIE
-        is_required = signature_field.is_required
+        is_required = field_definition.is_required
     else:
-        is_required = signature_field.is_required
+        is_required = field_definition.is_required
         param_in = ParamType.QUERY
-        parameter_name = kwargs_model.query if kwargs_model and kwargs_model.query else parameter_name
+        parameter_name = kwarg_definition.query if kwarg_definition and kwarg_definition.query else parameter_name
 
     if not result:
-        result = schema_creator.for_field(signature_field)
+        result = schema_creator.for_field_definition(field_definition)
 
     schema = result if isinstance(result, Schema) else schema_creator.schemas[result.value]
 
@@ -121,7 +114,7 @@ def create_parameter(
 
 def get_recursive_handler_parameters(
     field_name: str,
-    signature_field: SignatureField,
+    field_definition: FieldDefinition,
     dependency_providers: dict[str, Provide],
     route_handler: BaseRouteHandler,
     path_parameters: tuple[PathParameterDefinition, ...],
@@ -136,7 +129,7 @@ def get_recursive_handler_parameters(
     if field_name not in dependency_providers:
         return [
             create_parameter(
-                signature_field=signature_field,
+                field_definition=field_definition,
                 parameter_name=field_name,
                 path_parameters=path_parameters,
                 schema_creator=schema_creator,
@@ -154,8 +147,8 @@ def get_recursive_handler_parameters(
 
 def get_layered_parameter(
     field_name: str,
-    signature_field: SignatureField,
-    layered_parameters: dict[str, SignatureField],
+    field_definition: FieldDefinition,
+    layered_parameters: dict[str, FieldDefinition],
     path_parameters: tuple[PathParameterDefinition, ...],
     schema_creator: SchemaCreator,
 ) -> Parameter:
@@ -165,26 +158,26 @@ def get_layered_parameter(
     """
     layer_field = layered_parameters[field_name]
 
-    field = signature_field if signature_field.is_parameter_field else layer_field
-    default_value = layer_field.default_value if signature_field.is_empty else signature_field.default_value
-    field_type = signature_field.field_type if signature_field is not Empty else layer_field.field_type  # type: ignore
+    field = field_definition if field_definition.is_parameter_field else layer_field
+    default = layer_field.default if field_definition.has_default else field_definition.default
+    annotation = field_definition.annotation if field_definition is not Empty else layer_field.annotation
 
     parameter_name = field_name
-    if isinstance(field.kwarg_model, ParameterKwarg):
-        parameter_name = field.kwarg_model.query or field.kwarg_model.header or field.kwarg_model.cookie or field_name
+    if isinstance(field.kwarg_definition, ParameterKwarg):
+        parameter_name = (
+            field.kwarg_definition.query or field.kwarg_definition.header or field.kwarg_definition.cookie or field_name
+        )
 
-    from litestar._signature.field import SignatureField
-
-    signature_field = SignatureField.create(
-        children=field.children,
-        default_value=default_value,
+    field_definition = FieldDefinition.from_kwarg(
+        inner_types=field.inner_types,
+        default=default,
         extra=field.extra,
-        field_type=field_type,
-        kwarg_model=field.kwarg_model,
+        annotation=annotation,
+        kwarg_definition=field.kwarg_definition,
         name=field_name,
     )
     return create_parameter(
-        signature_field=signature_field,
+        field_definition=field_definition,
         parameter_name=parameter_name,
         path_parameters=path_parameters,
         schema_creator=schema_creator,
@@ -193,7 +186,7 @@ def get_layered_parameter(
 
 def create_parameter_for_handler(
     route_handler: BaseRouteHandler,
-    handler_fields: dict[str, SignatureField],
+    handler_fields: dict[str, FieldDefinition],
     path_parameters: tuple[PathParameterDefinition, ...],
     schema_creator: SchemaCreator,
 ) -> list[Parameter]:
@@ -213,14 +206,14 @@ def create_parameter_for_handler(
         (k, v) for k, v in handler_fields.items() if k not in RESERVED_KWARGS and k in layered_parameters
     )
 
-    for field_name, signature_field in unique_handler_fields:
-        if isinstance(signature_field.kwarg_model, DependencyKwarg) and field_name not in dependency_providers:
+    for field_name, field_definition in unique_handler_fields:
+        if isinstance(field_definition.kwarg_definition, DependencyKwarg) and field_name not in dependency_providers:
             # never document explicit dependencies
             continue
 
         for parameter in get_recursive_handler_parameters(
             field_name=field_name,
-            signature_field=signature_field,
+            field_definition=field_definition,
             dependency_providers=dependency_providers,
             route_handler=route_handler,
             path_parameters=path_parameters,
@@ -228,21 +221,21 @@ def create_parameter_for_handler(
         ):
             parameters.add(parameter)
 
-    for field_name, signature_field in unique_layered_fields:
+    for field_name, field_definition in unique_layered_fields:
         parameters.add(
             create_parameter(
-                signature_field=signature_field,
+                field_definition=field_definition,
                 parameter_name=field_name,
                 path_parameters=path_parameters,
                 schema_creator=schema_creator,
             )
         )
 
-    for field_name, signature_field in intersection_fields:
+    for field_name, field_definition in intersection_fields:
         parameters.add(
             get_layered_parameter(
                 field_name=field_name,
-                signature_field=signature_field,
+                field_definition=field_definition,
                 layered_parameters=layered_parameters,
                 path_parameters=path_parameters,
                 schema_creator=schema_creator,

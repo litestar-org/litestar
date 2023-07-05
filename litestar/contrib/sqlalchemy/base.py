@@ -66,7 +66,7 @@ def touch_updated_timestamp(session: Session, *_: Any) -> None:
     """
     for instance in session.dirty:
         if hasattr(instance, "updated_at"):
-            instance.updated = (datetime.now(timezone.utc),)
+            instance.updated_at = datetime.now(timezone.utc)
 
 
 @runtime_checkable
@@ -114,12 +114,12 @@ class AuditColumns:
 
     created_at: Mapped[datetime] = mapped_column(  # pyright: ignore
         DateTimeUTC(timezone=True),
-        default=datetime.now(timezone.utc),
+        default=lambda: datetime.now(timezone.utc),
     )
     """Date/time of instance creation."""
     updated_at: Mapped[datetime] = mapped_column(  # pyright: ignore
         DateTimeUTC(timezone=True),
-        default=datetime.now(timezone.utc),
+        default=lambda: datetime.now(timezone.utc),
     )
     """Date/time of instance last update."""
 

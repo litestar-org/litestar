@@ -10,8 +10,8 @@ from litestar.params import ParameterKwarg
 if TYPE_CHECKING:
     from typing_extensions import NotRequired
 
-    from litestar._signature.field import SignatureField
     from litestar.connection import ASGIConnection
+    from litestar.typing import FieldDefinition
     from litestar.utils.signature import ParsedSignature
 
 __all__ = ("SignatureModel",)
@@ -31,7 +31,7 @@ class SignatureModel(ABC):
 
     dependency_name_set: ClassVar[set[str]]
     return_annotation: ClassVar[Any]
-    fields: ClassVar[dict[str, SignatureField]]
+    fields: ClassVar[dict[str, FieldDefinition]]
 
     @classmethod
     def _create_exception(cls, connection: ASGIConnection, messages: list[ErrorMessage]) -> Exception:
@@ -86,10 +86,10 @@ class SignatureModel(ABC):
             if key in connection.query_params:
                 message["source"] = cast("Literal['cookie', 'body', 'header', 'query']", "query")
 
-            elif key in cls.fields and isinstance(cls.fields[key].kwarg_model, ParameterKwarg):
-                if cast(ParameterKwarg, cls.fields[key].kwarg_model).cookie:
+            elif key in cls.fields and isinstance(cls.fields[key].kwarg_definition, ParameterKwarg):
+                if cast(ParameterKwarg, cls.fields[key].kwarg_definition).cookie:
                     source = "cookie"
-                elif cast(ParameterKwarg, cls.fields[key].kwarg_model).header:
+                elif cast(ParameterKwarg, cls.fields[key].kwarg_definition).header:
                     source = "header"
                 else:
                     source = "query"
@@ -126,7 +126,7 @@ class SignatureModel(ABC):
 
     @classmethod
     @abstractmethod
-    def populate_signature_fields(cls) -> None:
+    def populate_field_definitions(cls) -> None:
         """Populate the class signature fields.
 
         Returns:

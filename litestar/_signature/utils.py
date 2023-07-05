@@ -22,7 +22,8 @@ if TYPE_CHECKING:
     from typing_extensions import TypeAlias
 
     from litestar._signature.models.base import SignatureModel
-    from litestar.utils.signature import ParsedParameter, ParsedSignature
+    from litestar.typing import FieldDefinition
+    from litestar.utils.signature import ParsedSignature
 
 __all__ = (
     "create_signature_model",
@@ -89,11 +90,11 @@ def get_signature_model(value: Any) -> type[SignatureModel]:
 
 
 def _any_attrs_annotation(parsed_signature: ParsedSignature) -> bool:
-    for parameter in parsed_signature.parameters.values():
-        parsed_type = parameter.parsed_type
-        if any(is_attrs_class(t.annotation) for t in parsed_type.inner_types) or is_attrs_class(parsed_type.annotation):
-            return True
-    return False
+    return any(
+        any(is_attrs_class(t.annotation) for t in field_definition.inner_types)
+        or is_attrs_class(field_definition.annotation)
+        for field_definition in parsed_signature.parameters.values()
+    )
 
 
 def _create_type_overrides(parsed_signature: ParsedSignature, has_data_dto: bool) -> dict[str, Any]:
@@ -117,14 +118,15 @@ def _get_signature_model_type(
     return PydanticSignatureModel
 
 
-def _should_skip_validation(parameter: ParsedParameter) -> bool:
+def _should_skip_validation(field_definition: FieldDefinition) -> bool:
     """Whether the parameter should skip validation.
 
     Returns:
         A boolean indicating whether the parameter should be validated.
     """
-    return parameter.name in SKIP_VALIDATION_NAMES or (
-        isinstance(parameter.default, DependencyKwarg) and parameter.default.skip_validation
+    return field_definition.name in SKIP_VALIDATION_NAMES or (
+        isinstance(field_definition.kwarg_definition, DependencyKwarg)
+        and field_definition.kwarg_definition.skip_validation
     )
 
 
@@ -146,8 +148,8 @@ def _validate_dependencies(
     dependency_names: set[str] = set()
 
     for parameter in parsed_signature.parameters.values():
-        if isinstance(parameter.default, DependencyKwarg) and parameter.name not in dependency_name_set:
-            if not parameter.parsed_type.is_optional and parameter.default.default is Empty:
+        if isinstance(parameter.kwarg_definition, DependencyKwarg) and parameter.name not in dependency_name_set:
+            if not parameter.is_optional and parameter.default is Empty:
                 raise ImproperlyConfiguredException(
                     f"Explicit dependency '{parameter.name}' for '{fn_name}' has no default value, "
                     f"or provided dependency."

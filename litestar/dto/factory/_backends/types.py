@@ -3,14 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from litestar.dto.factory.data_structures import FieldDefinition
+from litestar.dto.factory.data_structures import DTOFieldDefinition
 
 if TYPE_CHECKING:
     from typing import Any
 
     from typing_extensions import Self, TypeAlias
 
-    from litestar.typing import ParsedType
+    from litestar.typing import FieldDefinition
 
 
 @dataclass(frozen=True)
@@ -27,9 +27,9 @@ class NestedFieldInfo:
 class TransferType:
     """Type for representing model types for data transfer."""
 
-    __slots__ = ("parsed_type",)
+    __slots__ = ("field_definition",)
 
-    parsed_type: ParsedType
+    field_definition: FieldDefinition
 
 
 @dataclass(frozen=True)
@@ -90,7 +90,7 @@ class MappingType(CompositeType):
 
 
 @dataclass(frozen=True)
-class TransferFieldDefinition(FieldDefinition):
+class TransferDTOFieldDefinition(DTOFieldDefinition):
     __slots__ = (
         "default_factory",
         "dto_field",
@@ -113,28 +113,38 @@ class TransferFieldDefinition(FieldDefinition):
     """Whether the field should be excluded from transfer."""
 
     @classmethod
-    def from_field_definition(
+    def from_dto_field_definition(
         cls,
-        field_definition: FieldDefinition,
+        field_definition: DTOFieldDefinition,
         transfer_type: TransferType,
         serialization_name: str,
         is_partial: bool,
         is_excluded: bool,
     ) -> Self:
         return cls(
-            name=field_definition.name,
+            annotation=field_definition.annotation,
+            args=field_definition.args,
             default=field_definition.default,
-            parsed_type=field_definition.parsed_type,
             default_factory=field_definition.default_factory,
-            serialization_name=serialization_name,
-            unique_model_name=field_definition.unique_model_name,
-            transfer_type=transfer_type,
             dto_field=field_definition.dto_field,
-            is_partial=is_partial,
-            is_excluded=is_excluded,
             dto_for=field_definition.dto_for,
+            extra=field_definition.extra,
+            inner_types=field_definition.inner_types,
+            instantiable_origin=field_definition.instantiable_origin,
+            is_excluded=is_excluded,
+            is_partial=is_partial,
+            kwarg_definition=field_definition.kwarg_definition,
+            metadata=field_definition.metadata,
+            name=field_definition.name,
+            origin=field_definition.origin,
+            raw=field_definition.raw,
+            safe_generic_origin=field_definition.safe_generic_origin,
+            serialization_name=serialization_name,
+            transfer_type=transfer_type,
+            type_wrappers=field_definition.type_wrappers,
+            unique_model_name=field_definition.unique_model_name,
         )
 
 
-FieldDefinitionsType: TypeAlias = "tuple[TransferFieldDefinition, ...]"
+FieldDefinitionsType: TypeAlias = "tuple[TransferDTOFieldDefinition, ...]"
 """Generic representation of names and types."""
