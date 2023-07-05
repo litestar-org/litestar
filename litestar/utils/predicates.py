@@ -57,8 +57,9 @@ except ImportError:  # pragma: no cover
     attrs = Empty  # type: ignore
 
 __all__ = (
-    "is_async_callable",
+    "is_annotated_type",
     "is_any",
+    "is_async_callable",
     "is_attrs_class",
     "is_class_and_subclass",
     "is_class_var",
@@ -126,14 +127,14 @@ def is_dataclass_class(annotation: Any) -> TypeGuard[type[DataclassProtocol]]:
         return False
 
 
-def is_class_and_subclass(annotation: Any, t_type: type[T]) -> TypeGuard[type[T]]:
+def is_class_and_subclass(annotation: Any, type_or_type_tuple: type[T] | tuple[type[T], ...]) -> TypeGuard[type[T]]:
     """Return ``True`` if ``value`` is a ``class`` and is a subtype of ``t_type``.
 
     See https://github.com/litestar-org/litestar/issues/367
 
     Args:
         annotation: The value to check if is class and subclass of ``t_type``.
-        t_type: Type used for :func:`issubclass` check of ``value``
+        type_or_type_tuple: Type used for :func:`issubclass` check of ``value``
 
     Returns:
         bool
@@ -142,7 +143,7 @@ def is_class_and_subclass(annotation: Any, t_type: type[T]) -> TypeGuard[type[T]
     if not origin and not isclass(annotation):
         return False
     try:
-        return issubclass(origin or annotation, t_type)
+        return issubclass(origin or annotation, type_or_type_tuple)
     except TypeError:  # pragma: no cover
         return False
 

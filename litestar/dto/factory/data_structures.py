@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from litestar.utils.signature import ParsedParameter
+from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
     from typing import Any, Callable
@@ -62,7 +62,7 @@ def _set_nested_dict_value(d: dict[str, Any], keys: list[str], value: Any) -> No
 
 
 @dataclass(frozen=True)
-class FieldDefinition(ParsedParameter):
+class DTOFieldDefinition(FieldDefinition):
     """A model field representation for purposes of generating a DTO backend model type."""
 
     __slots__ = (
@@ -94,3 +94,44 @@ class FieldDefinition(ParsedParameter):
 
     def unique_name(self) -> str:
         return f"{self.unique_model_name}.{self.name}"
+
+    @classmethod
+    def from_field_definition(
+        cls,
+        field_definition: FieldDefinition,
+        unique_model_name: str,
+        default_factory: Callable[[], Any] | None,
+        dto_field: DTOField,
+        dto_for: ForType | None,
+    ) -> DTOFieldDefinition:
+        """Create a :class:`FieldDefinition` from a :class:`FieldDefinition`.
+
+        Args:
+            field_definition: A :class:`FieldDefinition` to create a :class:`FieldDefinition` from.
+            unique_model_name: The unique name of the model.
+            default_factory: Default factory function, if any.
+            dto_field: DTOField instance.
+            dto_for: DTO type.
+
+        Returns:
+            A :class:`FieldDefinition` instance.
+        """
+        return DTOFieldDefinition(
+            annotation=field_definition.annotation,
+            args=field_definition.args,
+            default=field_definition.default,
+            extra=field_definition.extra,
+            inner_types=field_definition.inner_types,
+            instantiable_origin=field_definition.instantiable_origin,
+            kwarg_definition=field_definition.kwarg_definition,
+            metadata=field_definition.metadata,
+            name=field_definition.name,
+            origin=field_definition.origin,
+            raw=field_definition.raw,
+            safe_generic_origin=field_definition.safe_generic_origin,
+            type_wrappers=field_definition.type_wrappers,
+            unique_model_name=unique_model_name,
+            default_factory=default_factory,
+            dto_field=dto_field,
+            dto_for=dto_for,
+        )

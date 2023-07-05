@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar.dto.interface import ConnectionContext, DTOInterface
 from litestar.enums import RequestEncodingType
-from litestar.typing import ParsedType
+from litestar.typing import FieldDefinition
 
 from ._backends import MsgspecDTOBackend, PydanticDTOBackend
 from ._backends.abc import BackendContext
@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from litestar.types.serialization import LitestarEncodableType
 
     from ._backends import AbstractDTOBackend
-    from .data_structures import FieldDefinition
+    from .data_structures import DTOFieldDefinition
 
 __all__ = ("AbstractDTOFactory",)
 
@@ -46,7 +46,9 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
     model_type: ClassVar[type[Any]]
     """If ``annotation`` is an iterable, this is the inner type, otherwise will be the same as ``annotation``."""
 
-    _type_backend_map: ClassVar[dict[tuple[ForType, ParsedType, RequestEncodingType | str | None], AbstractDTOBackend]]
+    _type_backend_map: ClassVar[
+        dict[tuple[ForType, FieldDefinition, RequestEncodingType | str | None], AbstractDTOBackend]
+    ]
     _handler_backend_map: ClassVar[dict[tuple[ForType, str], AbstractDTOBackend]]
 
     def __init__(self, connection_context: ConnectionContext) -> None:
@@ -59,21 +61,21 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
         self.connection_context = connection_context
 
     def __class_getitem__(cls, annotation: Any) -> type[Self]:
-        parsed_type = ParsedType(annotation)
+        field_definition = FieldDefinition.from_annotation(annotation)
 
-        if (parsed_type.is_optional and len(parsed_type.args) > 2) or (
-            parsed_type.is_union and not parsed_type.is_optional
+        if (field_definition.is_optional and len(field_definition.args) > 2) or (
+            field_definition.is_union and not field_definition.is_optional
         ):
             raise InvalidAnnotation(
                 "Unions are currently not supported as type argument to DTO. Want this? Open an issue."
             )
 
-        if parsed_type.is_forward_ref:
+        if field_definition.is_forward_ref:
             raise InvalidAnnotation("Forward references are not supported as type argument to DTO")
 
         # if a configuration is not provided, and the type narrowing is a type var, we don't want to create a subclass
-        configs = parse_configs_from_annotation(parsed_type)
-        if parsed_type.is_type_var and not configs:
+        configs = parse_configs_from_annotation(field_definition)
+        if field_definition.is_type_var and not configs:
             return cls
 
         if configs:
@@ -87,8 +89,8 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
             config = DTOConfig()
 
         cls_dict: dict[str, Any] = {"config": config, "_type_backend_map": {}, "_handler_backend_map": {}}
-        if not parsed_type.is_type_var:
-            cls_dict.update(model_type=parsed_type.annotation)
+        if not field_definition.is_type_var:
+            cls_dict.update(model_type=field_definition.annotation)
 
         return type(f"{cls.__name__}[{annotation}]", (cls,), cls_dict)
 
@@ -108,7 +110,7 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
 
     @classmethod
     @abstractmethod
-    def generate_field_definitions(cls, model_type: type[Any]) -> Generator[FieldDefinition, None, None]:
+    def generate_field_definitions(cls, model_type: type[Any]) -> Generator[DTOFieldDefinition, None, None]:
         """Generate ``FieldDefinition`` instances from ``model_type``.
 
         Yields:
@@ -117,14 +119,14 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
 
     @classmethod
     @abstractmethod
-    def detect_nested_field(cls, parsed_type: ParsedType) -> bool:
+    def detect_nested_field(cls, field_definition: FieldDefinition) -> bool:
         """Return ``True`` if ``field_definition`` represents a nested model field.
 
         Args:
-            parsed_type: inspect type to determine if field represents a nested model.
+            field_definition: inspect type to determine if field represents a nested model.
 
         Returns:
-            ``True`` if ``parsed_type`` represents a nested model field.
+            ``True`` if ``field_definition`` represents a nested model field.
         """
 
     @classmethod
@@ -135,20 +137,20 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
             handler_context: A :class:`HandlerContext <.HandlerContext>` instance. Provides information about the
                 handler and application of the DTO.
         """
-        parsed_type = handler_context.parsed_type
-        model_type = resolve_model_type(parsed_type)
+        field_definition = handler_context.field_definition
+        model_type = resolve_model_type(field_definition)
         wrapper_attribute_name: str | None = None
 
         if not model_type.is_subclass_of(cls.model_type):
             resolved_generic_result = resolve_generic_wrapper_type(model_type, cls.model_type)
             if resolved_generic_result is not None:
-                model_type, parsed_type, wrapper_attribute_name = resolved_generic_result
+                model_type, field_definition, wrapper_attribute_name = resolved_generic_result
             else:
                 raise InvalidAnnotation(
-                    f"DTO narrowed with '{cls.model_type}', handler type is '{parsed_type.annotation}'"
+                    f"DTO narrowed with '{cls.model_type}', handler type is '{field_definition.annotation}'"
                 )
 
-        key = (handler_context.dto_for, parsed_type, handler_context.request_encoding_type)
+        key = (handler_context.dto_for, field_definition, handler_context.request_encoding_type)
         backend = cls._type_backend_map.get(key)
         if backend is None:
             backend_type: type[AbstractDTOBackend]
@@ -163,7 +165,7 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
             backend_context = BackendContext(
                 dto_config=cls.config,
                 dto_for=handler_context.dto_for,
-                parsed_type=parsed_type,
+                field_definition=field_definition,
                 field_definition_generator=cls.generate_field_definitions,
                 is_nested_field_predicate=cls.detect_nested_field,
                 model_type=model_type.annotation,

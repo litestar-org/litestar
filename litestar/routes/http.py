@@ -180,8 +180,8 @@ class HTTPRoute(BaseRoute):
             if "data" in kwargs:
                 try:
                     kwargs["data"] = await kwargs["data"]
-                except SerializationException as exc:
-                    raise ClientException(str(exc)) from exc
+                except SerializationException as e:
+                    raise ClientException(str(e)) from e
 
             if "body" in kwargs:
                 kwargs["body"] = await kwargs["body"]

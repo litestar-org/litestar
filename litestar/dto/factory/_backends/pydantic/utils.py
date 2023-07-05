@@ -12,7 +12,7 @@ from litestar.types import Empty
 if TYPE_CHECKING:
     from typing import Any
 
-    from litestar.dto.factory._backends.types import FieldDefinitionsType, TransferFieldDefinition
+    from litestar.dto.factory._backends.types import FieldDefinitionsType, TransferDTOFieldDefinition
 
 __all__ = ("_create_model_for_field_definitions",)
 
@@ -26,7 +26,7 @@ class _OrmModeBase(BaseModel):
         orm_mode = True
 
 
-def _create_field_info(field_definition: TransferFieldDefinition) -> FieldInfo:
+def _create_field_info(field_definition: TransferDTOFieldDefinition) -> FieldInfo:
     kws: dict[str, Any] = {}
     if field_definition.is_partial:
         kws["default"] = UNSET

@@ -2,21 +2,21 @@ from __future__ import annotations
 
 import sys
 import typing
-from dataclasses import dataclass
-from inspect import Parameter, Signature, getmembers, isclass, ismethod
+from dataclasses import dataclass, replace
+from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain
 from typing import Any
 
 from typing_extensions import Self, get_type_hints
 
 from litestar import connection, datastructures, types
-from litestar.datastructures import ImmutableState
 from litestar.enums import RequestEncodingType
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import BodyKwarg, DependencyKwarg, ParameterKwarg
-from litestar.types import AnyCallable, Empty
-from litestar.typing import ParsedType
-from litestar.utils.dataclass import simple_asdict
+from litestar.params import BodyKwarg
+from litestar.types import Empty
+from litestar.typing import FieldDefinition
+
+if typing.TYPE_CHECKING:
+    from litestar.types import AnyCallable
 
 _GLOBAL_NAMES = {
     namespace: export
@@ -33,9 +33,8 @@ This allows users to include these names within an `if TYPE_CHECKING:` block in 
 
 __all__ = (
     "get_fn_type_hints",
-    "ParsedParameter",
     "ParsedSignature",
-    "infer_request_encoding_from_parameter",
+    "infer_request_encoding_from_field_definition",
 )
 
 
@@ -76,95 +75,6 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
 
 
 @dataclass(frozen=True)
-class ParsedParameter:
-    """Represents the parameters of a callable."""
-
-    __slots__ = (
-        "name",
-        "default",
-        "parsed_type",
-    )
-
-    name: str
-    """The name of the parameter."""
-    default: Any | Empty
-    """The default value of the parameter."""
-    parsed_type: ParsedType
-    """The annotation of the parameter."""
-
-    @property
-    def kwarg_container(self) -> ParameterKwarg | BodyKwarg | DependencyKwarg | None:
-        """A kwarg container, if any"""
-        return next(
-            (
-                value
-                for value in (*self.metadata, self.default)
-                if isinstance(value, (ParameterKwarg, BodyKwarg, DependencyKwarg))
-            ),
-            None,
-        )
-
-    @property
-    def metadata(self) -> tuple[Any, ...]:
-        """The metadata of the parameter's annotation."""
-        return self.parsed_type.metadata
-
-    @property
-    def annotation(self) -> Any:
-        """The annotation of the parameter."""
-        return self.parsed_type.annotation
-
-    @property
-    def has_default(self) -> bool:
-        """Whether the parameter has a default value or not."""
-        return self.default is not Empty
-
-    @classmethod
-    def from_parameter(cls, parameter: Parameter, fn_type_hints: dict[str, Any]) -> ParsedParameter:
-        """Initialize ParsedSignatureParameter.
-
-        Args:
-            parameter: inspect.Parameter
-            fn_type_hints: mapping of names to types. Should be result of ``get_type_hints()``, preferably via the
-            :attr:``get_fn_type_hints() <.utils.signature_parsing.get_fn_type_hints>` helper.
-
-        Returns:
-            ParsedSignatureParameter.
-        """
-        try:
-            annotation = fn_type_hints[parameter.name]
-        except KeyError as err:
-            raise ImproperlyConfiguredException(
-                f"'{parameter.name}' does not have a type annotation. If it should receive any value, use 'Any'."
-            ) from err
-
-        if parameter.name == "state" and not issubclass(annotation, ImmutableState):
-            raise ImproperlyConfiguredException(
-                f"The type annotation `{annotation}` is an invalid type for the 'state' reserved kwarg. "
-                "It must be typed to a subclass of `litestar.datastructures.ImmutableState` or "
-                "`litestar.datastructures.State`."
-            )
-
-        return ParsedParameter(
-            name=parameter.name,
-            default=Empty if parameter.default is Signature.empty else parameter.default,
-            parsed_type=ParsedType(annotation),
-        )
-
-    def copy_with(self, **kwargs: Any) -> Self:
-        """Create a copy of the parameter with the given attributes updated.
-
-        Args:
-            kwargs: Attributes to update.
-
-        Returns:
-            ParsedParameter
-        """
-        data = {**simple_asdict(self, convert_nested=False), **kwargs}
-        return type(self)(**data)
-
-
-@dataclass(frozen=True)
 class ParsedSignature:
     """Parsed signature.
 
@@ -175,9 +85,9 @@ class ParsedSignature:
 
     __slots__ = ("parameters", "return_type", "original_signature")
 
-    parameters: dict[str, ParsedParameter]
+    parameters: dict[str, FieldDefinition]
     """A mapping of parameter names to ParsedSignatureParameter instances."""
-    return_type: ParsedType
+    return_type: FieldDefinition
     """The return annotation of the callable."""
     original_signature: Signature
     """The raw signature as returned by :func:`inspect.signature`"""
@@ -196,14 +106,17 @@ class ParsedSignature:
         signature = Signature.from_callable(fn)
         fn_type_hints = get_fn_type_hints(fn, namespace=signature_namespace)
 
-        parameters = (
-            ParsedParameter.from_parameter(parameter=parameter, fn_type_hints=fn_type_hints)
+        parameters = tuple(
+            FieldDefinition.from_parameter(parameter=parameter, fn_type_hints=fn_type_hints)
             for name, parameter in signature.parameters.items()
             if name not in ("self", "cls")
         )
+
+        return_type = FieldDefinition.from_annotation(fn_type_hints.get("return", Any))
+
         return cls(
             parameters={p.name: p for p in parameters},
-            return_type=ParsedType(fn_type_hints.get("return", Empty)),
+            return_type=return_type if "return" in fn_type_hints else replace(return_type, annotation=Empty),
             original_signature=signature,
         )
 
@@ -230,19 +143,17 @@ class ParsedSignature:
         return cls.from_fn(fn, signature_namespace)
 
 
-def infer_request_encoding_from_parameter(param: ParsedParameter) -> RequestEncodingType | str:
+def infer_request_encoding_from_field_definition(field_definition: FieldDefinition) -> RequestEncodingType | str:
     """Infer the request encoding type from a parsed type.
 
     Args:
-        param: The parsed parameter to infer the request encoding type from.
+        field_definition: The parsed parameter to infer the request encoding type from.
 
     Returns:
         The inferred request encoding type.
     """
-    if param.has_default and isinstance(param.default, BodyKwarg):
-        return param.default.media_type
-    if param.parsed_type.metadata:
-        for item in param.parsed_type.metadata:
-            if isinstance(item, BodyKwarg):
-                return item.media_type
+    if field_definition.kwarg_definition and isinstance(field_definition.kwarg_definition, BodyKwarg):
+        return field_definition.kwarg_definition.media_type
+    if isinstance(field_definition.default, BodyKwarg):
+        return field_definition.default.media_type
     return RequestEncodingType.JSON

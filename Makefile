@@ -1,5 +1,8 @@
 .PHONY: docs
 
+sourcery:
+	poetry run sourcery review --fix .
+
 docs-clean:
 	rm -rf docs/_build
 

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from litestar.openapi.spec import Reference
     from litestar.types import LitestarEncodableType
     from litestar.types.internal_types import AnyConnection
-    from litestar.typing import ParsedType
+    from litestar.typing import FieldDefinition
 
     from .types import ForType
 
@@ -29,18 +29,19 @@ __all__ = (
 class HandlerContext:
     """Context object passed to the ``on_registration`` method of a DTO."""
 
-    __slots__ = ("dto_for", "handler_id", "parsed_type", "request_encoding_type")
+    __slots__ = ("dto_for", "handler_id", "field_definition", "request_encoding_type")
 
     def __init__(
         self,
+        *,
         dto_for: ForType,
         handler_id: str,
-        parsed_type: ParsedType,
+        field_definition: FieldDefinition,
         request_encoding_type: RequestEncodingType | str = RequestEncodingType.JSON,
     ) -> None:
         self.dto_for: Final[ForType] = dto_for
         self.handler_id: Final[str] = handler_id
-        self.parsed_type: Final[ParsedType] = parsed_type
+        self.field_definition: Final[FieldDefinition] = field_definition
         self.request_encoding_type: Final[RequestEncodingType | str] = request_encoding_type
 
 
@@ -123,7 +124,7 @@ class DTOInterface(Protocol):
     def on_registration(cls, handler_context: HandlerContext) -> None:
         """Receive information about the handler and application of the DTO.
 
-        At this point, if the DTO type does not support the annotated type of ``handler_context.parsed_type``, it should
+        At this point, if the DTO type does not support the annotated type of ``handler_context.field_definition``, it should
         raise an ``UnsupportedType`` exception.
 
         Args:
@@ -131,5 +132,5 @@ class DTOInterface(Protocol):
                 handler and application of the DTO.
 
         Raises:
-            UnsupportedType: If the DTO type does not support the annotated type of ``parsed_type``.
+            UnsupportedType: If the DTO type does not support the annotated type of ``field_definition``.
         """

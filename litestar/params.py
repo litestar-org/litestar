@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from typing import TYPE_CHECKING, Any, Hashable
+from typing import TYPE_CHECKING, Any, Hashable, Sequence
 
 from litestar.enums import RequestEncodingType
 from litestar.types import Empty
@@ -106,6 +106,10 @@ class KwargDefinition:
     """Constrict a string value to be lower case."""
     upper_case: bool | None = field(default=None)
     """Constrict a string value to be upper case."""
+    format: str | None = field(default=None)
+    """Specify the format to which a string value should be converted."""
+    enum: Sequence[Any] | None = field(default=None)
+    """A sequence of valid values."""
 
     @property
     def is_constrained(self) -> bool:
@@ -134,7 +138,7 @@ class KwargDefinition:
 class ParameterKwarg(KwargDefinition):
     """Data container representing a parameter."""
 
-    value_type: Any = field(default=Empty)
+    annotation: Any = field(default=Empty)
     """The field value - `Empty` by default."""
     header: str | None = field(default=None)
     """The header parameter key - required for header parameters."""
@@ -158,7 +162,7 @@ class ParameterKwarg(KwargDefinition):
 
 
 def Parameter(
-    value_type: Any = Empty,
+    annotation: Any = Empty,
     *,
     const: bool | None = None,
     content_encoding: str | None = None,
@@ -185,7 +189,7 @@ def Parameter(
     """Create an extended parameter kwarg definition.
 
     Args:
-        value_type: `Empty` by default.
+        annotation: `Empty` by default.
         const: A boolean flag dictating whether this parameter is a constant. If True, the value passed to the parameter
             must equal its default value. This also causes the OpenAPI const field
             to be populated with the default value.
@@ -223,7 +227,7 @@ def Parameter(
         title: String value used in the title section of the OpenAPI schema for the given parameter.
     """
     return ParameterKwarg(
-        value_type=value_type,
+        annotation=annotation,
         header=header,
         cookie=cookie,
         query=query,

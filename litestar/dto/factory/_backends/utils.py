@@ -22,12 +22,12 @@ from .types import (
 if TYPE_CHECKING:
     from typing import AbstractSet, Any, Iterable
 
-    from litestar.dto.factory.data_structures import FieldDefinition
+    from litestar.dto.factory.data_structures import DTOFieldDefinition
     from litestar.dto.factory.types import RenameStrategy
     from litestar.dto.types import ForType
-    from litestar.typing import ParsedType
+    from litestar.typing import FieldDefinition
 
-    from .types import FieldDefinitionsType, TransferFieldDefinition
+    from .types import FieldDefinitionsType, TransferDTOFieldDefinition
 
 __all__ = (
     "RenameStrategies",
@@ -61,7 +61,7 @@ def build_annotation_for_backend(annotation: Any, model: type[T]) -> type[T] | t
         return annotation.copy_with((model,))  # type:ignore[no-any-return]
 
 
-def should_mark_private(field_definition: FieldDefinition, underscore_fields_private: bool) -> bool:
+def should_mark_private(field_definition: DTOFieldDefinition, underscore_fields_private: bool) -> bool:
     """Returns ``True`` where a field should be marked as private.
 
     Fields should be marked as private when:
@@ -73,12 +73,12 @@ def should_mark_private(field_definition: FieldDefinition, underscore_fields_pri
         field_definition: defined DTO field
         underscore_fields_private: whether fields prefixed with an underscore should be marked as private.
     """
-    return (
+    return bool(
         underscore_fields_private and field_definition.dto_field.mark is None and field_definition.name.startswith("_")
     )
 
 
-def should_exclude_field(field_definition: FieldDefinition, exclude: AbstractSet[str], dto_for: ForType) -> bool:
+def should_exclude_field(field_definition: DTOFieldDefinition, exclude: AbstractSet[str], dto_for: ForType) -> bool:
     """Returns ``True`` where a field should be excluded from data transfer.
 
     Args:
@@ -98,7 +98,7 @@ def should_exclude_field(field_definition: FieldDefinition, exclude: AbstractSet
     return bool(excluded or private or read_only_for_data or write_only_for_return)
 
 
-def should_ignore_field(field_definition: FieldDefinition, dto_for: ForType) -> bool:
+def should_ignore_field(field_definition: DTOFieldDefinition, dto_for: ForType) -> bool:
     """Returns ``True`` where a field should be ignored.
 
     An ignored field is different to an excluded one in that we do not produce a
@@ -162,7 +162,7 @@ def transfer_data(
     source_data: Any | Collection[Any],
     field_definitions: FieldDefinitionsType,
     dto_for: ForType,
-    parsed_type: ParsedType,
+    field_definition: FieldDefinition,
 ) -> T | InstantiableCollection[T]:
     """Create instance or iterable of instances of ``destination_type``.
 
@@ -171,18 +171,20 @@ def transfer_data(
         source_data: data that has been parsed and validated via the backend.
         field_definitions: model field definitions.
         dto_for: indicates whether the DTO is for the request body or response.
-        parsed_type: the parsed type that represents the handler annotation for which the DTO is being applied.
+        field_definition: the parsed type that represents the handler annotation for which the DTO is being applied.
 
     Returns:
         Data parsed into ``destination_type``.
     """
-    if parsed_type.is_non_string_collection and not parsed_type.is_mapping:
-        origin = parsed_type.instantiable_origin
+    if field_definition.is_non_string_collection and not field_definition.is_mapping:
+        origin = field_definition.instantiable_origin
         if not issubclass(origin, InstantiableCollection):  # pragma: no cover
-            raise RuntimeError(f"Unexpected origin type '{parsed_type.instantiable_origin}', expected collection type")
+            raise RuntimeError(
+                f"Unexpected origin type '{field_definition.instantiable_origin}', expected collection type"
+            )
 
         return origin(  # type:ignore[no-any-return]
-            transfer_data(destination_type, item, field_definitions, dto_for, parsed_type.inner_types[0])
+            transfer_data(destination_type, item, field_definitions, dto_for, field_definition.inner_types[0])
             for item in source_data
         )
     return transfer_instance_data(destination_type, source_data, field_definitions, dto_for)
@@ -205,21 +207,11 @@ def transfer_instance_data(
     unstructured_data = {}
     source_is_mapping = isinstance(source_instance, Mapping)
 
-    if source_is_mapping:
+    def has(source: Any, key: str) -> bool:
+        return key in source if source_is_mapping else hasattr(source, key)
 
-        def has(source: Any, key: str) -> bool:
-            return key in source
-
-        def get(source: Any, key: str) -> Any:
-            return source[key]
-
-    else:
-
-        def has(source: Any, key: str) -> bool:
-            return hasattr(source, key)
-
-        def get(source: Any, key: str) -> Any:
-            return getattr(source, key)
+    def get(source: Any, key: str) -> Any:
+        return source[key] if source_is_mapping else getattr(source, key)
 
     def filter_missing(value: Any) -> bool:
         return value is UNSET
@@ -245,7 +237,7 @@ def transfer_instance_data(
 
 def should_skip_transfer(
     dto_for: ForType,
-    field_definition: TransferFieldDefinition,
+    field_definition: TransferDTOFieldDefinition,
     source_has_value: bool,
 ) -> bool:
     """Returns ``True`` where a field should be excluded from data transfer.
@@ -270,7 +262,9 @@ def transfer_type_data(
             dest_type = dict
         else:
             dest_type = (
-                transfer_type.parsed_type.annotation if dto_for == "data" else transfer_type.nested_field_info.model
+                transfer_type.field_definition.annotation
+                if dto_for == "data"
+                else transfer_type.nested_field_info.model
             )
 
         return transfer_nested_simple_type_data(dest_type, transfer_type.nested_field_info, dto_for, source_value)
@@ -279,9 +273,9 @@ def transfer_type_data(
     if isinstance(transfer_type, CollectionType):
         if transfer_type.has_nested:
             return transfer_nested_collection_type_data(
-                transfer_type.parsed_type.instantiable_origin, transfer_type, dto_for, source_value
+                transfer_type.field_definition.instantiable_origin, transfer_type, dto_for, source_value
             )
-        return transfer_type.parsed_type.instantiable_origin(source_value)
+        return transfer_type.field_definition.instantiable_origin(source_value)
     return source_value
 
 
@@ -304,10 +298,10 @@ def transfer_nested_union_type_data(transfer_type: UnionType, dto_for: ForType, 
 
         if inner_type.nested_field_info and isinstance(
             source_value,
-            inner_type.nested_field_info.model if dto_for == "data" else inner_type.parsed_type.annotation,
+            inner_type.nested_field_info.model if dto_for == "data" else inner_type.field_definition.annotation,
         ):
             return transfer_instance_data(
-                inner_type.parsed_type.annotation if dto_for == "data" else inner_type.nested_field_info.model,
+                inner_type.field_definition.annotation if dto_for == "data" else inner_type.nested_field_info.model,
                 source_value,
                 inner_type.nested_field_info.field_definitions,
                 dto_for,
@@ -324,7 +318,7 @@ def create_transfer_model_type_annotation(transfer_type: TransferType) -> Any:
     if isinstance(transfer_type, SimpleType):
         if transfer_type.nested_field_info:
             return transfer_type.nested_field_info.model
-        return transfer_type.parsed_type.annotation
+        return transfer_type.field_definition.annotation
 
     if isinstance(transfer_type, CollectionType):
         return create_transfer_model_collection_type(transfer_type)
@@ -342,24 +336,24 @@ def create_transfer_model_type_annotation(transfer_type: TransferType) -> Any:
 
 
 def create_transfer_model_collection_type(transfer_type: CollectionType) -> Any:
-    generic_collection_type = transfer_type.parsed_type.safe_generic_origin
+    generic_collection_type = transfer_type.field_definition.safe_generic_origin
     inner_type = create_transfer_model_type_annotation(transfer_type.inner_type)
-    if transfer_type.parsed_type.origin is tuple:
+    if transfer_type.field_definition.origin is tuple:
         return generic_collection_type[inner_type, ...]
     return generic_collection_type[inner_type]
 
 
 def create_transfer_model_tuple_type(transfer_type: TupleType) -> Any:
     inner_types = tuple(create_transfer_model_type_annotation(t) for t in transfer_type.inner_types)
-    return transfer_type.parsed_type.safe_generic_origin[inner_types]
+    return transfer_type.field_definition.safe_generic_origin[inner_types]
 
 
 def create_transfer_model_union_type(transfer_type: UnionType) -> Any:
     inner_types = tuple(create_transfer_model_type_annotation(t) for t in transfer_type.inner_types)
-    return transfer_type.parsed_type.safe_generic_origin[inner_types]
+    return transfer_type.field_definition.safe_generic_origin[inner_types]
 
 
 def create_transfer_model_mapping_type(transfer_type: MappingType) -> Any:
     key_type = create_transfer_model_type_annotation(transfer_type.key_type)
     value_type = create_transfer_model_type_annotation(transfer_type.value_type)
-    return transfer_type.parsed_type.safe_generic_origin[key_type, value_type]
+    return transfer_type.field_definition.safe_generic_origin[key_type, value_type]

@@ -7,15 +7,15 @@ from typing_extensions import Annotated
 
 from litestar.contrib.msgspec import MsgspecDTO
 from litestar.dto.factory import dto_field
-from litestar.dto.factory.data_structures import FieldDefinition
-from litestar.typing import ParsedType
+from litestar.dto.factory.data_structures import DTOFieldDefinition
+from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
     from typing import Callable
 
 
 def test_field_definition_generation(
-    int_factory: Callable[[], int], expected_field_defs: list[FieldDefinition]
+    int_factory: Callable[[], int], expected_field_defs: list[DTOFieldDefinition]
 ) -> None:
     class TestStruct(Struct):
         a: int
@@ -40,5 +40,5 @@ def test_detect_nested_field() -> None:
     class NotStruct:
         pass
 
-    assert MsgspecDTO.detect_nested_field(ParsedType(TestStruct)) is True
-    assert MsgspecDTO.detect_nested_field(ParsedType(NotStruct)) is False
+    assert MsgspecDTO.detect_nested_field(FieldDefinition.from_annotation(TestStruct)) is True
+    assert MsgspecDTO.detect_nested_field(FieldDefinition.from_annotation(NotStruct)) is False

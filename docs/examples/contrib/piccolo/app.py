@@ -6,7 +6,7 @@ from piccolo.columns import Boolean, Varchar
 from piccolo.table import Table, create_db_tables
 
 from litestar import Litestar, MediaType, delete, get, patch, post
-from litestar.contrib.piccolo.dto import PiccoloDTO
+from litestar.contrib.piccolo import PiccoloDTO
 from litestar.dto.factory import DTOConfig, DTOData
 from litestar.exceptions import NotFoundException
 

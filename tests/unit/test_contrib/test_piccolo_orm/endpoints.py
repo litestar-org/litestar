@@ -3,7 +3,7 @@ from typing import List
 from piccolo.testing import ModelBuilder
 
 from litestar import MediaType, get, post
-from litestar.contrib.piccolo.dto import PiccoloDTO
+from litestar.contrib.piccolo import PiccoloDTO
 from tests.unit.test_contrib.test_piccolo_orm.tables import Concert, RecordingStudio, Venue
 
 studio = ModelBuilder.build_sync(RecordingStudio, persist=False)
