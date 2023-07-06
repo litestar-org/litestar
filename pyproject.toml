@@ -48,9 +48,9 @@ classifiers = [
     "Topic :: Software Development",
     "Typing :: Typed",
     "Framework :: AsyncIO",
-#    Pending trove-classifiers#148
-#    "Framework :: Litestar",
-#    "Framework :: Litestar :: 2",
+    #    Pending trove-classifiers#148
+    #    "Framework :: Litestar",
+    #    "Framework :: Litestar :: 2",
     "Framework :: Pydantic",
     "Framework :: Pydantic :: 1",
     "Intended Audience :: Developers",
@@ -83,6 +83,7 @@ click = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
 fast-query-parsers = "*"
 httpx = ">=0.22"
+pydantic-extra-types = { version = "*", optional = true }
 importlib-metadata = { version = "*", python = "<3.10" }
 importlib-resources = { version = ">=5.12.0", python = "<3.9" }
 jinja2 = { version = ">=3.1.2", optional = true }
@@ -93,11 +94,11 @@ multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 picologging = { version = "*", optional = true }
 polyfactory = ">=2.3.2"
-prometheus-client = {version = "*", optional = true}
-pydantic = "<2"
-python-dateutil = { version = "*", optional = true }
+prometheus-client = { version = "*", optional = true }
+pydantic = "*"
+python-dateutil = "*"
 python-jose = { version = "*", optional = true }
-pytimeparse = { version = "*", optional = true }
+pytimeparse = "*"
 pyyaml = "*"
 redis = { version = ">=4.4.4, <4.5.0", optional = true, extras = ["hiredis"] }
 rich = { version = ">=13.0.0", optional = true }
@@ -138,6 +139,7 @@ picologging = "*"
 pre-commit = "*"
 prometheus-client = "*"
 psycopg = "*"
+pydantic = ">=2"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
@@ -158,6 +160,7 @@ structlog = "*"
 tortoise-orm = "*"
 trio = "*"
 uvicorn = "*"
+pydantic-extra-types = "*"
 
 [tool.poetry.group.docs]
 optional = true
@@ -401,30 +404,6 @@ known-first-party = ["litestar", "tests", "examples"]
 ]
 "docs/examples/application_hooks/before_send_hook.py" = ["UP006"]
 "docs/examples/contrib/sqlalchemy/plugins/**/*.*" = ["UP006"]
-"docs/examples/tests/**/*.*" = [
-    "A",
-    "ARG",
-    "B",
-    "BLE",
-    "C901",
-    "D",
-    "DTZ",
-    "EM",
-    "FBT",
-    "G",
-    "N",
-    "PGH",
-    "PIE",
-    "PLR",
-    "PLW",
-    "PTH",
-    "RSE",
-    "S",
-    "S101",
-    "SIM",
-    "TCH",
-    "TRY",
-]
 "docs/**/*.*" = ["S", "B", "DTZ", "A", "TCH", "ERA", "D", "RET"]
 "docs/examples/**" = ["T201"]
 "docs/examples/data_transfer_objects**/*.*" = ["UP006"]

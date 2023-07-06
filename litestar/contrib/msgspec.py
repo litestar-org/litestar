@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
     from litestar.typing import FieldDefinition
 
+
 __all__ = ("MsgspecDTO",)
 
 T = TypeVar("T", bound="Struct | Collection[Struct]")

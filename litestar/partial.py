@@ -9,11 +9,10 @@ from typing import (
     Type,
     TypeVar,
     Union,
-    get_type_hints,
 )
 
 import msgspec
-from typing_extensions import TypeAlias, TypedDict
+from typing_extensions import TypeAlias, TypedDict, get_type_hints
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.builtin_types import NoneType
@@ -55,7 +54,7 @@ def _create_partial_type_name(item: SupportedTypes) -> str:
 def _extract_type_hints(item: Any) -> tuple[tuple[str, Any], ...]:
     return tuple(
         (field_name, field_type)
-        for field_name, field_type in get_type_hints(item).items()
+        for field_name, field_type in get_type_hints(item, include_extras=True).items()
         if not is_class_var(field_type)
     )
 

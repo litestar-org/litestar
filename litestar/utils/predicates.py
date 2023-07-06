@@ -73,6 +73,7 @@ __all__ = (
     "is_pydantic_constrained_field",
     "is_pydantic_model_class",
     "is_pydantic_model_instance",
+    "is_struct_class",
     "is_sync_or_async_generator",
     "is_typed_dict",
     "is_union",
@@ -350,7 +351,7 @@ def is_pydantic_constrained_field(
         )
 
         return any(
-            is_class_and_subclass(annotation, constrained_type)
+            is_class_and_subclass(annotation, constrained_type)  # type: ignore[arg-type]
             for constrained_type in (
                 ConstrainedBytes,
                 ConstrainedDate,

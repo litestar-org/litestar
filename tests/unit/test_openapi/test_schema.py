@@ -261,7 +261,8 @@ def test_create_schema_for_pydantic_field() -> None:
         value: str = Field(title="title", description="description", example="example", max_length=16)
 
     schemas: Dict[str, Schema] = {}
-    SchemaCreator(schemas=schemas).for_field_definition(FieldDefinition.from_kwarg(name="Model", annotation=Model))
+    field_definition = FieldDefinition.from_kwarg(name="Model", annotation=Model)
+    SchemaCreator(schemas=schemas).for_field_definition(field_definition)
     schema = schemas["Model"]
 
     assert schema.properties["value"].description == "description"  # type: ignore
