@@ -79,7 +79,6 @@ annotated-types = { version = "*", optional = true }
 anyio = ">=3"
 attrs = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
-cattrs = { version = "*", optional = true }
 click = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
 fast-query-parsers = "*"
@@ -119,7 +118,6 @@ attrs = "*"
 beanie = "*"
 beautifulsoup4 = "*"
 brotli = "*"
-cattrs = "*"
 click = "*"
 cryptography = "*"
 duckdb-engine = "*"
@@ -197,7 +195,7 @@ types-redis = "*"
 
 [tool.poetry.extras]
 annotated-types = ["annotated-types"]
-attrs = ["attrs", "cattrs", "python-dateutil", "pytimeparse"]
+attrs = ["attrs"]
 brotli = ["brotli"]
 cli = ["click", "rich", "rich-click", "jsbeautifier", "uvicorn"]
 cryptography = ["cryptography"]
@@ -216,7 +214,6 @@ full = [
     "alembic",
     "attrs",
     "brotli",
-    "cattrs",
     "click",
     "cryptography",
     "jinja2",

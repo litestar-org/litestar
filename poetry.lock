@@ -541,31 +541,6 @@ files = [
 ]
 
 [[package]]
-name = "cattrs"
-version = "23.1.2"
-description = "Composable complex class support for attrs and dataclasses."
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "cattrs-23.1.2-py3-none-any.whl", hash = "sha256:b2bb14311ac17bed0d58785e5a60f022e5431aca3932e3fc5cc8ed8639de50a4"},
-    {file = "cattrs-23.1.2.tar.gz", hash = "sha256:db1c821b8c537382b2c7c66678c3790091ca0275ac486c76f3c8f3920e83c657"},
-]
-
-[package.dependencies]
-attrs = ">=20"
-exceptiongroup = {version = "*", markers = "python_version < \"3.11\""}
-typing_extensions = {version = ">=4.1.0", markers = "python_version < \"3.11\""}
-
-[package.extras]
-bson = ["pymongo (>=4.2.0,<5.0.0)"]
-cbor2 = ["cbor2 (>=5.4.6,<6.0.0)"]
-msgpack = ["msgpack (>=1.0.2,<2.0.0)"]
-orjson = ["orjson (>=3.5.2,<4.0.0)"]
-pyyaml = ["PyYAML (>=6.0,<7.0)"]
-tomlkit = ["tomlkit (>=0.11.4,<0.12.0)"]
-ujson = ["ujson (>=5.4.0,<6.0.0)"]
-
-[[package]]
 name = "certifi"
 version = "2023.5.7"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -2160,7 +2135,7 @@ zstd = ["pymongo[zstd] (>=4.4,<5)"]
 
 [[package]]
 name = "msgspec"
-version = "0.16.0+8.ge793b50"
+version = "0.16.0+23.g8ccae4e"
 description = "A fast serialization and validation library, with builtin support for JSON, MessagePack, YAML, and TOML."
 optional = false
 python-versions = ">=3.8"
@@ -2178,7 +2153,7 @@ yaml = ["pyyaml"]
 type = "git"
 url = "https://github.com/jcrist/msgspec.git"
 reference = "main"
-resolved_reference = "8f3dc5779f1e6b117fc3aedd759f7fd67ed07eaf"
+resolved_reference = "8ccae4e1b1cbbf7ce0dc1a37c10c0b88faace77d"
 
 [[package]]
 name = "multidict"
@@ -4321,11 +4296,11 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 
 [extras]
 annotated-types = ["annotated-types"]
-attrs = ["attrs", "cattrs", "python-dateutil", "pytimeparse"]
+attrs = ["attrs"]
 brotli = ["brotli"]
 cli = ["click", "jsbeautifier", "rich", "rich-click", "uvicorn"]
 cryptography = ["cryptography"]
-full = ["alembic", "attrs", "brotli", "cattrs", "click", "cryptography", "jinja2", "jsbeautifier", "opentelemetry-instrumentation-asgi", "prometheus-client", "python-dateutil", "python-jose", "pytimeparse", "redis", "rich", "sqlalchemy", "structlog", "uvicorn"]
+full = ["alembic", "attrs", "brotli", "click", "cryptography", "jinja2", "jsbeautifier", "opentelemetry-instrumentation-asgi", "prometheus-client", "python-dateutil", "python-jose", "pytimeparse", "redis", "rich", "sqlalchemy", "structlog", "uvicorn"]
 jinja = ["jinja2"]
 jwt = ["cryptography", "python-jose"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
@@ -4340,4 +4315,4 @@ tortoise-orm = ["tortoise-orm"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "7dd55ca1ad9da98b61adcd3026b16ffa06c79f8950408822bf8e0bf9f911db8c"
+content-hash = "40edab14b3dfcf5914f23c2423f55dcae533dbadca8bb6ebedcb0b84f929ee6a"
