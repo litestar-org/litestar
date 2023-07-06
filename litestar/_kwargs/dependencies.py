@@ -3,7 +3,7 @@ from __future__ import annotations
 from inspect import isasyncgen, isgenerator
 from typing import TYPE_CHECKING, Any
 
-from litestar._signature.utils import get_signature_model
+from litestar._signature import get_signature_model
 from litestar.utils.compat import async_next
 
 __all__ = ("Dependency", "create_dependency_batches", "map_dependencies_recursively", "resolve_dependency")
