@@ -2,6 +2,7 @@ import re
 from abc import ABC, abstractmethod
 from contextlib import suppress
 from copy import copy
+from dataclasses import dataclass
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -13,14 +14,18 @@ from typing import (
     Mapping,
     MutableMapping,
     Optional,
+    Pattern,
+    Set,
     Tuple,
+    Type,
     Union,
     cast,
+    get_args,
+    get_origin,
+    get_type_hints,
 )
 
 from multidict import CIMultiDict, CIMultiDictProxy, MultiMapping
-from pydantic import BaseModel, Extra, Field, ValidationError, validator
-from typing_extensions import Annotated
 
 from litestar._multipart import parse_content_header
 from litestar._parsers import parse_headers
@@ -29,6 +34,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 
 __all__ = ("Accept", "CacheControlHeader", "ETag", "Header", "Headers", "MutableScopeHeaders")
 
+from litestar.utils.dataclass import simple_asdict
 
 if TYPE_CHECKING:
     from litestar.types.asgi_types import (
@@ -39,6 +45,7 @@ if TYPE_CHECKING:
     )
 
 ETAG_RE = re.compile(r'([Ww]/)?"(.+)"')
+PRINTABLE_ASCII_RE: Pattern[str] = re.compile(r"^[ -~]+$")
 
 
 def _encode_headers(headers: Iterable[Tuple[str, str]]) -> "RawHeadersList":
@@ -231,19 +238,11 @@ class MutableScopeHeaders(MutableMapping):
         return iter(h[0].decode("latin-1") for h in self.headers)
 
 
-class Header(BaseModel, ABC):
+@dataclass
+class Header(ABC):
     """An abstract type for HTTP headers."""
 
     HEADER_NAME: ClassVar[str] = ""
-
-    class Config:
-        allow_population_by_field_name = True
-        extra = Extra.forbid
-
-        @classmethod
-        def alias_generator(cls, field_name: str) -> str:
-            """Generate field-aliases by replacing dashes with underscores in header-names."""
-            return field_name.replace("_", "-")
 
     documentation_only: bool = False
     """Defines the header instance as for OpenAPI documentation purpose only."""
@@ -272,7 +271,33 @@ class Header(BaseModel, ABC):
 
         return (f"{self.HEADER_NAME}: " if include_header_name else "") + self._get_header_value()
 
+    def dict(
+        self,
+        exclude_none: bool = False,
+        exclude_empty: bool = False,
+        by_alias: bool = False,
+        exclude: Optional[Set[str]] = None,
+        exclude_unset: bool = False,
+        **kwargs: Any,
+    ) -> Dict[str, Any]:
+        dictionary = simple_asdict(self, exclude_none=exclude_none, exclude_empty=exclude_empty, exclude=exclude)
 
+        if exclude_unset:
+            # This is a hack to get tests passing due to dataclasses not supporting exclude_unset see: https://github.com/pydantic/pydantic/discussions/5716
+            # Not sure how this should be handled properly
+            dictionary = {
+                k: v
+                for k, v in dictionary.items()
+                if (k == "documentation_only" and v is True) or k != "documentation_only"
+            }
+
+        if by_alias:
+            dictionary = {k.replace("_", "-"): v for k, v in dictionary.items()}
+
+        return dictionary
+
+
+@dataclass
 class CacheControlHeader(Header):
     """A ``cache-control`` header."""
 
@@ -303,6 +328,8 @@ class CacheControlHeader(Header):
     stale_while_revalidate: Optional[int] = None
     """Accessor for the ``stale-while-revalidate`` directive."""
 
+    _type_annotations: ClassVar[Optional[Dict[str, Type]]] = None
+
     def _get_header_value(self) -> str:
         """Get the header value as string."""
 
@@ -330,18 +357,23 @@ class CacheControlHeader(Header):
 
         cc_items = [v.strip() for v in header_value.split(",")]
         kwargs: Dict[str, Any] = {}
+        type_annotations = cls._get_type_annotations()
         for cc_item in cc_items:
             key_value = cc_item.split("=")
+            key_value[0] = key_value[0].replace("-", "_")
             if len(key_value) == 1:
                 kwargs[key_value[0]] = True
             elif len(key_value) == 2:
-                kwargs[key_value[0]] = key_value[1]
+                key, value = key_value
+                if key not in type_annotations:
+                    raise ImproperlyConfiguredException("Invalid cache-control header")
+                kwargs[key] = cls._convert_to_type(value, expected_type=type_annotations[key])
             else:
                 raise ImproperlyConfiguredException("Invalid cache-control header value")
 
         try:
             return CacheControlHeader(**kwargs)
-        except ValidationError as exc:
+        except TypeError as exc:
             raise ImproperlyConfiguredException from exc
 
     @classmethod
@@ -352,14 +384,70 @@ class CacheControlHeader(Header):
 
         return cls(no_store=True)
 
+    @classmethod
+    def _get_type_annotations(cls) -> Dict[str, Type]:
+        """Get the type annotations for the ``CacheControlHeader`` class properties.
 
+        This is needed due to the conversion from pydantic models to dataclasses. Dataclasses do not support
+        automatic conversion of types like pydantic models do.
+
+        Returns:
+            A dictionary of type annotations
+
+        """
+
+        def is_concrete_type(value: Type) -> bool:
+            args = get_args(value)
+            origin = get_origin(value)
+            return len(args) == 0 and origin is None
+
+        if cls._type_annotations is None:
+            cls._type_annotations = {}
+            for key, value in get_type_hints(cls).items():
+                if key == "_type_annotations":
+                    continue
+
+                args = get_args(value)
+                origin = get_origin(value)
+                is_optional = len(args) == 2 and args[1] is type(None)
+                is_concrete = is_concrete_type(value)
+                is_concrete_class_var = len(args) == 1 and is_concrete_type(args[0]) and origin is ClassVar
+
+                if is_optional or is_concrete_class_var:
+                    cls._type_annotations[key] = args[0]
+                elif is_concrete:
+                    cls._type_annotations[key] = value
+                else:
+                    # Union types are not supported e.g. Union[int, str] neither are generic types e.g. List[str]
+                    raise ImproperlyConfiguredException("Unsupported type annotation")
+        return cls._type_annotations
+
+    @classmethod
+    def _convert_to_type(cls, value: str, expected_type: Type) -> Any:
+        """Convert the value to the expected type.
+
+        Args:
+            value: the value of the cache-control directive
+            expected_type: the expected type of the value
+
+        Returns:
+            The value converted to the expected type
+        """
+        # bool values shouldn't be initiated since they should have been caught earlier in the from_header method and
+        # set with a value of True
+        if expected_type is bool:
+            raise ImproperlyConfiguredException("Invalid cache-control header value")
+        return expected_type(value)
+
+
+@dataclass
 class ETag(Header):
     """An ``etag`` header."""
 
     HEADER_NAME: ClassVar[str] = "etag"
 
     weak: bool = False
-    value: Annotated[Optional[str], Field(regex=r"^[ -~]+$")] = None  # only ASCII characters
+    value: Optional[str] = None  # only ASCII characters
 
     def _get_header_value(self) -> str:
         value = f'"{self.value}"'
@@ -377,15 +465,14 @@ class ETag(Header):
         weak, value = match.group(1, 2)
         try:
             return cls(weak=bool(weak), value=value)
-        except ValidationError as exc:
+        except ValueError as exc:
             raise ImproperlyConfiguredException from exc
 
-    @validator("value", always=True)
-    def validate_value(cls, value: Any, values: Dict[str, Any]) -> Any:
-        """Ensure that either value is set or the instance is for ``documentation_only``."""
-        if values.get("documentation_only") or value is not None:
-            return value
-        raise ValueError("value must be set if documentation_only is false")
+    def __post_init__(self) -> None:
+        if self.documentation_only is False and self.value is None:
+            raise ValueError("value must be set if documentation_only is false")
+        if self.value and not PRINTABLE_ASCII_RE.fullmatch(self.value):
+            raise ValueError("value must only contain ASCII printable characters")
 
 
 class MediaTypeHeader:
