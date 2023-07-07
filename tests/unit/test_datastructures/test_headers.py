@@ -15,6 +15,7 @@ from litestar.datastructures import (
 from litestar.datastructures.headers import Header
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
+from litestar.utils.dataclass import simple_asdict
 
 if TYPE_CHECKING:
     from litestar.types.asgi_types import RawHeaders, RawHeadersList
@@ -250,7 +251,7 @@ def test_cache_control_from_header() -> None:
         "must-revalidate, proxy-revalidate, must-understand, immutable, stale-while-revalidate=100"
     )
     header = CacheControlHeader.from_header(header_value)
-    assert header.dict() == {
+    assert simple_asdict(header) == {
         "documentation_only": False,
         "public": True,
         "private": True,
@@ -270,8 +271,8 @@ def test_cache_control_from_header() -> None:
 def test_cache_control_from_header_single_value() -> None:
     header_value = "no-cache"
     header = CacheControlHeader.from_header(header_value)
-    header_dict = header.dict(exclude_unset=True, exclude_none=True, by_alias=True)
-    assert header_dict == {"no-cache": True}
+    header_dict = simple_asdict(header, exclude_none=True)
+    assert header_dict == {"no_cache": True, "documentation_only": False}
 
 
 @pytest.mark.parametrize("invalid_value", ["x=y=z", "x, ", "no-cache=10", "invalid-header=10"])
@@ -282,8 +283,8 @@ def test_cache_control_from_header_invalid_value(invalid_value: str) -> None:
 
 def test_cache_control_header_prevent_storing() -> None:
     header = CacheControlHeader.prevent_storing()
-    header_dict = header.dict(exclude_unset=True, exclude_none=True, by_alias=True)
-    assert header_dict == {"no-store": True}
+    header_dict = simple_asdict(header, exclude_none=True)
+    assert header_dict == {"no_store": True, "documentation_only": False}
 
 
 def test_cache_control_header_unsupported_type_annotation() -> None:

@@ -15,7 +15,6 @@ from typing import (
     MutableMapping,
     Optional,
     Pattern,
-    Set,
     Tuple,
     Type,
     Union,
@@ -271,31 +270,6 @@ class Header(ABC):
 
         return (f"{self.HEADER_NAME}: " if include_header_name else "") + self._get_header_value()
 
-    def dict(
-        self,
-        exclude_none: bool = False,
-        exclude_empty: bool = False,
-        by_alias: bool = False,
-        exclude: Optional[Set[str]] = None,
-        exclude_unset: bool = False,
-        **kwargs: Any,
-    ) -> Dict[str, Any]:
-        dictionary = simple_asdict(self, exclude_none=exclude_none, exclude_empty=exclude_empty, exclude=exclude)
-
-        if exclude_unset:
-            # This is a hack to get tests passing due to dataclasses not supporting exclude_unset see: https://github.com/pydantic/pydantic/discussions/5716
-            # Not sure how this should be handled properly
-            dictionary = {
-                k: v
-                for k, v in dictionary.items()
-                if (k == "documentation_only" and v is True) or k != "documentation_only"
-            }
-
-        if by_alias:
-            dictionary = {k.replace("_", "-"): v for k, v in dictionary.items()}
-
-        return dictionary
-
 
 @dataclass
 class CacheControlHeader(Header):
@@ -334,13 +308,8 @@ class CacheControlHeader(Header):
         """Get the header value as string."""
 
         cc_items = [
-            key if isinstance(value, bool) else f"{key}={value}"
-            for key, value in self.dict(
-                exclude_unset=True,
-                exclude_none=True,
-                by_alias=True,
-                exclude={"documentation_only"},
-            ).items()
+            key.replace("_", "-") if isinstance(value, bool) else f"{key.replace('_', '-')}={value}"
+            for key, value in simple_asdict(self, exclude_none=True, exclude={"documentation_only"}).items()
         ]
         return ", ".join(cc_items)
 
