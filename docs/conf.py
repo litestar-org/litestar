@@ -111,6 +111,8 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.response_containers.Template"),
     (PY_CLASS, "litestar.response_containers.Redirect"),
     (PY_CLASS, "litestar.response.RedirectResponse"),
+    (PY_CLASS, "anyio.abc.BlockingPortal"),
+    (PY_CLASS, "litestar.typing.ParsedType"),
 ]
 
 nitpick_ignore_regex = [
