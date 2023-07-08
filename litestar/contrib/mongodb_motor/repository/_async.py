@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from litestar.contrib.mongodb_motor.repository._util import wrap_pymongo_exception
 from litestar.contrib.mongodb_motor.repository.types import AsyncMotorCollection, Document
@@ -10,9 +10,6 @@ from litestar.contrib.repository.filters import BeforeAfter, CollectionFilter, S
 if TYPE_CHECKING:
     from collections import abc
     from datetime import datetime
-
-    from pymongo.client_session import ClientSession
-    from pymongo.collation import Collation
 
 
 class MongoDbMotorAsyncRepository(AbstractAsyncRepository[Document]):
@@ -56,8 +53,6 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[Document]):
     async def count(
         self,
         *filters: FilterTypes,
-        session: ClientSession | None = None,
-        collation: Collation | None = None,
         **kwargs: Any,
     ) -> int:
         """Count the number of documents in the collection matching the filters.
@@ -74,8 +69,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[Document]):
 
         query = self._build_query(*filters)
         query = self._apply_kwargs_to_query(query, **kwargs)
-        count = await self.collection.count_documents(query, session=session, collation=collation)
-        return int(count)
+        return cast(int, await self.collection.count_documents(query))
 
     def _build_query(self, *filters: FilterTypes) -> dict:
         """Build a query dictionary from the provided filters.
