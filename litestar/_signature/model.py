@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Any, ClassVar, Literal, Optional, Sequence, Set, TypedDict, Union, cast
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, Literal, Optional, Sequence, Set, TypedDict, Union, cast
 
 from msgspec import NODEFAULT, Meta, Struct, ValidationError, convert, defstruct
 from msgspec.structs import asdict
@@ -59,9 +59,10 @@ ERR_RE = re.compile(r"`\$\.(.+)`$")
 class SignatureModel(Struct):
     """Model that represents a function signature that uses a msgspec specific type or types."""
 
+    # NOTE: we have to use Set and Dict here because python 3.8 goes haywire if we use 'set' and 'dict'
     dependency_name_set: ClassVar[Set[str]]
+    fields: ClassVar[Dict[str, FieldDefinition]]
     return_annotation: ClassVar[Any]
-    fields: ClassVar[dict[str, FieldDefinition]]
 
     @classmethod
     def _create_exception(cls, connection: ASGIConnection, messages: list[ErrorMessage]) -> Exception:
