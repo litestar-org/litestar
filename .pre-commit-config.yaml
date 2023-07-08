@@ -65,7 +65,7 @@ repos:
         exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures"
         additional_dependencies:
           [
-            "git+https://github.com/jcrist/msgspec.git",
+            msgspec>=0.17.0,
             aiosqlite,
             annotated_types,
             async_timeout,
@@ -124,7 +124,7 @@ repos:
         exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures"
         additional_dependencies:
           [
-            "git+https://github.com/jcrist/msgspec.git",
+            msgspec>=0.17.0,
             aiosqlite,
             annotated_types,
             async_timeout,

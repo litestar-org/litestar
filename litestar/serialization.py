@@ -68,7 +68,7 @@ def _enc_constrained_date(date: ConstrainedDate) -> str:
     return date.isoformat()
 
 
-def _enc_pattern(pattern: Pattern) -> Any:
+def _enc_pattern(pattern: Pattern[str]) -> Any:
     return pattern.pattern
 
 
