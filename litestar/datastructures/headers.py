@@ -29,7 +29,7 @@ from multidict import CIMultiDict, CIMultiDictProxy, MultiMapping
 from litestar._multipart import parse_content_header
 from litestar._parsers import parse_headers
 from litestar.datastructures.multi_dicts import MultiMixin
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 
 __all__ = ("Accept", "CacheControlHeader", "ETag", "Header", "Headers", "MutableScopeHeaders")
 
@@ -439,9 +439,9 @@ class ETag(Header):
 
     def __post_init__(self) -> None:
         if self.documentation_only is False and self.value is None:
-            raise ValueError("value must be set if documentation_only is false")
+            raise ValidationException("value must be set if documentation_only is false")
         if self.value and not PRINTABLE_ASCII_RE.fullmatch(self.value):
-            raise ValueError("value must only contain ASCII printable characters")
+            raise ValidationException("value must only contain ASCII printable characters")
 
 
 class MediaTypeHeader:
