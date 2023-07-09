@@ -13,7 +13,7 @@ from litestar.datastructures import (
     MutableScopeHeaders,
 )
 from litestar.datastructures.headers import Header
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 from litestar.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
 from litestar.utils.dataclass import simple_asdict
 
@@ -301,10 +301,10 @@ def test_etag_documentation_only() -> None:
 
 
 def test_etag_no_value() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationException):
         ETag()
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationException):
         ETag(weak=True)
 
 
