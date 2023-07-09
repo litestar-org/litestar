@@ -368,6 +368,7 @@ class CacheControlHeader(Header):
             cls._field_definitions = {}
             for key, value in get_type_hints(cls, include_extras=True).items():
                 definition = FieldDefinition.from_kwarg(annotation=value, name=key)
+                # resolve_model_type so that field_definition.raw has the real raw type e.g. <class 'bool'>
                 cls._field_definitions[key] = resolve_model_type(definition)
         return cls._field_definitions
 
