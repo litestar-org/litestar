@@ -18,10 +18,10 @@ from typing import (
     Tuple,
     Union,
     cast,
-    get_type_hints,
 )
 
 from multidict import CIMultiDict, CIMultiDictProxy, MultiMapping
+from typing_extensions import get_type_hints
 
 from litestar._multipart import parse_content_header
 from litestar._parsers import parse_headers
@@ -366,7 +366,7 @@ class CacheControlHeader(Header):
 
         if cls._field_definitions is None:
             cls._field_definitions = {}
-            for key, value in get_type_hints(cls).items():
+            for key, value in get_type_hints(cls, include_extras=True).items():
                 definition = FieldDefinition.from_kwarg(annotation=value, name=key)
                 cls._field_definitions[key] = resolve_model_type(definition)
         return cls._field_definitions
