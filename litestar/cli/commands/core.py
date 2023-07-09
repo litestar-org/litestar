@@ -42,7 +42,7 @@ def _convert_uvicorn_args(args: dict[str, Any]) -> list[str]:
     return process_args
 
 
-@command(name="version")
+@command(name="version")  # type: ignore
 @option("-s", "--short", help="Exclude release level and serial information", is_flag=True, default=False)
 def version_command(short: bool) -> None:
     """Show the currently installed Litestar version."""
@@ -58,7 +58,7 @@ def info_command(app: Litestar) -> None:
     show_app_info(app)
 
 
-@command(name="run")
+@command(name="run")  # type: ignore
 @option("-r", "--reload", help="Reload server on changes", default=False, is_flag=True)
 @option("-p", "--port", help="Serve under this port", type=int, default=8000, show_default=True)
 @option(

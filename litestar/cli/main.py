@@ -35,7 +35,7 @@ else:
 __all__ = ("litestar_group",)
 
 
-@group(cls=LitestarExtensionGroup)
+@group(cls=LitestarExtensionGroup)  # type: ignore
 @option("--app", "app_path", help="Module path to a Litestar application")
 @option(
     "--app-dir",

@@ -36,7 +36,7 @@ def sessions_group() -> None:
     """Manage server-side sessions."""
 
 
-@sessions_group.command("delete")
+@sessions_group.command("delete")  # type: ignore
 @argument("session-id")
 def delete_session_command(session_id: str, app: Litestar) -> None:
     """Delete a specific session."""
@@ -50,7 +50,7 @@ def delete_session_command(session_id: str, app: Litestar) -> None:
         console.print(f"[green]Deleted session {session_id!r}")
 
 
-@sessions_group.command("clear")
+@sessions_group.command("clear")  # type: ignore
 def clear_sessions_command(app: Litestar) -> None:
     """Delete all sessions."""
     import anyio

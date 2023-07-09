@@ -230,7 +230,7 @@ def _inject_args(func: Callable[P, T]) -> Callable[Concatenate[Context, P], T]:
 
         return func(*args, **kwargs)
 
-    return pass_context(wrapped)
+    return pass_context(wrapped)  # pyright: ignore
 
 
 def _wrap_commands(commands: Iterable[Command]) -> None:
