@@ -97,7 +97,7 @@ Behavior
 ++++++++
 
 The ``add_item()`` and ``update_item()`` routes no longer return the full collection, instead they return the item that
-was added or updated. This is a minor detail change, but it is worth nothing as it brings the behavior of the app closer
+was added or updated. This is a minor detail change, but it is worth noting as it brings the behavior of the app closer
 to what we would expect from a conventional API.
 
 Next steps
