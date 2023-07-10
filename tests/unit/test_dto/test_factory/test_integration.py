@@ -724,8 +724,7 @@ app = Litestar(route_handlers=[handler])
     )
     with TestClient(app=module.app) as client:
         data = module.Superuser(data=module.ClassicNameStyle(first_name="A", surname="B"), age=10)
-        headers = {}
-        headers["Content-Type"] = "application/json; charset=utf-8"
+        headers = {"Content-Type": "application/json; charset=utf-8"}
         received = client.post(
             "/",
             content=msgspec.json.encode(data),
