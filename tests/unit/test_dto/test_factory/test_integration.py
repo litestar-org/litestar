@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Dict, Optional, Sequence
 from unittest.mock import MagicMock
 
+import msgspec
 import pytest
 from typing_extensions import Annotated
 
@@ -681,3 +682,54 @@ app = Litestar(route_handlers=[handler])
     with TestClient(app=module.app) as client:
         response = client.get("/")
         assert response.json() == [{"name": "John"}, {"name": "Jane"}]
+
+
+def test_dto_with_msgspec_and_generic_inherited_models(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from dataclasses import dataclass
+from typing import Dict, Generic, TypeVar
+from typing_extensions import Annotated
+
+from litestar import Litestar, post
+from litestar.dto.factory import DTOConfig
+from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.contrib.msgspec import MsgspecDTO
+
+from msgspec import Struct
+
+T = TypeVar("T", bound=Struct)
+
+class ClassicNameStyle(Struct):
+    first_name: str
+    surname: str
+
+class User(Struct, Generic[T]):
+    age: int
+    data: T
+
+class Superuser(User[ClassicNameStyle]):
+    # data: ClassicNameStyle
+    pass
+
+class UserDTO(MsgspecDTO[Superuser]):
+    pass
+
+@post(dto=UserDTO)
+def handler(data: Superuser) -> Superuser:
+    return data
+
+app = Litestar(route_handlers=[handler])
+"""
+    )
+    with TestClient(app=module.app) as client:
+        data = module.Superuser(data=module.ClassicNameStyle(first_name="A", surname="B"), age=10)
+        headers = {}
+        headers["Content-Type"] = "application/json; charset=utf-8"
+        received = client.post(
+            "/",
+            content=msgspec.json.encode(data),
+            headers=headers,
+        )
+        print(received.content)
+        assert msgspec.json.decode(received.content, type=module.Superuser) == data
