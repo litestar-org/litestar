@@ -90,10 +90,18 @@ class UUIDPrimaryKey:
 
     id: Mapped[UUID] = mapped_column(default=uuid4, primary_key=True)  # pyright: ignore
     """UUID Primary key column."""
+    _sentinel_column_name: str
+    """SQLAlchemy ORM sentinel column name"""
 
     @declared_attr
     def _sentinel(cls) -> Mapped[int]:
-        return orm_insert_sentinel()
+        return orm_insert_sentinel(name=cls._sentinel_column_name)
+
+    def __init__(
+        self, id: UUID | None = None, _sentinel_column_name: str | None = None, **kwargs: Any  # noqa: A002
+    ) -> None:
+        super().__init__(**kwargs.update({"id": id}))
+        self.sentinel_column_name = "_sentinel" if _sentinel_column_name is None else _sentinel_column_name
 
 
 class BigIntPrimaryKey:
