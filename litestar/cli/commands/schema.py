@@ -30,7 +30,7 @@ def schema_group() -> None:
     """Manage server-side OpenAPI schemas."""
 
 
-@schema_group.command("openapi")  # type: ignore
+@schema_group.command("openapi")
 @option(
     "--output",
     help="output file path",
@@ -54,7 +54,7 @@ def generate_openapi_schema(app: Litestar, output: Path) -> None:
         raise LitestarCLIException(f"failed to write schema to path {output}") from e
 
 
-@schema_group.command("typescript")  # type: ignore
+@schema_group.command("typescript")
 @option(
     "--output",
     help="output file path",

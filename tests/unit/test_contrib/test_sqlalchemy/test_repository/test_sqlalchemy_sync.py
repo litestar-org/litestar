@@ -87,8 +87,8 @@ def test_sqlalchemy_sentinel(monkeypatch: MonkeyPatch) -> None:
     unloaded_cols = {"the_extra_col"}
     sa_instance_mock = MagicMock()
     sa_instance_mock.unloaded = unloaded_cols
-    assert isinstance(AnotherModel.sa_orm_sentinel, MappedColumn)
-    assert isinstance(TheTestModel.sa_orm_sentinel, MappedColumn)
+    assert isinstance(AnotherModel.sa_orm_sentinel, MappedColumn)  # pyright: ignore
+    assert isinstance(TheTestModel.sa_orm_sentinel, MappedColumn)  # pyright: ignore
     assert not hasattr(TheBigIntModel, "sa_orm_sentinel")
     model1, model2, model3 = AnotherModel(), TheTestModel(), TheBigIntModel()
     monkeypatch.setattr(model1, "_sa_instance_state", sa_instance_mock)
