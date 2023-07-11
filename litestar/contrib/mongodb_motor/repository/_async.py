@@ -21,7 +21,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[Document]):
         self.collection: AsyncMotorCollection = collection
 
     async def add(self, data: Document) -> Document:
-        """Add `data` to the collection.
+        """Add ``data`` to the collection.
 
         Args:
             data: Dictionary to be added to the collection.
@@ -42,7 +42,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[Document]):
             data: Iterable of dictionaries to be added to the collection.
 
         Returns:
-            The added dictionaries with the `_id` field set if the operation was successfully acknowledged.
+            The added dictionaries with the ``_id`` field set if the operation was successfully acknowledged.
         """
         with wrap_pymongo_exception():
             result = await self.collection.insert_many(data)
@@ -66,7 +66,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[Document]):
             *filters: Filters to apply to the collection.
             session: Optional session to use for the operation.
             collation: Optional collation to use for the operation.
-            **kwargs: Optional keyword arguments to pass to the underlying `count_documents` method.
+            **kwargs: Optional keyword arguments to pass to the underlying ``count_documents`` method.
 
         Returns:
             The number of documents in the collection matching the filters.
@@ -105,7 +105,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[Document]):
         return query
 
     def _build_before_after_query(self, field_name: str, before: datetime | None, after: datetime | None) -> dict:
-        """Build a query dictionary from the provided `BeforeAfter` filter values.
+        """Build a query dictionary from the provided ``BeforeAfter`` filter values.
 
         Args:
             field_name: Field name to filter on.
@@ -123,11 +123,11 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[Document]):
         return query
 
     def _build_collection_filter_query(self, field_name: str, values: abc.Collection[Any]) -> dict:
-        """Build a query dictionary from the provided `CollectionFilter` values.
+        """Build a query dictionary from the provided ``CollectionFilter`` values.
 
         Args:
             field_name: Field name to filter on.
-            values: Values for `IN` clause.
+            values: Values for ``IN`` clause.
 
         Returns:
             A dictionary representing the query.
@@ -135,11 +135,11 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[Document]):
         return {field_name: {"$in": values}}
 
     def _build_search_filter_query(self, field_name: str, value: str, ignore_case: bool) -> dict:
-        """Build a query dictionary from the provided `SearchFilter` values.
+        """Build a query dictionary from the provided ``SearchFilter`` values.
 
         Args:
             field_name: Field name to filter on.
-            value: Values for `LIKE` clause.
+            value: Values for ``LIKE`` clause.
             ignore_case: Should the search be case-insensitive.
 
         Returns:

@@ -10,8 +10,8 @@ from litestar.contrib.repository import ConflictError, RepositoryError
 
 @contextmanager
 def wrap_pymongo_exception() -> Any:
-    """Do something within context to raise a `RepositoryError` chained
-    from an original `PyMongoError`.
+    """Do something within context to raise a ``RepositoryError`` chained
+    from an original ``PyMongoError``.
 
     >>> try:
     ...     with wrap_pymongo_exception():
