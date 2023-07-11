@@ -5,7 +5,7 @@ from typing import Any
 
 from prometheus_client import REGISTRY
 
-from litestar import get, post
+from litestar import get, post, websocket_listener
 from litestar.contrib.prometheus import PrometheusConfig, PrometheusController, PrometheusMiddleware
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
@@ -170,5 +170,28 @@ def test_prometheus_controller_configurations() -> None:
 
         assert (
             """litestar_requests_total{app_name="litestar",method="GET",path="/test",status_code="200"} 1.0 # {trace_id="1234"} 1.0"""
+            in metrics
+        )
+
+
+def test_prometheus_with_websocket() -> None:
+    config = create_config()
+
+    @websocket_listener("/test")
+    def test(data: str) -> dict:
+        return {"hello": data}
+
+    with create_test_client([test, PrometheusController], middleware=[config.middleware]) as client:
+        with client.websocket_connect("/test") as websocket:
+            websocket.send_text("litestar")
+            websocket.receive_json()
+
+        metrix_exporter_response = client.get("/metrics")
+
+        assert metrix_exporter_response.status_code == HTTP_200_OK
+        metrics = metrix_exporter_response.content.decode()
+
+        assert (
+            """litestar_requests_total{app_name="litestar",method="websocket",path="/test",status_code="200"} 1.0"""
             in metrics
         )
