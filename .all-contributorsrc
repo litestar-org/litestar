@@ -1120,6 +1120,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "su-shubham",
+      "name": "Shubham",
+      "avatar_url": "https://avatars.githubusercontent.com/u/75021117?v=4",
+      "profile": "https://github.com/su-shubham",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
