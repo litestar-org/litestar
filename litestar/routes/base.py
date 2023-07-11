@@ -128,7 +128,7 @@ class BaseRoute(ABC):
         )
 
     @staticmethod
-    def _validate_path_parameter(param: str) -> None:
+    def _validate_path_parameter(param: str, path: str) -> None:
         """Validate that a path parameter adheres to the required format and datatypes.
 
         Raises:
@@ -136,8 +136,7 @@ class BaseRoute(ABC):
         """
         if len(param.split(":")) != 2:
             raise ImproperlyConfiguredException(
-                "Path parameters should be declared with a type using the following pattern: '{parameter_name:type}', "
-                "e.g. '/my-path/{my_param:int}'"
+                f"Path parameters should be declared with a type using the following pattern: '{{parameter_name:type}}', e.g. '/my-path/{{my_param:int}}' in path: '{path}'"
             )
         param_name, param_type = (p.strip() for p in param.split(":"))
         if not param_name:
@@ -166,7 +165,7 @@ class BaseRoute(ABC):
         for component in components:
             if param_match := param_match_regex.fullmatch(component):
                 param = param_match.group(1)
-                cls._validate_path_parameter(param)
+                cls._validate_path_parameter(param, path)
                 param_name, param_type = (p.strip() for p in param.split(":"))
                 type_class = param_type_map[param_type]
                 parser = parsers_map[type_class] if type_class not in {str, Path} else None
