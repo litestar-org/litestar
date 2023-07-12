@@ -2,16 +2,19 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Dict, Optional, Sequence
+from typing import TYPE_CHECKING, Dict, Generic, Optional, Sequence, TypeVar
 from unittest.mock import MagicMock
 
+import msgspec
 import pytest
+from msgspec import Struct
 from typing_extensions import Annotated
 
-from litestar import patch, post
+from litestar import Litestar, patch, post
+from litestar.contrib.msgspec import MsgspecDTO
 from litestar.datastructures import UploadFile
 from litestar.dto.factory import DTOConfig, DTOData, dto_field
-from litestar.dto.factory.stdlib.dataclass import DataclassDTO
+from litestar.dto.factory.stdlib import DataclassDTO
 from litestar.dto.factory.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
 from litestar.params import Body
@@ -681,3 +684,37 @@ app = Litestar(route_handlers=[handler])
     with TestClient(app=module.app) as client:
         response = client.get("/")
         assert response.json() == [{"name": "John"}, {"name": "Jane"}]
+
+
+def test_dto_with_msgspec_and_generic_inherited_models(create_module: Callable[[str], ModuleType]) -> None:
+    T = TypeVar("T", bound=Struct)
+
+    class ClassicNameStyle(Struct):
+        first_name: str
+        surname: str
+
+    class User(Struct, Generic[T]):
+        age: int
+        data: T
+
+    class Superuser(User[ClassicNameStyle]):
+        pass
+
+    class UserDTO(MsgspecDTO[Superuser]):
+        pass
+
+    @post(dto=UserDTO)
+    def handler(data: Superuser) -> Superuser:
+        return data
+
+    app = Litestar(route_handlers=[handler])
+    with TestClient(app=app) as client:
+        data = Superuser(data=ClassicNameStyle(first_name="A", surname="B"), age=10)
+        headers = {}
+        headers["Content-Type"] = "application/json; charset=utf-8"
+        received = client.post(
+            "/",
+            content=msgspec.json.encode(data),
+            headers=headers,
+        )
+        assert msgspec.json.decode(received.content, type=Superuser) == data
