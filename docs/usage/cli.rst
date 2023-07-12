@@ -216,7 +216,7 @@ filename using the ``--output`` flag. For example:
 
 .. code-block:: shell
 
-   litestar openapi schema --output my-specs.yaml
+   litestar schema openapi --output my-specs.yaml
 
 typescript
 ~~~~~~~~~~
@@ -225,13 +225,13 @@ The ``typescript`` subcommand generates TypeScript definitions from the Litestar
 
 .. code-block:: shell
 
-   litestar openapi typescript
+   litestar schema typescript
 
 By default, this command will output a file called ``api-specs.ts``. You can change this using the ``--output`` option:
 
 .. code-block:: shell
 
-   litestar openapi typescript --output my-types.ts
+   litestar schema typescript --output my-types.ts
 
 You can also specify the top level TypeScript namespace that will be created, which by default will be called API:
 
@@ -245,7 +245,7 @@ To do this use the ``--namespace`` option:
 
 .. code-block:: shell
 
-   litestar openapi typescript --namespace MyNamespace
+   litestar schema typescript --namespace MyNamespace
 
 Which will result in:
 

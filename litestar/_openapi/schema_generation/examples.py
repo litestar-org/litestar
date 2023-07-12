@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 from enum import Enum
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 from _decimal import Decimal
 from polyfactory.exceptions import ParameterException
@@ -20,8 +20,6 @@ except ImportError:
 
 
 if TYPE_CHECKING:
-    from polyfactory.field_meta import Constraints
-
     from litestar.typing import FieldDefinition
 
 
@@ -48,7 +46,6 @@ def _normalize_example_value(value: Any) -> Any:
 def _create_field_meta(field: FieldDefinition) -> FieldMeta:
     return FieldMeta.from_type(
         annotation=field.annotation,
-        constraints=cast("Constraints", {"constant": field.is_const}),
         default=field.default if field.default is not Empty else Null,
         name=field.name,
         random=Factory.__random__,
