@@ -79,7 +79,7 @@ def info_command(app: Litestar) -> None:
     default=None,
     show_default=True,
 )
-@option("-uds", "--uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
+@option("-uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
 @option("-d", "--debug", help="Run app in debug mode", is_flag=True)
 @option("-pdb", "--use-pdb", help="Drop into PDB on an exception", is_flag=True)
 @option("-R", "--reload-dir", help="Directories to watch for file changes", multiple=True)
