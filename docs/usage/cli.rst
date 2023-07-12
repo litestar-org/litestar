@@ -116,26 +116,26 @@ Options
 +=======================================+=================================+================================================================+
 | ``-r``\ , ``--reload``                | ``LITESTAR_RELOAD``             | Reload the application when files in its directory are changed |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``-R``\ , ``--reload-dir``           | ``LITESTAR_RELOAD_DIRS``        | Specify directories to watch for reload.                       |
+| ``-R``\ ,``--reload-dir``             | ``LITESTAR_RELOAD_DIRS``        | Specify directories to watch for reload.                       |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
 | ``-p``\ , ``--port``                  | ``LITESTAR_PORT``               | Bind the the server to this port [default: 8000]               |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``-W``\ , ``--web-concurrency``      | ``WEB_CONCURRENCY``             | The number of concurrent web workers to start [default: 1]     |
+| ``--wc``\ , ``--web-concurrency``     | ``WEB_CONCURRENCY``             | The number of concurrent web workers to start [default: 1]     |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``-H``\ , ``--host``                            | ``LITESTAR_HOST``               | Bind the server to this host [default: 127.0.0.1]              |
+| ``-H``\ ,``--host``                   | ``LITESTAR_HOST``               | Bind the server to this host [default: 127.0.0.1]              |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``-F``\ , ``--file-descriptor``      | ``LITESTAR_FILE_DESCRIPTOR``    | Bind to a socket from this file descriptor.                    |
+| ``--fd``\ , ``--file-descriptor``     | ``LITESTAR_FILE_DESCRIPTOR``    | Bind to a socket from this file descriptor.                    |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``-U``\ , ``--unix-domain-socket``  | ``LITESTAR_UNIX_DOMAIN_SOCKET`` | Bind to a UNIX domain socket.                                  |
+| ``--uds``\ , ``--unix-domain-socket`` | ``LITESTAR_UNIX_DOMAIN_SOCKET`` | Bind to a UNIX domain socket.                                  |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``-d``\ , ``--debug``                 | ``LITESTAR_DEBUG``              | Run the application in debug mode                              |
+| ``-d``\ ,``--debug``                  | ``LITESTAR_DEBUG``              | Run the application in debug mode                              |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``-P``\ , ``--use_pdb``             | ``LITESTAR_PDB``                | Drop into the Python debugger when an exception occurs         |
+| ``--pdb``\ , ``--use_pdb``            | ``LITESTAR_PDB``                | Drop into the Python debugger when an exception occurs         |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
 
 
-``-R`` | ``--reload-dir``
-++++++++++++++++++++++++++
+--reload-dir
+++++++++++++
 
 The ``--reload-dir`` flag can be used to specify directories to watch for changes. If specified, the ``--reload`` flag
 is implied. Multiple directories can be specified by passing the flag multiple times:
@@ -150,8 +150,8 @@ To set via environment variable, use a comma-separated list:
 
    LITESTAR_RELOAD_DIRS=.,../other-library/src
 
-``info``
-^^^^^^^^
+info
+^^^^
 
 The ``info`` command displays useful information about the selected application and its configuration
 
