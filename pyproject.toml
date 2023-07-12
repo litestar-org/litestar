@@ -160,6 +160,8 @@ structlog = "*"
 tortoise-orm = "*"
 trio = "*"
 uvicorn = "*"
+mypy = "^1.4.1"
+pyright = "^1.1.316"
 
 [tool.poetry.group.docs]
 optional = true
