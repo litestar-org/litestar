@@ -60,29 +60,28 @@ def info_command(app: Litestar) -> None:
 
 @command(name="run")
 @option("-r", "--reload", help="Reload server on changes", default=False, is_flag=True)
+@option("-R", "--reload-dir", help="Directories to watch for file changes", multiple=True)
 @option("-p", "--port", help="Serve under this port", type=int, default=8000, show_default=True)
 @option(
-    "-wc",
+    "-W",
     "--web-concurrency",
     help="The number of HTTP workers to launch",
     type=click.IntRange(min=1, max=multiprocessing.cpu_count() + 1),
     show_default=True,
     default=1,
 )
-@option("--host", help="Server under this host", default="127.0.0.1", show_default=True)
+@option("-H", "--host", help="Server under this host", default="127.0.0.1", show_default=True)
 @option(
-    "-fd",
-    "--fd",
+    "-F",
     "--file-descriptor",
     help="Bind to a socket from this file descriptor.",
     type=int,
     default=None,
     show_default=True,
 )
-@option("-uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
+@option("-U", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
 @option("-d", "--debug", help="Run app in debug mode", is_flag=True)
-@option("-pdb", "--use-pdb", help="Drop into PDB on an exception", is_flag=True)
-@option("-R", "--reload-dir", help="Directories to watch for file changes", multiple=True)
+@option("-P", "--use-pdb", help="Drop into PDB on an exception", is_flag=True)
 def run_command(
     reload: bool,
     port: int,
