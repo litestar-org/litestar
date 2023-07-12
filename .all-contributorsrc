@@ -1129,6 +1129,16 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "erik-hasse",
+      "name": "Erik Hasse",
+      "avatar_url": "https://avatars.githubusercontent.com/u/37126755?v=4",
+      "profile": "https://www.linkedin.com/in/erik-hasse",
+      "contributions": [
+        "bug",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
