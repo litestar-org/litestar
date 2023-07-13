@@ -690,21 +690,21 @@ app = Litestar(route_handlers=[handler])
 
 
 def test_default_values_for_dto_with_msgspec() -> None:
-    class User(Struct):
+    class MsgspecUser(Struct):
         age: int
         name: str
 
-    class UserDTO(MsgspecDTO[User]):
+    class UserDTO(MsgspecDTO[MsgspecUser]):
         pass
 
-    @post(dto=UserDTO, return_dto=None, signature_namespace={"User": User})
-    def handler(data: User, request: Request) -> dict:
+    @post(dto=UserDTO, return_dto=None, signature_namespace={"MsgspecUser": MsgspecUser})
+    def handler(data: MsgspecUser, request: Request) -> dict:
         schema = request.app.openapi_schema
         return schema.to_schema()
 
     app = Litestar(route_handlers=[handler])
     with TestClient(app=app) as client:
-        data = User(name="A", age=10)
+        data = MsgspecUser(name="A", age=10)
         headers = {}
         headers["Content-Type"] = "application/json; charset=utf-8"
         received = client.post(
@@ -717,21 +717,21 @@ def test_default_values_for_dto_with_msgspec() -> None:
 
 
 def test_default_values_for_dto_with_pydantic() -> None:
-    class User(BaseModel):
+    class PydanticUser(BaseModel):
         age: int
         name: str
 
-    class UserDTO(PydanticDTO[User]):
+    class UserDTO(PydanticDTO[PydanticUser]):
         pass
 
-    @post(dto=UserDTO, return_dto=None, signature_namespace={"User": User})
-    def handler(data: User, request: Request) -> dict:
+    @post(dto=UserDTO, return_dto=None, signature_namespace={"PydanticUser": PydanticUser})
+    def handler(data: PydanticUser, request: Request) -> dict:
         schema = request.app.openapi_schema
         return schema.to_schema()
 
     app = Litestar(route_handlers=[handler])
     with TestClient(app=app) as client:
-        data = User(name="A", age=10)
+        data = PydanticUser(name="A", age=10)
         headers = {}
         headers["Content-Type"] = "application/json; charset=utf-8"
         received = client.post(
@@ -745,21 +745,21 @@ def test_default_values_for_dto_with_pydantic() -> None:
 
 def test_default_values_for_dto_with_dataclass() -> None:
     @dataclass
-    class User:
+    class DataclassUser:
         age: int
         name: str
 
-    class UserDTO(DataclassDTO[User]):
+    class UserDTO(DataclassDTO[DataclassUser]):
         pass
 
-    @post(dto=UserDTO, return_dto=None, signature_namespace={"User": User})
-    def handler(data: User, request: Request) -> dict:
+    @post(dto=UserDTO, return_dto=None, signature_namespace={"DataclassUser": DataclassUser})
+    def handler(data: DataclassUser, request: Request) -> dict:
         schema = request.app.openapi_schema
         return schema.to_schema()
 
     app = Litestar(route_handlers=[handler])
     with TestClient(app=app) as client:
-        data = User(name="A", age=10)
+        data = DataclassUser(name="A", age=10)
         headers = {}
         headers["Content-Type"] = "application/json; charset=utf-8"
         received = client.post(
