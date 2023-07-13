@@ -769,3 +769,30 @@ def test_default_values_for_dto_with_dataclass() -> None:
         )
         required = list(received.json()["components"]["schemas"].values())[0]["required"]
         assert len(required) == 2
+
+
+def test_schema_required_fields_with_msgspec_dto_and_default_fields() -> None:
+    class MsgspecUser(Struct):
+        age: int
+        name: str = "A"
+
+    class UserDTO(MsgspecDTO[MsgspecUser]):
+        pass
+
+    @post(dto=UserDTO, return_dto=None, signature_namespace={"MsgspecUser": MsgspecUser})
+    def handler(data: MsgspecUser, request: Request) -> dict:
+        schema = request.app.openapi_schema
+        return schema.to_schema()
+
+    app = Litestar(route_handlers=[handler])
+    with TestClient(app=app) as client:
+        data = MsgspecUser(name="A", age=10)
+        headers = {}
+        headers["Content-Type"] = "application/json; charset=utf-8"
+        received = client.post(
+            "/",
+            content=msgspec.json.encode(data),
+            headers=headers,
+        )
+        required = list(received.json()["components"]["schemas"].values())[0]["required"]
+        assert required == ["age"]
