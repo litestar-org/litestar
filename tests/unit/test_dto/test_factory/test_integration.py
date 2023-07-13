@@ -8,11 +8,13 @@ from unittest.mock import MagicMock
 import msgspec
 import pytest
 from msgspec import Struct
+from pydantic import BaseModel
 from typing_extensions import Annotated
 
 from litestar import Litestar, patch, post
 from litestar.connection.request import Request
 from litestar.contrib.msgspec import MsgspecDTO
+from litestar.contrib.pydantic import PydanticDTO
 from litestar.datastructures import UploadFile
 from litestar.dto.factory import DTOConfig, DTOData, dto_field
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
@@ -710,7 +712,60 @@ def test_default_values_for_dto_with_msgspec() -> None:
             content=msgspec.json.encode(data),
             headers=headers,
         )
-        required = received.json()["components"]["schemas"][
-            "tests.unit.test_dto.test_factory.test_integration.test_default_values_for_dto_with_msgspec.<locals>.UserRequestBody"
-        ]["required"]
+        required = list(received.json()["components"]["schemas"].values())[0]["required"]
+        assert len(required) == 2
+
+
+def test_default_values_for_dto_with_pydantic() -> None:
+    class User(BaseModel):
+        age: int
+        name: str
+
+    class UserDTO(PydanticDTO[User]):
+        pass
+
+    @post(dto=UserDTO, return_dto=None, signature_namespace={"User": User})
+    def handler(data: User, request: Request) -> dict:
+        schema = request.app.openapi_schema
+        return schema.to_schema()
+
+    app = Litestar(route_handlers=[handler])
+    with TestClient(app=app) as client:
+        data = User(name="A", age=10)
+        headers = {}
+        headers["Content-Type"] = "application/json; charset=utf-8"
+        received = client.post(
+            "/",
+            content=data.json(),
+            headers=headers,
+        )
+        required = list(received.json()["components"]["schemas"].values())[0]["required"]
+        assert len(required) == 2
+
+
+def test_default_values_for_dto_with_dataclass() -> None:
+    @dataclass
+    class User:
+        age: int
+        name: str
+
+    class UserDTO(DataclassDTO[User]):
+        pass
+
+    @post(dto=UserDTO, return_dto=None, signature_namespace={"User": User})
+    def handler(data: User, request: Request) -> dict:
+        schema = request.app.openapi_schema
+        return schema.to_schema()
+
+    app = Litestar(route_handlers=[handler])
+    with TestClient(app=app) as client:
+        data = User(name="A", age=10)
+        headers = {}
+        headers["Content-Type"] = "application/json; charset=utf-8"
+        received = client.post(
+            "/",
+            content=msgspec.json.encode(data),
+            headers=headers,
+        )
+        required = list(received.json()["components"]["schemas"].values())[0]["required"]
         assert len(required) == 2
