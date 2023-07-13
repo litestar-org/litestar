@@ -176,7 +176,9 @@ def create_success_response(  # noqa: C901
     return response
 
 
-def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tuple[str, OpenAPIResponse]]:
+def create_error_responses(
+    exceptions: list[type[HTTPException]], schema_creator: SchemaCreator
+) -> Iterator[tuple[str, OpenAPIResponse]]:
     """Create the schema for error responses, if any."""
     grouped_exceptions: dict[int, list[type[HTTPException]]] = {}
     for exc in exceptions:
@@ -186,6 +188,7 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
     for status_code, exception_group in grouped_exceptions.items():
         exceptions_schemas = [
             Schema(
+                title=get_name(exc),
                 type=OpenAPIType.OBJECT,
                 required=["detail", "status_code"],
                 properties={
@@ -204,9 +207,12 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
             schema = Schema(one_of=exceptions_schemas)
         else:
             schema = exceptions_schemas[0]
+
+        _schema = schema_creator.process_schema_result(schema)
+
         yield str(status_code), OpenAPIResponse(
             description=HTTPStatus(status_code).description,
-            content={MediaType.JSON: OpenAPIMediaType(schema=schema)},
+            content={MediaType.JSON: OpenAPIMediaType(schema=_schema)},
         )
 
 
@@ -240,7 +246,7 @@ def create_responses(
     exceptions = list(route_handler.raises or [])
     if raises_validation_error and ValidationException not in exceptions:
         exceptions.append(ValidationException)
-    for status_code, response in create_error_responses(exceptions=exceptions):
+    for status_code, response in create_error_responses(exceptions=exceptions, schema_creator=schema_creator):
         responses[status_code] = response
 
     for status_code, response in create_additional_responses(route_handler, schema_creator):

@@ -75,6 +75,7 @@ def test_create_error_responses() -> None:
     class AlternativePetException(HTTPException):
         status_code = ValidationException.status_code
 
+    schema_creator = SchemaCreator(generate_examples=True)
     pet_exc_response, permission_denied_exc_response, validation_exc_response = tuple(
         create_error_responses(
             exceptions=[
@@ -82,7 +83,8 @@ def test_create_error_responses() -> None:
                 PermissionDeniedException,
                 AlternativePetException,
                 ValidationException,
-            ]
+            ],
+            schema_creator=schema_creator,
         )
     )
     assert pet_exc_response
@@ -91,6 +93,8 @@ def test_create_error_responses() -> None:
     assert pet_exc_response[1].content
     assert pet_exc_response[1].content[MediaType.JSON]
     pet_exc_response_schema = pet_exc_response[1].content[MediaType.JSON].schema
+    assert isinstance(pet_exc_response_schema, Reference)
+    pet_exc_response_schema = schema_creator.schemas[pet_exc_response_schema.value]
     assert isinstance(pet_exc_response_schema, Schema)
     assert pet_exc_response_schema.examples
     assert pet_exc_response_schema.properties
@@ -107,6 +111,8 @@ def test_create_error_responses() -> None:
     assert permission_denied_exc_response[1].content[MediaType.JSON]
     schema = permission_denied_exc_response[1].content[MediaType.JSON].schema
 
+    assert isinstance(schema, Reference)
+    schema = schema_creator.schemas[schema.value]
     assert isinstance(schema, Schema)
     assert schema.examples
     assert schema.properties

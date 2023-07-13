@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     from typing import Callable
 
 
-def test_process_schema_result() -> None:
+def test_process_schema_result_for_field() -> None:
     test_str = "abc"
     kwarg_definition = ParameterKwarg(
         examples=[Example(value=1)],

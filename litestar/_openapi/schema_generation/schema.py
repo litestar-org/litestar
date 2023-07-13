@@ -440,7 +440,7 @@ class SchemaCreator:
         else:
             result = create_schema_for_annotation(field_definition.annotation)
 
-        return self.process_schema_result(field_definition, result) if isinstance(result, Schema) else result
+        return self.process_schema_result_for_field(field_definition, result) if isinstance(result, Schema) else result
 
     def for_optional_field(self, field_definition: FieldDefinition) -> Schema:
         """Create a Schema for an optional FieldDefinition.
@@ -793,7 +793,7 @@ class SchemaCreator:
         """
         return (field_definition.alias or field_definition.name) if self.prefer_alias else field_definition.name
 
-    def process_schema_result(self, field: FieldDefinition, schema: Schema) -> Schema | Reference:
+    def process_schema_result_for_field(self, field: FieldDefinition, schema: Schema) -> Schema | Reference:
         if field.kwarg_definition and field.is_const and field.has_default and schema.const is None:
             schema.const = field.default
 
@@ -807,6 +807,9 @@ class SchemaCreator:
         if not schema.examples and self.generate_examples:
             schema.examples = create_examples_for_field(field)
 
+        return self.process_schema_result(schema)
+
+    def process_schema_result(self, schema: Schema) -> Schema | Reference:
         if schema.title and schema.type in (OpenAPIType.OBJECT, OpenAPIType.ARRAY):
             if schema.title in self.schemas and hash(self.schemas[schema.title]) != hash(schema):
                 raise ImproperlyConfiguredException(
