@@ -5,10 +5,14 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Dict, Optional, Sequence
 from unittest.mock import MagicMock
 
+import msgspec
 import pytest
+from msgspec import Struct
 from typing_extensions import Annotated
 
-from litestar import patch, post
+from litestar import Litestar, patch, post
+from litestar.connection.request import Request
+from litestar.contrib.msgspec import MsgspecDTO
 from litestar.datastructures import UploadFile
 from litestar.dto.factory import DTOConfig, DTOData, dto_field
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
@@ -681,3 +685,32 @@ app = Litestar(route_handlers=[handler])
     with TestClient(app=module.app) as client:
         response = client.get("/")
         assert response.json() == [{"name": "John"}, {"name": "Jane"}]
+
+
+def test_default_values_for_dto_with_msgspec() -> None:
+    class User(Struct):
+        age: int
+        name: str
+
+    class UserDTO(MsgspecDTO[User]):
+        pass
+
+    @post(dto=UserDTO, return_dto=None, signature_namespace={"User": User})
+    def handler(data: User, request: Request) -> dict:
+        schema = request.app.openapi_schema
+        return schema.to_schema()
+
+    app = Litestar(route_handlers=[handler])
+    with TestClient(app=app) as client:
+        data = User(name="A", age=10)
+        headers = {}
+        headers["Content-Type"] = "application/json; charset=utf-8"
+        received = client.post(
+            "/",
+            content=msgspec.json.encode(data),
+            headers=headers,
+        )
+        required = received.json()["components"]["schemas"][
+            "tests.unit.test_dto.test_factory.test_integration.test_default_values_for_dto_with_msgspec.<locals>.UserRequestBody"
+        ]["required"]
+        assert len(required) == 2
