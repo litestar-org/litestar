@@ -136,6 +136,20 @@ def test_create_error_responses() -> None:
         assert schema.type
 
 
+def test_create_error_responses_with_non_http_status_code() -> None:
+    class HouseNotFoundError(HTTPException):
+        status_code: int = 420
+        detail: str = "House not found."
+
+    house_not_found_exc_response, _ = tuple(
+        create_error_responses(exceptions=[HouseNotFoundError, ValidationException])
+    )
+
+    assert house_not_found_exc_response
+    assert house_not_found_exc_response[0] == str(HouseNotFoundError.status_code)
+    assert house_not_found_exc_response[1].description == HouseNotFoundError.detail
+
+
 def test_create_success_response_with_headers() -> None:
     @get(
         path="/test",
