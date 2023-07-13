@@ -689,7 +689,7 @@ app = Litestar(route_handlers=[handler])
         assert response.json() == [{"name": "John"}, {"name": "Jane"}]
 
 
-def test_default_values_for_dto_with_msgspec() -> None:
+def test_schema_required_fields_with_msgspec_dto() -> None:
     class MsgspecUser(Struct):
         age: int
         name: str
@@ -716,7 +716,7 @@ def test_default_values_for_dto_with_msgspec() -> None:
         assert len(required) == 2
 
 
-def test_default_values_for_dto_with_pydantic() -> None:
+def test_schema_required_fields_with_pydantic_dto() -> None:
     class PydanticUser(BaseModel):
         age: int
         name: str
@@ -743,7 +743,7 @@ def test_default_values_for_dto_with_pydantic() -> None:
         assert len(required) == 2
 
 
-def test_default_values_for_dto_with_dataclass() -> None:
+def test_schema_required_fields_with_dataclass_dto() -> None:
     @dataclass
     class DataclassUser:
         age: int
