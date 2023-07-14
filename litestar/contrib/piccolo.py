@@ -7,7 +7,7 @@ from _decimal import Decimal
 from msgspec import Meta
 from typing_extensions import Annotated
 
-from litestar.dto.factory.abc import AbstractDTOFactory
+from litestar.dto.factory.base import AbstractDTOFactory
 from litestar.dto.factory.data_structures import DTOFieldDefinition
 from litestar.dto.factory.field import DTOField, Mark
 from litestar.exceptions import MissingDependencyException

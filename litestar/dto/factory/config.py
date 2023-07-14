@@ -8,8 +8,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 if TYPE_CHECKING:
     from typing import AbstractSet
 
-    from .types import RenameStrategy
-
+    from litestar.dto.types import RenameStrategy
 
 __all__ = ("DTOConfig",)
 

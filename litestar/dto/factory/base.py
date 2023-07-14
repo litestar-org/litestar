@@ -5,12 +5,12 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar.dto.interface import ConnectionContext, DTOInterface
 from litestar.enums import RequestEncodingType
+from litestar.exceptions.dto_exceptions import InvalidAnnotationException
 from litestar.typing import FieldDefinition
 
 from ._backends import MsgspecDTOBackend, PydanticDTOBackend
 from ._backends.abc import BackendContext
 from .config import DTOConfig
-from .exc import InvalidAnnotation
 from .utils import (
     get_dto_config_from_annotated_type,
     resolve_generic_wrapper_type,
@@ -66,12 +66,12 @@ class AbstractDTOFactory(DTOInterface, Generic[T]):
         if (field_definition.is_optional and len(field_definition.args) > 2) or (
             field_definition.is_union and not field_definition.is_optional
         ):
-            raise InvalidAnnotation(
+            raise InvalidAnnotationException(
                 "Unions are currently not supported as type argument to DTO. Want this? Open an issue."
             )
 
         if field_definition.is_forward_ref:
-            raise InvalidAnnotation("Forward references are not supported as type argument to DTO")
+            raise InvalidAnnotationException("Forward references are not supported as type argument to DTO")
 
         # if a configuration is not provided, and the type narrowing is a type var, we don't want to create a subclass
         config = get_dto_config_from_annotated_type(field_definition)
@@ -139,7 +139,7 @@ class AbstractDTOFactory(DTOInterface, Generic[T]):
             if resolved_generic_result is not None:
                 model_type, field_definition, wrapper_attribute_name = resolved_generic_result
             else:
-                raise InvalidAnnotation(
+                raise InvalidAnnotationException(
                     f"DTO narrowed with '{cls.model_type}', handler type is '{field_definition.annotation}'"
                 )
 

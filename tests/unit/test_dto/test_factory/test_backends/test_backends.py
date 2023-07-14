@@ -295,3 +295,57 @@ dto_type = DataclassDTO[Model]
     assert b_d_nested_info is not None
     assert next(f for f in b_d_nested_info.field_definitions if f.name == "e").is_excluded
     assert b_d_nested_info.field_definitions[1].name == "f"
+
+
+def test_parse_model_nested_include(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from dataclasses import dataclass
+from typing import List
+
+from litestar.dto.factory.stdlib.dataclass import DataclassDTO
+
+@dataclass
+class NestedNestedModel:
+    e: int
+    f: int
+
+@dataclass
+class NestedModel:
+    c: int
+    d: List[NestedNestedModel]
+
+@dataclass
+class Model:
+    a: int
+    b: NestedModel
+
+dto_type = DataclassDTO[Model]
+    """
+    )
+    config = DTOConfig(max_nested_depth=2, include={"a", "b.c", "b.d.0.e"})
+    ctx = BackendContext(
+        dto_config=config,
+        dto_for="data",
+        field_definition=FieldDefinition.from_annotation(module.Model),
+        field_definition_generator=DataclassDTO.generate_field_definitions,
+        is_nested_field_predicate=DataclassDTO.detect_nested_field,
+        model_type=module.Model,
+        wrapper_attribute_name=None,
+    )
+    parsed = MsgspecDTOBackend(context=ctx).parsed_field_definitions
+    assert not next(f for f in parsed if f.name == "a").is_excluded
+    assert parsed[1].name == "b"
+    b_transfer_type = parsed[1].transfer_type
+    assert isinstance(b_transfer_type, SimpleType)
+    b_nested_info = b_transfer_type.nested_field_info
+    assert b_nested_info is not None
+    assert not next(f for f in b_nested_info.field_definitions if f.name == "c").is_excluded
+    assert b_nested_info.field_definitions[1].name == "d"
+    b_d_transfer_type = b_nested_info.field_definitions[1].transfer_type
+    assert isinstance(b_d_transfer_type, CollectionType)
+    assert isinstance(b_d_transfer_type.inner_type, SimpleType)
+    b_d_nested_info = b_d_transfer_type.inner_type.nested_field_info
+    assert b_d_nested_info is not None
+    assert not next(f for f in b_d_nested_info.field_definitions if f.name == "e").is_excluded
+    assert b_d_nested_info.field_definitions[1].name == "f"

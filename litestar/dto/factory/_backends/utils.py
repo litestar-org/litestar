@@ -23,8 +23,7 @@ if TYPE_CHECKING:
     from typing import AbstractSet, Any, Iterable
 
     from litestar.dto.factory.data_structures import DTOFieldDefinition
-    from litestar.dto.factory.types import RenameStrategy
-    from litestar.dto.types import ForType
+    from litestar.dto.types import ForType, RenameStrategy
     from litestar.typing import FieldDefinition
 
     from .types import FieldDefinitionsType, TransferDTOFieldDefinition
@@ -95,7 +94,7 @@ def should_exclude_field(
     field_name = field_definition.name
     if field_name in exclude:
         return True
-    if include and field_name not in include:
+    if include and field_name not in include and not (any(f.startswith(f"{field_name}.") for f in include)):
         return True
     if dto_field := field_definition.dto_field:
         if dto_field.mark is Mark.PRIVATE:

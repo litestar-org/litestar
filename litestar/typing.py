@@ -207,7 +207,7 @@ class FieldDefinition:
     def _extract_metadata(
         cls, annotation: Any, name: str | None, default: Any, metadata: tuple[Any, ...], extra: dict[str, Any] | None
     ) -> tuple[KwargDefinition | None, dict[str, Any]]:
-        from litestar.dto.factory.abc import AbstractDTOFactory
+        from litestar.dto.factory.base import AbstractDTOFactory
 
         model = BodyKwarg if name == "data" else ParameterKwarg
         if isinstance(default, FieldInfo):
