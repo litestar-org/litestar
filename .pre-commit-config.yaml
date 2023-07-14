@@ -24,12 +24,12 @@ repos:
   #      - id: poetry-lock
   #        args: ["--no-update"]
   - repo: https://github.com/provinzkraut/unasyncd
-    rev: "v0.4.0"
+    rev: "v0.5.0"
     hooks:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.277"
+    rev: "v0.0.278"
     hooks:
       - id: ruff
         args: ["--fix"]
