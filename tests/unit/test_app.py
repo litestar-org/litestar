@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, List, Tuple
 from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest
+from pydantic import VERSION
 from pytest import MonkeyPatch
 
 from litestar import Litestar, MediaType, Request, Response, get, post
@@ -139,7 +140,7 @@ def test_app_params_defined_on_app_config_object() -> None:
     litestar_signature = inspect.signature(Litestar)
     app_config_fields = {f.name for f in fields(AppConfig)}
     for name in litestar_signature.parameters:
-        if name in {"on_app_init", "initial_state"}:
+        if name in {"on_app_init", "initial_state", "_preferred_validation_backend"}:
             continue
         assert name in app_config_fields
     # ensure there are not fields defined on AppConfig that aren't in the Litestar signature
@@ -248,7 +249,7 @@ def test_default_handling_of_pydantic_errors() -> None:
         response = client.post("/123", json={"first_name": "moishe"})
         extra = response.json().get("extra")
         assert extra is not None
-        assert len(extra) == 3
+        assert 3 if len(extra) == VERSION.startswith("1") else 4
 
 
 def test_using_custom_http_exception_handler() -> None:

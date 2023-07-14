@@ -25,16 +25,25 @@ if TYPE_CHECKING:
     from pydantic import (
         BaseModel,
         ByteSize,
-        ConstrainedBytes,
-        ConstrainedDate,
         NameEmail,
-        SecretField,
         StrictBool,
     )
     from pydantic.color import Color
     from typing_extensions import TypeAlias
 
     from litestar.types import DataclassProtocol
+
+    try:  # pragma: no cover
+        # pydantic v1 only values
+        from pydantic import (
+            ConstrainedBytes,
+            ConstrainedDate,
+            SecretField,
+        )
+    except ImportError:
+        ConstrainedBytes = BaseModel
+        ConstrainedDate = BaseModel
+        SecretField = BaseModel
 
 __all__ = (
     "LitestarEncodableType",
@@ -55,8 +64,6 @@ EncodableStdLibIPType: TypeAlias = (
     "IPv4Address | IPv4Interface | IPv4Network | IPv6Address | IPv6Interface | IPv6Network"
 )
 EncodableMsgSpecType: TypeAlias = "Ext | Raw | Struct"
-EncodablePydanticType: TypeAlias = (
-    "BaseModel | ByteSize | ConstrainedBytes | ConstrainedDate | NameEmail | SecretField | StrictBool | Color"
-)
+EncodablePydanticType: TypeAlias = "BaseModel | ByteSize | ConstrainedBytes | ConstrainedDate | NameEmail | SecretField | StrictBool | Color"  # type: ignore
 
 LitestarEncodableType: TypeAlias = "EncodableBuiltinType | EncodableBuiltinCollectionType | EncodableStdLibType | EncodableStdLibIPType | EncodableMsgSpecType | EncodablePydanticType"

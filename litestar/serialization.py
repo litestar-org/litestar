@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import deque
+from datetime import date, datetime, time
 from decimal import Decimal
 from functools import partial
 from ipaddress import (
@@ -13,29 +14,20 @@ from ipaddress import (
 )
 from pathlib import Path, PurePath
 from re import Pattern
-from typing import TYPE_CHECKING, Any, Callable, Mapping, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Callable, Mapping, TypeVar, cast, overload
 from uuid import UUID
 
 import msgspec
 from msgspec import ValidationError
-from pydantic import (
-    UUID1,
-    BaseModel,
-    ByteSize,
-    ConstrainedBytes,
-    ConstrainedDate,
-    NameEmail,
-    SecretField,
-    StrictBool,
-)
-from pydantic.color import Color
-from pydantic.json import decimal_encoder
 
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
 from litestar.types import Empty, Serializer
+from litestar.utils import is_class_and_subclass, is_pydantic_model_class
 
 if TYPE_CHECKING:
+    from typing_extensions import TypeAlias
+
     from litestar.types import TypeEncodersMap
 
 __all__ = (
@@ -47,53 +39,114 @@ __all__ = (
     "encode_json",
     "encode_msgpack",
     "get_serializer",
+    "ExtendedMsgSpecValidationError",
 )
 
 T = TypeVar("T")
 
-
-def _enc_base_model(model: BaseModel) -> Any:
-    return model.dict()
+PYDANTIC_DECODERS: list[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]] = []
 
 
-def _enc_byte_size(bytes_: ByteSize) -> int:
-    return bytes_.real
+class ExtendedMsgSpecValidationError(ValidationError):
+    def __init__(self, errors: list[dict[str, Any]]) -> None:
+        self.errors = errors
+        super().__init__(errors)
 
 
-def _enc_constrained_bytes(bytes_: ConstrainedBytes) -> str:
-    return bytes_.decode("utf-8")
+try:
+    import pydantic
+
+    PYDANTIC_ENCODERS: dict[Any, Callable[[Any], Any]] = {
+        pydantic.EmailStr: str,
+        pydantic.NameEmail: str,
+        pydantic.ByteSize: lambda val: val.real,
+    }
+
+    def _dec_pydantic(type_: type[pydantic.BaseModel], value: Any) -> pydantic.BaseModel:
+        try:
+            return (
+                type_.model_validate(value, strict=False)
+                if hasattr(type_, "model_validate")
+                else type_.parse_obj(value)
+            )
+        except pydantic.ValidationError as e:
+            raise ExtendedMsgSpecValidationError(errors=cast(list[dict[str, Any]], e.errors())) from e
+
+    PYDANTIC_DECODERS.append((is_pydantic_model_class, _dec_pydantic))
+
+    if pydantic.VERSION.startswith("1"):  # pragma: no cover
+        PYDANTIC_ENCODERS.update(
+            {
+                pydantic.BaseModel: lambda model: model.dict(),
+                pydantic.SecretField: str,
+                pydantic.StrictBool: int,
+                pydantic.color.Color: str,  # pyright: ignore
+                pydantic.ConstrainedBytes: lambda val: val.decode("utf-8"),
+                pydantic.ConstrainedDate: lambda val: val.isoformat(),
+            }
+        )
+
+        PydanticUUIDType: TypeAlias = (
+            "type[pydantic.UUID1] | type[pydantic.UUID3] | type[pydantic.UUID4] | type[pydantic.UUID5]"
+        )
+
+        def _dec_pydantic_uuid(type_: PydanticUUIDType, val: Any) -> PydanticUUIDType:
+            if isinstance(val, str):
+                val = type_(val)
+
+            elif isinstance(val, (bytes, bytearray)):
+                try:
+                    val = type_(val.decode())
+                except ValueError:
+                    # 16 bytes in big-endian order as the bytes argument fail
+                    # the above check
+                    val = type_(bytes=val)
+            elif isinstance(val, UUID):
+                val = type_(str(val))
+
+            if not isinstance(val, type_):
+                raise ValidationError(f"Invalid UUID: {val!r}")
+
+            if type_._required_version != val.version:  # type: ignore
+                raise ValidationError(f"Invalid UUID version: {val!r}")
+
+            return cast("PydanticUUIDType", val)
+
+        def _is_pydantic_uuid(value: Any) -> bool:
+            return is_class_and_subclass(value, (pydantic.UUID1, pydantic.UUID3, pydantic.UUID4, pydantic.UUID5))
+
+        PYDANTIC_DECODERS.append((_is_pydantic_uuid, _dec_pydantic_uuid))
+    else:
+        from pydantic_extra_types import color
+
+        PYDANTIC_ENCODERS.update(
+            {
+                pydantic.BaseModel: lambda model: model.model_dump(mode="json"),
+                color.Color: str,
+                pydantic.types.SecretStr: lambda val: "**********" if val else "",
+                pydantic.types.SecretBytes: lambda val: "**********" if val else "",
+            }
+        )
 
 
-def _enc_constrained_date(date: ConstrainedDate) -> str:
-    return date.isoformat()
-
-
-def _enc_pattern(pattern: Pattern[str]) -> Any:
-    return pattern.pattern
-
+except ImportError:
+    PYDANTIC_ENCODERS = {}
 
 DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     Path: str,
     PurePath: str,
-    # pydantic specific types
-    BaseModel: _enc_base_model,
-    ByteSize: _enc_byte_size,
-    NameEmail: str,
-    Color: str,
-    SecretField: str,
-    ConstrainedBytes: _enc_constrained_bytes,
-    ConstrainedDate: _enc_constrained_date,
     IPv4Address: str,
     IPv4Interface: str,
     IPv4Network: str,
     IPv6Address: str,
     IPv6Interface: str,
     IPv6Network: str,
-    # pydantic compatibility
+    datetime: lambda val: val.isoformat(),
+    date: lambda val: val.isoformat(),
+    time: lambda val: val.isoformat(),
     deque: list,
-    Decimal: decimal_encoder,
-    StrictBool: int,
-    Pattern: _enc_pattern,
+    Decimal: lambda val: int(val) if val.as_tuple().exponent >= 0 else float(val),
+    Pattern: lambda val: val.pattern,
     # support subclasses of stdlib types, If no previous type matched, these will be
     # the last type in the mro, so we use this to (attempt to) convert a subclass into
     # its base class. # see https://github.com/jcrist/msgspec/issues/248
@@ -103,6 +156,8 @@ DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     float: float,
     set: set,
     frozenset: frozenset,
+    bytes: bytes,
+    **PYDANTIC_ENCODERS,
 }
 
 
@@ -119,42 +174,15 @@ def default_serializer(value: Any, type_encoders: Mapping[Any, Callable[[Any], A
     """
     if type_encoders is None:
         type_encoders = DEFAULT_TYPE_ENCODERS
+
     for base in value.__class__.__mro__[:-1]:
         try:
             encoder = type_encoders[base]
+            return encoder(value)
         except KeyError:
             continue
-        return encoder(value)
+
     raise TypeError(f"Unsupported type: {type(value)!r}")
-
-
-PydanticUUIDType = TypeVar("PydanticUUIDType", bound="UUID1")
-
-
-def _dec_pydantic_uuid(type_: type[PydanticUUIDType], val: Any) -> PydanticUUIDType:
-    if isinstance(val, str):
-        val = type_(val)
-    elif isinstance(val, (bytes, bytearray)):
-        try:
-            val = type_(val.decode())
-        except ValueError:
-            # 16 bytes in big-endian order as the bytes argument fail
-            # the above check
-            val = type_(bytes=val)
-    elif isinstance(val, UUID):
-        val = type_(str(val))
-
-    if not isinstance(val, type_):
-        raise ValidationError(f"Invalid UUID: {val!r}")
-
-    if type_._required_version != val.version:  # type:ignore[attr-defined]
-        raise ValidationError(f"Invalid UUID version: {val!r}")
-
-    return val
-
-
-def _dec_pydantic(type_: type[BaseModel], value: Any) -> BaseModel:
-    return type_.parse_obj(value)
 
 
 def dec_hook(type_: Any, value: Any) -> Any:  # pragma: no cover
@@ -170,14 +198,16 @@ def dec_hook(type_: Any, value: Any) -> Any:  # pragma: no cover
 
     from litestar.datastructures.state import ImmutableState
 
-    if issubclass(type_, UUID1):
-        return _dec_pydantic_uuid(type_, value)
     if isinstance(value, type_):
         return value
-    if issubclass(type_, BaseModel):
-        return _dec_pydantic(type_, value)
+
+    for predicate, decoder in PYDANTIC_DECODERS:
+        if predicate(type_):
+            return decoder(type_, value)
+
     if issubclass(type_, (Path, PurePath, ImmutableState, UUID)):
         return type_(value)
+
     raise TypeError(f"Unsupported type: {type(value)!r}")
 
 
@@ -187,7 +217,7 @@ _msgspec_msgpack_encoder = msgspec.msgpack.Encoder(enc_hook=default_serializer)
 _msgspec_msgpack_decoder = msgspec.msgpack.Decoder(dec_hook=dec_hook)
 
 
-def encode_json(obj: Any, default: Callable[[Any], Any] | None = default_serializer) -> bytes:
+def encode_json(obj: Any, default: Callable[[Any], Any] | None = None) -> bytes:
     """Encode a value into JSON.
 
     Args:
@@ -201,9 +231,7 @@ def encode_json(obj: Any, default: Callable[[Any], Any] | None = default_seriali
         SerializationException: If error encoding ``obj``.
     """
     try:
-        if default is None or default is default_serializer:
-            return _msgspec_json_encoder.encode(obj)
-        return msgspec.json.encode(obj, enc_hook=default)
+        return msgspec.json.encode(obj, enc_hook=default) if default else _msgspec_json_encoder.encode(obj)
     except (TypeError, msgspec.EncodeError) as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error
 

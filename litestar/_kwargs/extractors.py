@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     from litestar.dto.interface import DTOInterface
     from litestar.typing import FieldDefinition
 
+
 __all__ = (
     "body_extractor",
     "cookies_extractor",

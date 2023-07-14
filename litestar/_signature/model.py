@@ -6,15 +6,14 @@ from typing import TYPE_CHECKING, Any, ClassVar, Dict, Literal, Optional, Sequen
 
 from msgspec import NODEFAULT, Meta, Struct, ValidationError, convert, defstruct
 from msgspec.structs import asdict
-from pydantic import ValidationError as PydanticValidationError
 from typing_extensions import Annotated
 
 from litestar._signature.utils import create_type_overrides, validate_signature_dependencies
 from litestar.enums import ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
 from litestar.params import DependencyKwarg, KwargDefinition, ParameterKwarg
-from litestar.serialization import dec_hook
-from litestar.typing import FieldDefinition  # noqa: TCH
+from litestar.serialization import ExtendedMsgSpecValidationError, dec_hook
+from litestar.typing import FieldDefinition  # noqa
 from litestar.utils import make_non_optional_union
 from litestar.utils.dataclass import simple_asdict
 from litestar.utils.typing import unwrap_union
@@ -137,8 +136,8 @@ class SignatureModel(Struct):
         messages: list[ErrorMessage] = []
         try:
             return convert(kwargs, cls, strict=False, dec_hook=dec_hook).to_dict()
-        except PydanticValidationError as e:
-            for exc in e.errors():
+        except ExtendedMsgSpecValidationError as e:
+            for exc in e.errors:
                 keys = [str(loc) for loc in exc["loc"]]
                 message = cls._build_error_message(keys=keys, exc_msg=exc["msg"], connection=connection)
                 messages.append(message)
