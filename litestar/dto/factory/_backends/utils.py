@@ -23,8 +23,7 @@ if TYPE_CHECKING:
     from typing import AbstractSet, Any, Iterable
 
     from litestar.dto.factory.data_structures import DTOFieldDefinition
-    from litestar.dto.factory.types import RenameStrategy
-    from litestar.dto.types import ForType
+    from litestar.dto.types import ForType, RenameStrategy
     from litestar.typing import FieldDefinition
 
     from .types import FieldDefinitionsType, TransferDTOFieldDefinition
@@ -78,24 +77,33 @@ def should_mark_private(field_definition: DTOFieldDefinition, underscore_fields_
     )
 
 
-def should_exclude_field(field_definition: DTOFieldDefinition, exclude: AbstractSet[str], dto_for: ForType) -> bool:
+def should_exclude_field(
+    field_definition: DTOFieldDefinition, exclude: AbstractSet[str], include: AbstractSet[str], dto_for: ForType
+) -> bool:
     """Returns ``True`` where a field should be excluded from data transfer.
 
     Args:
         field_definition: defined DTO field
         exclude: names of fields to exclude
+        include: names of fields to exclude
         dto_for: indicates whether the DTO is for the request body or response.
 
     Returns:
         ``True`` if the field should not be included in any data transfer.
     """
     field_name = field_definition.name
-    dto_field = field_definition.dto_field
-    excluded = field_name in exclude
-    private = dto_field and dto_field.mark is Mark.PRIVATE
-    read_only_for_data = dto_for == "data" and dto_field and dto_field.mark is Mark.READ_ONLY
-    write_only_for_return = dto_for == "return" and dto_field and dto_field.mark is Mark.WRITE_ONLY
-    return bool(excluded or private or read_only_for_data or write_only_for_return)
+    if field_name in exclude:
+        return True
+    if include and field_name not in include and not (any(f.startswith(f"{field_name}.") for f in include)):
+        return True
+    if dto_field := field_definition.dto_field:
+        if dto_field.mark is Mark.PRIVATE:
+            return True
+        if dto_for == "data" and dto_field.mark is Mark.READ_ONLY:
+            return True
+        if dto_for == "return" and dto_field.mark is Mark.WRITE_ONLY:
+            return True
+    return False
 
 
 def should_ignore_field(field_definition: DTOFieldDefinition, dto_for: ForType) -> bool:

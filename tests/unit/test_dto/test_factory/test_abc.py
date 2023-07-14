@@ -11,10 +11,10 @@ from typing_extensions import Annotated
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar.dto.factory._backends import PydanticDTOBackend
 from litestar.dto.factory.config import DTOConfig
-from litestar.dto.factory.exc import InvalidAnnotation
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.dto.interface import ConnectionContext, HandlerContext
 from litestar.enums import RequestEncodingType
+from litestar.exceptions.dto_exceptions import InvalidAnnotationException
 from litestar.typing import FieldDefinition
 
 from . import Model
@@ -35,7 +35,7 @@ def get_backend(dto_type: type[DataclassDTO[Any]]) -> AbstractDTOBackend:
 
 
 def test_forward_referenced_type_argument_raises_exception() -> None:
-    with pytest.raises(InvalidAnnotation):
+    with pytest.raises(InvalidAnnotationException):
         DataclassDTO["Model"]
 
 
@@ -43,7 +43,7 @@ def test_union_type_argument_raises_exception() -> None:
     class ModelB(Model):
         ...
 
-    with pytest.raises(InvalidAnnotation):
+    with pytest.raises(InvalidAnnotationException):
         DataclassDTO[Union[Model, ModelB]]
 
 
@@ -150,7 +150,7 @@ def test_form_encoded_data_uses_pydantic_backend(request_encoding_type: RequestE
 def test_raises_invalid_annotation_for_non_homogenous_collection_types() -> None:
     dto_type = DataclassDTO[Model]
 
-    with pytest.raises(InvalidAnnotation):
+    with pytest.raises(InvalidAnnotationException):
         dto_type.on_registration(
             HandlerContext(
                 handler_id="handler",
@@ -167,7 +167,7 @@ def test_raises_invalid_annotation_for_mismatched_types() -> None:
     class OtherModel:
         a: int
 
-    with pytest.raises(InvalidAnnotation):
+    with pytest.raises(InvalidAnnotationException):
         dto_type.on_registration(
             HandlerContext(
                 handler_id="handler", dto_for="data", field_definition=FieldDefinition.from_annotation(OtherModel)

@@ -15,7 +15,6 @@ from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO, parse_type_from_eleme
 from litestar.dto.factory import DTOConfig, DTOField, Mark
 from litestar.dto.factory.field import DTO_FIELD_META_KEY
 from litestar.dto.interface import ConnectionContext, HandlerContext
-from litestar.dto.types import ForType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import encode_json
 from litestar.typing import FieldDefinition
@@ -24,6 +23,8 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from types import ModuleType
     from typing import Any
+
+    from litestar.dto.types import ForType
 
 
 @pytest.fixture(name="base")
