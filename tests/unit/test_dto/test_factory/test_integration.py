@@ -12,7 +12,7 @@ from litestar import patch, post
 from litestar.datastructures import UploadFile
 from litestar.dto.factory import DTOConfig, DTOData, dto_field
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
-from litestar.dto.factory.types import RenameStrategy
+from litestar.dto.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
 from litestar.params import Body
 from litestar.testing import TestClient, create_test_client

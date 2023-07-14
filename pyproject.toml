@@ -48,9 +48,9 @@ classifiers = [
     "Topic :: Software Development",
     "Typing :: Typed",
     "Framework :: AsyncIO",
-#    Pending trove-classifiers#148
-#    "Framework :: Litestar",
-#    "Framework :: Litestar :: 2",
+    #    Pending trove-classifiers#148
+    #    "Framework :: Litestar",
+    #    "Framework :: Litestar :: 2",
     "Framework :: Pydantic",
     "Framework :: Pydantic :: 1",
     "Intended Audience :: Developers",
@@ -94,7 +94,7 @@ multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 picologging = { version = "*", optional = true }
 polyfactory = ">=2.3.2"
-prometheus-client = {version = "*", optional = true}
+prometheus-client = { version = "*", optional = true }
 pydantic = "<2"
 python-dateutil = { version = "*", optional = true }
 python-jose = { version = "*", optional = true }
@@ -402,6 +402,7 @@ known-first-party = ["litestar", "tests", "examples"]
     "TCH",
     "TRY",
 ]
+"tests/unit/test_contrib/test_sqlalchemy/**/*.*" = ["UP006"]
 "docs/examples/application_hooks/before_send_hook.py" = ["UP006"]
 "docs/examples/contrib/sqlalchemy/plugins/**/*.*" = ["UP006"]
 "docs/examples/tests/**/*.*" = [

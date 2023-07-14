@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from abc import abstractmethod
-from typing import TYPE_CHECKING, Protocol, runtime_checkable
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
 from litestar.enums import RequestEncodingType
-from litestar.openapi.spec import Schema
 
 if TYPE_CHECKING:
     from typing import Any, Final
@@ -12,7 +11,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from litestar._openapi.schema_generation import SchemaCreator
-    from litestar.openapi.spec import Reference
+    from litestar.openapi.spec import Reference, Schema
     from litestar.types import LitestarEncodableType
     from litestar.types.internal_types import AnyConnection
     from litestar.typing import FieldDefinition
@@ -62,8 +61,7 @@ class ConnectionContext:
         )
 
 
-@runtime_checkable
-class DTOInterface(Protocol):
+class DTOInterface(ABC):
     __slots__ = ("connection_context",)
 
     connection_context: ConnectionContext
@@ -110,6 +108,7 @@ class DTOInterface(Protocol):
         """
 
     @classmethod
+    @abstractmethod
     def create_openapi_schema(
         cls, dto_for: ForType, handler_id: str, schema_creator: SchemaCreator
     ) -> Reference | Schema:
@@ -118,9 +117,9 @@ class DTOInterface(Protocol):
         Returns:
             An optional :class:`RequestBody <.openapi.spec.request_body.RequestBody>` instance.
         """
-        return Schema()
 
     @classmethod
+    @abstractmethod
     def on_registration(cls, handler_context: HandlerContext) -> None:
         """Receive information about the handler and application of the DTO.
 

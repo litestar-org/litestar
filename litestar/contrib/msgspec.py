@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Collection, Generic, TypeVar, cast
 
 from msgspec import NODEFAULT, Struct, inspect
 
-from litestar.dto.factory.abc import AbstractDTOFactory
+from litestar.dto.factory.base import AbstractDTOFactory
 from litestar.dto.factory.data_structures import DTOFieldDefinition
 from litestar.dto.factory.field import DTO_FIELD_META_KEY, DTOField
 from litestar.dto.factory.utils import get_model_type_hints

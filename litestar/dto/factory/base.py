@@ -1,18 +1,18 @@
 from __future__ import annotations
 
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar.dto.interface import ConnectionContext, DTOInterface
 from litestar.enums import RequestEncodingType
+from litestar.exceptions.dto_exceptions import InvalidAnnotationException
 from litestar.typing import FieldDefinition
 
 from ._backends import MsgspecDTOBackend, PydanticDTOBackend
 from ._backends.abc import BackendContext
 from .config import DTOConfig
-from .exc import InvalidAnnotation
 from .utils import (
-    parse_configs_from_annotation,
+    get_dto_config_from_annotated_type,
     resolve_generic_wrapper_type,
     resolve_model_type,
 )
@@ -36,7 +36,7 @@ __all__ = ("AbstractDTOFactory",)
 T = TypeVar("T")
 
 
-class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
+class AbstractDTOFactory(DTOInterface, Generic[T]):
     """Base class for DTO types."""
 
     __slots__ = ("connection_context",)
@@ -58,7 +58,7 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
             connection_context: A :class:`ConnectionContext <.ConnectionContext>` instance, which provides
                 information about the connection.
         """
-        self.connection_context = connection_context
+        super().__init__(connection_context=connection_context)
 
     def __class_getitem__(cls, annotation: Any) -> type[Self]:
         field_definition = FieldDefinition.from_annotation(annotation)
@@ -66,27 +66,20 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
         if (field_definition.is_optional and len(field_definition.args) > 2) or (
             field_definition.is_union and not field_definition.is_optional
         ):
-            raise InvalidAnnotation(
+            raise InvalidAnnotationException(
                 "Unions are currently not supported as type argument to DTO. Want this? Open an issue."
             )
 
         if field_definition.is_forward_ref:
-            raise InvalidAnnotation("Forward references are not supported as type argument to DTO")
+            raise InvalidAnnotationException("Forward references are not supported as type argument to DTO")
 
         # if a configuration is not provided, and the type narrowing is a type var, we don't want to create a subclass
-        configs = parse_configs_from_annotation(field_definition)
-        if field_definition.is_type_var and not configs:
-            return cls
+        config = get_dto_config_from_annotated_type(field_definition)
 
-        if configs:
-            # provided config is always preferred
-            config = configs[0]
-        elif hasattr(cls, "config"):
-            # if no config is provided, but the class has one assigned, use that
-            config = cls.config
-        else:
-            # otherwise, create a new config
-            config = DTOConfig()
+        if not config:
+            if field_definition.is_type_var:
+                return cls
+            config = cls.config if hasattr(cls, "config") else DTOConfig()
 
         cls_dict: dict[str, Any] = {"config": config, "_type_backend_map": {}, "_handler_backend_map": {}}
         if not field_definition.is_type_var:
@@ -146,7 +139,7 @@ class AbstractDTOFactory(DTOInterface, Generic[T], metaclass=ABCMeta):
             if resolved_generic_result is not None:
                 model_type, field_definition, wrapper_attribute_name = resolved_generic_result
             else:
-                raise InvalidAnnotation(
+                raise InvalidAnnotationException(
                     f"DTO narrowed with '{cls.model_type}', handler type is '{field_definition.annotation}'"
                 )
 
