@@ -39,12 +39,19 @@ __all__ = (
     "encode_json",
     "encode_msgpack",
     "get_serializer",
+    "ExtendedMsgSpecValidationError",
 )
 
 T = TypeVar("T")
 
-
 PYDANTIC_DECODERS: list[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]] = []
+
+
+class ExtendedMsgSpecValidationError(ValidationError):
+    def __init__(self, errors: list[dict[str, Any]]) -> None:
+        self.errors = errors
+        super().__init__(errors)
+
 
 try:
     import pydantic
@@ -56,7 +63,14 @@ try:
     }
 
     def _dec_pydantic(type_: type[pydantic.BaseModel], value: Any) -> pydantic.BaseModel:
-        return type_.model_validate(value, strict=False) if hasattr(type_, "model_validate") else type_.parse_obj(value)
+        try:
+            return (
+                type_.model_validate(value, strict=False)
+                if hasattr(type_, "model_validate")
+                else type_.parse_obj(value)
+            )
+        except pydantic.ValidationError as e:
+            raise ExtendedMsgSpecValidationError(errors=cast(list[dict[str, Any]], e.errors())) from e
 
     PYDANTIC_DECODERS.append((is_pydantic_model_class, _dec_pydantic))
 
@@ -117,7 +131,6 @@ try:
 
 except ImportError:
     PYDANTIC_ENCODERS = {}
-
 
 DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     Path: str,
