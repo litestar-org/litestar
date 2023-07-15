@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import deque
+from datetime import date, datetime, time
 from decimal import Decimal
 from functools import partial
 from ipaddress import (
@@ -14,22 +15,13 @@ from ipaddress import (
 from pathlib import Path, PurePath
 from re import Pattern
 from typing import TYPE_CHECKING, Any, Callable, Mapping, TypeVar, overload
+from uuid import UUID
 
 import msgspec
-from pydantic import (
-    BaseModel,
-    ByteSize,
-    ConstrainedBytes,
-    ConstrainedDate,
-    NameEmail,
-    SecretField,
-    StrictBool,
-)
-from pydantic.color import Color
-from pydantic.json import decimal_encoder
 
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
+from litestar.serialization._pydantic_serialization import create_pydantic_decoders, create_pydantic_encoders
 from litestar.types import Empty, Serializer
 
 if TYPE_CHECKING:
@@ -48,49 +40,26 @@ __all__ = (
 
 T = TypeVar("T")
 
+EXTRA_DECODERS: list[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]] = []
 
-def _enc_base_model(model: BaseModel) -> Any:
-    return model.dict()
-
-
-def _enc_byte_size(bytes_: ByteSize) -> int:
-    return bytes_.real
-
-
-def _enc_constrained_bytes(bytes_: ConstrainedBytes) -> str:
-    return bytes_.decode("utf-8")
-
-
-def _enc_constrained_date(date: ConstrainedDate) -> str:
-    return date.isoformat()
-
-
-def _enc_pattern(pattern: Pattern) -> Any:
-    return pattern.pattern
-
+if pydantic_decoders := create_pydantic_decoders():
+    EXTRA_DECODERS.extend(pydantic_decoders)
 
 DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     Path: str,
     PurePath: str,
-    # pydantic specific types
-    BaseModel: _enc_base_model,
-    ByteSize: _enc_byte_size,
-    NameEmail: str,
-    Color: str,
-    SecretField: str,
-    ConstrainedBytes: _enc_constrained_bytes,
-    ConstrainedDate: _enc_constrained_date,
     IPv4Address: str,
     IPv4Interface: str,
     IPv4Network: str,
     IPv6Address: str,
     IPv6Interface: str,
     IPv6Network: str,
-    # pydantic compatibility
+    datetime: lambda val: val.isoformat(),
+    date: lambda val: val.isoformat(),
+    time: lambda val: val.isoformat(),
     deque: list,
-    Decimal: decimal_encoder,
-    StrictBool: int,
-    Pattern: _enc_pattern,
+    Decimal: lambda val: int(val) if val.as_tuple().exponent >= 0 else float(val),
+    Pattern: lambda val: val.pattern,
     # support subclasses of stdlib types, If no previous type matched, these will be
     # the last type in the mro, so we use this to (attempt to) convert a subclass into
     # its base class. # see https://github.com/jcrist/msgspec/issues/248
@@ -100,6 +69,8 @@ DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     float: float,
     set: set,
     frozenset: frozenset,
+    bytes: bytes,
+    **create_pydantic_encoders(),
 }
 
 
@@ -116,12 +87,14 @@ def default_serializer(value: Any, type_encoders: Mapping[Any, Callable[[Any], A
     """
     if type_encoders is None:
         type_encoders = DEFAULT_TYPE_ENCODERS
+
     for base in value.__class__.__mro__[:-1]:
         try:
             encoder = type_encoders[base]
+            return encoder(value)
         except KeyError:
             continue
-        return encoder(value)
+
     raise TypeError(f"Unsupported type: {type(value)!r}")
 
 
@@ -135,10 +108,19 @@ def dec_hook(type_: Any, value: Any) -> Any:  # pragma: no cover
     Returns:
         A ``msgspec``-supported type
     """
-    if issubclass(type_, BaseModel):
-        return type_.parse_obj(value)
-    if issubclass(type_, (Path, PurePath)):
+
+    from litestar.datastructures.state import ImmutableState
+
+    if isinstance(value, type_):
+        return value
+
+    for predicate, decoder in EXTRA_DECODERS:
+        if predicate(type_):
+            return decoder(type_, value)
+
+    if issubclass(type_, (Path, PurePath, ImmutableState, UUID)):
         return type_(value)
+
     raise TypeError(f"Unsupported type: {type(value)!r}")
 
 
@@ -148,7 +130,7 @@ _msgspec_msgpack_encoder = msgspec.msgpack.Encoder(enc_hook=default_serializer)
 _msgspec_msgpack_decoder = msgspec.msgpack.Decoder(dec_hook=dec_hook)
 
 
-def encode_json(obj: Any, default: Callable[[Any], Any] | None = default_serializer) -> bytes:
+def encode_json(obj: Any, default: Callable[[Any], Any] | None = None) -> bytes:
     """Encode a value into JSON.
 
     Args:
@@ -162,9 +144,7 @@ def encode_json(obj: Any, default: Callable[[Any], Any] | None = default_seriali
         SerializationException: If error encoding ``obj``.
     """
     try:
-        if default is None or default is default_serializer:
-            return _msgspec_json_encoder.encode(obj)
-        return msgspec.json.encode(obj, enc_hook=default)
+        return msgspec.json.encode(obj, enc_hook=default) if default else _msgspec_json_encoder.encode(obj)
     except (TypeError, msgspec.EncodeError) as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error
 

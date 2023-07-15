@@ -5,7 +5,6 @@ from typing import Any
 from uuid import UUID, uuid1, uuid4
 
 import pytest
-from pydantic import UUID4
 
 from litestar import Litestar, MediaType, get, post
 from litestar.exceptions import ImproperlyConfiguredException
@@ -60,7 +59,7 @@ from litestar.testing import create_test_client
                 "user_id": "abc",
                 "order_id": str(uuid1()),
             },
-            True,
+            False,
         ),
     ],
 )
@@ -69,7 +68,7 @@ def test_path_params(params_dict: dict, should_raise: bool) -> None:
 
     @get(path=test_path)
     def test_method(
-        order_id: UUID4,
+        order_id: UUID,
         version: float = Parameter(gt=0.1, le=4.0),
         service_id: int = Parameter(gt=0, le=100),
         user_id: str = Parameter(min_length=1, max_length=10),

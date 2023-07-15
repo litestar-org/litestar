@@ -1,7 +1,6 @@
+from dataclasses import MISSING
 from inspect import Signature
 from typing import Literal
-
-from pydantic.fields import Undefined
 
 from litestar.enums import MediaType
 from litestar.types import Empty
@@ -20,6 +19,19 @@ SCOPE_STATE_DEPENDENCY_CACHE: Literal["dependency_cache"] = "dependency_cache"
 SCOPE_STATE_NAMESPACE: Literal["__litestar__"] = "__litestar__"
 SCOPE_STATE_RESPONSE_COMPRESSED: Literal["response_compressed"] = "response_compressed"
 SKIP_VALIDATION_NAMES = {"request", "socket", "scope", "receive", "send"}
-UNDEFINED_SENTINELS = {Undefined, Signature.empty, Empty, Ellipsis}
+UNDEFINED_SENTINELS = {Signature.empty, Empty, Ellipsis, MISSING}
 WEBSOCKET_CLOSE: Literal["websocket.close"] = "websocket.close"
 WEBSOCKET_DISCONNECT: Literal["websocket.disconnect"] = "websocket.disconnect"
+
+try:
+    import pydantic
+
+    if pydantic.VERSION.startswith("2"):
+        from pydantic_core import PydanticUndefined
+    else:  # pragma: no cover
+        from pydantic.fields import Undefined as PydanticUndefined  # type: ignore
+
+    UNDEFINED_SENTINELS.add(PydanticUndefined)
+
+except ImportError:  # pragma: no cover
+    pass

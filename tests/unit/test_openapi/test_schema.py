@@ -15,7 +15,6 @@ from litestar._openapi.schema_generation.schema import (
     SchemaCreator,
     create_schema_for_annotation,
 )
-from litestar._signature.models.pydantic_signature_model import PydanticSignatureModel
 from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.di import Provide
 from litestar.enums import ParamType
@@ -110,9 +109,7 @@ def test_get_schema_for_annotation_enum() -> None:
     class M(BaseModel):
         opt: Opts
 
-    schema = create_schema_for_annotation(
-        annotation=PydanticSignatureModel.field_definition_from_model_field(M.__fields__["opt"]).annotation
-    )
+    schema = create_schema_for_annotation(annotation=M.__annotations__["opt"])
     assert schema
     assert schema.enum == ["opt1", "opt2"]
 
@@ -264,7 +261,8 @@ def test_create_schema_for_pydantic_field() -> None:
         value: str = Field(title="title", description="description", example="example", max_length=16)
 
     schemas: Dict[str, Schema] = {}
-    SchemaCreator(schemas=schemas).for_field_definition(FieldDefinition.from_kwarg(name="Model", annotation=Model))
+    field_definition = FieldDefinition.from_kwarg(name="Model", annotation=Model)
+    SchemaCreator(schemas=schemas).for_field_definition(field_definition)
     schema = schemas["Model"]
 
     assert schema.properties["value"].description == "description"  # type: ignore

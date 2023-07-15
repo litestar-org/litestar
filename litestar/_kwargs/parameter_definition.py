@@ -5,11 +5,10 @@ from typing import TYPE_CHECKING, Any, NamedTuple
 from litestar.enums import ParamType
 from litestar.params import ParameterKwarg
 
-__all__ = ("ParameterDefinition", "create_parameter_definition", "merge_parameter_sets")
-
-
 if TYPE_CHECKING:
     from litestar.typing import FieldDefinition
+
+__all__ = ("ParameterDefinition", "create_parameter_definition", "merge_parameter_sets")
 
 
 class ParameterDefinition(NamedTuple):

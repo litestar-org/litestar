@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from litestar.types.protocols import DataclassProtocol
     from litestar.typing import FieldDefinition
 
+
 __all__ = ("DataclassDTO", "T")
 
 T = TypeVar("T", bound="DataclassProtocol | Collection[DataclassProtocol]")

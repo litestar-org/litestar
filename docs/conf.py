@@ -114,6 +114,7 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.response.RedirectResponse"),
     (PY_CLASS, "anyio.abc.BlockingPortal"),
     (PY_CLASS, "litestar.typing.ParsedType"),
+    (PY_CLASS, "pydantic.BaseModel"),
 ]
 
 nitpick_ignore_regex = [
