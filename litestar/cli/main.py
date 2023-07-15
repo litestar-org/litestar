@@ -35,7 +35,7 @@ else:
 __all__ = ("litestar_group",)
 
 
-@group(cls=LitestarExtensionGroup, context_settings={"help_option_names": ["-h", "--help"]})  # type: ignore[arg-type]
+@group(cls=LitestarExtensionGroup, context_settings={"help_option_names": ["-h", "--help"]})
 @option("--app", "app_path", help="Module path to a Litestar application")
 @option(
     "--app-dir",
