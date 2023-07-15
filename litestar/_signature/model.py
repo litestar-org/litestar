@@ -100,23 +100,21 @@ class SignatureModel(Struct):
 
         message: ErrorMessage = {"message": exc_msg.split(" - ")[0]}
 
-        if not keys:
-            return message
-
-        message["key"] = key = ".".join(keys)
-        if keys[0].startswith("data"):
-            message["key"] = message["key"].replace("data.", "")
-            message["source"] = "body"
-        elif key in connection.query_params:
-            message["source"] = ParamType.QUERY
-
-        elif key in cls._fields and isinstance(cls._fields[key].kwarg_definition, ParameterKwarg):
-            if cast(ParameterKwarg, cls._fields[key].kwarg_definition).cookie:
-                message["source"] = ParamType.COOKIE
-            elif cast(ParameterKwarg, cls._fields[key].kwarg_definition).header:
-                message["source"] = ParamType.HEADER
-            else:
+        if keys:
+            message["key"] = key = ".".join(keys)
+            if keys[0].startswith("data"):
+                message["key"] = message["key"].replace("data.", "")
+                message["source"] = "body"
+            elif key in connection.query_params:
                 message["source"] = ParamType.QUERY
+
+            elif key in cls._fields and isinstance(cls._fields[key].kwarg_definition, ParameterKwarg):
+                if cast(ParameterKwarg, cls._fields[key].kwarg_definition).cookie:
+                    message["source"] = ParamType.COOKIE
+                elif cast(ParameterKwarg, cls._fields[key].kwarg_definition).header:
+                    message["source"] = ParamType.HEADER
+                else:
+                    message["source"] = ParamType.QUERY
 
         return message
 

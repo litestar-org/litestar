@@ -4,6 +4,7 @@ from typing import Any, Callable, TypeVar, cast
 from uuid import UUID
 
 from msgspec import ValidationError
+from pydantic import VERSION
 
 from litestar.serialization._msgspec_utils import ExtendedMsgSpecValidationError
 from litestar.utils import is_class_and_subclass, is_pydantic_model_class
@@ -16,7 +17,7 @@ __all__ = (
 T = TypeVar("T")
 
 
-def create_pydantic_decoders() -> list[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]]:
+def create_pydantic_decoders() -> list[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]]:  # noqa: C901
     decoders: list[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]] = []
     try:
         import pydantic
@@ -33,36 +34,39 @@ def create_pydantic_decoders() -> list[tuple[Callable[[Any], bool], Callable[[An
 
         decoders.append((is_pydantic_model_class, _dec_pydantic))
 
-        def _dec_pydantic_uuid(
-            type_: type[pydantic.UUID1] | type[pydantic.UUID3] | type[pydantic.UUID4] | type[pydantic.UUID5], val: Any
-        ) -> type[pydantic.UUID1] | type[pydantic.UUID3] | type[pydantic.UUID4] | type[pydantic.UUID5]:
-            if isinstance(val, str):
-                val = type_(val)
+        if VERSION.startswith("1"):  # pragma: no cover
 
-            elif isinstance(val, (bytes, bytearray)):
-                try:
-                    val = type_(val.decode())
-                except ValueError:
-                    # 16 bytes in big-endian order as the bytes argument fail
-                    # the above check
-                    val = type_(bytes=val)
-            elif isinstance(val, UUID):
-                val = type_(str(val))
+            def _dec_pydantic_uuid(
+                type_: type[pydantic.UUID1] | type[pydantic.UUID3] | type[pydantic.UUID4] | type[pydantic.UUID5],
+                val: Any,
+            ) -> type[pydantic.UUID1] | type[pydantic.UUID3] | type[pydantic.UUID4] | type[pydantic.UUID5]:
+                if isinstance(val, str):
+                    val = type_(val)
 
-            if not isinstance(val, type_):
-                raise ValidationError(f"Invalid UUID: {val!r}")
+                elif isinstance(val, (bytes, bytearray)):
+                    try:
+                        val = type_(val.decode())
+                    except ValueError:
+                        # 16 bytes in big-endian order as the bytes argument fail
+                        # the above check
+                        val = type_(bytes=val)
+                elif isinstance(val, UUID):
+                    val = type_(str(val))
 
-            if type_._required_version != val.version:  # type: ignore
-                raise ValidationError(f"Invalid UUID version: {val!r}")
+                if not isinstance(val, type_):
+                    raise ValidationError(f"Invalid UUID: {val!r}")
 
-            return cast(
-                "type[pydantic.UUID1] | type[pydantic.UUID3] | type[pydantic.UUID4] | type[pydantic.UUID5]", val
-            )
+                if type_._required_version != val.version:  # type: ignore
+                    raise ValidationError(f"Invalid UUID version: {val!r}")
 
-        def _is_pydantic_uuid(value: Any) -> bool:
-            return is_class_and_subclass(value, (pydantic.UUID1, pydantic.UUID3, pydantic.UUID4, pydantic.UUID5))
+                return cast(
+                    "type[pydantic.UUID1] | type[pydantic.UUID3] | type[pydantic.UUID4] | type[pydantic.UUID5]", val
+                )
 
-        decoders.append((_is_pydantic_uuid, _dec_pydantic_uuid))
+            def _is_pydantic_uuid(value: Any) -> bool:
+                return is_class_and_subclass(value, (pydantic.UUID1, pydantic.UUID3, pydantic.UUID4, pydantic.UUID5))
+
+            decoders.append((_is_pydantic_uuid, _dec_pydantic_uuid))
         return decoders
     except ImportError:
         return decoders
