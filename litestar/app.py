@@ -3,7 +3,7 @@ from __future__ import annotations
 import inspect
 import logging
 import os
-from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager
+from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager, suppress
 from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
@@ -22,6 +22,7 @@ from litestar.datastructures.state import State
 from litestar.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
 from litestar.exceptions import (
     ImproperlyConfiguredException,
+    MissingDependencyException,
     NoRouteMatchFoundException,
 )
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
@@ -37,7 +38,7 @@ from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.static_files.base import StaticFiles
 from litestar.stores.registry import StoreRegistry
-from litestar.types import Empty
+from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition
 from litestar.utils import AsyncCallable, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
@@ -205,6 +206,7 @@ class Litestar(Router):
         tags: Sequence[str] | None = None,
         template_config: TemplateConfig | None = None,
         type_encoders: TypeEncodersMap | None = None,
+        type_decoders: TypeDecodersSequence | None = None,
         websocket_class: type[WebSocket] | None = None,
         lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
         pdb_on_exception: bool | None = None,
@@ -291,6 +293,7 @@ class Litestar(Router):
                 application.
             template_config: An instance of :class:`TemplateConfig <.template.TemplateConfig>`
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+            type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
             websocket_class: An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket
                 connections.
         """
@@ -332,7 +335,12 @@ class Litestar(Router):
             opt=dict(opt or {}),
             parameters=parameters or {},
             pdb_on_exception=pdb_on_exception,
-            plugins=list(plugins or []),
+            plugins=list(
+                chain(
+                    plugins or [],
+                    self.default_plugins,
+                )
+            ),
             request_class=request_class,
             response_cache_config=response_cache_config or ResponseCacheConfig(),
             response_class=response_class,
@@ -348,6 +356,7 @@ class Litestar(Router):
             tags=list(tags or []),
             template_config=template_config,
             type_encoders=type_encoders,
+            type_decoders=type_decoders,
             websocket_class=websocket_class,
         )
         for handler in chain(
@@ -416,6 +425,7 @@ class Litestar(Router):
             signature_namespace=config.signature_namespace,
             tags=config.tags,
             type_encoders=config.type_encoders,
+            type_decoders=config.type_decoders,
         )
 
         for route_handler in config.route_handlers:
@@ -436,6 +446,15 @@ class Litestar(Router):
         self.stores: StoreRegistry = (
             config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
         )
+
+    @property
+    def default_plugins(self) -> list[PluginProtocol]:
+        default_plugins: list[PluginProtocol] = []
+        with suppress(MissingDependencyException):
+            from litestar.contrib.pydantic import PydanticInitPlugin, PydanticSchemaPlugin
+
+            default_plugins.extend((PydanticInitPlugin(), PydanticSchemaPlugin()))
+        return default_plugins
 
     @property
     def debug(self) -> bool:

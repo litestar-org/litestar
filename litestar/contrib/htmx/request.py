@@ -97,7 +97,7 @@ class HTMXDetails:
         """
         if value := self._get_header_value(HTMXHeaders.TRIGGERING_EVENT):
             with suppress(SerializationException):
-                return decode_json(value)
+                return decode_json(value=value, type_decoders=self.request.route_handler.resolve_type_decoders())
         return None
 
 

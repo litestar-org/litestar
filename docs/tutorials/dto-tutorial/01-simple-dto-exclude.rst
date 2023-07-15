@@ -14,16 +14,15 @@ handler is also instructed to use the DTO to handle the response.
 
 Lets look at these changes in more detail. Firstly, we add two additional imports.
 
-The :class:`DTOConfig <litestar.dto.factory.DTOConfig>` class is imported from the ``litestar.dto.factory`` module.
-This class is used to configure DTOs. In this case, we are using it to exclude the ``email`` field from the DTO, but
-there are many other configuration options available and we'll cover most of them in this tutorial.
+The :class:`DTOConfig <litestar.dto.config.DTOConfig>` class is used to configure DTOs. In this case, we are using it to
+exclude the ``email`` field from the DTO, but there are many other configuration options available and we'll cover most
+of them in this tutorial.
 
-The :class:`DataclassDTO <litestar.dto.factory.stdlib.DataclassDTO>` class is imported from the
-``litestar.dto.factory.stdlib`` module. This is a factory class that specializes in creating DTOs from dataclasses. It
-is also a :class:`Generic <typing.Generic>` class, which means that it it accepts a type parameter. When we provide a
-type parameter to a generic class it makes that class a specialized version of the generic class. In this case, we
-create a DTO type that specializes in transferring data to and from instances of the ``Person`` class
-(``DataclassDTO[Person]``).
+The :class:`DataclassDTO <litestar.dto.dataclass_dto_factory.DataclassDTO>` class is a factory class that specializes
+in creating DTOs from dataclasses. It is also a :class:`Generic <typing.Generic>` class, which means that it it accepts
+a type parameter. When we provide a type parameter to a generic class it makes that class a specialized version of the
+generic class. In this case, we create a DTO type that specializes in transferring data to and from instances of the
+``Person`` class (``DataclassDTO[Person]``).
 
 .. note::
 

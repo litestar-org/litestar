@@ -11,7 +11,7 @@ from litestar.status_codes import (
     HTTP_405_METHOD_NOT_ALLOWED,
 )
 from litestar.testing import create_test_client
-from tests import Person, PersonFactory
+from tests import PydanticPerson, PydanticPersonFactory
 
 
 @delete(sync_to_thread=False)
@@ -93,13 +93,13 @@ def test_path_parsing_with_ambiguous_paths() -> None:
 def test_root_route_handler(
     decorator: Type[get], test_path: str, decorator_path: str, delete_handler: Optional[Callable]
 ) -> None:
-    person_instance = PersonFactory.build()
+    person_instance = PydanticPersonFactory.build()
 
     class MyController(Controller):
         path = test_path
 
         @decorator(path=decorator_path)
-        def test_method(self) -> Person:
+        def test_method(self) -> PydanticPerson:
             return person_instance
 
     with create_test_client([MyController, delete_handler] if delete_handler else MyController) as client:

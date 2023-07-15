@@ -1,8 +1,7 @@
 from .msgspec_hooks import (
-    dec_hook,
     decode_json,
-    decode_media_type,
     decode_msgpack,
+    default_deserializer,
     default_serializer,
     encode_json,
     encode_msgpack,
@@ -10,9 +9,8 @@ from .msgspec_hooks import (
 )
 
 __all__ = (
-    "dec_hook",
+    "default_deserializer",
     "decode_json",
-    "decode_media_type",
     "decode_msgpack",
     "default_serializer",
     "encode_json",

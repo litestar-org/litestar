@@ -47,6 +47,7 @@ if TYPE_CHECKING:
         TypeEncodersMap,
     )
     from litestar.types.callable_types import LifespanHook
+    from litestar.types.composite_types import TypeDecodersSequence
     from litestar.types.empty import EmptyType
 
 
@@ -188,6 +189,8 @@ class AppConfig:
     """An instance of :class:`TemplateConfig <.template.TemplateConfig>`."""
     type_encoders: TypeEncodersMap | None = field(default=None)
     """A mapping of types to callables that transform them into types supported for serialization."""
+    type_decoders: TypeDecodersSequence | None = field(default=None)
+    """A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization."""
     websocket_class: type[WebSocket] | None = field(default=None)
     """An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket connections."""
     multipart_form_part_limit: int = field(default=1000)

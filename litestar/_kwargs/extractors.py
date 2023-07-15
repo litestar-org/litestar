@@ -320,6 +320,7 @@ def create_multipart_extractor(
                 body=await connection.body(),
                 boundary=connection.content_type[-1].get("boundary", "").encode(),
                 multipart_form_part_limit=multipart_form_part_limit,
+                type_decoders=connection.route_handler.resolve_type_decoders(),
             )
         )
 

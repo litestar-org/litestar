@@ -7,7 +7,7 @@ declaring a renaming strategy.
 Explicitly renaming fields
 ==========================
 
-We can rename fields explicitly using the :attr:`rename_fields <litestar.dto.factory.DTOConfig.rename_fields>`
+We can rename fields explicitly using the :attr:`rename_fields <litestar.dto.config.DTOConfig.rename_fields>`
 attribute. This attribute is a dictionary that maps the original field name to the new field name.
 
 In this example, we rename the ``address`` field to ``location``:
@@ -28,7 +28,7 @@ Field renaming strategies
 Instead of explicitly renaming fields, we can also use a field renaming strategy.
 
 The field renaming strategy is specified using the
-:attr:`rename_strategy <litestar.dto.factory.DTOConfig.rename_strategy>` config.
+:attr:`rename_strategy <litestar.dto.config.DTOConfig.rename_strategy>` config.
 
 Litestar supports the following strategies:
 

@@ -8,7 +8,6 @@ contrib
     jinja
     jwt
     mako
-    msgspec
     opentelemetry
     piccolo
     pydantic

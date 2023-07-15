@@ -217,8 +217,8 @@
             from typing_extensions import Annotated
 
             from litestar import Litestar, get
-            from litestar.dto.factory import DTOConfig
-            from litestar.dto.factory.stdlib import DataclassDTO
+            from litestar.dto import DTOConfig
+            from litestar.dto.factory.dataclass_factory import DataclassDTO
 
 
             @dataclass

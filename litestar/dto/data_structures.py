@@ -8,8 +8,8 @@ from litestar.typing import FieldDefinition
 if TYPE_CHECKING:
     from typing import Any, Callable
 
-    from litestar.dto.factory import DTOField
-    from litestar.dto.factory._backends.abc import AbstractDTOBackend
+    from litestar.dto import DTOField
+    from litestar.dto._backend import DTOBackend
     from litestar.dto.types import ForType
 
 T = TypeVar("T")
@@ -20,7 +20,7 @@ class DTOData(Generic[T]):
 
     __slots__ = ("_backend", "_data_as_builtins")
 
-    def __init__(self, backend: AbstractDTOBackend[Any], data_as_builtins: Any) -> None:
+    def __init__(self, backend: DTOBackend, data_as_builtins: Any) -> None:
         self._backend = backend
         self._data_as_builtins = data_as_builtins
 

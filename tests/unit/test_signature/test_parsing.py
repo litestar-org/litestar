@@ -3,33 +3,16 @@ from typing import Any, Callable, Iterable, List, Optional, Sequence, Union
 from unittest.mock import MagicMock
 
 import pytest
-from pydantic import BaseModel
 from typing_extensions import Annotated
 
 from litestar import get
 from litestar._signature import SignatureModel
 from litestar.params import Body, Parameter
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT
-from litestar.testing import RequestFactory, TestClient, create_test_client
+from litestar.testing import TestClient, create_test_client
 from litestar.types import Empty
 from litestar.types.helper_types import OptionalSequence
 from litestar.utils.signature import ParsedSignature
-
-
-def test_parses_values_from_connection_kwargs_without_plugin() -> None:
-    class MyModel(BaseModel):
-        name: str
-
-    def fn(a: MyModel) -> None:
-        pass
-
-    model = SignatureModel.create(
-        fn=fn,
-        dependency_name_set=set(),
-        parsed_signature=ParsedSignature.from_fn(fn, {}),
-    )
-    result = model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), a={"name": "my name"})
-    assert result == {"a": MyModel(name="my name")}
 
 
 def test_create_function_signature_model_parameter_parsing() -> None:

@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from litestar.dto.factory.data_structures import DTOFieldDefinition
+from litestar.dto.data_structures import DTOFieldDefinition
 
 if TYPE_CHECKING:
     from typing import Any

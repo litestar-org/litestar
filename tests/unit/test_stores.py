@@ -39,7 +39,7 @@ def patch_storage_obj_frozen_datetime(mocker: MockerFixture) -> None:
                 return value.isoformat()
             raise TypeError()
 
-        return encode_msgpack(data, enc_hook=enc_hook)
+        return encode_msgpack(data, serializer=enc_hook)
 
     def _msgpack_decode(data: Any, type: Any) -> Any:
         def dec_hook(value_type: Any, value: Any) -> Any:

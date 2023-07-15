@@ -7,9 +7,8 @@ from unittest.mock import ANY
 
 import pytest
 
-from litestar.dto.factory import DTOField
-from litestar.dto.factory.data_structures import DTOFieldDefinition
-from litestar.dto.factory.stdlib.dataclass import DataclassDTO
+from litestar.dto import DataclassDTO, DTOField
+from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_fully_qualified_class_name
 

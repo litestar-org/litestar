@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from litestar import Litestar, post
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DataclassDTO
 
 
 @dataclass

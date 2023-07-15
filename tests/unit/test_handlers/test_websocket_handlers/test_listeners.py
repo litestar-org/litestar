@@ -9,8 +9,7 @@ from pytest_lazyfixture import lazy_fixture
 from litestar import Controller, Litestar, Request, WebSocket
 from litestar.datastructures import State
 from litestar.di import Provide
-from litestar.dto.factory import dto_field
-from litestar.dto.factory.stdlib.dataclass import DataclassDTO
+from litestar.dto import DataclassDTO, dto_field
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.websocket_handlers import WebsocketListener, websocket_listener
 from litestar.testing import create_test_client

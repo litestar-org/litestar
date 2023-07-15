@@ -3,13 +3,13 @@ DTO Factory
 
 Litestar maintains a suite of DTO factory types that can be used to create DTOs for use with popular data modelling
 libraries, such as ORMs. These take a model type as a generic type argument, and create subtypes of
-:class:`AbstractDTOFactory <litestar.dto.factory.base.AbstractDTOFactory>` that support conversion of that model type to
+:class:`AbstractDTOFactory <litestar.dto.base_factory.AbstractDTOFactory>` that support conversion of that model type to
 and from raw bytes.
 
 The following factories are currently available:
 
-- :class:`DataclassDTO <litestar.dto.factory.stdlib.DataclassDTO>`
-- :class:`MsgspecDTO <litestar.contrib.msgspec.MsgspecDTO>`
+- :class:`DataclassDTO <litestar.dto.dataclass_dto_factory.DataclassDTO>`
+- :class:`MsgspecDTO <litestar.dto.msgspec_dto_factory.MsgspecDTO>`
 - :class:`PydanticDTO <litestar.contrib.pydantic.PydanticDTO>`
 - :class:`SQLAlchemyDTO <litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO>`
 
@@ -38,7 +38,7 @@ Let's explore how we can configure DTOs to manage scenarios like these.
 Marking fields
 --------------
 
-The :func:`dto_field <litestar.dto.factory.dto_field>` function can be used to mark model attributes with DTO-based
+The :func:`dto_field <litestar.dto.field.dto_field>` function can be used to mark model attributes with DTO-based
 configuration.
 
 Fields marked as ``"private"`` or ``"read-only"`` will not be parsed from client data into the user model, and
@@ -53,13 +53,13 @@ Fields marked as ``"private"`` or ``"read-only"`` will not be parsed from client
 .. note:
 
     The procedure for "marking" a model field will vary depending on the library. For example,
-    :class:`DataclassDTO <.dto.factory.stdlib.dataclass.DataclassDTO>` expects that the mark is made in the ``metadata``
+    :class:`DataclassDTO <.dto.DataclassDTO>` expects that the mark is made in the ``metadata``
     parameter to ``dataclasses.field``.
 
 Excluding fields
 ----------------
 
-Fields can be explicitly excluded using :class:`DTOConfig <litestar.dto.factory.DTOConfig>`.
+Fields can be explicitly excluded using :class:`DTOConfig <litestar.dto.config.DTOConfig>`.
 
 The following example demonstrates excluding attributes from the serialized response, including excluding fields from
 nested models.
@@ -99,7 +99,7 @@ represent fields of the ``Address`` object nested inside the ``User`` object, an
 Renaming fields
 ---------------
 
-Fields can be renamed using :class:`DTOConfig <litestar.dto.factory.DTOConfig>`. The following example uses the name
+Fields can be renamed using :class:`DTOConfig <litestar.dto.config.DTOConfig>`. The following example uses the name
 ``userName`` client-side, and ``user`` internally.
 
 .. literalinclude:: /examples/data_transfer_objects/factory/renaming_fields.py
@@ -136,7 +136,7 @@ to it, the DTO will only accept ``User`` types for "data" and return types.
 In the above example, the handler is declared to use ``UserDTO`` which has been type-narrowed with the ``User`` type.
 However, we annotate the handler with the ``Foo`` type. This will raise an error such as this at runtime:
 
-    litestar.dto.factory.exc.InvalidAnnotation: DTO narrowed with
+    litestar.exceptions.dto.InvalidAnnotationException: DTO narrowed with
     '<class 'docs.examples.data_transfer_objects.factory.type_checking.User'>', handler type is
     '<class 'docs.examples.data_transfer_objects.factory.type_checking.Foo'>'
 
@@ -144,7 +144,7 @@ Nested fields
 -------------
 
 The depth of related items parsed from client data and serialized into return data can be controlled using the
-``max_nested_depth`` parameter to :class:`DTOConfig <litestar.dto.factory.DTOConfig>`.
+``max_nested_depth`` parameter to :class:`DTOConfig <litestar.dto.config.DTOConfig>`.
 
 In this example, we set ``max_nested_depth=0`` for the DTO that handles inbound client data, and leave it at the default
 of ``1`` for the return DTO.
@@ -187,7 +187,7 @@ field, and decode the client data into that. However, this method can become qui
 variability in the data that we accept from clients, for example,
 `PATCH <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH>`_ requests.
 
-This is where the :class:`DTOData <litestar.dto.factory.DTOData>` class comes in. It is a generic class that accepts the
+This is where the :class:`DTOData <litestar.dto.data_structures.DTOData>` class comes in. It is a generic class that accepts the
 type of the data that it will contain, and provides useful methods for interacting with that data.
 
 .. literalinclude:: /examples/data_transfer_objects/factory/dto_data_usage.py
@@ -195,11 +195,11 @@ type of the data that it will contain, and provides useful methods for interacti
     :emphasize-lines: 7,25,27
     :linenos:
 
-In the above example, we've injected an instance of :class:`DTOData <litestar.dto.factory.DTOData>` into our handler,
+In the above example, we've injected an instance of :class:`DTOData <litestar.dto.data_structures.DTOData>` into our handler,
 and have used that to create our ``Person`` instance, after augmenting the client data with a server generated ``id``
 value.
 
-Consult the :class:`Reference Docs <litestar.dto.factory.DTOData>` for more information on the methods available.
+Consult the :class:`Reference Docs <litestar.dto.data_structures.DTOData>` for more information on the methods available.
 
 .. _dto-create-instance-nested-data:
 
@@ -207,7 +207,7 @@ Providing values for nested data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To augment data used to instantiate our model instances, we can provide keyword arguments to the
-:meth:`create_instance() <litestar.dto.factory.DTOData.create_instance>` method.
+:meth:`create_instance() <litestar.dto.data_structures.DTOData.create_instance>` method.
 
 Sometimes we need to provide values for nested data, for example, when creating a new instance of a model that has a
 nested model with excluded fields.
@@ -218,7 +218,7 @@ nested model with excluded fields.
     :linenos:
 
 The double-underscore syntax ``address__id`` passed as a keyword argument to the
-:meth:`create_instance() <litestar.dto.factory.DTOData.create_instance>` method call is used to specify a value for a
+:meth:`create_instance() <litestar.dto.data_structures.DTOData.create_instance>` method call is used to specify a value for a
 nested attribute. In this case, it's used to provide a value for the ``id`` attribute of the ``Address`` instance nested
 within the ``Person`` instance.
 
@@ -244,7 +244,7 @@ The ``PatchDTO`` class is defined for the Person class. The ``config`` attribute
 id field, preventing clients from setting it when updating a person, and the ``partial`` attribute is set to ``True``,
 which allows the DTO to accept a subset of the model attributes.
 
-Inside the handler, the :meth:`DTOData.update_instance <litestar.dto.factory.DTOData.update_instance>` method is called
+Inside the handler, the :meth:`DTOData.update_instance <litestar.dto.data_structures.DTOData.update_instance>` method is called
 to update the instance of ``Person`` before returning it.
 
 In our request, we set only the ``name`` property of the ``Person``, from ``"Peter"`` to ``"Peter Pan"`` and received
@@ -261,7 +261,7 @@ parsed from client data, and will not be serialized into return data.
     :linenos:
 
 This can be overridden by setting the
-:attr:`DTOConfig.leading_underscore_private <litestar.dto.factory.DTOConfig.underscore_fields_private>` attribute to
+:attr:`DTOConfig.leading_underscore_private <litestar.dto.config.DTOConfig.underscore_fields_private>` attribute to
 ``False``.
 
 .. literalinclude:: /examples/data_transfer_objects/factory/leading_underscore_private_override.py
@@ -308,7 +308,7 @@ Now, create a DTO for your data object and configure it using ``DTOConfig``. In 
 .. code-block:: python
 
    from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-   from litestar.dto.factory import DTOConfig
+   from litestar.dto import DTOConfig
 
 
    class UserDTO(SQLAlchemyDTO[User]):
@@ -362,7 +362,7 @@ representation of our users.
 .. code-block:: python
 
    from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-   from litestar.dto.factory import DTOConfig
+   from litestar.dto import DTOConfig
 
 
    class UserDTO(SQLAlchemyDTO[User]):
@@ -416,7 +416,7 @@ from the serialized output.
 .. code-block:: python
 
    from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-   from litestar.dto.factory import DTOConfig
+   from litestar.dto import DTOConfig
 
 
    class UserDTO(SQLAlchemyDTO[User]):

@@ -26,7 +26,7 @@ from litestar.logging.config import LoggingConfig
 from litestar.router import Router
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
-from tests import Person
+from tests import PydanticPerson
 
 if TYPE_CHECKING:
     from typing import Dict
@@ -242,7 +242,7 @@ def test_before_send() -> None:
 
 def test_default_handling_of_pydantic_errors() -> None:
     @post("/{param:int}")
-    def my_route_handler(param: int, data: Person) -> None:
+    def my_route_handler(param: int, data: PydanticPerson) -> None:
         ...
 
     with create_test_client(my_route_handler) as client:

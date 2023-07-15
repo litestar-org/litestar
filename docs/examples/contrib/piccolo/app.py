@@ -7,7 +7,7 @@ from piccolo.table import Table, create_db_tables
 
 from litestar import Litestar, MediaType, delete, get, patch, post
 from litestar.contrib.piccolo import PiccoloDTO
-from litestar.dto.factory import DTOConfig, DTOData
+from litestar.dto import DTOConfig, DTOData
 from litestar.exceptions import NotFoundException
 
 from .piccolo_conf import DB

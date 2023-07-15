@@ -13,11 +13,9 @@ from typing_extensions import Annotated
 
 from litestar import Litestar, patch, post
 from litestar.connection.request import Request
-from litestar.contrib.msgspec import MsgspecDTO
 from litestar.contrib.pydantic import PydanticDTO
 from litestar.datastructures import UploadFile
-from litestar.dto.factory import DTOConfig, DTOData, dto_field
-from litestar.dto.factory.stdlib.dataclass import DataclassDTO
+from litestar.dto import DataclassDTO, DTOConfig, DTOData, MsgspecDTO, dto_field
 from litestar.dto.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
 from litestar.params import Body
@@ -84,7 +82,7 @@ def test_renamed_field() -> None:
         assert data.bar == "hello"
         return data
 
-    with create_test_client(route_handlers=[handler], debug=True) as client:
+    with create_test_client(route_handlers=[handler]) as client:
         response = client.post("/", json={"baz": "hello"})
         assert response.json() == {"baz": "hello"}
 
@@ -159,8 +157,8 @@ from typing import Any, Dict
 from typing_extensions import Annotated
 
 from litestar import post
-from litestar.dto.factory import DTOConfig, DTOData
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig, DTOData
+from litestar.dto import DataclassDTO
 
 @dataclass
 class Foo:
@@ -196,8 +194,8 @@ from typing import Any, Dict
 from typing_extensions import Annotated
 
 from litestar import post
-from litestar.dto.factory import DTOConfig, DTOData
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig, DTOData
+from litestar.dto import DataclassDTO
 
 @dataclass
 class Foo:
@@ -396,8 +394,8 @@ from typing import List
 from typing_extensions import Annotated
 
 from litestar import Litestar, get
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig
+from litestar.dto import DataclassDTO
 from litestar.pagination import ClassicPagination
 
 @dataclass
@@ -437,8 +435,8 @@ from uuid import UUID
 from typing_extensions import Annotated
 
 from litestar import Litestar, get
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig
+from litestar.dto import DataclassDTO
 from litestar.pagination import CursorPagination
 
 @dataclass
@@ -477,8 +475,8 @@ from typing import List
 from typing_extensions import Annotated
 
 from litestar import Litestar, get
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig
+from litestar.dto import DataclassDTO
 from litestar.pagination import OffsetPagination
 
 @dataclass
@@ -517,8 +515,8 @@ from typing import Generic, List, TypeVar
 from typing_extensions import Annotated
 
 from litestar import Litestar, get
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig
+from litestar.dto import DataclassDTO
 
 @dataclass
 class User:
@@ -557,8 +555,8 @@ from typing import Generic, TypeVar
 from typing_extensions import Annotated
 
 from litestar import Litestar, get
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig
+from litestar.dto import DataclassDTO
 
 @dataclass
 class User:
@@ -599,8 +597,8 @@ from typing import Dict, Generic, TypeVar
 from typing_extensions import Annotated
 
 from litestar import Litestar, get
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig
+from litestar.dto import DataclassDTO
 
 @dataclass
 class User:
@@ -640,8 +638,8 @@ from typing import Generic, TypeVar
 from typing_extensions import Annotated
 
 from litestar import Litestar, Response, get
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig
+from litestar.dto import DataclassDTO
 
 @dataclass
 class User:
@@ -669,8 +667,8 @@ from typing import Generic, List, TypeVar
 from typing_extensions import Annotated
 
 from litestar import Litestar, Response, get
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig
+from litestar.dto import DataclassDTO
 
 @dataclass
 class User:

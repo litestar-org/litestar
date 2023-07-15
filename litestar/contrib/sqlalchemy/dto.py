@@ -18,10 +18,10 @@ from sqlalchemy.orm import (
     RelationshipProperty,
 )
 
-from litestar.dto.factory.base import AbstractDTOFactory
-from litestar.dto.factory.data_structures import DTOFieldDefinition
-from litestar.dto.factory.field import DTO_FIELD_META_KEY, DTOField, Mark
-from litestar.dto.factory.utils import get_model_type_hints
+from litestar.dto._utils import get_model_type_hints
+from litestar.dto.base_factory import AbstractDTOFactory
+from litestar.dto.data_structures import DTOFieldDefinition
+from litestar.dto.field import DTO_FIELD_META_KEY, DTOField, Mark
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition

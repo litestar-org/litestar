@@ -16,7 +16,7 @@ from litestar.params import Body
 from litestar.status_codes import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 from dataclasses import dataclass
-from tests import Person, PersonFactory
+from tests import PydanticPerson, PydanticPersonFactory
 from . import Form
 
 
@@ -101,13 +101,13 @@ def test_request_body_multi_part(t_type: Type[Any]) -> None:
 
 
 def test_request_body_multi_part_mixed_field_content_types() -> None:
-    person = PersonFactory.build()
+    person = PydanticPersonFactory.build()
 
     @dataclass
     class MultiPartFormWithMixedFields:
         image: UploadFile
         tags: List[int]
-        profile: Person
+        profile: PydanticPerson
 
     @post(path="/form")
     async def test_method(data: MultiPartFormWithMixedFields = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:

@@ -52,6 +52,6 @@ def test_header_param_example() -> None:
         assert user_id
         assert token == test_token
 
-    with create_test_client(my_method, debug=True) as client:
+    with create_test_client(my_method) as client:
         response = client.get(f"/users/{uuid4()}/", headers={"X-API-KEY": test_token})
         assert response.status_code == HTTP_200_OK

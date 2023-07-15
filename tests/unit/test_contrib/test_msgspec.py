@@ -5,9 +5,8 @@ from typing import TYPE_CHECKING
 from msgspec import Meta, Struct, field
 from typing_extensions import Annotated
 
-from litestar.contrib.msgspec import MsgspecDTO
-from litestar.dto.factory import dto_field
-from litestar.dto.factory.data_structures import DTOFieldDefinition
+from litestar.dto import MsgspecDTO, dto_field
+from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:

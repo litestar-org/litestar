@@ -4,14 +4,11 @@ back again, to bytes.
 from __future__ import annotations
 
 import secrets
-from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Final, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Final, cast
 
-from litestar.dto.factory import DTOData, Mark
-from litestar.typing import FieldDefinition
-from litestar.utils.helpers import get_fully_qualified_class_name
+from msgspec import Struct, convert
 
-from .types import (
+from litestar.dto._types import (
     CollectionType,
     CompositeType,
     MappingType,
@@ -21,31 +18,36 @@ from .types import (
     TupleType,
     UnionType,
 )
-from .utils import (
+from litestar.dto._utils import (
     RenameStrategies,
     build_annotation_for_backend,
+    create_struct_for_field_definitions,
     should_exclude_field,
     should_ignore_field,
     should_mark_private,
     transfer_data,
 )
+from litestar.dto.data_structures import DTOData
+from litestar.dto.field import Mark
+from litestar.enums import RequestEncodingType
+from litestar.exceptions import SerializationException
+from litestar.serialization import decode_json, decode_msgpack
+from litestar.typing import FieldDefinition
+from litestar.utils.helpers import get_fully_qualified_class_name
 
 if TYPE_CHECKING:
-    from typing import AbstractSet, Callable, Generator
+    from typing import AbstractSet, Callable, Collection, Generator
 
     from litestar._openapi.schema_generation import SchemaCreator
-    from litestar.dto.factory import DTOConfig
-    from litestar.dto.factory.data_structures import DTOFieldDefinition
+    from litestar.dto import DTOConfig
+    from litestar.dto._types import FieldDefinitionsType
+    from litestar.dto.data_structures import DTOFieldDefinition
     from litestar.dto.interface import ConnectionContext
     from litestar.dto.types import ForType
     from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
 
-    from .types import FieldDefinitionsType
-
-__all__ = ("AbstractDTOBackend", "BackendContext")
-
-BackendT = TypeVar("BackendT")
+__all__ = ("DTOBackend", "BackendContext")
 
 
 class BackendContext:
@@ -103,7 +105,7 @@ class NestedDepthExceededError(Exception):
     """
 
 
-class AbstractDTOBackend(ABC, Generic[BackendT]):
+class DTOBackend:
     __slots__ = (
         "annotation",
         "context",
@@ -200,8 +202,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             defined_fields.append(transfer_field_definition)
         return tuple(defined_fields)
 
-    @abstractmethod
-    def create_transfer_model_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[BackendT]:
+    def create_transfer_model_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
         """Create a model for data transfer.
 
         Args:
@@ -211,9 +212,12 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         Returns:
             A ``BackendT`` class.
         """
+        fqn_uid: str = self._gen_unique_name_id(unique_name)
+        struct = create_struct_for_field_definitions(fqn_uid, field_definitions)
+        setattr(struct, "__schema_name__", unique_name)
+        return struct
 
-    @abstractmethod
-    def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> Any:
+    def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> Struct | Collection[Struct]:
         """Parse raw bytes into transfer model type.
 
         Args:
@@ -224,7 +228,20 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             The raw bytes parsed into transfer model type.
         """
 
-    @abstractmethod
+        if connection_context.request_encoding_type not in [RequestEncodingType.JSON, RequestEncodingType.MESSAGEPACK]:
+            raise SerializationException(
+                f"Unsupported request encoding type: '{connection_context.request_encoding_type}'"
+            )
+
+        if connection_context.request_encoding_type == RequestEncodingType.JSON:
+            result = decode_json(value=raw, target_type=self.annotation, type_decoders=connection_context.type_decoders)
+        else:
+            result = decode_msgpack(
+                value=raw, target_type=self.annotation, type_decoders=connection_context.type_decoders
+            )
+
+        return cast("Struct | Collection[Struct]", result)
+
     def parse_builtins(self, builtins: Any, connection_context: ConnectionContext) -> Any:
         """Parse builtin types into transfer model type.
 
@@ -235,6 +252,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         Returns:
             The builtin type parsed into transfer model type.
         """
+        return convert(obj=builtins, type=self.annotation, dec_hook=connection_context.default_deserializer)
 
     def populate_data_from_builtins(self, builtins: Any, connection_context: ConnectionContext) -> Any:
         """Populate model instance from builtin types.
@@ -328,7 +346,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             return cast("LitestarEncodableType", data)
 
         return transfer_data(
-            destination_type=self.transfer_model_type,  # type: ignore[arg-type]
+            destination_type=self.transfer_model_type,
             source_data=data,
             field_definitions=self.parsed_field_definitions,
             dto_for="return",

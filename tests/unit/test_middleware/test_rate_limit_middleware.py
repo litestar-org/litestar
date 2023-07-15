@@ -37,7 +37,7 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
         assert response.status_code == HTTP_200_OK
         cached_value = await store.get(cache_key)
         assert cached_value
-        cache_object = CacheObject(**decode_json(cached_value))
+        cache_object = CacheObject(**decode_json(value=cached_value))
         assert len(cache_object.history) == 1
 
         assert response.headers.get(config.rate_limit_policy_header_key) == f"1; w={DURATION_VALUES[unit]}"
@@ -109,7 +109,7 @@ async def test_reset() -> None:
         assert response.status_code == HTTP_200_OK
         cached_value = await store.get(cache_key)
         assert cached_value
-        cache_object = CacheObject(**decode_json(cached_value))
+        cache_object = CacheObject(**decode_json(value=cached_value))
         assert cache_object.reset == int(time() + 1)
 
         cache_object.reset -= 2

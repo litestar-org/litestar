@@ -3,19 +3,16 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from litestar.dto.interface import ConnectionContext, DTOInterface
-from litestar.enums import RequestEncodingType
-from litestar.exceptions.dto_exceptions import InvalidAnnotationException
-from litestar.typing import FieldDefinition
-
-from ._backends import MsgspecDTOBackend, PydanticDTOBackend
-from ._backends.abc import BackendContext
-from .config import DTOConfig
-from .utils import (
+from litestar.dto._backend import BackendContext, DTOBackend
+from litestar.dto._utils import (
     get_dto_config_from_annotated_type,
     resolve_generic_wrapper_type,
     resolve_model_type,
 )
+from litestar.dto.config import DTOConfig
+from litestar.dto.interface import ConnectionContext, DTOInterface
+from litestar.exceptions.dto_exceptions import InvalidAnnotationException
+from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Collection, Generator
@@ -23,13 +20,12 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from litestar._openapi.schema_generation import SchemaCreator
+    from litestar.dto.data_structures import DTOFieldDefinition
     from litestar.dto.interface import HandlerContext
     from litestar.dto.types import ForType
+    from litestar.enums import RequestEncodingType
     from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
-
-    from ._backends import AbstractDTOBackend
-    from .data_structures import DTOFieldDefinition
 
 __all__ = ("AbstractDTOFactory",)
 
@@ -46,10 +42,8 @@ class AbstractDTOFactory(DTOInterface, Generic[T]):
     model_type: ClassVar[type[Any]]
     """If ``annotation`` is an iterable, this is the inner type, otherwise will be the same as ``annotation``."""
 
-    _type_backend_map: ClassVar[
-        dict[tuple[ForType, FieldDefinition, RequestEncodingType | str | None], AbstractDTOBackend]
-    ]
-    _handler_backend_map: ClassVar[dict[tuple[ForType, str], AbstractDTOBackend]]
+    _type_backend_map: ClassVar[dict[tuple[ForType, FieldDefinition, RequestEncodingType | str | None], DTOBackend]]
+    _handler_backend_map: ClassVar[dict[tuple[ForType, str], DTOBackend]]
 
     def __init__(self, connection_context: ConnectionContext) -> None:
         """Create an AbstractDTOFactory type.
@@ -146,14 +140,7 @@ class AbstractDTOFactory(DTOInterface, Generic[T]):
         key = (handler_context.dto_for, field_definition, handler_context.request_encoding_type)
         backend = cls._type_backend_map.get(key)
         if backend is None:
-            backend_type: type[AbstractDTOBackend]
-            if handler_context.request_encoding_type in {
-                RequestEncodingType.URL_ENCODED,
-                RequestEncodingType.MULTI_PART,
-            }:
-                backend_type = PydanticDTOBackend
-            else:
-                backend_type = MsgspecDTOBackend
+            backend_type: type[DTOBackend] = DTOBackend
 
             backend_context = BackendContext(
                 dto_config=cls.config,
@@ -179,6 +166,6 @@ class AbstractDTOFactory(DTOInterface, Generic[T]):
         return cls._get_backend(dto_for, handler_id).create_openapi_schema(schema_creator)
 
     @classmethod
-    def _get_backend(cls, dto_for: ForType, handler_id: str) -> AbstractDTOBackend:
+    def _get_backend(cls, dto_for: ForType, handler_id: str) -> DTOBackend:
         """Return the backend for the handler/dto_for combo."""
         return cls._handler_backend_map[(dto_for, handler_id)]

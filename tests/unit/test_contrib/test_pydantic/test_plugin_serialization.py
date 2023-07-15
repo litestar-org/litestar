@@ -1,5 +1,6 @@
 import datetime
 import json
+from functools import partial
 from pathlib import Path
 from typing import Any
 
@@ -25,6 +26,8 @@ from pydantic import (
     constr,
 )
 
+from litestar.contrib.pydantic.pydantic_init_plugin import PydanticInitPlugin
+
 if VERSION.startswith("1"):
     from pydantic import (
         PaymentCardNumber,
@@ -34,15 +37,14 @@ else:
     from pydantic_extra_types.color import Color  # type: ignore
     from pydantic_extra_types.payment import PaymentCardNumber  # type: ignore
 
-from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
 from litestar.serialization import (
     decode_json,
-    decode_media_type,
     decode_msgpack,
     default_serializer,
     encode_json,
     encode_msgpack,
+    get_serializer,
 )
 
 
@@ -117,6 +119,9 @@ class Model(BaseModel):
     conint: conint(ge=0)  # type: ignore
 
 
+serializer = partial(default_serializer, type_encoders=PydanticInitPlugin.encoders())
+
+
 @pytest.fixture()
 def model() -> Model:
     return Model(
@@ -161,16 +166,16 @@ def model() -> Model:
     ],
 )
 def test_default_serializer(model: BaseModel, attribute_name: str, expected: Any) -> None:
-    assert default_serializer(getattr(model, attribute_name)) == expected
+    assert serializer(getattr(model, attribute_name)) == expected
 
 
 def test_serialization_of_model_instance(model: BaseModel) -> None:
-    assert default_serializer(model) == model.model_dump(mode="json") if hasattr(model, "model_dump") else model.dict()
+    assert serializer(model) == model.model_dump(mode="json") if hasattr(model, "model_dump") else model.dict()
 
 
 def test_pydantic_json_compatibility(model: BaseModel) -> None:
     raw = model.model_dump_json() if hasattr(model, "model_dump_json") else model.json()
-    encoded_json = encode_json(model)
+    encoded_json = encode_json(model, serializer=get_serializer(PydanticInitPlugin.encoders()))
 
     raw_result = json.loads(raw)
     encoded_result = json.loads(encoded_json)
@@ -198,7 +203,7 @@ def test_decode_json_raises_serialization_exception(model: BaseModel, decoder: A
 
 def test_decode_json_typed(model: BaseModel) -> None:
     dumped_model = model.model_dump_json() if hasattr(model, "model_dump_json") else model.json()
-    decoded_model = decode_json(dumped_model, Model)
+    decoded_model = decode_json(value=dumped_model, target_type=Model, type_decoders=PydanticInitPlugin.decoders())
     assert (
         decoded_model.model_dump_json() if hasattr(decoded_model, "model_dump_json") else decoded_model.json()
     ) == dumped_model
@@ -206,15 +211,11 @@ def test_decode_json_typed(model: BaseModel) -> None:
 
 def test_decode_msgpack_typed(model: BaseModel) -> None:
     model_json = model.json()
-    assert decode_msgpack(encode_msgpack(model), Model).json() == model_json
-
-
-def test_decode_media_type(model: BaseModel) -> None:
-    model_json = model.json()
-    assert decode_media_type(model_json.encode("utf-8"), MediaType.JSON, Model).json() == model_json
-    assert decode_media_type(encode_msgpack(model), MediaType.MESSAGEPACK, Model).json() == model_json
-
-
-def test_decode_media_type_unsupported_media_type(model: BaseModel) -> None:
-    with pytest.raises(SerializationException):
-        decode_media_type(b"", MediaType.HTML, Model)
+    assert (
+        decode_msgpack(
+            encode_msgpack(model, serializer=get_serializer(PydanticInitPlugin.encoders())),
+            Model,
+            type_decoders=PydanticInitPlugin.decoders(),
+        ).json()
+        == model_json
+    )

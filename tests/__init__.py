@@ -18,27 +18,27 @@ class Species(str, Enum):
     PIG = "Pig"
 
 
-class Pet(BaseModel):
+class PydanticPet(BaseModel):
     name: str
     species: Species = Field(default=Species.MONKEY)
     age: float
 
 
-class Person(BaseModel):
+class PydanticPerson(BaseModel):
     first_name: str
     last_name: str
     id: str
     optional: Optional[str]
     complex: Dict[str, List[Dict[str, str]]]
-    pets: Optional[List[Pet]] = None
+    pets: Optional[List[PydanticPet]] = None
 
 
-class PersonFactory(ModelFactory[Person]):
-    __model__ = Person
+class PydanticPersonFactory(ModelFactory[PydanticPerson]):
+    __model__ = PydanticPerson
 
 
-class PetFactory(ModelFactory[Pet]):
-    __model__ = Pet
+class PydanticPetFactory(ModelFactory[PydanticPet]):
+    __model__ = PydanticPet
 
 
 @vanilla_dataclass
@@ -48,7 +48,7 @@ class VanillaDataClassPerson:
     id: str
     optional: Optional[str]
     complex: Dict[str, List[Dict[str, str]]]
-    pets: Optional[List[Pet]] = None
+    pets: Optional[List[PydanticPet]] = None
 
 
 @pydantic_dataclass
@@ -58,7 +58,7 @@ class PydanticDataClassPerson:
     id: str
     optional: Optional[str]
     complex: Dict[str, List[Dict[str, str]]]
-    pets: Optional[List[Pet]] = None
+    pets: Optional[List[PydanticPet]] = None
 
 
 class TypedDictPerson(TypedDict):
@@ -67,7 +67,7 @@ class TypedDictPerson(TypedDict):
     id: Required[str]
     optional: NotRequired[Optional[str]]
     complex: Required[Dict[str, List[Dict[str, str]]]]
-    pets: NotRequired[Optional[List[Pet]]]
+    pets: NotRequired[Optional[List[PydanticPet]]]
 
 
 @attrs.define
@@ -77,7 +77,7 @@ class AttrsPerson:
     id: str
     optional: Optional[str]
     complex: Dict[str, List[Dict[str, str]]]
-    pets: Optional[List[Pet]]
+    pets: Optional[List[PydanticPet]]
 
 
 class MsgSpecStructPerson(msgspec.Struct):
@@ -86,7 +86,7 @@ class MsgSpecStructPerson(msgspec.Struct):
     id: str
     optional: Optional[str]
     complex: Dict[str, List[Dict[str, str]]]
-    pets: Optional[List[Pet]]
+    pets: Optional[List[PydanticPet]]
 
 
 class User(BaseModel):

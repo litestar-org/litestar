@@ -90,7 +90,7 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
         nonce = decoded[:NONCE_SIZE]
         aad_starts_from = decoded.find(AAD)
         associated_data = decoded[aad_starts_from:].replace(AAD, b"") if aad_starts_from != -1 else None
-        if associated_data and decode_json(associated_data)["expires_at"] > round(time.time()):
+        if associated_data and decode_json(value=associated_data)["expires_at"] > round(time.time()):
             encrypted_session = decoded[NONCE_SIZE:aad_starts_from]
             decrypted = self.aesgcm.decrypt(nonce, encrypted_session, associated_data=associated_data)
             return self.deserialize_data(decrypted)

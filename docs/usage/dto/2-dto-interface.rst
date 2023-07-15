@@ -2,7 +2,7 @@ DTO Interface
 =============
 
 While Litestar maintains a suite of DTO factories, it is possible to create your own DTOs. To do so, you must implement
-the :class:`DTOInterface <litestar.dto.interface.DTOInterface>` protocol.
+the :class:`DTOInterface <litestar.dto.interface.DTOInterface>` abc.
 
 The following is a description of the methods of the protocol, and how they are used by Litestar. For detailed
 information on the signature of each method, see the :class:`reference docs <litestar.dto.interface.DTOInterface>`.

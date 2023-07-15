@@ -29,4 +29,4 @@ raises an error.
 There is more than one way to address this issue, for example we could assign a default value to the ``id`` field and
 overwrite the default in the handler, or we could create an entirely separate model that has no ``id`` field, and
 transfer the data from that to the ``Person`` model in the handler. However, Litestar has a built-in solution for this:
-:class:`DTOData <litestar.dto.factory.DTOData>`.
+:class:`DTOData <litestar.dto.data_structures.DTOData>`.

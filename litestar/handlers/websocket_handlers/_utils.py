@@ -82,7 +82,7 @@ def create_handle_receive(
 
         async def handle_receive(socket: WebSocket, dto: DTOInterface | None) -> Any:
             received_data = await socket.receive_data(mode=receive_mode)
-            return decode_json(received_data)
+            return decode_json(value=received_data, type_decoders=socket.route_handler.resolve_type_decoders())
 
     return handle_receive
 
