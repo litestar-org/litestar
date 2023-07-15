@@ -29,7 +29,7 @@ def create_pydantic_decoders() -> list[tuple[Callable[[Any], bool], Callable[[An
                     else type_.parse_obj(value)
                 )
             except pydantic.ValidationError as e:
-                raise ExtendedMsgSpecValidationError(errors=cast(list[dict[str, Any]], e.errors())) from e
+                raise ExtendedMsgSpecValidationError(errors=cast("list[dict[str, Any]]", e.errors())) from e
 
         decoders.append((is_pydantic_model_class, _dec_pydantic))
 
