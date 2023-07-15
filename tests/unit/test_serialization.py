@@ -1,3 +1,4 @@
+import datetime
 import json
 from pathlib import Path
 from typing import Any
@@ -5,7 +6,6 @@ from typing import Any
 import pydantic
 import pytest
 from _decimal import Decimal
-from dateutil.utils import today
 from pydantic import (
     VERSION,
     BaseModel,
@@ -110,7 +110,7 @@ class Model(BaseModel):
 
     constr: constr(min_length=1)  # type: ignore
     conbytes: conbytes(min_length=1)  # type: ignore
-    condate: condate(ge=today().date())  # type: ignore
+    condate: condate(ge=datetime.date.today())  # type: ignore
     condecimal: condecimal(ge=Decimal("1"))  # type: ignore
     confloat: confloat(ge=0)  # type: ignore
 
@@ -130,7 +130,7 @@ def model() -> Model:
         payment_card_number=PaymentCardNumber("4000000000000002"),
         constr="hello",
         conbytes=b"hello",
-        condate=today(),
+        condate=datetime.date.today(),
         condecimal=Decimal("3.14"),
         confloat=1.0,
         conset={1},
@@ -153,7 +153,7 @@ def model() -> Model:
         ("payment_card_number", "4000000000000002"),
         ("constr", "hello"),
         ("conbytes", b"hello"),
-        ("condate", today().date().isoformat()),
+        ("condate", datetime.date.today().isoformat()),
         ("condecimal", 3.14),
         ("conset", {1}),
         ("confrozenset", frozenset([1])),
