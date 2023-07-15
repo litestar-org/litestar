@@ -120,6 +120,7 @@ repos:
             types-python-dateutil,
             types-pyyaml,
             types-redis,
+            types-python-jose,
             uvicorn,
             prometheus_client,
           ]
@@ -180,6 +181,7 @@ repos:
             types-python-dateutil,
             types-pyyaml,
             types-redis,
+            types-python-jose,
             uvicorn,
             prometheus_client,
           ]
