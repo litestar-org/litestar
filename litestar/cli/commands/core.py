@@ -62,6 +62,7 @@ def info_command(app: Litestar) -> None:
 @option("-R", "--reload-dir", help="Directories to watch for file changes", multiple=True)
 @option("-p", "--port", help="Serve under this port", type=int, default=8000, show_default=True)
 @option(
+    "-W",
     "--wc",
     "--web-concurrency",
     help="The number of HTTP workers to launch",
@@ -71,6 +72,7 @@ def info_command(app: Litestar) -> None:
 )
 @option("-H", "--host", help="Server under this host", default="127.0.0.1", show_default=True)
 @option(
+    "-F",
     "--fd",
     "--file-descriptor",
     help="Bind to a socket from this file descriptor.",
@@ -78,9 +80,9 @@ def info_command(app: Litestar) -> None:
     default=None,
     show_default=True,
 )
-@option("--uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
+@option("-U", "--uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
 @option("-d", "--debug", help="Run app in debug mode", is_flag=True)
-@option("--pdb", "--use-pdb", help="Drop into PDB on an exception", is_flag=True)
+@option("-P", "--pdb", "--use-pdb", help="Drop into PDB on an exception", is_flag=True)
 def run_command(
     reload: bool,
     port: int,
