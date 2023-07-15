@@ -11,7 +11,7 @@ from litestar import get, post
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig
 from litestar.dto.factory._backends.utils import RenameStrategies
-from litestar.dto.factory.types import RenameStrategy
+from litestar.dto.types import RenameStrategy
 from litestar.testing import create_test_client
 
 

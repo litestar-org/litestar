@@ -22,8 +22,8 @@ class Author(UUIDBase):
 
 
 # The `AuditBase` class includes the same UUID` based primary key (`id`) and 2
-# additional columns: `created` and `updated`. `created` is a timestamp of when the
-# record created, and `updated` is the last time the record was modified.
+# additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the
+# record created, and `updated_at` is the last time the record was modified.
 class Book(UUIDAuditBase):
     title: Mapped[str]
     author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))

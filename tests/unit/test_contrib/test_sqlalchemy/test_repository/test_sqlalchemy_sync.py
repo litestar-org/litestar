@@ -9,7 +9,7 @@ from uuid import uuid4
 import pytest
 from sqlalchemy import String
 from sqlalchemy.exc import IntegrityError, InvalidRequestError, SQLAlchemyError
-from sqlalchemy.orm import Mapped, MappedColumn, Session, mapped_column
+from sqlalchemy.orm import InstrumentedAttribute, Mapped, Session, mapped_column
 
 from litestar.contrib.repository.exceptions import ConflictError, RepositoryError
 from litestar.contrib.repository.filters import (
@@ -87,15 +87,18 @@ def test_sqlalchemy_sentinel(monkeypatch: MonkeyPatch) -> None:
     unloaded_cols = {"the_extra_col"}
     sa_instance_mock = MagicMock()
     sa_instance_mock.unloaded = unloaded_cols
-    assert isinstance(AnotherModel._sentinel, MappedColumn)
-    assert isinstance(TheTestModel._sentinel, MappedColumn)
+    assert isinstance(AnotherModel._sentinel, InstrumentedAttribute)  # pyright: ignore
+    assert isinstance(TheTestModel._sentinel, InstrumentedAttribute)  # pyright: ignore
     assert not hasattr(TheBigIntModel, "_sentinel")
     model1, model2, model3 = AnotherModel(), TheTestModel(), TheBigIntModel()
     monkeypatch.setattr(model1, "_sa_instance_state", sa_instance_mock)
     monkeypatch.setattr(model2, "_sa_instance_state", sa_instance_mock)
     monkeypatch.setattr(model3, "_sa_instance_state", sa_instance_mock)
-    assert "created" not in model1.to_dict(exclude={"created"}).keys()
-    assert "the_extra_col" not in model1.to_dict(exclude={"created"}).keys()
+    assert "created_at" not in model1.to_dict(exclude={"created_at"}).keys()
+    assert "the_extra_col" not in model1.to_dict(exclude={"created_at"}).keys()
+    assert "sa_orm_sentinel" not in model1.to_dict().keys()
+    assert "sa_orm_sentinel" not in model2.to_dict().keys()
+    assert "sa_orm_sentinel" not in model3.to_dict().keys()
     assert "_sentinel" not in model1.to_dict().keys()
     assert "_sentinel" not in model2.to_dict().keys()
     assert "_sentinel" not in model3.to_dict().keys()

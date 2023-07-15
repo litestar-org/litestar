@@ -8,12 +8,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable
 from uuid import UUID
 
-from pydantic.datetime_parse import (
-    parse_date,
-    parse_datetime,
-    parse_duration,
-    parse_time,
-)
+import msgspec
 
 from litestar._kwargs import KwargsModel
 from litestar._signature import get_signature_model
@@ -25,6 +20,26 @@ if TYPE_CHECKING:
     from litestar.enums import ScopeType
     from litestar.handlers.base import BaseRouteHandler
     from litestar.types import Method, Receive, Scope, Send
+
+
+def _parse_datetime(value: str) -> datetime:
+    return msgspec.convert(value, datetime)
+
+
+def _parse_date(value: str) -> date:
+    return msgspec.convert(value, date)
+
+
+def _parse_time(value: str) -> time:
+    return msgspec.convert(value, time)
+
+
+def _parse_timedelta(value: str) -> timedelta:
+    try:
+        return msgspec.convert(value, timedelta)
+    except msgspec.ValidationError:
+        return timedelta(seconds=int(float(value)))
+
 
 param_match_regex = re.compile(r"{(.*?)}")
 
@@ -47,10 +62,10 @@ parsers_map: dict[Any, Callable[[Any], Any]] = {
     int: int,
     Decimal: Decimal,
     UUID: UUID,
-    date: parse_date,
-    datetime: parse_datetime,
-    time: parse_time,
-    timedelta: parse_duration,
+    date: _parse_date,
+    datetime: _parse_datetime,
+    time: _parse_time,
+    timedelta: _parse_timedelta,
 }
 
 

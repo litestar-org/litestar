@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import pydantic
+import pytest
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated
 
@@ -45,6 +47,7 @@ def test_detect_nested_field() -> None:
     assert PydanticDTO.detect_nested_field(FieldDefinition.from_annotation(NotModel)) is False
 
 
+@pytest.mark.skipif(pydantic.VERSION.startswith("2"), reason="Beanie does not support pydantic 2 yet")
 def test_generate_field_definitions_from_beanie_models(create_module: Callable[[str], ModuleType]) -> None:
     module = create_module(
         """

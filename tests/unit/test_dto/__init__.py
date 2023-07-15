@@ -3,8 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from litestar.dto.interface import DTOInterface
-from litestar.types.internal_types import AnyConnection
+from litestar._openapi.schema_generation import SchemaCreator
+from litestar.dto.interface import ConnectionContext, DTOInterface, HandlerContext
+from litestar.dto.types import ForType
+from litestar.openapi.spec import Reference, Schema
 from litestar.types.protocols import DataclassProtocol
 from litestar.types.serialization import LitestarEncodableType
 
@@ -19,8 +21,8 @@ class Model:
 
 
 class MockDTO(DTOInterface):
-    def __init__(self, connection: AnyConnection) -> None:
-        pass
+    def __init__(self, connection_context: ConnectionContext) -> None:
+        super().__init__(connection_context=connection_context)
 
     def builtins_to_data_type(self, builtins: Any) -> Model:
         return Model(a=1, b="2")
@@ -31,10 +33,20 @@ class MockDTO(DTOInterface):
     def data_to_encodable_type(self, data: DataclassProtocol) -> bytes | LitestarEncodableType:
         return Model(a=1, b="2")
 
+    @classmethod
+    def create_openapi_schema(
+        cls, dto_for: ForType, handler_id: str, schema_creator: SchemaCreator
+    ) -> Reference | Schema:
+        return Schema()
+
+    @classmethod
+    def on_registration(cls, handler_context: HandlerContext) -> None:
+        return None
+
 
 class MockReturnDTO(DTOInterface):
-    def __init__(self, connection: AnyConnection) -> None:
-        pass
+    def __init__(self, connection_context: ConnectionContext) -> None:
+        super().__init__(connection_context=connection_context)
 
     def builtins_to_data_type(self, builtins: Any) -> Model:
         raise RuntimeError("Return DTO should not have this method called")
@@ -44,3 +56,13 @@ class MockReturnDTO(DTOInterface):
 
     def data_to_encodable_type(self, data: DataclassProtocol) -> bytes | LitestarEncodableType:
         return b'{"a": 1, "b": "2"}'
+
+    @classmethod
+    def create_openapi_schema(
+        cls, dto_for: ForType, handler_id: str, schema_creator: SchemaCreator
+    ) -> Reference | Schema:
+        return Schema()
+
+    @classmethod
+    def on_registration(cls, handler_context: HandlerContext) -> None:
+        return None

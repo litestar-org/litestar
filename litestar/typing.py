@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from collections import abc
+from collections import abc, deque
 from dataclasses import dataclass, replace
 from inspect import Parameter, Signature
 from typing import Any, AnyStr, Collection, ForwardRef, Literal, Mapping, Sequence, TypeVar, cast
 
-from pydantic.fields import FieldInfo
 from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin
 
 from litestar.exceptions import ImproperlyConfiguredException
@@ -28,6 +27,11 @@ from litestar.utils.typing import (
     make_non_optional_union,
     unwrap_annotation,
 )
+
+try:
+    from pydantic.fields import FieldInfo
+except ImportError:
+    FieldInfo = Empty  # type: ignore
 
 __all__ = ("FieldDefinition",)
 
@@ -64,7 +68,10 @@ def _parse_metadata(value: Any, is_sequence_container: bool, extra: dict[str, An
     Returns:
         A dictionary of constraints, which fulfill the kwargs of a KwargDefinition class.
     """
-    extra = cast("dict[str, Any]", extra or getattr(value, "extra", None) or {})
+    extra = {
+        **cast("dict[str, Any]", extra or getattr(value, "extra", None) or {}),
+        **(getattr(value, "json_schema_extra", None) or {}),
+    }
     if example := extra.pop("example", None):
         example_list = [Example(value=example)]
     elif examples := getattr(value, "examples", None):
@@ -116,7 +123,13 @@ def _traverse_metadata(
     """
     constraints: dict[str, Any] = {}
     for value in metadata:
-        if is_annotated_type(value) and (type_args := [v for v in get_args(value) if v is not None]):
+        if isinstance(value, (list, set, frozenset, deque)):
+            constraints.update(
+                _traverse_metadata(
+                    metadata=cast("Sequence[Any]", value), is_sequence_container=is_sequence_container, extra=extra
+                )
+            )
+        elif is_annotated_type(value) and (type_args := [v for v in get_args(value) if v is not None]):
             # annotated values can be nested inside other annotated values
             # this behaviour is buggy in python 3.8, hence we need to guard here.
             if len(type_args) > 1:
@@ -207,7 +220,7 @@ class FieldDefinition:
     def _extract_metadata(
         cls, annotation: Any, name: str | None, default: Any, metadata: tuple[Any, ...], extra: dict[str, Any] | None
     ) -> tuple[KwargDefinition | None, dict[str, Any]]:
-        from litestar.dto.factory.abc import AbstractDTOFactory
+        from litestar.dto.factory.base import AbstractDTOFactory
 
         model = BodyKwarg if name == "data" else ParameterKwarg
         if isinstance(default, FieldInfo):

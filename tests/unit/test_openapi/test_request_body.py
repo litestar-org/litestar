@@ -24,7 +24,7 @@ class FormData(BaseModel):
 def test_create_request_body(person_controller: Type[Controller]) -> None:
     for route in Litestar(route_handlers=[person_controller]).routes:
         for route_handler, _ in route.route_handler_map.values():  # type: ignore
-            handler_fields = route_handler.signature_model.fields  # type: ignore
+            handler_fields = route_handler.signature_model._fields  # type: ignore
             if "data" in handler_fields:
                 request_body = create_request_body(
                     route_handler=route_handler,

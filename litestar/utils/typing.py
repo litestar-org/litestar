@@ -37,6 +37,7 @@ __all__ = (
     "instantiable_type_mapping",
     "make_non_optional_union",
     "unwrap_annotation",
+    "unwrap_union",
 )
 
 

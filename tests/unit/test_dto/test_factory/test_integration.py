@@ -18,7 +18,7 @@ from litestar.contrib.pydantic import PydanticDTO
 from litestar.datastructures import UploadFile
 from litestar.dto.factory import DTOConfig, DTOData, dto_field
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
-from litestar.dto.factory.types import RenameStrategy
+from litestar.dto.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
 from litestar.params import Body
 from litestar.testing import TestClient, create_test_client
@@ -84,7 +84,7 @@ def test_renamed_field() -> None:
         assert data.bar == "hello"
         return data
 
-    with create_test_client(route_handlers=[handler]) as client:
+    with create_test_client(route_handlers=[handler], debug=True) as client:
         response = client.post("/", json={"baz": "hello"})
         assert response.json() == {"baz": "hello"}
 

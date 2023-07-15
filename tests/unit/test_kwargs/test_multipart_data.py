@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, DefaultDict, Dict, List, Optional, Type
 
 import pytest
+from msgspec import convert
 from pydantic import BaseConfig, BaseModel
 
 from litestar import Request, post
@@ -14,6 +15,7 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.status_codes import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
+from dataclasses import dataclass
 from tests import Person, PersonFactory
 from . import Form
 
@@ -101,19 +103,17 @@ def test_request_body_multi_part(t_type: Type[Any]) -> None:
 def test_request_body_multi_part_mixed_field_content_types() -> None:
     person = PersonFactory.build()
 
-    class MultiPartFormWithMixedFields(BaseModel):
-        class Config(BaseConfig):
-            arbitrary_types_allowed = True
-
+    @dataclass
+    class MultiPartFormWithMixedFields:
         image: UploadFile
-        tags: List[str]
+        tags: List[int]
         profile: Person
 
     @post(path="/form")
     async def test_method(data: MultiPartFormWithMixedFields = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
         file_data = await data.image.read()
         assert file_data == b"data"
-        assert data.tags == ["1", "2", "3"]
+        assert data.tags == [1, 2, 3]
         assert data.profile == person
 
     with create_test_client(test_method) as client:

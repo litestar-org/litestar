@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 __all__ = (
     "get_model_type_hints",
-    "parse_configs_from_annotation",
+    "get_dto_config_from_annotated_type",
     "resolve_generic_wrapper_type",
     "resolve_model_type",
 )
@@ -51,7 +51,7 @@ def get_model_type_hints(model_type: type[Any], namespace: dict[str, Any] | None
     }
 
 
-def parse_configs_from_annotation(field_definition: FieldDefinition) -> tuple[DTOConfig, ...]:
+def get_dto_config_from_annotated_type(field_definition: FieldDefinition) -> DTOConfig | None:
     """Extract data type and config instances from ``Annotated`` annotation.
 
     Args:
@@ -60,7 +60,9 @@ def parse_configs_from_annotation(field_definition: FieldDefinition) -> tuple[DT
     Returns:
         The type and config object extracted from the annotation.
     """
-    return tuple(item for item in field_definition.metadata if isinstance(item, DTOConfig))
+    if configs := [item for item in field_definition.metadata if isinstance(item, DTOConfig)]:
+        return configs[0]
+    return None
 
 
 def resolve_model_type(field_definition: FieldDefinition) -> FieldDefinition:

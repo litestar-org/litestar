@@ -25,8 +25,7 @@ if TYPE_CHECKING:
 class BaseModel(_BaseModel):
     """Extend Pydantic's BaseModel to enable ORM mode"""
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 
 # the SQLAlchemy base includes a declarative model for you to use in your models.

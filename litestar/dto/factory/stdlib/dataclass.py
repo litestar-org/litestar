@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import MISSING, fields, replace
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from litestar.dto.factory.abc import AbstractDTOFactory
+from litestar.dto.factory.base import AbstractDTOFactory
 from litestar.dto.factory.data_structures import DTOFieldDefinition
 from litestar.dto.factory.field import DTO_FIELD_META_KEY, DTOField
 from litestar.dto.factory.utils import get_model_type_hints
@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 
     from litestar.types.protocols import DataclassProtocol
     from litestar.typing import FieldDefinition
+
 
 __all__ = ("DataclassDTO", "T")
 

@@ -139,11 +139,14 @@ def create_transfer_type(
     backend: AbstractDTOBackend,
     field_definition: FieldDefinition,
     exclude: AbstractSet[str] | None = None,
+    include: AbstractSet[str] | None = None,
     field_name: str = "name",
     unique_name: str = "some_module.SomeModel.name",
     nested_depth: int = 0,
 ) -> TransferType:
-    return backend._create_transfer_type(field_definition, exclude or set(), field_name, unique_name, nested_depth)
+    return backend._create_transfer_type(
+        field_definition, exclude or set(), include or set(), field_name, unique_name, nested_depth
+    )
 
 
 @pytest.mark.parametrize(
@@ -277,6 +280,6 @@ def test_parse_model_respects_field_definition_dto_for(
     object.__setattr__(field_definitions[1], "dto_for", "return")
     backend.context.dto_for = dto_for  # type:ignore[misc]
     backend.context.field_definition_generator = lambda _: iter(field_definitions)  # type: ignore
-    transfer_field_defs = backend.parse_model(None, exclude=set())
+    transfer_field_defs = backend.parse_model(None, exclude=set(), include=set())
     assert len(transfer_field_defs) == 1
     assert transfer_field_defs[0].dto_for == dto_for

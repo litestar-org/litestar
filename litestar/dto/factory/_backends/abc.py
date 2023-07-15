@@ -120,7 +120,9 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             context: context of the type represented by this backend.
         """
         self.context = context
-        self.parsed_field_definitions = self.parse_model(context.model_type, context.config.exclude)
+        self.parsed_field_definitions = self.parse_model(
+            model_type=context.model_type, exclude=context.config.exclude, include=context.config.include
+        )
         self.transfer_model_type = self.create_transfer_model_type(
             get_fully_qualified_class_name(context.model_type), self.parsed_field_definitions
         )
@@ -132,7 +134,9 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             annotation = context.field_definition.annotation
         self.annotation = build_annotation_for_backend(annotation, self.transfer_model_type)
 
-    def parse_model(self, model_type: Any, exclude: AbstractSet[str], nested_depth: int = 0) -> FieldDefinitionsType:
+    def parse_model(
+        self, model_type: Any, exclude: AbstractSet[str], include: AbstractSet[str], nested_depth: int = 0
+    ) -> FieldDefinitionsType:
         """Reduce :attr:`model_type` to :class:`FieldDefinitionsType`.
 
         .. important::
@@ -167,11 +171,12 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
 
             try:
                 transfer_type = self._create_transfer_type(
-                    field_definition,
-                    exclude,
-                    field_definition.name,
-                    field_definition.unique_name(),
-                    nested_depth,
+                    field_definition=field_definition,
+                    exclude=exclude,
+                    include=include,
+                    field_name=field_definition.name,
+                    unique_name=field_definition.unique_name(),
+                    nested_depth=nested_depth,
                 )
             except NestedDepthExceededError:
                 continue
@@ -188,7 +193,9 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
                 serialization_name=serialization_name,
                 transfer_type=transfer_type,
                 is_partial=self.context.config.partial,
-                is_excluded=should_exclude_field(field_definition, exclude, self.context.dto_for),
+                is_excluded=should_exclude_field(
+                    field_definition=field_definition, exclude=exclude, include=include, dto_for=self.context.dto_for
+                ),
             )
             defined_fields.append(transfer_field_definition)
         return tuple(defined_fields)
@@ -338,32 +345,66 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         self,
         field_definition: FieldDefinition,
         exclude: AbstractSet[str],
+        include: AbstractSet[str],
         field_name: str,
         unique_name: str,
         nested_depth: int,
     ) -> CompositeType | SimpleType:
-        exclude = _filter_exclude(exclude, field_name)
+        exclude = _filter_nested_field(exclude, field_name)
+        include = _filter_nested_field(include, field_name)
 
         if field_definition.is_union:
-            return self._create_union_type(field_definition, exclude, unique_name, nested_depth)
+            return self._create_union_type(
+                field_definition=field_definition,
+                exclude=exclude,
+                include=include,
+                unique_name=unique_name,
+                nested_depth=nested_depth,
+            )
 
         if field_definition.is_tuple:
             if len(field_definition.inner_types) == 2 and field_definition.inner_types[1].annotation is Ellipsis:
-                return self._create_collection_type(field_definition, exclude, unique_name, nested_depth)
-            return self._create_tuple_type(field_definition, exclude, unique_name, nested_depth)
+                return self._create_collection_type(
+                    field_definition=field_definition,
+                    exclude=exclude,
+                    include=include,
+                    unique_name=unique_name,
+                    nested_depth=nested_depth,
+                )
+            return self._create_tuple_type(
+                field_definition=field_definition,
+                exclude=exclude,
+                include=include,
+                unique_name=unique_name,
+                nested_depth=nested_depth,
+            )
 
         if field_definition.is_mapping:
-            return self._create_mapping_type(field_definition, exclude, unique_name, nested_depth)
+            return self._create_mapping_type(
+                field_definition=field_definition,
+                exclude=exclude,
+                include=include,
+                unique_name=unique_name,
+                nested_depth=nested_depth,
+            )
 
         if field_definition.is_non_string_collection:
-            return self._create_collection_type(field_definition, exclude, unique_name, nested_depth)
+            return self._create_collection_type(
+                field_definition=field_definition,
+                exclude=exclude,
+                include=include,
+                unique_name=unique_name,
+                nested_depth=nested_depth,
+            )
 
         transfer_model: NestedFieldInfo | None = None
         if self.context.is_nested_field_predicate(field_definition):
             if nested_depth == self.context.config.max_nested_depth:
                 raise NestedDepthExceededError()
 
-            nested_field_definitions = self.parse_model(field_definition.annotation, exclude, nested_depth + 1)
+            nested_field_definitions = self.parse_model(
+                model_type=field_definition.annotation, exclude=exclude, include=include, nested_depth=nested_depth + 1
+            )
             transfer_model = NestedFieldInfo(
                 model=self.create_transfer_model_type(unique_name, nested_field_definitions),
                 field_definitions=nested_field_definitions,
@@ -372,12 +413,18 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         return SimpleType(field_definition, nested_field_info=transfer_model)
 
     def _create_collection_type(
-        self, field_definition: FieldDefinition, exclude: AbstractSet[str], unique_name: str, nested_depth: int
+        self,
+        field_definition: FieldDefinition,
+        exclude: AbstractSet[str],
+        include: AbstractSet[str],
+        unique_name: str,
+        nested_depth: int,
     ) -> CollectionType:
         inner_types = field_definition.inner_types
         inner_type = self._create_transfer_type(
             field_definition=inner_types[0] if inner_types else FieldDefinition.from_annotation(Any),
             exclude=exclude,
+            include=include,
             field_name="0",
             unique_name=_enumerate_name(unique_name, 0),
             nested_depth=nested_depth,
@@ -387,12 +434,18 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         )
 
     def _create_mapping_type(
-        self, field_definition: FieldDefinition, exclude: AbstractSet[str], unique_name: str, nested_depth: int
+        self,
+        field_definition: FieldDefinition,
+        exclude: AbstractSet[str],
+        include: AbstractSet[str],
+        unique_name: str,
+        nested_depth: int,
     ) -> MappingType:
         inner_types = field_definition.inner_types
         key_type = self._create_transfer_type(
             field_definition=inner_types[0] if inner_types else FieldDefinition.from_annotation(Any),
             exclude=exclude,
+            include=include,
             field_name="0",
             unique_name=_enumerate_name(unique_name, 0),
             nested_depth=nested_depth,
@@ -400,6 +453,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         value_type = self._create_transfer_type(
             field_definition=inner_types[1] if inner_types else FieldDefinition.from_annotation(Any),
             exclude=exclude,
+            include=include,
             field_name="1",
             unique_name=_enumerate_name(unique_name, 1),
             nested_depth=nested_depth,
@@ -412,12 +466,18 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         )
 
     def _create_tuple_type(
-        self, field_definition: FieldDefinition, exclude: AbstractSet[str], unique_name: str, nested_depth: int
+        self,
+        field_definition: FieldDefinition,
+        exclude: AbstractSet[str],
+        include: AbstractSet[str],
+        unique_name: str,
+        nested_depth: int,
     ) -> TupleType:
         inner_types = tuple(
             self._create_transfer_type(
                 field_definition=inner_type,
                 exclude=exclude,
+                include=include,
                 field_name=str(i),
                 unique_name=_enumerate_name(unique_name, i),
                 nested_depth=nested_depth,
@@ -431,12 +491,18 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         )
 
     def _create_union_type(
-        self, field_definition: FieldDefinition, exclude: AbstractSet[str], unique_name: str, nested_depth: int
+        self,
+        field_definition: FieldDefinition,
+        exclude: AbstractSet[str],
+        include: AbstractSet[str],
+        unique_name: str,
+        nested_depth: int,
     ) -> UnionType:
         inner_types = tuple(
             self._create_transfer_type(
                 field_definition=inner_type,
                 exclude=exclude,
+                include=include,
                 field_name=str(i),
                 unique_name=_enumerate_name(unique_name, i),
                 nested_depth=nested_depth,
@@ -449,15 +515,16 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             has_nested=any(_determine_has_nested(t) for t in inner_types),
         )
 
-    def _gen_unique_name_id(self, unique_name: str, size: int = 12) -> str:
+    @staticmethod
+    def _gen_unique_name_id(unique_name: str) -> str:
         # Generate a unique ID
         # Convert the ID to a short alphanumeric string
         return f"{unique_name}-{secrets.token_hex(8)}"
 
 
-def _filter_exclude(exclude: AbstractSet[str], field_name: str) -> AbstractSet[str]:
-    """Filter exclude set to only include exclusions for the given field name."""
-    return {split[1] for s in exclude if (split := s.split(".", 1))[0] == field_name and len(split) > 1}
+def _filter_nested_field(field_name_set: AbstractSet[str], field_name: str) -> AbstractSet[str]:
+    """Filter a nested field name."""
+    return {split[1] for s in field_name_set if (split := s.split(".", 1))[0] == field_name and len(split) > 1}
 
 
 def _enumerate_name(name: str, index: int) -> str:
