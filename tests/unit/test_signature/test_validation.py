@@ -3,7 +3,7 @@ from typing import List, Optional
 
 import pytest
 from attr import define
-from pydantic import BaseModel, VERSION
+from pydantic import VERSION, BaseModel
 from typing_extensions import TypedDict
 
 from litestar import get, post
@@ -50,8 +50,8 @@ def test_dependency_validation_failure_raises_500() -> None:
         ...
 
     with create_test_client(
-            route_handlers=[test],
-            dependencies=dependencies,
+        route_handlers=[test],
+        dependencies=dependencies,
     ) as client:
         response = client.get("/?param=13")
 
@@ -141,11 +141,11 @@ def test_invalid_input_pydantic() -> None:
 
     @post("/")
     def test(
-            data: Parent,
-            int_param: int,
-            length_param: str = Parameter(min_length=2),
-            int_header: int = Parameter(header="X-SOME-INT"),
-            int_cookie: int = Parameter(cookie="int-cookie"),
+        data: Parent,
+        int_param: int,
+        length_param: str = Parameter(min_length=2),
+        int_header: int = Parameter(header="X-SOME-INT"),
+        int_cookie: int = Parameter(cookie="int-cookie"),
     ) -> None:
         ...
 
@@ -175,9 +175,19 @@ def test_invalid_input_pydantic() -> None:
             ]
         else:
             assert data["extra"] == [
-                {'message': 'Input should be a valid integer, unable to parse string as an integer', 'key': 'child.val'},
-                {'message': 'Input should be a valid integer, unable to parse string as an integer', 'key': 'child.other_val'},
-                {'message': 'Input should be a valid integer, unable to parse string as an integer', 'key': 'other_child.val.1'}]
+                {
+                    "message": "Input should be a valid integer, unable to parse string as an integer",
+                    "key": "child.val",
+                },
+                {
+                    "message": "Input should be a valid integer, unable to parse string as an integer",
+                    "key": "child.other_val",
+                },
+                {
+                    "message": "Input should be a valid integer, unable to parse string as an integer",
+                    "key": "other_child.val.1",
+                },
+            ]
 
 
 def test_invalid_input_attrs() -> None:
@@ -197,10 +207,10 @@ def test_invalid_input_attrs() -> None:
 
     @post("/")
     def test(
-            data: Parent,
-            int_param: int,
-            int_header: int = Parameter(header="X-SOME-INT"),
-            int_cookie: int = Parameter(cookie="int-cookie"),
+        data: Parent,
+        int_param: int,
+        int_header: int = Parameter(header="X-SOME-INT"),
+        int_cookie: int = Parameter(cookie="int-cookie"),
     ) -> None:
         ...
 
@@ -219,12 +229,10 @@ def test_invalid_input_attrs() -> None:
 
         assert data
         assert data["extra"] == [
-            {"key": "child.val", "message": "invalid literal for int() with base 10: 'a'", "source": "body"},
-            {"key": "child.other_val", "message": "invalid literal for int() with base 10: 'b'", "source": "body"},
-            {"key": "other_child.val.1", "message": "invalid literal for int() with base 10: 'c'", "source": "body"},
-            {"key": "int_param", "message": "invalid literal for int() with base 10: 'param'", "source": "query"},
-            {"key": "int_header", "message": "invalid literal for int() with base 10: 'header'", "source": "header"},
-            {"key": "int_cookie", "message": "invalid literal for int() with base 10: 'cookie'", "source": "cookie"},
+            {"message": "Expected `int`, got `str`", "key": "child.val", "source": "body"},
+            {"message": "Expected `int`, got `str`", "key": "int_param", "source": "query"},
+            {"message": "Expected `int`, got `str`", "key": "int_header", "source": "header"},
+            {"message": "Expected `int`, got `str`", "key": "int_cookie", "source": "cookie"},
         ]
 
 
@@ -245,11 +253,11 @@ def test_invalid_input_dataclass() -> None:
 
     @post("/")
     def test(
-            data: Parent,
-            int_param: int,
-            length_param: str = Parameter(min_length=2),
-            int_header: int = Parameter(header="X-SOME-INT"),
-            int_cookie: int = Parameter(cookie="int-cookie"),
+        data: Parent,
+        int_param: int,
+        length_param: str = Parameter(min_length=2),
+        int_header: int = Parameter(header="X-SOME-INT"),
+        int_cookie: int = Parameter(cookie="int-cookie"),
     ) -> None:
         ...
 
@@ -268,13 +276,11 @@ def test_invalid_input_dataclass() -> None:
 
         assert data
         assert data["extra"] == [
-            {"key": "child.val", "message": "value is not a valid integer", "source": "body"},
-            {"key": "child.other_val", "message": "value is not a valid integer", "source": "body"},
-            {"key": "other_child.val.1", "message": "value is not a valid integer", "source": "body"},
-            {"key": "int_param", "message": "value is not a valid integer", "source": "query"},
-            {"key": "length_param", "message": "ensure this value has at least 2 characters", "source": "query"},
-            {"key": "int_header", "message": "value is not a valid integer", "source": "header"},
-            {"key": "int_cookie", "message": "value is not a valid integer", "source": "cookie"},
+            {"message": "Expected `int`, got `str`", "key": "child.val", "source": "body"},
+            {"message": "Expected `int`, got `str`", "key": "int_param", "source": "query"},
+            {"message": "Expected `int`, got `str`", "key": "length_param", "source": "query"},
+            {"message": "Expected `int`, got `str`", "key": "int_header", "source": "header"},
+            {"message": "Expected `int`, got `str`", "key": "int_cookie", "source": "cookie"},
         ]
 
 
@@ -292,11 +298,11 @@ def test_invalid_input_typed_dict() -> None:
 
     @post("/")
     def test(
-            data: Parent,
-            int_param: int,
-            length_param: str = Parameter(min_length=2),
-            int_header: int = Parameter(header="X-SOME-INT"),
-            int_cookie: int = Parameter(cookie="int-cookie"),
+        data: Parent,
+        int_param: int,
+        length_param: str = Parameter(min_length=2),
+        int_header: int = Parameter(header="X-SOME-INT"),
+        int_cookie: int = Parameter(cookie="int-cookie"),
     ) -> None:
         ...
 
@@ -315,11 +321,9 @@ def test_invalid_input_typed_dict() -> None:
 
         assert data
         assert data["extra"] == [
-            {"key": "child.val", "message": "value is not a valid integer", "source": "body"},
-            {"key": "child.other_val", "message": "value is not a valid integer", "source": "body"},
-            {"key": "other_child.val.1", "message": "value is not a valid integer", "source": "body"},
-            {"key": "int_param", "message": "value is not a valid integer", "source": "query"},
-            {"key": "length_param", "message": "ensure this value has at least 2 characters", "source": "query"},
-            {"key": "int_header", "message": "value is not a valid integer", "source": "header"},
-            {"key": "int_cookie", "message": "value is not a valid integer", "source": "cookie"},
+            {"message": "Expected `int`, got `str`", "key": "child.val", "source": "body"},
+            {"message": "Expected `int`, got `str`", "key": "int_param", "source": "query"},
+            {"message": "Expected `int`, got `str`", "key": "length_param", "source": "query"},
+            {"message": "Expected `int`, got `str`", "key": "int_header", "source": "header"},
+            {"message": "Expected `int`, got `str`", "key": "int_cookie", "source": "cookie"},
         ]

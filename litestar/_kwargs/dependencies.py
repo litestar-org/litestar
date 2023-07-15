@@ -61,7 +61,7 @@ async def resolve_dependency(
     signature_model = get_signature_model(dependency.provide)
     dependency_kwargs = (
         signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)
-        if signature_model.fields
+        if signature_model._fields
         else {}
     )
     value = await dependency.provide(**dependency_kwargs)

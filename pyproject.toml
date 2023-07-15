@@ -83,7 +83,6 @@ click = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
 fast-query-parsers = "*"
 httpx = ">=0.22"
-pydantic-extra-types = { version = "*", optional = true }
 importlib-metadata = { version = "*", python = "<3.10" }
 importlib-resources = { version = ">=5.12.0", python = "<3.9" }
 jinja2 = { version = ">=3.1.2", optional = true }
@@ -96,6 +95,7 @@ picologging = { version = "*", optional = true }
 polyfactory = ">=2.3.2"
 prometheus-client = { version = "*", optional = true }
 pydantic = "*"
+pydantic-extra-types = { version = "*", optional = true }
 python-dateutil = "*"
 python-jose = { version = "*", optional = true }
 pytimeparse = "*"
@@ -140,6 +140,7 @@ pre-commit = "*"
 prometheus-client = "*"
 psycopg = "*"
 pydantic = ">=2"
+pydantic-extra-types = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
@@ -160,7 +161,6 @@ structlog = "*"
 tortoise-orm = "*"
 trio = "*"
 uvicorn = "*"
-pydantic-extra-types = "*"
 
 [tool.poetry.group.docs]
 optional = true
@@ -206,12 +206,12 @@ jinja = ["jinja2"]
 jwt = ["python-jose", "cryptography"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
+prometheus = ["prometheus-client"]
 redis = ["redis"]
 sqlalchemy = ["sqlalchemy", "alembic"]
 standard = ["click", "jinja2", "jsbeautifier", "rich", "uvicorn", "rich-click"]
 structlog = ["structlog"]
 tortoise-orm = ["tortoise-orm"]
-prometheus = ["prometheus-client"]
 
 full = [
     "alembic",

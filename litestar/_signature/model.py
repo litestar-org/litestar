@@ -9,10 +9,11 @@ from msgspec.structs import asdict
 from typing_extensions import Annotated
 
 from litestar._signature.utils import create_type_overrides, validate_signature_dependencies
-from litestar.enums import ScopeType
+from litestar.enums import ParamType, ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
 from litestar.params import DependencyKwarg, KwargDefinition, ParameterKwarg
-from litestar.serialization import ExtendedMsgSpecValidationError, dec_hook
+from litestar.serialization import dec_hook
+from litestar.serialization._msgspec_utils import ExtendedMsgSpecValidationError
 from litestar.typing import FieldDefinition  # noqa
 from litestar.utils import make_non_optional_union
 from litestar.utils.dataclass import simple_asdict
@@ -38,7 +39,7 @@ class ErrorMessage(TypedDict):
     # in this case, we don't show a key at all as it will be empty
     key: NotRequired[str]
     message: str
-    source: NotRequired[Literal["cookie", "body", "header", "query"]]
+    source: NotRequired[Literal["body"] | ParamType]
 
 
 MSGSPEC_CONSTRAINT_FIELDS = (
@@ -59,9 +60,9 @@ class SignatureModel(Struct):
     """Model that represents a function signature that uses a msgspec specific type or types."""
 
     # NOTE: we have to use Set and Dict here because python 3.8 goes haywire if we use 'set' and 'dict'
-    dependency_name_set: ClassVar[Set[str]]
-    fields: ClassVar[Dict[str, FieldDefinition]]
-    return_annotation: ClassVar[Any]
+    _dependency_name_set: ClassVar[Set[str]]
+    _fields: ClassVar[Dict[str, FieldDefinition]]
+    _return_annotation: ClassVar[Any]
 
     @classmethod
     def _create_exception(cls, connection: ASGIConnection, messages: list[ErrorMessage]) -> Exception:
@@ -79,7 +80,7 @@ class SignatureModel(Struct):
         if client_errors := [
             err_message
             for err_message in messages
-            if ("key" in err_message and err_message["key"] not in cls.dependency_name_set) or "key" not in err_message
+            if ("key" in err_message and err_message["key"] not in cls._dependency_name_set) or "key" not in err_message
         ]:
             return ValidationException(detail=f"Validation failed for {method} {connection.url}", extra=client_errors)
         return InternalServerException()
@@ -103,20 +104,34 @@ class SignatureModel(Struct):
             return message
 
         message["key"] = key = ".".join(keys)
+        if keys[0].startswith("data"):
+            message["key"] = message["key"].replace("data.", "")
+            message["source"] = "body"
+        elif key in connection.query_params:
+            message["source"] = ParamType.QUERY
 
-        if key in connection.query_params:
-            message["source"] = cast("Literal['cookie', 'body', 'header', 'query']", "query")
-
-        elif key in cls.fields and isinstance(cls.fields[key].kwarg_definition, ParameterKwarg):
-            if cast(ParameterKwarg, cls.fields[key].kwarg_definition).cookie:
-                source = "cookie"
-            elif cast(ParameterKwarg, cls.fields[key].kwarg_definition).header:
-                source = "header"
+        elif key in cls._fields and isinstance(cls._fields[key].kwarg_definition, ParameterKwarg):
+            if cast(ParameterKwarg, cls._fields[key].kwarg_definition).cookie:
+                message["source"] = ParamType.COOKIE
+            elif cast(ParameterKwarg, cls._fields[key].kwarg_definition).header:
+                message["source"] = ParamType.HEADER
             else:
-                source = "query"
-            message["source"] = cast("Literal['cookie', 'body', 'header', 'query']", source)
+                message["source"] = ParamType.QUERY
 
         return message
+
+    @classmethod
+    def _collect_errors(cls, **kwargs: Any) -> list[tuple[str, Exception]]:
+        exceptions: list[tuple[str, Exception]] = []
+        for field_name in cls._fields:
+            try:
+                raw_value = kwargs[field_name]
+                annotation = cls.__annotations__[field_name]
+                convert(raw_value, type=annotation, strict=False, dec_hook=dec_hook, str_keys=True)
+            except Exception as e:  # noqa: BLE001
+                exceptions.append((field_name, e))
+
+        return exceptions
 
     @classmethod
     def parse_values_from_connection_kwargs(cls, connection: ASGIConnection, **kwargs: Any) -> dict[str, Any]:
@@ -143,10 +158,11 @@ class SignatureModel(Struct):
                 messages.append(message)
             raise cls._create_exception(messages=messages, connection=connection) from e
         except ValidationError as e:
-            match = ERR_RE.search(str(e))
-            keys = [str(match.group(1)) if match else "n/a"]
-            message = cls._build_error_message(keys=keys, exc_msg=str(e), connection=connection)
-            messages.append(message)
+            for field_name, exc in cls._collect_errors(**kwargs):  # type: ignore[assignment]
+                match = ERR_RE.search(str(exc))
+                keys = [field_name, str(match.group(1))] if match else [field_name]
+                message = cls._build_error_message(keys=keys, exc_msg=str(e), connection=connection)
+                messages.append(message)
             raise cls._create_exception(messages=messages, connection=connection) from e
 
     def to_dict(self) -> dict[str, Any]:
@@ -221,9 +237,9 @@ class SignatureModel(Struct):
             bases=(cls,),
             module=getattr(fn, "__module__", None),
             namespace={
-                "return_annotation": parsed_signature.return_type.annotation,
-                "dependency_name_set": dependency_names,
-                "fields": parsed_signature.parameters,
+                "_return_annotation": parsed_signature.return_type.annotation,
+                "_dependency_name_set": dependency_names,
+                "_fields": parsed_signature.parameters,
             },
             kw_only=True,
         )

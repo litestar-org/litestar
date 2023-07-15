@@ -93,7 +93,7 @@ def create_path_item(
         route_handler, _ = handler_tuple
 
         if route_handler.include_in_schema:
-            handler_fields = route_handler.signature_model.fields if route_handler.signature_model else {}
+            handler_fields = route_handler.signature_model._fields if route_handler.signature_model else {}
             parameters = (
                 create_parameter_for_handler(
                     route_handler=route_handler,

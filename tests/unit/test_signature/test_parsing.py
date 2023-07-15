@@ -42,7 +42,7 @@ def test_create_function_signature_model_parameter_parsing() -> None:
         dependency_name_set=set(),
         parsed_signature=ParsedSignature.from_fn(my_fn.fn.value, {}),
     )
-    fields = model.fields
+    fields = model._fields
     assert fields["a"].annotation is int
     assert not fields["a"].is_optional
     assert fields["b"].annotation is str
@@ -120,8 +120,8 @@ def test_field_definition_is_non_string_iterable() -> None:
         parsed_signature=ParsedSignature.from_fn(fn, {}),
     )
 
-    assert model.fields["a"].is_non_string_iterable
-    assert model.fields["b"].is_non_string_iterable
+    assert model._fields["a"].is_non_string_iterable
+    assert model._fields["b"].is_non_string_iterable
 
 
 def test_field_definition_is_non_string_sequence() -> None:
@@ -134,8 +134,8 @@ def test_field_definition_is_non_string_sequence() -> None:
         parsed_signature=ParsedSignature.from_fn(fn, signature_namespace={}),
     )
 
-    assert model.fields["a"].is_non_string_sequence
-    assert model.fields["b"].is_non_string_sequence
+    assert model._fields["a"].is_non_string_sequence
+    assert model._fields["b"].is_non_string_sequence
 
 
 @pytest.mark.parametrize("query,expected", [("1", True), ("true", True), ("0", False), ("false", False)])

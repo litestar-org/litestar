@@ -32,7 +32,7 @@ def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
         fn=handler,
         dependency_name_set=set(),
         parsed_signature=route_handler.parsed_fn_signature,
-    ).fields
+    )._fields
 
     return create_parameter_for_handler(
         route_handler, handler_fields, route.path_parameters, SchemaCreator(generate_examples=True)
