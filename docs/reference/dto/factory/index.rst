@@ -11,4 +11,3 @@ factory
     config
     field
     stdlib
-    types

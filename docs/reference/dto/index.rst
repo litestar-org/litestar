@@ -5,4 +5,5 @@ dto
     :titlesonly:
 
     interface
+    types
     factory/index
