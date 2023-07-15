@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
@@ -131,6 +131,7 @@ def test_duplicate_path_param_validation() -> None:
         ["uuid", UUID, "542226d1-7199-41a0-9cba-aaa6d85932a3", UUID("542226d1-7199-41a0-9cba-aaa6d85932a3")],
         ["decimal", Decimal, "1.00001", Decimal("1.00001")],
         ["date", date, "2023-07-15", date(year=2023, month=7, day=15)],
+        ["time", time, "01:02:03", time(1, 2, 3)],
         ["datetime", datetime, "2023-07-15T15:45:34.073314", datetime.fromisoformat("2023-07-15T15:45:34.073314")],
         ["timedelta", timedelta, "86400.0", timedelta(days=1)],
         ["timedelta", timedelta, "P1D", timedelta(days=1)],
