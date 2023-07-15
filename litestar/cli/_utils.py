@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import importlib
 import inspect
 import sys
@@ -100,13 +101,10 @@ class LitestarEnv:
         if cwd_str_path not in sys.path:
             sys.path.append(cwd_str_path)
 
-        try:
+        with contextlib.suppress(ImportError):
             import dotenv
 
             dotenv.load_dotenv()
-        except ImportError:
-            pass
-
         app_path = app_path or getenv("LITESTAR_APP")
         if app_path:
             console.print(f"Using Litestar app from env: [bright_blue]{app_path!r}")
