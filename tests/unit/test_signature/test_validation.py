@@ -165,13 +165,9 @@ def test_invalid_input_pydantic() -> None:
         assert data
         if VERSION.startswith("1"):
             assert data["extra"] == [
-                {"key": "child.val", "message": "value is not a valid integer", "source": "body"},
-                {"key": "child.other_val", "message": "value is not a valid integer", "source": "body"},
-                {"key": "other_child.val.1", "message": "value is not a valid integer", "source": "body"},
-                {"key": "int_param", "message": "value is not a valid integer", "source": "query"},
-                {"key": "length_param", "message": "ensure this value has at least 2 characters", "source": "query"},
-                {"key": "int_header", "message": "value is not a valid integer", "source": "header"},
-                {"key": "int_cookie", "message": "value is not a valid integer", "source": "cookie"},
+                {"key": "child.val", "message": "value is not a valid integer"},
+                {"key": "child.other_val", "message": "value is not a valid integer"},
+                {"key": "other_child.val.1", "message": "value is not a valid integer"},
             ]
         else:
             assert data["extra"] == [

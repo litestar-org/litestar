@@ -139,7 +139,7 @@ picologging = "*"
 pre-commit = "*"
 prometheus-client = "*"
 psycopg = "*"
-pydantic = ">=2"
+pydantic = "*"
 pydantic-extra-types = "*"
 pytest = "*"
 pytest-asyncio = "*"
@@ -259,6 +259,7 @@ exclude_lines = [
     'except ImportError:',
     '\.\.\.',
     'raise NotImplementedError',
+    'if VERSION.startswith("1"):',
 ]
 
 [tool.pytest.ini_options]

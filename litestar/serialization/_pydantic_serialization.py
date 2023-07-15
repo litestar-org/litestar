@@ -81,7 +81,9 @@ def create_pydantic_encoders() -> dict[Any, Callable[[Any], Any]]:
         if pydantic.VERSION.startswith("1"):  # pragma: no cover
             encoders.update(
                 {
-                    pydantic.BaseModel: lambda model: model.dict(),
+                    pydantic.BaseModel: lambda model: {
+                        k: v if not isinstance(v, bytes) else v.decode() for k, v in model.dict().items()
+                    },
                     pydantic.SecretField: str,
                     pydantic.StrictBool: int,
                     pydantic.color.Color: str,  # pyright: ignore

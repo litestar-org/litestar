@@ -60,7 +60,10 @@ jobs:
         run: poetry install --no-interaction
       - if: ${{ inputs.pydantic-version == '1' }}
         name: Install pydantic v1
-        run: source .venv/bin/activate && pip install "pydantic>=1.10.10"
+        run: poetry add "pydantic>=1.10.10,<2" && poetry remove pydantic-extra-types
+      - if: ${{ inputs.pydantic-version == '2' }}
+        name: Install pydantic v2
+        run: poetry add "pydantic>=2" && poetry add pydantic-extra-types
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
       - name: Test

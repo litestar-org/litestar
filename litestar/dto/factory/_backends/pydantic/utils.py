@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Union
 
 from msgspec import UNSET, UnsetType
-from pydantic import BaseModel, create_model
+from pydantic import VERSION, BaseModel, create_model
 from pydantic.fields import FieldInfo
 
 from litestar.dto.factory._backends.utils import create_transfer_model_type_annotation
@@ -21,9 +21,14 @@ T = TypeVar("T")
 
 
 class _OrmModeBase(BaseModel):
-    class Config:
-        arbitrary_types_allowed = True
-        orm_mode = True
+    if VERSION.startswith("1"):
+
+        class Config:
+            arbitrary_types_allowed = True
+            orm_mode = True
+
+    else:
+        model_config = {"arbitrary_types_allowed": True, "from_attributes": True}
 
 
 def _create_field_info(field_definition: TransferDTOFieldDefinition) -> FieldInfo:

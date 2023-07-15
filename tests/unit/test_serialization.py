@@ -171,7 +171,17 @@ def test_serialization_of_model_instance(model: BaseModel) -> None:
 def test_pydantic_json_compatibility(model: BaseModel) -> None:
     raw = model.model_dump_json() if hasattr(model, "model_dump_json") else model.json()
     encoded_json = encode_json(model)
-    assert json.loads(raw) == json.loads(encoded_json)
+
+    raw_result = json.loads(raw)
+    encoded_result = json.loads(encoded_json)
+
+    if VERSION.startswith("1"):
+        # pydantic v1 dumps decimals into floats as json, we therefore regard this as an error
+        assert raw_result.get("condecimal") == float(encoded_result.get("condecimal"))
+        del raw_result["condecimal"]
+        del encoded_result["condecimal"]
+
+    assert raw_result == encoded_result
 
 
 @pytest.mark.parametrize("encoder", [encode_json, encode_msgpack])
