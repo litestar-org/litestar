@@ -87,6 +87,7 @@ nitpick_ignore = [
     (PY_METH, "_types.TypeDecorator.process_bind_param"),
     (PY_METH, "_types.TypeDecorator.process_result_value"),
     (PY_METH, "type_engine"),
+    (PY_METH, "litestar.typing.ParsedType.is_subclass_of"),
     # type vars and aliases / intentionally undocumented
     (PY_CLASS, "RouteHandlerType"),
     (PY_OBJ, "litestar.security.base.AuthType"),
