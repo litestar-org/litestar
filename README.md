@@ -431,7 +431,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://www.linkedin.com/in/erik-hasse"><img src="https://avatars.githubusercontent.com/u/37126755?v=4?s=100" width="100px;" alt="Erik Hasse"/><br /><sub><b>Erik Hasse</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3Aerik-hasse" title="Bug reports">🐛</a> <a href="https://github.com/litestar-org/litestar/commits?author=erik-hasse" title="Code">💻</a></td>
     </tr>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://sobolevn.me"><img src="https://avatars.githubusercontent.com/u/4660275?v=4?s=100" width="100px;" alt="Nikita Sobolev"/><br /><sub><b>Nikita Sobolev</b></sub></a><br /><a href="#infra-sobolevn" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://sobolevn.me"><img src="https://avatars.githubusercontent.com/u/4660275?v=4?s=100" width="100px;" alt="Nikita Sobolev"/><br /><sub><b>Nikita Sobolev</b></sub></a><br /><a href="#infra-sobolevn" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/litestar-org/litestar/commits?author=sobolevn" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
