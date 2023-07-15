@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 from jose import JWSError, JWTError, jwt
 
@@ -112,11 +112,8 @@ class Token:
             ImproperlyConfiguredException: If encoding fails.
         """
         try:
-            return cast(
-                "str",
-                jwt.encode(
-                    claims={k: v for k, v in asdict(self).items() if v is not None}, key=secret, algorithm=algorithm
-                ),
+            return jwt.encode(
+                claims={k: v for k, v in asdict(self).items() if v is not None}, key=secret, algorithm=algorithm
             )
         except (JWTError, JWSError) as e:
             raise ImproperlyConfiguredException("Failed to encode token") from e
