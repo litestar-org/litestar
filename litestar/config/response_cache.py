@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, final
 from urllib.parse import urlencode
 
 __all__ = ("ResponseCacheConfig", "default_cache_key_builder", "CACHE_FOREVER")
@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from litestar.types import CacheKeyBuilder
 
 
+@final
 class CACHE_FOREVER:  # noqa: N801
     """Sentinel value indicating that a cached response should be stored without an expiration, explicitly skipping the
     default expiration
