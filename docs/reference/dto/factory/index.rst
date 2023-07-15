@@ -7,6 +7,7 @@ factory
 .. toctree::
     :titlesonly:
 
-    abc
+    base
+    config
+    field
     stdlib
-    types
