@@ -12,7 +12,7 @@ from sqlalchemy.exc import IntegrityError, InvalidRequestError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
 )
-from sqlalchemy.orm import Mapped, MappedColumn, mapped_column
+from sqlalchemy.orm import InstrumentedAttribute, Mapped, mapped_column
 
 from litestar.contrib.repository.exceptions import ConflictError, RepositoryError
 from litestar.contrib.repository.filters import (
@@ -88,9 +88,9 @@ async def test_sqlalchemy_sentinel(monkeypatch: MonkeyPatch) -> None:
     sa_instance_mock = MagicMock()
     sa_instance_mock.unloaded = unloaded_cols
 
-    assert isinstance(AnotherModel.sa_orm_sentinel, MappedColumn)  # pyright: ignore
-    assert isinstance(TheTestModel.sa_orm_sentinel, MappedColumn)  # pyright: ignore
-    assert not hasattr(TheBigIntModel, "sa_orm_sentinel")
+    assert isinstance(AnotherModel._sentinel, InstrumentedAttribute)  # pyright: ignore
+    assert isinstance(TheTestModel._sentinel, InstrumentedAttribute)  # pyright: ignore
+    assert not hasattr(TheBigIntModel, "_sentinel")
     model1, model2, model3 = AnotherModel(), TheTestModel(), TheBigIntModel()
     monkeypatch.setattr(model1, "_sa_instance_state", sa_instance_mock)
     monkeypatch.setattr(model2, "_sa_instance_state", sa_instance_mock)
@@ -100,6 +100,9 @@ async def test_sqlalchemy_sentinel(monkeypatch: MonkeyPatch) -> None:
     assert "sa_orm_sentinel" not in model1.to_dict().keys()
     assert "sa_orm_sentinel" not in model2.to_dict().keys()
     assert "sa_orm_sentinel" not in model3.to_dict().keys()
+    assert "_sentinel" not in model1.to_dict().keys()
+    assert "_sentinel" not in model2.to_dict().keys()
+    assert "_sentinel" not in model3.to_dict().keys()
     assert "the_extra_col" not in model1.to_dict().keys()
 
 
