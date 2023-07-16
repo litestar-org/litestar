@@ -137,7 +137,7 @@ jobs:
       - name: Build docs
         env:
           LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT: 1
-        run: poetry shell && make docs
+        run: poetry run make docs
       - name: Save PR number
         env:
           PR_NUMBER: ${{ github.event.number }}
