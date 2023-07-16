@@ -88,7 +88,7 @@ def create_path_item(
     operation_ids: list[str] = []
 
     request_schema_creator = SchemaCreator(create_examples, plugins, schemas, prefer_alias=True)
-    response_schema_creator = SchemaCreator(create_examples, plugins, schemas, prefer_alias=False)
+    response_schema_creator = SchemaCreator(create_examples, plugins, schemas, prefer_alias=True)
     for http_method, handler_tuple in route.route_handler_map.items():
         route_handler, _ = handler_tuple
 
