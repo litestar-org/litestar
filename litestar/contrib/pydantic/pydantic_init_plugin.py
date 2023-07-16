@@ -26,7 +26,7 @@ def _dec_pydantic(model_type: type[pydantic.BaseModel], value: Any) -> pydantic.
         return (
             model_type.model_validate(value, strict=False)
             if hasattr(model_type, "model_validate")
-            else model_type.model_validate(value)
+            else model_type.parse_obj(value)
         )
     except pydantic.ValidationError as e:
         raise ExtendedMsgSpecValidationError(errors=cast("list[dict[str, Any]]", e.errors())) from e
