@@ -306,10 +306,6 @@ module = "tests.unit.test_contrib.test_sqlalchemy.test_dto"
 disable_error_code = ["arg-type", "misc", "valid-type", "var-annotated"]
 
 [[tool.mypy.overrides]]
-module = "tests"
-disallow_untyped_decorators = false
-
-[[tool.mypy.overrides]]
 module = ["mako.*", "pytimeparse.*", "brotli.*", "jsbeautifier.*"]
 ignore_missing_imports = true
 

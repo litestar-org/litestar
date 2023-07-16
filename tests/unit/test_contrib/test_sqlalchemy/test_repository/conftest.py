@@ -202,6 +202,7 @@ def oracle_engine(docker_ip: str, oracle_service: None) -> Engine:
 
     Args:
         docker_ip: IP address for TCP connection to Docker containers.
+        oracle_service: ...
 
     Returns:
         Async SQLAlchemy engine instance.
@@ -224,14 +225,7 @@ def oracle_engine(docker_ip: str, oracle_service: None) -> Engine:
 
 @pytest.fixture()
 def psycopg_engine(docker_ip: str, postgres_service: None) -> Engine:
-    """Postgresql instance for end-to-end testing.
-
-    Args:
-        docker_ip: IP address for TCP connection to Docker containers.
-
-    Returns:
-        Async SQLAlchemy engine instance.
-    """
+    """Postgresql instance for end-to-end testing."""
     return create_engine(
         URL(
             drivername="postgresql+psycopg",
@@ -262,14 +256,7 @@ def sqlite_engine(tmp_path: Path) -> Generator[Engine, None, None]:
 
 @pytest.fixture()
 def spanner_engine(docker_ip: str, spanner_service: None, monkeypatch: MonkeyPatch) -> Engine:
-    """Postgresql instance for end-to-end testing.
-
-    Args:
-        docker_ip: IP address for TCP connection to Docker containers.
-
-    Returns:
-        Async SQLAlchemy engine instance.
-    """
+    """Postgresql instance for end-to-end testing."""
     monkeypatch.setenv("SPANNER_EMULATOR_HOST", "localhost:9010")
     monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "emulator-test-project")
 
@@ -316,14 +303,7 @@ async def aiosqlite_engine(tmp_path: Path) -> AsyncGenerator[AsyncEngine, None]:
 
 @pytest.fixture()
 async def asyncmy_engine(docker_ip: str, mysql_service: None) -> AsyncEngine:
-    """Postgresql instance for end-to-end testing.
-
-    Args:
-        docker_ip: IP address for TCP connection to Docker containers.
-
-    Returns:
-        Async SQLAlchemy engine instance.
-    """
+    """Postgresql instance for end-to-end testing."""
     return create_async_engine(
         URL(
             drivername="mysql+asyncmy",
@@ -340,14 +320,7 @@ async def asyncmy_engine(docker_ip: str, mysql_service: None) -> AsyncEngine:
 
 @pytest.fixture()
 async def asyncpg_engine(docker_ip: str, postgres_service: None) -> AsyncEngine:
-    """Postgresql instance for end-to-end testing.
-
-    Args:
-        docker_ip: IP address for TCP connection to Docker containers.
-
-    Returns:
-        Async SQLAlchemy engine instance.
-    """
+    """Postgresql instance for end-to-end testing."""
     return create_async_engine(
         URL(
             drivername="postgresql+asyncpg",
@@ -364,14 +337,7 @@ async def asyncpg_engine(docker_ip: str, postgres_service: None) -> AsyncEngine:
 
 @pytest.fixture()
 async def psycopg_async_engine(docker_ip: str, postgres_service: None) -> AsyncEngine:
-    """Postgresql instance for end-to-end testing.
-
-    Args:
-        docker_ip: IP address for TCP connection to Docker containers.
-
-    Returns:
-        Async SQLAlchemy engine instance.
-    """
+    """Postgresql instance for end-to-end testing."""
     return create_async_engine(
         URL(
             drivername="postgresql+psycopg",

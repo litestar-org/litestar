@@ -33,7 +33,6 @@ async def default_before_send_handler(message: Message, scope: Scope) -> None:
 
     Args:
         message: ASGI-``Message``
-        _: A ``State`` (not used)
         scope: An ASGI-``Scope``
 
     Returns:

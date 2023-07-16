@@ -95,7 +95,7 @@ def test_data_using_model(decorator: Any, http_method: Any, expected_status_code
     class MyController(Controller):
         path = test_path
 
-        @decorator()
+        @decorator()  # type: ignore[misc]
         def test_method(self, data: Person) -> None:
             assert data == person_instance
 
@@ -121,7 +121,7 @@ def test_data_using_list_of_models(decorator: Any, http_method: Any, expected_st
     class MyController(Controller):
         path = test_path
 
-        @decorator()
+        @decorator()  # type: ignore[misc]
         def test_method(self, data: List[Person]) -> None:
             assert data == people
 
@@ -157,7 +157,7 @@ def test_path_params(decorator: Any, http_method: Any, expected_status_code: Any
     class MyController(Controller):
         path = test_path
 
-        @decorator(path="/{person_id:str}")
+        @decorator(path="/{person_id:str}")  # type: ignore[misc]
         def test_method(self, person_id: str) -> None:
             assert person_id == person_instance.id
 
@@ -184,7 +184,7 @@ def test_query_params(decorator: Any, http_method: Any, expected_status_code: An
     class MyController(Controller):
         path = test_path
 
-        @decorator()
+        @decorator()  # type: ignore[misc]
         def test_method(self, first: str, second: List[str], third: Optional[int] = None) -> None:
             assert first == query_params_instance.first
             assert second == query_params_instance.second
@@ -218,7 +218,7 @@ def test_header_params(decorator: Any, http_method: Any, expected_status_code: A
     class MyController(Controller):
         path = test_path
 
-        @decorator()
+        @decorator()  # type: ignore[misc]
         def test_method(self, headers: dict) -> None:
             for key, value in request_headers.items():
                 assert headers[key] == value
@@ -244,7 +244,7 @@ def test_request(decorator: Any, http_method: Any, expected_status_code: Any) ->
     class MyController(Controller):
         path = test_path
 
-        @decorator()
+        @decorator()  # type: ignore[misc]
         def test_method(self, request: Request) -> None:
             assert isinstance(request, Request)
 
@@ -269,7 +269,7 @@ def test_scope(decorator: Any, http_method: Any, expected_status_code: Any) -> N
     class MyController(Controller):
         path = test_path
 
-        @decorator()
+        @decorator()  # type: ignore[misc]
         def test_method(self, scope: Scope) -> None:
             assert isinstance(scope, dict)
 
@@ -294,7 +294,7 @@ def test_body(decorator: Any, http_method: Any, expected_status_code: Any) -> No
     class MyController(Controller):
         path = test_path
 
-        @decorator()
+        @decorator()  # type: ignore[misc]
         async def test_method(self, request: Request[Any, Any, Any], body: bytes) -> None:
             assert body == await request.body()
 

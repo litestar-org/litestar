@@ -100,9 +100,7 @@ def should_exclude_field(
         return True
     if dto_for == "data" and field_definition.dto_field.mark is Mark.READ_ONLY:
         return True
-    if dto_for == "return" and field_definition.dto_field.mark is Mark.WRITE_ONLY:
-        return True
-    return False
+    return dto_for == "return" and field_definition.dto_field.mark is Mark.WRITE_ONLY
 
 
 def should_ignore_field(field_definition: DTOFieldDefinition, dto_for: ForType) -> bool:

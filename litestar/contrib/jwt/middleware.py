@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Awaitable
+from typing import TYPE_CHECKING
 
 from litestar.contrib.jwt.jwt_token import Token
 from litestar.exceptions import NotAuthorizedException

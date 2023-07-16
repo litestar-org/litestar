@@ -86,7 +86,7 @@ def create_pydantic_encoders() -> dict[Any, Callable[[Any], Any]]:
             encoders.update(
                 {
                     pydantic.BaseModel: lambda model: {
-                        k: v if not isinstance(v, bytes) else v.decode() for k, v in model.dict().items()
+                        k: v.decode() if isinstance(v, bytes) else v for k, v in model.dict().items()
                     },
                     pydantic.SecretField: str,
                     pydantic.StrictBool: int,

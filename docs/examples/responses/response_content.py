@@ -6,6 +6,7 @@ def retrieve_resource(request: Request) -> Response[bytes]:
     provided_types = [MediaType.TEXT, MediaType.HTML, "application/xml"]
     preferred_type = request.accept.best_match(provided_types, default=MediaType.TEXT)
 
+    content = None
     if preferred_type == MediaType.TEXT:
         content = b"Hello World!"
     elif preferred_type == MediaType.HTML:

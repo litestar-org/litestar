@@ -162,7 +162,7 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
 
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         """Unsubscribe from ``channels``"""
-        self._subscribed_channels = self._subscribed_channels - set(channels)
+        self._subscribed_channels -= set(channels)
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
         """Publish ``data`` to ``channels``.

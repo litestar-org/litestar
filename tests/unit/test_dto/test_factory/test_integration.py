@@ -705,8 +705,7 @@ def test_schema_required_fields_with_msgspec_dto() -> None:
     app = Litestar(route_handlers=[handler])
     with TestClient(app=app) as client:
         data = MsgspecUser(name="A", age=10)
-        headers = {}
-        headers["Content-Type"] = "application/json; charset=utf-8"
+        headers = {"Content-Type": "application/json; charset=utf-8"}
         received = client.post(
             "/",
             content=msgspec.json.encode(data),
@@ -732,8 +731,7 @@ def test_schema_required_fields_with_pydantic_dto() -> None:
     app = Litestar(route_handlers=[handler])
     with TestClient(app=app) as client:
         data = PydanticUser(name="A", age=10)
-        headers = {}
-        headers["Content-Type"] = "application/json; charset=utf-8"
+        headers = {"Content-Type": "application/json; charset=utf-8"}
         received = client.post(
             "/",
             content=data.json(),
@@ -760,8 +758,7 @@ def test_schema_required_fields_with_dataclass_dto() -> None:
     app = Litestar(route_handlers=[handler])
     with TestClient(app=app) as client:
         data = DataclassUser(name="A", age=10)
-        headers = {}
-        headers["Content-Type"] = "application/json; charset=utf-8"
+        headers = {"Content-Type": "application/json; charset=utf-8"}
         received = client.post(
             "/",
             content=msgspec.json.encode(data),
@@ -787,8 +784,7 @@ def test_schema_required_fields_with_msgspec_dto_and_default_fields() -> None:
     app = Litestar(route_handlers=[handler])
     with TestClient(app=app) as client:
         data = MsgspecUser(name="A", age=10)
-        headers = {}
-        headers["Content-Type"] = "application/json; charset=utf-8"
+        headers = {"Content-Type": "application/json; charset=utf-8"}
         received = client.post(
             "/",
             content=msgspec.json.encode(data),
