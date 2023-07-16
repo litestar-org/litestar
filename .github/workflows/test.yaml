@@ -60,7 +60,7 @@ jobs:
         run: poetry install --no-interaction
       - if: ${{ inputs.pydantic-version == '1' }}
         name: Install pydantic v1
-        run: poetry add "pydantic>=1.10.10,<2" && poetry remove pydantic-extra-types
+        run: poetry remove pydantic-extra-types && poetry add "pydantic>=1.10.10,<2" && poetry add piccolo && poetry add beanie
       - if: ${{ inputs.pydantic-version == '2' }}
         name: Install pydantic v2
         run: poetry add "pydantic>=2" && poetry add pydantic-extra-types
