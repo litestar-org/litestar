@@ -26,7 +26,7 @@ def _dec_pydantic(model_type: type[pydantic.BaseModel], value: Any) -> pydantic.
         return (
             model_type.model_validate(value, strict=False)
             if hasattr(model_type, "model_validate")
-            else model_type.parse_obj(value)
+            else model_type.model_validate(value)
         )
     except pydantic.ValidationError as e:
         raise ExtendedMsgSpecValidationError(errors=cast("list[dict[str, Any]]", e.errors())) from e
@@ -105,7 +105,7 @@ class PydanticInitPlugin(InitPluginProtocol):
         try:
             from pydantic_extra_types import color
         except ImportError:
-            color = None
+            color = None  # type: ignore[assignment]
         encoders = {
             pydantic.BaseModel: lambda model: model.model_dump(mode="json"),
             pydantic.types.SecretStr: lambda val: "**********" if val else "",
@@ -115,8 +115,7 @@ class PydanticInitPlugin(InitPluginProtocol):
             encoders.update({color.Color: str})
         return encoders
 
-
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
-        app_config.type_encoders = {**(app_config.type_encoders or {}), **self.encoders()}
-        app_config.type_decoders = [*(app_config.type_decoders or []), *self.decoders()]
+        app_config.type_encoders = {**self.encoders(), **(app_config.type_encoders or {})}
+        app_config.type_decoders = [*self.decoders(), *(app_config.type_decoders or [])]
         return app_config
