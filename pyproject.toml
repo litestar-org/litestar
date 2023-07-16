@@ -283,6 +283,42 @@ markers = [
     "sqlalchemy_duckdb: SQLAlchemy Duckdb (duckdb-engine) Tests",
 ]
 
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unreachable = true
+warn_return_any = true
+strict = true
+disallow_untyped_decorators = true
+disallow_any_generics = false
+implicit_reexport = false
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = ["tests.*.test_sqlalchemy_sync", "tests.*.test_sqlalchemy_async"]
+disable_error_code = "attr-defined"
+
+[[tool.mypy.overrides]]
+module = "tests.unit.test_contrib.test_sqlalchemy.test_dto"
+disable_error_code = ["arg-type", "misc", "valid-type", "var-annotated"]
+
+[[tool.mypy.overrides]]
+module = "tests"
+disallow_untyped_decorators = false
+
+[[tool.mypy.overrides]]
+module = ["mako.*", "pytimeparse.*", "brotli.*", "jsbeautifier.*"]
+ignore_missing_imports = true
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+warn_untyped_fields = true
+
 [tool.pyright]
 include = ["litestar", "tests", "examples"]
 exclude = [
