@@ -24,7 +24,7 @@ repos:
   #      - id: poetry-lock
   #        args: ["--no-update"]
   - repo: https://github.com/provinzkraut/unasyncd
-    rev: "v0.5.0"
+    rev: "v0.6.0"
     hooks:
       - id: unasyncd
         additional_dependencies: ["ruff"]
