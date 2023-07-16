@@ -679,7 +679,7 @@ class SchemaCreator:
                 [
                     field.encode_name
                     for field in msgspec_struct_fields(annotation)
-                    if _is_field_requiured(field=field) and not is_optional_union(field.type)
+                    if _is_field_required(field=field) and not is_optional_union(field.type)
                 ]
             ),
             properties={
