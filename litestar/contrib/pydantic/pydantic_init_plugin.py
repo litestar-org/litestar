@@ -112,7 +112,7 @@ class PydanticInitPlugin(InitPluginProtocol):
             pydantic.types.SecretBytes: lambda val: "**********" if val else "",
         }
         if color:
-            encoders.update({color.Color: str})
+            encoders[color.Color] = str
         return encoders
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
