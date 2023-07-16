@@ -133,7 +133,7 @@ jobs:
           path: .venv
           key: v1-venv-docs-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
-        run: poetry install --no-interaction --with docs
+        run: poetry install --no-interaction --with docs && poetry add piccolo
       - name: Build docs
         env:
           LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT: 1
