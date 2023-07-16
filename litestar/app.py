@@ -454,6 +454,11 @@ class Litestar(Router):
             from litestar.contrib.pydantic import PydanticInitPlugin, PydanticSchemaPlugin
 
             default_plugins.extend((PydanticInitPlugin(), PydanticSchemaPlugin()))
+
+        with suppress(MissingDependencyException):
+            from litestar.contrib.attrs import AttrsSchemaPlugin
+
+            default_plugins.append(AttrsSchemaPlugin())
         return default_plugins
 
     @property
