@@ -16,7 +16,7 @@ from litestar.utils.helpers import get_fully_qualified_class_name
 try:
     import piccolo  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("piccolo orm is not installed") from e
+    raise MissingDependencyException("piccolo") from e
 
 from piccolo.columns import Column, column_types
 from piccolo.table import Table

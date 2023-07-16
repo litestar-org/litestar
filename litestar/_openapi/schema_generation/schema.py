@@ -55,7 +55,6 @@ from litestar.serialization import encode_json
 from litestar.types import DataclassProtocol, Empty, TypedDictClass
 from litestar.typing import FieldDefinition
 from litestar.utils.predicates import (
-    is_attrs_class,
     is_class_and_subclass,
     is_dataclass_class,
     is_optional_union,
@@ -72,10 +71,6 @@ if TYPE_CHECKING:
     from litestar.dto.types import ForType
     from litestar.plugins import OpenAPISchemaPluginProtocol
 
-    try:
-        from attrs import AttrsInstance
-    except ImportError:
-        AttrsInstance = Any  # type: ignore
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "content_encoding": "contentEncoding",
@@ -278,8 +273,6 @@ class SchemaCreator:
             result = self.for_optional_field(field_definition)
         elif field_definition.is_union:
             result = self.for_union_field(field_definition)
-        elif is_attrs_class(field_definition.annotation):
-            result = self.for_attrs_class(field_definition.annotation, dto_for)
         elif is_struct_class(field_definition.annotation):
             result = self.for_struct_class(field_definition.annotation, dto_for)
         elif is_dataclass_class(field_definition.annotation):
@@ -457,35 +450,6 @@ class SchemaCreator:
                 )
             )
         return schema  # pragma: no cover
-
-    def for_attrs_class(self, annotation: type[AttrsInstance], dto_for: ForType | None) -> Schema:  # pyright: ignore
-        """Create a schema object for a given attrs class.
-
-        Args:
-            annotation: An attrs class.
-            dto_for: The type of DTO to generate a schema for.
-
-        Returns:
-            A schema instance.
-        """
-        from attr import NOTHING
-        from attrs import fields_dict
-
-        annotation_hints = get_type_hints(annotation, include_extras=True)
-        return Schema(
-            required=sorted(
-                [
-                    field_name
-                    for field_name, attribute in fields_dict(annotation).items()
-                    if attribute.default is NOTHING and not is_optional_union(annotation_hints[field_name])
-                ]
-            ),
-            properties={
-                k: self.for_field_definition(FieldDefinition.from_kwarg(v, k)) for k, v in annotation_hints.items()
-            },
-            type=OpenAPIType.OBJECT,
-            title=_get_type_schema_name(annotation, dto_for),
-        )
 
     def for_struct_class(self, annotation: type[Struct], dto_for: ForType | None) -> Schema:
         """Create a schema object for a given msgspec.Struct class.
