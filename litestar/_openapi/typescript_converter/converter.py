@@ -154,7 +154,8 @@ def parse_params(
     query_params: list[TypeScriptProperty] = []
 
     for param in params:
-        if param.schema and (schema := get_openapi_type(param.schema, components)):
+        if param.schema:
+            schema = get_openapi_type(param.schema, components)
             ts_prop = TypeScriptProperty(
                 key=normalize_typescript_namespace(param.name, allow_quoted=True),
                 required=param.required,
@@ -197,12 +198,11 @@ def parse_request_body(body: RequestBody, components: Components) -> TypeScriptT
     if not body.content:
         return TypeScriptType("RequestBody", undefined)
 
-    if (content := [get_openapi_type(v.schema, components) for v in body.content.values() if v.schema]) and (
-        schema := content[0]
-    ):
+    if content := [get_openapi_type(v.schema, components) for v in body.content.values() if v.schema]:
+        schema = content[0]
         return TypeScriptType(
             "RequestBody",
-            parse_schema(schema) if body.required else TypeScriptUnion((parse_schema(content[0]), undefined)),
+            parse_schema(schema) if body.required else TypeScriptUnion((parse_schema(schema), undefined)),
         )
 
     return TypeScriptType("RequestBody", undefined)
@@ -222,10 +222,8 @@ def parse_responses(responses: Responses, components: Components) -> tuple[TypeS
     for http_status, response in [
         (status, get_openapi_type(res, components=components)) for status, res in responses.items()
     ]:
-        if (
-            response
-            and response.content
-            and (content := [get_openapi_type(v.schema, components) for v in response.content.values() if v.schema])
+        if response.content and (
+            content := [get_openapi_type(v.schema, components) for v in response.content.values() if v.schema]
         ):
             ts_type = parse_schema(content[0])
         else:
@@ -273,7 +271,7 @@ def convert_openapi_to_typescript(openapi_schema: OpenAPI, namespace: str = "API
 
     for path_item in openapi_schema.paths.values():
         shared_params = [
-            get_openapi_type(p, components=openapi_schema.components) for p in (path_item.parameters or []) if p
+            get_openapi_type(p, components=openapi_schema.components) for p in (path_item.parameters or [])
         ]
         for method in HttpMethod:
             if (
@@ -284,7 +282,6 @@ def convert_openapi_to_typescript(openapi_schema: OpenAPI, namespace: str = "API
                         *(
                             get_openapi_type(p, components=openapi_schema.components)
                             for p in (operation.parameters or [])
-                            if p
                         ),
                         *shared_params,
                     ],

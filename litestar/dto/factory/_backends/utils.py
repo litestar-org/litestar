@@ -96,13 +96,12 @@ def should_exclude_field(
         return True
     if include and field_name not in include and not (any(f.startswith(f"{field_name}.") for f in include)):
         return True
-    if dto_field := field_definition.dto_field:
-        if dto_field.mark is Mark.PRIVATE:
-            return True
-        if dto_for == "data" and dto_field.mark is Mark.READ_ONLY:
-            return True
-        if dto_for == "return" and dto_field.mark is Mark.WRITE_ONLY:
-            return True
+    if field_definition.dto_field.mark is Mark.PRIVATE:
+        return True
+    if dto_for == "data" and field_definition.dto_field.mark is Mark.READ_ONLY:
+        return True
+    if dto_for == "return" and field_definition.dto_field.mark is Mark.WRITE_ONLY:
+        return True
     return False
 
 

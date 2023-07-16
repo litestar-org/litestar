@@ -33,7 +33,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         auth_header: str,
         exclude: str | list[str] | None,
         exclude_opt_key: str,
-        retrieve_user_handler: AsyncCallable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
+        retrieve_user_handler: AsyncCallable[[Token, ASGIConnection[Any, Any, Any, Any]], Any],
         scopes: Scopes,
         token_secret: str,
     ) -> None:
@@ -117,7 +117,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         auth_header: str,
         exclude: str | list[str] | None,
         exclude_opt_key: str,
-        retrieve_user_handler: AsyncCallable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
+        retrieve_user_handler: AsyncCallable[[Token, ASGIConnection[Any, Any, Any, Any]], Any],
         scopes: Scopes,
         token_secret: str,
     ) -> None:

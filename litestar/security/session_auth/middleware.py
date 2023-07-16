@@ -79,7 +79,7 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
         exclude: str | list[str] | None,
         exclude_opt_key: str,
         scopes: Scopes | None,
-        retrieve_user_handler: AsyncCallable[[dict[str, Any], ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
+        retrieve_user_handler: AsyncCallable[[dict[str, Any], ASGIConnection[Any, Any, Any, Any]], Any],
     ) -> None:
         """Session based authentication middleware.
 
