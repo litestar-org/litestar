@@ -33,6 +33,7 @@ from typing import (
 from uuid import UUID
 
 from _decimal import Decimal
+from msgspec.structs import FieldInfo
 from msgspec.structs import fields as msgspec_struct_fields
 from typing_extensions import Annotated, NotRequired, Required, get_args, get_type_hints
 
@@ -669,12 +670,16 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
+
+        def _is_field_required(field: FieldInfo) -> bool:
+            return field.required or field.default_factory is Empty
+
         return Schema(
             required=sorted(
                 [
                     field.encode_name
                     for field in msgspec_struct_fields(annotation)
-                    if field.required and not is_optional_union(field.type)
+                    if _is_field_required(field=field) and not is_optional_union(field.type)
                 ]
             ),
             properties={
