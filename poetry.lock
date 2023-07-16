@@ -4263,7 +4263,7 @@ jwt = ["cryptography", "python-jose"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 prometheus = ["prometheus-client"]
-pydantic = ["pydantic", "pydantic-extra-types"]
+pydantic = ["pydantic"]
 redis = ["redis"]
 sqlalchemy = ["alembic", "sqlalchemy"]
 standard = ["click", "jinja2", "jsbeautifier", "rich", "rich-click", "uvicorn"]
@@ -4273,4 +4273,4 @@ tortoise-orm = ["tortoise-orm"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "d79b24a45b5ea9da39f65484154abfba38daf3f12ce75cd35fbeeaed9dc47e77"
+content-hash = "0279d72bbc0478e4c4ffa52721102e500b53a285c217984a10d270f8790bd25e"
