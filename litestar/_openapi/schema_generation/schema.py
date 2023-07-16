@@ -671,7 +671,7 @@ class SchemaCreator:
             A schema instance.
         """
 
-        def _is_field_requiured(field: FieldInfo) -> bool:
+        def _is_field_required(field: FieldInfo) -> bool:
             return field.required or field.default_factory is Empty
 
         return Schema(
