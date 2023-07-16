@@ -1,4 +1,5 @@
 from collections import defaultdict, deque
+from dataclasses import MISSING
 from functools import partial
 from inspect import Signature
 from typing import (
@@ -27,6 +28,7 @@ from typing_extensions import Annotated
 
 from litestar import Response, get
 from litestar.pagination import CursorPagination
+from litestar.types import Empty
 from litestar.utils import is_any, is_async_callable, is_class_and_subclass, is_optional_union, is_union
 from litestar.utils.predicates import (
     is_class_var,
@@ -34,6 +36,7 @@ from litestar.utils.predicates import (
     is_mapping,
     is_non_string_iterable,
     is_non_string_sequence,
+    is_undefined_sentinel,
 )
 
 
@@ -258,3 +261,15 @@ def test_is_async_callable(c: Callable[[int, int], None], exp: bool) -> None:
     assert is_async_callable(partial_1) is exp
     partial_2 = partial(partial_1, 2)
     assert is_async_callable(partial_2) is exp
+
+
+def test_not_undefined_sentinel() -> None:
+    assert is_undefined_sentinel(Signature.empty) is True
+    assert is_undefined_sentinel(Empty) is True
+    assert is_undefined_sentinel(Ellipsis) is True
+    assert is_undefined_sentinel(MISSING) is True
+    assert is_undefined_sentinel(1) is False
+    assert is_undefined_sentinel("") is False
+    assert is_undefined_sentinel([]) is False
+    assert is_undefined_sentinel({}) is False
+    assert is_undefined_sentinel(None) is False

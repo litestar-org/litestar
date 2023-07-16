@@ -95,7 +95,7 @@ picologging = { version = "*", optional = true }
 polyfactory = ">=2.3.2"
 prometheus-client = { version = "*", optional = true }
 pydantic = "*"
-pydantic-extra-types = { version = "*", optional = true }
+pydantic-extra-types = { version = ">=2", optional = true }
 python-jose = { version = "*", optional = true }
 pyyaml = "*"
 redis = { version = ">=4.4.4, <4.5.0", optional = true, extras = ["hiredis"] }
@@ -165,14 +165,14 @@ optional = true
 auto-pytabs = { extras = ["sphinx"], version = "*" }
 black = "*"
 httpx = "*"
+litestar-sphinx-theme = { git = "https://github.com/litestar-org/litestar-sphinx-theme.git" }
 sphinx = ">=5.3.0,<=6"
 sphinx-autobuild = "*"
+sphinx-click = "*"
 sphinx-copybutton = ">=0.5.1"
 sphinx-design = ">=0.3.0,<1"
 sphinxcontrib-mermaid = ">=0.8.1,<1"
-litestar-sphinx-theme = { git = "https://github.com/litestar-org/litestar-sphinx-theme.git" }
 uvicorn = "*"
-sphinx-click = "^4.4.0"
 
 [tool.poetry.group.lint]
 optional = true
@@ -332,7 +332,7 @@ strict-imports = false
 
 [tool.ruff]
 select = [
-    "A",   # flake8-builtins
+    "A", # flake8-builtins
     "B",   # flake8-bugbear
     "BLE", # flake8-blind-except
     "C4",  # flake8-comprehensions
