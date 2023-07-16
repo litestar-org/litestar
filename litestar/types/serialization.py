@@ -64,6 +64,8 @@ EncodableStdLibIPType: TypeAlias = (
     "IPv4Address | IPv4Interface | IPv4Network | IPv6Address | IPv6Interface | IPv6Network"
 )
 EncodableMsgSpecType: TypeAlias = "Ext | Raw | Struct"
-EncodablePydanticType: TypeAlias = "BaseModel | ByteSize | ConstrainedBytes | ConstrainedDate | NameEmail | SecretField | StrictBool | Color"  # type: ignore
+EncodablePydanticType: TypeAlias = (
+    "BaseModel | ByteSize | ConstrainedBytes | ConstrainedDate | NameEmail | SecretField | StrictBool | Color"
+)
 
 LitestarEncodableType: TypeAlias = "EncodableBuiltinType | EncodableBuiltinCollectionType | EncodableStdLibType | EncodableStdLibIPType | EncodableMsgSpecType | EncodablePydanticType"
