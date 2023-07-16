@@ -100,6 +100,11 @@ Then, run the following command:
     # Or you can run Uvicorn directly:
     uvicorn app:app --reload
 
+.. attention::
+
+    If it fails with ``pydantic.errors.PydanticUserError: `const` is removed, use `Literal` instead`` error,
+    please downgrade Pydantic by ``pip install "pydantic==1.10.10"``
+
 You can now visit ``http://localhost:8000/`` and ``http://localhost:8000/books/1`` in your browser and
 you should see the JSON responses of your two endpoints:
 
