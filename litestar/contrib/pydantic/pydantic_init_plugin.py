@@ -106,7 +106,7 @@ class PydanticInitPlugin(InitPluginProtocol):
             from pydantic_extra_types import color
         except ImportError:
             color = None  # type: ignore[assignment]
-        encoders = {
+        encoders: dict[Any, Callable[[Any], Any]] = {
             pydantic.BaseModel: lambda model: model.model_dump(mode="json"),
             pydantic.types.SecretStr: lambda val: "**********" if val else "",
             pydantic.types.SecretBytes: lambda val: "**********" if val else "",
