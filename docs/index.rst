@@ -1,9 +1,7 @@
 Litestar library documentation
 ==============================
 
-Litestar is a powerful, flexible, highly performant, and opinionated ASGI framework,
-offering first class typing support and a full `Pydantic <https://github.com/pydantic/pydantic>`_
-integration.
+Litestar is a powerful, flexible, highly performant, and opinionated ASGI framework.
 
 The Litestar framework supports :doc:`/usage/plugins`, ships
 with :doc:`dependency injection </usage/dependency-injection>`, :doc:`security primitives </usage/security/index>`,
@@ -20,6 +18,12 @@ Installation
 
 .. dropdown:: Extras
     :icon: star
+
+    `Pydantic <https://docs.pydantic.dev/latest/>`_
+        :code:`pip install litestar[pydantic]`
+
+    `Attrs <https://www.attrs.org>`_
+        :code:`pip install litestar[attrs]`
 
     :ref:`Brotli Compression Middleware <usage/middleware/builtin-middleware:brotli>`:
         :code:`pip install litestar[brotli]`
@@ -53,9 +57,6 @@ Installation
 
     :doc:`Jinja Templating </usage/templating>`
         :code:`pip install litestar[jinja]`
-
-    `Attrs <https://www.attrs.org>`_
-        :code:`pip install litestar[attrs]`
 
     Standard Installation (includes CLI and Jinja templating):
         :code:`pip install litestar[standard]`

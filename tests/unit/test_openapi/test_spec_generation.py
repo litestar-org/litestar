@@ -8,15 +8,23 @@ from litestar.testing import create_test_client
 from tests import (
     AttrsPerson,
     MsgSpecStructPerson,
-    Person,
     PydanticDataClassPerson,
+    PydanticPerson,
     TypedDictPerson,
     VanillaDataClassPerson,
 )
 
 
 @pytest.mark.parametrize(
-    "cls", (Person, VanillaDataClassPerson, PydanticDataClassPerson, TypedDictPerson, MsgSpecStructPerson, AttrsPerson)
+    "cls",
+    (
+        PydanticPerson,
+        VanillaDataClassPerson,
+        PydanticDataClassPerson,
+        TypedDictPerson,
+        MsgSpecStructPerson,
+        AttrsPerson,
+    ),
 )
 def test_spec_generation(cls: Any) -> None:
     @post("/")
@@ -43,7 +51,7 @@ def test_spec_generation(cls: Any) -> None:
                 "pets": {
                     "oneOf": [
                         {"type": "null"},
-                        {"items": {"$ref": "#/components/schemas/Pet"}, "type": "array"},
+                        {"items": {"$ref": "#/components/schemas/PydanticPet"}, "type": "array"},
                     ]
                 },
             },

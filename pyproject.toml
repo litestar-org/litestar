@@ -91,10 +91,11 @@ mako = { version = ">=1.2.4", optional = true }
 msgspec = ">=0.17.0"
 multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
+piccolo = { version = "*", optional = true }
 picologging = { version = "*", optional = true }
 polyfactory = ">=2.3.2"
 prometheus-client = { version = "*", optional = true }
-pydantic = "*"
+pydantic = { version = "*", optional = true, extras = ["email"] }
 pydantic-extra-types = { version = ">=2", optional = true }
 python-jose = { version = "*", optional = true }
 pyyaml = "*"
@@ -114,7 +115,6 @@ annotated-types = "*"
 asyncmy = "*"
 asyncpg = "*"
 attrs = "*"
-beanie = "*"
 beautifulsoup4 = "*"
 brotli = "*"
 click = "*"
@@ -132,13 +132,13 @@ mongomock-motor = { version = "*", markers = "sys_platform != 'win32'" }
 opentelemetry-instrumentation-asgi = "*"
 opentelemetry-sdk = "*"
 oracledb = "*"
-piccolo = "*"
 picologging = "*"
 pre-commit = "*"
 prometheus-client = "*"
 psycopg = "*"
 pydantic = "*"
 pydantic-extra-types = "*"
+email_validator = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
@@ -154,7 +154,6 @@ sqlalchemy = ">=2.0"
 sqlalchemy-spanner = "*"
 starlette = "*"
 structlog = "*"
-tortoise-orm = "*"
 trio = "*"
 uvicorn = "*"
 
@@ -165,14 +164,14 @@ optional = true
 auto-pytabs = { extras = ["sphinx"], version = "*" }
 black = "*"
 httpx = "*"
-litestar-sphinx-theme = { git = "https://github.com/litestar-org/litestar-sphinx-theme.git" }
 sphinx = ">=5.3.0,<=6"
 sphinx-autobuild = "*"
-sphinx-click = "*"
 sphinx-copybutton = ">=0.5.1"
 sphinx-design = ">=0.3.0,<1"
 sphinxcontrib-mermaid = ">=0.8.1,<1"
+litestar-sphinx-theme = { git = "https://github.com/litestar-org/litestar-sphinx-theme.git" }
 uvicorn = "*"
+sphinx-click = "^4.4.0"
 
 [tool.poetry.group.lint]
 optional = true
@@ -195,6 +194,7 @@ types-redis = "*"
 [tool.poetry.extras]
 annotated-types = ["annotated-types"]
 attrs = ["attrs"]
+pydantic = ["pydantic", "pydantic-extra-types"]
 brotli = ["brotli"]
 cli = ["click", "rich", "rich-click", "jsbeautifier", "uvicorn"]
 cryptography = ["cryptography"]

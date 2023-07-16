@@ -31,8 +31,7 @@
 <hr>
 
 Litestar is a powerful, performant, flexible and opinionated ASGI framework,
-offering first class typing support and a full [Pydantic](https://github.com/pydantic/pydantic)
-integration.
+offering first class typing support.
 
 Check out the [documentation 📚](https://docs.litestar.dev/).
 
@@ -68,24 +67,23 @@ app = Litestar(route_handlers=[hello_world])
 
 - [Class based controllers](#class-based-controllers)
 - [Dependency Injection](#dependency-injection)
-- [Validation and Parsing](#data-parsing-type-hints-and-pydantic) using [Pydantic](https://github.com/pydantic/pydantic)
 - [Layered Middleware](#middleware)
 - [Plugin System](#plugin-system-orm-support-and-dtos)
 - [OpenAPI 3.1 schema generation](#openapi)
 - [Life Cycle Hooks](#request-life-cycle-hooks)
 - [Route Guards based Authorization](#route-guards)
+- Support for `dataclasses`, `TypedDict`, [pydantic version 1 and version 2](https://docs.pydantic.dev/latest/),
+  [msgspec](https://github.com/jcrist/msgspec) and [attrs](https://www.attrs.org/en/stable/)
 - Layered Parameter declaration
-- SQLAlchemy Support (via plugin)
-- Piccolo ORM Support (via plugin)
-- Tortoise ORM Support (via plugin)
 - Extended testing support
 - [Automatic API documentation with](#redoc-swagger-ui-and-stoplight-elements-api-documentation):
   - [Redoc](https://github.com/Redocly/redoc)
   - [Stoplight Elements](https://github.com/stoplightio/elements)
   - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
-- Support for dataclasses and `TypedDict`
 - [Trio](https://trio.readthedocs.io/en/stable/) support (built-in, via [AnyIO](https://anyio.readthedocs.io/))
-- Ultra-fast json serialization and deserialization using [msgspec](https://github.com/jcrist/msgspec)
+- Ultra-fast validation, serialization and deserialization using [msgspec](https://github.com/jcrist/msgspec)
+- SQLAlchemy Support
+- Piccolo ORM Support
 
 ## Example Applications
 

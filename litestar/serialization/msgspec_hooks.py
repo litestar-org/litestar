@@ -19,19 +19,16 @@ from uuid import UUID
 
 import msgspec
 
-from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
-from litestar.serialization._pydantic_serialization import create_pydantic_decoders, create_pydantic_encoders
-from litestar.types import Empty, Serializer
+from litestar.types import Empty, EmptyType, Serializer, TypeDecodersSequence
 
 if TYPE_CHECKING:
     from litestar.types import TypeEncodersMap
 
 __all__ = (
-    "dec_hook",
     "decode_json",
-    "decode_media_type",
     "decode_msgpack",
+    "default_deserializer",
     "default_serializer",
     "encode_json",
     "encode_msgpack",
@@ -39,11 +36,6 @@ __all__ = (
 )
 
 T = TypeVar("T")
-
-EXTRA_DECODERS: list[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]] = []
-
-if pydantic_decoders := create_pydantic_decoders():
-    EXTRA_DECODERS.extend(pydantic_decoders)
 
 DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     Path: str,
@@ -70,7 +62,6 @@ DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     set: set,
     frozenset: frozenset,
     bytes: bytes,
-    **create_pydantic_encoders(),
 }
 
 
@@ -85,8 +76,7 @@ def default_serializer(value: Any, type_encoders: Mapping[Any, Callable[[Any], A
     Raises:
         TypeError: if value is not supported
     """
-    if type_encoders is None:
-        type_encoders = DEFAULT_TYPE_ENCODERS
+    type_encoders = {**DEFAULT_TYPE_ENCODERS, **(type_encoders or {})}
 
     for base in value.__class__.__mro__[:-1]:
         try:
@@ -98,12 +88,15 @@ def default_serializer(value: Any, type_encoders: Mapping[Any, Callable[[Any], A
     raise TypeError(f"Unsupported type: {type(value)!r}")
 
 
-def dec_hook(type_: Any, value: Any) -> Any:  # pragma: no cover
+def default_deserializer(
+    target_type: Any, value: Any, type_decoders: TypeDecodersSequence | None = None
+) -> Any:  # pragma: no cover
     """Transform values non-natively supported by ``msgspec``
 
     Args:
-        type_: Encountered type
+        target_type: Encountered type
         value: Value to coerce
+        type_decoders: Optional sequence of type decoders
 
     Returns:
         A ``msgspec``-supported type
@@ -111,31 +104,32 @@ def dec_hook(type_: Any, value: Any) -> Any:  # pragma: no cover
 
     from litestar.datastructures.state import ImmutableState
 
-    if isinstance(value, type_):
+    if isinstance(value, target_type):
         return value
 
-    for predicate, decoder in EXTRA_DECODERS:
-        if predicate(type_):
-            return decoder(type_, value)
+    if type_decoders:
+        for predicate, decoder in type_decoders:
+            if predicate(target_type):
+                return decoder(target_type, value)
 
-    if issubclass(type_, (Path, PurePath, ImmutableState, UUID)):
-        return type_(value)
+    if issubclass(target_type, (Path, PurePath, ImmutableState, UUID)):
+        return target_type(value)
 
     raise TypeError(f"Unsupported type: {type(value)!r}")
 
 
 _msgspec_json_encoder = msgspec.json.Encoder(enc_hook=default_serializer)
-_msgspec_json_decoder = msgspec.json.Decoder(dec_hook=dec_hook)
+_msgspec_json_decoder = msgspec.json.Decoder(dec_hook=default_deserializer)
 _msgspec_msgpack_encoder = msgspec.msgpack.Encoder(enc_hook=default_serializer)
-_msgspec_msgpack_decoder = msgspec.msgpack.Decoder(dec_hook=dec_hook)
+_msgspec_msgpack_decoder = msgspec.msgpack.Decoder(dec_hook=default_deserializer)
 
 
-def encode_json(obj: Any, default: Callable[[Any], Any] | None = None) -> bytes:
+def encode_json(value: Any, serializer: Callable[[Any], Any] | None = None) -> bytes:
     """Encode a value into JSON.
 
     Args:
-        obj: Value to encode
-        default: Optional callable to support non-natively supported types.
+        value: Value to encode
+        serializer: Optional callable to support non-natively supported types.
 
     Returns:
         JSON as bytes
@@ -144,48 +138,65 @@ def encode_json(obj: Any, default: Callable[[Any], Any] | None = None) -> bytes:
         SerializationException: If error encoding ``obj``.
     """
     try:
-        return msgspec.json.encode(obj, enc_hook=default) if default else _msgspec_json_encoder.encode(obj)
+        return msgspec.json.encode(value, enc_hook=serializer) if serializer else _msgspec_json_encoder.encode(value)
     except (TypeError, msgspec.EncodeError) as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error
 
 
 @overload
-def decode_json(raw: str | bytes) -> Any:
+def decode_json(value: str | bytes) -> Any:
     ...
 
 
 @overload
-def decode_json(raw: str | bytes, type_: type[T]) -> T:
+def decode_json(value: str | bytes, type_decoders: TypeDecodersSequence | None) -> Any:
     ...
 
 
-def decode_json(raw: str | bytes, type_: Any = Empty) -> Any:
+@overload
+def decode_json(value: str | bytes, target_type: type[T]) -> T:
+    ...
+
+
+@overload
+def decode_json(value: str | bytes, target_type: type[T], type_decoders: TypeDecodersSequence | None) -> T:
+    ...
+
+
+def decode_json(  # type: ignore
+    value: str | bytes,
+    target_type: type[T] | EmptyType = Empty,  # pyright: ignore
+    type_decoders: TypeDecodersSequence | None = None,
+) -> Any:
     """Decode a JSON string/bytes into an object.
 
     Args:
-        raw: Value to decode
-        type_: An optional type to decode the data into
+        value: Value to decode
+        target_type: An optional type to decode the data into
+        type_decoders: Optional sequence of type decoders
 
     Returns:
         An object
 
     Raises:
-        SerializationException: If error decoding ``raw``.
+        SerializationException: If error decoding ``value``.
     """
     try:
-        if type_ is Empty:
-            return _msgspec_json_decoder.decode(raw)
-        return msgspec.json.decode(raw, dec_hook=dec_hook, type=type_)
+        if target_type is Empty:
+            return _msgspec_json_decoder.decode(value)
+        return msgspec.json.decode(
+            value, dec_hook=partial(default_deserializer, type_decoders=type_decoders), type=target_type
+        )
     except msgspec.DecodeError as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error
 
 
-def encode_msgpack(obj: Any, enc_hook: Callable[[Any], Any] | None = default_serializer) -> bytes:
+def encode_msgpack(value: Any, serializer: Callable[[Any], Any] | None = default_serializer) -> bytes:
     """Encode a value into MessagePack.
 
     Args:
-        obj: Value to encode
-        enc_hook: Optional callable to support non-natively supported types
+        value: Value to encode
+        serializer: Optional callable to support non-natively supported types
 
     Returns:
         MessagePack as bytes
@@ -194,71 +205,61 @@ def encode_msgpack(obj: Any, enc_hook: Callable[[Any], Any] | None = default_ser
         SerializationException: If error encoding ``obj``.
     """
     try:
-        if enc_hook is None or enc_hook is default_serializer:
-            return _msgspec_msgpack_encoder.encode(obj)
-        return msgspec.msgpack.encode(obj, enc_hook=enc_hook)
+        if serializer is None or serializer is default_serializer:
+            return _msgspec_msgpack_encoder.encode(value)
+        return msgspec.msgpack.encode(value, enc_hook=serializer)
     except (TypeError, msgspec.EncodeError) as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error
 
 
 @overload
-def decode_msgpack(raw: bytes) -> Any:
+def decode_msgpack(value: bytes) -> Any:
     ...
 
 
 @overload
-def decode_msgpack(raw: bytes, type_: type[T]) -> T:
+def decode_msgpack(value: bytes, type_decoders: TypeDecodersSequence | None) -> Any:
     ...
 
 
-def decode_msgpack(raw: bytes, type_: Any = Empty) -> Any:
+@overload
+def decode_msgpack(value: bytes, target_type: type[T]) -> T:
+    ...
+
+
+@overload
+def decode_msgpack(value: bytes, target_type: type[T], type_decoders: TypeDecodersSequence | None) -> T:
+    ...
+
+
+def decode_msgpack(value: bytes, target_type: type[T] | EmptyType = Empty, type_decoders: TypeDecodersSequence | None = None) -> Any:  # type: ignore[misc]
     """Decode a MessagePack string/bytes into an object.
 
     Args:
-        raw: Value to decode
-        type_: An optional type to decode the data into
+        value: Value to decode
+        target_type: An optional type to decode the data into
+        type_decoders: Optional sequence of type decoders
 
     Returns:
         An object
 
     Raises:
-        SerializationException: If error decoding ``raw``.
+        SerializationException: If error decoding ``value``.
     """
     try:
-        if type_ is Empty:
-            return _msgspec_msgpack_decoder.decode(raw)
-        return msgspec.msgpack.decode(raw, dec_hook=dec_hook, type=type_)
+        if target_type is Empty:
+            return _msgspec_msgpack_decoder.decode(value)
+        return msgspec.msgpack.decode(
+            value, dec_hook=partial(default_deserializer, type_decoders=type_decoders), type=target_type
+        )
     except msgspec.DecodeError as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error
-
-
-def decode_media_type(raw: bytes, media_type: MediaType | str, type_: Any) -> Any:
-    """Decode a raw value into an object.
-
-    Args:
-        raw: Value to decode
-        media_type: Media type of the value
-        type_: An optional type to decode the data into
-
-    Returns:
-        An object
-
-    Raises:
-        SerializationException: If error decoding ``raw`` or ``media_type`` unsupported.
-    """
-    if media_type == MediaType.JSON:
-        return decode_json(raw, type_=type_)
-
-    if media_type == MediaType.MESSAGEPACK:
-        return decode_msgpack(raw, type_=type_)
-
-    raise SerializationException(f"Unsupported media type: '{media_type}'")
 
 
 def get_serializer(type_encoders: TypeEncodersMap | None = None) -> Serializer:
     """Get the serializer for the given type encoders."""
 
     if type_encoders:
-        return partial(default_serializer, type_encoders={**DEFAULT_TYPE_ENCODERS, **type_encoders})
+        return partial(default_serializer, type_encoders=type_encoders)
 
     return default_serializer

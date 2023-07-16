@@ -11,12 +11,14 @@ from sqlalchemy import ForeignKey, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, declared_attr, mapped_column, relationship
 from typing_extensions import Annotated
 
+from litestar.contrib.pydantic import PydanticInitPlugin
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO, parse_type_from_element
-from litestar.dto.factory import DTOConfig, DTOField, Mark
-from litestar.dto.factory.field import DTO_FIELD_META_KEY
+from litestar.dto import DTOConfig, DTOField, Mark
+from litestar.dto.field import DTO_FIELD_META_KEY
 from litestar.dto.interface import ConnectionContext, HandlerContext
+from litestar.enums import RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.serialization import encode_json
+from litestar.serialization import default_deserializer, encode_json
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
@@ -63,7 +65,12 @@ def fx_raw_author() -> bytes:
 
 @pytest.fixture(name="connection_context")
 def fx_connection_context() -> ConnectionContext:
-    return ConnectionContext(handler_id="handler", request_encoding_type="application/json")
+    return ConnectionContext(
+        handler_id="handler",
+        request_encoding_type=RequestEncodingType.JSON,
+        default_deserializer=default_deserializer,
+        type_decoders=PydanticInitPlugin.encoders(),
+    )
 
 
 T = TypeVar("T")
@@ -253,7 +260,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from typing_extensions import Annotated
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig
+from litestar.dto import DTOConfig
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -292,7 +299,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from typing_extensions import Annotated
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig
+from litestar.dto import DTOConfig
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -331,7 +338,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from typing_extensions import Annotated
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig
+from litestar.dto import DTOConfig
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -364,7 +371,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from typing_extensions import Annotated
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig
+from litestar.dto import DTOConfig
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -434,7 +441,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from typing_extensions import Annotated
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig
+from litestar.dto import DTOConfig
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -499,7 +506,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing_extensions import Annotated
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig
+from litestar.dto import DTOConfig
 
 from {base_module.__name__} import Base
 
@@ -539,7 +546,7 @@ from sqlalchemy.types import JSON, ARRAY
 from typing_extensions import Annotated
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig
+from litestar.dto import DTOConfig
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)

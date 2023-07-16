@@ -6,8 +6,8 @@ from unittest.mock import ANY
 
 import pytest
 
-from litestar.dto.factory import DTOField, Mark
-from litestar.dto.factory.data_structures import DTOFieldDefinition
+from litestar.dto import DTOField, Mark
+from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
 

@@ -8,8 +8,8 @@ from pydantic import BaseModel, Field
 from typing_extensions import Annotated
 
 from litestar.contrib.pydantic import PydanticDTO
-from litestar.dto.factory import dto_field
-from litestar.dto.factory.data_structures import DTOFieldDefinition
+from litestar.dto import dto_field
+from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
@@ -30,7 +30,7 @@ def test_field_definition_generation(
     field_defs = list(PydanticDTO.generate_field_definitions(TestModel))
     assert (
         field_defs[0].unique_model_name
-        == "tests.unit.test_contrib.test_pydantic.test_field_definition_generation.<locals>.TestModel"
+        == "tests.unit.test_contrib.test_pydantic.test_pydanticdt_dto_factory.test_field_definition_generation.<locals>.TestModel"
     )
     for field_def, exp in zip(field_defs, expected_field_defs):
         assert field_def == exp

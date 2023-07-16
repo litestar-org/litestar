@@ -3,10 +3,10 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import TYPE_CHECKING, Collection, Generic, TypeVar
 
-from litestar.dto.factory.base import AbstractDTOFactory
-from litestar.dto.factory.data_structures import DTOFieldDefinition
-from litestar.dto.factory.field import DTO_FIELD_META_KEY, DTOField
-from litestar.dto.factory.utils import get_model_type_hints
+from litestar.dto._utils import get_model_type_hints
+from litestar.dto.base_factory import AbstractDTOFactory
+from litestar.dto.data_structures import DTOFieldDefinition
+from litestar.dto.field import DTO_FIELD_META_KEY, DTOField
 from litestar.exceptions import MissingDependencyException
 from litestar.types.empty import Empty
 from litestar.utils.helpers import get_fully_qualified_class_name
@@ -45,7 +45,7 @@ class PydanticDTO(AbstractDTOFactory[T], Generic[T]):
     ) -> Generator[DTOFieldDefinition, None, None]:
         model_field_definitions = get_model_type_hints(model_type)
 
-        if pydantic.VERSION.startswith("1"):
+        if pydantic.VERSION.startswith("1"):  # pragma: no cover
             model_fields: dict[str, pydantic.fields.FieldInfo] = {k: model_field.field_info for k, model_field in model_type.__fields__.items()}  # type: ignore
         else:
             model_fields = dict(model_type.model_fields)

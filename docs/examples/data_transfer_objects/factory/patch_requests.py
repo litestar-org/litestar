@@ -4,8 +4,7 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from litestar import Litestar, patch
-from litestar.dto.factory import DTOConfig, DTOData
-from litestar.dto.factory.stdlib.dataclass import DataclassDTO
+from litestar.dto import DataclassDTO, DTOConfig, DTOData
 
 
 @dataclass

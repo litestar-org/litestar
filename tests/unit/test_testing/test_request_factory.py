@@ -1,5 +1,5 @@
 import json
-from typing import Any, Callable, Dict, Union
+from typing import Callable, Dict
 
 import pytest
 from pydantic import BaseModel
@@ -8,10 +8,18 @@ from litestar import HttpMethod, Litestar, get
 from litestar.datastructures import Cookie, MultiDict
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.testing import RequestFactory
-from tests import Pet, PetFactory
+from litestar.types import DataContainerType
+from tests import (
+    AttrsPerson,
+    MsgSpecStructPerson,
+    PydanticPerson,
+    PydanticPersonFactory,
+    PydanticPetFactory,
+    VanillaDataClassPerson,
+)
 
 _DEFAULT_REQUEST_FACTORY_URL = "http://test.org:3000/"
-pet = PetFactory.build()
+pet = PydanticPetFactory.build()
 
 
 async def test_request_factory_empty_body() -> None:
@@ -55,15 +63,16 @@ def test_request_factory_build_headers() -> None:
         assert headers[decoded_key] == decoded_value
 
 
-@pytest.mark.parametrize("data", [pet, pet.dict()])
-async def test_request_factory_create_with_data(data: Union[Pet, Dict[str, Any]]) -> None:
+@pytest.mark.parametrize("data_cls", [PydanticPerson, VanillaDataClassPerson, AttrsPerson, MsgSpecStructPerson])
+async def test_request_factory_create_with_data(data_cls: DataContainerType) -> None:
+    person = PydanticPersonFactory.build().dict()
     request = RequestFactory()._create_request_with_data(
         HttpMethod.POST,
         "/",
-        data=data,
+        data=data_cls(**person),  # type: ignore
     )
     body = await request.body()
-    assert json.loads(body.decode()) == pet.dict()
+    assert json.loads(body.decode()) == person
 
 
 @pytest.mark.parametrize(

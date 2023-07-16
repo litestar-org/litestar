@@ -9,12 +9,11 @@ import pytest
 from typing_extensions import Annotated
 
 from litestar._openapi.schema_generation import SchemaCreator
-from litestar.dto.factory._backends import PydanticDTOBackend
-from litestar.dto.factory.config import DTOConfig
-from litestar.dto.factory.stdlib.dataclass import DataclassDTO
+from litestar.dto import DataclassDTO, DTOConfig
 from litestar.dto.interface import ConnectionContext, HandlerContext
 from litestar.enums import RequestEncodingType
 from litestar.exceptions.dto_exceptions import InvalidAnnotationException
+from litestar.serialization import default_deserializer
 from litestar.typing import FieldDefinition
 
 from . import Model
@@ -24,13 +23,13 @@ if TYPE_CHECKING:
 
     from pytest import MonkeyPatch
 
-    from litestar.dto.factory._backends.abc import AbstractDTOBackend
+    from litestar.dto._backend import DTOBackend
     from litestar.testing import RequestFactory
 
 T = TypeVar("T", bound=Model)
 
 
-def get_backend(dto_type: type[DataclassDTO[Any]]) -> AbstractDTOBackend:
+def get_backend(dto_type: type[DataclassDTO[Any]]) -> DTOBackend:
     return next(iter(dto_type._type_backend_map.values()))
 
 
@@ -112,7 +111,12 @@ async def test_from_bytes(request_factory: RequestFactory) -> None:
     dto_type.on_registration(
         HandlerContext(handler_id="handler", dto_for="data", field_definition=FieldDefinition.from_annotation(Model))
     )
-    conn_ctx = ConnectionContext(handler_id="handler", request_encoding_type="application/json")
+    conn_ctx = ConnectionContext(
+        handler_id="handler",
+        request_encoding_type=RequestEncodingType.JSON,
+        default_deserializer=default_deserializer,
+        type_decoders=None,
+    )
     assert dto_type(conn_ctx).bytes_to_data_type(b'{"a":1,"b":"two"}') == Model(a=1, b="two")
 
 
@@ -131,20 +135,6 @@ def test_type_narrowing_with_multiple_configs() -> None:
     config_2 = DTOConfig()
     dto = DataclassDTO[Annotated[Model, config_1, config_2]]
     assert dto.config is config_1
-
-
-@pytest.mark.parametrize("request_encoding_type", [RequestEncodingType.MULTI_PART, RequestEncodingType.URL_ENCODED])
-def test_form_encoded_data_uses_pydantic_backend(request_encoding_type: RequestEncodingType) -> None:
-    dto_type = DataclassDTO[Model]
-    dto_type.on_registration(
-        HandlerContext(
-            handler_id="handler",
-            dto_for="data",
-            field_definition=FieldDefinition.from_annotation(Model),
-            request_encoding_type=request_encoding_type,
-        )
-    )
-    assert isinstance(dto_type._handler_backend_map[("data", "handler")], PydanticDTOBackend)
 
 
 def test_raises_invalid_annotation_for_non_homogenous_collection_types() -> None:
@@ -194,7 +184,7 @@ def test_create_openapi_schema(monkeypatch: MonkeyPatch) -> None:
         HandlerContext(handler_id="handler", dto_for="data", field_definition=FieldDefinition.from_annotation(Model))
     )
 
-    with patch("litestar.dto.factory._backends.abc.AbstractDTOBackend.create_openapi_schema") as mock:
+    with patch("litestar.dto._backend.DTOBackend.create_openapi_schema") as mock:
         schema_creator = SchemaCreator()
         dto_type.create_openapi_schema("data", "handler", schema_creator)
         mock.assert_called_once_with(schema_creator)

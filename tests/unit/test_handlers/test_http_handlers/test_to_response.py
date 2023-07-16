@@ -23,7 +23,7 @@ from litestar.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
 from litestar.template.config import TemplateConfig
 from litestar.testing import RequestFactory, create_test_client
 from litestar.utils.signature import ParsedSignature
-from tests import Person, PersonFactory
+from tests import PydanticPerson, PydanticPersonFactory
 
 if TYPE_CHECKING:
     from typing import AsyncGenerator
@@ -85,11 +85,11 @@ class MyAsyncIterator:
 
 async def test_to_response_async_await(anyio_backend: str) -> None:
     @route(http_method=HttpMethod.POST, path="/person")
-    async def test_function(data: Person) -> Person:
-        assert isinstance(data, Person)
+    async def test_function(data: PydanticPerson) -> PydanticPerson:
+        assert isinstance(data, PydanticPerson)
         return data
 
-    person_instance = PersonFactory.build()
+    person_instance = PydanticPersonFactory.build()
     test_function.signature_model = SignatureModel.create(
         fn=test_function.fn.value,
         dependency_name_set=set(),
@@ -98,8 +98,8 @@ async def test_to_response_async_await(anyio_backend: str) -> None:
 
     response = await test_function.to_response(
         data=test_function.fn.value(data=person_instance),
-        app=Litestar(route_handlers=[]),
-        request=RequestFactory().get(),
+        app=Litestar(route_handlers=[test_function]),
+        request=RequestFactory().get(route_handler=test_function),
     )
     assert loads(response.body) == person_instance.dict()  # type: ignore
 

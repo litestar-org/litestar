@@ -39,15 +39,10 @@ from typing import (
     Iterable,
     List,
     Literal,
-    Optional,
     Tuple,
     TypedDict,
     Union,
 )
-
-from pydantic import BaseModel
-
-from litestar.types.empty import EmptyType
 
 __all__ = (
     "ASGIApp",
@@ -96,17 +91,18 @@ __all__ = (
     "WebSocketSendMessage",
 )
 
-
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
 
     from litestar.app import Litestar
     from litestar.enums import ScopeType
+    from litestar.types.empty import EmptyType
 
     from .internal_types import LitestarType, RouteHandlerType
+    from .serialization import DataContainerType
 
 Method: TypeAlias = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD", "TRACE", "OPTIONS"]
-ScopeSession: TypeAlias = Optional[Union[EmptyType, Dict[str, Any], BaseModel]]
+ScopeSession: TypeAlias = "EmptyType | Dict[str, Any] | DataContainerType | None"
 
 
 class ASGIVersion(TypedDict):

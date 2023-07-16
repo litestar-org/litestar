@@ -99,9 +99,9 @@ def test_decode_validation() -> None:
         token.decode(encoded_token=encoded_token, algorithm=algorithm, secret=uuid4().hex)
 
 
-@given(exp=datetimes(max_value=datetime.now() - timedelta(seconds=1)))
+@given(exp=datetimes(min_value=datetime(1970, 1, 1), max_value=datetime.now() - timedelta(seconds=1)))
 def test_exp_validation(exp: datetime) -> None:
-    if sys.platform == "win32" and exp == datetime(1970, 1, 1, 0, 0):
+    if sys.platform == "win32" and exp == datetime(1970, 1, 1):
         # this does not work on windows. see https://bugs.python.org/issue29097
         pytest.skip("Skipping because .timestamp is weird on windows sometimes")
 

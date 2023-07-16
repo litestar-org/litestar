@@ -33,4 +33,4 @@ Here's the output:
 Fantastic! Our ``children`` are now represented in the output, and their email and addresses are excluded. However,
 astute readers may have noticed that we didn't exclude the ``children`` field of ``Person.children``
 (e.g., ``children.0.children``) yet that field is not represented in the output. To understand why, we'll next look at
-the :attr:`max_nested_depth <litestar.dto.factory.DTOConfig.max_nested_depth>` configuration option.
+the :attr:`max_nested_depth <litestar.dto.config.DTOConfig.max_nested_depth>` configuration option.

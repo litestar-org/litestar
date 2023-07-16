@@ -2,8 +2,13 @@ dto
 ===
 
 .. toctree::
-    :titlesonly:
+    :maxdepth: 1
 
     interface
+    config
+    data_structures
+    field
     types
-    factory/index
+    base_factory
+    msgspec_dto_factory
+    dataclass_dto_factory

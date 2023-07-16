@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 from litestar.enums import RequestEncodingType
 
@@ -11,9 +11,9 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from litestar._openapi.schema_generation import SchemaCreator
+    from litestar.connection import ASGIConnection
     from litestar.openapi.spec import Reference, Schema
-    from litestar.types import LitestarEncodableType
-    from litestar.types.internal_types import AnyConnection
+    from litestar.types import LitestarEncodableType, TypeDecodersSequence
     from litestar.typing import FieldDefinition
 
     from .types import ForType
@@ -47,17 +47,27 @@ class HandlerContext:
 class ConnectionContext:
     """Context object passed to the ``__init__`` method of a DTO."""
 
-    __slots__ = ("handler_id", "request_encoding_type")
+    __slots__ = ("handler_id", "request_encoding_type", "default_deserializer", "type_decoders")
 
-    def __init__(self, handler_id: str, request_encoding_type: RequestEncodingType | str) -> None:
+    def __init__(
+        self,
+        handler_id: str,
+        request_encoding_type: RequestEncodingType | str,
+        default_deserializer: Callable[[Any, Any], Any],
+        type_decoders: TypeDecodersSequence | None,
+    ) -> None:
         self.handler_id: Final[str] = handler_id
         self.request_encoding_type: Final[RequestEncodingType | str] = request_encoding_type
+        self.default_deserializer: Final[Callable[[Any, Any], Any]] = default_deserializer
+        self.type_decoders = type_decoders
 
     @classmethod
-    def from_connection(cls, connection: AnyConnection) -> Self:
+    def from_connection(cls, connection: ASGIConnection[Any, Any, Any, Any]) -> Self:
         return cls(
             handler_id=str(connection.route_handler),
             request_encoding_type=getattr(connection, "content_type", (RequestEncodingType.JSON,))[0],
+            default_deserializer=connection.route_handler.default_deserializer,
+            type_decoders=connection.route_handler.resolve_type_decoders(),
         )
 
 

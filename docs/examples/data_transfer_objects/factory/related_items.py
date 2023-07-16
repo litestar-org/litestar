@@ -8,7 +8,7 @@ from typing_extensions import Annotated
 
 from litestar import Litestar, put
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig
+from litestar.dto import DTOConfig
 
 from .my_lib import Base
 

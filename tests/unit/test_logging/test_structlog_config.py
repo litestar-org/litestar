@@ -2,8 +2,8 @@ from pytest import CaptureFixture
 from structlog.processors import JSONRenderer
 from structlog.types import BindableLogger
 
-from litestar.logging.config import StructLoggingConfig
-from litestar.serialization import decode_json, encode_json
+from litestar.logging.config import StructLoggingConfig, default_json_serializer
+from litestar.serialization import decode_json
 from litestar.testing import create_test_client
 
 # structlog.testing.capture_logs changes the processors
@@ -16,7 +16,7 @@ def test_structlog_config_default(capsys: CaptureFixture) -> None:
         assert isinstance(client.app.logger, BindableLogger)
         client.app.logger.info("message", key="value")  # type: ignore [attr-defined]
 
-        log_messages = [decode_json(x) for x in capsys.readouterr().out.splitlines()]
+        log_messages = [decode_json(value=x) for x in capsys.readouterr().out.splitlines()]
         assert len(log_messages) == 1
 
         # Format should be: {event: message, key: value, level: info, timestamp: isoformat}
@@ -25,7 +25,7 @@ def test_structlog_config_default(capsys: CaptureFixture) -> None:
 
 
 def test_structlog_config_specify_processors(capsys: CaptureFixture) -> None:
-    logging_config = StructLoggingConfig(processors=[JSONRenderer(encode_json)])
+    logging_config = StructLoggingConfig(processors=[JSONRenderer(serializer=default_json_serializer)])
 
     with create_test_client([], logging_config=logging_config) as client:
         assert client.app.logger
@@ -35,7 +35,7 @@ def test_structlog_config_specify_processors(capsys: CaptureFixture) -> None:
         # Log twice to make sure issue #882 doesn't appear again
         client.app.logger.info("message2", key="value2")  # type: ignore [attr-defined]
 
-        log_messages = [decode_json(x) for x in capsys.readouterr().out.splitlines()]
+        log_messages = [decode_json(value=x) for x in capsys.readouterr().out.splitlines()]
 
         assert log_messages == [
             {"key": "value1", "event": "message1"},

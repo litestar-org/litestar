@@ -2,7 +2,20 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Any, ClassVar, Dict, Literal, Optional, Sequence, Set, TypedDict, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    ClassVar,
+    Dict,
+    Literal,
+    Optional,
+    Sequence,
+    Set,
+    TypedDict,
+    Union,
+    cast,
+)
 
 from msgspec import NODEFAULT, Meta, Struct, ValidationError, convert, defstruct
 from msgspec.structs import asdict
@@ -12,7 +25,6 @@ from litestar._signature.utils import create_type_overrides, validate_signature_
 from litestar.enums import ParamType, ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
 from litestar.params import DependencyKwarg, KwargDefinition, ParameterKwarg
-from litestar.serialization import dec_hook
 from litestar.serialization._msgspec_utils import ExtendedMsgSpecValidationError
 from litestar.typing import FieldDefinition  # noqa
 from litestar.utils import make_non_optional_union
@@ -119,13 +131,15 @@ class SignatureModel(Struct):
         return message
 
     @classmethod
-    def _collect_errors(cls, **kwargs: Any) -> list[tuple[str, Exception]]:
+    def _collect_errors(
+        cls, default_deserializer: Callable[[Any, Any], Any], **kwargs: Any
+    ) -> list[tuple[str, Exception]]:
         exceptions: list[tuple[str, Exception]] = []
         for field_name in cls._fields:
             try:
                 raw_value = kwargs[field_name]
                 annotation = cls.__annotations__[field_name]
-                convert(raw_value, type=annotation, strict=False, dec_hook=dec_hook, str_keys=True)
+                convert(raw_value, type=annotation, strict=False, dec_hook=default_deserializer, str_keys=True)
             except Exception as e:  # noqa: BLE001
                 exceptions.append((field_name, e))
 
@@ -148,7 +162,7 @@ class SignatureModel(Struct):
         """
         messages: list[ErrorMessage] = []
         try:
-            return convert(kwargs, cls, strict=False, dec_hook=dec_hook).to_dict()
+            return convert(kwargs, cls, strict=False, dec_hook=connection.route_handler.default_deserializer).to_dict()
         except ExtendedMsgSpecValidationError as e:
             for exc in e.errors:
                 keys = [str(loc) for loc in exc["loc"]]
@@ -156,7 +170,7 @@ class SignatureModel(Struct):
                 messages.append(message)
             raise cls._create_exception(messages=messages, connection=connection) from e
         except ValidationError as e:
-            for field_name, exc in cls._collect_errors(**kwargs):  # type: ignore[assignment]
+            for field_name, exc in cls._collect_errors(default_deserializer=connection.route_handler.default_deserializer, **kwargs):  # type: ignore[assignment]
                 match = ERR_RE.search(str(exc))
                 keys = [field_name, str(match.group(1))] if match else [field_name]
                 message = cls._build_error_message(keys=keys, exc_msg=str(e), connection=connection)

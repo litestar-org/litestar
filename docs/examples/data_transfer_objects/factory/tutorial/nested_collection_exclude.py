@@ -4,8 +4,7 @@ from dataclasses import dataclass
 from typing import List
 
 from litestar import Litestar, get
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib.dataclass import DataclassDTO
+from litestar.dto import DataclassDTO, DTOConfig
 
 
 @dataclass

@@ -143,7 +143,7 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
         Returns:
             Deserialized data as a dictionary
         """
-        return cast("dict[str, Any]", decode_json(data))
+        return cast("dict[str, Any]", decode_json(value=data))
 
     @abstractmethod
     async def store_in_message(self, scope_session: ScopeSession, message: Message, connection: ASGIConnection) -> None:

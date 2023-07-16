@@ -4,17 +4,24 @@ from typing import AsyncGenerator, Callable
 
 import pytest
 from _decimal import Decimal
-from piccolo.columns import Column, column_types
-from piccolo.conf.apps import Finder
-from piccolo.table import Table, create_db_tables, drop_db_tables
-from piccolo.testing.model_builder import ModelBuilder
 from polyfactory.utils.predicates import is_annotated
 from typing_extensions import get_args
 
 from litestar import Litestar
-from litestar.contrib.piccolo import PiccoloDTO
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from litestar.testing import create_test_client
+
+try:
+    import piccolo  # noqa: F401
+except ImportError:
+    pytest.skip("Piccolo not installed", allow_module_level=True)
+
+from piccolo.columns import Column, column_types
+from piccolo.conf.apps import Finder
+from piccolo.table import Table, create_db_tables, drop_db_tables
+from piccolo.testing.model_builder import ModelBuilder
+
+from litestar.contrib.piccolo import PiccoloDTO
 
 from .endpoints import create_concert, retrieve_studio, retrieve_venues, studio, venues
 from .tables import Band, Concert, Manager, RecordingStudio, Venue

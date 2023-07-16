@@ -1,13 +1,24 @@
 from __future__ import annotations
 
 from copy import copy
-from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
+from functools import partial
+from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence, cast
 
 from litestar._signature import SignatureModel
 from litestar.di import Provide
 from litestar.dto.interface import HandlerContext
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.types import Dependencies, Empty, ExceptionHandlersMap, Guard, MaybePartial, Middleware, TypeEncodersMap
+from litestar.serialization import default_deserializer
+from litestar.types import (
+    Dependencies,
+    Empty,
+    ExceptionHandlersMap,
+    Guard,
+    MaybePartial,
+    Middleware,
+    TypeDecodersSequence,
+    TypeEncodersMap,
+)
 from litestar.typing import FieldDefinition
 from litestar.utils import AsyncCallable, Ref, async_partial, get_name, normalize_path
 from litestar.utils.helpers import unwrap_partial
@@ -45,6 +56,7 @@ class BaseRouteHandler:
         "_resolved_layered_parameters",
         "_resolved_return_dto",
         "_resolved_signature_namespace",
+        "_resolved_type_decoders",
         "_resolved_type_encoders",
         "dependencies",
         "dto",
@@ -58,6 +70,7 @@ class BaseRouteHandler:
         "return_dto",
         "signature_model",
         "signature_namespace",
+        "type_decoders",
         "type_encoders",
     )
 
@@ -75,6 +88,7 @@ class BaseRouteHandler:
         return_dto: type[DTOInterface] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         type_encoders: TypeEncodersMap | None = None,
+        type_decoders: TypeDecodersSequence | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``HTTPRouteHandler``.
@@ -97,6 +111,7 @@ class BaseRouteHandler:
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature
                 modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+            type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self._parsed_fn_signature: ParsedSignature | EmptyType = Empty
@@ -107,6 +122,7 @@ class BaseRouteHandler:
         self._resolved_return_dto: type[DTOInterface] | None | EmptyType = Empty
         self._resolved_signature_namespace: dict[str, Any] | EmptyType = Empty
         self._resolved_type_encoders: TypeEncodersMap | EmptyType = Empty
+        self._resolved_type_decoders: TypeDecodersSequence | EmptyType = Empty
 
         self.dependencies = dependencies
         self.dto = dto
@@ -126,11 +142,22 @@ class BaseRouteHandler:
         )
         self.opt.update(**kwargs)
         self.type_encoders = type_encoders
+        self.type_decoders = type_decoders
 
     def __call__(self, fn: AsyncAnyCallable) -> Self:
         """Replace a function with itself."""
         self._fn = Ref["MaybePartial[AsyncAnyCallable]"](fn)
         return self
+
+    @property
+    def default_deserializer(self) -> Callable[[Any, Any], Any]:
+        """Get a default serializer for the route handler.
+
+        Returns:
+            A default serializer for the route handler.
+
+        """
+        return partial(default_deserializer, type_decoders=self.resolve_type_decoders())
 
     @property
     def fn(self) -> Ref[MaybePartial[AsyncAnyCallable]]:
@@ -210,6 +237,22 @@ class BaseRouteHandler:
                 if type_encoders := getattr(layer, "type_encoders", None):
                     self._resolved_type_encoders.update(type_encoders)
         return cast("TypeEncodersMap", self._resolved_type_encoders)
+
+    def resolve_type_decoders(self) -> TypeDecodersSequence:
+        """Return a merged type_encoders mapping.
+
+        This method is memoized so the computation occurs only once.
+
+        Returns:
+            A dict of type encoders
+        """
+        if self._resolved_type_decoders is Empty:
+            self._resolved_type_decoders = []
+
+            for layer in self.ownership_layers:
+                if type_decoders := getattr(layer, "type_decoders", None):
+                    self._resolved_type_decoders.extend(list(type_decoders))
+        return cast("TypeDecodersSequence", self._resolved_type_decoders)
 
     def resolve_layered_parameters(self) -> dict[str, FieldDefinition]:
         """Return all parameters declared above the handler."""

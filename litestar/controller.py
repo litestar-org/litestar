@@ -35,7 +35,7 @@ if TYPE_CHECKING:
         ResponseCookies,
         TypeEncodersMap,
     )
-    from litestar.types.composite_types import ResponseHeaders
+    from litestar.types.composite_types import ResponseHeaders, TypeDecodersSequence
     from litestar.types.empty import EmptyType
 
 
@@ -67,6 +67,7 @@ class Controller:
         "signature_namespace",
         "tags",
         "type_encoders",
+        "type_decoders",
     )
 
     after_request: AfterRequestHookHandler | None
@@ -142,6 +143,8 @@ class Controller:
     """A mapping of names to types for use in forward reference resolution during signature modelling."""
     type_encoders: TypeEncodersMap | None
     """A mapping of types to callables that transform them into types supported for serialization."""
+    type_decoders: TypeDecodersSequence | None
+    """A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization."""
 
     def __init__(self, owner: Router) -> None:
         """Initialize a controller.

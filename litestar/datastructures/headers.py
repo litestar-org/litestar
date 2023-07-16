@@ -26,7 +26,7 @@ from typing_extensions import get_type_hints
 from litestar._multipart import parse_content_header
 from litestar._parsers import parse_headers
 from litestar.datastructures.multi_dicts import MultiMixin
-from litestar.dto.factory.utils import resolve_model_type
+from litestar.dto._utils import resolve_model_type
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 
 __all__ = ("Accept", "CacheControlHeader", "ETag", "Header", "Headers", "MutableScopeHeaders")

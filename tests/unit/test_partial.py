@@ -15,8 +15,8 @@ from litestar.utils import is_class_var
 from tests import (
     AttrsPerson,
     MsgSpecStructPerson,
-    Person,
     PydanticDataClassPerson,
+    PydanticPerson,
     TypedDictPerson,
     VanillaDataClassPerson,
 )
@@ -29,12 +29,12 @@ except ImportError:
 
 @pytest.mark.skipif(pydantic.VERSION.startswith("2"), reason="pydantic v1 only logic")
 def test_partial_pydantic_v1_model() -> None:
-    class PersonWithClassVar(Person):
+    class PydanticPersonWithClassVar(PydanticPerson):
         cls_var: ClassVar[int]
 
-    partial = Partial[PersonWithClassVar]
+    partial = Partial[PydanticPersonWithClassVar]
 
-    assert len(partial.__fields__) == len(Person.__fields__)  # type: ignore
+    assert len(partial.__fields__) == len(PydanticPerson.__fields__)  # type: ignore
 
     for field in partial.__fields__.values():  # type: ignore
         assert field.allow_none
@@ -50,12 +50,12 @@ def test_partial_pydantic_v1_model() -> None:
 
 @pytest.mark.skipif(pydantic.VERSION.startswith("1"), reason="pydantic v2 only logic")
 def test_partial_pydantic_v2_model() -> None:
-    class PersonWithClassVar(Person):
+    class PydanticPersonWithClassVar(PydanticPerson):
         cls_var: ClassVar[int]
 
-    partial = Partial[PersonWithClassVar]
+    partial = Partial[PydanticPersonWithClassVar]
     partial_model_fields = cast("dict[str,FieldInfo]", partial.model_fields)  # type: ignore
-    assert len(partial_model_fields) == len(Person.model_fields)  #
+    assert len(partial_model_fields) == len(PydanticPerson.model_fields)  #
 
     for field in partial_model_fields.values():
         assert not field.is_required()
@@ -229,7 +229,7 @@ class Foo:
 
 @pytest.mark.parametrize(
     "cls, should_raise",
-    ((Foo, True), (Person, False), (VanillaDataClassPerson, False), (PydanticDataClassPerson, False)),
+    ((Foo, True), (PydanticPerson, False), (VanillaDataClassPerson, False), (PydanticDataClassPerson, False)),
 )
 def test_validation(cls: Any, should_raise: bool) -> None:
     """Test that Partial returns no annotations for classes that don't inherit from BaseModel."""

@@ -6,8 +6,8 @@ from typing import Dict, List, Tuple, Union
 import pytest
 from msgspec import Struct
 
-from litestar.dto.factory import DTOField
-from litestar.dto.factory._backends.types import (
+from litestar.dto import DTOField
+from litestar.dto._types import (
     CollectionType,
     CompositeType,
     MappingType,
@@ -16,12 +16,12 @@ from litestar.dto.factory._backends.types import (
     TupleType,
     UnionType,
 )
-from litestar.dto.factory._backends.utils import (
+from litestar.dto._utils import (
     create_transfer_model_type_annotation,
     should_mark_private,
     transfer_nested_union_type_data,
 )
-from litestar.dto.factory.data_structures import DTOFieldDefinition
+from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.typing import FieldDefinition
 
 

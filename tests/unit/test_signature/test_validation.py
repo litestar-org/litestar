@@ -8,6 +8,7 @@ from typing_extensions import TypedDict
 
 from litestar import get, post
 from litestar._signature import SignatureModel
+from litestar.contrib.pydantic import PydanticInitPlugin
 from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 from litestar.params import Dependency, Parameter
@@ -107,18 +108,19 @@ def test_validation_error_exception_key() -> None:
         child: Child
         other_child: OtherChild
 
-    def fn(data: Parent) -> None:
+    @get("/", type_decoders=PydanticInitPlugin.decoders())
+    def handler(data: Parent) -> None:
         pass
 
     model = SignatureModel.create(
-        fn=fn,
+        fn=handler,
         dependency_name_set=set(),
-        parsed_signature=ParsedSignature.from_fn(fn, {}),
+        parsed_signature=ParsedSignature.from_fn(handler.fn.value, {}),
     )
 
     with pytest.raises(ValidationException) as exc_info:
         model.parse_values_from_connection_kwargs(
-            connection=RequestFactory().get(), data={"child": {}, "other_child": {}}
+            connection=RequestFactory().get(route_handler=handler), data={"child": {}, "other_child": {}}
         )
 
     assert isinstance(exc_info.value.extra, list)

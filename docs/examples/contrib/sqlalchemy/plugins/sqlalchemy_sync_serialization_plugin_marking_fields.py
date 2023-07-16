@@ -6,7 +6,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
 from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
-from litestar.dto.factory import dto_field
+from litestar.dto import dto_field
 
 if TYPE_CHECKING:
     from typing import List
