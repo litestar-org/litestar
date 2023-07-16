@@ -618,7 +618,7 @@ class SchemaCreator:
                 if pydantic.VERSION.startswith("2")
                 else Annotated[annotation_hints[k], f],  # pyright: ignore
                 name=f.alias if f.alias and self.prefer_alias else k,
-                default=f.default if not is_undefined_sentinel(f.default) else Empty,
+                default=Empty if is_undefined_sentinel(f.default) else f.default,
             )
             for k, f in model_fields.items()
         }

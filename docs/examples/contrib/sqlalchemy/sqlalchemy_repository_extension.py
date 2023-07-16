@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import random
 import re
 import string
@@ -124,7 +126,7 @@ class BlogPostCreate(BaseModel):
 
 # we can optionally override the default `select` used for the repository to pass in
 # specific SQL options such as join details
-async def provide_blog_post_repo(db_session: "AsyncSession") -> BlogPostRepository:
+async def provide_blog_post_repo(db_session: AsyncSession) -> BlogPostRepository:
     """This provides a simple example demonstrating how to override the join options
     for the repository."""
     return BlogPostRepository(session=db_session)

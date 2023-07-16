@@ -91,6 +91,7 @@ class UUIDPrimaryKey:
     id: Mapped[UUID] = mapped_column(default=uuid4, primary_key=True)  # pyright: ignore
     """UUID Primary key column."""
 
+    # noinspection PyMethodParameters
     @declared_attr
     def _sentinel(cls) -> Mapped[int]:
         return orm_insert_sentinel(name="sa_orm_sentinel")
@@ -99,6 +100,7 @@ class UUIDPrimaryKey:
 class BigIntPrimaryKey:
     """BigInt Primary Key Field Mixin."""
 
+    # noinspection PyMethodParameters
     @declared_attr
     def id(cls) -> Mapped[int]:
         """BigInt Primary key column."""

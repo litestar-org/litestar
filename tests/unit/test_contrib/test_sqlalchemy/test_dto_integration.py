@@ -105,9 +105,7 @@ def book_json_data() -> Callable[[RenameStrategy, BookAuthorTestData], Tuple[Dic
 
 @pytest.mark.parametrize(
     "rename_strategy",
-    [
-        ("camel"),
-    ],
+    ("camel",),
 )
 def test_fields_alias_generator_sqlalchemy(
     rename_strategy: RenameStrategy,

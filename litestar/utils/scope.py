@@ -83,6 +83,5 @@ def delete_litestar_scope_state(scope: Scope, key: str) -> None:
     Args:
         scope: The connection scope.
         key: Key to set under internal namespace in scope state.
-        value: Value for key.
     """
     del scope["state"][SCOPE_STATE_NAMESPACE][key]
