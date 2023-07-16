@@ -33,6 +33,7 @@ from typing import (
 from uuid import UUID
 
 from _decimal import Decimal
+from msgspec.structs import FieldInfo
 from msgspec.structs import fields as msgspec_struct_fields
 from typing_extensions import Annotated, NotRequired, Required, get_args, get_type_hints
 
@@ -43,7 +44,6 @@ from litestar._openapi.schema_generation.constrained_fields import (
 )
 from litestar._openapi.schema_generation.examples import create_examples_for_field
 from litestar._openapi.schema_generation.utils import sort_schemas_and_references
-from litestar.constants import UNDEFINED_SENTINELS
 from litestar.datastructures import UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Example, Reference
@@ -63,6 +63,7 @@ from litestar.utils.predicates import (
     is_pydantic_model_class,
     is_struct_class,
     is_typed_dict,
+    is_undefined_sentinel,
 )
 from litestar.utils.typing import get_origin_or_inner_type, make_non_optional_union
 
@@ -617,7 +618,7 @@ class SchemaCreator:
                 if pydantic.VERSION.startswith("2")
                 else Annotated[annotation_hints[k], f],  # pyright: ignore
                 name=f.alias if f.alias and self.prefer_alias else k,
-                default=f.default if f.default not in UNDEFINED_SENTINELS else Empty,
+                default=f.default if not is_undefined_sentinel(f.default) else Empty,
             )
             for k, f in model_fields.items()
         }
@@ -669,12 +670,16 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
+
+        def _is_field_required(field: FieldInfo) -> bool:
+            return field.required or field.default_factory is Empty
+
         return Schema(
             required=sorted(
                 [
                     field.encode_name
                     for field in msgspec_struct_fields(annotation)
-                    if field.required and not is_optional_union(field.type)
+                    if _is_field_required(field=field) and not is_optional_union(field.type)
                 ]
             ),
             properties={
@@ -795,7 +800,7 @@ class SchemaCreator:
         if field.kwarg_definition:
             for kwarg_definition_key, schema_key in KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
                 if (value := getattr(field.kwarg_definition, kwarg_definition_key, Empty)) and (
-                    not isinstance(value, Hashable) or value not in UNDEFINED_SENTINELS
+                    not isinstance(value, Hashable) or not is_undefined_sentinel(value)
                 ):
                     setattr(schema, schema_key, value)
 

@@ -254,6 +254,7 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
     assert schema.properties["id"].description == "description"  # type: ignore
     assert schema.properties["id"].title == "title"  # type: ignore
     assert schema.properties["id"].max_length == 16  # type: ignore
+    assert schema.required == ["id"]
 
 
 def test_create_schema_for_pydantic_field() -> None:

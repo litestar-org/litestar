@@ -24,7 +24,7 @@ repos:
   #      - id: poetry-lock
   #        args: ["--no-update"]
   - repo: https://github.com/provinzkraut/unasyncd
-    rev: "v0.5.0"
+    rev: "v0.6.0"
     hooks:
       - id: unasyncd
         additional_dependencies: ["ruff"]
@@ -100,14 +100,13 @@ repos:
             picologging,
             psycopg,
             pydantic>=2,
-            pydantic_extra_types,
+            pydantic-extra-types,
             pytest,
             pytest-lazy-fixture,
             pytest-mock,
             pytest_docker,
             python-dotenv,
             python-jose,
-            pytimeparse,
             pyyaml,
             rich,
             rich-click,
@@ -117,7 +116,6 @@ repos:
             tortoise-orm,
             types-beautifulsoup4,
             types-freezegun,
-            types-python-dateutil,
             types-pyyaml,
             types-redis,
             types-python-jose,
@@ -161,14 +159,13 @@ repos:
             picologging,
             psycopg,
             pydantic>=2,
-            pydantic_extra_types,
+            pydantic-extra-types,
             pytest,
             pytest-lazy-fixture,
             pytest-mock,
             pytest_docker,
             python-dotenv,
             python-jose,
-            pytimeparse,
             pyyaml,
             rich,
             rich-click,
@@ -178,7 +175,6 @@ repos:
             tortoise-orm,
             types-beautifulsoup4,
             types-freezegun,
-            types-python-dateutil,
             types-pyyaml,
             types-redis,
             types-python-jose,
