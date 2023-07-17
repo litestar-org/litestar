@@ -195,7 +195,7 @@ types-redis = "*"
 [tool.poetry.extras]
 annotated-types = ["annotated-types"]
 attrs = ["attrs"]
-pydantic = ["pydantic", "pydantic-extra-types"]
+pydantic = ["pydantic"]
 brotli = ["brotli"]
 cli = ["click", "rich", "rich-click", "jsbeautifier", "uvicorn"]
 cryptography = ["cryptography"]

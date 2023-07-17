@@ -102,16 +102,20 @@ class PydanticInitPlugin(InitPluginProtocol):
 
     @staticmethod
     def _create_pydantic_v2_encoders() -> dict[Any, Callable[[Any], Any]]:
-        from pydantic_extra_types import color
-
-        return {
+        try:
+            from pydantic_extra_types import color
+        except ImportError:
+            color = None  # type: ignore[assignment]
+        encoders: dict[Any, Callable[[Any], Any]] = {
             pydantic.BaseModel: lambda model: model.model_dump(mode="json"),
-            color.Color: str,
             pydantic.types.SecretStr: lambda val: "**********" if val else "",
             pydantic.types.SecretBytes: lambda val: "**********" if val else "",
         }
+        if color:
+            encoders[color.Color] = str
+        return encoders
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
-        app_config.type_encoders = {**(app_config.type_encoders or {}), **self.encoders()}
-        app_config.type_decoders = [*(app_config.type_decoders or []), *self.decoders()]
+        app_config.type_encoders = {**self.encoders(), **(app_config.type_encoders or {})}
+        app_config.type_decoders = [*self.decoders(), *(app_config.type_decoders or [])]
         return app_config
