@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Type
 
 from pydantic_factories.utils import is_pydantic_model
 from tortoise.fields import ReverseRelation
@@ -33,7 +33,7 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
 
         This fixes some issues with the result of the tortoise model creator.
         """
-        pydantic_model = cast("Type[PydanticModel]", pydantic_model_creator(model_class, **kwargs))
+        pydantic_model = pydantic_model_creator(model_class, **kwargs)
         for (
             field_name,
             tortoise_model_field,
@@ -44,9 +44,10 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
                     and "." in pydantic_model.__fields__[field_name].type_.__name__
                 ):
                     sub_model_name = pydantic_model.__fields__[field_name].type_.__name__.split(".")[-2]
-                    pydantic_model.__fields__[field_name].type_ = cast(
-                        "Type[PydanticModel]", pydantic_model_creator(model_class, name=sub_model_name)
+                    pydantic_model.__fields__[field_name].type_ = pydantic_model_creator(
+                        model_class, name=sub_model_name
                     )
+
                 if not tortoise_model_field.required:
                     pydantic_model.__fields__[field_name].required = False
                 if tortoise_model_field.null:
@@ -97,7 +98,7 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
         """Given an instance of a model supported by the plugin, return a dictionary of serializable values."""
         pydantic_model_class = self.to_pydantic_model_class(type(model_instance))
         data = await pydantic_model_class.from_tortoise_orm(model_instance)
-        return cast("Dict[str, Any]", data.dict())
+        return data.dict()
 
     def from_dict(self, model_class: Type[Model], **kwargs: Any) -> Model:  # pragma: no cover
         """Given a class supported by this plugin and a dict of values, create an instance of the class."""

@@ -223,7 +223,7 @@ def is_dataclass_class_or_instance(value: Any) -> "TypeGuard[DataclassClassOrIns
     Returns:
         ``True`` if instance or type of ``dataclass``.
     """
-    return is_dataclass(value)
+    return is_dataclass(value)  # type: ignore[no-any-return]
 
 
 def is_typed_dict(value: Any) -> "TypeGuard[TypedDictClass]":

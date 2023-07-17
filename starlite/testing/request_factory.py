@@ -264,7 +264,7 @@ class RequestFactory:
             body = b""
             for chunk in stream:
                 body += chunk
-            scope["_body"] = body  # type: ignore[typeddict-item]
+            scope["_body"] = body  # type: ignore[typeddict-unknown-key]
         self._create_cookie_header(headers, cookies)
         scope["headers"] = self._build_headers(headers)
         return Request(scope=scope)

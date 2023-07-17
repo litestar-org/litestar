@@ -37,7 +37,7 @@ def test_partial_pydantic_model() -> None:
 
 @pytest.mark.parametrize("cls", [VanillaDataClassPerson, PydanticDataClassPerson])
 def test_partial_dataclass(cls: Any) -> None:
-    partial = Partial[cls]  # type: ignore
+    partial = Partial[cls]
 
     assert len(partial.__dataclass_fields__) == len(cls.__dataclass_fields__)  # type: ignore
 
@@ -125,6 +125,6 @@ def test_validation(cls: Any, should_raise: bool) -> None:
     """Test that Partial returns no annotations for classes that don't inherit from BaseModel."""
     if should_raise:
         with pytest.raises(ImproperlyConfiguredException):
-            Partial[cls]()  # type: ignore
+            Partial[cls]()
     else:
-        Partial[cls]()  # type: ignore
+        Partial[cls]()

@@ -241,7 +241,7 @@ class JWTCookieAuth(Generic[UserType], JWTAuth[UserType]):
                     type="http",
                     scheme="Bearer",
                     name=self.key,
-                    security_scheme_in="cookie",
+                    security_scheme_in="cookie",  # pyright: ignore
                     bearerFormat="JWT",
                     description=self.description,
                 )
@@ -389,8 +389,8 @@ class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
                     type="oauth2",
                     scheme="Bearer",
                     name=self.auth_header,
-                    security_scheme_in="header",
-                    flows=OAuthFlows(password=self.oauth_flow),  # pyright: reportGeneralTypeIssues=false
+                    security_scheme_in="header",  # pyright: ignore
+                    flows=OAuthFlows(password=self.oauth_flow),  # pyright: ignore
                     bearerFormat="JWT",
                     description=self.description,
                 )

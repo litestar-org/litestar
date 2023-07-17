@@ -113,7 +113,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
             A URL instance constructed from the request's scope.
         """
         if self._url is Empty:
-            self._url = self.scope["_url"] = URL.from_scope(self.scope)  # type: ignore[typeddict-item]
+            self._url = self.scope["_url"] = URL.from_scope(self.scope)  # type: ignore[typeddict-unknown-key]
         return cast("URL", self._url)
 
     @property
@@ -131,7 +131,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
                 "query_string": b"",
                 "root_path": self.scope.get("app_root_path") or self.scope.get("root_path", ""),
             }
-            self._base_url = self.scope["_base_url"] = URL.from_scope(cast("Scope", scope))  # type: ignore[typeddict-item]
+            self._base_url = self.scope["_base_url"] = URL.from_scope(cast("Scope", scope))  # type: ignore[typeddict-unknown-key]
 
         return cast("URL", self._base_url)
 
@@ -144,7 +144,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         """
         if self._headers is Empty:
             self.scope.setdefault("headers", [])
-            self._headers = self.scope["_headers"] = parse_headers(tuple(self.scope["headers"]))  # type: ignore[typeddict-item]
+            self._headers = self.scope["_headers"] = parse_headers(tuple(self.scope["headers"]))  # type: ignore[typeddict-unknown-key]
         return Headers(self._headers)
 
     @property
@@ -179,7 +179,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
             cookie_header = self.headers.get("cookie")
             if cookie_header:
                 cookies = parse_cookie_string(cookie_header)
-            self._cookies = self.scope["_cookies"] = cookies  # type: ignore[typeddict-item]
+            self._cookies = self.scope["_cookies"] = cookies  # type: ignore[typeddict-unknown-key]
         return cast("Dict[str, str]", self._cookies)
 
     @property

@@ -67,7 +67,7 @@ def create_app_file(
         tmp_app_file.write_text(content or APP_FILE_CONTENT)
 
         if directory:
-            request.addfinalizer(lambda: rmtree(directory))  # type: ignore[arg-type]
+            request.addfinalizer(lambda: rmtree(directory))
         else:
             request.addfinalizer(tmp_app_file.unlink)
         return tmp_app_file

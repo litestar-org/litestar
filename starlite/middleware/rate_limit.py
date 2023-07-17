@@ -106,7 +106,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             if self.config.set_rate_limit_headers:
                 send = self.create_send_wrapper(send=send, cache_object=cache_object)
 
-        await self.app(scope, receive, send)
+        await self.app(scope, receive, send)  # pyright: ignore
 
     def create_send_wrapper(self, send: "Send", cache_object: CacheObject) -> "Send":
         """Create a ``send`` function that wraps the original send to inject response headers.
