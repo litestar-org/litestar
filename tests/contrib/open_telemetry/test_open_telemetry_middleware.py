@@ -28,7 +28,7 @@ def create_config(**kwargs: Any) -> Tuple[OpenTelemetryConfig, InMemoryMetricRea
     """
     resource = Resource(attributes={SERVICE_NAME: "starlite-test"})
     tracer_provider = TracerProvider(resource=resource)
-    exporter = InMemorySpanExporter()  # type: ignore
+    exporter = InMemorySpanExporter()
     tracer_provider.add_span_processor(SimpleSpanProcessor(exporter))
 
     aggregation_last_value = {Counter: ExplicitBucketHistogramAggregation()}
@@ -58,7 +58,7 @@ def test_open_telemetry_middleware_with_http_route() -> None:
         assert response.status_code == HTTP_200_OK
         assert reader.get_metrics_data()
 
-        first_span, second_span, third_span = cast("Tuple[Span, Span, Span]", exporter.get_finished_spans())  # type: ignore
+        first_span, second_span, third_span = cast("Tuple[Span, Span, Span]", exporter.get_finished_spans())
         assert dict(first_span.attributes) == {"http.status_code": 200, "type": "http.response.start"}  # type: ignore
         assert dict(second_span.attributes) == {"type": "http.response.body"}  # type: ignore
         assert dict(third_span.attributes) == {  # type: ignore
@@ -104,7 +104,7 @@ def test_open_telemetry_middleware_with_websocket_route() -> None:
         assert data == {"hello": "world"}
 
         first_span, second_span, third_span, fourth_span, fifth_span = cast(
-            "Tuple[Span, Span, Span, Span, Span]", exporter.get_finished_spans()  # type: ignore
+            "Tuple[Span, Span, Span, Span, Span]", exporter.get_finished_spans()
         )
         assert dict(first_span.attributes) == {"type": "websocket.connect"}  # type: ignore
         assert dict(second_span.attributes) == {"type": "websocket.accept"}  # type: ignore

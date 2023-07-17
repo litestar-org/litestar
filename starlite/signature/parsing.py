@@ -247,7 +247,7 @@ def create_pydantic_signature_model(
         f"{fn_name}_signature_model",
         __base__=PydanticSignatureModel,
         __module__=fn_module or "pydantic.main",
-        **field_definitions,
+        **field_definitions,  # pyright: ignore
     )
     model.return_annotation = return_annotation
     model.field_plugin_mappings = field_plugin_mappings

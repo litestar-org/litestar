@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import TYPE_CHECKING, Callable, Dict, Literal, cast
+from typing import TYPE_CHECKING, Callable, Dict, Literal
 
 from yaml import dump as dump_yaml
 
@@ -32,7 +32,7 @@ class OpenAPISchemaResponse(Response):
         """
         content_dict = content.dict(by_alias=True, exclude_none=True)
         if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
-            return cast("bytes", dump_yaml(content_dict, default_flow_style=False).encode("utf-8"))
+            return dump_yaml(content_dict, default_flow_style=False).encode("utf-8")
         return encode_json(content_dict)
 
 
