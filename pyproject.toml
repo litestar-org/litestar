@@ -172,6 +172,7 @@ sphinxcontrib-mermaid = ">=0.8.1,<1"
 litestar-sphinx-theme = { git = "https://github.com/litestar-org/litestar-sphinx-theme.git" }
 uvicorn = "*"
 sphinx-click = "^4.4.0"
+piccolo = "*"  # temporarily moved here because it depends on Pydantic <2 but we need it to generate the docs
 
 [tool.poetry.group.lint]
 optional = true

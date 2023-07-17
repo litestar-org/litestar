@@ -3,6 +3,98 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.0.0beta2
+    :date: 2023/06/24
+
+    .. change:: Support ``annotated-types``
+        :type: feature
+        :pr: 1847
+
+        Extended support for the
+        `annotated-types <https://pypi.org/project/annotated-types>`_ library is now
+        available.
+
+    .. change:: Increased verbosity of validation error response keys
+        :type: feature
+        :pr: 1774
+        :breaking:
+
+        The keys in validation error responses now include the full path to the field
+        where the originated.
+
+        An optional ``source`` key has been added, signifying whether the value is from
+        the body, a cookie, a header, or a query param.
+
+        .. code-block:: json
+            :caption: before
+
+            {
+              "status_code": 400,
+              "detail": "Validation failed for POST http://localhost:8000/some-route",
+              "extra": [
+                {"key": "int_param", "message": "value is not a valid integer"},
+                {"key": "int_header", "message": "value is not a valid integer"},
+                {"key": "int_cookie", "message": "value is not a valid integer"},
+                {"key": "my_value", "message": "value is not a valid integer"}
+              ]
+            }
+
+        .. code-block:: json
+            :caption: after
+
+            {
+              "status_code": 400,
+              "detail": "Validation failed for POST http://localhost:8000/some-route",
+              "extra": [
+                {"key": "child.my_value", "message": "value is not a valid integer", "source": "body"},
+                {"key": "int_param", "message": "value is not a valid integer", "source": "query"},
+                {"key": "int_header", "message": "value is not a valid integer", "source": "header"},
+                {"key": "int_cookie", "message": "value is not a valid integer", "source": "cookie"},
+              ]
+            }
+
+    .. change:: ``TestClient`` default timeout
+        :type: feature
+        :pr: 1840
+        :breaking:
+
+        A ``timeout`` parameter was added to
+
+        - :class:`~litestar.testing.TestClient`
+        - :class:`~litestar.testing.AsyncTestClient`
+        - :class:`~litestar.testing.create_test_client`
+        - :class:`~litestar.testing.create_async_test_client`
+
+        The value is passed down to the underlying HTTPX client and serves as a default
+        timeout for all requests.
+
+    .. change:: SQLAlchemy DTO: Explicit error messages when type annotations for a column are missing
+        :type: feature
+        :pr: 1852
+
+        Replace the nondescript :exc:`KeyError` raised when a SQLAlchemy DTO is
+        constructed from a model that is missing a type annotation for an included
+        column with an :exc:`ImproperlyConfiguredException`, including an explicit error
+        message, pointing at the potential cause.
+
+    .. change:: Remove exception details from Internal Server Error responses
+        :type: bugfix
+        :pr: 1857
+        :issue: 1856
+
+        Error responses with a ``500`` status code will now always use
+        `"Internal Server Error"` as default detail.
+
+    .. change:: Pydantic v1 regex validation
+        :type: bugfix
+        :pr: 1865
+        :issue: 1860
+
+        A regression has been fixed in the pydantic signature model logic, which was
+        caused by the renaming of ``regex`` to ``pattern``, which would lead to the
+        :attr:`~litestar.params.KwargDefinition.pattern` not being validated.
+
+
 .. changelog:: 2.0.0beta1
     :date: 2023/06/16
 

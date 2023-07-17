@@ -1,7 +1,9 @@
 <!-- markdownlint-disable -->
 <p align="center">
+  <!-- github-banner-start -->
   <img src="artwork/banner-light.svg#gh-light-mode-only" alt="Litestar Logo - Light" width="100%" height="auto" />
   <img src="artwork/banner-dark.svg#gh-dark-mode-only" alt="Litestar Logo - Dark" width="100%" height="auto" />
+  <!-- github-banner-end -->
 </p>
 <!-- markdownlint-restore -->
 
@@ -18,7 +20,7 @@
 | Meta      |     | [![Litestar Project](https://img.shields.io/badge/Litestar%20Org-%E2%AD%90%20Litestar-202235.svg?logo=python&labelColor=202235&color=edb641&logoColor=edb641)](https://github.com/litestar-org/litestar) [![types - Mypy](https://img.shields.io/badge/types-Mypy-202235.svg?logo=python&labelColor=202235&color=edb641&logoColor=edb641)](https://github.com/python/mypy) [![License - MIT](https://img.shields.io/badge/license-MIT-202235.svg?logo=python&labelColor=202235&color=edb641&logoColor=edb641)](https://spdx.org/licenses/) [![Litestar Sponsors](https://img.shields.io/badge/Sponsor-%E2%9D%A4-%23edb641.svg?&logo=github&logoColor=edb641&labelColor=202235)](https://github.com/sponsors/litestar-org) [![linting - Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json&labelColor=202235)](https://github.com/astral-sh/ruff) [![code style - Black](https://img.shields.io/badge/code%20style-black-000000.svg?logo=python&labelColor=202235&logoColor=edb641)](https://github.com/psf/black) |
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-120-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-122-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -266,6 +268,8 @@ or [join our Matrix](https://matrix.to/#/#litestar:matrix.org) space
 to discuss contributions and project maintenance. For guidelines on how to contribute, please
 see [the contribution guide](CONTRIBUTING.rst).
 
+<!-- contributors-start -->
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -430,6 +434,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://sobolevn.me"><img src="https://avatars.githubusercontent.com/u/4660275?v=4?s=100" width="100px;" alt="Nikita Sobolev"/><br /><sub><b>Nikita Sobolev</b></sub></a><br /><a href="#infra-sobolevn" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/litestar-org/litestar/commits?author=sobolevn" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/lazyc97"><img src="https://avatars.githubusercontent.com/u/8538104?v=4?s=100" width="100px;" alt="Nguyễn Hoàng Đức"/><br /><sub><b>Nguyễn Hoàng Đức</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3Alazyc97" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/RavanaBhrama"><img src="https://avatars.githubusercontent.com/u/131459969?v=4?s=100" width="100px;" alt="RavanaBhrama"/><br /><sub><b>RavanaBhrama</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=RavanaBhrama" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
@@ -441,3 +447,5 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
 Contributions of any kind welcome!
+
+<!-- contributors-end -->

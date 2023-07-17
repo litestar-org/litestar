@@ -189,3 +189,8 @@ repos:
         entry: sphinx-lint
         additional_dependencies: [sphinx-lint]
         types: [rst]
+      - id: pypi-readme
+        name: pypi-readme
+        language: python
+        entry: python tools/pypi_readme.py
+        types: [markdown]
