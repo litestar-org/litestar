@@ -97,7 +97,7 @@ class DTO(GenericModel, Generic[T]):
         elif isinstance(model_instance, dict):
             values = dict(model_instance)  # copy required as `_from_value_mapping()`` mutates ``values`.
         else:
-            values = asdict(model_instance)
+            values = asdict(model_instance)  # type: ignore[call-overload]
         return cls._from_value_mapping(mapping=values)
 
     @classmethod

@@ -13,12 +13,12 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.3.1
+    rev: v3.9.0
     hooks:
       - id: pyupgrade
         args: ["--py38-plus"]
   - repo: https://github.com/hadialqattan/pycln
-    rev: v2.1.3
+    rev: v2.1.5
     hooks:
       - id: pycln
         args: [--config=pyproject.toml]
@@ -28,26 +28,26 @@ repos:
       - id: isort
         exclude: "docs"
   - repo: https://github.com/psf/black
-    rev: 23.1.0
+    rev: 23.7.0
     hooks:
       - id: black
         args: [--config=./pyproject.toml]
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.2
+    rev: v2.2.5
     hooks:
       - id: codespell
         exclude: "tests/openapi/typescript_converter/test_converter"
   - repo: https://github.com/asottile/blacken-docs
-    rev: 1.13.0
+    rev: 1.15.0
     hooks:
       - id: blacken-docs
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "v3.0.0-alpha.4"
+    rev: "v3.0.0"
     hooks:
       - id: prettier
         exclude: docs
   - repo: https://github.com/pycqa/bandit
-    rev: 1.7.4
+    rev: 1.7.5
     hooks:
       - id: bandit
         exclude: "test_*"
@@ -81,12 +81,12 @@ repos:
           ]
         exclude: "docs"
   - repo: https://github.com/ariebovenberg/slotscheck
-    rev: v0.16.4
+    rev: v0.16.5
     hooks:
       - id: slotscheck
         exclude: "test_*|docs"
   - repo: https://github.com/pycqa/pylint
-    rev: "v2.16.0"
+    rev: "v3.0.0a6"
     hooks:
       - id: pylint
         exclude: "tests|examples|test_apps|docs|tools"
@@ -119,7 +119,7 @@ repos:
             jsbeautifier,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v0.991"
+    rev: "v1.4.1"
     hooks:
       - id: mypy
         exclude: "test_apps|docs|tools"
@@ -158,7 +158,7 @@ repos:
             jsbeautifier,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.292
+    rev: v1.1.317
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs"
