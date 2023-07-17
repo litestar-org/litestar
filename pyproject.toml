@@ -62,7 +62,7 @@ msgspec = ">=0.11.0"
 multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 picologging = { version = "*", optional = true }
-pydantic = "*"
+pydantic = "<2"
 pydantic-factories = "*"
 pydantic-openapi-schema = ">=1.5.0"
 python-jose = { version = "*", optional = true }
