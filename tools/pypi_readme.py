@@ -8,6 +8,9 @@ def generate_pypi_readme() -> None:
     source = Path("README.md").read_text()
     output = re.sub(r"<!-- github-banner-start -->[\w\W]*<!-- github-banner-end -->", PYPI_BANNER, source)
     output = re.sub(r"<!-- contributors-start -->[\w\W]*<!-- contributors-end -->", "", output)
+
+    # ensure a newline here so the other pre-commit hooks don't complain
+    output = output.strip() + "\n"
     Path("docs/PYPI_README.md").write_text(output)
 
 

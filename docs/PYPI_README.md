@@ -264,5 +264,3 @@ Litestar is open to contributions big and small. You can always [join our discor
 or [join our Matrix](https://matrix.to/#/#litestar:matrix.org) space
 to discuss contributions and project maintenance. For guidelines on how to contribute, please
 see [the contribution guide](CONTRIBUTING.rst).
-
-
