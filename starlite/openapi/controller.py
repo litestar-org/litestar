@@ -125,10 +125,7 @@ class OpenAPIController(Controller):
         if request_path == root_path and config.root_schema_site in config.enabled_endpoints:
             return True
 
-        if request_path & config.enabled_endpoints:
-            return True
-
-        return False
+        return bool(request_path & config.enabled_endpoints)
 
     @property
     def favicon(self) -> str:

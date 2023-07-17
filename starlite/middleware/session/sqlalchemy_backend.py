@@ -211,9 +211,9 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
 
     def _get_sync(self, session_id: str) -> Optional[bytes]:
         sa_session = self._create_sa_session()
-        session_obj = self._get_session_obj(sa_session=sa_session, session_id=session_id)
-
-        if session_obj:
+        if session_obj := self._get_session_obj(
+            sa_session=sa_session, session_id=session_id
+        ):
             if not session_obj.expired:  # type: ignore[truthy-function]
                 self._update_session_expiry(session_obj)  # type: ignore[unreachable]
                 sa_session.commit()

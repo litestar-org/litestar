@@ -135,9 +135,7 @@ def parse_fn_signature(
         if name not in ("self", "cls")
     ):
         if isinstance(parameter.default, DependencyKwarg) and parameter.name not in dependency_name_set:
-            if not parameter.optional and (
-                isinstance(parameter.default, DependencyKwarg) and parameter.default.default is Empty
-            ):
+            if not parameter.optional and parameter.default.default is Empty:
                 raise ImproperlyConfiguredException(
                     f"Explicit dependency '{parameter.name}' for '{fn_name}' has no default value, "
                     f"or provided dependency."

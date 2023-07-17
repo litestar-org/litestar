@@ -44,13 +44,10 @@ def get_field_type(model_field: ModelField) -> Any:
         Type of field.
     """
     outer_type = model_field.outer_type_
-    inner_type = model_field.type_
     if "ForwardRef" not in repr(outer_type):
         return outer_type
-    if model_field.shape == SHAPE_SINGLETON:
-        return inner_type
-    # This might be too simplistic
-    return List[inner_type]  # type: ignore
+    inner_type = model_field.type_
+    return inner_type if model_field.shape == SHAPE_SINGLETON else List[inner_type]
 
 
 T = TypeVar("T")
