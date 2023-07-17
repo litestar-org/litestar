@@ -132,6 +132,7 @@ mongomock-motor = { version = "*", markers = "sys_platform != 'win32'" }
 opentelemetry-instrumentation-asgi = "*"
 opentelemetry-sdk = "*"
 oracledb = "*"
+piccolo = "*"
 picologging = "*"
 pre-commit = "*"
 prometheus-client = "*"
