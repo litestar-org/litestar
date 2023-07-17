@@ -1,7 +1,9 @@
 <!-- markdownlint-disable -->
 <p align="center">
+  <!-- github-banner-start -->
   <img src="artwork/banner-light.svg#gh-light-mode-only" alt="Litestar Logo - Light" width="100%" height="auto" />
   <img src="artwork/banner-dark.svg#gh-dark-mode-only" alt="Litestar Logo - Dark" width="100%" height="auto" />
+  <!-- github-banner-end -->
 </p>
 <!-- markdownlint-restore -->
 
@@ -266,6 +268,8 @@ or [join our Matrix](https://matrix.to/#/#litestar:matrix.org) space
 to discuss contributions and project maintenance. For guidelines on how to contribute, please
 see [the contribution guide](CONTRIBUTING.rst).
 
+<!-- contributors-start -->
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -442,3 +446,5 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
 Contributions of any kind welcome!
+
+<!-- contributors-end -->
