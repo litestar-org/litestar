@@ -1,6 +1,30 @@
 1.x Changelog
 =============
 
+1.51.11
+-------
+
+* Fix missing ``content-encoding`` headers for gzip/brotli compressed files
+
+1.51.10
+-------
+
+* Fix ``Partial`` modifying dataclasses
+* Fix CLI `--reload` flag not working as expected
+* Add uvicorn to ``cli`` extra
+
+1.51.9
+------
+
+* Remove ``pytest-lazy-fixture`` as s dependency that was erroneously added in the previous release
+
+
+1.51.8
+------
+
+* Fix a regression where setting ``cache=True`` in a route handler would cause errors when used with the redis cache backend
+
+
 1.51.7
 ------
 
