@@ -1150,6 +1150,15 @@
         "infra",
         "code"
       ]
+    },
+    {
+      "login": "lazyc97",
+      "name": "Nguyễn Hoàng Đức",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8538104?v=4",
+      "profile": "https://github.com/lazyc97",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
