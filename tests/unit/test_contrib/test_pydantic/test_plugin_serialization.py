@@ -171,6 +171,7 @@ def test_default_serializer(model: BaseModel, attribute_name: str, expected: Any
 
 
 def test_serialization_of_model_instance(model: BaseModel) -> None:
+    assert serializer(getattr(model, "conbytes")) == b"hello"
     assert serializer(model) == _model_dump(model)
 
 

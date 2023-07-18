@@ -90,9 +90,7 @@ class PydanticInitPlugin(InitPluginProtocol):
     @staticmethod
     def _create_pydantic_v1_encoders() -> dict[Any, Callable[[Any], Any]]:  # pragma: no cover
         return {
-            pydantic.BaseModel: lambda model: {
-                k: v.decode() if isinstance(v, bytes) else v for k, v in model.dict().items()
-            },
+            pydantic.BaseModel: lambda model: model.dict(),
             pydantic.SecretField: str,
             pydantic.StrictBool: int,
             pydantic.color.Color: str,  # pyright: ignore
