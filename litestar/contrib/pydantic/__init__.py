@@ -16,7 +16,7 @@ def _model_dump(model: pydantic.BaseModel, *, by_alias: bool = False) -> dict[st
     return (
         model.model_dump(mode="json", by_alias=by_alias)
         if hasattr(model, "model_dump")
-        else model.dict(by_alias=by_alias)
+        else {k: v.decode() if isinstance(v, bytes) else v for k, v in model.dict(by_alias=by_alias).items()}
     )
 
 

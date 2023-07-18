@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 from uuid import UUID
 
@@ -90,7 +91,9 @@ class PydanticInitPlugin(InitPluginProtocol):
     @staticmethod
     def _create_pydantic_v1_encoders() -> dict[Any, Callable[[Any], Any]]:  # pragma: no cover
         return {
-            pydantic.BaseModel: lambda model: model.dict(),
+            pydantic.BaseModel: lambda model: {
+                k: v.decode() if isinstance(v, bytes) else v for k, v in model.dict().items()
+            },
             pydantic.SecretField: str,
             pydantic.StrictBool: int,
             pydantic.color.Color: str,  # pyright: ignore
@@ -100,17 +103,17 @@ class PydanticInitPlugin(InitPluginProtocol):
 
     @staticmethod
     def _create_pydantic_v2_encoders() -> dict[Any, Callable[[Any], Any]]:
-        try:
-            from pydantic_extra_types import color
-        except ImportError:
-            color = None  # type: ignore[assignment]
         encoders: dict[Any, Callable[[Any], Any]] = {
             pydantic.BaseModel: lambda model: model.model_dump(mode="json"),
             pydantic.types.SecretStr: lambda val: "**********" if val else "",
             pydantic.types.SecretBytes: lambda val: "**********" if val else "",
         }
-        if color:
+
+        with suppress(ImportError):
+            from pydantic_extra_types import color
+
             encoders[color.Color] = str
+
         return encoders
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
