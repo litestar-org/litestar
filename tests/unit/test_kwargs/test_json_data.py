@@ -13,7 +13,9 @@ def test_request_body_json() -> None:
         assert isinstance(data, Form)
 
     with create_test_client(test_method) as client:
-        response = client.post("/test", json=_model_dump(Form(name="Moishe Zuchmir", age=30, programmer=True)))
+        response = client.post(
+            "/test", json=_model_dump(Form(name="Moishe Zuchmir", age=30, programmer=True, value="100"))
+        )
         assert response.status_code == HTTP_201_CREATED
 
 

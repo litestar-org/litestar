@@ -81,7 +81,7 @@ attrs = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
 click = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
-fast-query-parsers = "*"
+fast-query-parsers = ">=1.0.0"
 httpx = ">=0.22"
 importlib-metadata = { version = "*", python = "<3.10" }
 importlib-resources = { version = ">=5.12.0", python = "<3.9" }
@@ -171,7 +171,7 @@ sphinxcontrib-mermaid = ">=0.8.1,<1"
 litestar-sphinx-theme = { git = "https://github.com/litestar-org/litestar-sphinx-theme.git" }
 uvicorn = "*"
 sphinx-click = "^4.4.0"
-piccolo = "*"  # temporarily moved here because it depends on Pydantic <2 but we need it to generate the docs
+piccolo = "*"                                                                                 # temporarily moved here because it depends on Pydantic <2 but we need it to generate the docs
 
 [tool.poetry.group.lint]
 optional = true
@@ -332,7 +332,7 @@ strict-imports = false
 
 [tool.ruff]
 select = [
-    "A", # flake8-builtins
+    "A",   # flake8-builtins
     "B",   # flake8-bugbear
     "BLE", # flake8-blind-except
     "C4",  # flake8-comprehensions

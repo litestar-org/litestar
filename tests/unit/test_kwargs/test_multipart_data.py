@@ -90,7 +90,7 @@ def test_request_body_multi_part(t_type: Type[Any]) -> None:
     body = Body(media_type=RequestEncodingType.MULTI_PART)
 
     test_path = "/test"
-    data = _model_dump(Form(name="Moishe Zuchmir", age=30, programmer=True))
+    data = _model_dump(Form(name="Moishe Zuchmir", age=30, programmer=True, value="100"))
 
     @post(path=test_path)
     def test_method(data: t_type = body) -> None:  # type: ignore
