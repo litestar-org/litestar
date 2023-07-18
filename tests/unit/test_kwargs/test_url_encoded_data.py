@@ -16,7 +16,7 @@ def test_request_body_url_encoded() -> None:
         assert isinstance(data, Form)
 
     with create_test_client(test_method) as client:
-        response = _model_dump(client.post("/test", data=Form(name="Moishe Zuchmir", age=30, programmer=True)))
+        response = client.post("/test", data=_model_dump(Form(name="Moishe Zuchmir", age=30, programmer=True)))
         assert response.status_code == HTTP_201_CREATED
 
 
