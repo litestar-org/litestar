@@ -266,7 +266,9 @@ class RequestFactory:
 
                 data = attrs_as_dict(data)  # type: ignore[arg-type]
             elif is_pydantic_model_instance(data):
-                data = data.model_dump(mode="json") if hasattr(data, "model_dump") else data.dict()
+                from litestar.contrib.pydantic import _model_dump
+
+                data = _model_dump(data)
 
             if request_media_type == RequestEncodingType.JSON:
                 encoding_headers, stream = httpx_encode_json(data)

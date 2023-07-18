@@ -13,7 +13,7 @@ from typing_extensions import Annotated
 
 from litestar import Litestar, patch, post
 from litestar.connection.request import Request
-from litestar.contrib.pydantic import PydanticDTO
+from litestar.contrib.pydantic import PydanticDTO, _model_dump_json
 from litestar.datastructures import UploadFile
 from litestar.dto import DataclassDTO, DTOConfig, DTOData, MsgspecDTO, dto_field
 from litestar.dto.types import RenameStrategy
@@ -732,7 +732,7 @@ def test_schema_required_fields_with_pydantic_dto() -> None:
         headers = {"Content-Type": "application/json; charset=utf-8"}
         received = client.post(
             "/",
-            content=data.json(),
+            content=_model_dump_json(data),
             headers=headers,
         )
         required = list(received.json()["components"]["schemas"].values())[0]["required"]

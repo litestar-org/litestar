@@ -16,6 +16,7 @@ from litestar import (
     websocket,
 )
 from litestar.connection import WebSocket
+from litestar.contrib.pydantic import _model_dump
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from litestar.testing import create_test_client
@@ -59,7 +60,8 @@ async def test_controller_http_method(
         response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
         if return_value:
-            assert response.json() == return_value.dict() if isinstance(return_value, BaseModel) else return_value
+            if isinstance(return_value, BaseModel):
+                assert response.json() == _model_dump(return_value)
 
 
 def test_controller_with_websocket_handler() -> None:

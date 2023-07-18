@@ -4,6 +4,7 @@ from typing import Any, Callable, List, Optional, Type
 import pytest
 
 from litestar import Controller, MediaType, delete, get, post
+from litestar.contrib.pydantic import _model_dump
 from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_204_NO_CONTENT,
@@ -105,7 +106,7 @@ def test_root_route_handler(
     with create_test_client([MyController, delete_handler] if delete_handler else MyController) as client:
         response = client.get(decorator_path or test_path)
         assert response.status_code == HTTP_200_OK, response.json()
-        assert response.json() == person_instance.dict()
+        assert response.json() == _model_dump(person_instance)
         if delete_handler:
             delete_response = client.delete("/")
             assert delete_response.status_code == HTTP_204_NO_CONTENT

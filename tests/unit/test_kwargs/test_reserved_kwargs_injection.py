@@ -17,6 +17,7 @@ from litestar import (
     post,
     put,
 )
+from litestar.contrib.pydantic import _model_dump
 from litestar.datastructures.state import ImmutableState, State
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.status_codes import (
@@ -100,7 +101,7 @@ def test_data_using_model(decorator: Any, http_method: Any, expected_status_code
             assert data == person_instance
 
     with create_test_client(MyController) as client:
-        response = client.request(http_method, test_path, json=person_instance.dict())
+        response = client.request(http_method, test_path, json=_model_dump(person_instance))
         assert response.status_code == expected_status_code
 
 
@@ -126,7 +127,7 @@ def test_data_using_list_of_models(decorator: Any, http_method: Any, expected_st
             assert data == people
 
     with create_test_client(MyController) as client:
-        response = client.request(http_method, test_path, json=[p.dict() for p in people])
+        response = client.request(http_method, test_path, json=[_model_dump(p) for p in people])
         assert response.status_code == expected_status_code
 
 

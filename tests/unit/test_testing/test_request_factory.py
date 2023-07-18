@@ -5,6 +5,7 @@ import pytest
 from pydantic import BaseModel
 
 from litestar import HttpMethod, Litestar, get
+from litestar.contrib.pydantic import _model_dump
 from litestar.datastructures import Cookie, MultiDict
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.testing import RequestFactory
@@ -65,7 +66,7 @@ def test_request_factory_build_headers() -> None:
 
 @pytest.mark.parametrize("data_cls", [PydanticPerson, VanillaDataClassPerson, AttrsPerson, MsgSpecStructPerson])
 async def test_request_factory_create_with_data(data_cls: DataContainerType) -> None:
-    person = PydanticPersonFactory.build().dict()
+    person = _model_dump(PydanticPersonFactory.build())
     request = RequestFactory()._create_request_with_data(
         HttpMethod.POST,
         "/",
@@ -78,7 +79,7 @@ async def test_request_factory_create_with_data(data_cls: DataContainerType) -> 
 @pytest.mark.parametrize(
     "request_media_type, verify_data",
     [
-        [RequestEncodingType.JSON, lambda data: json.loads(data) == pet.dict()],
+        [RequestEncodingType.JSON, lambda data: json.loads(data) == _model_dump(pet)],
         [RequestEncodingType.MULTI_PART, lambda data: "Content-Disposition" in data],
         [
             RequestEncodingType.URL_ENCODED,
@@ -92,7 +93,7 @@ async def test_request_factory_create_with_content_type(
     request = RequestFactory()._create_request_with_data(
         HttpMethod.POST,
         "/",
-        data=pet.dict(),
+        data=_model_dump(pet),
         request_media_type=request_media_type,
     )
     assert request.headers["Content-Type"].startswith(request_media_type.value)
@@ -196,4 +197,4 @@ async def test_request_factory_post_put_patch(factory: Callable, method: HttpMet
     assert len(request.headers.keys()) == 3
     assert request.headers.get("header1") == "value1"
     body = await request.body()
-    assert json.loads(body) == pet.dict()
+    assert json.loads(body) == _model_dump(pet)

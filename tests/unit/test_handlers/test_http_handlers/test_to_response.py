@@ -13,6 +13,7 @@ from litestar import HttpMethod, Litestar, MediaType, Request, Response, get, ro
 from litestar._signature import SignatureModel
 from litestar.background_tasks import BackgroundTask
 from litestar.contrib.jinja import JinjaTemplateEngine
+from litestar.contrib.pydantic import _model_dump
 from litestar.datastructures import Cookie, ResponseHeader
 from litestar.response.base import ASGIResponse
 from litestar.response.file import ASGIFileResponse, File
@@ -101,7 +102,7 @@ async def test_to_response_async_await(anyio_backend: str) -> None:
         app=Litestar(route_handlers=[test_function]),
         request=RequestFactory().get(route_handler=test_function),
     )
-    assert loads(response.body) == person_instance.dict()  # type: ignore
+    assert loads(response.body) == _model_dump(person_instance)  # type: ignore
 
 
 async def test_to_response_returning_litestar_response() -> None:

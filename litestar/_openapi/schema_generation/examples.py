@@ -34,7 +34,9 @@ def _normalize_example_value(value: Any) -> Any:
     if isinstance(value, Enum):
         value = value.value
     if is_pydantic_model_instance(value):
-        value = value.dict()
+        from litestar.contrib.pydantic import _model_dump
+
+        value = _model_dump(value)
     if isinstance(value, (list, set)):
         value = [_normalize_example_value(v) for v in value]
     if isinstance(value, dict):
