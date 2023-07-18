@@ -1088,27 +1088,27 @@ lua = ["lupa (>=1.14,<2.0)"]
 
 [[package]]
 name = "fast-query-parsers"
-version = "0.4.0"
+version = "1.0.0"
 description = "Ultra-fast query string and url-encoded form-data parsers"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "fast_query_parsers-0.4.0-cp38-abi3-macosx_10_7_x86_64.whl", hash = "sha256:5d5b9a6cbba217bc3311c270030dcaacc9ce081e2343703cab3dbdf21f09fcab"},
-    {file = "fast_query_parsers-0.4.0-cp38-abi3-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:bd39fee9817f5b9ccd42c7893b778fdddb7401d8a57fb0219c83935d749e35d6"},
-    {file = "fast_query_parsers-0.4.0-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a1aba46436734f31bd00fde8da6337d41203cad82f7701ad08b341b45fd79237"},
-    {file = "fast_query_parsers-0.4.0-cp38-abi3-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:acabff2ed93a893753bad5acc78c8c6151e27386648b69bcd3c694de10408b93"},
-    {file = "fast_query_parsers-0.4.0-cp38-abi3-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:59ababfa12fc08c442f6b06b09f8c0c40b642a9abba680d1da052fe86900c31a"},
-    {file = "fast_query_parsers-0.4.0-cp38-abi3-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:c7ee77c1049c468e063bd8292b07aa3cc18ed1f1b3a0d771961ee977c7a721eb"},
-    {file = "fast_query_parsers-0.4.0-cp38-abi3-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:67527991471aa2647e075643dbd71292fffcc6e4b51a588ce1892777bad40c72"},
-    {file = "fast_query_parsers-0.4.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:70f7abd5e82573875858d78149c13c0a4639d2e4f0b837f5cc8a21a87d6a1ac1"},
-    {file = "fast_query_parsers-0.4.0-cp38-abi3-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:505b9d3d18065f1a1dc8ab0d59b39ff2756f98d016513aec42a41733998a30b9"},
-    {file = "fast_query_parsers-0.4.0-cp38-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:d80f7fbb1f2036dc8d40360e6e2c297f69e00914aba7743c189595349f0a1e0a"},
-    {file = "fast_query_parsers-0.4.0-cp38-abi3-musllinux_1_2_armv7l.whl", hash = "sha256:2837df1c76fd7ae03ffe05ee05c75f639b80aec56617ba285deddaebb2a26691"},
-    {file = "fast_query_parsers-0.4.0-cp38-abi3-musllinux_1_2_i686.whl", hash = "sha256:d71a51b983c186ce7ed4b1af0292b5a937d485d6a330f02c52d95ccc81c2e1b7"},
-    {file = "fast_query_parsers-0.4.0-cp38-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:f4f6d57b06623c840200415ed30aba14bc2de0c81189bb6609f802651b771e6a"},
-    {file = "fast_query_parsers-0.4.0-cp38-abi3-win32.whl", hash = "sha256:bda8b91ca9f95bf95346d93a5ea23678880b8721674713ef0bff6dad29eab480"},
-    {file = "fast_query_parsers-0.4.0-cp38-abi3-win_amd64.whl", hash = "sha256:ebbdcb6d3e3936a959c73a96765a6abf02a8d214eb2dd1024bad1c83d0b7ba41"},
-    {file = "fast_query_parsers-0.4.0.tar.gz", hash = "sha256:fdeb39582a06f77c02e9a3d7a61f9ea7025c0c18b0e42d2e78a4d3cf1d13d862"},
+    {file = "fast_query_parsers-1.0.0-cp38-abi3-macosx_10_7_x86_64.whl", hash = "sha256:0e79684c696ca4db6b8a674961d6dc401f7c26472fdd11c8030c02cfc7cd8e50"},
+    {file = "fast_query_parsers-1.0.0-cp38-abi3-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:612a58d5af661472093cf91624d322298b40dd76cc18fef86f26a39a65a57d97"},
+    {file = "fast_query_parsers-1.0.0-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:75d188ee816ac8547d2d86672917a350393326acecdf965d3c1d02bf7fcb4e32"},
+    {file = "fast_query_parsers-1.0.0-cp38-abi3-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:4a6c95552c6e3f33292c2f957e9583b460f959936b117e8fdf72f84303aa4591"},
+    {file = "fast_query_parsers-1.0.0-cp38-abi3-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:6761c582d112f3501bd468ab1788d6227d62f918d3bd0f598cf03dd39bf45420"},
+    {file = "fast_query_parsers-1.0.0-cp38-abi3-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:66a1aef9314c2d60dd366f32fefca05124ee6c3cc2565d0afce72cad76f74128"},
+    {file = "fast_query_parsers-1.0.0-cp38-abi3-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:f3816e00cff6c08ca7962359afa6f9b0504bd2b716cda74db0f36b0a9d7e0f06"},
+    {file = "fast_query_parsers-1.0.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:44f2694643f9ca7868a07943d70758ffff6f56ce921e3875169d419ed97fa519"},
+    {file = "fast_query_parsers-1.0.0-cp38-abi3-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:cfc0df87c48b0f22f97c8e3c1a12bed33e4dba15009feefff66ec13c154fac37"},
+    {file = "fast_query_parsers-1.0.0-cp38-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:4b8a15f3fa03638dbf997f2071a84f3ffe2877742712eff3435591adf41aab1f"},
+    {file = "fast_query_parsers-1.0.0-cp38-abi3-musllinux_1_2_armv7l.whl", hash = "sha256:4c321c87895e286e08a836139a78d035dab3ac4ce77f9906dbb2f46c5675f326"},
+    {file = "fast_query_parsers-1.0.0-cp38-abi3-musllinux_1_2_i686.whl", hash = "sha256:f96b29d6b91cf629c4a7cd20b89068e345effdf589ec4573ef669f2e156214df"},
+    {file = "fast_query_parsers-1.0.0-cp38-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:3f76e8be49354be7dbbe6040efea87f21f16effe03e903a369f78fa0f956b306"},
+    {file = "fast_query_parsers-1.0.0-cp38-abi3-win32.whl", hash = "sha256:6a95f32c4286c8cc56e6d1ef2fd68ae0bf45d4cb142c8119a7de7e0c5e0ce0de"},
+    {file = "fast_query_parsers-1.0.0-cp38-abi3-win_amd64.whl", hash = "sha256:af3d959da3fdb2a3df1ba22d1db9da21fda3c6537ab3cb6d26bc871586ae0002"},
+    {file = "fast_query_parsers-1.0.0.tar.gz", hash = "sha256:76f32c69c13a0a690111e9e3d8b6f63898aa45d604950e91d5c6a6b2abad6aea"},
 ]
 
 [[package]]
@@ -4274,4 +4274,4 @@ tortoise-orm = ["tortoise-orm"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "a89ec5db599720ca9336c7e0d81d581ba8285ee2c8283906e26cb586835d89b9"
+content-hash = "dc1a3a378eb9f34912d390f64577cf94b8b18b7994b18156bf070a2cba3c3804"

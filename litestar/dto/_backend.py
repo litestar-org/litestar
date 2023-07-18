@@ -252,7 +252,9 @@ class DTOBackend:
         Returns:
             The builtin type parsed into transfer model type.
         """
-        return convert(obj=builtins, type=self.annotation, dec_hook=connection_context.default_deserializer)
+        return convert(
+            obj=builtins, type=self.annotation, dec_hook=connection_context.default_deserializer, strict=False
+        )
 
     def populate_data_from_builtins(self, builtins: Any, connection_context: ConnectionContext) -> Any:
         """Populate model instance from builtin types.
@@ -268,11 +270,11 @@ class DTOBackend:
             return self.dto_data_type(
                 backend=self,
                 data_as_builtins=transfer_data(
-                    dict,
-                    self.parse_builtins(builtins, connection_context),
-                    self.parsed_field_definitions,
-                    "data",
-                    self.context.field_definition,
+                    destination_type=dict,
+                    source_data=self.parse_builtins(builtins, connection_context),
+                    field_definitions=self.parsed_field_definitions,
+                    dto_for="data",
+                    field_definition=self.context.field_definition,
                 ),
             )
         return self.transfer_data_from_builtins(self.parse_builtins(builtins, connection_context))
