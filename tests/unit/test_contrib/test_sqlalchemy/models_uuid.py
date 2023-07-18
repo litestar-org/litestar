@@ -19,7 +19,7 @@ class UUIDAuthor(UUIDAuditBase):
 
     name: Mapped[str] = mapped_column(String(length=100))  # pyright: ignore
     dob: Mapped[date] = mapped_column(nullable=True)  # pyright: ignore
-    books: Mapped[List[UUIDBook]] = relationship(  # pyright: ignore  # noqa: UP
+    books: Mapped[List[UUIDBook]] = relationship(  # pyright: ignore
         lazy="selectin",
         back_populates="author",
         cascade="all, delete",
@@ -63,7 +63,7 @@ uuid_item_tag = Table(
 class UUIDItem(UUIDBase):
     name: Mapped[str] = mapped_column(String(length=50))  # pyright: ignore
     description: Mapped[str] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
-    tags: Mapped[List[UUIDTag]] = relationship(  # pyright: ignore  # noqa: UP
+    tags: Mapped[List[UUIDTag]] = relationship(  # pyright: ignore
         secondary=lambda: uuid_item_tag, back_populates="items"
     )
 
@@ -72,7 +72,7 @@ class UUIDTag(UUIDAuditBase):
     """The event log domain object."""
 
     name: Mapped[str] = mapped_column(String(length=50))  # pyright: ignore
-    items: Mapped[List[UUIDItem]] = relationship(  # pyright: ignore  # noqa: UP
+    items: Mapped[List[UUIDItem]] = relationship(  # pyright: ignore
         secondary=lambda: uuid_item_tag, back_populates="tags"
     )
 
