@@ -186,7 +186,6 @@ can :ref:`inject into route handlers <usage/route-handlers:handler function kwar
 
    from litestar import Controller, patch
    from litestar.di import Provide
-   from litestar.partial import Partial
    from pydantic import BaseModel, UUID4
 
 
@@ -204,7 +203,7 @@ can :ref:`inject into route handlers <usage/route-handlers:handler function kwar
        dependencies = {"user": Provide(retrieve_db_user)}
 
        @patch(path="/{user_id:uuid}")
-       async def update_user(self, data: Partial[User], user: User) -> User:
+       async def get_user(self, user: User) -> User:
            ...
 
 In the above example we have a ``User`` model that we are persisting into a db. The model is fetched using the helper

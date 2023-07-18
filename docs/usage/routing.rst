@@ -157,15 +157,20 @@ better code organization and organize code by logical concerns.
 
 .. code-block:: python
 
-   from pydantic import BaseModel, UUID4
+   from litestar.contrib.pydantic import PydanticDTO
    from litestar.controller import Controller
+   from litestar.dto import DTOConfig, DTOData
    from litestar.handlers import get, post, patch, delete
-   from litestar.types import Partial
+   from pydantic import BaseModel, UUID4
 
 
    class UserOrder(BaseModel):
        user_id: int
        order: str
+
+
+   class PartialUserOrderDTO(PydanticDTO[UserOrder]):
+       config = DTOConfig(partial=True)
 
 
    class UserOrderController(Controller):
@@ -179,9 +184,9 @@ better code organization and organize code by logical concerns.
        async def retrieve_user_order(self, order_id: UUID4) -> UserOrder:
            ...
 
-       @patch(path="/{order_id:uuid}")
+       @patch(path="/{order_id:uuid}", dto=PartialUserOrderDTO)
        async def update_user_order(
-           self, order_id: UUID4, data: Partial[UserOrder]
+           self, order_id: UUID4, data: DTOData[PartialUserOrderDTO]
        ) -> UserOrder:
            ...
 

@@ -332,9 +332,9 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        return Schema(
-            one_of=sort_schemas_and_references(list(map(self.for_field_definition, field_definition.inner_types or [])))
-        )
+        inner_types = [f for f in (field_definition.inner_types or []) if not is_undefined_sentinel(f.annotation)]
+        values = list(map(self.for_field_definition, inner_types))
+        return Schema(one_of=sort_schemas_and_references(values))
 
     def for_object_type(self, field_definition: FieldDefinition) -> Schema:
         """Create schema for object types (dict, Mapping, list, Sequence etc.) types.

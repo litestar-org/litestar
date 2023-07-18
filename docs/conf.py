@@ -123,6 +123,7 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.response_containers.Redirect"),
     (PY_CLASS, "litestar.response_containers.Template"),
     (PY_CLASS, "litestar.typing.ParsedType"),
+    (PY_CLASS, "litestar.partial.Partial"),
     (PY_METH, "litestar.dto.factory.DTOData.create_instance"),
 ]
 

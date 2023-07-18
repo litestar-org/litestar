@@ -10,6 +10,9 @@ from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass as pydantic_dataclass
 from typing_extensions import NotRequired, Required, TypedDict
 
+from litestar.contrib.pydantic import PydanticDTO
+from litestar.dto import DTOConfig
+
 
 class Species(str, Enum):
     DOG = "Dog"
@@ -39,6 +42,10 @@ class PydanticPersonFactory(ModelFactory[PydanticPerson]):
 
 class PydanticPetFactory(ModelFactory[PydanticPet]):
     __model__ = PydanticPet
+
+
+class PartialPersonDTO(PydanticDTO[PydanticPerson]):
+    config = DTOConfig(partial=True)
 
 
 @vanilla_dataclass
