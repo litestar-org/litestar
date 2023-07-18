@@ -26,6 +26,7 @@ from pydantic import (
     constr,
 )
 
+from litestar.contrib.pydantic import _model_dump, _model_dump_json
 from litestar.contrib.pydantic.pydantic_init_plugin import PydanticInitPlugin
 
 if VERSION.startswith("1"):
@@ -170,11 +171,12 @@ def test_default_serializer(model: BaseModel, attribute_name: str, expected: Any
 
 
 def test_serialization_of_model_instance(model: BaseModel) -> None:
-    assert serializer(model) == model.model_dump(mode="json") if hasattr(model, "model_dump") else model.dict()
+    assert serializer(getattr(model, "conbytes")) == b"hello"
+    assert serializer(model) == _model_dump(model)
 
 
 def test_pydantic_json_compatibility(model: BaseModel) -> None:
-    raw = model.model_dump_json() if hasattr(model, "model_dump_json") else model.json()
+    raw = _model_dump_json(model)
     encoded_json = encode_json(model, serializer=get_serializer(PydanticInitPlugin.encoders()))
 
     raw_result = json.loads(raw)
@@ -202,15 +204,13 @@ def test_decode_json_raises_serialization_exception(model: BaseModel, decoder: A
 
 
 def test_decode_json_typed(model: BaseModel) -> None:
-    dumped_model = model.model_dump_json() if hasattr(model, "model_dump_json") else model.json()
+    dumped_model = _model_dump_json(model)
     decoded_model = decode_json(value=dumped_model, target_type=Model, type_decoders=PydanticInitPlugin.decoders())
-    assert (
-        decoded_model.model_dump_json() if hasattr(decoded_model, "model_dump_json") else decoded_model.json()
-    ) == dumped_model
+    assert _model_dump_json(decoded_model) == dumped_model
 
 
 def test_decode_msgpack_typed(model: BaseModel) -> None:
-    model_json = model.json()
+    model_json = _model_dump_json(model)
     assert (
         decode_msgpack(
             encode_msgpack(model, serializer=get_serializer(PydanticInitPlugin.encoders())),

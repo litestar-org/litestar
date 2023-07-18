@@ -10,6 +10,7 @@ from msgspec import convert
 from pydantic import BaseConfig, BaseModel
 
 from litestar import Request, post
+from litestar.contrib.pydantic import _model_dump, _model_dump_json
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
@@ -89,7 +90,7 @@ def test_request_body_multi_part(t_type: Type[Any]) -> None:
     body = Body(media_type=RequestEncodingType.MULTI_PART)
 
     test_path = "/test"
-    data = Form(name="Moishe Zuchmir", age=30, programmer=True).dict()
+    data = _model_dump(Form(name="Moishe Zuchmir", age=30, programmer=True))
 
     @post(path=test_path)
     def test_method(data: t_type = body) -> None:  # type: ignore
@@ -120,7 +121,7 @@ def test_request_body_multi_part_mixed_field_content_types() -> None:
         response = client.post(
             "/form",
             files={"image": ("image.png", b"data")},
-            data={"tags": ["1", "2", "3"], "profile": person.json()},
+            data={"tags": ["1", "2", "3"], "profile": _model_dump_json(person)},
         )
         assert response.status_code == HTTP_201_CREATED
 
