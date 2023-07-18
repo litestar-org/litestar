@@ -32,11 +32,11 @@ def test_partial_pydantic_v1_model() -> None:
     class PydanticPersonWithClassVar(PydanticPerson):
         cls_var: ClassVar[int]
 
-    partial = Partial[PydanticPersonWithClassVar]
+    partial = Partial[PydanticPersonWithClassVar]  # type: ignore
 
     assert len(partial.__fields__) == len(PydanticPerson.__fields__)  # type: ignore
 
-    for field in partial.__fields__.values():  # type: ignore
+    for field in partial.__fields__.values():
         assert field.allow_none
         assert not field.required
 

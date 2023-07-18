@@ -20,18 +20,20 @@ from litestar.dto._types import (
 from litestar.dto.config import DTOConfig
 from litestar.dto.data_structures import DTOData
 from litestar.dto.field import Mark
+from litestar.dto.types import ForType, RenameStrategy
+from litestar.enums import RequestEncodingType
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType
 from litestar.types.composite_types import TypeEncodersMap
 from litestar.types.protocols import InstantiableCollection
 from litestar.typing import FieldDefinition
+from litestar.utils import find_index
 
 if TYPE_CHECKING:
     from typing import AbstractSet, Any, Iterable
 
     from litestar.dto._types import FieldDefinitionsType, TransferDTOFieldDefinition
     from litestar.dto.data_structures import DTOFieldDefinition
-    from litestar.dto.types import ForType, RenameStrategy
 
 __all__ = (
     "RenameStrategies",
@@ -66,7 +68,15 @@ def get_model_type_hints(model_type: type[Any], namespace: dict[str, Any] | None
     """
     namespace = namespace or {}
     namespace.update(vars(typing))
-    namespace.update({"TypeEncodersMap": TypeEncodersMap})
+    namespace.update(
+        {
+            "TypeEncodersMap": TypeEncodersMap,
+            "ForType": ForType,
+            "DTOConfig": DTOConfig,
+            "RenameStrategy": RenameStrategy,
+            "RequestEncodingType": RequestEncodingType,
+        }
+    )
 
     if model_module := getmodule(model_type):
         namespace.update(vars(model_module))
@@ -131,28 +141,26 @@ def resolve_generic_wrapper_type(
     Returns:
         The data model type.
     """
-    if not (origin := field_definition.origin):
-        return None
+    if (origin := field_definition.origin) and (parameters := getattr(origin, "__parameters__", None)):
+        param_index = find_index(
+            field_definition.inner_types, lambda x: resolve_model_type(x).is_subclass_of(dto_specialized_type)
+        )
 
-    if not (parameters := getattr(origin, "__parameters__", None)):
-        return None  # pragma: no cover
+        if param_index == -1:
+            return None
 
-    for param_index, inner_type in enumerate(field_definition.inner_types):  # noqa: B007 (`param_index` not used)
+        inner_type = field_definition.inner_types[param_index]
         model_type = resolve_model_type(inner_type)
-        if model_type.is_subclass_of(dto_specialized_type):
-            break
-    else:
-        return None
+        type_var = parameters[param_index]
 
-    type_var = parameters[param_index]
-    for attr, attr_type in get_model_type_hints(origin).items():
-        if attr_type.annotation is type_var or any(t.annotation is type_var for t in attr_type.inner_types):
-            if attr_type.is_non_string_collection:
-                # the inner type of the collection type is the type var, so we need to specialize the
-                # collection type with the DTO supported type.
-                specialized_annotation = attr_type.safe_generic_origin[model_type.annotation]
-                return model_type, FieldDefinition.from_annotation(specialized_annotation), attr
-            return model_type, inner_type, attr
+        for attr, attr_type in get_model_type_hints(origin).items():
+            if attr_type.annotation is type_var or any(t.annotation is type_var for t in attr_type.inner_types):
+                if attr_type.is_non_string_collection:
+                    # the inner type of the collection type is the type var, so we need to specialize the
+                    # collection type with the DTO supported type.
+                    specialized_annotation = attr_type.safe_generic_origin[model_type.annotation]
+                    return model_type, FieldDefinition.from_annotation(specialized_annotation), attr
+                return model_type, inner_type, attr
 
     return None
 

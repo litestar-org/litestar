@@ -8,10 +8,10 @@ from pydantic import (
 
 from litestar import Controller, MediaType, delete, get, patch, post, put
 from litestar.datastructures import ResponseHeader, State
+from litestar.dto import DTOData
 from litestar.openapi.spec.example import Example
 from litestar.params import Parameter
-from litestar.partial import Partial
-from tests import PydanticPerson, PydanticPersonFactory, PydanticPet, VanillaDataClassPerson
+from tests import PartialPersonDTO, PydanticPerson, PydanticPersonFactory, PydanticPet, VanillaDataClassPerson
 
 from .utils import Gender, PetException
 
@@ -59,9 +59,9 @@ def create_person_controller() -> Type[Controller]:
         ) -> PydanticPerson:
             return data
 
-        @post(path="/bulk")
+        @post(path="/bulk", dto=PartialPersonDTO)
         def bulk_create_person(
-            self, data: List[PydanticPerson], secret_header: str = Parameter(header="secret")
+            self, data: List[DTOData[PydanticPerson]], secret_header: str = Parameter(header="secret")
         ) -> List[PydanticPerson]:
             return []
 
@@ -71,9 +71,9 @@ def create_person_controller() -> Type[Controller]:
         ) -> List[PydanticPerson]:
             return []
 
-        @patch(path="/bulk")
+        @patch(path="/bulk", dto=PartialPersonDTO)
         def bulk_partial_update_person(
-            self, data: List[Partial[PydanticPerson]], secret_header: str = Parameter(header="secret")
+            self, data: List[DTOData[PydanticPerson]], secret_header: str = Parameter(header="secret")
         ) -> List[PydanticPerson]:
             return []
 
@@ -82,8 +82,8 @@ def create_person_controller() -> Type[Controller]:
             """Description in docstring."""
             return PydanticPersonFactory.build(id=person_id)
 
-        @patch(path="/{person_id:str}", description="Description in decorator")
-        def partial_update_person(self, person_id: str, data: Partial[PydanticPerson]) -> PydanticPerson:
+        @patch(path="/{person_id:str}", description="Description in decorator", dto=PartialPersonDTO)
+        def partial_update_person(self, person_id: str, data: DTOData[PydanticPerson]) -> PydanticPerson:
             """Description in docstring."""
             return PydanticPersonFactory.build(id=person_id)
 

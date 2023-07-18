@@ -16,6 +16,7 @@ from typing_extensions import TypeAlias, TypedDict, get_type_hints
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.builtin_types import NoneType
+from litestar.utils import warn_deprecation
 from litestar.utils.predicates import (
     is_attrs_class,
     is_class_var,
@@ -28,8 +29,6 @@ from litestar.utils.predicates import (
 if TYPE_CHECKING:
     import attrs
     import pydantic
-
-__all__ = ("Partial",)
 
 try:
     # python 3.9 changed these variable
@@ -59,7 +58,7 @@ def _extract_type_hints(item: Any) -> tuple[tuple[str, Any], ...]:
     )
 
 
-class Partial(Generic[T]):
+class _Partial(Generic[T]):
     """Partial is a special typing helper that takes a generic T, and
     returns to static type checkers a version of this T in which all fields -
     and nested fields - are optional.
@@ -184,3 +183,18 @@ class Partial(Generic[T]):
             fields=field_definitions,
             bases=(item,),
         )
+
+
+def __getattr__(attr_name: str) -> object:
+    if "Partial" in attr_name:
+        warn_deprecation(
+            deprecated_name="litestar.partial.Partial",
+            version="2.0b3",
+            kind="class",
+            removal_in="2.0",
+            info="the 'Partial' class is deprecated, please use a partial DTO instead",
+        )
+
+        globals()[attr_name] = _Partial
+        return _Partial
+    raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")

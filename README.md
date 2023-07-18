@@ -119,13 +119,13 @@ controllers:
 
 ```python title="my_app/controllers/user.py"
 from typing import List, Optional
-
-from pydantic import UUID4
-from litestar import Controller, get, post, put, patch, delete
-from litestar.partial import Partial
 from datetime import datetime
 
-from my_app.models import User
+from litestar import Controller, get, post, put, patch, delete
+from litestar.dto import DTOData
+from pydantic import UUID4
+
+from my_app.models import User, PartialUserDTO
 
 
 class UserController(Controller):
@@ -143,8 +143,8 @@ class UserController(Controller):
     async def list_new_users(self, date: datetime) -> List[User]:
         ...
 
-    @patch(path="/{user_id:uuid}")
-    async def partial_update_user(self, user_id: UUID4, data: Partial[User]) -> User:
+    @patch(path="/{user_id:uuid}", dto=PartialUserDTO)
+    async def partial_update_user(self, user_id: UUID4, data: DTOData[PartialUserDTO]) -> User:
         ...
 
     @put(path="/{user_id:uuid}")

@@ -31,9 +31,9 @@ class OpenAPIController(Controller):
     """Base styling of the html body."""
     redoc_version: str = "next"
     """Redoc version to download from the CDN."""
-    swagger_ui_version: str = "5.0.0"
+    swagger_ui_version: str = "5.1.3"
     """SwaggerUI version to download from the CDN."""
-    stoplight_elements_version: str = "7.7.5"
+    stoplight_elements_version: str = "7.7.18"
     """StopLight Elements version to download from the CDN."""
     favicon_url: str = ""
     """URL to download a favicon from."""
@@ -67,9 +67,6 @@ class OpenAPIController(Controller):
     _dumped_schema: str = ""
     # until swagger-ui supports v3.1.* of OpenAPI officially, we need to modify the schema for it and keep it
     # separate from the redoc version of the schema, which is unmodified.
-    _dumped_modified_schema: str = ""
-    # set the dto types to `None` to ensure that if a dto is supplied at the application layer, they don't apply to
-    # this controller.
     dto = None
     return_dto = None
 

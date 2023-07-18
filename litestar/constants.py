@@ -2,6 +2,8 @@ from dataclasses import MISSING
 from inspect import Signature
 from typing import Final
 
+from msgspec import UnsetType
+
 from litestar.enums import MediaType
 from litestar.types import Empty
 
@@ -19,7 +21,7 @@ SCOPE_STATE_DEPENDENCY_CACHE: Final = "dependency_cache"
 SCOPE_STATE_NAMESPACE: Final = "__litestar__"
 SCOPE_STATE_RESPONSE_COMPRESSED: Final = "response_compressed"
 SKIP_VALIDATION_NAMES: Final = {"request", "socket", "scope", "receive", "send"}
-UNDEFINED_SENTINELS: Final = {Signature.empty, Empty, Ellipsis, MISSING}
+UNDEFINED_SENTINELS: Final = {Signature.empty, Empty, Ellipsis, MISSING, UnsetType}
 WEBSOCKET_CLOSE: Final = "websocket.close"
 WEBSOCKET_DISCONNECT: Final = "websocket.disconnect"
 

@@ -5,6 +5,7 @@ from dataclasses import dataclass, replace
 from inspect import Parameter, Signature
 from typing import Any, AnyStr, Collection, ForwardRef, Literal, Mapping, Sequence, TypeVar, cast
 
+from msgspec import UnsetType
 from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin
 
 from litestar.exceptions import ImproperlyConfiguredException
@@ -304,7 +305,8 @@ class FieldDefinition:
         """Check if the field should be marked as a required parameter."""
         if Required in self.type_wrappers:  # type: ignore[comparison-overlap]
             return True
-        if NotRequired in self.type_wrappers:  # type: ignore[comparison-overlap]
+
+        if NotRequired in self.type_wrappers or UnsetType in self.args:  # type: ignore[comparison-overlap]
             return False
 
         if isinstance(self.kwarg_definition, ParameterKwarg) and self.kwarg_definition.required is not None:

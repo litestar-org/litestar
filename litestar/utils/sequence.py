@@ -8,7 +8,7 @@ __all__ = ("find_index", "unique", "compact")
 T = TypeVar("T")
 
 
-def find_index(target_list: list[T], predicate: Callable[[T], bool]) -> int:
+def find_index(target_list: Sequence[T], predicate: Callable[[T], bool]) -> int:
     """Find element in list given a key and value.
 
     List elements can be dicts or classes

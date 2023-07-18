@@ -147,8 +147,8 @@ You can also use dataclasses (standard library and Pydantic),
 
    from uuid import UUID
 
-   # from pydantic.dataclasses import dataclass
    from dataclasses import dataclass
+   from litestar.dto import DTOConfig, DataclassDTO
 
 
    @dataclass
@@ -157,16 +157,21 @@ You can also use dataclasses (standard library and Pydantic),
        last_name: str
        id: UUID
 
+
+   class PartialUserDTO(DataclassDTO[User]):
+       config = DTOConfig(exclude={"id"}, partial=True)
+
 **Define a Controller for your data model:**
 
 .. code-block:: python
 
     from typing import List
 
-    from pydantic import UUID4
     from litestar import Controller, get, post, put, patch, delete
-    from litestar.partial import Partial
-    from my_app.models import User
+    from litestar.dto import DTOData
+    from pydantic import UUID4
+
+    from my_app.models import User, PartialUserDTO
 
 
     class UserController(Controller):
@@ -180,8 +185,8 @@ You can also use dataclasses (standard library and Pydantic),
         async def list_users(self) -> List[User]:
             ...
 
-        @patch(path="/{user_id:uuid}")
-        async def partial_update_user(self, user_id: UUID4, data: Partial[User]) -> User:
+        @patch(path="/{user_id:uuid}", dto=PartialUserDTO)
+        async def partial_update_user(self, user_id: UUID4, data: PartialUserDTO) -> User:
             ...
 
         @put(path="/{user_id:uuid}")
