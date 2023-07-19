@@ -10,7 +10,7 @@ from typing_extensions import Annotated
 from litestar import get, post
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto import DTOConfig
-from litestar.dto._utils import RenameStrategies
+from litestar.dto._backend import _rename_field
 from litestar.dto.types import RenameStrategy
 from litestar.testing import create_test_client
 
@@ -63,22 +63,22 @@ class BookAuthorTestData:
 def book_json_data() -> Callable[[RenameStrategy, BookAuthorTestData], Tuple[Dict[str, Any], Book]]:
     def _generate(rename_strategy: RenameStrategy, test_data: BookAuthorTestData) -> Tuple[Dict[str, Any], Book]:
         data: Dict[str, Any] = {
-            RenameStrategies(rename_strategy)("id"): test_data.book_id,
-            RenameStrategies(rename_strategy)("title"): test_data.book_title,
-            RenameStrategies(rename_strategy)("author_id"): test_data.book_author_id,
-            RenameStrategies(rename_strategy)("bar"): test_data.book_bar,
-            RenameStrategies(rename_strategy)("SPAM"): test_data.book_SPAM,
-            RenameStrategies(rename_strategy)("spam_bar"): test_data.book_spam_bar,
-            RenameStrategies(rename_strategy)("first_author"): {
-                RenameStrategies(rename_strategy)("id"): test_data.book_author_id,
-                RenameStrategies(rename_strategy)("name"): test_data.book_author_name,
-                RenameStrategies(rename_strategy)("date_of_birth"): test_data.book_author_date_of_birth,
+            _rename_field(name="id", strategy=rename_strategy): test_data.book_id,
+            _rename_field(name="title", strategy=rename_strategy): test_data.book_title,
+            _rename_field(name="author_id", strategy=rename_strategy): test_data.book_author_id,
+            _rename_field(name="bar", strategy=rename_strategy): test_data.book_bar,
+            _rename_field(name="SPAM", strategy=rename_strategy): test_data.book_SPAM,
+            _rename_field(name="spam_bar", strategy=rename_strategy): test_data.book_spam_bar,
+            _rename_field(name="first_author", strategy=rename_strategy): {
+                _rename_field(name="id", strategy=rename_strategy): test_data.book_author_id,
+                _rename_field(name="name", strategy=rename_strategy): test_data.book_author_name,
+                _rename_field(name="date_of_birth", strategy=rename_strategy): test_data.book_author_date_of_birth,
             },
-            RenameStrategies(rename_strategy)("reviews"): [
+            _rename_field(name="reviews", strategy=rename_strategy): [
                 {
-                    RenameStrategies(rename_strategy)("book_id"): test_data.book_id,
-                    RenameStrategies(rename_strategy)("id"): test_data.book_review_id,
-                    RenameStrategies(rename_strategy)("review"): test_data.book_review,
+                    _rename_field(name="book_id", strategy=rename_strategy): test_data.book_id,
+                    _rename_field(name="id", strategy=rename_strategy): test_data.book_review_id,
+                    _rename_field(name="review", strategy=rename_strategy): test_data.book_review,
                 }
             ],
         }

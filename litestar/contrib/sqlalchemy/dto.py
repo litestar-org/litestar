@@ -18,7 +18,6 @@ from sqlalchemy.orm import (
     RelationshipProperty,
 )
 
-from litestar.dto._utils import get_model_type_hints
 from litestar.dto.base_factory import AbstractDTOFactory
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField, Mark
@@ -193,7 +192,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
 
         # includes SQLAlchemy names and other mapped class names in the forward reference resolution namespace
         namespace = {**SQLA_NS, **{m.class_.__name__: m.class_ for m in mapper.registry.mappers if m is not mapper}}
-        model_type_hints = get_model_type_hints(model_type, namespace=namespace)
+        model_type_hints = cls.get_model_type_hints(model_type, namespace=namespace)
         model_name = get_fully_qualified_class_name(model_type)
 
         # the same hybrid property descriptor can be included in `all_orm_descriptors` multiple times, once

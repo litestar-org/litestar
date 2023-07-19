@@ -41,6 +41,10 @@ class SimpleType(TransferType):
     nested_field_info: NestedFieldInfo | None
     """If the type is a 'nested' type, this is the model generated for transfer to/from it."""
 
+    @property
+    def has_nested(self) -> bool:
+        return self.nested_field_info is not None
+
 
 @dataclass(frozen=True)
 class CompositeType(TransferType):

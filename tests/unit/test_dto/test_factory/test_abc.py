@@ -30,7 +30,7 @@ T = TypeVar("T", bound=Model)
 
 
 def get_backend(dto_type: type[DataclassDTO[Any]]) -> DTOBackend:
-    return next(iter(dto_type._type_backend_map.values()))
+    return next(iter(dto_type._dto_backends.values()))
 
 
 def test_forward_referenced_type_argument_raises_exception() -> None:
@@ -175,7 +175,7 @@ def test_sub_types_supported() -> None:
     dto_type.on_registration(
         HandlerContext(handler_id="handler", dto_for="data", field_definition=FieldDefinition.from_annotation(SubType))
     )
-    assert dto_type._handler_backend_map[("data", "handler")].parsed_field_definitions[-1].name == "c"
+    assert dto_type.get_backend("data", "handler").parsed_field_definitions[-1].name == "c"
 
 
 def test_create_openapi_schema(monkeypatch: MonkeyPatch) -> None:

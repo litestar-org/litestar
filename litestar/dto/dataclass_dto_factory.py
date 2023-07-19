@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import MISSING, fields, replace
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from litestar.dto._utils import get_model_type_hints
 from litestar.dto.base_factory import AbstractDTOFactory
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField
@@ -36,7 +35,7 @@ class DataclassDTO(AbstractDTOFactory[T], Generic[T]):
         cls, model_type: type[DataclassProtocol]
     ) -> Generator[DTOFieldDefinition, None, None]:
         dc_fields = {f.name: f for f in fields(model_type)}
-        for key, field_definition in get_model_type_hints(model_type).items():
+        for key, field_definition in cls.get_model_type_hints(model_type).items():
             if not (dc_field := dc_fields.get(key)):
                 continue
 
