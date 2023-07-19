@@ -21,7 +21,7 @@ def parse_url_encoded_form_data(encoded_data: bytes) -> dict[str, Any]:
     Returns:
         A parsed dict.
     """
-    return parse_url_encoded_dict(qs=encoded_data, parse_numbers=False)
+    return parse_url_encoded_dict(qs=encoded_data)
 
 
 @lru_cache(1024)

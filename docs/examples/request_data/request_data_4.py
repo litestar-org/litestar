@@ -14,9 +14,7 @@ class User:
 
 
 @post(path="/")
-async def create_user(
-    data: Annotated[User, Body(media_type=RequestEncodingType.URL_ENCODED)],
-) -> User:
+async def create_user(data: Annotated[User, Body(media_type=RequestEncodingType.URL_ENCODED)]) -> User:
     return data
 
 
