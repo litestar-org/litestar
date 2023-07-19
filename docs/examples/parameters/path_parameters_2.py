@@ -19,8 +19,9 @@ ORDERS_BY_DATETIME = {
 }
 
 
-@get(path="/orders/{from_date:int}", sync_to_thread=False)
-def get_orders(from_date: datetime) -> List[Order]:
+@get(path="/orders/{from_timestamp:int}", sync_to_thread=False)
+def get_orders(from_timestamp: int) -> List[Order]:
+    from_date = datetime.fromtimestamp(from_timestamp, tz=timezone.utc)
     return ORDERS_BY_DATETIME[from_date]
 
 
