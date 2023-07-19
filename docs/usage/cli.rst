@@ -1,16 +1,14 @@
 CLI
 ===
 
-Litestar optionally provides a simple command line interface, for running and managing
-Litestar applications, powered by `click <https://click.palletsprojects.com/>`_ and
-`rich <https://rich.readthedocs.io>`_.
+Litestar provides a convenient command line interface (CLI) for running and managing Litestar applications. The CLI is
+powered by `click <https://click.palletsprojects.com/>`_ and `rich <https://rich.readthedocs.io>`_.
 
 Enabling the CLI
 ----------------
 
-Dependencies for the CLI are not included by default, to keep the packages needed to install
-Litestar to a minimum. To enable the CLI, Litestar has to be installed with the ``cli`` or ``standard``
-extra:
+By default, the CLI dependencies are not included during the installation of Litestar to minimize the required packages.
+To enable the CLI, you need to install Litestar with the ``cli`` or ``standard`` extras:
 
 .. code-block:: shell
 
@@ -20,41 +18,37 @@ extra:
 
    pip install litestar[standard]
 
-After installing any of these two, the ``litestar`` command will be available as the entrypoint
-to the CLI.
+Once you have installed either of these, you can access the CLI functionality through the ``litestar`` command.
 
 .. note::
-   Litestar includes the ``click``, ``rich``, and ``rich-click`` packages when you install the CLI.
-   We recommend using ``rich-click`` for the best experience, but it is considered an optional dependency.
-
-   If you would like to use the CLI without the included ``rich-click`` dependency,
-   simply install ``click`` and ``rich`` in your project instead of using one of the built in Litestar extras flag.
+   Installing the CLI automatically includes the ``click``, ``rich``, and ``rich-click`` packages. While we recommend
+    using ``rich-click`` for the best experience, it is an optional dependency. If you prefer not to use it, you can
+    manually install ``click`` and ``rich`` in your project instead of using the built-in Litestar extras flag.
 
 Autodiscovery
 -------------
 
-Litestar will automatically discover Litestar applications and application factories placed within the canonical modules
-``app`` and ``application``, which can be singular files or directories. Within those modules, or submodules thereof,
-the CLI will pick up any :class:`Litestar <.app.Litestar>` instance, callables named ``create_app``, or callables
-annotated as returning a :class:`Litestar <.app.Litestar>` instance.
+Litestar offers autodiscovery of applications and application factories placed within the canonical modules named
+either ``app`` or ``application``. These modules can be individual files or directories. Within these modules or their
+submodules, the CLI will detect any instances of :class:`Litestar <.app.Litestar>`, callables named ``create_app``, or
+callables annotated to return a :class:`Litestar <.app.Litestar>` instance.
 
-The lookup will consider these locations in order:
+The autodiscovery follows these lookup locations in order:
 
 1. ``app.py``
 2. ``app/__init__.py``
 3. Submodules of ``app``
 4. ``application.py``
 5. ``application/__init__.py``
-6. Submodules ``application``
+6. Submodules of ``application``
 
-and within those, look for:
+Within these locations, Litestar CLI looks for:
 
-1. An object named ``app`` that's an instance of  :class:`Litestar <.app.Litestar>`
-2. An object named ``application`` that's an instance of  :class:`Litestar <.app.Litestar>`
-3. Any object that's an instance of :class:`Litestar <.app.Litestar>`
+1. An object named ``app`` that is an instance of :class:`Litestar <.app.Litestar>`
+2. An object named ``application`` that is an instance of :class:`Litestar <.app.Litestar>`
+3. Any object that is an instance of :class:`Litestar <.app.Litestar>`
 4. A callable named ``create_app``
-5. A callable that's annotated as returning an instance of :class:`Litestar <.app.Litestar>`
-
+5. A callable annotated to return an instance of :class:`Litestar <.app.Litestar>`
 
 Commands
 --------
@@ -62,8 +56,10 @@ Commands
 litestar
 ^^^^^^^^
 
-The ``litestar`` command is the main entrypoint to the CLI. If the ``--app`` flag is not passed,
-the app will be automatically discovered as described in `the section above <autodiscovery>`_
+The main entrypoint to the Litestar CLI is the ``litestar`` command.
+
+If you don't pass the ``--app`` flag, the application will be automatically discovered, as explained in the
+`autodiscovery section <autodiscovery>`_.
 
 Options
 ~~~~~~~
@@ -73,14 +69,14 @@ Options
 +===============+===========================+=================================================================+
 | ``--app``     | ``LITESTAR_APP``          | ``<modulename>.<submodule>:<app instance>``                     |
 +---------------+---------------------------+-----------------------------------------------------------------+
-| ``--app-dir`` | N/A                       | Look for APP in the specified directory, by adding this to the  |
+| ``--app-dir`` | N/A                       | Look for the app in the specified directory by adding it to the |
 |               |                           | PYTHONPATH. Defaults to the current working directory.          |
 +---------------+---------------------------+-----------------------------------------------------------------+
 
 version
 ^^^^^^^
 
-Print the currently installed version of Litestar
+Prints the currently installed version of Litestar.
 
 Options
 ~~~~~~~
@@ -92,10 +88,10 @@ Options
 +-------------------------+------------------------------------+
 
 
-Run
+run
 ^^^
 
-The ``run`` command runs a Litestar application using `uvicorn <https://www.uvicorn.org/>`_.
+The ``run`` command executes a Litestar application using `uvicorn <https://www.uvicorn.org/>`_.
 
 .. code-block:: shell
 
@@ -103,8 +99,7 @@ The ``run`` command runs a Litestar application using `uvicorn <https://www.uvic
 
 .. caution::
 
-    This feature is intended for development purposes only and should not be used to
-    deploy production applications
+    This feature is intended for development purposes only and should not be used to deploy production applications.
 
 .. _cli-run-options:
 
@@ -118,7 +113,7 @@ Options
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
 | ``-R``\ ,``--reload-dir``             | ``LITESTAR_RELOAD_DIRS``        | Specify directories to watch for reload.                       |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``-p``\ , ``--port``                  | ``LITESTAR_PORT``               | Bind the the server to this port [default: 8000]               |
+| ``-p``\ , ``--port``                  | ``LITESTAR_PORT``               | Bind the server to this port [default: 8000]                   |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
 | ``--wc``\ , ``--web-concurrency``     | ``WEB_CONCURRENCY``             | The number of concurrent web workers to start [default: 1]     |
 +---------------------------------------+---------------------------------+----------------------------------------------------------------+
@@ -137,14 +132,13 @@ Options
 --reload-dir
 ++++++++++++
 
-The ``--reload-dir`` flag can be used to specify directories to watch for changes. If specified, the ``--reload`` flag
-is implied. Multiple directories can be specified by passing the flag multiple times:
+The ``--reload-dir`` flag allows you to specify directories to watch for changes. If you specify this flag, the ``--reload`` flag is implied. You can specify multiple directories by passing the flag multiple times:
 
 .. code-block:: shell
 
    litestar run --reload-dir=. --reload-dir=../other-library/src
 
-To set via environment variable, use a comma-separated list:
+To set multiple directories via an environment variable, use a comma-separated list:
 
 .. code-block:: shell
 
@@ -153,7 +147,7 @@ To set via environment variable, use a comma-separated list:
 info
 ^^^^
 
-The ``info`` command displays useful information about the selected application and its configuration
+The ``info`` command displays useful information about the selected application and its configuration.
 
 .. code-block:: shell
 
@@ -167,7 +161,7 @@ The ``info`` command displays useful information about the selected application 
 routes
 ^^^^^^
 
-The ``routes`` command displays a tree view of the routing table
+The ``routes`` command displays a tree view of the routing table.
 
 .. code-block:: shell
 
@@ -181,8 +175,7 @@ The ``routes`` command displays a tree view of the routing table
 sessions
 ^^^^^^^^
 
-This command and its subcommands provide management utilities for
-:ref:`server-side session backends <usage/middleware/builtin-middleware:server-side sessions>`.
+This command and its subcommands provide management utilities for server-side session backends.
 
 delete
 ~~~~~~
@@ -191,28 +184,28 @@ The ``delete`` subcommand deletes a specific session from the backend.
 
 .. code-block:: shell
 
-   litestar sessions delete cc3debc7-1ab6-4dc8-a220-91934a473717
+      litestar sessions delete cc3debc7-1ab6-4dc8-a220-91934a473717
 
 clear
 ~~~~~
 
-The ``clear`` subcommand clears all sessions from the backend.
+The `clear` subcommand is used to remove all sessions from the backend.
 
 .. code-block:: shell
 
    litestar sessions clear
 
-OpenAPI
+openapi
 ^^^^^^^
 
-This command provides utilities to generate OpenAPI schema and TypeScript types.
+This command provides utilities to generate OpenAPI schemas and TypeScript types.
 
 schema
 ~~~~~~
 
-The ``schema`` subcommand generates OpenAPI specs from the Litestar application, serializing these as either JSON or YAML.
-The serialization format depends on the filename, which is by default ``openapi_schema.json``. You can specify a different
-filename using the ``--output`` flag. For example:
+The `schema` subcommand generates OpenAPI specifications from the Litestar application and serializes them as either
+JSON or YAML. The serialization format depends on the filename, which is by default `openapi_schema.json`. You can
+specify a different filename using the `--output` flag. For example:
 
 .. code-block:: shell
 
@@ -221,19 +214,20 @@ filename using the ``--output`` flag. For example:
 typescript
 ~~~~~~~~~~
 
-The ``typescript`` subcommand generates TypeScript definitions from the Litestar application's OpenAPI specs.  For example:
+The `typescript` subcommand generates TypeScript definitions from the Litestar application's OpenAPI specifications.
+For example:
 
 .. code-block:: shell
 
    litestar schema typescript
 
-By default, this command will output a file called ``api-specs.ts``. You can change this using the ``--output`` option:
+By default, this command outputs a file called `api-specs.ts`. You can change this using the `--output` option:
 
 .. code-block:: shell
 
    litestar schema typescript --output my-types.ts
 
-You can also specify the top level TypeScript namespace that will be created, which by default will be called API:
+You can also specify the top-level TypeScript namespace that will be created, which is `API` by default:
 
 .. code-block:: typescript
 
@@ -241,13 +235,13 @@ You can also specify the top level TypeScript namespace that will be created, wh
        // ...
    }
 
-To do this use the ``--namespace`` option:
+To do this, use the `--namespace` option:
 
 .. code-block:: shell
 
    litestar schema typescript --namespace MyNamespace
 
-Which will result in:
+This will result in:
 
 .. code-block:: typescript
 
@@ -258,11 +252,11 @@ Which will result in:
 Extending the CLI
 -----------------
 
-Litestar's CLI is built with `click <https://click.palletsprojects.com/>`_, and can be easily extended.
-All that's needed to add subcommands under the ``litestar`` command is adding an
-`entry point <https://packaging.python.org/en/latest/specifications/entry-points/>`_, pointing to a
-:class:`click.Command` or :class:`click.Group`, under the
-``litestar.commands`` group.
+Litestar's CLI is built with `click <https://click.palletsprojects.com/>`_ and can be easily extended.
+To add subcommands under the `litestar` command, you need to add an
+`entry point <https://packaging.python.org/en/latest/specifications/entry-points/>`_ that points to a
+:class:`click.Command` or :class:`click.Group` under the
+`litestar.commands` group.
 
 .. tab-set::
 
@@ -280,8 +274,6 @@ All that's needed to add subcommands under the ``litestar`` command is adding an
                },
            )
 
-
-
     .. tab-item:: poetry
 
         .. code-block:: toml
@@ -289,14 +281,12 @@ All that's needed to add subcommands under the ``litestar`` command is adding an
            [tool.poetry.plugins."litestar.commands"]
            my_command = "my_litestar_plugin.cli:main"
 
-
-
 Accessing the app instance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-When extending the Litestar CLI, you most likely need access to the loaded ``Litestar`` instance.
-This can be achieved by adding the special ``app`` parameter to your CLI functions. This will cause
-``Litestar`` instance to be injected into the function whenever it is being called from a click-context.
+When extending the Litestar CLI, you will most likely need access to the loaded `Litestar` instance.
+You can achieve this by adding the special `app` parameter to your CLI functions. This will cause the
+`Litestar` instance to be injected into the function whenever it is called from a click-context.
 
 .. code-block:: python
 
@@ -308,8 +298,7 @@ This can be achieved by adding the special ``app`` parameter to your CLI functio
    def my_command(app: Litestar) -> None:
        ...
 
-
 CLI Reference
 -------------
 
-Learn more by visiting the :doc:`Litestar CLI Click API Reference </reference/cli>`.
+For more information, visit the :doc:`Litestar CLI Click API Reference </reference/cli>`.
