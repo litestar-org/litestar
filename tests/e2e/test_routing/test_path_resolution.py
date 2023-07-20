@@ -3,7 +3,7 @@ from typing import Any, Callable, List, Optional, Type
 
 import pytest
 
-from litestar import Controller, MediaType, delete, get, post
+from litestar import Controller, MediaType, Router, delete, get, post
 from litestar.contrib.pydantic import _model_dump
 from litestar.status_codes import (
     HTTP_200_OK,
@@ -273,4 +273,30 @@ def test_root_path_param_resolution() -> None:
         assert response.status_code == HTTP_404_NOT_FOUND
 
         response = client.get("/jon/bon/jovi")
+        assert response.status_code == HTTP_404_NOT_FOUND
+
+
+def test_root_path_param_resolution_2() -> None:
+    # https://github.com/litestar-org/litestar/issues/1830#issuecomment-1642291149
+    @get("/{name:str}")
+    async def name_greeting(name: str) -> str:
+        return f"Hello, {name}!"
+
+    @get("/{age:int}")
+    async def age_greeting(name: str, age: int) -> str:
+        return f"Hello, {name}! {age} is a great age to be!"
+
+    age_router = Router("/{name:str}/age", route_handlers=[age_greeting])
+    name_router = Router("/name", route_handlers=[name_greeting, age_router])
+
+    with create_test_client(name_router) as client:
+        response = client.get("/name/jon")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "Hello, jon!"
+
+        response = client.get("/name/jon/age/42")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "Hello, jon! 42 is a great age to be!"
+
+        response = client.get("/name/jon/bon")
         assert response.status_code == HTTP_404_NOT_FOUND
