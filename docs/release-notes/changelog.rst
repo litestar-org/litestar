@@ -14,22 +14,21 @@
         If type annotations aren't available for a given column/relationship, they may
         be inferred from the mapped object.
 
-        For columns, the :attr:`sqlalchemy.Column.type.python_type` attribute will be
-        used as the type of the column, and the :attr:`sqlalchemy.Column.nullable`
+        For columns, the :attr:`~sqlalchemy.engine.interfaces.ReflectedColumn.type`\ 's
+        :attr:`~sqlalchemy.types.TypeEngine.python_type` will be used as the type of the
+        column, and the :attr:`~sqlalchemy.engine.interfaces.ReflectedColumn.nullable`
         property to determine if the field should have a :obj:`None` union.
 
-        For relationships, where the
-        :attr:`~sqlalchemy.orm.RelationshipProperty.direction` is
+        For relationships, where the ``RelationshipProperty.direction`` is
         :attr:`~sqlalchemy.orm.RelationshipDirection.ONETOMANY` or
         :attr:`~sqlalchemy.orm.RelationshipDirection.MANYTOMANY`,
-        :attr:`~sqlalchemy.orm.RelationshipProperty.collection_class` and
-        :attr:`~sqlalchemy.orm.RelationshipProperty.mapper.class_` are used to construct
-        an annotation for the collection.
+        ``RelationshipProperty.collection_class`` and
+        ``RelationshipProperty.mapper.class_`` are used to construct an annotation for
+        the collection.
 
-        For :attr:`~sqlalchemy.orm.RelationshipDirection.ONETOONE`relationships,
-        :attr:`~sqlalchemy.orm.RelationshipProperty.mapper.class_` is used to get the
-        type annotation, and will be made a union with :obj:`None` if all of the foreign
-        key columns are nullable.
+        For one-to-one relationships, ``RelationshipProperty.mapper.class_`` is used to
+        get the type annotation, and will be made a union with :obj:`None` if all of the
+        foreign key columns are nullable.
 
     .. change:: DTO: Piccolo ORM
         :type: feature
@@ -54,6 +53,8 @@
         :type: feature
         :pr: 1900
 
+        .. currentmodule:: litestar.contrib.sqlalchemy.repository
+
         Three new parameters have been added to the repository and various methods:
 
         ``auto_commit``
@@ -63,14 +64,14 @@
 
             Available in:
 
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.add`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.add_many`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.delete`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.delete_many`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.get_or_create`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.update`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.update_many`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.upsert`
+            - :meth:`~SQLAlchemyAsyncRepository.add`
+            - :meth:`~SQLAlchemyAsyncRepository.add_many`
+            - :meth:`~SQLAlchemyAsyncRepository.delete`
+            - :meth:`~SQLAlchemyAsyncRepository.delete_many`
+            - :meth:`~SQLAlchemyAsyncRepository.get_or_create`
+            - :meth:`~SQLAlchemyAsyncRepository.update`
+            - :meth:`~SQLAlchemyAsyncRepository.update_many`
+            - :meth:`~SQLAlchemyAsyncRepository.upsert`
 
             (and their sync equivalents)
 
@@ -80,32 +81,32 @@
 
             Available in:
 
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.add`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.get_or_create`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.update`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.upsert`
+            - :meth:`~SQLAlchemyAsyncRepository.add`
+            - :meth:`~SQLAlchemyAsyncRepository.get_or_create`
+            - :meth:`~SQLAlchemyAsyncRepository.update`
+            - :meth:`~SQLAlchemyAsyncRepository.upsert`
 
             (and their sync equivalents)
 
 
         ``auto_expunge``
             When this is :obj:`True`, the session will execute
-            :meth:`~sqlalchemy.orm.expunge` all objects before returning.
+            :meth:`~sqlalchemy.orm.Session.expunge` all objects before returning.
 
             Available in:
 
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.add`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.add_many`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.delete`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.delete_many`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.get`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.get_one`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.get_one_or_none`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.get_one_or_create`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.update`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.update_many`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.list`
-            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.upsert`
+            - :meth:`~SQLAlchemyAsyncRepository.add`
+            - :meth:`~SQLAlchemyAsyncRepository.add_many`
+            - :meth:`~SQLAlchemyAsyncRepository.delete`
+            - :meth:`~SQLAlchemyAsyncRepository.delete_many`
+            - :meth:`~SQLAlchemyAsyncRepository.get`
+            - :meth:`~SQLAlchemyAsyncRepository.get_one`
+            - :meth:`~SQLAlchemyAsyncRepository.get_one_or_none`
+            - :meth:`~SQLAlchemyAsyncRepository.get_or_create`
+            - :meth:`~SQLAlchemyAsyncRepository.update`
+            - :meth:`~SQLAlchemyAsyncRepository.update_many`
+            - :meth:`~SQLAlchemyAsyncRepository.list`
+            - :meth:`~SQLAlchemyAsyncRepository.upsert`
 
             (and their sync equivalents)
 
@@ -132,7 +133,7 @@
         :breaking:
         :pr: 1950
 
-        :class:`~litestar.dto.factory.AbstractDTOFactory` has moved from
+        :class:`~litestar.dto.base_factory.AbstractDTOFactory` has moved from
         ``litestar.dto.factory.abc`` to ``litestar.dto.factory.base``.
 
     .. change:: SQLAlchemy repository: Rename ``_sentinel`` column to ``sa_orm_sentinel``
@@ -165,11 +166,11 @@
         `Sequence <https://docs.sqlalchemy.org/en/20/core/defaults.html#defining-sequences>`_
         default values.
 
-        The SQLAlchemy default value for a :class:`~sqlalchemy.Column` will be ignored
-        when it is a :class:`~sqlalchemy.Sequence` object. This is because the
-        SQLAlchemy sequence types represent server generated values, and there is no way
-        for us to generate a reasonable default value for that field from it without
-        making a database query, which is not possible deserialization.
+        The SQLAlchemy default value for a :class:`~sqlalchemy.schema.Column` will be
+        ignored when it is a :class:`~sqlalchemy.schema.Sequence` object. This is
+        because the SQLAlchemy sequence types represent server generated values, and
+        there is no way for us to generate a reasonable default value for that field
+        from it without making a database query, which is not possible deserialization.
 
     .. change:: Allow JSON as redirect response
         :type: bugfix
