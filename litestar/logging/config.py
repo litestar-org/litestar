@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field
 from importlib.util import find_spec
@@ -291,6 +292,8 @@ class StructLoggingConfig(BaseLoggingConfig):
         - requires ``structlog`` to be installed.
     """
 
+    debug: bool = False
+    """Log in debug mode."""
     processors: list[Processor] | None = field(default_factory=default_structlog_processors)  # pyright: ignore
     """Iterable of structlog logging processors."""
     wrapper_class: type[BindableLogger] | None = field(default_factory=default_wrapper_class)  # pyright: ignore
@@ -338,7 +341,12 @@ class StructLoggingConfig(BaseLoggingConfig):
                     "log_exceptions",
                     "traceback_line_limit",
                     "exception_logging_handler",
+                    "debug",
                 )
             }
         )
+
+        log_level = logging.DEBUG if self.debug else logging.INFO
+        logging.getLogger().setLevel(log_level)
+
         return get_logger

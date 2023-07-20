@@ -305,6 +305,16 @@ class Litestar(Router):
         if debug is None:
             debug = os.getenv("LITESTAR_DEBUG", "0") == "1"
 
+        try:
+            import structlog
+
+            from litestar.logging.config import StructLoggingConfig
+
+            if debug:
+                logging_config = StructLoggingConfig(wrapper_class=structlog.make_filtering_bound_logger(10))
+        except ImportError:
+            logging.basicConfig(level=logging.DEBUG if debug else logging.INFO)
+
         if pdb_on_exception is None:
             pdb_on_exception = os.getenv("LITESTAR_PDB", "0") == "1"
 
