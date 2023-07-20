@@ -3,6 +3,228 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.0.0beta3
+    :date: 2023/07/20
+
+    .. change:: SQLAlchemyDTO: column/relationship type inference
+        :type: feature
+        :pr: 1879
+        :issue: 1853
+
+        If type annotations aren't available for a given column/relationship, they may
+        be inferred from the mapped object.
+
+        For columns, the :attr:`sqlalchemy.Column.type.python_type` attribute will be
+        used as the type of the column, and the :attr:`sqlalchemy.Column.nullable`
+        property to determine if the field should have a :obj:`None` union.
+
+        For relationships, where the
+        :attr:`~sqlalchemy.orm.RelationshipProperty.direction` is
+        :attr:`~sqlalchemy.orm.RelationshipDirection.ONETOMANY` or
+        :attr:`~sqlalchemy.orm.RelationshipDirection.MANYTOMANY`,
+        :attr:`~sqlalchemy.orm.RelationshipProperty.collection_class` and
+        :attr:`~sqlalchemy.orm.RelationshipProperty.mapper.class_` are used to construct
+        an annotation for the collection.
+
+        For :attr:`~sqlalchemy.orm.RelationshipDirection.ONETOONE`relationships,
+        :attr:`~sqlalchemy.orm.RelationshipProperty.mapper.class_` is used to get the
+        type annotation, and will be made a union with :obj:`None` if all of the foreign
+        key columns are nullable.
+
+    .. change:: DTO: Piccolo ORM
+        :type: feature
+        :pr: 1896
+
+        Add support for piccolo ORM with the
+        :class:`~litestar.contrib.piccolo.PiccoloDTO`.
+
+    .. change:: OpenAPI: Allow setting ``OpenAPIController.path`` from ```OpenAPIConfig``
+        :type: feature
+        :pr: 1886
+
+        :attr:`~litestar.openapi.OpenAPIConfig.path` has been added, which can be used
+        to set the ``path`` for :class:`~litestar.openapi.OpenAPIController` directly,
+        without needing to create a custom instance of it.
+
+        If ``path`` is set in both :class:`~litestar.openapi.OpenAPIConfig` and
+        :class:`~litestar.openapi.OpenAPIController`, the path set on the controller
+        will take precedence.
+
+    .. change:: SQLAlchemy repository: ``auto_commit``, ``auto_expunge`` and ``auto_refresh`` options
+        :type: feature
+        :pr: 1900
+
+        Three new parameters have been added to the repository and various methods:
+
+        ``auto_commit``
+            When this :obj:`True`, the session will
+            :meth:`~sqlalchemy.orm.Session.commit` instead of
+            :meth:`~sqlalchemy.orm.Session.flush` before returning.
+
+            Available in:
+
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.add`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.add_many`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.delete`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.delete_many`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.get_or_create`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.update`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.update_many`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.upsert`
+
+            (and their sync equivalents)
+
+        ``auto_refresh``
+            When :obj:`True`, the session will execute
+            :meth:`~sqlalchemy.orm.Session.refresh` objects before returning.
+
+            Available in:
+
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.add`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.get_or_create`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.update`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.upsert`
+
+            (and their sync equivalents)
+
+
+        ``auto_expunge``
+            When this is :obj:`True`, the session will execute
+            :meth:`~sqlalchemy.orm.expunge` all objects before returning.
+
+            Available in:
+
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.add`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.add_many`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.delete`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.delete_many`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.get`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.get_one`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.get_one_or_none`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.get_one_or_create`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.update`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.update_many`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.list`
+            - :meth:`~litestar.contrib.repository.SQLAlchemyAsyncRepository.upsert`
+
+            (and their sync equivalents)
+
+    .. change:: Include path name in ``ImproperlyConfiguredException`` message for missing param types
+        :type: feature
+        :pr: 1935
+
+        The message of a :exc:`ImproperlyConfiguredException` raised when a path
+        parameter is missing a type now contains the name of the path.
+
+    .. change:: DTO: New ``include`` parameter added to ``DTOConfig``
+        :type: feature
+        :pr: 1950
+
+        :attr:`~litestar.dto.config.DTOConfig.include` has been added to
+        :class:`~litestar.dto.config.DTOConfig`, providing a counterpart to
+        :attr:`~litestar.dto.config.DTOConfig.exclude`.
+
+        If ``include`` is provided, only those fields specified within it will be
+        included.
+
+    .. change:: ``AbstractDTOFactory`` moved to ``dto.factory.base``
+        :type: misc
+        :breaking:
+        :pr: 1950
+
+        :class:`~litestar.dto.factory.AbstractDTOFactory` has moved from
+        ``litestar.dto.factory.abc`` to ``litestar.dto.factory.base``.
+
+    .. change:: SQLAlchemy repository: Rename ``_sentinel`` column to ``sa_orm_sentinel``
+        :type: misc
+        :breaking:
+        :pr: 1933
+
+
+        The ``_sentinel`` column of
+        :class:`~litestar.contrib.sqlalchemy.base.UUIDPrimaryKey` has been renamed to
+        ``sa_orm_sentinel``, to support Spanner, which does not support tables starting
+        with ``_``.
+
+    .. change:: SQLAlchemy repository: Fix audit columns defaulting to app startup time
+        :type: bugfix
+        :pr: 1894
+
+        A bug was fixed where
+        :attr:`~litestar.contrib.sqlalchemy.base.AuditColumns.created_at` and
+        :attr:`~litestar.contrib.sqlalchemy.base.AuditColumns.updated_at` would default
+        to the :class:`~datetime.datetime` at initialization time, instead of the time
+        of the update.
+
+    .. change:: SQLAlchemyDTO: Fix handling of ``Sequence`` with defaults
+        :type: bugfix
+        :pr: 1883
+        :issue: 1851
+
+        Fixes handling of columns defined with
+        `Sequence <https://docs.sqlalchemy.org/en/20/core/defaults.html#defining-sequences>`_
+        default values.
+
+        The SQLAlchemy default value for a :class:`~sqlalchemy.Column` will be ignored
+        when it is a :class:`~sqlalchemy.Sequence` object. This is because the
+        SQLAlchemy sequence types represent server generated values, and there is no way
+        for us to generate a reasonable default value for that field from it without
+        making a database query, which is not possible deserialization.
+
+    .. change:: Allow JSON as redirect response
+        :type: bugfix
+        :pr: 1908
+
+        Enables using redirect responses with a JSON media type.
+
+    .. change:: DTO / OpenAPI: Fix detection of required fields for Pydantic and msgspec DTOs
+        :type: bugfix
+        :pr: 1946
+
+        A bug was fixed that would lead to fields of a Pydantic model or msgspec Structs
+        being marked as "not required" in the generated OpenAPI schema when used with
+        DTOs.
+
+    .. change:: Replace ``Header``, ``CacheControlHeader`` and ``ETag`` Pydantic models with dataclasses
+        :type: misc
+        :pr: 1917
+        :breaking:
+
+        As part of the removal of Pydantic as a hard dependency, the header models
+        :class:`~litestar.datastructures.Header`,
+        :class:`~litestar.datastructures.CacheControlHeader` and
+        :class:`~litestar.datastructures.ETag` have been replaced with dataclasses.
+
+
+        .. note::
+            Although marked breaking, this change should not affect usage unless you
+            relied on these being Pydantic models in some way.
+
+    .. change:: Pydantic as an optional dependency
+        :breaking:
+        :pr: 1963
+        :type: misc
+
+        As of this release, Pydantic is no longer a required dependency of Litestar.
+        It is still supported in the same capacity as before, but Litestar itself does
+        not depend on it anymore in its internals.
+
+    .. change:: Pydantic 2 support
+        :type: feature
+        :pr: 1956
+
+        Pydantic 2 is now supported alongside Pydantic 1.
+
+    .. change:: Deprecation of  ``partial`` module
+        :type: misc
+        :pr: 2002
+
+        The :mod:`litestar.partial` and :class:`~litestar.partial.Partial` have been
+        deprecated and will be removed in a future release. Users are advised to upgrade
+        to DTOs, making use of the :class:`~litestar.dto.config.DTOConfig` option
+        ``partial=True``.
+
+
 .. changelog:: 2.0.0beta2
     :date: 2023/06/24
 
