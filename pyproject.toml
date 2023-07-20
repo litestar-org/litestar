@@ -119,7 +119,7 @@ brotli = "*"
 click = "*"
 cryptography = "*"
 duckdb-engine = "*"
-fakeredis = { extras = ["lua"], version = "*" }
+fakeredis = { extras = ["lua"], version = "<2.17.0" }
 freezegun = "*"
 fsspec = "*"
 greenlet = "*"

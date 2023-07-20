@@ -1068,13 +1068,13 @@ typing-extensions = {version = ">=3.10.0.1", markers = "python_version <= \"3.8\
 
 [[package]]
 name = "fakeredis"
-version = "2.17.0"
+version = "2.16.0"
 description = "Python implementation of redis API, can be used for testing purposes."
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "fakeredis-2.17.0-py3-none-any.whl", hash = "sha256:a99ef6e5642c31e91d36be78809fec3743e2bf7aaa682685b0d65a849fecd148"},
-    {file = "fakeredis-2.17.0.tar.gz", hash = "sha256:e304bc7addb2f862c3550cb7db58548418a0fadd4cd78a4de66464c84fbc2195"},
+    {file = "fakeredis-2.16.0-py3-none-any.whl", hash = "sha256:188514cbd7120ff28c88f2a31e2fddd18fb1b28504478dfa3669c683134c4d82"},
+    {file = "fakeredis-2.16.0.tar.gz", hash = "sha256:5abdd734de4ead9d6c7acbd3add1c4aa9b3ab35219339530472d9dd2bdf13057"},
 ]
 
 [package.dependencies]
@@ -4274,4 +4274,4 @@ tortoise-orm = ["tortoise-orm"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "7ee6190b83b5a960d8318b6754dc88cbff162f4d4f43a4e1bccfd385287b627a"
+content-hash = "edcc97b139a915706f098bef1e485a6bd1b23d3f966abf0d398c45c0822a6def"
