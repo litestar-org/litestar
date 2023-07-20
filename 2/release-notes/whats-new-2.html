@@ -951,6 +951,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../usage/contrib/jwt.html">JWT Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/contrib/prometheus.html">Prometheus Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/contrib/piccolo.html">Piccolo ORM</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../usage/contrib/sqlalchemy/index.html">SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../usage/contrib/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../usage/contrib/sqlalchemy/plugins/index.html">Plugins</a></li>
@@ -976,6 +977,7 @@ document.write(`
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/cli.html">cli</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/connection.html">connection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -983,8 +985,8 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jwt.html">jwt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/mako.html">mako</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/msgspec.html">msgspec</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/piccolo.html">piccolo_orm</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/pydantic.html">pydantic</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/repository/abc.html">abc</a></li>
@@ -1010,25 +1012,26 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/interface.html">interface</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/dto/factory/index.html">factory</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../reference/dto/factory/abc.html">abc</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/dto/factory/stdlib.html">stdlib</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/dto/factory/types.html">types</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/data_structures.html">data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/field.html">field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/types.html">types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/base_factory.html">base_factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/msgspec_dto_factory.html">msgspec_dto_factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/dataclass_dto_factory.html">dataclass_dto_factory</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">enums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/picologging.html">picologging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/standard.html">standard</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/compression.html">compression</a></li>
@@ -1036,7 +1039,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/client_side.html">client_side</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/server_side.html">server_side</a></li>
@@ -1044,7 +1047,7 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/openapi.html">openapi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/spec.html">spec</a></li>
 </ul>
@@ -1053,7 +1056,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/partial.html">partial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/plugins.html">plugins</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/response/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/response/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/response/redirect.html">redirect</a></li>
@@ -1063,13 +1066,14 @@ document.write(`
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/router.html">router</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/routes.html">routes</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/status_codes.html">status_code</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/memory.html">memory</a></li>
@@ -1077,18 +1081,17 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/registry.html">registry</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/status_codes.html">status_code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/template.html">template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/testing.html">testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/types.html">types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/typing.html">typing</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -1154,23 +1157,24 @@ document.write(`
 For a detailed list of all changes, including changes between versions leading up to the
 2.0 release, consult the <a class="reference internal" href="changelog.html"><span class="doc">2.x Changelog</span></a>.</p>
 <section id="starlite-litestar">
-<h2>Starlite -&gt; Litestar<a class="headerlink" href="#starlite-litestar" title="Permalink to this heading">#</a></h2>
-<p>One of the biggest changes in version 2 is the renaming of the project from <em>Starlite</em>
-to <em>Litestar</em>.</p>
+<h2>Starlite → Litestar<a class="headerlink" href="#starlite-litestar" title="Permalink to this heading">#</a></h2>
+<p>We’re thrilled to introduce some exciting changes in our latest release, version 2!
+The most noteworthy transformation you will notice is the rebranding of our project, previously known as Starlite,
+now stepping into the limelight as Litestar.</p>
 <p>The name “Starlite” was chosen as an homage to <a class="reference external" href="https://www.starlette.io/">Starlette</a>,
 the ASGI framework and toolkit Starlite was initially based on. Over the course of its
 development, Starlite grew more independent and relied less on Starlette, up to the
 point were Starlette was officially removed as a dependency in November 2022, with the
 release of <a class="reference external" href="https://github.com/starlite-api/starlite/releases/tag/v1.39.0">v1.39.0</a>.</p>
-<p>After careful considerations, it was decided that with the release of 2.0, Starlite
+<p>After careful consideration, it was decided that with the release of 2.0, Starlite
 would be renamed to Litestar. There were many factors contributing to this decision, but
 it was mainly driven by concerns from within and outside the community about the
-possible confusion of the names <em>Starlette</em> and <em>Starlite</em> which (not incidentally) bea
+possible confusion of the names <em>Starlette</em> and <em>Starlite</em> which - not incidentally - bore
 a lot of resemblance, which now had outlived its purpose.</p>
 <hr class="docutils" />
-<p>Aside from the name, Litestar 2.0 is a direct successor of Starlite 1, and the regular
-release cycle will continue. It was determined that making the first release under the
-new name 2.0 and continue with the version numbers from Starlite would cause the least
+<p>Aside from the name, Litestar 2.0 is a direct successor of Starlite 1.x, and the regular
+release cycle will continue. It was determined that making the first 2.0 release under the
+new name and continuing with the version scheme from Starlite would cause the least
 friction. Following that decision, the first release under the new name was
 <a class="reference external" href="https://github.com/litestar-org/litestar/releases/tag/v2.0.0alpha3">v2.0.0alpha3</a>,
 following the last alpha release of Starlite 2.0,
@@ -1193,7 +1197,7 @@ following the last alpha release of Starlite 2.0,
 <td><p><a class="reference internal" href="../reference/connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">connection.ASGIConnection</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">starlite.Partial</span></code></p></td>
-<td><p><a class="reference internal" href="../reference/partial.html#litestar.partial.Partial" title="litestar.partial.Partial"><code class="xref py py-class docutils literal notranslate"><span class="pre">partial.Partial</span></code></a></p></td>
+<td><p>replaced with DTOs</p></td>
 </tr>
 <tr class="row-even"><td colspan="2"><p><strong>Enums</strong></p></td>
 </tr>
@@ -1512,8 +1516,8 @@ SQLAlchemy 2 only.</p>
 <p>TODO: Migration instructions</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../usage/contrib/sqlalchemy/index.html"><span class="doc">SQLAlchemy</span></a>
-<a class="reference internal" href="../reference/contrib/sqlalchemy/index.html"><span class="doc">sqlalchemy</span></a></p>
+<p>The <a class="reference internal" href="../usage/contrib/sqlalchemy/index.html"><span class="doc">SQLAlchemy</span></a> usage documentation and the
+<a class="reference internal" href="../reference/contrib/sqlalchemy/index.html"><span class="doc">sqlalchemy</span></a> API reference</p>
 </div>
 </section>
 <section id="removal-of-pydantic-models">
@@ -1561,8 +1565,8 @@ should be changed to include an additional <code class="docutils literal notrans
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="changelog.html#2.0.0alpha2-remove support for 2 argument form of"><span class="std std-ref">Change: Remove support for 2 argument form of </span></a>
-<a class="reference internal" href="../reference/config.html#litestar.config.app.AppConfig.before_send" title="litestar.config.app.AppConfig.before_send"><span class="xref std std-ref">before_send</span></a></p>
+<p><a class="reference internal" href="changelog.html#2.0.0alpha2-remove support for 2 argument form of"><span class="std std-ref">Change: Remove support for 2 argument form of </span></a> <code class="docutils literal notranslate"><span class="pre">before_send</span></code> and the
+<a class="reference internal" href="../reference/config.html#litestar.config.app.AppConfig.before_send" title="litestar.config.app.AppConfig.before_send"><span class="xref std std-ref">before_send</span></a> API reference</p>
 </div>
 </section>
 <section id="initial-state-application-parameter">
@@ -1647,7 +1651,7 @@ stores as well as provide defaults.</p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../usage/stores.html"><span class="doc">Stores</span></a></p>
+<p>The <a class="reference internal" href="../usage/stores.html"><span class="doc">Stores</span></a> usage documentation</p>
 </div>
 </section>
 <section id="usage-of-the-stores-for-caching-and-other-integrations">
@@ -1677,10 +1681,10 @@ protocol.</p>
 <p>Litestar provides a suite of factory types that implement the <code class="docutils literal notranslate"><span class="pre">DTOInterface</span></code> protocol
 and can be used to define DTOs:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../reference/dto/factory/stdlib.html#litestar.dto.factory.stdlib.DataclassDTO" title="litestar.dto.factory.stdlib.DataclassDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.dto.factory.stdlib.DataclassDTO</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/dto/dataclass_dto_factory.html#litestar.dto.dataclass_dto_factory.DataclassDTO" title="litestar.dto.dataclass_dto_factory.DataclassDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.dto.dataclass_dto_factory.DataclassDTO</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/dto/msgspec_dto_factory.html#litestar.dto.msgspec_dto_factory.MsgspecDTO" title="litestar.dto.msgspec_dto_factory.MsgspecDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.dto.msgspec_dto_factory.MsgspecDTO</span></code></a></p></li>
 <li><p><a class="reference internal" href="../reference/contrib/sqlalchemy/dto.html#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO" title="litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO</span></code></a></p></li>
 <li><p><a class="reference internal" href="../reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO" title="litestar.contrib.pydantic.PydanticDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.contrib.pydantic.PydanticDTO</span></code></a></p></li>
-<li><p><a class="reference internal" href="../reference/contrib/msgspec.html#litestar.contrib.msgspec.MsgspecDTO" title="litestar.contrib.msgspec.MsgspecDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.contrib.msgspec.MsgspecDTO</span></code></a></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">litestar.contrib.piccolo.PiccoloDTO</span></code> (TODO)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">litestar.contrib.tortoise.TortoiseDTO</span></code> (TODO)</p></li>
 </ul>
@@ -1688,8 +1692,7 @@ and can be used to define DTOs:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.dto.factory</span> <span class="kn">import</span> <span class="n">DTOConfig</span>
-<span class="kn">from</span> <span class="nn">litestar.dto.factory.stdlib</span> <span class="kn">import</span> <span class="n">DataclassDTO</span>
+<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
 
 
 <span class="nd">@dataclass</span>
@@ -1730,7 +1733,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.dto</span> <span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
-<span class="kn">from</span> <span class="nn">litestar.dto.factory</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">dto_field</span>
+<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">dto_field</span>
 
 <span class="kn">from</span> <span class="nn">.my_lib</span> <span class="kn">import</span> <span class="n">Base</span>
 
@@ -1769,7 +1772,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.dto</span> <span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
-<span class="kn">from</span> <span class="nn">litestar.dto.factory</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">dto_field</span>
+<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">dto_field</span>
 
 <span class="kn">from</span> <span class="nn">.my_lib</span> <span class="kn">import</span> <span class="n">Base</span>
 
@@ -1800,7 +1803,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;e382fce5-e4fd-434c-9f00-2f5e604c8440&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;afd70970-d58d-4e5f-bee7-c79ca14364b5&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1820,7 +1823,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.dto</span> <span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
-<span class="kn">from</span> <span class="nn">litestar.dto.factory</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">dto_field</span>
+<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">dto_field</span>
 
 <span class="kn">from</span> <span class="nn">.my_lib</span> <span class="kn">import</span> <span class="n">Base</span>
 
@@ -1886,7 +1889,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.dto</span> <span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
-<span class="kn">from</span> <span class="nn">litestar.dto.factory</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">dto_field</span>
+<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">dto_field</span>
 
 <span class="kn">from</span> <span class="nn">.my_lib</span> <span class="kn">import</span> <span class="n">Base</span>
 
@@ -1954,7 +1957,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.dto</span> <span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
-<span class="kn">from</span> <span class="nn">litestar.dto.factory</span> <span class="kn">import</span> <span class="n">dto_field</span>
+<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">dto_field</span>
 
 <span class="kn">from</span> <span class="nn">.my_lib</span> <span class="kn">import</span> <span class="n">Base</span>
 
@@ -1985,13 +1988,13 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;86143aef-28fb-44fc-8988-5f9406330f6d&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;e39ec966-3710-4ef7-8336-47156430a056&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../usage/dto/index.html"><span class="doc">Data Transfer Object (DTO)</span></a></p>
+<p>The <a class="reference internal" href="../usage/dto/index.html"><span class="doc">Data Transfer Object (DTO)</span></a> usage documentation</p>
 </div>
 </section>
 <section id="application-lifespan-hooks">
@@ -2083,7 +2086,7 @@ a thread pool, passing <code class="docutils literal notranslate"><span class="p
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../topics/sync-vs-async.html"><span class="doc">Sync vs. Async</span></a></p>
+<p>The <a class="reference internal" href="../topics/sync-vs-async.html"><span class="doc">Sync vs. Async</span></a> topic guide</p>
 </div>
 </section>
 <section id="htmx">
@@ -2092,7 +2095,7 @@ a thread pool, passing <code class="docutils literal notranslate"><span class="p
 <code class="docutils literal notranslate"><span class="pre">litestar.contrib.htmx</span></code> module.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../usage/contrib/htmx.html"><span class="doc">HTMX Request Class</span></a></p>
+<p>The <a class="reference internal" href="../usage/contrib/htmx.html"><span class="doc">HTMX Request Class</span></a> usage documentation</p>
 </div>
 </section>
 <section id="event-bus">
@@ -2102,8 +2105,8 @@ listeners and emitters, providing a similar interface to handlers. It currently
 features a simple in-memory, process-local backend.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../usage/events.html"><span class="doc">Event Emitters and Listeners</span></a>
-<a class="reference internal" href="../reference/events.html"><span class="doc">events</span></a></p>
+<p>The <a class="reference internal" href="../usage/events.html"><span class="doc">Event Emitters and Listeners</span></a> usage documentation and the
+<a class="reference internal" href="../reference/events.html"><span class="doc">events</span></a> API reference</p>
 </div>
 </section>
 <section id="sqlalchemy-repository">
@@ -2212,11 +2215,13 @@ handlers, OOP based event dispatching, data iterators and more.</p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="changelog.html#2.0.0alpha3-enhanced websockets support"><span class="std std-ref">Change: Enhanced WebSockets support</span></a>
-<a class="reference internal" href="changelog.html#2.0.0alpha6-websockets: managing a socket's lifespan using a context manager in websocket listeners"><span class="std std-ref">Change: WebSockets: Managing a socket's lifespan using a context manager in websocket listeners</span></a>
-<a class="reference internal" href="changelog.html#2.0.0alpha6-websockets: messagepack support"><span class="std std-ref">Change: WebSockets: MessagePack support</span></a>
-<a class="reference internal" href="changelog.html#2.0.0alpha6-websockets: data iterators"><span class="std std-ref">Change: WebSockets: Data iterators</span></a>
-<a class="reference internal" href="../usage/websockets.html"><span class="doc">WebSockets</span></a></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="changelog.html#2.0.0alpha3-enhanced websockets support"><span class="std std-ref">Change: Enhanced WebSockets support</span></a></p></li>
+<li><p><a class="reference internal" href="changelog.html#2.0.0alpha6-websockets: managing a socket's lifespan using a context manager in websocket listeners"><span class="std std-ref">Change: WebSockets: Managing a socket's lifespan using a context manager in websocket listeners</span></a></p></li>
+<li><p><a class="reference internal" href="changelog.html#2.0.0alpha6-websockets: messagepack support"><span class="std std-ref">Change: WebSockets: MessagePack support</span></a></p></li>
+<li><p><a class="reference internal" href="changelog.html#2.0.0alpha6-websockets: data iterators"><span class="std std-ref">Change: WebSockets: Data iterators</span></a></p></li>
+<li><p>The <a class="reference internal" href="../usage/websockets.html"><span class="doc">WebSockets</span></a> usage documentation</p></li>
+</ul>
 </div>
 </section>
 <section id="attrs-signature-modelling">
@@ -2267,7 +2272,7 @@ broadcast messages.</p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../usage/channels.html"><span class="doc">channels</span></a></p>
+<p>The <a class="reference internal" href="../usage/channels.html"><span class="doc">channels</span></a> usage documentation</p>
 </div>
 </section>
 <section id="application-lifespan-context-managers">
@@ -2383,7 +2388,7 @@ low-level, and lack the utility of the higher-level response types.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite-litestar">Starlite -&gt; Litestar</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite-litestar">Starlite → Litestar</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#imports">Imports</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#response-headers">Response headers</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#response-cookies">Response cookies</a></li>

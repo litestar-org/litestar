@@ -46,7 +46,7 @@ Lifespan context manager
 
 When using a database, we need to ensure that we clean up our resources correctly. To do this, we create a context
 manager called ``db_connection()`` that creates a new :class:`engine <sqlalchemy.ext.asyncio.AsyncEngine>` and disposes
-of it when we are done. This context manager is added to the applicaton's ``lifespan`` argument.
+of it when we are done. This context manager is added to the application's ``lifespan`` argument.
 
 .. literalinclude::
     /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
@@ -96,7 +96,7 @@ serializable by Litestar.
 Behavior
 ++++++++
 
-the ``add_item()`` and ``update_item()`` routes no longer return the full collection, instead they return the item that
+The ``add_item()`` and ``update_item()`` routes no longer return the full collection, instead they return the item that
 was added or updated. This is a minor detail change, but it is worth noting as it brings the behavior of the app closer
 to what we would expect from a conventional API.
 

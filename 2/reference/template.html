@@ -55,7 +55,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="testing" href="testing.html" />
-    <link rel="prev" title="status_code" href="status_codes.html" />
+    <link rel="prev" title="registry" href="stores/registry.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -953,6 +953,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../usage/contrib/jwt.html">JWT Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/contrib/prometheus.html">Prometheus Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/contrib/piccolo.html">Piccolo ORM</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../usage/contrib/sqlalchemy/index.html">SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../usage/contrib/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../usage/contrib/sqlalchemy/plugins/index.html">Plugins</a></li>
@@ -978,6 +979,7 @@ document.write(`
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html">cli</a></li>
 <li class="toctree-l2"><a class="reference internal" href="config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="connection.html">connection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -985,8 +987,8 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="contrib/jwt.html">jwt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="contrib/mako.html">mako</a></li>
-<li class="toctree-l3"><a class="reference internal" href="contrib/msgspec.html">msgspec</a></li>
 <li class="toctree-l3"><a class="reference internal" href="contrib/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contrib/piccolo.html">piccolo_orm</a></li>
 <li class="toctree-l3"><a class="reference internal" href="contrib/pydantic.html">pydantic</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="contrib/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="contrib/repository/abc.html">abc</a></li>
@@ -1012,25 +1014,26 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="di.html">di</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="dto/interface.html">interface</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="dto/factory/index.html">factory</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="dto/factory/abc.html">abc</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dto/factory/stdlib.html">stdlib</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dto/factory/types.html">types</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="dto/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dto/data_structures.html">data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dto/field.html">field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dto/types.html">types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dto/base_factory.html">base_factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dto/msgspec_dto_factory.html">msgspec_dto_factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dto/dataclass_dto_factory.html">dataclass_dto_factory</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="enums.html">enums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="logging/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="logging/picologging.html">picologging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="logging/standard.html">standard</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="middleware/authentication.html">authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="middleware/compression.html">compression</a></li>
@@ -1038,7 +1041,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="middleware/session/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="middleware/session/client_side.html">client_side</a></li>
 <li class="toctree-l4"><a class="reference internal" href="middleware/session/server_side.html">server_side</a></li>
@@ -1046,7 +1049,7 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="openapi/openapi.html">openapi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openapi/spec.html">spec</a></li>
 </ul>
@@ -1055,7 +1058,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="partial.html">partial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plugins.html">plugins</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="response/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="response/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="response/redirect.html">redirect</a></li>
@@ -1065,13 +1068,14 @@ document.write(`
 </li>
 <li class="toctree-l2"><a class="reference internal" href="router.html">router</a></li>
 <li class="toctree-l2"><a class="reference internal" href="routes.html">routes</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="status_codes.html">status_code</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="stores/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stores/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stores/memory.html">memory</a></li>
@@ -1079,18 +1083,17 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="stores/registry.html">registry</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="status_codes.html">status_code</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="testing.html">testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="types.html">types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="typing.html">typing</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -1301,12 +1304,12 @@ document.write(`
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="status_codes.html"
+       href="stores/registry.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">status_code</p>
+        <p class="prev-next-title">registry</p>
       </div>
     </a>
     <a class="right-next"

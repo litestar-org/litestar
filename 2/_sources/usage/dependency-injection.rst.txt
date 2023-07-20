@@ -186,7 +186,6 @@ can :ref:`inject into route handlers <usage/route-handlers:handler function kwar
 
    from litestar import Controller, patch
    from litestar.di import Provide
-   from litestar.partial import Partial
    from pydantic import BaseModel, UUID4
 
 
@@ -204,7 +203,7 @@ can :ref:`inject into route handlers <usage/route-handlers:handler function kwar
        dependencies = {"user": Provide(retrieve_db_user)}
 
        @patch(path="/{user_id:uuid}")
-       async def update_user(self, data: Partial[User], user: User) -> User:
+       async def get_user(self, user: User) -> User:
            ...
 
 In the above example we have a ``User`` model that we are persisting into a db. The model is fetched using the helper
@@ -364,7 +363,7 @@ Depending on your application design, it is possible to have a dependency declar
 :class:`Provide <.di.Provide>` function that has a default value. If the dependency isn't provided for the route, the
 default should be used by the function.
 
-.. literalinclude:: /examples/dependency_injection/dependency_default_value_no_dependency_fn.py
+.. literalinclude:: /examples/dependency_injection/dependency_with_default.py
     :caption: Dependency with default value
     :language: python
 
@@ -375,7 +374,7 @@ parameter.
 
 By declaring the parameter to be a dependency, Litestar knows to exclude it from the docs:
 
-.. literalinclude:: /examples/dependency_injection/dependency_default_value_with_dependency_fn.py
+.. literalinclude:: /examples/dependency_injection/dependency_with_dependency_fn_and_default.py
     :caption: Dependency with default value
     :language: python
 

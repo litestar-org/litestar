@@ -55,7 +55,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="repository" href="repository/index.html" />
-    <link rel="prev" title="opentelemetry" href="opentelemetry.html" />
+    <link rel="prev" title="piccolo_orm" href="piccolo.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -953,6 +953,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/jwt.html">JWT Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/prometheus.html">Prometheus Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/piccolo.html">Piccolo ORM</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../usage/contrib/sqlalchemy/index.html">SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../usage/contrib/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../usage/contrib/sqlalchemy/plugins/index.html">Plugins</a></li>
@@ -978,6 +979,7 @@ document.write(`
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../cli.html">cli</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../connection.html">connection</a></li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">contrib</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
@@ -985,8 +987,8 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="jwt.html">jwt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mako.html">mako</a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgspec.html">msgspec</a></li>
 <li class="toctree-l3"><a class="reference internal" href="opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="piccolo.html">piccolo_orm</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">pydantic</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="repository/abc.html">abc</a></li>
@@ -1012,25 +1014,26 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../di.html">di</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../dto/interface.html">interface</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../dto/factory/index.html">factory</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../dto/factory/abc.html">abc</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dto/factory/stdlib.html">stdlib</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dto/factory/types.html">types</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../dto/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dto/data_structures.html">data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dto/field.html">field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dto/types.html">types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dto/base_factory.html">base_factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dto/msgspec_dto_factory.html">msgspec_dto_factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dto/dataclass_dto_factory.html">dataclass_dto_factory</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../enums.html">enums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../logging/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../logging/picologging.html">picologging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../logging/standard.html">standard</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../middleware/authentication.html">authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../middleware/compression.html">compression</a></li>
@@ -1038,7 +1041,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../middleware/session/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../middleware/session/client_side.html">client_side</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../middleware/session/server_side.html">server_side</a></li>
@@ -1046,7 +1049,7 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../openapi/openapi.html">openapi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../openapi/spec.html">spec</a></li>
 </ul>
@@ -1055,7 +1058,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../partial.html">partial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plugins.html">plugins</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../response/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../response/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../response/redirect.html">redirect</a></li>
@@ -1065,13 +1068,14 @@ document.write(`
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../router.html">router</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../routes.html">routes</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../status_codes.html">status_code</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../stores/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stores/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stores/memory.html">memory</a></li>
@@ -1079,18 +1083,17 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../stores/registry.html">registry</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../status_codes.html">status_code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../template.html">template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../testing.html">testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../types.html">types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../typing.html">typing</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../topics/sync-vs-async.html">Sync vs. Async</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -1161,17 +1164,17 @@ document.write(`
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.contrib.pydantic.PydanticDTO">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.pydantic.</span></span><span class="sig-name descname"><span class="pre">PydanticDTO</span></span><a class="headerlink" href="#litestar.contrib.pydantic.PydanticDTO" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../dto/factory/abc.html#litestar.dto.factory.abc.AbstractDTOFactory" title="litestar.dto.factory.abc.AbstractDTOFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDTOFactory</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<dd><p>Bases: <a class="reference internal" href="../dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory" title="litestar.dto.base_factory.AbstractDTOFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDTOFactory</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
 <p>Support for domain modelling with Pydantic.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.contrib.pydantic.PydanticDTO.model_type">
-<span class="sig-name descname"><span class="pre">model_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">BaseModel</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.contrib.pydantic.PydanticDTO.model_type" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">model_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">pydantic.BaseModel</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.contrib.pydantic.PydanticDTO.model_type" title="Permalink to this definition">#</a></dt>
 <dd><p>If <code class="docutils literal notranslate"><span class="pre">annotation</span></code> is an iterable, this is the inner type, otherwise will be the same as <code class="docutils literal notranslate"><span class="pre">annotation</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.contrib.pydantic.PydanticDTO.generate_field_definitions">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_field_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">BaseModel</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">FieldDefinition</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.contrib.pydantic.PydanticDTO.generate_field_definitions" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_field_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">pydantic.BaseModel</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../dto/data_structures.html#litestar.dto.data_structures.DTOFieldDefinition" title="litestar.dto.data_structures.DTOFieldDefinition"><span class="pre">DTOFieldDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.contrib.pydantic.PydanticDTO.generate_field_definitions" title="Permalink to this definition">#</a></dt>
 <dd><p>Generate <code class="docutils literal notranslate"><span class="pre">FieldDefinition</span></code> instances from <code class="docutils literal notranslate"><span class="pre">model_type</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Yields<span class="colon">:</span></dt>
@@ -1182,14 +1185,93 @@ document.write(`
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.contrib.pydantic.PydanticDTO.detect_nested_field">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">detect_nested_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parsed_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../typing.html#litestar.typing.ParsedType" title="litestar.typing.ParsedType"><span class="pre">ParsedType</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.contrib.pydantic.PydanticDTO.detect_nested_field" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">detect_nested_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.contrib.pydantic.PydanticDTO.detect_nested_field" title="Permalink to this definition">#</a></dt>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">field_definition</span></code> represents a nested model field.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>parsed_type</strong> – inspect type to determine if field represents a nested model.</p>
+<dd class="field-odd"><p><strong>field_definition</strong> – inspect type to determine if field represents a nested model.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">parsed_type</span></code> represents a nested model field.</p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">field_definition</span></code> represents a nested model field.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.contrib.pydantic.PydanticInitPlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.pydantic.</span></span><span class="sig-name descname"><span class="pre">PydanticInitPlugin</span></span><a class="headerlink" href="#litestar.contrib.pydantic.PydanticInitPlugin" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../plugins.html#litestar.plugins.InitPluginProtocol" title="litestar.plugins.InitPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitPluginProtocol</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.contrib.pydantic.PydanticInitPlugin.on_app_init">
+<span class="sig-name descname"><span class="pre">on_app_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><span class="pre">AppConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><span class="pre">AppConfig</span></a></span></span><a class="headerlink" href="#litestar.contrib.pydantic.PydanticInitPlugin.on_app_init" title="Permalink to this definition">#</a></dt>
+<dd><p>Receive the <a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance after <cite>on_app_init</cite> hooks have been called.</p>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app_config</strong> – The <a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The app config object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.contrib.pydantic.PydanticSchemaPlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.pydantic.</span></span><span class="sig-name descname"><span class="pre">PydanticSchemaPlugin</span></span><a class="headerlink" href="#litestar.contrib.pydantic.PydanticSchemaPlugin" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../plugins.html#litestar.plugins.OpenAPISchemaPluginProtocol" title="litestar.plugins.OpenAPISchemaPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.contrib.pydantic.PydanticSchemaPlugin.is_plugin_supported_type">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_plugin_supported_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.contrib.pydantic.PydanticSchemaPlugin.is_plugin_supported_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a value of indeterminate type, determine if this value is supported by the plugin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – An arbitrary value.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A typeguard dictating whether the value is supported by the plugin.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema">
+<span class="sig-name descname"><span class="pre">to_openapi_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_creator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SchemaCreator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dto_for</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dto/types.html#litestar.dto.types.ForType" title="litestar.dto.types.ForType"><span class="pre">ForType</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../openapi/spec.html#litestar.openapi.spec.Schema" title="litestar.openapi.spec.Schema"><span class="pre">Schema</span></a></span></span><a class="headerlink" href="#litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a type annotation, transform it into an OpenAPI schema class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>annotation</strong> – A type annotation.</p></li>
+<li><p><strong>schema_creator</strong> – An instance of the schema creator class</p></li>
+<li><p><strong>dto_for</strong> – The type of the DTO if any.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An <a class="reference internal" href="../openapi/spec.html#litestar.openapi.spec.Schema" title="litestar.openapi.spec.schema.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPI</span></code></a> instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.contrib.pydantic.PydanticSchemaPlugin.for_pydantic_model">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">for_pydantic_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">pydantic.BaseModel</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_creator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SchemaCreator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dto_for</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dto/types.html#litestar.dto.types.ForType" title="litestar.dto.types.ForType"><span class="pre">ForType</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../openapi/spec.html#litestar.openapi.spec.Schema" title="litestar.openapi.spec.Schema"><span class="pre">Schema</span></a></span></span><a class="headerlink" href="#litestar.contrib.pydantic.PydanticSchemaPlugin.for_pydantic_model" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a schema object for a given pydantic model class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>annotation</strong> – A pydantic model class.</p></li>
+<li><p><strong>schema_creator</strong> – An instance of the schema creator class</p></li>
+<li><p><strong>dto_for</strong> – The type of the DTO if any.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A schema instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1210,12 +1292,12 @@ document.write(`
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="opentelemetry.html"
+       href="piccolo.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">opentelemetry</p>
+        <p class="prev-next-title">piccolo_orm</p>
       </div>
     </a>
     <a class="right-next"
@@ -1249,6 +1331,16 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.pydantic.PydanticDTO.model_type"><code class="docutils literal notranslate"><span class="pre">PydanticDTO.model_type</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.pydantic.PydanticDTO.generate_field_definitions"><code class="docutils literal notranslate"><span class="pre">PydanticDTO.generate_field_definitions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.pydantic.PydanticDTO.detect_nested_field"><code class="docutils literal notranslate"><span class="pre">PydanticDTO.detect_nested_field()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.pydantic.PydanticInitPlugin"><code class="docutils literal notranslate"><span class="pre">PydanticInitPlugin</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.pydantic.PydanticInitPlugin.on_app_init"><code class="docutils literal notranslate"><span class="pre">PydanticInitPlugin.on_app_init()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.pydantic.PydanticSchemaPlugin"><code class="docutils literal notranslate"><span class="pre">PydanticSchemaPlugin</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.pydantic.PydanticSchemaPlugin.is_plugin_supported_type"><code class="docutils literal notranslate"><span class="pre">PydanticSchemaPlugin.is_plugin_supported_type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema"><code class="docutils literal notranslate"><span class="pre">PydanticSchemaPlugin.to_openapi_schema()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.pydantic.PydanticSchemaPlugin.for_pydantic_model"><code class="docutils literal notranslate"><span class="pre">PydanticSchemaPlugin.for_pydantic_model()</span></code></a></li>
 </ul>
 </li>
 </ul>

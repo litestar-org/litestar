@@ -953,6 +953,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../jwt.html">JWT Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../open-telemetry.html">Open Telemetry Instrumentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../prometheus.html">Prometheus Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../piccolo.html">Piccolo ORM</a></li>
 <li class="toctree-l3 current active has-children"><a class="reference internal" href="index.html">SQLAlchemy</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l4 current active"><a class="current reference internal" href="#">SQLAlchemy Models &amp; Repository</a></li>
 <li class="toctree-l4"><a class="reference internal" href="plugins/index.html">Plugins</a></li>
@@ -978,6 +979,7 @@ document.write(`
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/cli.html">cli</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/connection.html">connection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -985,8 +987,8 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/jwt.html">jwt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/mako.html">mako</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/msgspec.html">msgspec</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/piccolo.html">piccolo_orm</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/contrib/pydantic.html">pydantic</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../reference/contrib/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/contrib/repository/abc.html">abc</a></li>
@@ -1012,25 +1014,26 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/di.html">di</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/interface.html">interface</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../reference/dto/factory/index.html">factory</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../reference/dto/factory/abc.html">abc</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../reference/dto/factory/stdlib.html">stdlib</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../reference/dto/factory/types.html">types</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/data_structures.html">data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/field.html">field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/types.html">types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/base_factory.html">base_factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/msgspec_dto_factory.html">msgspec_dto_factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/dataclass_dto_factory.html">dataclass_dto_factory</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/enums.html">enums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/logging/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/logging/picologging.html">picologging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/logging/standard.html">standard</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/authentication.html">authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/compression.html">compression</a></li>
@@ -1038,7 +1041,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/middleware/session/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/middleware/session/client_side.html">client_side</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../reference/middleware/session/server_side.html">server_side</a></li>
@@ -1046,7 +1049,7 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/openapi/openapi.html">openapi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/openapi/spec.html">spec</a></li>
 </ul>
@@ -1055,7 +1058,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/partial.html">partial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/plugins.html">plugins</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/response/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/response/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/response/redirect.html">redirect</a></li>
@@ -1065,13 +1068,14 @@ document.write(`
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/router.html">router</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/routes.html">routes</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/status_codes.html">status_code</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/memory.html">memory</a></li>
@@ -1079,18 +1083,17 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/registry.html">registry</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../../reference/status_codes.html">status_code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/template.html">template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/testing.html">testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/types.html">types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/typing.html">typing</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../topics/sync-vs-async.html">Sync vs. Async</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -1238,8 +1241,8 @@ and <code class="docutils literal notranslate"><span class="pre">BigIntAuditBase
 
 
 <span class="c1"># The `AuditBase` class includes the same UUID` based primary key (`id`) and 2</span>
-<span class="c1"># additional columns: `created` and `updated`. `created` is a timestamp of when the</span>
-<span class="c1"># record created, and `updated` is the last time the record was modified.</span>
+<span class="c1"># additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the</span>
+<span class="c1"># record created, and `updated_at` is the last time the record was modified.</span>
 <span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">UUIDAuditBase</span><span class="p">):</span>
     <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">author_id</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;author.id&quot;</span><span class="p">))</span>
@@ -1279,7 +1282,9 @@ and <code class="docutils literal notranslate"><span class="pre">BigIntAuditBase
 your controllers and function based routes.</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">sqlalchemy_async_repository.py</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
 
@@ -1306,8 +1311,7 @@ your controllers and function based routes.</p>
 <span class="k">class</span> <span class="nc">BaseModel</span><span class="p">(</span><span class="n">_BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extend Pydantic&#39;s BaseModel to enable ORM mode&quot;&quot;&quot;</span>
 
-    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-        <span class="n">orm_mode</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;from_attributes&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
 
 <span class="c1"># the SQLAlchemy base includes a declarative model for you to use in your models.</span>
@@ -1317,7 +1321,7 @@ your controllers and function based routes.</p>
     <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;author&quot;</span>  <span class="c1">#  type: ignore[assignment]</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">dob</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
-    <span class="n">books</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s2">&quot;BookModel&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="s2">&quot;noload&quot;</span><span class="p">)</span>
+    <span class="n">books</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">BookModel</span><span class="p">]]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="s2">&quot;noload&quot;</span><span class="p">)</span>
 
 
 <span class="c1"># The `AuditBase` class includes the same UUID` based primary key (`id`) and 2</span>
@@ -1327,7 +1331,7 @@ your controllers and function based routes.</p>
     <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;book&quot;</span>  <span class="c1">#  type: ignore[assignment]</span>
     <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">author_id</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;author.id&quot;</span><span class="p">))</span>
-    <span class="n">author</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="s2">&quot;AuthorModel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">lazy</span><span class="o">=</span><span class="s2">&quot;joined&quot;</span><span class="p">,</span> <span class="n">innerjoin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">viewonly</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">author</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">AuthorModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">lazy</span><span class="o">=</span><span class="s2">&quot;joined&quot;</span><span class="p">,</span> <span class="n">innerjoin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">viewonly</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="c1"># we will explicitly define the schema instead of using DTO objects for clarity.</span>
@@ -1355,14 +1359,14 @@ your controllers and function based routes.</p>
     <span class="n">model_type</span> <span class="o">=</span> <span class="n">AuthorModel</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">provide_authors_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="s2">&quot;AsyncSession&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">provide_authors_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides the default Authors repository.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
 
 
 <span class="c1"># we can optionally override the default `select` used for the repository to pass in</span>
 <span class="c1"># specific SQL options such as join details</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">provide_author_details_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="s2">&quot;AsyncSession&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">provide_author_details_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides a simple example demonstrating how to override the join options for the repository.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span>
         <span class="n">statement</span><span class="o">=</span><span class="n">select</span><span class="p">(</span><span class="n">AuthorModel</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">selectinload</span><span class="p">(</span><span class="n">AuthorModel</span><span class="o">.</span><span class="n">books</span><span class="p">)),</span>
@@ -1491,7 +1495,6 @@ your controllers and function based routes.</p>
     <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
     <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)],</span>
     <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;limit_offset&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_limit_offset_pagination</span><span class="p">)},</span>
-    <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1499,7 +1502,9 @@ your controllers and function based routes.</p>
 <p>Alternately, you may use the <code class="docutils literal notranslate"><span class="pre">SQLAlchemySyncRepository</span></code> class for your synchronous database connection.</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">sqlalchemy_sync_repository.py</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
 
@@ -1526,8 +1531,7 @@ your controllers and function based routes.</p>
 <span class="k">class</span> <span class="nc">BaseModel</span><span class="p">(</span><span class="n">_BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extend Pydantic&#39;s BaseModel to enable ORM mode&quot;&quot;&quot;</span>
 
-    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-        <span class="n">orm_mode</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;from_attributes&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
 
 <span class="c1"># the SQLAlchemy base includes a declarative model for you to use in your models.</span>
@@ -1537,7 +1541,7 @@ your controllers and function based routes.</p>
     <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;author&quot;</span>  <span class="c1">#  type: ignore[assignment]</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">dob</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
-    <span class="n">books</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s2">&quot;BookModel&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="s2">&quot;noload&quot;</span><span class="p">)</span>
+    <span class="n">books</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">BookModel</span><span class="p">]]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="s2">&quot;noload&quot;</span><span class="p">)</span>
 
 
 <span class="c1"># The `AuditBase` class includes the same UUID` based primary key (`id`) and 2</span>
@@ -1547,7 +1551,7 @@ your controllers and function based routes.</p>
     <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;book&quot;</span>  <span class="c1">#  type: ignore[assignment]</span>
     <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">author_id</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;author.id&quot;</span><span class="p">))</span>
-    <span class="n">author</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="s2">&quot;AuthorModel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">lazy</span><span class="o">=</span><span class="s2">&quot;joined&quot;</span><span class="p">,</span> <span class="n">innerjoin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">viewonly</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">author</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">AuthorModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">lazy</span><span class="o">=</span><span class="s2">&quot;joined&quot;</span><span class="p">,</span> <span class="n">innerjoin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">viewonly</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="c1"># we will explicitly define the schema instead of using DTO objects for clarity.</span>
@@ -1575,14 +1579,14 @@ your controllers and function based routes.</p>
     <span class="n">model_type</span> <span class="o">=</span> <span class="n">AuthorModel</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">provide_authors_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">provide_authors_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides the default Authors repository.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
 
 
 <span class="c1"># we can optionally override the default `select` used for the repository to pass in</span>
 <span class="c1"># specific SQL options such as join details</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">provide_author_details_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">provide_author_details_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides a simple example demonstrating how to override the join options</span>
 <span class="sd">    for the repository.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span>
@@ -1713,7 +1717,6 @@ your controllers and function based routes.</p>
     <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
     <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)],</span>
     <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;limit_offset&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_limit_offset_pagination</span><span class="p">)},</span>
-    <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>

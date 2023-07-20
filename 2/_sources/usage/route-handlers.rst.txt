@@ -202,12 +202,18 @@ These are used exactly like ``route`` with the sole exception that you cannot co
 .. code-block:: python
 
    from litestar import delete, get, patch, post, put, head
-   from litestar.partial import Partia
+   from litestar.dto import DTOConfig, DTOData
+   from litestar.contrib.pydantic import PydanticDTO
+
    from pydantic import BaseModel
 
 
    class Resource(BaseModel):
        ...
+
+
+   class PartialResourceDTO(PydanticDTO[Resource]):
+       config = DTOConfig(partial=True)
 
 
    @get(path="/resources")
@@ -235,8 +241,10 @@ These are used exactly like ``route`` with the sole exception that you cannot co
        ...
 
 
-   @patch(path="/resources/{pk:int}")
-   async def partially_update_resource(data: Partial[Resource], pk: int) -> Resource:
+   @patch(path="/resources/{pk:int}", dto=PartialResourceDTO)
+   async def partially_update_resource(
+       data: DTOData[PartialResourceDTO], pk: int
+   ) -> Resource:
        ...
 
 
