@@ -40,7 +40,7 @@ pip install litestar
 You can check out the latest pre-release version by instead running
 
 ```shell
-pip install litestar==2.0.0beta2
+pip install litestar==2.0.0beta3
 ```
 
 ## Quick Start
@@ -178,7 +178,7 @@ plugins.
 ### OpenAPI
 
 Litestar has custom logic to generate OpenAPI 3.1.0 schema, include optional generation of examples using the
-`pydantic-factories` library.
+[`polyfactory`](https://pypi.org/project/polyfactory/) library.
 
 #### ReDoc, Swagger-UI and Stoplight Elements API Documentation
 
