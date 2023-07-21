@@ -2514,13 +2514,13 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "polyfactory"
-version = "2.6.2"
+version = "2.6.3"
 description = "Mock data generation factories"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "polyfactory-2.6.2-py3-none-any.whl", hash = "sha256:becdae6720a6df87fb1aa738ba8fa5c26982d72040eb73bf7d938be2637c35b3"},
-    {file = "polyfactory-2.6.2.tar.gz", hash = "sha256:a71016770b643c3bbc26c439cffea13b8510827d6e9e40a857783f8242cb1d8f"},
+    {file = "polyfactory-2.6.3-py3-none-any.whl", hash = "sha256:3da6450402c65f0841cbcd0db72eb28c4c415d4b9c853951ddb0722968ae9ee7"},
+    {file = "polyfactory-2.6.3.tar.gz", hash = "sha256:4c314e94ff89afd0fc59a8c947c9759bb01b65b0662c64bc3b25961747a036e6"},
 ]
 
 [package.dependencies]
@@ -2528,10 +2528,11 @@ faker = "*"
 typing-extensions = "*"
 
 [package.extras]
-beanie = ["beanie", "pydantic"]
+beanie = ["beanie", "pydantic[email]"]
+full = ["beanie", "msgspec", "odmantic", "pydantic[email]"]
 msgspec = ["msgspec"]
-odmantic = ["odmantic", "pydantic"]
-pydantic = ["pydantic"]
+odmantic = ["odmantic", "pydantic[email]"]
+pydantic = ["pydantic[email]"]
 
 [[package]]
 name = "pre-commit"
@@ -4190,4 +4191,4 @@ structlog = ["structlog"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "d38a0c9c9070189954bae9a5d7489d2ecfd8f59c57c2568ca0560ff2599bd5f9"
+content-hash = "77163d5e959ce7fec38aebcca68f5af53f598fe9eb6c82bf7bdb6d85c02f761c"
