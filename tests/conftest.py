@@ -12,7 +12,6 @@ from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, Type
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from fakeredis.aioredis import FakeRedis
 from freezegun import freeze_time
 from pytest_lazyfixture import lazy_fixture
 from redis.asyncio import Redis as AsyncRedis
@@ -77,13 +76,8 @@ def mock_asgi_app() -> ASGIApp:
 
 
 @pytest.fixture()
-def fake_redis() -> FakeRedis:
-    return FakeRedis()
-
-
-@pytest.fixture()
-def redis_store(fake_redis: FakeRedis) -> RedisStore:
-    return RedisStore(redis=fake_redis)
+def redis_store(redis_client: AsyncRedis) -> RedisStore:
+    return RedisStore(redis=redis_client)
 
 
 @pytest.fixture()

@@ -12,6 +12,7 @@ from _pytest.fixtures import FixtureRequest
 from freezegun.api import FakeDatetime, FrozenDateTimeFactory  # type: ignore[attr-defined]
 from msgspec.msgpack import decode as decode_msgpack
 from pytest_mock import MockerFixture
+from redis.asyncio import Redis as AsyncRedis
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import encode_msgpack
@@ -21,8 +22,6 @@ from litestar.stores.redis import RedisStore
 from litestar.stores.registry import StoreRegistry
 
 if TYPE_CHECKING:
-    from redis.asyncio import Redis
-
     from litestar.stores.base import NamespacedStore, Store
 
 
@@ -90,6 +89,10 @@ async def test_expires(store: Store, frozen_datetime: FrozenDateTimeFactory) -> 
 
     frozen_datetime.tick(2)
 
+    if isinstance(store, RedisStore):
+        # mocking the time doesn't affect the expiry timeout on the Redis instance
+        await store._redis.expire(f"{store.namespace}:foo", 0)
+
     stored_value = await store.get("foo")
 
     assert stored_value is None
@@ -114,8 +117,8 @@ async def test_delete(store: Store) -> None:
 
     await store.delete(key)
 
-    fake_redis_value = await store.get(key)
-    assert fake_redis_value is None
+    value = await store.get(key)
+    assert value is None
 
 
 async def test_delete_empty(store: Store) -> None:
@@ -166,7 +169,7 @@ async def test_expires_in(store: Store, frozen_datetime: FrozenDateTimeFactory) 
     assert expiration is not None
     assert math.ceil(expiration / 10) == 1
 
-    frozen_datetime.tick(12)
+    await store._redis.expire(f"{store.namespace}:foo", 0)
     expiration = await store.expires_in("foo")
     assert expiration is None
 
@@ -216,8 +219,8 @@ async def test_redis_delete_all(redis_store: RedisStore) -> None:
     assert stored_value == b"test_value"  # check it doesn't delete other values
 
 
-async def test_redis_delete_all_no_namespace_raises(fake_redis: Redis) -> None:
-    redis_store = RedisStore(redis=fake_redis, namespace=None)
+async def test_redis_delete_all_no_namespace_raises(redis_client: AsyncRedis) -> None:
+    redis_store = RedisStore(redis=redis_client, namespace=None)
 
     with pytest.raises(ImproperlyConfiguredException):
         await redis_store.delete_all()
@@ -236,9 +239,9 @@ def test_redis_with_namespace(redis_store: RedisStore) -> None:
     assert namespaced_test._redis is redis_store._redis
 
 
-def test_redis_namespace_explicit_none(fake_redis: Redis) -> None:
+def test_redis_namespace_explicit_none(redis_client: AsyncRedis) -> None:
     assert RedisStore.with_client(url="redis://127.0.0.1", namespace=None).namespace is None
-    assert RedisStore(redis=fake_redis, namespace=None).namespace is None
+    assert RedisStore(redis=redis_client, namespace=None).namespace is None
 
 
 async def test_file_init_directory(file_store: FileStore) -> None:

@@ -113,7 +113,6 @@ asyncmy = "*"
 asyncpg = "*"
 beautifulsoup4 = "*"
 duckdb-engine = "*"
-fakeredis = { extras = ["lua"], version = "<2.17.0" }
 freezegun = "*"
 fsspec = "*"
 greenlet = "*"
