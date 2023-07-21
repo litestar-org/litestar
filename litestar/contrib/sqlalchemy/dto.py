@@ -37,7 +37,7 @@ __all__ = ("SQLAlchemyDTO",)
 
 T = TypeVar("T", bound="DeclarativeBase | Collection[DeclarativeBase]")
 
-ElementType: TypeAlias = "Column[Any] | RelationshipProperty[Any]"
+ElementType: TypeAlias = "Column | RelationshipProperty"
 SQLA_NS = {**vars(orm), **vars(sql)}
 
 

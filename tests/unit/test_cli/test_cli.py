@@ -45,7 +45,7 @@ def test_register_commands_from_entrypoint(mocker: "MockerFixture", runner: "Cli
     def custom_group() -> None:
         pass
 
-    @custom_group.command()  # type: ignore[attr-defined]
+    @custom_group.command()
     def custom_command(app: Litestar) -> None:
         mock_command_callback()
 
