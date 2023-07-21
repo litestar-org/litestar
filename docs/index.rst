@@ -92,7 +92,7 @@ First, create a file named ``app.py`` with the following contents:
 
 
    @get("/books/{book_id:int}")
-   async def get_book(book_id: int) -> JSONResponse:
+   async def get_book(book_id: int) -> dict[str, int]:
        return {"book_id": book_id}
 
 
