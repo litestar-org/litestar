@@ -661,6 +661,23 @@ receives a single positional arg, that must be an iterator delivering the stream
     a generator itself, a sync or async iterator class, or an instance of a sync or async iterator class.
 
 
+Server Sent Event Responses
+---------------------------
+
+To send `server-sent-events` or SSEs to the frontend, use the :class:`ServerSentEvent <.response.ServerSentEvent>`
+class. The class receives a content arg. You can additionally specify ``event_type``, which is the
+name of the event as declared in the browser, the ``event_id``, which sets the event source property, ``comment_message``,
+which is used in for sending pings, and ``retry_duration``, which dictates the duration for retrying.
+
+.. literalinclude:: /examples/responses/sse_responses.py
+    :language: python
+
+
+.. note::
+
+    You can use different kinds of values for the iterator. It can be a callable returning a sync or async generator,
+    a generator itself, a sync or async iterator class, or an instance of a sync or async iterator class.
+
 
 Template Responses
 ------------------

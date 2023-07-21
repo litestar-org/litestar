@@ -1653,6 +1653,17 @@ http2 = ["h2 (>=3,<5)"]
 socks = ["socksio (==1.*)"]
 
 [[package]]
+name = "httpx-sse"
+version = "0.3.1"
+description = "Consume Server-Sent Event (SSE) messages with HTTPX."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "httpx-sse-0.3.1.tar.gz", hash = "sha256:3bb3289b2867f50cbdb2fee3eeeefecb1e86653122e164faac0023f1ffc88aea"},
+    {file = "httpx_sse-0.3.1-py3-none-any.whl", hash = "sha256:7376dd88732892f9b6b549ac0ad05a8e2341172fe7dcf9f8f9c8050934297316"},
+]
+
+[[package]]
 name = "hypothesis"
 version = "6.82.0"
 description = "A library for property-based testing"
@@ -4191,4 +4202,4 @@ structlog = ["structlog"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "77163d5e959ce7fec38aebcca68f5af53f598fe9eb6c82bf7bdb6d85c02f761c"
+content-hash = "06e8078eec22ba58622f5e66d067eb278797ebce807a2d8b23d8280949877ab0"
