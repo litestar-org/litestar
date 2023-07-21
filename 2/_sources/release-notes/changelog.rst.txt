@@ -3,6 +3,18 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.0.0beta4
+    :date: 2023/07/21
+
+    .. change:: Fix extra package dependencies
+        :type: bugfix
+        :pr: 2029
+
+        A workaround for a
+        `bug in poetry <https://github.com/python-poetry/poetry/issues/4401>`_ that
+        caused development / extra dependencies to be installed alongside the package
+        has been added.
+
 .. changelog:: 2.0.0beta3
     :date: 2023/07/20
 
