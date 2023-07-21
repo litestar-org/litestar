@@ -57,7 +57,7 @@ jobs:
           path: ~/.cache
           key: cache-${{ runner.os }}-${{ inputs.python-version }}-${{ inputs.pydantic-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
-        run: poetry install --no-interaction
+        run: poetry install --no-interaction --extras full
       - if: ${{ inputs.pydantic-version == '1' }}
         name: Install pydantic v1
         run: poetry remove pydantic-extra-types && poetry add "pydantic>=1.10.10,<2" piccolo beanie

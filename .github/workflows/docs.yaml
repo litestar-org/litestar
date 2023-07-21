@@ -25,7 +25,7 @@ jobs:
           path: .venv
           key: venv-${{ hashFiles('**/poetry.lock') }}
       - name: Install App Dependencies
-        run: poetry install --no-interaction --with docs
+        run: poetry install --no-interaction --with docs --extras full
       - name: Fetch gh pages
         run: git fetch origin gh-pages --depth=1
       - name: Build docs

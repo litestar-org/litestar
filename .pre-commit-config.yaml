@@ -83,7 +83,7 @@ repos:
             brotli,
             click,
             fakeredis>=2.10.2,
-            fast-query-parsers>=1.0.0,
+            fast-query-parsers>=1.0.2,
             freezegun,
             fsspec,
             httpx,
@@ -112,9 +112,8 @@ repos:
             rich-click,
             sqlalchemy>=2.0.12,
             starlette,
-            structlog,
-            tortoise-orm,
             types-beautifulsoup4,
+            structlog,
             types-freezegun,
             types-pyyaml,
             types-redis,
@@ -123,7 +122,7 @@ repos:
             prometheus_client,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.317
+    rev: v1.1.318
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures|tests/unit/test_partial"
@@ -142,7 +141,7 @@ repos:
             brotli,
             click,
             fakeredis>=2.10.2,
-            fast-query-parsers>=1.0.0,
+            fast-query-parsers>=1.0.2,
             freezegun,
             fsspec,
             httpx,
@@ -172,7 +171,6 @@ repos:
             sqlalchemy>=2.0.12,
             starlette,
             structlog,
-            tortoise-orm,
             types-beautifulsoup4,
             types-freezegun,
             types-pyyaml,
@@ -181,14 +179,12 @@ repos:
             uvicorn,
             prometheus_client,
           ]
-  - repo: local
+  - repo: https://github.com/sphinx-contrib/sphinx-lint
+    rev: "v0.6.7"
     hooks:
       - id: sphinx-lint
-        name: sphinx-lint
-        language: python
-        entry: sphinx-lint
-        additional_dependencies: [sphinx-lint]
-        types: [rst]
+  - repo: local
+    hooks:
       - id: pypi-readme
         name: pypi-readme
         language: python
