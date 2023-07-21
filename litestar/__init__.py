@@ -13,12 +13,13 @@ __version__ = get_version()
 __all__ = (
     "Controller",
     "HttpMethod",
+    "Litestar",
     "MediaType",
     "Request",
     "Response",
     "Router",
-    "Litestar",
     "WebSocket",
+    "__version__",
     "asgi",
     "delete",
     "get",
@@ -29,5 +30,4 @@ __all__ = (
     "route",
     "websocket",
     "websocket_listener",
-    "__version__",
 )
