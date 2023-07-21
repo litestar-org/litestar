@@ -414,7 +414,6 @@ class Response(Generic[T]):
         return ASGIResponse(
             background=self.background or background,
             body=self.render(self.content, media_type, get_serializer(type_encoders)),
-            content_length=None,
             cookies=cookies,
             encoded_headers=encoded_headers or [],
             encoding=self.encoding,

@@ -12,4 +12,5 @@ response
     file
     redirect
     streaming
+    sse
     template
