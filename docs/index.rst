@@ -15,8 +15,7 @@ Installation
 
    pip install litestar
 
-.. tip:: ``litestar[standard]`` includes everything you need to get started with Litestar, including
-        an ASGI web server. It has: ``click`` and ``rich`` for a great CLI experience, ``jinja2`` for templating,
+.. tip:: ``litestar[standard]`` includes everything you need to get started with Litestar. It has: ``click`` and ``rich`` for a great CLI experience, ``jinja2`` for templating,
         and ``uvicorn`` for running your app.
 
         You can also install just the :doc:`CLI </usage/cli>` with ``litestar[cli]``!
