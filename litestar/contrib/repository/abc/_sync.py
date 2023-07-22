@@ -255,27 +255,29 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         return item_or_none
 
     @classmethod
-    def get_id_attribute_value(cls, item: T | type[T]) -> Any:
+    def get_id_attribute_value(cls, item: T | type[T], **kwargs: Any) -> Any:
         """Get value of attribute named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` on ``item``.
 
         Args:
             item: Anything that should have an attribute named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` value.
-
+            kwargs: Optional arguments to override functionality
         Returns:
             The value of attribute on ``item`` named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>`.
         """
-        return getattr(item, cls.id_attribute)
+        id_attribute = kwargs.pop("id_attribute", cls.id_attribute)
+        return getattr(item, id_attribute)
 
     @classmethod
-    def set_id_attribute_value(cls, item_id: Any, item: T) -> T:
+    def set_id_attribute_value(cls, item_id: Any, item: T, **kwargs: Any) -> T:
         """Return the ``item`` after the ID is set to the appropriate attribute.
 
         Args:
             item_id: Value of ID to be set on instance
             item: Anything that should have an attribute named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` value.
-
+            kwargs: Optional arguments to override functionality
         Returns:
             Item with ``item_id`` set to :attr:`id_attribute <AbstractAsyncRepository.id_attribute>`
         """
-        setattr(item, cls.id_attribute, item_id)
+        id_attribute = kwargs.pop("id_attribute", cls.id_attribute)
+        setattr(item, id_attribute, item_id)
         return item

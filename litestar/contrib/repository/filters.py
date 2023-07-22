@@ -21,7 +21,7 @@ __all__ = (
 )
 
 
-FilterTypes: TypeAlias = "BeforeAfter | CollectionFilter[Any] | LimitOffset | OrderBy | SearchFilter"
+FilterTypes: TypeAlias = "BeforeAfter | CollectionFilter[Any] | LimitOffset | OrderBy | SearchFilter | NotInCollectionFilter[Any] | NotInSearchFilter"
 """Aggregate type alias of the types supported for collection filtering."""
 
 
@@ -35,11 +35,25 @@ class BeforeAfter:
     """Filter results where field earlier than this."""
     after: datetime | None
     """Filter results where field later than this."""
+    on_or_before: datetime | None = None
+    """Filter results where field is on or earlier than this."""
+    on_or_after: datetime | None = None
+    """Filter results where field on or later than this."""
 
 
 @dataclass
 class CollectionFilter(Generic[T]):
     """Data required to construct a ``WHERE ... IN (...)`` clause."""
+
+    field_name: str
+    """Name of the model attribute to filter on."""
+    values: abc.Collection[T]
+    """Values for ``IN`` clause."""
+
+
+@dataclass
+class NotInCollectionFilter(Generic[T]):
+    """Data required to construct a ``WHERE ... NOT IN (...)`` clause."""
 
     field_name: str
     """Name of the model attribute to filter on."""
@@ -72,8 +86,20 @@ class SearchFilter:
     """Data required to construct a ``WHERE field_name LIKE '%' || :value || '%'`` clause."""
 
     field_name: str
-    """Name of the model attribute to sort on."""
+    """Name of the model attribute to search on."""
     value: str
     """Values for ``LIKE`` clause."""
+    ignore_case: bool | None = False
+    """Should the search be case insensitive."""
+
+
+@dataclass
+class NotInSearchFilter:
+    """Data required to construct a ``WHERE field_name NOT LIKE '%' || :value || '%'`` clause."""
+
+    field_name: str
+    """Name of the model attribute to search on."""
+    value: str
+    """Values for ``NOT LIKE`` clause."""
     ignore_case: bool | None = False
     """Should the search be case insensitive."""

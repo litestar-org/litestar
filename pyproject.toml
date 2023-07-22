@@ -203,6 +203,7 @@ full = [
     "python-jose",
     "redis",
     "rich",
+    "rich-click",
     "sqlalchemy",
     "structlog",
     "uvicorn",
