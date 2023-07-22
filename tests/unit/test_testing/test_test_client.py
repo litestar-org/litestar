@@ -3,9 +3,7 @@ from typing import TYPE_CHECKING, Any, Dict
 import pytest
 
 from litestar import Litestar, Request, get, post
-from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.stores.base import Store
-from litestar.stores.redis import RedisStore
 from litestar.testing import TestClient
 
 if TYPE_CHECKING:
@@ -13,19 +11,6 @@ if TYPE_CHECKING:
     from litestar.types import AnyIOBackend
 
 
-@pytest.fixture()
-def skip_for_trio_redis(
-    session_backend_config: "BaseBackendConfig", test_client_backend: "AnyIOBackend", store: Store
-) -> None:
-    if (
-        isinstance(session_backend_config, ServerSideSessionConfig)
-        and isinstance(store, RedisStore)
-        and test_client_backend == "trio"
-    ):
-        pytest.skip("fakeredis does not always play well with trio, so skip this for now")
-
-
-@pytest.mark.usefixtures("skip_for_trio_redis")
 @pytest.mark.parametrize("with_domain", [False, True])
 def test_test_client_set_session_data(
     with_domain: bool,
@@ -48,7 +33,6 @@ def test_test_client_set_session_data(
         assert session_data == client.get("/test").json()
 
 
-@pytest.mark.usefixtures("skip_for_trio_redis")
 @pytest.mark.parametrize("with_domain", [False, True])
 def test_test_client_get_session_data(
     with_domain: bool, session_backend_config: "BaseBackendConfig", test_client_backend: "AnyIOBackend", store: Store
