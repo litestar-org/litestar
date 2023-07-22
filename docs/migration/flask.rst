@@ -636,4 +636,4 @@ Error handling
 ..  seealso::
 
     To learn more about exception handling, check out this chapter in the documentation:
-    `Exception handling <usage/17-exceptions/#exception-handling>`_
+    :ref:`usage/exceptions:exception handling`
