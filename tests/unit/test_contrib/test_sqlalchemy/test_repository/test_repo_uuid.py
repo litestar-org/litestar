@@ -546,7 +546,9 @@ async def test_repo_filter_on_before_after(author_repo: AuthorAsyncRepository) -
         on_or_before=datetime.strptime("2023-05-01T00:00:00", "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc),
         on_or_after=None,
     )
-    existing_obj = await maybe_async(author_repo.list(before_filter))
+    existing_obj = await maybe_async(
+        author_repo.list(*[before_filter, OrderBy(field_name="created_at", sort_order="desc")])  # type: ignore
+    )
     assert existing_obj[0].name == "Agatha Christie"
 
     after_filter = OnBeforeAfter(
@@ -554,7 +556,9 @@ async def test_repo_filter_on_before_after(author_repo: AuthorAsyncRepository) -
         on_or_after=datetime.strptime("2023-03-01T00:00:00", "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc),
         on_or_before=None,
     )
-    existing_obj = await maybe_async(author_repo.list(after_filter))
+    existing_obj = await maybe_async(
+        author_repo.list(*[after_filter, OrderBy(field_name="created_at", sort_order="desc")])  # type: ignore
+    )
     assert existing_obj[0].name == "Agatha Christie"
 
 
@@ -592,7 +596,7 @@ async def test_repo_filter_not_in_search(author_repo: AuthorAsyncRepository) -> 
     )
     # sqlite & mysql are case insensitive by default with a `LIKE`
     dialect = author_repo.session.bind.dialect.name if author_repo.session.bind else "default"
-    expected_objs = 1 if dialect in {"sqlite", "mysql"} else 0
+    expected_objs = 1 if dialect in {"sqlite", "mysql"} else 2
     assert len(existing_obj) == expected_objs
     existing_obj = await maybe_async(
         author_repo.list(NotInSearchFilter(field_name="name", value="GATH", ignore_case=True))
