@@ -79,7 +79,7 @@ Middlewares and Exceptions
 --------------------------
 
 When an exception is raised by a route handler or a :doc:`dependency </usage/dependency-injection>`
-it will be transformed into a response by an `exception handler <../../17-exceptions#exception-handling>`_.
+it will be transformed into a response by an :ref:`exception handler <usage/exceptions:exception handling>`.
 This response will follow the normal "flow" of the application and therefore, middlewares are
 still applied to it.
 
