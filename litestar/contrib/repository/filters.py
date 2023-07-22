@@ -21,7 +21,7 @@ __all__ = (
 )
 
 
-FilterTypes: TypeAlias = "BeforeAfter | CollectionFilter[Any] | LimitOffset | OrderBy | SearchFilter | NotInCollectionFilter[Any] | NotInSearchFilter"
+FilterTypes: TypeAlias = "BeforeAfter | OnBeforeAfter | CollectionFilter[Any] | LimitOffset | OrderBy | SearchFilter | NotInCollectionFilter[Any] | NotInSearchFilter"
 """Aggregate type alias of the types supported for collection filtering."""
 
 
@@ -35,9 +35,17 @@ class BeforeAfter:
     """Filter results where field earlier than this."""
     after: datetime | None
     """Filter results where field later than this."""
-    on_or_before: datetime | None = None
+
+
+@dataclass
+class OnBeforeAfter:
+    """Data required to filter a query on a ``datetime`` column."""
+
+    field_name: str
+    """Name of the model attribute to filter on."""
+    on_or_before: datetime | None
     """Filter results where field is on or earlier than this."""
-    on_or_after: datetime | None = None
+    on_or_after: datetime | None
     """Filter results where field on or later than this."""
 
 
