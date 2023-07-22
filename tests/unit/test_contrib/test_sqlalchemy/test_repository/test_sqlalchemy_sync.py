@@ -525,7 +525,7 @@ def test_filter_on_datetime_field(before: datetime, after: datetime, mock_repo: 
     field_mock = MagicMock()
     field_mock.__gt__ = field_mock.__lt__ = lambda self, other: True
     mock_repo.model_type.updated_at = field_mock
-    mock_repo._filter_on_datetime_field("updated_at", before, after, statement=mock_repo.statement)
+    mock_repo._filter_on_datetime_field("updated_at", before=before, after=after, statement=mock_repo.statement)
 
 
 def test_filter_collection_by_kwargs(mock_repo: SQLAlchemySyncRepository) -> None:

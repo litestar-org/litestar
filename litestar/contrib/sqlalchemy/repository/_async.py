@@ -13,6 +13,7 @@ from litestar.contrib.repository.filters import (
     LimitOffset,
     NotInCollectionFilter,
     NotInSearchFilter,
+    OnBeforeAfter,
     OrderBy,
     SearchFilter,
 )
@@ -514,28 +515,6 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                 instances.append(instance)
             return instances, count
 
-    async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[ModelT]:
-        """Get a list of instances, optionally filtered.
-
-        Args:
-            *filters: Types for specific filtering operations.
-            **kwargs: Instance attribute value filters.
-
-        Returns:
-            The list of instances, after filtering applied.
-        """
-        auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
-        statement = kwargs.pop("statement", self.statement)
-        statement = self._apply_filters(*filters, statement=statement)
-        statement = self._filter_select_by_kwargs(statement, **kwargs)
-
-        with wrap_sqlalchemy_exception():
-            result = await self._execute(statement)
-            instances = list(result.scalars())
-            for instance in instances:
-                self._expunge(instance, auto_expunge=auto_expunge)
-            return instances
-
     async def upsert(
         self,
         data: ModelT,
@@ -574,6 +553,72 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             self._expunge(instance, auto_expunge=auto_expunge)
             return instance
 
+    async def upsert_many(
+        self,
+        data: list[ModelT],
+        attribute_names: Iterable[str] | None = None,
+        with_for_update: bool | None = None,
+        **kwargs: Any,
+    ) -> list[ModelT]:
+        """Update or create instance.
+
+        Updates instances with the attribute values present on `data`, or creates a new instance if
+        one doesn't exist.
+
+        Args:
+            data: Instance to update existing, or be created. Identifier used to determine if an
+                existing instance exists is the value of an attribute on `data` named as value of
+                `self.id_attribute`.
+            attribute_names: an iterable of attribute names to pass into the ``update`` method.
+            with_for_update: indicating FOR UPDATE should be used, or may be a dictionary containing flags to indicate a more specific set of FOR UPDATE flags for the SELECT
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            The updated or created instance.
+
+        Raises:
+            NotFoundError: If no instance found with same identifier as `data`.
+        """
+        auto_commit = kwargs.pop("auto_commit", self.auto_commit)
+        auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
+        auto_refresh = kwargs.pop("auto_refresh", self.auto_refresh)
+        instances = []
+        with wrap_sqlalchemy_exception():
+            for datum in data:
+                instance = await self._attach_to_session(datum, strategy="merge")
+                await self._flush_or_commit(auto_commit=auto_commit)
+                await self._refresh(
+                    instance,
+                    attribute_names=attribute_names,
+                    with_for_update=with_for_update,
+                    auto_refresh=auto_refresh,
+                )
+                self._expunge(instance, auto_expunge=auto_expunge)
+                instances.append(instance)
+        return instances
+
+    async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[ModelT]:
+        """Get a list of instances, optionally filtered.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            The list of instances, after filtering applied.
+        """
+        auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
+        statement = kwargs.pop("statement", self.statement)
+        statement = self._apply_filters(*filters, statement=statement)
+        statement = self._filter_select_by_kwargs(statement, **kwargs)
+
+        with wrap_sqlalchemy_exception():
+            result = await self._execute(statement)
+            instances = list(result.scalars())
+            for instance in instances:
+                self._expunge(instance, auto_expunge=auto_expunge)
+            return instances
+
     def filter_collection_by_kwargs(  # type:ignore[override]
         self, collection: SelectT, /, **kwargs: Any
     ) -> SelectT:
@@ -597,7 +642,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         Returns:
             `True` if healthy.
         """
-        sql = "SELECT 1 FROM DUAL" if session.bind.dialect.name == "oracle" else "SELECT 1"
+        sql = "SELECT 1 FROM DUAL" if session.bind and session.bind.dialect.name == "oracle" else "SELECT 1"
         return (  # type:ignore[no-any-return]  # pragma: no cover
             await session.execute(text(sql))
         ).scalar_one() == 1
@@ -648,11 +693,16 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                     statement = self._apply_limit_offset_pagination(filter_.limit, filter_.offset, statement=statement)
             elif isinstance(filter_, BeforeAfter):
                 statement = self._filter_on_datetime_field(
-                    filter_.field_name,
-                    filter_.before,
-                    filter_.after,
-                    filter_.on_or_before,
-                    filter_.on_or_after,
+                    field_name=filter_.field_name,
+                    before=filter_.before,
+                    after=filter_.after,
+                    statement=statement,
+                )
+            elif isinstance(filter_, OnBeforeAfter):
+                statement = self._filter_on_datetime_field(
+                    field_name=filter_.field_name,
+                    on_or_before=filter_.on_or_before,
+                    on_or_after=filter_.on_or_after,
                     statement=statement,
                 )
             elif isinstance(filter_, CollectionFilter):
@@ -690,11 +740,11 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
     def _filter_on_datetime_field(
         self,
         field_name: str,
-        before: datetime | None,
-        after: datetime | None,
-        on_or_before: datetime | None,
-        on_or_after: datetime | None,
         statement: SelectT,
+        before: datetime | None = None,
+        after: datetime | None = None,
+        on_or_before: datetime | None = None,
+        on_or_after: datetime | None = None,
     ) -> SelectT:
         field = getattr(self.model_type, field_name)
         if before is not None:
