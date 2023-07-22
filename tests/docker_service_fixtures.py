@@ -211,7 +211,7 @@ def spanner_responsive(host: str) -> bool:
         except Exception:
             pass
         with database.snapshot() as snapshot:
-            resp = list(snapshot.execute_sql("SELECT 1"))[0]
+            resp = next(iter(snapshot.execute_sql("SELECT 1")))
         return resp[0] == 1
     except Exception:
         return False

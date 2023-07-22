@@ -709,7 +709,7 @@ def test_schema_required_fields_with_msgspec_dto() -> None:
             content=msgspec.json.encode(data),
             headers=headers,
         )
-        required = list(received.json()["components"]["schemas"].values())[0]["required"]
+        required = next(iter(received.json()["components"]["schemas"].values()))["required"]
         assert len(required) == 2
 
 
@@ -735,7 +735,7 @@ def test_schema_required_fields_with_pydantic_dto() -> None:
             content=_model_dump_json(data),
             headers=headers,
         )
-        required = list(received.json()["components"]["schemas"].values())[0]["required"]
+        required = next(iter(received.json()["components"]["schemas"].values()))["required"]
         assert len(required) == 2
 
 
@@ -762,7 +762,7 @@ def test_schema_required_fields_with_dataclass_dto() -> None:
             content=msgspec.json.encode(data),
             headers=headers,
         )
-        required = list(received.json()["components"]["schemas"].values())[0]["required"]
+        required = next(iter(received.json()["components"]["schemas"].values()))["required"]
         assert len(required) == 2
 
 
@@ -788,5 +788,5 @@ def test_schema_required_fields_with_msgspec_dto_and_default_fields() -> None:
             content=msgspec.json.encode(data),
             headers=headers,
         )
-        required = list(received.json()["components"]["schemas"].values())[0]["required"]
+        required = next(iter(received.json()["components"]["schemas"].values()))["required"]
         assert required == ["age"]
