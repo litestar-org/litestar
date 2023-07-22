@@ -16,6 +16,8 @@ from litestar.contrib.repository.filters import (
     BeforeAfter,
     CollectionFilter,
     LimitOffset,
+    NotInCollectionFilter,
+    OnBeforeAfter,
 )
 from litestar.contrib.sqlalchemy import base
 from litestar.contrib.sqlalchemy.repository import (
@@ -440,6 +442,23 @@ def test_sqlalchemy_repo_list_with_before_after_filter(
     assert mock_repo.statement.where.has_calls([call("gt"), call("lt")])
 
 
+async def test_sqlalchemy_repo_list_with_on_before_after_filter(
+    mock_repo: SQLAlchemySyncRepository, monkeypatch: MonkeyPatch
+) -> None:
+    """Test list operation with BeforeAfter filter."""
+    field_name = "updated_at"
+    # model has to support comparison with the datetimes
+    getattr(mock_repo.model_type, field_name).__le__ = lambda self, compare: "le"
+    getattr(mock_repo.model_type, field_name).__ge__ = lambda self, compare: "ge"
+    result_mock = MagicMock()
+    execute_mock = MagicMock(return_value=result_mock)
+    monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    mock_repo.statement.where.return_value = mock_repo.statement
+    mock_repo.list(OnBeforeAfter(field_name, datetime.max, datetime.min))
+    assert mock_repo.statement.where.call_count == 2
+    assert mock_repo.statement.where.has_calls([call("ge"), call("le")])
+
+
 def test_sqlalchemy_repo_list_with_collection_filter(
     mock_repo: SQLAlchemySyncRepository, monkeypatch: MonkeyPatch
 ) -> None:
@@ -453,6 +472,21 @@ def test_sqlalchemy_repo_list_with_collection_filter(
     mock_repo.list(CollectionFilter(field_name, values))
     mock_repo.statement.where.assert_called_once()
     getattr(mock_repo.model_type, field_name).in_.assert_called_once_with(values)
+
+
+async def test_sqlalchemy_repo_list_with_not_in_collection_filter(
+    mock_repo: SQLAlchemySyncRepository, monkeypatch: MonkeyPatch
+) -> None:
+    """Test behavior of list operation given CollectionFilter."""
+    field_name = "id"
+    result_mock = MagicMock()
+    execute_mock = MagicMock(return_value=result_mock)
+    monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    mock_repo.statement.where.return_value = mock_repo.statement
+    values = [1, 2, 3]
+    mock_repo.list(NotInCollectionFilter(field_name, values))
+    mock_repo.statement.where.assert_called_once()
+    getattr(mock_repo.model_type, field_name).notin_.assert_called_once_with(values)
 
 
 def test_sqlalchemy_repo_unknown_filter_type_raises(mock_repo: SQLAlchemySyncRepository) -> None:

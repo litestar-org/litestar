@@ -737,7 +737,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
     def _filter_not_in_collection(self, field_name: str, values: abc.Collection[Any], statement: SelectT) -> SelectT:
         if not values:
             return statement
-        return statement.where(getattr(self.model_type, field_name).not_in_(values))
+        return statement.where(getattr(self.model_type, field_name).notin_(values))
 
     def _filter_on_datetime_field(
         self,
