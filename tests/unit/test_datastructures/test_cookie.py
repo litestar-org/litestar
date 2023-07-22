@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from freezegun import freeze_time
+from time_machine import travel
 
 from litestar.datastructures import Cookie
 
@@ -10,7 +10,7 @@ def test_basic_cookie_as_header() -> None:
     assert cookie.to_header() == 'Set-Cookie: key=""; Path=/; SameSite=lax'
 
 
-@freeze_time()
+@travel(datetime.utcnow, tick=False)
 def test_cookie_as_header() -> None:
     expires_sec = 123
     cookie = Cookie(

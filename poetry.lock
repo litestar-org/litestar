@@ -117,7 +117,7 @@ tests = ["mypy (>=0.800)", "pytest", "pytest-asyncio"]
 name = "async-timeout"
 version = "4.0.2"
 description = "Timeout context manager for asyncio programs"
-optional = false
+optional = true
 python-versions = ">=3.6"
 files = [
     {file = "async-timeout-4.0.2.tar.gz", hash = "sha256:2163e1640ddb52b7a8c80d0a67a08587e5d245cc9c553a74a847056bc2976b15"},
@@ -1106,20 +1106,6 @@ files = [
 [package.extras]
 docs = ["furo (>=2023.5.20)", "sphinx (>=7.0.1)", "sphinx-autodoc-typehints (>=1.23,!=1.23.4)"]
 testing = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "diff-cover (>=7.5)", "pytest (>=7.3.1)", "pytest-cov (>=4.1)", "pytest-mock (>=3.10)", "pytest-timeout (>=2.1)"]
-
-[[package]]
-name = "freezegun"
-version = "1.2.2"
-description = "Let your Python tests travel through time"
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "freezegun-1.2.2-py3-none-any.whl", hash = "sha256:ea1b963b993cb9ea195adbd893a48d573fda951b0da64f60883d7e988b606c9f"},
-    {file = "freezegun-1.2.2.tar.gz", hash = "sha256:cd22d1ba06941384410cd967d8a99d5ae2442f57dfafeff2fda5de8dc5c05446"},
-]
-
-[package.dependencies]
-python-dateutil = ">=2.7"
 
 [[package]]
 name = "fsspec"
@@ -2997,7 +2983,7 @@ files = [
 name = "redis"
 version = "4.4.4"
 description = "Python client for Redis database and key-value store"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "redis-4.4.4-py3-none-any.whl", hash = "sha256:da92a39fec86438d3f1e2a1db33c312985806954fe860120b582a8430e231d8f"},
@@ -3584,6 +3570,63 @@ colorama = "==0.4.*"
 docstring-parser = ">=0.12"
 
 [[package]]
+name = "time-machine"
+version = "2.11.0"
+description = "Travel through time in your tests."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "time_machine-2.11.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:a6c25f03b634ff9389d2ff78f2f0168421a1be692cb8ab135202a8fda3e7b30a"},
+    {file = "time_machine-2.11.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:4cbeac9003319a4e84540c794e9be9cc2fa69abe5d0005091419a16b8e199ded"},
+    {file = "time_machine-2.11.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d8cb21faf0192e9c7776921cec70dc36c54e69e3544effe2a3360700cc21b4ab"},
+    {file = "time_machine-2.11.0-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:1a41e6be04a8290e353218827d288dd5070b02758eb69bb58b8c4a823115b4e9"},
+    {file = "time_machine-2.11.0-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:dcccab530ff39935f62c325004f55958e3349d8dfc693bc6a96dffe692b6ef1b"},
+    {file = "time_machine-2.11.0-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:13502936af3e58396327fcff6228f113c06d94dd9965070d8c8d1b6a8ef20167"},
+    {file = "time_machine-2.11.0-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:bdbf92b1a479356b97a277ed229d6b592f1fb14e71d3534b32346208eb7eff50"},
+    {file = "time_machine-2.11.0-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:863c7e74539741737fedc5fff8b0db4de53db9c9a9e5428c2b977f34daa97bad"},
+    {file = "time_machine-2.11.0-cp310-cp310-win32.whl", hash = "sha256:575342fbebceddf42a0d1cb3855db8d1bde26ac6fe969c6dc457ff227e63df2d"},
+    {file = "time_machine-2.11.0-cp310-cp310-win_amd64.whl", hash = "sha256:e26d26a318a609d3471ffb307c218ddb5c1514de65cb896bea0b230833340018"},
+    {file = "time_machine-2.11.0-cp310-cp310-win_arm64.whl", hash = "sha256:c48c7705880608086dd9919173dd63985837e1b1db56ee048ff4797aed99018b"},
+    {file = "time_machine-2.11.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:f1b1c0cd878b432d724cca59f9fe57acf29c3d4a9cb1e6c70278b77c55b23523"},
+    {file = "time_machine-2.11.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:628c2eb2037eff591ac8abefce20488930d6227158c080b3d3256a0855436431"},
+    {file = "time_machine-2.11.0-cp311-cp311-macosx_13_0_arm64.whl", hash = "sha256:945bb190b1f1a1d1b642cbe77c4bc3598c8085840a539904aed2b28790cca5d2"},
+    {file = "time_machine-2.11.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:98dff4645fddc1c7cddd2d22d56c10f87d23fd5091fbf03d65aa523de4f5de08"},
+    {file = "time_machine-2.11.0-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:b773c16427714b9f70a96e75834d47e4105450a9dcd75025b11f22a4e6b16c65"},
+    {file = "time_machine-2.11.0-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2ddd6a83a4a86de62e125ed4431934602a1074a946b9243eae8cd76ebab78b73"},
+    {file = "time_machine-2.11.0-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:c29cb7f7358b34722c3f005aa3ca34cee22c057a642e648af82aada30a2281a9"},
+    {file = "time_machine-2.11.0-cp311-cp311-musllinux_1_1_i686.whl", hash = "sha256:86207d54f1b4f4eab78b55d120a686d8cb55da77131ba5c1fc5d593e74e58e62"},
+    {file = "time_machine-2.11.0-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:ee1d6ac1d292953dc90d1a39aef3f727ea02cce4426f025bc55d4c1553006044"},
+    {file = "time_machine-2.11.0-cp311-cp311-win32.whl", hash = "sha256:c6395911dad8c5ed138f143941ae4d40fd5da383649ac0ffe4c2f2a1ee88911a"},
+    {file = "time_machine-2.11.0-cp311-cp311-win_amd64.whl", hash = "sha256:e883660a606e696085fcc25833ed31a5227e201314c4e238c8abdaf937cd472f"},
+    {file = "time_machine-2.11.0-cp311-cp311-win_arm64.whl", hash = "sha256:6a76908586b8d79cf4d38393f7b8164cedd9fad5e2100014351aff885d1ef5af"},
+    {file = "time_machine-2.11.0-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:995de1e3d631be23c1ac340db75680cb04419205f652155fe5c40367a8810e6e"},
+    {file = "time_machine-2.11.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:1406a9487224d68e7e756093b8009a1946c8899d414676740d934b09f7e12f40"},
+    {file = "time_machine-2.11.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:72fa4edd05fbadd77ccb77e184414cff3137f7ff80c610146481c88080a2848c"},
+    {file = "time_machine-2.11.0-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:9fd4ab2f4a056c17e75e22cafd0461fcf94ae824d3140f7f0e9d513548ca6b6c"},
+    {file = "time_machine-2.11.0-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b8843a705cbd44971b39d25e24140c4922a836afb7a66311aa4fc437c0113a89"},
+    {file = "time_machine-2.11.0-cp38-cp38-musllinux_1_1_aarch64.whl", hash = "sha256:d876570c26ffce923032d1d9544a14fb48d764581fa96baa44cd3a40a9eab8a7"},
+    {file = "time_machine-2.11.0-cp38-cp38-musllinux_1_1_i686.whl", hash = "sha256:60ad90d8a4437c961be3b3de616fe12852eab802b87b086ac621b6a96eca125e"},
+    {file = "time_machine-2.11.0-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:01c9732d7f396210fa384ec43c86395a94cb22f4687e9fdb972ecc05bb1b1570"},
+    {file = "time_machine-2.11.0-cp38-cp38-win32.whl", hash = "sha256:855b6911ca20f6d4f118593ab79c5b45ee2311739944f8d1ddfdcc755f131c8e"},
+    {file = "time_machine-2.11.0-cp38-cp38-win_amd64.whl", hash = "sha256:2c99bdd61d83fdd65ee61ad0b7d1e5cd8c85143ed6a4d0a4acb445a99e3646f9"},
+    {file = "time_machine-2.11.0-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:cc801788d230a55927f8dededff534014c8023ccd4baf89558d234a9e8bed3c7"},
+    {file = "time_machine-2.11.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:e0cd973d829a09c1eb9292270141b319606bca16e427ff8fcf0df69982c987a6"},
+    {file = "time_machine-2.11.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:2714a00be7fcd2fd2c0cd430470693a7914f936f5218c5d1f1c7632ad6b003cf"},
+    {file = "time_machine-2.11.0-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:64940b7f70d808c766f893c8f62d5fc1b2ec9217eebfbd50ad9cc4000325867d"},
+    {file = "time_machine-2.11.0-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b2b53b29895addca43a065d66af6e632b165299e8b4b514b4f62870b71af9aff"},
+    {file = "time_machine-2.11.0-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:b140c434c81331df16c3ca1654c7892aecf2fdfd4dc7b7136ca757a9847c1bf3"},
+    {file = "time_machine-2.11.0-cp39-cp39-musllinux_1_1_i686.whl", hash = "sha256:be037615c9f0b81a9d101a44c8d88a34c6a202b5eb60a4dcacfba183d48ae0d2"},
+    {file = "time_machine-2.11.0-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:49da9ad3eda905534de6188e4040c857b9393d225ef1ce93d8ad477ba15b4714"},
+    {file = "time_machine-2.11.0-cp39-cp39-win32.whl", hash = "sha256:defaed86af4fc06cee02a5e4ef7ae26ec17131f5e43d7820c559c95f28173710"},
+    {file = "time_machine-2.11.0-cp39-cp39-win_amd64.whl", hash = "sha256:c518ea79f443f93f7e164b1ed8763c49685759b38b94bd436386cc216bf52103"},
+    {file = "time_machine-2.11.0-cp39-cp39-win_arm64.whl", hash = "sha256:a80ae2c92735b01bd1cac7fa433a13a499c23748adb2399acab2b3c6f50d3742"},
+    {file = "time_machine-2.11.0.tar.gz", hash = "sha256:6c08a0f9ef8b53ca8b69c0be3f9ddb85a587a784fc239b74c35e6c47bf359515"},
+]
+
+[package.dependencies]
+python-dateutil = "*"
+
+[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -3647,17 +3690,6 @@ files = [
 
 [package.dependencies]
 types-html5lib = "*"
-
-[[package]]
-name = "types-freezegun"
-version = "1.1.10"
-description = "Typing stubs for freezegun"
-optional = false
-python-versions = "*"
-files = [
-    {file = "types-freezegun-1.1.10.tar.gz", hash = "sha256:cb3a2d2eee950eacbaac0673ab50499823365ceb8c655babb1544a41446409ec"},
-    {file = "types_freezegun-1.1.10-py3-none-any.whl", hash = "sha256:fadebe72213e0674036153366205038e1f95c8ca96deb4ef9b71ddc15413543e"},
-]
 
 [[package]]
 name = "types-html5lib"
@@ -4098,4 +4130,4 @@ structlog = ["structlog"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "06e8078eec22ba58622f5e66d067eb278797ebce807a2d8b23d8280949877ab0"
+content-hash = "1d85b8efea698b5f6a676db72db19eaa32159ec6892094cc65044bbe64a22829"

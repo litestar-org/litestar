@@ -6,16 +6,17 @@ import os
 import random
 import string
 import sys
+from datetime import datetime
 from os import urandom
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, TypeVar, Union, cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from freezegun import freeze_time
 from pytest_lazyfixture import lazy_fixture
 from redis.asyncio import Redis as AsyncRedis
 from redis.client import Redis
+from time_machine import travel
 
 from litestar.logging import LoggingConfig
 from litestar.logging.config import default_handlers as logging_default_handlers
@@ -32,8 +33,8 @@ from litestar.testing import RequestFactory
 if TYPE_CHECKING:
     from types import ModuleType
 
-    from freezegun.api import FrozenDateTimeFactory
     from pytest import FixtureRequest, MonkeyPatch
+    from time_machine import Coordinates
 
     from litestar import Litestar
     from litestar.types import (
@@ -249,9 +250,9 @@ def create_module(tmp_path: Path, monkeypatch: MonkeyPatch) -> Callable[[str], M
 
 
 @pytest.fixture()
-def frozen_datetime() -> Generator[FrozenDateTimeFactory, None, None]:
-    with freeze_time() as frozen:
-        yield cast("FrozenDateTimeFactory", frozen)
+def frozen_datetime() -> Generator[Coordinates, None, None]:
+    with travel(datetime.utcnow, tick=False) as frozen:
+        yield frozen
 
 
 @pytest.fixture()

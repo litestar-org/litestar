@@ -83,7 +83,6 @@ repos:
             brotli,
             click,
             fast-query-parsers>=1.0.2,
-            freezegun,
             fsspec,
             httpx,
             httpx_sse,
@@ -114,12 +113,12 @@ repos:
             starlette,
             types-beautifulsoup4,
             structlog,
-            types-freezegun,
             types-pyyaml,
             types-redis,
             types-python-jose,
             uvicorn,
             prometheus_client,
+            time-machine,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.318
@@ -141,7 +140,6 @@ repos:
             brotli,
             click,
             fast-query-parsers>=1.0.2,
-            freezegun,
             fsspec,
             httpx,
             httpx_sse,
@@ -172,12 +170,12 @@ repos:
             starlette,
             structlog,
             types-beautifulsoup4,
-            types-freezegun,
             types-pyyaml,
             types-redis,
             types-python-jose,
             uvicorn,
             prometheus_client,
+            time-machine,
           ]
   - repo: https://github.com/sphinx-contrib/sphinx-lint
     rev: "v0.6.7"
