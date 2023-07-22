@@ -2,6 +2,9 @@ name: Documentation Building
 on:
   release:
     types: [published]
+  push:
+    branches:
+      - main
 jobs:
   docs:
     permissions:
@@ -29,7 +32,12 @@ jobs:
       - name: Fetch gh pages
         run: git fetch origin gh-pages --depth=1
       - name: Build docs
-        run: poetry run python tools/build_docs.py docs-build
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            poetry run python tools/build_docs.py docs-build dev
+          else
+            poetry run python tools/build_docs.py docs-build
+          fi
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
