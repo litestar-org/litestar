@@ -135,7 +135,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         """
         auto_commit = kwargs.pop("auto_commit", self.auto_commit)
         auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
-        id_attribute = kwargs.pop("id_attribute", self.get_id_attribute_value(self.model_type))
+        id_attribute = kwargs.pop("id_attribute", self.id_attribute)
         with wrap_sqlalchemy_exception():
             instance = self.get(item_id, id_attribute=id_attribute)
             self.session.delete(instance)
@@ -160,7 +160,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         """
         auto_commit = kwargs.pop("auto_commit", self.auto_commit)
         auto_expunge = kwargs.pop("auto_expunge", self.auto_expunge)
-        id_attribute = kwargs.pop("id_attribute", self.get_id_attribute_value(self.model_type))
+        id_attribute = kwargs.pop("id_attribute", self.id_attribute)
         with wrap_sqlalchemy_exception():
             instances: list[ModelT] = []
             chunk_size = 450
