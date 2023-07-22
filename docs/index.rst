@@ -17,7 +17,7 @@ Installation
 
 .. tip:: ``litestar[standard]`` includes everything you need to get started with Litestar, including
         an ASGI web server. It has: ``click`` and ``rich`` for a great CLI experience, ``jinja2`` for templating,
-        ``jsbeautifier`` for keeping your Javascript tidy , and ``uvicorn`` for running your app.
+        and ``uvicorn`` for running your app.
 
         You can also install just the :doc:`CLI </usage/cli>` with ``litestar[cli]``!
 
