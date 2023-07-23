@@ -18,6 +18,8 @@ DocumentType = Dict[str, Any]
 
 
 class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
+    """Motor based implementation of the repository interface."""
+
     id_attribute = "_id"
 
     def __init__(
