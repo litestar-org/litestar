@@ -14,10 +14,10 @@ if TYPE_CHECKING:
 
     from motor.motor_asyncio import AsyncIOMotorCollection
 
-_DocumentType = dict[str, Any]
+DocumentType = dict[str, Any]
 
 
-class MongoDbMotorAsyncRepository(AbstractAsyncRepository[_DocumentType]):
+class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
     id_attribute = "_id"
 
     def __init__(
@@ -26,7 +26,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[_DocumentType]):
         super().__init__(**kwargs)
         self.collection = collection
 
-    async def add(self, data: _DocumentType) -> _DocumentType:
+    async def add(self, data: DocumentType) -> DocumentType:
         """Add ``data`` to the collection.
 
         Args:
@@ -39,7 +39,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[_DocumentType]):
             await self.collection.insert_one(data)
             return data
 
-    async def add_many(self, data: list[_DocumentType]) -> list[_DocumentType]:
+    async def add_many(self, data: list[DocumentType]) -> list[DocumentType]:
         """Add multiple dictionaries to the collection.
 
         Args:
@@ -73,7 +73,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[_DocumentType]):
         query.update(kwargs)
         return cast(int, await self.collection.count_documents(query))
 
-    async def delete(self, item_id: Any) -> _DocumentType:
+    async def delete(self, item_id: Any) -> DocumentType:
         """Delete instance identified by ``item_id``.
 
         Args:
@@ -88,9 +88,9 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[_DocumentType]):
         with wrap_pymongo_exception():
             document = await self.collection.find_one_and_delete({self.id_attribute: item_id})
             self.check_not_found(document)
-            return cast(_DocumentType, document)
+            return cast(DocumentType, document)
 
-    async def delete_many(self, item_ids: list[Any]) -> list[_DocumentType]:
+    async def delete_many(self, item_ids: list[Any]) -> list[DocumentType]:
         """Delete instance identified by ``item_id``.
 
         Args:
@@ -103,7 +103,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[_DocumentType]):
         with wrap_pymongo_exception():
             documents_to_delete = await self.collection.find({self.id_attribute: {"$in": item_ids}}).to_list(None)
             await self.collection.delete_many({self.id_attribute: {"$in": item_ids}})
-            return cast(list[_DocumentType], documents_to_delete)
+            return cast(list[DocumentType], documents_to_delete)
 
     async def exists(self, **kwargs: Any) -> bool:
         """Return true if the object specified by ``kwargs`` exists.
@@ -118,7 +118,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[_DocumentType]):
         existing = await self.count(**kwargs)
         return existing > 0
 
-    async def get(self, item_id: Any, **kwargs: Any) -> _DocumentType:
+    async def get(self, item_id: Any, **kwargs: Any) -> DocumentType:
         """Get instance identified by ``item_id``.
 
         Args:
@@ -134,9 +134,9 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[_DocumentType]):
         with wrap_pymongo_exception():
             document = await self.collection.find_one({self.id_attribute: item_id, **kwargs})
             self.check_not_found(document)
-            return cast(_DocumentType, document)
+            return cast(DocumentType, document)
 
-    async def get_one(self, **kwargs: Any) -> _DocumentType:
+    async def get_one(self, **kwargs: Any) -> DocumentType:
         """Get instance identified by ``kwargs``.
 
         Args:
@@ -151,11 +151,11 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[_DocumentType]):
         with wrap_pymongo_exception():
             document = await self.collection.find_one(kwargs)
             self.check_not_found(document)
-            return cast(_DocumentType, document)
+            return cast(DocumentType, document)
 
     async def get_or_create(
         self, match_fields: list[str] | str | None = None, upsert: bool = True, **kwargs: Any
-    ) -> tuple[_DocumentType, bool]:
+    ) -> tuple[DocumentType, bool]:
         """Get instance identified by ``kwargs`` or create if it doesn't exist.
 
         Args:
@@ -188,7 +188,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[_DocumentType]):
                 )
         return doc, False
 
-    async def get_one_or_none(self, **kwargs: Any) -> _DocumentType | None:
+    async def get_one_or_none(self, **kwargs: Any) -> DocumentType | None:
         """Get instance identified by ``kwargs`` or None if not found.
 
         Args:
@@ -198,9 +198,9 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[_DocumentType]):
             The retrieved instance or None
         """
         with wrap_pymongo_exception():
-            return cast(Optional[_DocumentType], await self.collection.find_one(kwargs))
+            return cast(Optional[DocumentType], await self.collection.find_one(kwargs))
 
-    async def update(self, data: _DocumentType) -> _DocumentType:
+    async def update(self, data: DocumentType) -> DocumentType:
         """Update instance with the attribute values present on ``data``.
 
         Args:
@@ -220,9 +220,9 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[_DocumentType]):
                 return_document=ReturnDocument.AFTER,
             )
             self.check_not_found(result)
-            return cast(_DocumentType, result)
+            return cast(DocumentType, result)
 
-    async def update_many(self, data: list[_DocumentType]) -> list[_DocumentType]:
+    async def update_many(self, data: list[DocumentType]) -> list[DocumentType]:
         """Update one or more instances with the attribute values present on ``data``.
 
         Args:
@@ -252,7 +252,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[_DocumentType]):
 
             return data
 
-    async def upsert(self, data: _DocumentType) -> _DocumentType:
+    async def upsert(self, data: DocumentType) -> DocumentType:
         """Update or create instance.
 
         Updates instance with the attribute values present on `data`, or creates a new instance if
@@ -272,9 +272,9 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[_DocumentType]):
             document = await self.collection.find_one_and_update(
                 {"_id": data["_id"]}, {"$set": data}, upsert=True, return_document=ReturnDocument.AFTER
             )
-            return cast(_DocumentType, document)
+            return cast(DocumentType, document)
 
-    async def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[list[_DocumentType], int]:
+    async def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[list[DocumentType], int]:
         """List records with total count.
 
         Args:
@@ -292,7 +292,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[_DocumentType]):
             docs = await cursor.to_list(length=None)
             return docs, len(docs)
 
-    async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[_DocumentType]:
+    async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[DocumentType]:
         """Get a list of instances, optionally filtered.
 
         Args:
@@ -307,7 +307,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[_DocumentType]):
 
         with wrap_pymongo_exception():
             cursor = self.collection.find(query)
-            return cast(list[_DocumentType], await cursor.to_list(length=None))
+            return cast(list[DocumentType], await cursor.to_list(length=None))
 
     def filter_collection_by_kwargs(  # type:ignore[override]
         self,
