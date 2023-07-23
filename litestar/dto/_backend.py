@@ -27,6 +27,7 @@ from litestar.exceptions import SerializationException
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
+from litestar.utils.typing import safe_generic_origin_map
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
@@ -723,6 +724,9 @@ def _maybe_wrap_in_generic_annotation(annotation: Any, model: Any) -> Any:
     Returns:
         Annotation with new inner type if applicable.
     """
+    if (origin := get_origin(annotation)) and origin in safe_generic_origin_map:
+        return safe_generic_origin_map[origin][model]  # type: ignore[index]
+
     return origin[model] if (origin := get_origin(annotation)) else model
 
 
@@ -766,7 +770,7 @@ def _should_exclude_field(
         return True
     if is_data_field and field_definition.dto_field.mark is Mark.READ_ONLY:
         return True
-    return field_definition.name != "return" and field_definition.dto_field.mark is Mark.WRITE_ONLY
+    return not is_data_field and field_definition.dto_field.mark is Mark.WRITE_ONLY
 
 
 def _create_transfer_model_type_annotation(transfer_type: TransferType) -> Any:

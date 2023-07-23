@@ -80,7 +80,7 @@ instantiable_type_mapping = {
     tuple: tuple,
 }
 
-_safe_generic_origin_map = {
+safe_generic_origin_map = {
     set: t.AbstractSet,
     defaultdict: t.DefaultDict,
     deque: t.Deque,
@@ -242,8 +242,8 @@ def get_safe_generic_origin(origin_type: Any, annotation: Any) -> Any:
         The ``typing`` module equivalent of the given type, if it exists. Otherwise, the original type is returned.
     """
     if origin_type is None:
-        return _safe_generic_origin_map.get(annotation)
-    return _safe_generic_origin_map.get(origin_type, origin_type)
+        return safe_generic_origin_map.get(annotation)
+    return safe_generic_origin_map.get(origin_type, origin_type)
 
 
 def get_instantiable_origin(origin_type: Any, annotation: Any) -> Any:
