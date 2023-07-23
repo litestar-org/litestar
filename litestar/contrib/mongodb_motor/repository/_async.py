@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Optional, cast
+from typing import TYPE_CHECKING, Any, Dict, Optional, cast
 
 from pymongo import ReturnDocument, UpdateOne
 
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
     from motor.motor_asyncio import AsyncIOMotorCollection
 
-DocumentType = dict[str, Any]
+DocumentType = Dict[str, Any]
 
 
 class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
