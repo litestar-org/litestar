@@ -99,7 +99,7 @@ class TransferDTOFieldDefinition(DTOFieldDefinition):
         "default_factory",
         "dto_field",
         "dto_for",
-        "unique_model_name",
+        "model_name",
         "is_excluded",
         "is_partial",
         "serialization_name",
@@ -146,7 +146,7 @@ class TransferDTOFieldDefinition(DTOFieldDefinition):
             serialization_name=serialization_name,
             transfer_type=transfer_type,
             type_wrappers=field_definition.type_wrappers,
-            unique_model_name=field_definition.unique_model_name,
+            model_name=field_definition.model_name,
         )
 
 

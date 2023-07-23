@@ -59,7 +59,7 @@ def fx_field_definitions(data_model_type: type[Model]) -> list[DTOFieldDefinitio
             ),
             default_factory=None,
             dto_field=DTOField(),
-            unique_model_name="some_module.SomeModel",
+            model_name="some_module.SomeModel",
             dto_for=None,
         ),
         DTOFieldDefinition.from_field_definition(
@@ -69,7 +69,7 @@ def fx_field_definitions(data_model_type: type[Model]) -> list[DTOFieldDefinitio
             ),
             default_factory=None,
             dto_field=DTOField(),
-            unique_model_name="some_module.SomeModel",
+            model_name="some_module.SomeModel",
             dto_for=None,
         ),
     ]
@@ -87,7 +87,7 @@ def fx_backend(data_model_type: type[Model], field_definitions: list[DTOFieldDef
             yield from field_definitions
 
     class _Backend(DTOBackend):
-        def create_transfer_model_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[Any]:
+        def create_transfer_model_type(self, model_name: str, field_definitions: FieldDefinitionsType) -> type[Any]:
             """Create a model for data transfer.
 
             Args:
@@ -129,6 +129,7 @@ def fx_backend(data_model_type: type[Model], field_definitions: list[DTOFieldDef
         field_definition=FieldDefinition.from_annotation(data_model_type),
         model_type=data_model_type,
         wrapper_attribute_name=None,
+        handler_id="test",
     )
 
 

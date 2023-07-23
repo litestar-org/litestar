@@ -4,7 +4,7 @@ back again, to bytes.
 from __future__ import annotations
 
 import secrets
-from typing import TYPE_CHECKING, AbstractSet, Any, Callable, Collection, Final, Mapping, Union, cast
+from typing import TYPE_CHECKING, AbstractSet, Any, Callable, ClassVar, Collection, Final, Mapping, Union, cast
 
 from msgspec import UNSET, Struct, UnsetType, convert, defstruct, field
 from typing_extensions import get_origin
@@ -27,7 +27,6 @@ from litestar.exceptions import SerializationException
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils.helpers import get_fully_qualified_class_name
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
@@ -44,37 +43,42 @@ class DTOBackend:
     __slots__ = (
         "annotation",
         "dto_data_type",
-        "field_definition",
         "dto_factory",
+        "field_definition",
+        "handler_id",
+        "is_data_field",
         "model_type",
         "parsed_field_definitions",
         "reverse_name_map",
         "transfer_model_type",
         "wrapper_attribute_name",
-        "is_data_field",
     )
+
+    _seen_model_names: ClassVar[set[str]] = set()
 
     def __init__(
         self,
         dto_factory: type[AbstractDTOFactory],
         field_definition: FieldDefinition,
+        handler_id: str,
+        is_data_field: bool,
         model_type: type[Any],
         wrapper_attribute_name: str | None,
-        is_data_field: bool,
     ) -> None:
         """Create dto backend instance.
 
         Args:
-            field_definition: Parsed type.
             dto_factory: The DTO factory class calling this backend.
-            model_type: Model type.
-            wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure, this is the
-                name of the attribute that the data is stored in.
+            field_definition: Parsed type.
+            handler_id: The name of the handler that this backend is for.
             is_data_field: Whether or not the field is a subclass of DTOData.
+            model_type: Model type.
+            wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure, this is the name of the attribute that the data is stored in.
         """
         self.dto_factory: Final[type[AbstractDTOFactory]] = dto_factory
         self.field_definition: Final[FieldDefinition] = field_definition
         self.is_data_field: Final[bool] = is_data_field
+        self.handler_id: Final[str] = handler_id
         self.model_type: Final[type[Any]] = model_type
         self.wrapper_attribute_name: Final[str | None] = wrapper_attribute_name
 
@@ -82,7 +86,7 @@ class DTOBackend:
             model_type=model_type, exclude=self.dto_factory.config.exclude, include=self.dto_factory.config.include
         )
         self.transfer_model_type = self.create_transfer_model_type(
-            get_fully_qualified_class_name(model_type), self.parsed_field_definitions
+            model_name=model_type.__name__, field_definitions=self.parsed_field_definitions
         )
         self.dto_data_type: type[DTOData] | None = None
 
@@ -140,7 +144,7 @@ class DTOBackend:
                     exclude=exclude,
                     include=include,
                     field_name=field_definition.name,
-                    unique_name=field_definition.unique_name(),
+                    unique_name=field_definition.model_name,
                     nested_depth=nested_depth,
                 )
             except RecursionError:
@@ -170,19 +174,30 @@ class DTOBackend:
             defined_fields.append(transfer_field_definition)
         return tuple(defined_fields)
 
-    def create_transfer_model_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
+    def create_transfer_model_type(self, model_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
         """Create a model for data transfer.
 
         Args:
-            unique_name: name for the type that should be unique across all transfer types.
+            model_name: name for the type that should be unique across all transfer types.
             field_definitions: field definitions for the container type.
 
         Returns:
             A ``BackendT`` class.
         """
-        fqn_uid: str = self._gen_unique_name_id(unique_name)
-        struct = _create_struct_for_field_definitions(fqn_uid, field_definitions)
-        setattr(struct, "__schema_name__", unique_name)
+        short_name_prefix = _camelize(self.handler_id.split(".")[-1], True)
+        long_name_prefix = self.handler_id
+        name_suffix = "RequestBody" if self.is_data_field else "ResponseBody"
+
+        if f"{short_name_prefix}{model_name}{name_suffix}" not in self._seen_model_names:
+            struct_name = f"{short_name_prefix}{model_name}{name_suffix}"
+        elif f"{long_name_prefix}{model_name}{name_suffix}" not in self._seen_model_names:
+            struct_name = f"{long_name_prefix}{model_name}{name_suffix}"
+        else:
+            struct_name = f"{long_name_prefix}{model_name}{name_suffix}{secrets.token_hex(8)}"
+
+        self._seen_model_names.add(struct_name)
+        struct = _create_struct_for_field_definitions(struct_name, field_definitions)
+        setattr(struct, "__schema_name__", struct_name)
         return struct
 
     def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> Struct | Collection[Struct]:
@@ -509,10 +524,7 @@ def _rename_field(name: str, strategy: RenameStrategy) -> str:
     if strategy == "pascal":
         return _camelize(value=name, capitalize_first_letter=True)
 
-    if strategy == "lower":
-        return name.lower()
-
-    return name.upper()
+    return name.lower() if strategy == "lower" else name.upper()
 
 
 def _filter_nested_field(field_name_set: AbstractSet[str], field_name: str) -> AbstractSet[str]:
@@ -574,15 +586,14 @@ def _transfer_instance_data(
         Data parsed into ``model_type``.
     """
     unstructured_data = {}
-    source_is_mapping = isinstance(source_instance, Mapping)
-
-    def filter_missing(value: Any) -> bool:
-        return value is UNSET
 
     for field_definition in field_definitions:
         source_name = field_definition.serialization_name if is_data_field else field_definition.name
+
         source_has_value = (
-            source_name in source_instance if source_is_mapping else hasattr(source_instance, source_name)
+            source_name in source_instance
+            if isinstance(source_instance, Mapping)
+            else hasattr(source_instance, source_name)
         )
 
         if (is_data_field and not source_has_value) or (not is_data_field and field_definition.is_excluded):
@@ -590,9 +601,13 @@ def _transfer_instance_data(
 
         transfer_type = field_definition.transfer_type
         destination_name = field_definition.name if is_data_field else field_definition.serialization_name
-        source_value = source_instance[source_name] if source_is_mapping else getattr(source_instance, source_name)
+        source_value = (
+            source_instance[source_name]
+            if isinstance(source_instance, Mapping)
+            else getattr(source_instance, source_name)
+        )
 
-        if field_definition.is_partial and is_data_field and filter_missing(source_value):
+        if field_definition.is_partial and is_data_field and source_value is UNSET:
             continue
 
         unstructured_data[destination_name] = _transfer_type_data(
@@ -601,6 +616,7 @@ def _transfer_instance_data(
             nested_as_dict=destination_type is dict,
             is_data_field=is_data_field,
         )
+
     return destination_type(**unstructured_data)
 
 
@@ -679,17 +695,21 @@ def _create_msgspec_field(field_definition: TransferDTOFieldDefinition) -> Any:
 
 def _create_struct_for_field_definitions(model_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
     struct_fields: list[tuple[str, type] | tuple[str, type, type]] = []
-    for field_def in field_definitions:
-        if field_def.is_excluded:
+    for field_definition in field_definitions:
+        if field_definition.is_excluded:
             continue
 
-        field_name = field_def.serialization_name or field_def.name
-
-        field_type = _create_transfer_model_type_annotation(field_def.transfer_type)
-        if field_def.is_partial:
+        field_type = _create_transfer_model_type_annotation(field_definition.transfer_type)
+        if field_definition.is_partial:
             field_type = Union[field_type, UnsetType]
 
-        struct_fields.append((field_name, field_type, _create_msgspec_field(field_def)))
+        struct_fields.append(
+            (
+                field_definition.serialization_name or field_definition.name,
+                field_type,
+                _create_msgspec_field(field_definition),
+            )
+        )
     return defstruct(model_name, struct_fields, frozen=True, kw_only=True)
 
 

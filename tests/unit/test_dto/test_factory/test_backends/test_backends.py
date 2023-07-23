@@ -84,6 +84,7 @@ def test_backend_parse_raw_json(dto_factory: type[DataclassDTO], connection_cont
                 model_type=DC,
                 wrapper_attribute_name=None,
                 is_data_field=True,
+                handler_id="test",
             ).parse_raw(b'{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}]}', connection_context)
         )
         == DESTRUCTURED
@@ -100,6 +101,7 @@ def test_backend_parse_raw_msgpack(dto_factory: type[DataclassDTO], connection_c
                 model_type=DC,
                 wrapper_attribute_name=None,
                 is_data_field=True,
+                handler_id="test",
             ).parse_raw(
                 b"\x83\xa1a\x01\xa6nested\x82\xa1a\x01\xa1b\xa3two\xabnested_list\x91\x82\xa1a\x01\xa1b\xa3two",
                 connection_context,
@@ -120,11 +122,13 @@ def test_backend_parse_unsupported_media_type(
             model_type=DC,
             wrapper_attribute_name=None,
             is_data_field=True,
+            handler_id="test",
         ).parse_raw(b"", connection_context)
 
 
 def test_backend_iterable_annotation(dto_factory: type[DataclassDTO]) -> None:
     backend = DTOBackend(
+        handler_id="test",
         dto_factory=dto_factory,
         field_definition=FieldDefinition.from_annotation(List[DC]),
         model_type=DC,
@@ -138,6 +142,7 @@ def test_backend_iterable_annotation(dto_factory: type[DataclassDTO]) -> None:
 
 def test_backend_scalar_annotation(dto_factory: type[DataclassDTO]) -> None:
     backend = DTOBackend(
+        handler_id="test",
         dto_factory=dto_factory,
         field_definition=FieldDefinition.from_annotation(DC),
         model_type=DC,
@@ -151,6 +156,7 @@ def test_backend_populate_data_from_builtins(
     dto_factory: type[DataclassDTO], connection_context: ConnectionContext
 ) -> None:
     backend = DTOBackend(
+        handler_id="test",
         dto_factory=dto_factory,
         field_definition=FieldDefinition.from_annotation(DC),
         model_type=DC,
@@ -163,6 +169,7 @@ def test_backend_populate_data_from_builtins(
 
 def test_backend_create_openapi_schema(dto_factory: type[DataclassDTO]) -> None:
     backend = DTOBackend(
+        handler_id="test",
         dto_factory=dto_factory,
         field_definition=FieldDefinition.from_annotation(DC),
         model_type=DC,
@@ -185,40 +192,41 @@ def test_backend_create_openapi_schema(dto_factory: type[DataclassDTO]) -> None:
 
 def test_backend_model_name_uniqueness(dto_factory: type[DataclassDTO]) -> None:
     backend = DTOBackend(
+        handler_id="test",
         dto_factory=dto_factory,
         field_definition=FieldDefinition.from_annotation(DC),
         model_type=DC,
         wrapper_attribute_name=None,
         is_data_field=True,
     )
+    backend._seen_model_names.clear()
     unique_names: set = set()
-    transfer_type = SimpleType(field_definition=FieldDefinition.from_annotation(int), nested_field_info=None)
-    field_definition = FieldDefinition.from_kwarg(annotation=int, name="a")
-    field_definition = DTOFieldDefinition.from_field_definition(
-        field_definition=field_definition,
-        default_factory=None,
-        dto_field=DTOField(),
-        unique_model_name="some_module.SomeModel",
-        dto_for=None,
-    )
-    fd = (
-        TransferDTOFieldDefinition.from_dto_field_definition(
-            field_definition=field_definition,
-            serialization_name="a",
-            transfer_type=transfer_type,
-            is_partial=False,
-            is_excluded=False,
+
+    field_definition = TransferDTOFieldDefinition.from_dto_field_definition(
+        field_definition=DTOFieldDefinition.from_field_definition(
+            field_definition=FieldDefinition.from_kwarg(annotation=int, name="a"),
+            default_factory=None,
+            dto_field=DTOField(),
+            model_name="some_module.SomeModel",
+            dto_for=None,
         ),
+        serialization_name="a",
+        transfer_type=SimpleType(field_definition=FieldDefinition.from_annotation(int), nested_field_info=None),
+        is_partial=False,
+        is_excluded=False,
     )
+
     for _ in range(100):
-        model_class = backend.create_transfer_model_type("some_module.SomeModel", fd)
-        model_name = model_class.__name__
-        assert model_name not in unique_names
-        unique_names.add(model_name)
+        model_class = backend.create_transfer_model_type("some_module.SomeModel", field_definitions=(field_definition,))
+        unique_names.add(model_class.__name__)
+
+    assert len(unique_names) == 100
+    assert backend._seen_model_names == unique_names
 
 
 def test_backend_populate_data_from_raw(dto_factory: type[DataclassDTO], connection_context: ConnectionContext) -> None:
     backend = DTOBackend(
+        handler_id="test",
         dto_factory=dto_factory,
         field_definition=FieldDefinition.from_annotation(DC),
         model_type=DC,
@@ -233,6 +241,7 @@ def test_backend_populate_collection_data_from_raw(
     dto_factory: type[DataclassDTO], connection_context: ConnectionContext
 ) -> None:
     backend = DTOBackend(
+        handler_id="test",
         dto_factory=dto_factory,
         field_definition=FieldDefinition.from_annotation(List[DC]),
         model_type=DC,
@@ -245,6 +254,7 @@ def test_backend_populate_collection_data_from_raw(
 
 def test_backend_encode_data(dto_factory: type[DataclassDTO], connection_context: ConnectionContext) -> None:
     backend = DTOBackend(
+        handler_id="test",
         dto_factory=dto_factory,
         field_definition=FieldDefinition.from_annotation(DC),
         model_type=DC,
@@ -257,6 +267,7 @@ def test_backend_encode_data(dto_factory: type[DataclassDTO], connection_context
 
 def test_backend_encode_collection_data(dto_factory: type[DataclassDTO], connection_context: ConnectionContext) -> None:
     backend = DTOBackend(
+        handler_id="test",
         dto_factory=dto_factory,
         field_definition=FieldDefinition.from_annotation(List[DC]),
         model_type=DC,
@@ -298,6 +309,7 @@ dto_type = DataclassDTO[Model]
         config = DTOConfig(max_nested_depth=2, exclude={"a", "b.c", "b.d.0.e"})
 
     backend = DTOBackend(
+        handler_id="test",
         dto_factory=Factory,
         field_definition=FieldDefinition.from_annotation(module.Model),
         model_type=module.Model,
@@ -353,6 +365,7 @@ dto_type = DataclassDTO[Model]
         config = DTOConfig(max_nested_depth=2, include={"a", "b.c", "b.d.0.e"})
 
     backend = DTOBackend(
+        handler_id="test",
         dto_factory=Factory,
         field_definition=FieldDefinition.from_annotation(module.Model),
         model_type=module.Model,

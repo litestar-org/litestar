@@ -159,7 +159,7 @@ def test_should_mark_private_underscore_fields_private_true() -> None:
         _should_mark_private(
             DTOFieldDefinition.from_field_definition(
                 field_definition=FieldDefinition.from_kwarg(annotation=int, name="a", default=1),
-                unique_model_name="A",
+                model_name="A",
                 default_factory=None,
                 dto_field=DTOField(),
                 dto_for=None,
@@ -172,7 +172,7 @@ def test_should_mark_private_underscore_fields_private_true() -> None:
         _should_mark_private(
             DTOFieldDefinition.from_field_definition(
                 field_definition=FieldDefinition.from_kwarg(annotation=int, name="_a", default=1),
-                unique_model_name="A",
+                model_name="A",
                 default_factory=None,
                 dto_field=DTOField(),
                 dto_for=None,
@@ -185,7 +185,7 @@ def test_should_mark_private_underscore_fields_private_true() -> None:
         _should_mark_private(
             DTOFieldDefinition.from_field_definition(
                 field_definition=FieldDefinition.from_kwarg(annotation=int, name="_a", default=1),
-                unique_model_name="A",
+                model_name="A",
                 default_factory=None,
                 dto_field=DTOField(mark="read-only"),
                 dto_for=None,
@@ -201,7 +201,7 @@ def test_should_mark_private_underscore_fields_private_false() -> None:
         _should_mark_private(
             DTOFieldDefinition.from_field_definition(
                 field_definition=FieldDefinition.from_kwarg(annotation=int, name="a", default=1),
-                unique_model_name="A",
+                model_name="A",
                 default_factory=None,
                 dto_field=DTOField(),
                 dto_for=None,
@@ -214,7 +214,7 @@ def test_should_mark_private_underscore_fields_private_false() -> None:
         _should_mark_private(
             DTOFieldDefinition.from_field_definition(
                 field_definition=FieldDefinition.from_kwarg(annotation=int, name="_a", default=1),
-                unique_model_name="A",
+                model_name="A",
                 default_factory=None,
                 dto_field=DTOField(),
                 dto_for=None,
@@ -227,7 +227,7 @@ def test_should_mark_private_underscore_fields_private_false() -> None:
         _should_mark_private(
             DTOFieldDefinition.from_field_definition(
                 field_definition=FieldDefinition.from_kwarg(annotation=int, name="_a", default=1),
-                unique_model_name="A",
+                model_name="A",
                 default_factory=None,
                 dto_field=DTOField(mark="read-only"),
                 dto_for=None,

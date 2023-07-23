@@ -278,6 +278,8 @@ def get_handler() -> Interval:
 
 
 def test_dto_with_hybrid_property_setter(create_module: Callable[[str], ModuleType]) -> None:
+    SQLAlchemyDTO._dto_backends = {}
+
     module = create_module(
         """
 from __future__ import annotations

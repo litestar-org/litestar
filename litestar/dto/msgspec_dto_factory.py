@@ -9,7 +9,6 @@ from litestar.dto.base_factory import AbstractDTOFactory
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField
 from litestar.types.empty import Empty
-from litestar.utils.helpers import get_fully_qualified_class_name
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Generator
@@ -44,7 +43,7 @@ class MsgspecDTO(AbstractDTOFactory[T], Generic[T]):
                 DTOFieldDefinition.from_field_definition(
                     field_definition=field_definition,
                     dto_field=dto_field,
-                    unique_model_name=get_fully_qualified_class_name(model_type),
+                    model_name=model_type.__name__,
                     default_factory=default_or_empty(msgspec_field.default_factory),
                     dto_for=None,
                 ),

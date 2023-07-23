@@ -107,6 +107,7 @@ def test_config_assigned_via_subclassing() -> None:
 
 
 async def test_from_bytes(request_factory: RequestFactory) -> None:
+    DataclassDTO._dto_backends = {}
     dto_type = DataclassDTO[Model]
     dto_type.on_registration(
         HandlerContext(handler_id="handler", dto_for="data", field_definition=FieldDefinition.from_annotation(Model))
@@ -121,12 +122,13 @@ async def test_from_bytes(request_factory: RequestFactory) -> None:
 
 
 def test_config_field_rename() -> None:
+    DataclassDTO._dto_backends = {}
     config = DTOConfig(rename_fields={"a": "z"})
     dto_type = DataclassDTO[Annotated[Model, config]]
     dto_type.on_registration(
         HandlerContext(handler_id="handler", dto_for="data", field_definition=FieldDefinition.from_annotation(Model))
     )
-    field_definitions = get_backend(dto_type).parsed_field_definitions
+    field_definitions = dto_type.get_backend(for_type="data", handler_id="handler").parsed_field_definitions
     assert field_definitions[0].serialization_name == "z"
 
 
@@ -166,6 +168,7 @@ def test_raises_invalid_annotation_for_mismatched_types() -> None:
 
 
 def test_sub_types_supported() -> None:
+    DataclassDTO._dto_backends = {}
     dto_type = DataclassDTO[Model]
 
     @dataclass

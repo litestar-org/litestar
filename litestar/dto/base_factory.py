@@ -147,6 +147,7 @@ class AbstractDTOFactory(DTOInterface, Generic[T]):
                 model_type=model_type_field_definition.annotation,
                 wrapper_attribute_name=wrapper_attribute_name,
                 is_data_field=handler_context.dto_for == "data",
+                handler_id=handler_context.handler_id,
             )
 
     @classmethod

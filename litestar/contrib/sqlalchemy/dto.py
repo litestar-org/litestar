@@ -24,7 +24,6 @@ from litestar.dto.field import DTO_FIELD_META_KEY, DTOField, Mark
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils.helpers import get_fully_qualified_class_name
 from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
@@ -102,7 +101,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                 default_factory=default_factory,
                 dto_field=elem.info.get(DTO_FIELD_META_KEY, DTOField()),
                 dto_for=None,
-                unique_model_name=model_name,
+                model_name=model_name,
             )
         ]
 
@@ -133,7 +132,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                 ),
                 default_factory=None,
                 dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.READ_ONLY)),
-                unique_model_name=model_name,
+                model_name=model_name,
                 dto_for=None,
             )
         ]
@@ -162,7 +161,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                 ),
                 default_factory=None,
                 dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.READ_ONLY)),
-                unique_model_name=model_name,
+                model_name=model_name,
                 dto_for="return",
             )
         ]
@@ -178,7 +177,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                     ),
                     default_factory=None,
                     dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.WRITE_ONLY)),
-                    unique_model_name=model_name,
+                    model_name=model_name,
                     dto_for="data",
                 )
             )
@@ -193,7 +192,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
         # includes SQLAlchemy names and other mapped class names in the forward reference resolution namespace
         namespace = {**SQLA_NS, **{m.class_.__name__: m.class_ for m in mapper.registry.mappers if m is not mapper}}
         model_type_hints = cls.get_model_type_hints(model_type, namespace=namespace)
-        model_name = get_fully_qualified_class_name(model_type)
+        model_name = model_type.__name__
 
         # the same hybrid property descriptor can be included in `all_orm_descriptors` multiple times, once
         # for each method name it is bound to. We only need to see it once, so track views of it here.
@@ -202,6 +201,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
             if isinstance(orm_descriptor, hybrid_property):
                 if orm_descriptor in seen_hybrid_descriptors:
                     continue
+
                 seen_hybrid_descriptors.add(orm_descriptor)
 
             yield from cls.handle_orm_descriptor(
