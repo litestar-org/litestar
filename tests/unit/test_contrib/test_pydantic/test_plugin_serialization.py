@@ -1,12 +1,12 @@
 import datetime
 import json
+from decimal import Decimal
 from functools import partial
 from pathlib import Path
 from typing import Any
 
 import pydantic
 import pytest
-from _decimal import Decimal
 from pydantic import (
     VERSION,
     BaseModel,

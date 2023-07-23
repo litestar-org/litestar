@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import AsyncGenerator, Callable
 
 import pytest
-from _decimal import Decimal
 from polyfactory.utils.predicates import is_annotated
 from typing_extensions import get_args
 
