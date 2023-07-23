@@ -122,6 +122,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         item_id: Any,
         auto_commit: bool | None = None,
         auto_expunge: bool | None = None,
+        id_attribute: Any | None = None,
     ) -> ModelT:
         """Delete instance identified by ``item_id``.
 
@@ -131,6 +132,8 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                 :class:`SQLAlchemyAsyncRepository.auto_expunge <SQLAlchemyAsyncRepository>`.
             auto_commit: Commit objects before returning. Defaults to
                 :class:`SQLAlchemyAsyncRepository.auto_commit <SQLAlchemyAsyncRepository>`
+            id_attribute: Allows customization of the unique identifier to use for model fetching.
+                Defaults to `id`, but can reference any surrogate or candidate key for the table.
 
         Returns:
             The deleted instance.
@@ -139,7 +142,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             NotFoundError: If no instance found identified by ``item_id``.
         """
         with wrap_sqlalchemy_exception():
-            instance = await self.get(item_id)
+            instance = await self.get(item_id, id_attribute=id_attribute)
             await self.session.delete(instance)
             await self._flush_or_commit(auto_commit=auto_commit)
             self._expunge(instance, auto_expunge=auto_expunge)
@@ -150,6 +153,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         item_ids: list[Any],
         auto_commit: bool | None = None,
         auto_expunge: bool | None = None,
+        id_attribute: Any | None = None,
     ) -> list[ModelT]:
         """Delete instance identified by `item_id`.
 
@@ -159,12 +163,16 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                 :class:`SQLAlchemyAsyncRepository.auto_expunge <SQLAlchemyAsyncRepository>`.
             auto_commit: Commit objects before returning. Defaults to
                 :class:`SQLAlchemyAsyncRepository.auto_commit <SQLAlchemyAsyncRepository>`
+            id_attribute: Allows customization of the unique identifier to use for model fetching.
+                Defaults to `id`, but can reference any surrogate or candidate key for the table.
 
         Returns:
             The deleted instances.
 
         """
+
         with wrap_sqlalchemy_exception():
+            id_attribute = id_attribute if id_attribute is not None else self.id_attribute
             instances: list[ModelT] = []
             chunk_size = 450
             for idx in range(0, len(item_ids), chunk_size):
@@ -173,18 +181,18 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                     instances.extend(
                         await self.session.scalars(
                             delete(self.model_type)
-                            .where(getattr(self.model_type, self.id_attribute).in_(chunk))
+                            .where(getattr(self.model_type, id_attribute).in_(chunk))
                             .returning(self.model_type)
                         )
                     )
                 else:
                     instances.extend(
                         await self.session.scalars(
-                            select(self.model_type).where(getattr(self.model_type, self.id_attribute).in_(chunk))
+                            select(self.model_type).where(getattr(self.model_type, id_attribute).in_(chunk))
                         )
                     )
                     await self.session.execute(
-                        delete(self.model_type).where(getattr(self.model_type, self.id_attribute).in_(chunk))
+                        delete(self.model_type).where(getattr(self.model_type, id_attribute).in_(chunk))
                     )
             await self._flush_or_commit(auto_commit=auto_commit)
             for instance in instances:
@@ -209,6 +217,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         item_id: Any,
         auto_expunge: bool | None = None,
         statement: Select[tuple[ModelT]] | None = None,
+        id_attribute: Any | None = None,
     ) -> ModelT:
         """Get instance identified by `item_id`.
 
@@ -218,6 +227,8 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                 :class:`SQLAlchemyAsyncRepository.auto_expunge <SQLAlchemyAsyncRepository>`
             statement: To facilitate customization of the underlying select query.
                 Defaults to :class:`SQLAlchemyAsyncRepository.statement <SQLAlchemyAsyncRepository>`
+            id_attribute: Allows customization of the unique identifier to use for model fetching.
+                Defaults to `id`, but can reference any surrogate or candidate key for the table.
 
         Returns:
             The retrieved instance.
@@ -226,8 +237,9 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             NotFoundError: If no instance found identified by `item_id`.
         """
         with wrap_sqlalchemy_exception():
+            id_attribute = id_attribute if id_attribute is not None else self.id_attribute
             statement = statement if statement is not None else self.statement
-            statement = self._filter_select_by_kwargs(statement=statement, **{self.id_attribute: item_id})
+            statement = self._filter_select_by_kwargs(statement=statement, **{id_attribute: item_id})
             instance = (await self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
             self._expunge(instance, auto_expunge=auto_expunge)
@@ -386,6 +398,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         auto_commit: bool | None = None,
         auto_expunge: bool | None = None,
         auto_refresh: bool | None = None,
+        id_attribute: Any | None = None,
         **kwargs: Any,
     ) -> ModelT:
         """Update instance with the attribute values present on `data`.
@@ -404,6 +417,8 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                 :class:`SQLAlchemyAsyncRepository.auto_refresh <SQLAlchemyAsyncRepository>`
             auto_commit: Commit objects before returning. Defaults to
                 :class:`SQLAlchemyAsyncRepository.auto_commit <SQLAlchemyAsyncRepository>`
+            id_attribute: Allows customization of the unique identifier to use for model fetching.
+                Defaults to `id`, but can reference any surrogate or candidate key for the table.
             **kwargs: Additional arguments.
 
         Returns:
@@ -413,9 +428,9 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             NotFoundError: If no instance found with same identifier as `data`.
         """
         with wrap_sqlalchemy_exception():
-            item_id = self.get_id_attribute_value(data)
+            item_id = self.get_id_attribute_value(data, id_attribute=id_attribute)
             # this will raise for not found, and will put the item in the session
-            await self.get(item_id)
+            await self.get(item_id, id_attribute=id_attribute)
             # this will merge the inbound data to the instance we just put in the session
             instance = await self._attach_to_session(data, strategy="merge")
             await self._flush_or_commit(auto_commit=auto_commit)
