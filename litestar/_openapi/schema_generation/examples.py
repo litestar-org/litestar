@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from decimal import Decimal
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
-from _decimal import Decimal
 from polyfactory.exceptions import ParameterException
 from polyfactory.field_meta import FieldMeta, Null
 from polyfactory.utils.helpers import unwrap_annotation

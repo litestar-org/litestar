@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from decimal import Decimal
 from typing import Any, Generator, Generic, Optional, TypeVar
 
-from _decimal import Decimal
 from msgspec import Meta
 from typing_extensions import Annotated
 
