@@ -198,6 +198,24 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
+    def upsert_many(self, data: list[T]) -> list[T]:
+        """Update or create multiple instances.
+        Updates instances with the attribute values present on ``data``, or creates a new instance if
+        one doesn't exist.
+
+        Args:
+            data: Instances to update or created. Identifier used to determine if an
+                existing instance exists is the value of an attribute on ``data`` named as value of
+                :attr:`id_attribute <AbstractAsyncRepository.id_attribute>`.
+
+        Returns:
+            The updated or created instances.
+
+        Raises:
+            NotFoundError: If no instance found with same identifier as ``data``.
+        """
+
+    @abstractmethod
     def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[list[T], int]:
         """List records with total count.
 
