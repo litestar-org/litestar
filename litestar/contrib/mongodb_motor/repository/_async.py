@@ -1,51 +1,55 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Optional, cast
+
+from pymongo import ReturnDocument, UpdateOne
 
 from litestar.contrib.mongodb_motor.repository._util import wrap_pymongo_exception
-from litestar.contrib.mongodb_motor.repository.types import AsyncMotorCollection, Document
-from litestar.contrib.repository import AbstractAsyncRepository, FilterTypes, RepositoryError
+from litestar.contrib.repository import AbstractAsyncRepository, FilterTypes, NotFoundError, RepositoryError
 from litestar.contrib.repository.filters import BeforeAfter, CollectionFilter, SearchFilter
 
 if TYPE_CHECKING:
     from collections import abc
     from datetime import datetime
 
+    from motor.motor_asyncio import AsyncIOMotorCollection
 
-class MongoDbMotorAsyncRepository(AbstractAsyncRepository[Document]):
-    def __init__(self, collection: AsyncMotorCollection, **kwargs: Any) -> None:
+_DocumentType = dict[str, Any]
+
+
+class MongoDbMotorAsyncRepository(AbstractAsyncRepository[_DocumentType]):
+    id_attribute = "_id"
+
+    def __init__(
+        self, collection: AsyncIOMotorCollection, **kwargs: Any  # pyright: ignore[reportGeneralTypeIssues]
+    ) -> None:
         super().__init__(**kwargs)
-        self.collection: AsyncMotorCollection = collection
+        self.collection = collection
 
-    async def add(self, data: Document) -> Document:
+    async def add(self, data: _DocumentType) -> _DocumentType:
         """Add ``data`` to the collection.
 
         Args:
             data: Dictionary to be added to the collection.
 
         Returns:
-            The added dictionary with the `_id` field set if the operation was successfully acknowledged.
+            The added document.
         """
         with wrap_pymongo_exception():
-            result = await self.collection.insert_one(data)
-            if result.acknowledged:
-                data["_id"] = result.inserted_id
+            await self.collection.insert_one(data)
             return data
 
-    async def add_many(self, data: list[Document]) -> list[Document]:
+    async def add_many(self, data: list[_DocumentType]) -> list[_DocumentType]:
         """Add multiple dictionaries to the collection.
 
         Args:
             data: Iterable of dictionaries to be added to the collection.
 
         Returns:
-            The added dictionaries with the ``_id`` field set if the operation was successfully acknowledged.
+            The added documents.
         """
         with wrap_pymongo_exception():
-            result = await self.collection.insert_many(data)
-            if result.acknowledged:
-                for idx, doc in enumerate(data):
-                    doc["_id"] = result.inserted_ids[idx]
+            await self.collection.insert_many(data)
             return data
 
         # ...
@@ -59,19 +63,272 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[Document]):
 
         Args:
             *filters: Filters to apply to the collection.
-            session: Optional session to use for the operation.
-            collation: Optional collation to use for the operation.
-            **kwargs: Optional keyword arguments to pass to the underlying ``count_documents`` method.
+            **kwargs: Additional keyword arguments to filter the collection.
 
         Returns:
             The number of documents in the collection matching the filters.
         """
 
-        query = self._build_query(*filters)
-        query = self._apply_kwargs_to_query(query, **kwargs)
+        query = self._build_query_from_filters(*filters)
+        query.update(kwargs)
         return cast(int, await self.collection.count_documents(query))
 
-    def _build_query(self, *filters: FilterTypes) -> dict:
+    async def delete(self, item_id: Any) -> _DocumentType:
+        """Delete instance identified by ``item_id``.
+
+        Args:
+            item_id: Identifier of instance to be deleted.
+
+        Returns:
+            The deleted instance.
+
+        Raises:
+            NotFoundError: If no instance found identified by ``item_id``.
+        """
+        with wrap_pymongo_exception():
+            document = await self.collection.find_one_and_delete({self.id_attribute: item_id})
+            self.check_not_found(document)
+            return cast(_DocumentType, document)
+
+    async def delete_many(self, item_ids: list[Any]) -> list[_DocumentType]:
+        """Delete instance identified by ``item_id``.
+
+        Args:
+            item_ids: Identifier of instance to be deleted.
+
+        Returns:
+            The deleted instances.
+
+        """
+        with wrap_pymongo_exception():
+            documents_to_delete = await self.collection.find({self.id_attribute: {"$in": item_ids}}).to_list(None)
+            await self.collection.delete_many({self.id_attribute: {"$in": item_ids}})
+            return cast(list[_DocumentType], documents_to_delete)
+
+    async def exists(self, **kwargs: Any) -> bool:
+        """Return true if the object specified by ``kwargs`` exists.
+
+        Args:
+            **kwargs: Identifier of the instance to be retrieved.
+
+        Returns:
+            True if the instance was found. False if not found.
+
+        """
+        existing = await self.count(**kwargs)
+        return existing > 0
+
+    async def get(self, item_id: Any, **kwargs: Any) -> _DocumentType:
+        """Get instance identified by ``item_id``.
+
+        Args:
+            item_id: Identifier of the instance to be retrieved.
+            **kwargs: Additional parameters
+
+        Returns:
+            The retrieved instance.
+
+        Raises:
+            NotFoundError: If no instance found identified by ``item_id``.
+        """
+        with wrap_pymongo_exception():
+            document = await self.collection.find_one({self.id_attribute: item_id, **kwargs})
+            self.check_not_found(document)
+            return cast(_DocumentType, document)
+
+    async def get_one(self, **kwargs: Any) -> _DocumentType:
+        """Get instance identified by ``kwargs``.
+
+        Args:
+            **kwargs: Identifier of the instance to be retrieved.
+
+        Returns:
+            The retrieved instance.
+
+        Raises:
+            NotFoundError: If no instance found identified by `item_id`.
+        """
+        with wrap_pymongo_exception():
+            document = await self.collection.find_one(kwargs)
+            self.check_not_found(document)
+            return cast(_DocumentType, document)
+
+    async def get_or_create(
+        self, match_fields: list[str] | str | None = None, upsert: bool = True, **kwargs: Any
+    ) -> tuple[_DocumentType, bool]:
+        """Get instance identified by ``kwargs`` or create if it doesn't exist.
+
+        Args:
+            match_fields: a list of keys to use to match the existing model.  When empty, all fields are matched.
+            upsert: When using match_fields and actual model values differ from `kwargs`, perform an update operation on the model.
+            **kwargs: Identifier of the instance to be retrieved.
+
+        Returns:
+            a tuple that includes the instance and whether it was newly created.
+        """
+        if isinstance(match_fields, str):
+            match_fields = [match_fields]
+        # KeyError is expected to be thrown if a match_field is not in field_values, not sure if this is the best way to handle this
+        # Could also do a ".get" and then check for None but not sure if that is better since it would be a silent failure
+        match_filter = kwargs if match_fields is None else {k: kwargs[k] for k in match_fields}
+
+        doc = await self.get_one_or_none(**match_filter)
+
+        if doc is None:
+            doc = self.model_type(kwargs)
+            c = await self.add(doc)
+            return c, True
+
+        if upsert:
+            update = {"$set": kwargs}
+            with wrap_pymongo_exception():
+                return (
+                    await self.collection.find_one_and_update(doc, **update, return_document=ReturnDocument.AFTER),
+                    False,
+                )
+        return doc, False
+
+    async def get_one_or_none(self, **kwargs: Any) -> _DocumentType | None:
+        """Get instance identified by ``kwargs`` or None if not found.
+
+        Args:
+            **kwargs: Identifier of the instance to be retrieved.
+
+        Returns:
+            The retrieved instance or None
+        """
+        with wrap_pymongo_exception():
+            return cast(Optional[_DocumentType], await self.collection.find_one(kwargs))
+
+    async def update(self, data: _DocumentType) -> _DocumentType:
+        """Update instance with the attribute values present on ``data``.
+
+        Args:
+            data: An instance that should have a value for `self.id_attribute` that exists in the
+                collection.
+
+        Returns:
+            The updated instance.
+
+        Raises:
+            NotFoundError: If no instance found with same identifier as ``data``.
+        """
+        with wrap_pymongo_exception():
+            result = await self.collection.find_one_and_update(
+                {self.id_attribute: self.get_id_attribute_value(data)},
+                {"$set": data},
+                return_document=ReturnDocument.AFTER,
+            )
+            self.check_not_found(result)
+            return cast(_DocumentType, result)
+
+    async def update_many(self, data: list[_DocumentType]) -> list[_DocumentType]:
+        """Update one or more instances with the attribute values present on ``data``.
+
+        Args:
+            data: A list of documents to update.  Each should have a value for `self.id_attribute` that exists in the
+                collection.
+
+        Returns:
+            The updated instances.
+
+        Raises:
+            NotFoundError: If no instance found with same identifier as `data`.
+        """
+
+        bulk_operations = []
+
+        for instance_data in data:
+            _id = self.get_id_attribute_value(instance_data)
+            bulk_operations.append(UpdateOne({"_id": _id}, {"$set": instance_data}))
+
+        with wrap_pymongo_exception():
+            result = await self.collection.bulk_write(bulk_operations)
+
+            if result.matched_count != len(data):
+                raise NotFoundError(
+                    f"Some instances were not found and updated. Total data: {len(data)}, Matched: {result.matched_count}"
+                )
+
+            return data
+
+    async def upsert(self, data: _DocumentType) -> _DocumentType:
+        """Update or create instance.
+
+        Updates instance with the attribute values present on `data`, or creates a new instance if
+        one doesn't exist.
+
+        Args:
+            data: Instance to update existing, or be created. Identifier used to determine if an
+                existing instance exists is the value of an attribute on `data` named as value of
+                `self.id_attribute`.
+
+        Returns:
+            The updated or created instance.
+        """
+        _id = self.get_id_attribute_value(data)
+
+        with wrap_pymongo_exception():
+            document = await self.collection.find_one_and_update(
+                {"_id": data["_id"]}, {"$set": data}, upsert=True, return_document=ReturnDocument.AFTER
+            )
+            return cast(_DocumentType, document)
+
+    async def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[list[_DocumentType], int]:
+        """List records with total count.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            Count of records returned by query, ignoring pagination.
+        """
+        query = self._build_query_from_filters(*filters)
+        query.update(kwargs)
+
+        with wrap_pymongo_exception():
+            cursor = self.collection.find(query)
+            docs = await cursor.to_list(length=None)
+            return docs, len(docs)
+
+    async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[_DocumentType]:
+        """Get a list of instances, optionally filtered.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            The list of instances, after filtering applied.
+        """
+        query = self._build_query_from_filters(*filters)
+        query.update(kwargs)
+
+        with wrap_pymongo_exception():
+            cursor = self.collection.find(query)
+            return cast(list[_DocumentType], await cursor.to_list(length=None))
+
+    def filter_collection_by_kwargs(  # type:ignore[override]
+        self,
+        collection: dict[str, Any],
+        /,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """Filter the collection by kwargs.
+
+        Args:
+            collection: A dictionary representing the initial query.
+            **kwargs: key/value pairs that should be added to the query.
+
+        Returns:
+            An updated query dictionary with additional filters.
+        """
+
+        collection.update(kwargs)
+        return collection
+
+    def _build_query_from_filters(self, *filters: FilterTypes) -> dict:
         """Build a query dictionary from the provided filters.
 
         Args:
@@ -80,7 +337,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[Document]):
         Returns:
             A dictionary representing the query.
         """
-        query: dict = {}
+        query = {}
         for filter_ in filters:
             if isinstance(filter_, BeforeAfter):
                 query.update(
@@ -98,7 +355,9 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[Document]):
                 raise RepositoryError(f"Unsupported filter type: {type(filter_)}")
         return query
 
-    def _build_before_after_query(self, field_name: str, before: datetime | None, after: datetime | None) -> dict:
+    def _build_before_after_query(
+        self, field_name: str, before: datetime | None, after: datetime | None
+    ) -> dict[str, Any]:
         """Build a query dictionary from the provided ``BeforeAfter`` filter values.
 
         Args:
@@ -140,17 +399,3 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[Document]):
             A dictionary representing the query.
         """
         return {field_name: {"$regex": value, "$options": "i" if ignore_case else ""}}
-
-    def _apply_kwargs_to_query(self, query: dict, **kwargs: Any) -> dict:
-        """Apply keyword arguments to the query.
-
-        Args:
-            query: Query to apply the keyword arguments to.
-            **kwargs: Keyword arguments to apply to the query.
-
-        Returns:
-            The updated query.
-        """
-        for key, value in kwargs.items():
-            query[key] = value
-        return query
