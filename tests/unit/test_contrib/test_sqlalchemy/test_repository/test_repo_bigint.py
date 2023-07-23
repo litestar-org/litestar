@@ -146,6 +146,7 @@ async def test_repo_count_method(author_repo: AuthorAsyncRepository) -> None:
     Args:
         author_repo (AuthorAsyncRepository): The author mock repository
     """
+    # TODO: Test with kwargs
     assert await maybe_async(author_repo.count()) == 2
 
 

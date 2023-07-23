@@ -17,7 +17,7 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
 
     model_type: type[T]
     """Type of object represented by the repository."""
-    id_attribute = "id"
+    id_attribute: Any = "id"
     """Name of the primary identifying attribute on :attr:`model_type`."""
 
     def __init__(self, **kwargs: Any) -> None:

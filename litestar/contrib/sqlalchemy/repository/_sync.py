@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Final, Generic, Iterable, Literal, cast
 
 from sqlalchemy import Result, Select, TextClause, delete, over, select, text, update
 from sqlalchemy import func as sql_func
+from sqlalchemy.orm import InstrumentedAttribute, Session
 
 from litestar.contrib.repository import AbstractSyncRepository, RepositoryError
 from litestar.contrib.repository.filters import (
@@ -20,7 +21,7 @@ from litestar.contrib.repository.filters import (
     SearchFilter,
 )
 
-from ._util import wrap_sqlalchemy_exception
+from ._util import get_instrumented_attr, wrap_sqlalchemy_exception
 from .types import ModelT, RowT, SelectT
 
 if TYPE_CHECKING:
@@ -28,7 +29,6 @@ if TYPE_CHECKING:
     from datetime import datetime
 
     from sqlalchemy.engine.interfaces import _CoreSingleExecuteParams
-    from sqlalchemy.orm import Session
 
 DEFAULT_INSERTMANYVALUES_MAX_PARAMETERS: Final = 950
 
@@ -37,6 +37,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
     """SQLAlchemy based implementation of the repository interface."""
 
     match_fields: list[str] | str | None = None
+    id_attribute: str | InstrumentedAttribute
 
     def __init__(
         self,
@@ -129,7 +130,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         item_id: Any,
         auto_commit: bool | None = None,
         auto_expunge: bool | None = None,
-        id_attribute: Any | None = None,
+        id_attribute: str | InstrumentedAttribute | None = None,
     ) -> ModelT:
         """Delete instance identified by ``item_id``.
 
@@ -160,7 +161,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         item_ids: list[Any],
         auto_commit: bool | None = None,
         auto_expunge: bool | None = None,
-        id_attribute: Any | None = None,
+        id_attribute: str | InstrumentedAttribute | None = None,
         chunk_size: int | None = None,
     ) -> list[ModelT]:
         """Delete instance identified by `item_id`.
@@ -182,7 +183,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         """
 
         with wrap_sqlalchemy_exception():
-            id_attribute = id_attribute if id_attribute is not None else self.id_attribute
+            id_attribute = get_instrumented_attr(
+                self.model_type, id_attribute if id_attribute is not None else self.id_attribute
+            )
             instances: list[ModelT] = []
             chunk_size = self._get_insertmanyvalues_max_parameters(chunk_size)
             for idx in range(0, len(item_ids), chunk_size):
@@ -190,20 +193,12 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                 if self._dialect.delete_executemany_returning:
                     instances.extend(
                         self.session.scalars(
-                            delete(self.model_type)
-                            .where(getattr(self.model_type, id_attribute).in_(chunk))
-                            .returning(self.model_type)
+                            delete(self.model_type).where(id_attribute.in_(chunk)).returning(self.model_type)
                         )
                     )
                 else:
-                    instances.extend(
-                        self.session.scalars(
-                            select(self.model_type).where(getattr(self.model_type, id_attribute).in_(chunk))
-                        )
-                    )
-                    self.session.execute(
-                        delete(self.model_type).where(getattr(self.model_type, id_attribute).in_(chunk))
-                    )
+                    instances.extend(self.session.scalars(select(self.model_type).where(id_attribute.in_(chunk))))
+                    self.session.execute(delete(self.model_type).where(id_attribute.in_(chunk)))
             self._flush_or_commit(auto_commit=auto_commit)
             for instance in instances:
                 self._expunge(instance, auto_expunge=auto_expunge)
@@ -230,7 +225,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         item_id: Any,
         auto_expunge: bool | None = None,
         statement: Select[tuple[ModelT]] | None = None,
-        id_attribute: Any | None = None,
+        id_attribute: str | InstrumentedAttribute | None = None,
     ) -> ModelT:
         """Get instance identified by `item_id`.
 
@@ -252,7 +247,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         with wrap_sqlalchemy_exception():
             id_attribute = id_attribute if id_attribute is not None else self.id_attribute
             statement = statement if statement is not None else self.statement
-            statement = self._filter_select_by_kwargs(statement=statement, **{id_attribute: item_id})
+            statement = self._filter_select_by_kwargs(statement=statement, kwargs={id_attribute: item_id})
             instance = (self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
             self._expunge(instance, auto_expunge=auto_expunge)
@@ -281,7 +276,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         """
         with wrap_sqlalchemy_exception():
             statement = statement if statement is not None else self.statement
-            statement = self._filter_select_by_kwargs(statement=statement, **kwargs)
+            statement = self._filter_select_by_kwargs(statement=statement, kwargs=kwargs)
             instance = (self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
             self._expunge(instance, auto_expunge=auto_expunge)
@@ -307,7 +302,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         """
         with wrap_sqlalchemy_exception():
             statement = statement if statement is not None else self.statement
-            statement = self._filter_select_by_kwargs(statement=statement, **kwargs)
+            statement = self._filter_select_by_kwargs(statement=statement, kwargs=kwargs)
             instance = (self._execute(statement)).scalar_one_or_none()
             if instance:
                 self._expunge(instance, auto_expunge=auto_expunge)
@@ -399,7 +394,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             maintain_column_froms=True,
         ).order_by(None)
         statement = self._apply_filters(*filters, apply_pagination=False, statement=statement)
-        statement = self._filter_select_by_kwargs(statement, **kwargs)
+        statement = self._filter_select_by_kwargs(statement, kwargs)
         results = self._execute(statement)
         return results.scalar_one()  # type: ignore
 
@@ -411,8 +406,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         auto_commit: bool | None = None,
         auto_expunge: bool | None = None,
         auto_refresh: bool | None = None,
-        id_attribute: Any | None = None,
-        **kwargs: Any,
+        id_attribute: str | InstrumentedAttribute | None = None,
     ) -> ModelT:
         """Update instance with the attribute values present on `data`.
 
@@ -432,7 +426,6 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                 :class:`SQLAlchemyAsyncRepository.auto_commit <SQLAlchemyAsyncRepository>`
             id_attribute: Allows customization of the unique identifier to use for model fetching.
                 Defaults to `id`, but can reference any surrogate or candidate key for the table.
-            **kwargs: Additional arguments.
 
         Returns:
             The updated instance.
@@ -441,7 +434,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             NotFoundError: If no instance found with same identifier as `data`.
         """
         with wrap_sqlalchemy_exception():
-            item_id = self.get_id_attribute_value(data, id_attribute=id_attribute)
+            item_id = self.get_id_attribute_value(
+                data, id_attribute=id_attribute.key if isinstance(id_attribute, InstrumentedAttribute) else id_attribute
+            )
             # this will raise for not found, and will put the item in the session
             self.get(item_id, id_attribute=id_attribute)
             # this will merge the inbound data to the instance we just put in the session
@@ -579,7 +574,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         statement = statement if statement is not None else self.statement
         statement = statement.add_columns(over(sql_func.count(self.get_id_attribute_value(self.model_type))))
         statement = self._apply_filters(*filters, statement=statement)
-        statement = self._filter_select_by_kwargs(statement, **kwargs)
+        statement = self._filter_select_by_kwargs(statement, kwargs)
         with wrap_sqlalchemy_exception():
             result = self._execute(statement)
             count: int = 0
@@ -613,7 +608,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         """
         statement = statement if statement is not None else self.statement
         statement = self._apply_filters(*filters, statement=statement)
-        statement = self._filter_select_by_kwargs(statement, **kwargs)
+        statement = self._filter_select_by_kwargs(statement, kwargs)
         count_statement = statement.with_only_columns(
             sql_func.count(self.get_id_attribute_value(self.model_type)),
             maintain_column_froms=True,
@@ -742,7 +737,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         """
         statement = statement if statement is not None else self.statement
         statement = self._apply_filters(*filters, statement=statement)
-        statement = self._filter_select_by_kwargs(statement, **kwargs)
+        statement = self._filter_select_by_kwargs(statement, kwargs)
 
         with wrap_sqlalchemy_exception():
             result = self._execute(statement)
@@ -896,13 +891,15 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             statement = statement.where(field >= on_or_after)
         return statement
 
-    def _filter_select_by_kwargs(self, statement: SelectT, **kwargs: Any) -> SelectT:
+    def _filter_select_by_kwargs(self, statement: SelectT, kwargs: dict[Any, Any]) -> SelectT:
         for key, val in kwargs.items():
-            statement = statement.where(getattr(self.model_type, key) == val)
+            statement = statement.where(get_instrumented_attr(self.model_type, key) == val)
         return statement
 
-    def _filter_by_like(self, statement: SelectT, field_name: str, value: str, ignore_case: bool) -> SelectT:
-        field = getattr(self.model_type, field_name)
+    def _filter_by_like(
+        self, statement: SelectT, field_name: str | InstrumentedAttribute, value: str, ignore_case: bool
+    ) -> SelectT:
+        field = get_instrumented_attr(self.model_type, field_name)
         search_text = f"%{value}%"
         return statement.where(field.ilike(search_text) if ignore_case else field.like(search_text))
 
@@ -911,6 +908,8 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         search_text = f"%{value}%"
         return statement.where(field.not_ilike(search_text) if ignore_case else field.not_like(search_text))
 
-    def _order_by(self, statement: SelectT, field_name: str, sort_desc: bool = False) -> SelectT:
-        field = getattr(self.model_type, field_name)
+    def _order_by(
+        self, statement: SelectT, field_name: str | InstrumentedAttribute, sort_desc: bool = False
+    ) -> SelectT:
+        field = get_instrumented_attr(self.model_type, field_name)
         return statement.order_by(field.desc() if sort_desc else field.asc())
