@@ -60,7 +60,7 @@ def test_route_handler_kwarg_handling(
         if not path:
             assert result.paths == {"/"}
         else:
-            assert list(result.paths)[0] == normalize_path(path)
+            assert next(iter(result.paths)) == normalize_path(path)
         assert result.status_code == status_code or get_default_status_code(http_methods=result.http_methods)
 
 

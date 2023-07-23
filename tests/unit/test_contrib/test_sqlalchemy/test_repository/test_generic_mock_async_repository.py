@@ -87,7 +87,7 @@ def test_generic_mock_repository_filter_collection_by_kwargs(
     """Test filtering the repository collection by kwargs."""
     collection = author_repository.filter_collection_by_kwargs(author_repository.collection, name="Leo Tolstoy")
     assert len(collection) == 1
-    assert list(collection.values())[0].name == "Leo Tolstoy"
+    assert next(iter(collection.values())).name == "Leo Tolstoy"
 
 
 def test_generic_mock_repository_filter_collection_by_kwargs_and_semantics(
@@ -147,7 +147,7 @@ async def test_sets_updated_on_update(author_repository: GenericAsyncMockReposit
     """Test that the repository updates the 'updated' timestamp if
     necessary."""
 
-    instance = list(author_repository.collection.values())[0]
+    instance = next(iter(author_repository.collection.values()))
     original_updated = instance.updated_at
     instance = await author_repository.update(instance)
     assert instance.updated_at > original_updated

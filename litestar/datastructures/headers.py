@@ -70,7 +70,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
             super().__init__(CIMultiDict(headers_))
         else:
             super().__init__(headers)
-        self._header_list: Optional["RawHeadersList"] = None
+        self._header_list: Optional[RawHeadersList] = None
 
     @classmethod
     def from_scope(cls, scope: "HeaderScope") -> "Headers":
@@ -112,7 +112,7 @@ class MutableScopeHeaders(MutableMapping):
         Args:
             scope: The ASGI connection scope.
         """
-        self.headers: "RawHeadersList"
+        self.headers: RawHeadersList
         if scope is not None:
             if not isinstance(scope["headers"], list):
                 scope["headers"] = list(scope["headers"])

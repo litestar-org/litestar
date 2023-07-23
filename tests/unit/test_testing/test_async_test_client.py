@@ -55,13 +55,13 @@ def test_warns_problematic_domain() -> None:
 @pytest.mark.parametrize("method", ["get", "post", "put", "patch", "delete", "head", "options"])
 async def test_client_interface(method: str, test_client_backend: "AnyIOBackend") -> None:
     async def asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        start_event: "HTTPResponseStartEvent" = {
+        start_event: HTTPResponseStartEvent = {
             "type": "http.response.start",
             "status": HTTP_200_OK,
             "headers": [(b"content-type", b"text/plain")],
         }
         await send(start_event)
-        body_event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": b"", "more_body": False}
+        body_event: HTTPResponseBodyEvent = {"type": "http.response.body", "body": b"", "more_body": False}
         await send(body_event)
 
     client = AsyncTestClient(asgi_app, backend=test_client_backend)
