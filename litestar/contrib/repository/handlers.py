@@ -1,6 +1,16 @@
 from typing import TYPE_CHECKING
 
-from litestar.contrib.repository.filters import BeforeAfter, CollectionFilter, LimitOffset, OrderBy, SearchFilter
+from litestar.contrib.repository.filters import (
+    BeforeAfter,
+    CollectionFilter,
+    FilterTypes,
+    LimitOffset,
+    NotInCollectionFilter,
+    NotInSearchFilter,
+    OnBeforeAfter,
+    OrderBy,
+    SearchFilter,
+)
 
 if TYPE_CHECKING:
     from litestar.config.app import AppConfig
@@ -8,10 +18,14 @@ if TYPE_CHECKING:
 
 signature_namespace_values = {
     "BeforeAfter": BeforeAfter,
+    "OnBeforeAfter": OnBeforeAfter,
     "CollectionFilter": CollectionFilter,
     "LimitOffset": LimitOffset,
     "OrderBy": OrderBy,
     "SearchFilter": SearchFilter,
+    "NotInCollectionFilter": NotInCollectionFilter,
+    "NotInSearchFilter": NotInSearchFilter,
+    "FilterTypes": FilterTypes,
 }
 
 

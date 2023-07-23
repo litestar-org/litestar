@@ -13,6 +13,9 @@ from litestar.contrib.repository.filters import (
     CollectionFilter,
     FilterTypes,
     LimitOffset,
+    NotInCollectionFilter,
+    NotInSearchFilter,
+    OnBeforeAfter,
     OrderBy,
     SearchFilter,
 )
@@ -450,9 +453,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
     ) -> list[ModelT]:
         """Update one or more instances with the attribute values present on `data`.
 
-        This function has an optimized bulk insert based on the configured SQL dialect:
-        - For backends supporting `RETURNING` with `executemany`, a single bulk insert with returning clause is executed.
-        - For other backends, it does a bulk insert and then selects the inserted records
+        This function has an optimized bulk update based on the configured SQL dialect:
+        - For backends supporting `RETURNING` with `executemany`, a single bulk update with returning clause is executed.
+        - For other backends, it does a bulk update and then returns the updated data after a refresh.
 
         Args:
             data: A list of instances to update.  Each should have a value for `self.id_attribute` that exists in the
@@ -765,8 +768,21 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                     statement = self._apply_limit_offset_pagination(filter_.limit, filter_.offset, statement=statement)
             elif isinstance(filter_, BeforeAfter):
                 statement = self._filter_on_datetime_field(
-                    filter_.field_name, filter_.before, filter_.after, statement=statement
+                    field_name=filter_.field_name,
+                    before=filter_.before,
+                    after=filter_.after,
+                    statement=statement,
                 )
+            elif isinstance(filter_, OnBeforeAfter):
+                statement = self._filter_on_datetime_field(
+                    field_name=filter_.field_name,
+                    on_or_before=filter_.on_or_before,
+                    on_or_after=filter_.on_or_after,
+                    statement=statement,
+                )
+
+            elif isinstance(filter_, NotInCollectionFilter):
+                statement = self._filter_not_in_collection(filter_.field_name, filter_.values, statement=statement)
             elif isinstance(filter_, CollectionFilter):
                 statement = self._filter_in_collection(filter_.field_name, filter_.values, statement=statement)
             elif isinstance(filter_, OrderBy):
@@ -779,6 +795,10 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                 statement = self._filter_by_like(
                     statement, filter_.field_name, value=filter_.value, ignore_case=bool(filter_.ignore_case)
                 )
+            elif isinstance(filter_, NotInSearchFilter):
+                statement = self._filter_by_not_like(
+                    statement, filter_.field_name, value=filter_.value, ignore_case=bool(filter_.ignore_case)
+                )
             else:
                 raise RepositoryError(f"Unexpected filter: {filter_}")
         return statement
@@ -788,14 +808,29 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             return statement
         return statement.where(getattr(self.model_type, field_name).in_(values))
 
+    def _filter_not_in_collection(self, field_name: str, values: abc.Collection[Any], statement: SelectT) -> SelectT:
+        if not values:
+            return statement
+        return statement.where(getattr(self.model_type, field_name).notin_(values))
+
     def _filter_on_datetime_field(
-        self, field_name: str, before: datetime | None, after: datetime | None, statement: SelectT
+        self,
+        field_name: str,
+        statement: SelectT,
+        before: datetime | None = None,
+        after: datetime | None = None,
+        on_or_before: datetime | None = None,
+        on_or_after: datetime | None = None,
     ) -> SelectT:
         field = getattr(self.model_type, field_name)
         if before is not None:
             statement = statement.where(field < before)
         if after is not None:
             statement = statement.where(field > after)
+        if on_or_before is not None:
+            statement = statement.where(field <= on_or_before)
+        if on_or_after is not None:
+            statement = statement.where(field >= on_or_after)
         return statement
 
     def _filter_select_by_kwargs(self, statement: SelectT, **kwargs: Any) -> SelectT:
@@ -807,6 +842,11 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         field = getattr(self.model_type, field_name)
         search_text = f"%{value}%"
         return statement.where(field.ilike(search_text) if ignore_case else field.like(search_text))
+
+    def _filter_by_not_like(self, statement: SelectT, field_name: str, value: str, ignore_case: bool) -> SelectT:
+        field = getattr(self.model_type, field_name)
+        search_text = f"%{value}%"
+        return statement.where(field.not_ilike(search_text) if ignore_case else field.not_like(search_text))
 
     def _order_by(self, statement: SelectT, field_name: str, sort_desc: bool = False) -> SelectT:
         field = getattr(self.model_type, field_name)

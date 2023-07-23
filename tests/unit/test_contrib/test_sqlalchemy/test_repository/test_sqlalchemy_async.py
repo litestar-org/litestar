@@ -19,6 +19,8 @@ from litestar.contrib.repository.filters import (
     BeforeAfter,
     CollectionFilter,
     LimitOffset,
+    NotInCollectionFilter,
+    OnBeforeAfter,
 )
 from litestar.contrib.sqlalchemy import base
 from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository, wrap_sqlalchemy_exception
@@ -444,6 +446,23 @@ async def test_sqlalchemy_repo_list_with_before_after_filter(
     assert mock_repo.statement.where.has_calls([call("gt"), call("lt")])
 
 
+async def test_sqlalchemy_repo_list_with_on_before_after_filter(
+    mock_repo: SQLAlchemyAsyncRepository, monkeypatch: MonkeyPatch
+) -> None:
+    """Test list operation with BeforeAfter filter."""
+    field_name = "updated_at"
+    # model has to support comparison with the datetimes
+    getattr(mock_repo.model_type, field_name).__le__ = lambda self, compare: "le"
+    getattr(mock_repo.model_type, field_name).__ge__ = lambda self, compare: "ge"
+    result_mock = MagicMock()
+    execute_mock = AsyncMock(return_value=result_mock)
+    monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    mock_repo.statement.where.return_value = mock_repo.statement
+    await mock_repo.list(OnBeforeAfter(field_name, datetime.max, datetime.min))
+    assert mock_repo.statement.where.call_count == 2
+    assert mock_repo.statement.where.has_calls([call("ge"), call("le")])
+
+
 async def test_sqlalchemy_repo_list_with_collection_filter(
     mock_repo: SQLAlchemyAsyncRepository, monkeypatch: MonkeyPatch
 ) -> None:
@@ -457,6 +476,21 @@ async def test_sqlalchemy_repo_list_with_collection_filter(
     await mock_repo.list(CollectionFilter(field_name, values))
     mock_repo.statement.where.assert_called_once()
     getattr(mock_repo.model_type, field_name).in_.assert_called_once_with(values)
+
+
+async def test_sqlalchemy_repo_list_with_not_in_collection_filter(
+    mock_repo: SQLAlchemyAsyncRepository, monkeypatch: MonkeyPatch
+) -> None:
+    """Test behavior of list operation given CollectionFilter."""
+    field_name = "id"
+    result_mock = MagicMock()
+    execute_mock = AsyncMock(return_value=result_mock)
+    monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    mock_repo.statement.where.return_value = mock_repo.statement
+    values = [1, 2, 3]
+    await mock_repo.list(NotInCollectionFilter(field_name, values))
+    mock_repo.statement.where.assert_called_once()
+    getattr(mock_repo.model_type, field_name).notin_.assert_called_once_with(values)
 
 
 async def test_sqlalchemy_repo_unknown_filter_type_raises(mock_repo: SQLAlchemyAsyncRepository) -> None:
@@ -513,7 +547,7 @@ async def testexecute(mock_repo: SQLAlchemyAsyncRepository) -> None:
 def test_filter_in_collection_noop_if_collection_empty(mock_repo: SQLAlchemyAsyncRepository) -> None:
     """Ensures we don't filter on an empty collection."""
     mock_repo._filter_in_collection("id", [], statement=mock_repo.statement)
-    mock_repo.statement.where.assert_not_called()
+    mock_repo.statement.where.assert_not_called()  # type: ignore
 
 
 @pytest.mark.parametrize(
@@ -529,7 +563,7 @@ def test_filter_on_datetime_field(before: datetime, after: datetime, mock_repo: 
     field_mock = MagicMock()
     field_mock.__gt__ = field_mock.__lt__ = lambda self, other: True
     mock_repo.model_type.updated_at = field_mock
-    mock_repo._filter_on_datetime_field("updated_at", before, after, statement=mock_repo.statement)
+    mock_repo._filter_on_datetime_field("updated_at", before=before, after=after, statement=mock_repo.statement)
 
 
 def test_filter_collection_by_kwargs(mock_repo: SQLAlchemyAsyncRepository) -> None:
