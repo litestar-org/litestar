@@ -22,7 +22,7 @@ def test_handler_raise_for_no_template_engine() -> None:
     def invalid_path() -> Template:
         return Template(template_name="index.html", context={"ye": "yeeee"})
 
-    with create_test_client(route_handlers=[invalid_path]) as client:
+    with create_test_client(route_handlers=[invalid_path], debug=False) as client:
         response = client.request("GET", "/")
         assert response.status_code == 500
         assert response.json() == {"detail": "Internal Server Error", "status_code": 500}

@@ -53,6 +53,7 @@ def test_dependency_validation_failure_raises_500() -> None:
     with create_test_client(
         route_handlers=[test],
         dependencies=dependencies,
+        debug=False,
     ) as client:
         response = client.get("/?param=13")
 

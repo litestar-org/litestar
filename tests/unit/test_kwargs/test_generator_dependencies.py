@@ -104,7 +104,7 @@ async def test_generator_dependency_websocket(
 
 
 @pytest.mark.parametrize("dependency_fixture", ["generator_dependency", "async_generator_dependency"])
-def test_generator_dependency_handle_exception(
+def test_generator_dependency_handle_exception_debug_false(
     request: FixtureRequest,
     dependency_fixture: str,
     cleanup_mock: MagicMock,
@@ -117,7 +117,7 @@ def test_generator_dependency_handle_exception(
     def handler(dep: str) -> Dict[str, str]:
         raise ValueError("foo")
 
-    with create_test_client(route_handlers=[handler]) as client:
+    with create_test_client(route_handlers=[handler], debug=False) as client:
         res = client.get("/")
         assert res.status_code == 500
         assert res.json() == {"detail": "Internal Server Error", "status_code": 500}
@@ -127,7 +127,7 @@ def test_generator_dependency_handle_exception(
 
 
 @pytest.mark.parametrize("dependency_fixture", ["generator_dependency", "async_generator_dependency"])
-def test_generator_dependency_exception_during_cleanup(
+def test_generator_dependency_exception_during_cleanup_debug_false(
     request: FixtureRequest,
     dependency_fixture: str,
     cleanup_mock: MagicMock,
@@ -141,7 +141,7 @@ def test_generator_dependency_exception_during_cleanup(
     def handler(dep: str) -> Dict[str, str]:
         return {"value": dep}
 
-    with create_test_client(route_handlers=[handler]) as client:
+    with create_test_client(route_handlers=[handler], debug=False) as client:
         res = client.get("/")
         assert res.status_code == 500
         assert res.json() == {"status_code": 500, "detail": "Internal Server Error"}

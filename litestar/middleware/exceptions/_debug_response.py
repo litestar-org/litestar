@@ -4,7 +4,7 @@ from html import escape
 from inspect import getinnerframes
 from pathlib import Path
 from traceback import format_exception
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from litestar.enums import MediaType
 from litestar.response import Response
@@ -180,9 +180,12 @@ def create_debug_response(request: Request, exc: Exception) -> Response:
     Returns:
         A response with a rendered exception traceback.
     """
-    if "text/html" in request.headers.get("accept", ""):
-        content = create_html_response_content(exc=exc, request=request)
+    if MediaType.HTML in request.headers.get("accept", ""):
+        content: Any = create_html_response_content(exc=exc, request=request)
         media_type = MediaType.HTML
+    elif MediaType.JSON in request.headers.get("accept", ""):
+        content = {"details": create_plain_text_response_content(exc), "status_code": HTTP_500_INTERNAL_SERVER_ERROR}
+        media_type = MediaType.JSON
     else:
         content = create_plain_text_response_content(exc)
         media_type = MediaType.TEXT

@@ -1,9 +1,11 @@
 from typing import Optional
 
+import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from litestar import get
 from litestar.enums import MediaType
 from litestar.exceptions import (
     HTTPException,
@@ -14,6 +16,7 @@ from litestar.exceptions import (
 )
 from litestar.middleware.exceptions.middleware import create_exception_response
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
+from litestar.testing import create_test_client
 
 
 @given(detail=st.one_of(st.none(), st.text()))
@@ -109,3 +112,20 @@ def test_missing_dependency_exception_differing_package_name() -> None:
     )
 
     assert str(exc) == expected
+
+
+@pytest.mark.parametrize("media_type", (MediaType.HTML, MediaType.JSON, MediaType.TEXT))
+def test_default_exception_handling_of_internal_server_errors(media_type: MediaType) -> None:
+    @get("/")
+    def handler() -> None:
+        raise ValueError("internal problem")
+
+    with create_test_client(handler) as client:
+        response = client.get("/", headers={"Accept": media_type})
+        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+        if media_type == MediaType.HTML:
+            assert response.text.startswith("<!doctype html>")
+        elif media_type == MediaType.JSON:
+            assert response.json().get("details").startswith("Traceback (most recent call last")
+        else:
+            assert response.text.startswith("Traceback (most recent call last")
