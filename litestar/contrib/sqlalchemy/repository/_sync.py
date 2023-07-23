@@ -715,8 +715,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Returns:
             `True` if healthy.
         """
+        sql = "SELECT 1 FROM DUAL" if session.bind and session.bind.dialect.name == "oracle" else "SELECT 1"
         return (  # type:ignore[no-any-return]  # pragma: no cover
-            session.execute(text("SELECT 1"))
+            session.execute(text(sql))
         ).scalar_one() == 1
 
     def _attach_to_session(self, model: ModelT, strategy: Literal["add", "merge"] = "add") -> ModelT:
