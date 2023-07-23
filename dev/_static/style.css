@@ -28,3 +28,8 @@
 p {
   font-size: 1.1em;
 }
+
+html[data-theme="dark"] .mermaid svg {
+  background-color: white;
+  padding: 1em;
+}
