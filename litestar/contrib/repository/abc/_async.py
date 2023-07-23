@@ -253,7 +253,7 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
         return item_or_none
 
     @classmethod
-    def get_id_attribute_value(cls, item: T | type[T], id_attribute: Any | None = None) -> Any:
+    def get_id_attribute_value(cls, item: T | type[T], id_attribute: str | None = None) -> Any:
         """Get value of attribute named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` on ``item``.
 
         Args:
@@ -267,7 +267,7 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
         return getattr(item, id_attribute if id_attribute is not None else cls.id_attribute)
 
     @classmethod
-    def set_id_attribute_value(cls, item_id: Any, item: T, id_attribute: Any | None = None) -> T:
+    def set_id_attribute_value(cls, item_id: Any, item: T, id_attribute: str | None = None) -> T:
         """Return the ``item`` after the ID is set to the appropriate attribute.
 
         Args:
