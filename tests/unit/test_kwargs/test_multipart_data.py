@@ -1,13 +1,13 @@
-# flake8: noqa
 from collections import defaultdict
+from dataclasses import dataclass
 from os import path
 from os.path import dirname, join, realpath
 from pathlib import Path
-from typing import Any, DefaultDict, Dict, List, Optional, Type
+from typing import Any, DefaultDict, Dict, List, Optional
 
 import pytest
-from msgspec import convert
 from pydantic import BaseConfig, BaseModel
+from typing_extensions import Annotated
 
 from litestar import Request, post
 from litestar.contrib.pydantic import _model_dump, _model_dump_json
@@ -16,8 +16,8 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.status_codes import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
-from dataclasses import dataclass
 from tests import PydanticPerson, PydanticPersonFactory
+
 from . import Form
 
 
@@ -50,7 +50,7 @@ async def form_handler(request: Request) -> Dict[str, Any]:
 @post("/form")
 async def form_multi_item_handler(request: Request) -> DefaultDict[str, list]:
     data = await request.form()
-    output: DefaultDict[str, list] = defaultdict(list)
+    output: defaultdict[str, list] = defaultdict(list)
     for key, value in data.multi_items():
         for v in value:
             if isinstance(v, UploadFile):
@@ -86,14 +86,12 @@ async def form_with_headers_handler(request: Request) -> Dict[str, Any]:
 
 
 @pytest.mark.parametrize("t_type", [FormData, Dict[str, UploadFile], List[UploadFile], UploadFile])
-def test_request_body_multi_part(t_type: Type[Any]) -> None:
-    body = Body(media_type=RequestEncodingType.MULTI_PART)
-
+def test_request_body_multi_part(t_type: type) -> None:
     test_path = "/test"
     data = _model_dump(Form(name="Moishe Zuchmir", age=30, programmer=True, value="100"))
 
     @post(path=test_path)
-    def test_method(data: t_type = body) -> None:  # type: ignore
+    def test_method(data: Annotated[t_type, Body(media_type=RequestEncodingType.MULTI_PART)]) -> None:  # type: ignore
         assert data
 
     with create_test_client(test_method) as client:
@@ -445,3 +443,88 @@ def test_multipart_form_part_limit_body_param_precedence() -> None:
         data = {str(i): "a" for i in range(route_limit + 1)}
         response = client.post("/", files=data)
         assert response.status_code == HTTP_400_BAD_REQUEST
+
+
+@dataclass
+class ProductForm:
+    name: str
+    int_field: int
+    options: List[int]
+    optional_without_default: Optional[float]
+    optional_with_default: Optional[int] = None
+
+
+def test_multipart_handling_of_none_values() -> None:
+    @post("/")
+    def handler(
+        data: Annotated[ProductForm, Body(media_type=RequestEncodingType.MULTI_PART)],
+    ) -> None:
+        assert data
+
+    with create_test_client(route_handlers=[handler]) as client:
+        response = client.post(
+            "/",
+            content=(
+                b"--1f35df74046888ceaa62d8a534a076dd\r\n"
+                b'Content-Disposition: form-data; name="name"\r\n'
+                b"Content-Type: application/octet-stream\r\n\r\n"
+                b"moishe zuchmir\r\n"
+                b"--1f35df74046888ceaa62d8a534a076dd\r\n"
+                b'Content-Disposition: form-data; name="int_field"\r\n'
+                b"Content-Type: application/octet-stream\r\n\r\n"
+                b"1\r\n"
+                b"--1f35df74046888ceaa62d8a534a076dd\r\n"
+                b'Content-Disposition: form-data; name="options"\r\n'
+                b"Content-Type: application/octet-stream\r\n\r\n"
+                b"[1,2,3,4]\r\n"
+                b"--1f35df74046888ceaa62d8a534a076dd\r\n"
+                b'Content-Disposition: form-data; name="optional_without_default"\r\n'
+                b"Content-Type: application/octet-stream\r\n\r\n\r\n"
+                b"--1f35df74046888ceaa62d8a534a076dd\r\n"
+                b'Content-Disposition: form-data; name="optional_with_default"\r\n'
+                b"Content-Type: application/octet-stream\r\n\r\n\r\n"
+                b"--1f35df74046888ceaa62d8a534a076dd--\r\n"
+            ),
+            headers={"Content-Type": "multipart/form-data; boundary=1f35df74046888ceaa62d8a534a076dd"},
+        )
+        assert response.status_code == HTTP_201_CREATED
+
+
+def test_multipart_handling_of_none_json_lists_with_multiple_elements() -> None:
+    @post("/")
+    def handler(
+        data: Annotated[ProductForm, Body(media_type=RequestEncodingType.MULTI_PART)],
+    ) -> None:
+        assert data
+
+    with create_test_client(route_handlers=[handler]) as client:
+        response = client.post(
+            "/",
+            content=(
+                b"--1f35df74046888ceaa62d8a534a076dd\r\n"
+                b'Content-Disposition: form-data; name="name"\r\n'
+                b"Content-Type: application/octet-stream\r\n\r\n"
+                b"moishe zuchmir\r\n"
+                b"--1f35df74046888ceaa62d8a534a076dd\r\n"
+                b'Content-Disposition: form-data; name="int_field"\r\n'
+                b"Content-Type: application/octet-stream\r\n\r\n"
+                b"1\r\n"
+                b"--1f35df74046888ceaa62d8a534a076dd\r\n"
+                b'Content-Disposition: form-data; name="options"\r\n'
+                b"Content-Type: application/octet-stream\r\n\r\n"
+                b"1\r\n"
+                b"--1f35df74046888ceaa62d8a534a076dd\r\n"
+                b'Content-Disposition: form-data; name="options"\r\n'
+                b"Content-Type: application/octet-stream\r\n\r\n"
+                b"2\r\n"
+                b"--1f35df74046888ceaa62d8a534a076dd\r\n"
+                b'Content-Disposition: form-data; name="optional_without_default"\r\n'
+                b"Content-Type: application/octet-stream\r\n\r\n\r\n"
+                b"--1f35df74046888ceaa62d8a534a076dd\r\n"
+                b'Content-Disposition: form-data; name="optional_with_default"\r\n'
+                b"Content-Type: application/octet-stream\r\n\r\n\r\n"
+                b"--1f35df74046888ceaa62d8a534a076dd--\r\n"
+            ),
+            headers={"Content-Type": "multipart/form-data; boundary=1f35df74046888ceaa62d8a534a076dd"},
+        )
+        assert response.status_code == HTTP_201_CREATED

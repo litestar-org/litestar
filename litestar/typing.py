@@ -421,9 +421,9 @@ class FieldDefinition:
             if isinstance(kwargs.get("default"), (KwargDefinition, DependencyKwarg)):
                 kwargs["kwarg_definition"] = kwargs.pop("default")
             elif any(isinstance(v, (KwargDefinition, DependencyKwarg)) for v in metadata):
-                kwargs["kwarg_definition"] = [v for v in metadata if isinstance(v, (KwargDefinition, DependencyKwarg))][
-                    0
-                ]
+                kwargs["kwarg_definition"] = next(
+                    v for v in metadata if isinstance(v, (KwargDefinition, DependencyKwarg))
+                )
                 metadata = tuple(v for v in metadata if not isinstance(v, (KwargDefinition, DependencyKwarg)))
             elif (extra := kwargs.get("extra", {})) and "kwarg_definition" in extra:
                 kwargs["kwarg_definition"] = extra.pop("kwarg_definition")

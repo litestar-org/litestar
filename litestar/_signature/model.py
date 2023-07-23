@@ -162,7 +162,9 @@ class SignatureModel(Struct):
         """
         messages: list[ErrorMessage] = []
         try:
-            return convert(kwargs, cls, strict=False, dec_hook=connection.route_handler.default_deserializer).to_dict()
+            return convert(
+                kwargs, cls, strict=False, dec_hook=connection.route_handler.default_deserializer, str_keys=True
+            ).to_dict()
         except ExtendedMsgSpecValidationError as e:
             for exc in e.errors:
                 keys = [str(loc) for loc in exc["loc"]]
