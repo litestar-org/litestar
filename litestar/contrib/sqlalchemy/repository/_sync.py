@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Generic, Iterable, Literal, cast
 
-from sqlalchemy import Result, Select, delete, over, select, text, update
+from sqlalchemy import Result, Select, TextClause, delete, over, select, text, update
 from sqlalchemy import func as sql_func
 
 from litestar.contrib.repository import AbstractSyncRepository, RepositoryError
@@ -715,10 +715,16 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Returns:
             `True` if healthy.
         """
-        sql = "SELECT 1 FROM DUAL" if session.bind and session.bind.dialect.name == "oracle" else "SELECT 1"
-        return (  # type:ignore[no-any-return]  # pragma: no cover
-            session.execute(text(sql))
+
+        return (  # type:ignore[no-any-return]
+            session.execute(cls._get_health_check_statement(session))
         ).scalar_one() == 1
+
+    @staticmethod
+    def _get_health_check_statement(session: Session) -> TextClause:
+        if session.bind and session.bind.dialect.name == "oracle":
+            return text("SELECT 1 FROM DUAL")
+        return text("SELECT 1")
 
     def _attach_to_session(self, model: ModelT, strategy: Literal["add", "merge"] = "add") -> ModelT:
         """Attach detached instance to the session.
