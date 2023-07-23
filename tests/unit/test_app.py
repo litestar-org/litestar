@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, List, Tuple
 from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest
+from pydantic import VERSION
 from pytest import MonkeyPatch
 
 from litestar import Litestar, MediaType, Request, Response, get, post
@@ -25,7 +26,7 @@ from litestar.logging.config import LoggingConfig
 from litestar.router import Router
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
-from tests import Person
+from tests import PydanticPerson
 
 if TYPE_CHECKING:
     from typing import Dict
@@ -241,14 +242,14 @@ def test_before_send() -> None:
 
 def test_default_handling_of_pydantic_errors() -> None:
     @post("/{param:int}")
-    def my_route_handler(param: int, data: Person) -> None:
+    def my_route_handler(param: int, data: PydanticPerson) -> None:
         ...
 
     with create_test_client(my_route_handler) as client:
         response = client.post("/123", json={"first_name": "moishe"})
         extra = response.json().get("extra")
         assert extra is not None
-        assert len(extra) == 3
+        assert 3 if len(extra) == VERSION.startswith("1") else 4
 
 
 def test_using_custom_http_exception_handler() -> None:

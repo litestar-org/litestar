@@ -1,6 +1,6 @@
 from typing import Generic, List, Optional, TypeVar
 
-from litestar.dto.factory.utils import resolve_generic_wrapper_type, resolve_model_type
+from litestar.dto._utils import resolve_generic_wrapper_type, resolve_model_type
 from litestar.typing import FieldDefinition
 
 T = TypeVar("T")

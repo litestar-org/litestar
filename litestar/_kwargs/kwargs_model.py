@@ -277,7 +277,7 @@ class KwargsModel:
             An instance of KwargsModel
         """
 
-        field_definitions = signature_model.fields
+        field_definitions = signature_model._fields
 
         cls._validate_raw_kwargs(
             path_parameters=path_parameters,
@@ -405,7 +405,7 @@ class KwargsModel:
         list.
         """
         provide = dependencies[key]
-        sub_dependency_keys = [k for k in get_signature_model(provide).fields if k in dependencies]
+        sub_dependency_keys = [k for k in get_signature_model(provide)._fields if k in dependencies]
         return Dependency(
             key=key,
             provide=provide,

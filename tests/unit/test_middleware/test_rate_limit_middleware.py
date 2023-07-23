@@ -1,8 +1,9 @@
+from datetime import datetime
 from time import time
 from typing import TYPE_CHECKING, Any
 
 import pytest
-from freezegun import freeze_time
+from time_machine import travel
 
 from litestar import Litestar, Request, get
 from litestar.middleware.rate_limit import (
@@ -32,12 +33,12 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
     app = Litestar(route_handlers=[handler], middleware=[config.middleware])
     store = app.stores.get("rate_limit")
 
-    with freeze_time() as frozen_time, TestClient(app=app) as client:
+    with travel(datetime.utcnow, tick=False) as frozen_time, TestClient(app=app) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         cached_value = await store.get(cache_key)
         assert cached_value
-        cache_object = CacheObject(**decode_json(cached_value))
+        cache_object = CacheObject(**decode_json(value=cached_value))
         assert len(cache_object.history) == 1
 
         assert response.headers.get(config.rate_limit_policy_header_key) == f"1; w={DURATION_VALUES[unit]}"
@@ -45,7 +46,7 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
         assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
         assert response.headers.get(config.rate_limit_reset_header_key) == str(int(time()) - cache_object.reset)
 
-        frozen_time.tick(DURATION_VALUES[unit] - 1)  # type: ignore[arg-type]
+        frozen_time.shift(DURATION_VALUES[unit] - 1)
 
         response = client.get("/")
         assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
@@ -54,7 +55,7 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
         assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
         assert response.headers.get(config.rate_limit_reset_header_key) == str(int(time()) - cache_object.reset)
 
-        frozen_time.tick(1)  # type: ignore[arg-type]
+        frozen_time.shift(1)
 
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
@@ -109,7 +110,7 @@ async def test_reset() -> None:
         assert response.status_code == HTTP_200_OK
         cached_value = await store.get(cache_key)
         assert cached_value
-        cache_object = CacheObject(**decode_json(cached_value))
+        cache_object = CacheObject(**decode_json(value=cached_value))
         assert cache_object.reset == int(time() + 1)
 
         cache_object.reset -= 2

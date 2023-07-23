@@ -5,14 +5,18 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Dict, Optional, Sequence
 from unittest.mock import MagicMock
 
+import msgspec
 import pytest
+from msgspec import Struct
+from pydantic import BaseModel
 from typing_extensions import Annotated
 
-from litestar import patch, post
+from litestar import Litestar, patch, post
+from litestar.connection.request import Request
+from litestar.contrib.pydantic import PydanticDTO, _model_dump_json
 from litestar.datastructures import UploadFile
-from litestar.dto.factory import DTOConfig, DTOData, dto_field
-from litestar.dto.factory.stdlib.dataclass import DataclassDTO
-from litestar.dto.factory.types import RenameStrategy
+from litestar.dto import DataclassDTO, DTOConfig, DTOData, MsgspecDTO, dto_field
+from litestar.dto.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
 from litestar.params import Body
 from litestar.testing import TestClient, create_test_client
@@ -153,8 +157,8 @@ from typing import Any, Dict
 from typing_extensions import Annotated
 
 from litestar import post
-from litestar.dto.factory import DTOConfig, DTOData
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig, DTOData
+from litestar.dto import DataclassDTO
 
 @dataclass
 class Foo:
@@ -190,8 +194,8 @@ from typing import Any, Dict
 from typing_extensions import Annotated
 
 from litestar import post
-from litestar.dto.factory import DTOConfig, DTOData
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig, DTOData
+from litestar.dto import DataclassDTO
 
 @dataclass
 class Foo:
@@ -390,8 +394,8 @@ from typing import List
 from typing_extensions import Annotated
 
 from litestar import Litestar, get
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig
+from litestar.dto import DataclassDTO
 from litestar.pagination import ClassicPagination
 
 @dataclass
@@ -431,8 +435,8 @@ from uuid import UUID
 from typing_extensions import Annotated
 
 from litestar import Litestar, get
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig
+from litestar.dto import DataclassDTO
 from litestar.pagination import CursorPagination
 
 @dataclass
@@ -471,8 +475,8 @@ from typing import List
 from typing_extensions import Annotated
 
 from litestar import Litestar, get
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig
+from litestar.dto import DataclassDTO
 from litestar.pagination import OffsetPagination
 
 @dataclass
@@ -511,8 +515,8 @@ from typing import Generic, List, TypeVar
 from typing_extensions import Annotated
 
 from litestar import Litestar, get
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig
+from litestar.dto import DataclassDTO
 
 @dataclass
 class User:
@@ -551,8 +555,8 @@ from typing import Generic, TypeVar
 from typing_extensions import Annotated
 
 from litestar import Litestar, get
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig
+from litestar.dto import DataclassDTO
 
 @dataclass
 class User:
@@ -593,8 +597,8 @@ from typing import Dict, Generic, TypeVar
 from typing_extensions import Annotated
 
 from litestar import Litestar, get
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig
+from litestar.dto import DataclassDTO
 
 @dataclass
 class User:
@@ -634,8 +638,8 @@ from typing import Generic, TypeVar
 from typing_extensions import Annotated
 
 from litestar import Litestar, Response, get
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig
+from litestar.dto import DataclassDTO
 
 @dataclass
 class User:
@@ -663,8 +667,8 @@ from typing import Generic, List, TypeVar
 from typing_extensions import Annotated
 
 from litestar import Litestar, Response, get
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib import DataclassDTO
+from litestar.dto import DTOConfig
+from litestar.dto import DataclassDTO
 
 @dataclass
 class User:
@@ -681,3 +685,108 @@ app = Litestar(route_handlers=[handler])
     with TestClient(app=module.app) as client:
         response = client.get("/")
         assert response.json() == [{"name": "John"}, {"name": "Jane"}]
+
+
+def test_schema_required_fields_with_msgspec_dto() -> None:
+    class MsgspecUser(Struct):
+        age: int
+        name: str
+
+    class UserDTO(MsgspecDTO[MsgspecUser]):
+        pass
+
+    @post(dto=UserDTO, return_dto=None, signature_namespace={"MsgspecUser": MsgspecUser})
+    def handler(data: MsgspecUser, request: Request) -> dict:
+        schema = request.app.openapi_schema
+        return schema.to_schema()
+
+    app = Litestar(route_handlers=[handler])
+    with TestClient(app=app) as client:
+        data = MsgspecUser(name="A", age=10)
+        headers = {"Content-Type": "application/json; charset=utf-8"}
+        received = client.post(
+            "/",
+            content=msgspec.json.encode(data),
+            headers=headers,
+        )
+        required = next(iter(received.json()["components"]["schemas"].values()))["required"]
+        assert len(required) == 2
+
+
+def test_schema_required_fields_with_pydantic_dto() -> None:
+    class PydanticUser(BaseModel):
+        age: int
+        name: str
+
+    class UserDTO(PydanticDTO[PydanticUser]):
+        pass
+
+    @post(dto=UserDTO, return_dto=None, signature_namespace={"PydanticUser": PydanticUser})
+    def handler(data: PydanticUser, request: Request) -> dict:
+        schema = request.app.openapi_schema
+        return schema.to_schema()
+
+    app = Litestar(route_handlers=[handler])
+    with TestClient(app=app) as client:
+        data = PydanticUser(name="A", age=10)
+        headers = {"Content-Type": "application/json; charset=utf-8"}
+        received = client.post(
+            "/",
+            content=_model_dump_json(data),
+            headers=headers,
+        )
+        required = next(iter(received.json()["components"]["schemas"].values()))["required"]
+        assert len(required) == 2
+
+
+def test_schema_required_fields_with_dataclass_dto() -> None:
+    @dataclass
+    class DataclassUser:
+        age: int
+        name: str
+
+    class UserDTO(DataclassDTO[DataclassUser]):
+        pass
+
+    @post(dto=UserDTO, return_dto=None, signature_namespace={"DataclassUser": DataclassUser})
+    def handler(data: DataclassUser, request: Request) -> dict:
+        schema = request.app.openapi_schema
+        return schema.to_schema()
+
+    app = Litestar(route_handlers=[handler])
+    with TestClient(app=app) as client:
+        data = DataclassUser(name="A", age=10)
+        headers = {"Content-Type": "application/json; charset=utf-8"}
+        received = client.post(
+            "/",
+            content=msgspec.json.encode(data),
+            headers=headers,
+        )
+        required = next(iter(received.json()["components"]["schemas"].values()))["required"]
+        assert len(required) == 2
+
+
+def test_schema_required_fields_with_msgspec_dto_and_default_fields() -> None:
+    class MsgspecUser(Struct):
+        age: int
+        name: str = "A"
+
+    class UserDTO(MsgspecDTO[MsgspecUser]):
+        pass
+
+    @post(dto=UserDTO, return_dto=None, signature_namespace={"MsgspecUser": MsgspecUser})
+    def handler(data: MsgspecUser, request: Request) -> dict:
+        schema = request.app.openapi_schema
+        return schema.to_schema()
+
+    app = Litestar(route_handlers=[handler])
+    with TestClient(app=app) as client:
+        data = MsgspecUser(name="A", age=10)
+        headers = {"Content-Type": "application/json; charset=utf-8"}
+        received = client.post(
+            "/",
+            content=msgspec.json.encode(data),
+            headers=headers,
+        )
+        required = next(iter(received.json()["components"]["schemas"].values()))["required"]
+        assert required == ["age"]

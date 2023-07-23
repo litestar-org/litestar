@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-__all__ = ("MissingDependencyException", "SerializationException", "LitestarException")
+__all__ = ("MissingDependencyException", "SerializationException", "LitestarException", "LitestarWarning")
 
 
 class LitestarException(Exception):

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import random
 import re
 import string
@@ -25,8 +27,7 @@ if TYPE_CHECKING:
 class BaseModel(_BaseModel):
     """Extend Pydantic's BaseModel to enable ORM mode"""
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 
 # we are going to add a simple "slug" to our model that is a URL safe surrogate key to
@@ -125,7 +126,7 @@ class BlogPostCreate(BaseModel):
 
 # we can optionally override the default `select` used for the repository to pass in
 # specific SQL options such as join details
-async def provide_blog_post_repo(db_session: "AsyncSession") -> BlogPostRepository:
+async def provide_blog_post_repo(db_session: AsyncSession) -> BlogPostRepository:
     """This provides a simple example demonstrating how to override the join options
     for the repository."""
     return BlogPostRepository(session=db_session)

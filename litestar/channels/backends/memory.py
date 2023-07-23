@@ -55,7 +55,7 @@ class MemoryChannelsBackend(ChannelsBackend):
 
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         """Unsubscribe from ``channels``"""
-        self._channels = self._channels - (set(channels))
+        self._channels -= set(channels)
         try:
             for channel in channels:
                 del self._history[channel]

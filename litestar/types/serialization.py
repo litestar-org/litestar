@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from collections import deque
@@ -22,19 +22,19 @@ if TYPE_CHECKING:
 
     from msgspec import Raw, Struct
     from msgspec.msgpack import Ext
-    from pydantic import (
-        BaseModel,
-        ByteSize,
-        ConstrainedBytes,
-        ConstrainedDate,
-        NameEmail,
-        SecretField,
-        StrictBool,
-    )
-    from pydantic.color import Color
     from typing_extensions import TypeAlias
 
-    from litestar.types import DataclassProtocol
+    from litestar.types import DataclassProtocol, TypedDictClass
+
+    try:
+        from pydantic import BaseModel
+    except ImportError:
+        BaseModel = Any  # type: ignore
+
+    try:
+        from attrs import AttrsInstance
+    except ImportError:
+        AttrsInstance = Any  # type: ignore
 
 __all__ = (
     "LitestarEncodableType",
@@ -43,7 +43,7 @@ __all__ = (
     "EncodableStdLibType",
     "EncodableStdLibIPType",
     "EncodableMsgSpecType",
-    "EncodablePydanticType",
+    "DataContainerType",
 )
 
 EncodableBuiltinType: TypeAlias = "None | bool | int | float | str | bytes | bytearray"
@@ -55,8 +55,7 @@ EncodableStdLibIPType: TypeAlias = (
     "IPv4Address | IPv4Interface | IPv4Network | IPv6Address | IPv6Interface | IPv6Network"
 )
 EncodableMsgSpecType: TypeAlias = "Ext | Raw | Struct"
-EncodablePydanticType: TypeAlias = (
-    "BaseModel | ByteSize | ConstrainedBytes | ConstrainedDate | NameEmail | SecretField | StrictBool | Color"
+LitestarEncodableType: TypeAlias = "EncodableBuiltinType | EncodableBuiltinCollectionType | EncodableStdLibType | EncodableStdLibIPType | EncodableMsgSpecType | BaseModel | AttrsInstance"  # pyright: ignore
+DataContainerType: TypeAlias = (
+    "Struct | BaseModel | AttrsInstance | TypedDictClass | DataclassProtocol"  # pyright: ignore
 )
-
-LitestarEncodableType: TypeAlias = "EncodableBuiltinType | EncodableBuiltinCollectionType | EncodableStdLibType | EncodableStdLibIPType | EncodableMsgSpecType | EncodablePydanticType"

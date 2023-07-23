@@ -9,9 +9,9 @@ from typing_extensions import Annotated
 
 from litestar import get, post
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory._backends.utils import RenameStrategies
-from litestar.dto.factory.types import RenameStrategy
+from litestar.dto import DTOConfig
+from litestar.dto._utils import RenameStrategies
+from litestar.dto.types import RenameStrategy
 from litestar.testing import create_test_client
 
 
@@ -105,9 +105,7 @@ def book_json_data() -> Callable[[RenameStrategy, BookAuthorTestData], Tuple[Dic
 
 @pytest.mark.parametrize(
     "rename_strategy",
-    [
-        ("camel"),
-    ],
+    ("camel",),
 )
 def test_fields_alias_generator_sqlalchemy(
     rename_strategy: RenameStrategy,
@@ -157,7 +155,7 @@ from sqlalchemy.ext.associationproxy import AssociationProxy
 
 from litestar import get
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import dto_field
+from litestar.dto import dto_field
 
 class Base(DeclarativeBase):
     pass
@@ -292,7 +290,7 @@ from sqlalchemy.sql import SQLColumnExpression
 
 from litestar import post
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import dto_field
+from litestar.dto import dto_field
 
 class Base(DeclarativeBase):
     pass
@@ -338,7 +336,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, sessionmaker
 
 from litestar import Litestar, post
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig
+from litestar.dto import DTOConfig
 
 engine = create_engine('sqlite:///:memory:', echo=True)
 Session = sessionmaker(bind=engine, expire_on_commit=False)

@@ -69,9 +69,9 @@ def test_by_alias() -> None:
         "title": "RequestWithAlias",
     }
     assert schemas["ResponseWithAlias"] == {
-        "properties": {"first": {"type": "string"}},
+        "properties": {"second": {"type": "string"}},
         "type": "object",
-        "required": ["first"],
+        "required": ["second"],
         "title": "ResponseWithAlias",
     }
 

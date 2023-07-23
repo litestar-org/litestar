@@ -11,7 +11,7 @@ Here's a reminder of the output:
 
 Given that we didn't explicitly exclude it from the response, each of the ``Person`` objects in the ``children``
 collection should have an empty ``children`` collection. The reason they do not is due to
-:attr:`max_nested_depth <litestar.dto.factory.DTOConfig.max_nested_depth>` and its default value of ``1``.
+:attr:`max_nested_depth <litestar.dto.config.DTOConfig.max_nested_depth>` and its default value of ``1``.
 
 The ``max_nested_depth`` attribute is used to limit the depth of nested objects that are
 included in the response. In this case, the ``Person`` object has a ``children`` collection, which is a collection of

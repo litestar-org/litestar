@@ -18,10 +18,10 @@ from sqlalchemy.orm import (
     RelationshipProperty,
 )
 
-from litestar.dto.factory.abc import AbstractDTOFactory
-from litestar.dto.factory.data_structures import DTOFieldDefinition
-from litestar.dto.factory.field import DTO_FIELD_META_KEY, DTOField, Mark
-from litestar.dto.factory.utils import get_model_type_hints
+from litestar.dto._utils import get_model_type_hints
+from litestar.dto.base_factory import AbstractDTOFactory
+from litestar.dto.data_structures import DTOFieldDefinition
+from litestar.dto.field import DTO_FIELD_META_KEY, DTOField, Mark
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
@@ -37,7 +37,7 @@ __all__ = ("SQLAlchemyDTO",)
 
 T = TypeVar("T", bound="DeclarativeBase | Collection[DeclarativeBase]")
 
-ElementType: TypeAlias = "Column[Any] | RelationshipProperty[Any]"
+ElementType: TypeAlias = "Column | RelationshipProperty"
 SQLA_NS = {**vars(orm), **vars(sql)}
 
 
@@ -225,7 +225,7 @@ def _detect_defaults(elem: ElementType) -> tuple[Any, Any]:
             def default_factory(d: Any = sqla_default) -> Any:
                 return d.arg({})
 
-        elif sqla_default.is_sequence:
+        elif sqla_default.is_sequence or sqla_default.is_sentinel:
             # SQLAlchemy sequences represent server side defaults
             # so we cannot infer a reasonable default value for
             # them on the client side

@@ -1,17 +1,26 @@
 import json
-from typing import Any, Callable, Dict, Union
+from typing import Callable, Dict
 
 import pytest
 from pydantic import BaseModel
 
 from litestar import HttpMethod, Litestar, get
+from litestar.contrib.pydantic import _model_dump
 from litestar.datastructures import Cookie, MultiDict
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.testing import RequestFactory
-from tests import Pet, PetFactory
+from litestar.types import DataContainerType
+from tests import (
+    AttrsPerson,
+    MsgSpecStructPerson,
+    PydanticPerson,
+    PydanticPersonFactory,
+    PydanticPetFactory,
+    VanillaDataClassPerson,
+)
 
 _DEFAULT_REQUEST_FACTORY_URL = "http://test.org:3000/"
-pet = PetFactory.build()
+pet = PydanticPetFactory.build()
 
 
 async def test_request_factory_empty_body() -> None:
@@ -55,21 +64,22 @@ def test_request_factory_build_headers() -> None:
         assert headers[decoded_key] == decoded_value
 
 
-@pytest.mark.parametrize("data", [pet, pet.dict()])
-async def test_request_factory_create_with_data(data: Union[Pet, Dict[str, Any]]) -> None:
+@pytest.mark.parametrize("data_cls", [PydanticPerson, VanillaDataClassPerson, AttrsPerson, MsgSpecStructPerson])
+async def test_request_factory_create_with_data(data_cls: DataContainerType) -> None:
+    person = _model_dump(PydanticPersonFactory.build())
     request = RequestFactory()._create_request_with_data(
         HttpMethod.POST,
         "/",
-        data=data,
+        data=data_cls(**person),  # type: ignore
     )
     body = await request.body()
-    assert json.loads(body.decode()) == pet.dict()
+    assert json.loads(body.decode()) == person
 
 
 @pytest.mark.parametrize(
     "request_media_type, verify_data",
     [
-        [RequestEncodingType.JSON, lambda data: json.loads(data) == pet.dict()],
+        [RequestEncodingType.JSON, lambda data: json.loads(data) == _model_dump(pet)],
         [RequestEncodingType.MULTI_PART, lambda data: "Content-Disposition" in data],
         [
             RequestEncodingType.URL_ENCODED,
@@ -83,7 +93,7 @@ async def test_request_factory_create_with_content_type(
     request = RequestFactory()._create_request_with_data(
         HttpMethod.POST,
         "/",
-        data=pet.dict(),
+        data=_model_dump(pet),
         request_media_type=request_media_type,
     )
     assert request.headers["Content-Type"].startswith(request_media_type.value)
@@ -187,4 +197,4 @@ async def test_request_factory_post_put_patch(factory: Callable, method: HttpMet
     assert len(request.headers.keys()) == 3
     assert request.headers.get("header1") == "value1"
     body = await request.body()
-    assert json.loads(body) == pet.dict()
+    assert json.loads(body) == _model_dump(pet)

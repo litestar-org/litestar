@@ -38,7 +38,7 @@ if TYPE_CHECKING:
         RouteHandlerType,
         TypeEncodersMap,
     )
-    from litestar.types.composite_types import Dependencies, ResponseHeaders
+    from litestar.types.composite_types import Dependencies, ResponseHeaders, TypeDecodersSequence
     from litestar.types.empty import EmptyType
 
 
@@ -73,6 +73,7 @@ class Router:
         "signature_namespace",
         "tags",
         "type_encoders",
+        "type_decoders",
     )
 
     def __init__(
@@ -100,6 +101,7 @@ class Router:
         signature_namespace: Mapping[str, Any] | None = None,
         tags: Sequence[str] | None = None,
         type_encoders: TypeEncodersMap | None = None,
+        type_decoders: TypeDecodersSequence | None = None,
     ) -> None:
         """Initialize a ``Router``.
 
@@ -146,6 +148,7 @@ class Router:
             tags: A sequence of string tags that will be appended to the schema of all route handlers under the
                 application.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+            type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
         """
 
         self.after_request = AsyncCallable(after_request) if after_request else None  # type: ignore[arg-type]
@@ -172,6 +175,7 @@ class Router:
         self.tags = list(tags or [])
         self.registered_route_handler_ids: set[int] = set()
         self.type_encoders = dict(type_encoders) if type_encoders is not None else None
+        self.type_decoders = list(type_decoders) if type_decoders is not None else None
 
         for route_handler in route_handlers or []:
             self.register(value=route_handler)

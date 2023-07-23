@@ -1,23 +1,20 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Protocol, TypedDict, TypeVar, Union, runtime_checkable
-
-from pydantic import BaseModel
-
-from litestar.types.protocols import DataclassProtocol
+from typing import TYPE_CHECKING, Any, Protocol, TypeVar, Union, runtime_checkable
 
 if TYPE_CHECKING:
-    from typing_extensions import TypeGuard
-
+    from litestar._openapi.schema_generation import SchemaCreator
     from litestar.config.app import AppConfig
     from litestar.dto.interface import DTOInterface
+    from litestar.dto.types import ForType
     from litestar.openapi.spec import Schema
     from litestar.typing import FieldDefinition
 
+
 __all__ = ("SerializationPluginProtocol", "InitPluginProtocol", "OpenAPISchemaPluginProtocol", "PluginProtocol")
 
-ModelT = TypeVar("ModelT")
-DataContainerT = TypeVar("DataContainerT", bound=Union[BaseModel, DataclassProtocol, TypedDict])  # type: ignore[valid-type]
+
+T = TypeVar("T")
 
 
 @runtime_checkable
@@ -89,13 +86,13 @@ class SerializationPluginProtocol(Protocol):
 
 
 @runtime_checkable
-class OpenAPISchemaPluginProtocol(Protocol[ModelT]):
+class OpenAPISchemaPluginProtocol(Protocol):
     """Plugin to extend the support of OpenAPI schema generation for non-library types."""
 
     __slots__ = ()
 
     @staticmethod
-    def is_plugin_supported_type(value: Any) -> TypeGuard[ModelT]:
+    def is_plugin_supported_type(value: Any) -> bool:
         """Given a value of indeterminate type, determine if this value is supported by the plugin.
 
         Args:
@@ -106,11 +103,13 @@ class OpenAPISchemaPluginProtocol(Protocol[ModelT]):
         """
         raise NotImplementedError()
 
-    def to_openapi_schema(self, model_class: type[ModelT]) -> Schema:
-        """Given a model class, transform it into an OpenAPI schema class.
+    def to_openapi_schema(self, annotation: Any, schema_creator: SchemaCreator, dto_for: ForType | None) -> Schema:
+        """Given a type annotation, transform it into an OpenAPI schema class.
 
         Args:
-            model_class: A model class.
+            annotation: A type annotation.
+            schema_creator: An instance of the openapi SchemaCreator.
+            dto_for: The type of the DTO if any.
 
         Returns:
             An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.

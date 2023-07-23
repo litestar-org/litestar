@@ -3,8 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from litestar import Litestar, post
-from litestar.dto.factory import DTOConfig
-from litestar.dto.factory.stdlib.dataclass import DataclassDTO
+from litestar.dto import DataclassDTO, DTOConfig
 
 
 @dataclass

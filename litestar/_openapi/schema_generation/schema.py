@@ -4,6 +4,7 @@ from collections import deque
 from copy import copy
 from dataclasses import MISSING, fields
 from datetime import date, datetime, time, timedelta
+from decimal import Decimal
 from enum import EnumMeta
 from ipaddress import IPv4Address, IPv4Interface, IPv4Network, IPv6Address, IPv6Interface, IPv6Network
 from pathlib import Path
@@ -32,7 +33,7 @@ from typing import (
 )
 from uuid import UUID
 
-from _decimal import Decimal
+from msgspec.structs import FieldInfo
 from msgspec.structs import fields as msgspec_struct_fields
 from typing_extensions import NotRequired, Required, get_args, get_type_hints
 
@@ -43,10 +44,9 @@ from litestar._openapi.schema_generation.constrained_fields import (
 )
 from litestar._openapi.schema_generation.examples import create_examples_for_field
 from litestar._openapi.schema_generation.utils import sort_schemas_and_references
-from litestar.constants import UNDEFINED_SENTINELS
 from litestar.datastructures import UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.openapi.spec import Example, Reference
+from litestar.openapi.spec import Reference
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.schema import Schema, SchemaDataContainer
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
@@ -55,14 +55,13 @@ from litestar.serialization import encode_json
 from litestar.types import DataclassProtocol, Empty, TypedDictClass
 from litestar.typing import FieldDefinition
 from litestar.utils.predicates import (
-    is_attrs_class,
     is_class_and_subclass,
     is_dataclass_class,
     is_optional_union,
     is_pydantic_constrained_field,
-    is_pydantic_model_class,
     is_struct_class,
     is_typed_dict,
+    is_undefined_sentinel,
 )
 from litestar.utils.typing import get_origin_or_inner_type, make_non_optional_union
 
@@ -72,161 +71,26 @@ if TYPE_CHECKING:
     from litestar.dto.types import ForType
     from litestar.plugins import OpenAPISchemaPluginProtocol
 
-    try:
-        from pydantic import (
-            BaseModel,
-            ConstrainedBytes,
-            ConstrainedDate,
-            ConstrainedDecimal,
-            ConstrainedFloat,
-            ConstrainedFrozenSet,
-            ConstrainedInt,
-            ConstrainedList,
-            ConstrainedSet,
-            ConstrainedStr,
-        )
-        from pydantic.fields import ModelField
-    except ImportError:
-        BaseModel = Any  # type: ignore
-        ConstrainedBytes = Any  # type: ignore
-        ConstrainedDate = Any  # type: ignore
-        ConstrainedDecimal = Any  # type: ignore
-        ConstrainedFloat = Any  # type: ignore
-        ConstrainedFrozenSet = Any  # type: ignore
-        ConstrainedInt = Any  # type: ignore
-        ConstrainedList = Any  # type: ignore
-        ConstrainedSet = Any  # type: ignore
-        ConstrainedStr = Any  # type: ignore
-        ModelField = Any  # type: ignore
-
-    try:
-        from attrs import AttrsInstance
-    except ImportError:
-        AttrsInstance = Any  # type: ignore
-try:
-    import pydantic
-
-    PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
-        pydantic.UUID1: Schema(
-            type=OpenAPIType.STRING,
-            format=OpenAPIFormat.UUID,
-            description="UUID1 string",
-        ),
-        pydantic.UUID3: Schema(
-            type=OpenAPIType.STRING,
-            format=OpenAPIFormat.UUID,
-            description="UUID3 string",
-        ),
-        pydantic.UUID4: Schema(
-            type=OpenAPIType.STRING,
-            format=OpenAPIFormat.UUID,
-            description="UUID4 string",
-        ),
-        pydantic.UUID5: Schema(
-            type=OpenAPIType.STRING,
-            format=OpenAPIFormat.UUID,
-            description="UUID5 string",
-        ),
-        pydantic.AnyHttpUrl: Schema(
-            type=OpenAPIType.STRING, format=OpenAPIFormat.URL, description="must be a valid HTTP based URL"
-        ),
-        pydantic.AnyUrl: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URL),
-        pydantic.ByteSize: Schema(type=OpenAPIType.INTEGER),
-        pydantic.DirectoryPath: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI_REFERENCE),
-        pydantic.EmailStr: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL),
-        pydantic.FilePath: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI_REFERENCE),
-        pydantic.HttpUrl: Schema(
-            type=OpenAPIType.STRING,
-            format=OpenAPIFormat.URL,
-            description="must be a valid HTTP based URL",
-            max_length=2083,
-        ),
-        pydantic.IPvAnyAddress: Schema(
-            one_of=[
-                Schema(
-                    type=OpenAPIType.STRING,
-                    format=OpenAPIFormat.IPV4,
-                    description="IPv4 address",
-                ),
-                Schema(
-                    type=OpenAPIType.STRING,
-                    format=OpenAPIFormat.IPV6,
-                    description="IPv6 address",
-                ),
-            ]
-        ),
-        pydantic.IPvAnyInterface: Schema(
-            one_of=[
-                Schema(
-                    type=OpenAPIType.STRING,
-                    format=OpenAPIFormat.IPV4,
-                    description="IPv4 interface",
-                ),
-                Schema(
-                    type=OpenAPIType.STRING,
-                    format=OpenAPIFormat.IPV6,
-                    description="IPv6 interface",
-                ),
-            ]
-        ),
-        pydantic.IPvAnyNetwork: Schema(
-            one_of=[
-                Schema(
-                    type=OpenAPIType.STRING,
-                    format=OpenAPIFormat.IPV4,
-                    description="IPv4 network",
-                ),
-                Schema(
-                    type=OpenAPIType.STRING,
-                    format=OpenAPIFormat.IPV6,
-                    description="IPv6 network",
-                ),
-            ]
-        ),
-        pydantic.Json: Schema(type=OpenAPIType.OBJECT, format=OpenAPIFormat.JSON_POINTER),
-        pydantic.NameEmail: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL, description="Name and email"),
-        pydantic.NegativeFloat: Schema(type=OpenAPIType.NUMBER, exclusive_maximum=0.0),
-        pydantic.NegativeInt: Schema(type=OpenAPIType.INTEGER, exclusive_maximum=0),
-        pydantic.NonNegativeInt: Schema(type=OpenAPIType.INTEGER, minimum=0),
-        pydantic.NonPositiveFloat: Schema(type=OpenAPIType.NUMBER, maximum=0.0),
-        pydantic.PaymentCardNumber: Schema(type=OpenAPIType.STRING, min_length=12, max_length=19),
-        pydantic.PositiveFloat: Schema(type=OpenAPIType.NUMBER, exclusive_minimum=0.0),
-        pydantic.PositiveInt: Schema(type=OpenAPIType.INTEGER, exclusive_minimum=0),
-        pydantic.PostgresDsn: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI, description="postgres DSN"),
-        pydantic.PyObject: Schema(
-            type=OpenAPIType.STRING,
-            description="dot separated path identifying a python object, e.g. 'decimal.Decimal'",
-        ),
-        pydantic.RedisDsn: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI, description="redis DSN"),
-        pydantic.SecretBytes: Schema(type=OpenAPIType.STRING),
-        pydantic.SecretStr: Schema(type=OpenAPIType.STRING),
-        pydantic.StrictBool: Schema(type=OpenAPIType.BOOLEAN),
-        pydantic.StrictBytes: Schema(type=OpenAPIType.STRING),
-        pydantic.StrictFloat: Schema(type=OpenAPIType.NUMBER),
-        pydantic.StrictInt: Schema(type=OpenAPIType.INTEGER),
-        pydantic.StrictStr: Schema(type=OpenAPIType.STRING),
-    }
-except ImportError:
-    PYDANTIC_TYPE_MAP = {}
-
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
+    "content_encoding": "contentEncoding",
     "default": "default",
-    "multiple_of": "multipleOf",
-    "ge": "minimum",
-    "le": "maximum",
-    "lt": "exclusiveMaximum",
-    "gt": "exclusiveMinimum",
-    "max_length": "maxLength",
-    "min_length": "minLength",
-    "max_items": "maxItems",
-    "min_items": "minItems",
-    "pattern": "pattern",
-    "title": "title",
     "description": "description",
+    "enum": "enum",
     "examples": "examples",
     "external_docs": "externalDocs",
-    "content_encoding": "contentEncoding",
+    "format": "format",
+    "ge": "minimum",
+    "gt": "exclusiveMinimum",
+    "le": "maximum",
+    "lt": "exclusiveMaximum",
+    "max_items": "maxItems",
+    "max_length": "maxLength",
+    "min_items": "minItems",
+    "min_length": "minLength",
+    "multiple_of": "multipleOf",
+    "pattern": "pattern",
+    "title": "title",
 }
 
 TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
@@ -274,8 +138,6 @@ TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
         type=OpenAPIType.STRING,
         content_media_type="application/octet-stream",
     ),
-    # pydantic types
-    **PYDANTIC_TYPE_MAP,
 }
 
 
@@ -411,10 +273,6 @@ class SchemaCreator:
             result = self.for_optional_field(field_definition)
         elif field_definition.is_union:
             result = self.for_union_field(field_definition)
-        elif is_pydantic_model_class(field_definition.annotation):
-            result = self.for_pydantic_model(field_definition.annotation, dto_for)
-        elif is_attrs_class(field_definition.annotation):
-            result = self.for_attrs_class(field_definition.annotation, dto_for)
         elif is_struct_class(field_definition.annotation):
             result = self.for_struct_class(field_definition.annotation, dto_for)
         elif is_dataclass_class(field_definition.annotation):
@@ -424,7 +282,7 @@ class SchemaCreator:
         elif plugins_for_annotation := [
             plugin for plugin in self.plugins if plugin.is_plugin_supported_type(field_definition.annotation)
         ]:
-            result = self.for_plugin(field_definition, plugins_for_annotation[0])
+            result = self.for_plugin(field_definition, plugins_for_annotation[0], dto_for)
         elif is_pydantic_constrained_field(field_definition.annotation) or (
             isinstance(field_definition.kwarg_definition, (ParameterKwarg, BodyKwarg))
             and field_definition.kwarg_definition.is_constrained
@@ -474,9 +332,9 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        return Schema(
-            one_of=sort_schemas_and_references(list(map(self.for_field_definition, field_definition.inner_types or [])))
-        )
+        inner_types = [f for f in (field_definition.inner_types or []) if not is_undefined_sentinel(f.annotation)]
+        values = list(map(self.for_field_definition, inner_types))
+        return Schema(one_of=sort_schemas_and_references(values))
 
     def for_object_type(self, field_definition: FieldDefinition) -> Schema:
         """Create schema for object types (dict, Mapping, list, Sequence etc.) types.
@@ -567,17 +425,20 @@ class SchemaCreator:
             },
         )
 
-    def for_plugin(self, field_definition: FieldDefinition, plugin: OpenAPISchemaPluginProtocol) -> Schema | Reference:
+    def for_plugin(
+        self, field_definition: FieldDefinition, plugin: OpenAPISchemaPluginProtocol, dto_for: ForType | None = None
+    ) -> Schema | Reference:
         """Create a schema using a plugin.
 
         Args:
             field_definition: A signature field instance.
             plugin: A plugin for the field type.
+            dto_for: The type of DTO to generate a schema for if any.
 
         Returns:
             A schema instance.
         """
-        schema = plugin.to_openapi_schema(field_definition.annotation)
+        schema = plugin.to_openapi_schema(annotation=field_definition.annotation, schema_creator=self, dto_for=dto_for)
         if isinstance(schema, SchemaDataContainer):
             return self.for_field_definition(
                 FieldDefinition.from_kwarg(
@@ -590,69 +451,6 @@ class SchemaCreator:
             )
         return schema  # pragma: no cover
 
-    def for_pydantic_model(self, annotation: type[BaseModel], dto_for: ForType | None) -> Schema:
-        """Create a schema object for a given pydantic model class.
-
-        Args:
-            annotation: A pydantic model class.
-            dto_for: The type of DTO to generate a schema for.
-
-        Returns:
-            A schema instance.
-        """
-        annotation_hints = get_type_hints(annotation, include_extras=True)
-        model_config = getattr(annotation, "__config__", getattr(annotation, "model_config", Empty))
-        if isinstance(model_config, dict):
-            title = model_config.get("title")
-            example = model_config.get("example")
-        else:
-            title = getattr(model_config, "title", None)
-            example = getattr(model_config, "example", None)
-
-        return Schema(
-            required=sorted(self.get_field_name(field) for field in annotation.__fields__.values() if field.required),
-            properties={
-                self.get_field_name(f): self.for_field_definition(
-                    FieldDefinition.from_kwarg(
-                        annotation=annotation_hints[f.name], name=self.get_field_name(f), default=f.field_info
-                    )
-                )
-                for f in annotation.__fields__.values()
-            },
-            type=OpenAPIType.OBJECT,
-            title=title or _get_type_schema_name(annotation, dto_for),
-            examples=[Example(example)] if example else None,
-        )
-
-    def for_attrs_class(self, annotation: type[AttrsInstance], dto_for: ForType | None) -> Schema:
-        """Create a schema object for a given attrs class.
-
-        Args:
-            annotation: An attrs class.
-            dto_for: The type of DTO to generate a schema for.
-
-        Returns:
-            A schema instance.
-        """
-        from attr import NOTHING
-        from attrs import fields_dict
-
-        annotation_hints = get_type_hints(annotation, include_extras=True)
-        return Schema(
-            required=sorted(
-                [
-                    field_name
-                    for field_name, attribute in fields_dict(annotation).items()
-                    if attribute.default is NOTHING and not is_optional_union(annotation_hints[field_name])
-                ]
-            ),
-            properties={
-                k: self.for_field_definition(FieldDefinition.from_kwarg(v, k)) for k, v in annotation_hints.items()
-            },
-            type=OpenAPIType.OBJECT,
-            title=_get_type_schema_name(annotation, dto_for),
-        )
-
     def for_struct_class(self, annotation: type[Struct], dto_for: ForType | None) -> Schema:
         """Create a schema object for a given msgspec.Struct class.
 
@@ -663,12 +461,16 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
+
+        def _is_field_required(field: FieldInfo) -> bool:
+            return field.required or field.default_factory is Empty
+
         return Schema(
             required=sorted(
                 [
                     field.encode_name
                     for field in msgspec_struct_fields(annotation)
-                    if field.required and not is_optional_union(field.type)
+                    if _is_field_required(field=field) and not is_optional_union(field.type)
                 ]
             ),
             properties={
@@ -782,17 +584,6 @@ class SchemaCreator:
             )
         return schema
 
-    def get_field_name(self, field_definition: ModelField) -> str:
-        """Get the preferred name for a model field.
-
-        Args:
-            field_definition: A model field instance.
-
-        Returns:
-            The preferred name for the field.
-        """
-        return (field_definition.alias or field_definition.name) if self.prefer_alias else field_definition.name
-
     def process_schema_result(self, field: FieldDefinition, schema: Schema) -> Schema | Reference:
         if field.kwarg_definition and field.is_const and field.has_default and schema.const is None:
             schema.const = field.default
@@ -800,7 +591,7 @@ class SchemaCreator:
         if field.kwarg_definition:
             for kwarg_definition_key, schema_key in KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
                 if (value := getattr(field.kwarg_definition, kwarg_definition_key, Empty)) and (
-                    not isinstance(value, Hashable) or value not in UNDEFINED_SENTINELS
+                    not isinstance(value, Hashable) or not is_undefined_sentinel(value)
                 ):
                     setattr(schema, schema_key, value)
 

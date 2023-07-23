@@ -182,3 +182,15 @@ def test_route_handler_method_view(controller: Type[Controller]) -> None:
         "/second/send",
         "/second/modify",
     ]
+
+
+def test_missing_path_param_type(controller: Type[Controller]) -> None:
+    missing_path_type = "/missing_path_type/{path_type}"
+
+    @get(path=missing_path_type)
+    def handler() -> None:
+        ...
+
+    with pytest.raises(ImproperlyConfiguredException) as exc:
+        Router(path="/", route_handlers=[handler])
+    assert missing_path_type in exc.value.args[0]

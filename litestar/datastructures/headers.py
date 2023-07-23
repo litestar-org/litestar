@@ -2,6 +2,7 @@ import re
 from abc import ABC, abstractmethod
 from contextlib import suppress
 from copy import copy
+from dataclasses import dataclass
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -13,22 +14,25 @@ from typing import (
     Mapping,
     MutableMapping,
     Optional,
+    Pattern,
     Tuple,
     Union,
     cast,
 )
 
 from multidict import CIMultiDict, CIMultiDictProxy, MultiMapping
-from pydantic import BaseModel, Extra, Field, ValidationError, validator
-from typing_extensions import Annotated
+from typing_extensions import get_type_hints
 
 from litestar._multipart import parse_content_header
 from litestar._parsers import parse_headers
 from litestar.datastructures.multi_dicts import MultiMixin
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.dto._utils import resolve_model_type
+from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 
 __all__ = ("Accept", "CacheControlHeader", "ETag", "Header", "Headers", "MutableScopeHeaders")
 
+from litestar.typing import FieldDefinition
+from litestar.utils.dataclass import simple_asdict
 
 if TYPE_CHECKING:
     from litestar.types.asgi_types import (
@@ -39,6 +43,7 @@ if TYPE_CHECKING:
     )
 
 ETAG_RE = re.compile(r'([Ww]/)?"(.+)"')
+PRINTABLE_ASCII_RE: Pattern[str] = re.compile(r"^[ -~]+$")
 
 
 def _encode_headers(headers: Iterable[Tuple[str, str]]) -> "RawHeadersList":
@@ -65,7 +70,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
             super().__init__(CIMultiDict(headers_))
         else:
             super().__init__(headers)
-        self._header_list: Optional["RawHeadersList"] = None
+        self._header_list: Optional[RawHeadersList] = None
 
     @classmethod
     def from_scope(cls, scope: "HeaderScope") -> "Headers":
@@ -107,7 +112,7 @@ class MutableScopeHeaders(MutableMapping):
         Args:
             scope: The ASGI connection scope.
         """
-        self.headers: "RawHeadersList"
+        self.headers: RawHeadersList
         if scope is not None:
             if not isinstance(scope["headers"], list):
                 scope["headers"] = list(scope["headers"])
@@ -231,19 +236,11 @@ class MutableScopeHeaders(MutableMapping):
         return iter(h[0].decode("latin-1") for h in self.headers)
 
 
-class Header(BaseModel, ABC):
+@dataclass
+class Header(ABC):
     """An abstract type for HTTP headers."""
 
     HEADER_NAME: ClassVar[str] = ""
-
-    class Config:
-        allow_population_by_field_name = True
-        extra = Extra.forbid
-
-        @classmethod
-        def alias_generator(cls, field_name: str) -> str:
-            """Generate field-aliases by replacing dashes with underscores in header-names."""
-            return field_name.replace("_", "-")
 
     documentation_only: bool = False
     """Defines the header instance as for OpenAPI documentation purpose only."""
@@ -273,6 +270,7 @@ class Header(BaseModel, ABC):
         return (f"{self.HEADER_NAME}: " if include_header_name else "") + self._get_header_value()
 
 
+@dataclass
 class CacheControlHeader(Header):
     """A ``cache-control`` header."""
 
@@ -303,17 +301,14 @@ class CacheControlHeader(Header):
     stale_while_revalidate: Optional[int] = None
     """Accessor for the ``stale-while-revalidate`` directive."""
 
+    _field_definitions: ClassVar[Optional[Dict[str, FieldDefinition]]] = None
+
     def _get_header_value(self) -> str:
         """Get the header value as string."""
 
         cc_items = [
-            key if isinstance(value, bool) else f"{key}={value}"
-            for key, value in self.dict(
-                exclude_unset=True,
-                exclude_none=True,
-                by_alias=True,
-                exclude={"documentation_only"},
-            ).items()
+            key.replace("_", "-") if isinstance(value, bool) else f"{key.replace('_', '-')}={value}"
+            for key, value in simple_asdict(self, exclude_none=True, exclude={"documentation_only"}).items()
         ]
         return ", ".join(cc_items)
 
@@ -330,18 +325,23 @@ class CacheControlHeader(Header):
 
         cc_items = [v.strip() for v in header_value.split(",")]
         kwargs: Dict[str, Any] = {}
+        field_definitions = cls._get_field_definitions()
         for cc_item in cc_items:
             key_value = cc_item.split("=")
+            key_value[0] = key_value[0].replace("-", "_")
             if len(key_value) == 1:
                 kwargs[key_value[0]] = True
             elif len(key_value) == 2:
-                kwargs[key_value[0]] = key_value[1]
+                key, value = key_value
+                if key not in field_definitions:
+                    raise ImproperlyConfiguredException("Invalid cache-control header")
+                kwargs[key] = cls._convert_to_type(value, field_definition=field_definitions[key])
             else:
                 raise ImproperlyConfiguredException("Invalid cache-control header value")
 
         try:
             return CacheControlHeader(**kwargs)
-        except ValidationError as exc:
+        except TypeError as exc:
             raise ImproperlyConfiguredException from exc
 
     @classmethod
@@ -352,14 +352,53 @@ class CacheControlHeader(Header):
 
         return cls(no_store=True)
 
+    @classmethod
+    def _get_field_definitions(cls) -> Dict[str, FieldDefinition]:
+        """Get the type annotations for the ``CacheControlHeader`` class properties.
 
+        This is needed due to the conversion from pydantic models to dataclasses. Dataclasses do not support
+        automatic conversion of types like pydantic models do.
+
+        Returns:
+            A dictionary of type annotations
+
+        """
+
+        if cls._field_definitions is None:
+            cls._field_definitions = {}
+            for key, value in get_type_hints(cls, include_extras=True).items():
+                definition = FieldDefinition.from_kwarg(annotation=value, name=key)
+                # resolve_model_type so that field_definition.raw has the real raw type e.g. <class 'bool'>
+                cls._field_definitions[key] = resolve_model_type(definition)
+        return cls._field_definitions
+
+    @classmethod
+    def _convert_to_type(cls, value: str, field_definition: FieldDefinition) -> Any:
+        """Convert the value to the expected type.
+
+        Args:
+            value: the value of the cache-control directive
+            field_definition: the field definition for the value to convert
+
+        Returns:
+            The value converted to the expected type
+        """
+        # bool values shouldn't be initiated since they should have been caught earlier in the from_header method and
+        # set with a value of True
+        expected_type = field_definition.raw
+        if expected_type is bool:
+            raise ImproperlyConfiguredException("Invalid cache-control header value")
+        return expected_type(value)
+
+
+@dataclass
 class ETag(Header):
     """An ``etag`` header."""
 
     HEADER_NAME: ClassVar[str] = "etag"
 
     weak: bool = False
-    value: Annotated[Optional[str], Field(regex=r"^[ -~]+$")] = None  # only ASCII characters
+    value: Optional[str] = None  # only ASCII characters
 
     def _get_header_value(self) -> str:
         value = f'"{self.value}"'
@@ -377,15 +416,14 @@ class ETag(Header):
         weak, value = match.group(1, 2)
         try:
             return cls(weak=bool(weak), value=value)
-        except ValidationError as exc:
+        except ValueError as exc:
             raise ImproperlyConfiguredException from exc
 
-    @validator("value", always=True)
-    def validate_value(cls, value: Any, values: Dict[str, Any]) -> Any:
-        """Ensure that either value is set or the instance is for ``documentation_only``."""
-        if values.get("documentation_only") or value is not None:
-            return value
-        raise ValueError("value must be set if documentation_only is false")
+    def __post_init__(self) -> None:
+        if self.documentation_only is False and self.value is None:
+            raise ValidationException("value must be set if documentation_only is false")
+        if self.value and not PRINTABLE_ASCII_RE.fullmatch(self.value):
+            raise ValidationException("value must only contain ASCII printable characters")
 
 
 class MediaTypeHeader:

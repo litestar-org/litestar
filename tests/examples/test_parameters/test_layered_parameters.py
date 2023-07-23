@@ -49,7 +49,7 @@ from litestar.testing import TestClient
 def test_layered_parameters(params: Dict[str, Any], status_code: int, expected: Dict[str, Any]) -> None:
     with TestClient(app=app) as client:
         client.cookies = params.pop("cookies")
-        res = client.get("/router/controller/11", **params)
-        assert res.status_code == status_code, res.json()
+        response = client.get("/router/controller/11", **params)
+        assert response.status_code == status_code, response.json()
         if expected:
-            assert res.json() == expected
+            assert response.json() == expected

@@ -21,7 +21,6 @@ else:
     import rich_click as click
     from rich_click import Context, command, option
 
-
 __all__ = ("info_command", "routes_command", "run_command")
 
 if TYPE_CHECKING:
@@ -60,17 +59,20 @@ def info_command(app: Litestar) -> None:
 
 @command(name="run")
 @option("-r", "--reload", help="Reload server on changes", default=False, is_flag=True)
+@option("-R", "--reload-dir", help="Directories to watch for file changes", multiple=True)
 @option("-p", "--port", help="Serve under this port", type=int, default=8000, show_default=True)
 @option(
-    "-wc",
+    "-W",
+    "--wc",
     "--web-concurrency",
     help="The number of HTTP workers to launch",
     type=click.IntRange(min=1, max=multiprocessing.cpu_count() + 1),
     show_default=True,
     default=1,
 )
-@option("--host", help="Server under this host", default="127.0.0.1", show_default=True)
+@option("-H", "--host", help="Server under this host", default="127.0.0.1", show_default=True)
 @option(
+    "-F",
     "--fd",
     "--file-descriptor",
     help="Bind to a socket from this file descriptor.",
@@ -78,20 +80,19 @@ def info_command(app: Litestar) -> None:
     default=None,
     show_default=True,
 )
-@option("--uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
-@option("--debug", help="Run app in debug mode", is_flag=True)
-@option("--pdb", "use_pdb", help="Drop into PDB on an exception", is_flag=True)
-@option("--reload-dir", help="Directories to watch for file changes", multiple=True)
+@option("-U", "--uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
+@option("-d", "--debug", help="Run app in debug mode", is_flag=True)
+@option("-P", "--pdb", "--use-pdb", help="Drop into PDB on an exception", is_flag=True)
 def run_command(
     reload: bool,
     port: int,
-    web_concurrency: int,
+    wc: int,
     host: str,
     fd: int | None,
     uds: str | None,
     debug: bool,
     reload_dir: tuple[str, ...],
-    use_pdb: bool,
+    pdb: bool,
     ctx: Context,
 ) -> None:
     """Run a Litestar app.
@@ -106,7 +107,7 @@ def run_command(
     if debug:
         os.environ["LITESTAR_DEBUG"] = "1"
 
-    if use_pdb:
+    if pdb:
         os.environ["LITESTAR_PDB"] = "1"
 
     env = cast(LitestarEnv, ctx.obj())
@@ -119,7 +120,7 @@ def run_command(
     fd = env.fd if env.fd is not None else fd
     uds = env.uds or uds
     reload = env.reload or reload or bool(reload_dirs)
-    workers = env.web_concurrency or web_concurrency
+    workers = env.web_concurrency or wc
 
     console.rule("[yellow]Starting server process", align="left")
 

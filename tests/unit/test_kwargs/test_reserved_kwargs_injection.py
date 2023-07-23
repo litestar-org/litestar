@@ -1,5 +1,6 @@
 from typing import Any, List, Optional, Type, cast
 
+import pydantic
 import pytest
 from polyfactory.factories.pydantic_factory import ModelFactory
 from pydantic import BaseModel, Field
@@ -16,6 +17,7 @@ from litestar import (
     post,
     put,
 )
+from litestar.contrib.pydantic import _model_dump
 from litestar.datastructures.state import ImmutableState, State
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.status_codes import (
@@ -26,7 +28,7 @@ from litestar.status_codes import (
 )
 from litestar.testing import create_test_client
 from litestar.types import Scope
-from tests import Person, PersonFactory
+from tests import PydanticPerson, PydanticPersonFactory
 
 
 class CustomState(State):
@@ -66,7 +68,9 @@ def test_application_state_injection(state_typing: Type[State]) -> None:
 
 class QueryParams(BaseModel):
     first: str
-    second: List[str] = Field(min_items=3)
+    second: List[str] = (
+        Field(min_items=3) if pydantic.VERSION.startswith("1") else Field(min_length=1)  # pyright: ignore
+    )
     third: Optional[int]
 
 
@@ -74,7 +78,7 @@ class QueryParamsFactory(ModelFactory):
     __model__ = QueryParams
 
 
-person_instance = PersonFactory.build()
+person_instance = PydanticPersonFactory.build()
 
 
 @pytest.mark.parametrize(
@@ -93,11 +97,11 @@ def test_data_using_model(decorator: Any, http_method: Any, expected_status_code
         path = test_path
 
         @decorator()
-        def test_method(self, data: Person) -> None:
+        def test_method(self, data: PydanticPerson) -> None:
             assert data == person_instance
 
     with create_test_client(MyController) as client:
-        response = client.request(http_method, test_path, json=person_instance.dict())
+        response = client.request(http_method, test_path, json=_model_dump(person_instance))
         assert response.status_code == expected_status_code
 
 
@@ -113,17 +117,17 @@ def test_data_using_model(decorator: Any, http_method: Any, expected_status_code
 def test_data_using_list_of_models(decorator: Any, http_method: Any, expected_status_code: Any) -> None:
     test_path = "/person"
 
-    people = PersonFactory.batch(size=5)
+    people = PydanticPersonFactory.batch(size=5)
 
     class MyController(Controller):
         path = test_path
 
         @decorator()
-        def test_method(self, data: List[Person]) -> None:
+        def test_method(self, data: List[PydanticPerson]) -> None:
             assert data == people
 
     with create_test_client(MyController) as client:
-        response = client.request(http_method, test_path, json=[p.dict() for p in people])
+        response = client.request(http_method, test_path, json=[_model_dump(p) for p in people])
         assert response.status_code == expected_status_code
 
 

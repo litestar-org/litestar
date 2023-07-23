@@ -1,27 +1,27 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from decimal import Decimal
 from typing import Any, Generator, Generic, Optional, TypeVar
 
-from _decimal import Decimal
 from msgspec import Meta
 from typing_extensions import Annotated
 
-from litestar.dto.factory.abc import AbstractDTOFactory
-from litestar.dto.factory.data_structures import DTOFieldDefinition
-from litestar.dto.factory.field import DTOField, Mark
+from litestar.dto import AbstractDTOFactory, DTOField, Mark
+from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.exceptions import MissingDependencyException
 from litestar.types import Empty
-from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_fully_qualified_class_name
 
 try:
     import piccolo  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("piccolo orm is not installed") from e
+    raise MissingDependencyException("piccolo") from e
 
 from piccolo.columns import Column, column_types
 from piccolo.table import Table
+
+from litestar.typing import FieldDefinition
 
 T = TypeVar("T", bound=Table)
 

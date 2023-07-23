@@ -11,7 +11,6 @@ from typing import (
 )
 
 __all__ = (
-    "AnyConnection",
     "ControllerRouterHandler",
     "LitestarType",
     "PathParameterDefinition",
@@ -27,7 +26,6 @@ if TYPE_CHECKING:
     from typing_extensions import TypeAlias
 
     from litestar.app import Litestar
-    from litestar.connection import ASGIConnection
     from litestar.controller import Controller
     from litestar.handlers.asgi_handlers import ASGIRouteHandler
     from litestar.handlers.http_handlers import HTTPRouteHandler
@@ -36,7 +34,6 @@ if TYPE_CHECKING:
     from litestar.router import Router
     from litestar.types import Method
 
-    AnyConnection: TypeAlias = ASGIConnection[Any, Any, Any, Any]
     ReservedKwargs: TypeAlias = Literal["request", "socket", "headers", "query", "cookies", "state", "data"]
     LitestarType: TypeAlias = Litestar
     RouteHandlerType: TypeAlias = Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandler]
@@ -44,7 +41,6 @@ if TYPE_CHECKING:
     ControllerRouterHandler: TypeAlias = Union[type[Controller], RouteHandlerType, Router, Callable[..., Any]]
     RouteHandlerMapItem: TypeAlias = Dict[Union[Method, Literal["websocket", "asgi"]], RouteHandlerType]
 else:
-    AnyConnection: TypeAlias = Any
     ReservedKwargs: TypeAlias = Any
     LitestarType: TypeAlias = Any
     RouteHandlerType: TypeAlias = Any

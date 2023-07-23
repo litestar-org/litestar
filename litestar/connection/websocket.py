@@ -217,7 +217,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
             An arbitrary value
         """
         data = await self.receive_data(mode=mode)
-        return decode_json(data)
+        return decode_json(value=data, type_decoders=self.route_handler.resolve_type_decoders())
 
     async def receive_msgpack(self) -> Any:
         """Receive data and decode it as MessagePack.
@@ -229,7 +229,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
             An arbitrary value
         """
         data = await self.receive_data(mode="binary")
-        return decode_msgpack(data)
+        return decode_msgpack(value=data, type_decoders=self.route_handler.resolve_type_decoders())
 
     async def iter_json(self, mode: WebSocketMode = "text") -> AsyncGenerator[Any, None]:
         """Continuously receive data and yield it, decoding it as JSON in the process.
@@ -238,7 +238,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
             mode: Socket mode to use. Either ``text`` or ``binary``
         """
         async for data in self.iter_data(mode):
-            yield decode_json(data)
+            yield decode_json(value=data, type_decoders=self.route_handler.resolve_type_decoders())
 
     async def iter_msgpack(self) -> AsyncGenerator[Any, None]:
         """Continuously receive data and yield it, decoding it as MessagePack in the
@@ -249,7 +249,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
 
         """
         async for data in self.iter_data(mode="binary"):
-            yield decode_msgpack(data)
+            yield decode_msgpack(value=data, type_decoders=self.route_handler.resolve_type_decoders())
 
     async def send_data(self, data: str | bytes, mode: WebSocketMode = "text", encoding: str = "utf-8") -> None:
         """Send a 'websocket.send' event.

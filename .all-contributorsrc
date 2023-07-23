@@ -623,7 +623,8 @@
       "profile": "https://github.com/Alc-Alc",
       "contributions": [
         "doc",
-        "code"
+        "code",
+        "test"
       ]
     },
     {
@@ -758,7 +759,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/2532125?v=4",
       "profile": "https://github.com/abdulhaq-e",
       "contributions": [
-        "code"
+        "code",
+        "doc"
       ]
     },
     {
@@ -1099,6 +1101,80 @@
       "name": "sinisaos",
       "avatar_url": "https://avatars.githubusercontent.com/u/30960668?v=4",
       "profile": "https://github.com/sinisaos",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "Tsdevendra1",
+      "name": "Tharuka Devendra",
+      "avatar_url": "https://avatars.githubusercontent.com/u/38055748?v=4",
+      "profile": "https://github.com/Tsdevendra1",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "euri10",
+      "name": "euri10",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1104190?v=4",
+      "profile": "https://github.com/euri10",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "su-shubham",
+      "name": "Shubham",
+      "avatar_url": "https://avatars.githubusercontent.com/u/75021117?v=4",
+      "profile": "https://github.com/su-shubham",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "erik-hasse",
+      "name": "Erik Hasse",
+      "avatar_url": "https://avatars.githubusercontent.com/u/37126755?v=4",
+      "profile": "https://www.linkedin.com/in/erik-hasse",
+      "contributions": [
+        "bug",
+        "code"
+      ]
+    },
+    {
+      "login": "sobolevn",
+      "name": "Nikita Sobolev",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4660275?v=4",
+      "profile": "https://sobolevn.me",
+      "contributions": [
+        "infra",
+        "code"
+      ]
+    },
+    {
+      "login": "lazyc97",
+      "name": "Nguyễn Hoàng Đức",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8538104?v=4",
+      "profile": "https://github.com/lazyc97",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "RavanaBhrama",
+      "name": "RavanaBhrama",
+      "avatar_url": "https://avatars.githubusercontent.com/u/131459969?v=4",
+      "profile": "https://github.com/RavanaBhrama",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "mj0nez",
+      "name": "Marcel Johannesmann",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20128340?v=4",
+      "profile": "https://github.com/mj0nez",
       "contributions": [
         "doc"
       ]

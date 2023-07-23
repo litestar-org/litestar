@@ -1,7 +1,7 @@
-from typing import TYPE_CHECKING, List, Optional
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, List, Optional, Union
 
 import pytest
-from pydantic import ValidationError
 from pytest import FixtureRequest
 
 from litestar import MediaType
@@ -13,8 +13,9 @@ from litestar.datastructures import (
     MutableScopeHeaders,
 )
 from litestar.datastructures.headers import Header
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 from litestar.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
+from litestar.utils.dataclass import simple_asdict
 
 if TYPE_CHECKING:
     from litestar.types.asgi_types import RawHeaders, RawHeadersList
@@ -250,7 +251,7 @@ def test_cache_control_from_header() -> None:
         "must-revalidate, proxy-revalidate, must-understand, immutable, stale-while-revalidate=100"
     )
     header = CacheControlHeader.from_header(header_value)
-    assert header.dict() == {
+    assert simple_asdict(header) == {
         "documentation_only": False,
         "public": True,
         "private": True,
@@ -270,11 +271,11 @@ def test_cache_control_from_header() -> None:
 def test_cache_control_from_header_single_value() -> None:
     header_value = "no-cache"
     header = CacheControlHeader.from_header(header_value)
-    header_dict = header.dict(exclude_unset=True, exclude_none=True, by_alias=True)
-    assert header_dict == {"no-cache": True}
+    header_dict = simple_asdict(header, exclude_none=True)
+    assert header_dict == {"no_cache": True, "documentation_only": False}
 
 
-@pytest.mark.parametrize("invalid_value", ["x=y=z", "x, ", "no-cache=10"])
+@pytest.mark.parametrize("invalid_value", ["x=y=z", "x, ", "no-cache=10", "invalid-header=10"])
 def test_cache_control_from_header_invalid_value(invalid_value: str) -> None:
     with pytest.raises(ImproperlyConfiguredException):
         CacheControlHeader.from_header(invalid_value)
@@ -282,8 +283,17 @@ def test_cache_control_from_header_invalid_value(invalid_value: str) -> None:
 
 def test_cache_control_header_prevent_storing() -> None:
     header = CacheControlHeader.prevent_storing()
-    header_dict = header.dict(exclude_unset=True, exclude_none=True, by_alias=True)
-    assert header_dict == {"no-store": True}
+    header_dict = simple_asdict(header, exclude_none=True)
+    assert header_dict == {"no_store": True, "documentation_only": False}
+
+
+def test_cache_control_header_unsupported_type_annotation() -> None:
+    @dataclass
+    class InvalidCacheControlHeader(CacheControlHeader):
+        unsupported_type: Union[int, str] = "foo"
+
+    with pytest.raises(ImproperlyConfiguredException):
+        InvalidCacheControlHeader.from_header("unsupported_type")
 
 
 def test_etag_documentation_only() -> None:
@@ -291,15 +301,15 @@ def test_etag_documentation_only() -> None:
 
 
 def test_etag_no_value() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationException):
         ETag()
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationException):
         ETag(weak=True)
 
 
 def test_etag_non_ascii() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         ETag(value="f↓o")
 
 

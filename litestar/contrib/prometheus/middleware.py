@@ -5,6 +5,7 @@ from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, cast
 
 from litestar.connection.request import Request
+from litestar.enums import ScopeType
 from litestar.exceptions import MissingDependencyException
 from litestar.middleware.base import AbstractMiddleware
 
@@ -115,7 +116,7 @@ class PrometheusMiddleware(AbstractMiddleware):
         """
 
         return {
-            "method": request.method,
+            "method": request.method if request.scope["type"] == ScopeType.HTTP else request.scope["type"],
             "path": request.url.path,
             "status_code": 200,
             "app_name": self._config.app_name,

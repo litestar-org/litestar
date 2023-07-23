@@ -1,10 +1,11 @@
 import dataclasses
-from typing import Any, ClassVar, Optional, TypedDict, get_type_hints
+from typing import Any, ClassVar, Optional, TypedDict, cast, get_type_hints
 
 import pydantic
 import pytest
 from msgspec.inspect import type_info
 from pydantic import BaseModel
+from pydantic.fields import FieldInfo
 from typing_extensions import get_args
 
 from litestar.exceptions import ImproperlyConfiguredException
@@ -14,8 +15,8 @@ from litestar.utils import is_class_var
 from tests import (
     AttrsPerson,
     MsgSpecStructPerson,
-    Person,
     PydanticDataClassPerson,
+    PydanticPerson,
     TypedDictPerson,
     VanillaDataClassPerson,
 )
@@ -26,17 +27,38 @@ except ImportError:
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
 
-def test_partial_pydantic_model() -> None:
-    class PersonWithClassVar(Person):
+@pytest.mark.skipif(pydantic.VERSION.startswith("2"), reason="pydantic v1 only logic")
+def test_partial_pydantic_v1_model() -> None:
+    class PydanticPersonWithClassVar(PydanticPerson):
         cls_var: ClassVar[int]
 
-    partial = Partial[PersonWithClassVar]
+    partial = Partial[PydanticPersonWithClassVar]  # type: ignore
 
-    assert len(partial.__fields__) == len(Person.__fields__)  # type: ignore
+    assert len(partial.__fields__) == len(PydanticPerson.__fields__)  # type: ignore
 
-    for field in partial.__fields__.values():  # type: ignore
+    for field in partial.__fields__.values():
         assert field.allow_none
         assert not field.required
+
+    for annotation in get_type_hints(partial).values():
+        if not is_class_var(annotation):
+            assert isinstance(annotation, GenericAlias)
+            assert NoneType in get_args(annotation)
+        else:
+            assert NoneType not in get_args(annotation)
+
+
+@pytest.mark.skipif(pydantic.VERSION.startswith("1"), reason="pydantic v2 only logic")
+def test_partial_pydantic_v2_model() -> None:
+    class PydanticPersonWithClassVar(PydanticPerson):
+        cls_var: ClassVar[int]
+
+    partial = Partial[PydanticPersonWithClassVar]
+    partial_model_fields = cast("dict[str,FieldInfo]", partial.model_fields)  # type: ignore
+    assert len(partial_model_fields) == len(PydanticPerson.model_fields)  #
+
+    for field in partial_model_fields.values():
+        assert not field.is_required()
 
     for annotation in get_type_hints(partial).values():
         if not is_class_var(annotation):
@@ -126,7 +148,8 @@ def test_partial_attrs() -> None:
             assert NoneType not in get_args(annotation)
 
 
-def test_partial_pydantic_model_with_superclass() -> None:
+@pytest.mark.skipif(pydantic.VERSION.startswith("2"), reason="pydantic v1 only logic")
+def test_partial_pydantic_v1_model_with_superclass() -> None:
     """Test that Partial returns the correct annotations for nested models."""
 
     class Parent(BaseModel):
@@ -140,6 +163,27 @@ def test_partial_pydantic_model_with_superclass() -> None:
     for field in partial_child.__fields__.values():  # type: ignore
         assert field.allow_none
         assert not field.required
+
+    assert get_type_hints(partial_child) == {
+        "parent_attribute": Optional[int],
+        "child_attribute": Optional[int],
+    }
+
+
+@pytest.mark.skipif(pydantic.VERSION.startswith("1"), reason="pydantic v2 only logic")
+def test_partial_pydantic_v2_model_with_superclass() -> None:
+    """Test that Partial returns the correct annotations for nested models."""
+
+    class Parent(BaseModel):
+        parent_attribute: int
+
+    class Child(Parent):
+        child_attribute: int
+
+    partial_child = Partial[Child]
+    partial_model_fields = cast("dict[str,FieldInfo]", partial_child.model_fields)  # type: ignore
+    for field in partial_model_fields.values():
+        assert not field.is_required()
 
     assert get_type_hints(partial_child) == {
         "parent_attribute": Optional[int],
@@ -185,7 +229,7 @@ class Foo:
 
 @pytest.mark.parametrize(
     "cls, should_raise",
-    ((Foo, True), (Person, False), (VanillaDataClassPerson, False), (PydanticDataClassPerson, False)),
+    ((Foo, True), (PydanticPerson, False), (VanillaDataClassPerson, False), (PydanticDataClassPerson, False)),
 )
 def test_validation(cls: Any, should_raise: bool) -> None:
     """Test that Partial returns no annotations for classes that don't inherit from BaseModel."""

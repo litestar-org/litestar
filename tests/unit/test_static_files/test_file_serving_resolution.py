@@ -167,11 +167,12 @@ def test_static_files_response_mimetype(tmpdir: "Path", extension: str) -> None:
 def test_static_files_response_encoding(tmp_path: "Path", extension: str) -> None:
     fn = f"test.js.{extension}"
     path = tmp_path / fn
+    compressed_data = None
     if extension == "br":
         compressed_data = brotli.compress(b"content")
     elif extension == "gz":
         compressed_data = gzip.compress(b"content")
-    path.write_bytes(compressed_data)  # pyright: ignore
+    path.write_bytes(compressed_data)  # type: ignore[arg-type]
     static_files_config = StaticFilesConfig(path="/static", directories=[tmp_path])
     expected_encoding_type = mimetypes.guess_type(fn)[1]
 

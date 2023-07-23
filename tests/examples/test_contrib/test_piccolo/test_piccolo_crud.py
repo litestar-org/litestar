@@ -1,12 +1,19 @@
 import os
 from unittest import TestCase
 
-from docs.examples.contrib.piccolo.app import Task, app
-from piccolo.testing.model_builder import ModelBuilder
+import pytest
 
 from litestar.testing import TestClient
 
 os.environ["PICCOLO_CONF"] = "docs.examples.contrib.piccolo.piccolo_conf"
+
+try:
+    import piccolo  # noqa: F401
+except ImportError:
+    pytest.skip("Piccolo not installed", allow_module_level=True)
+
+from docs.examples.contrib.piccolo.app import Task, app  # noqa: E402
+from piccolo.testing.model_builder import ModelBuilder  # noqa: E402
 
 
 class TestCrud(TestCase):

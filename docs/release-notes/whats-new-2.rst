@@ -52,7 +52,7 @@ Imports
 +====================================================+========================================================================+
 | ``starlite.ASGIConnection``                        | :class:`.connection.ASGIConnection`                                    |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.Partial``                               | :class:`.partial.Partial`                                              |
+| ``starlite.Partial``                               | replaced with DTOs                                                     |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Enums**                                                                                                                   |
 +----------------------------------------------------+------------------------------------------------------------------------+
@@ -447,10 +447,10 @@ protocol.
 Litestar provides a suite of factory types that implement the ``DTOInterface`` protocol
 and can be used to define DTOs:
 
-- :class:`litestar.dto.factory.stdlib.DataclassDTO`
+- :class:`litestar.dto.dataclass_dto_factory.DataclassDTO`
+- :class:`litestar.dto.msgspec_dto_factory.MsgspecDTO`
 - :class:`litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO`
 - :class:`litestar.contrib.pydantic.PydanticDTO`
-- :class:`litestar.contrib.msgspec.MsgspecDTO`
 - ``litestar.contrib.piccolo.PiccoloDTO`` (TODO)
 - ``litestar.contrib.tortoise.TortoiseDTO`` (TODO)
 
@@ -461,8 +461,7 @@ For example, to define a DTO from a dataclass:
     from dataclasses import dataclass
 
     from litestar import get
-    from litestar.dto.factory import DTOConfig
-    from litestar.dto.factory.stdlib import DataclassDTO
+    from litestar.dto import DTOConfig, DataclassDTO
 
 
     @dataclass

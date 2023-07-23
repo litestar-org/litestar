@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 
 from litestar import Litestar, Request, Response, get
 from litestar.contrib.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
+from litestar.contrib.pydantic import _model_dump
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from litestar.stores.memory import MemoryStore
 from litestar.testing import create_test_client
@@ -72,7 +73,7 @@ async def test_jwt_auth(
     @get("/my-endpoint", middleware=[jwt_auth.middleware])
     def my_handler(request: Request["User", Token, Any]) -> None:
         assert request.user
-        assert request.user.dict() == user.dict()
+        assert _model_dump(request.user) == _model_dump(user)
         assert request.auth.sub == str(user.id)
 
     @get("/login")
@@ -174,7 +175,7 @@ async def test_jwt_cookie_auth(
     @get("/my-endpoint", middleware=[jwt_auth.middleware])
     def my_handler(request: Request["User", Token, Any]) -> None:
         assert request.user
-        assert request.user.dict() == user.dict()
+        assert _model_dump(request.user) == _model_dump(user)
         assert request.auth.sub == str(user.id)
 
     @get("/login")
@@ -403,7 +404,7 @@ def test_type_encoders() -> None:
         retrieve_user_handler=retrieve_user_handler,
         token_secret="abc1234",
         exclude=["/"],
-        type_encoders={BaseModel: lambda m: m.dict(by_alias=True)},
+        type_encoders={BaseModel: lambda m: _model_dump(m, by_alias=True)},
     )
 
     @get()

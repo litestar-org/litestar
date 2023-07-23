@@ -1,62 +1,19 @@
-from __future__ import annotations
-
-from dataclasses import MISSING, fields, replace
-from typing import TYPE_CHECKING, Generic, TypeVar
-
-from litestar.dto.factory.abc import AbstractDTOFactory
-from litestar.dto.factory.data_structures import DTOFieldDefinition
-from litestar.dto.factory.field import DTO_FIELD_META_KEY, DTOField
-from litestar.dto.factory.utils import get_model_type_hints
-from litestar.params import DependencyKwarg, KwargDefinition
-from litestar.types.empty import Empty
-from litestar.utils.helpers import get_fully_qualified_class_name
-
-if TYPE_CHECKING:
-    from typing import ClassVar, Collection, Generator
-
-    from litestar.types.protocols import DataclassProtocol
-    from litestar.typing import FieldDefinition
-
-__all__ = ("DataclassDTO", "T")
-
-T = TypeVar("T", bound="DataclassProtocol | Collection[DataclassProtocol]")
-AnyDataclass = TypeVar("AnyDataclass", bound="DataclassProtocol")
+from litestar.utils import warn_deprecation
 
 
-class DataclassDTO(AbstractDTOFactory[T], Generic[T]):
-    """Support for domain modelling with dataclasses."""
+def __getattr__(attr_name: str) -> object:
+    if "DataclassDTO" in attr_name:
+        from litestar.dto import DataclassDTO
 
-    __slots__ = ()
+        warn_deprecation(
+            deprecated_name="litestar.dto.factory.stdlib.dataclass.DataclassDTO",
+            version="2.0b3",
+            kind="import",
+            removal_in="2.0",
+            info="importing 'DataclassDTO' from 'litestar.dto.factory.stdlib.dataclass' is deprecated, please"
+            "import it from 'litestar.dto.factory' instead",
+        )
 
-    model_type: ClassVar[type[DataclassProtocol]]
-
-    @classmethod
-    def generate_field_definitions(
-        cls, model_type: type[DataclassProtocol]
-    ) -> Generator[DTOFieldDefinition, None, None]:
-        dc_fields = {f.name: f for f in fields(model_type)}
-        for key, field_definition in get_model_type_hints(model_type).items():
-            if not (dc_field := dc_fields.get(key)):
-                continue
-
-            default = dc_field.default if dc_field.default is not MISSING else Empty
-            default_factory = dc_field.default_factory if dc_field.default_factory is not MISSING else None
-            field_defintion = replace(
-                DTOFieldDefinition.from_field_definition(
-                    field_definition=field_definition,
-                    default_factory=default_factory,
-                    dto_field=dc_field.metadata.get(DTO_FIELD_META_KEY, DTOField()),
-                    unique_model_name=get_fully_qualified_class_name(model_type),
-                    dto_for=None,
-                ),
-                name=key,
-                default=default,
-            )
-
-            yield replace(field_defintion, default=Empty, kwarg_definition=default) if isinstance(
-                default, (KwargDefinition, DependencyKwarg)
-            ) else field_defintion
-
-    @classmethod
-    def detect_nested_field(cls, field_definition: FieldDefinition) -> bool:
-        return hasattr(field_definition.annotation, "__dataclass_fields__")
+        globals()[attr_name] = DataclassDTO
+        return DataclassDTO
+    raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")

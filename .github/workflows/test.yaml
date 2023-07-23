@@ -6,6 +6,9 @@ on:
       python-version:
         required: true
         type: string
+      pydantic-version:
+        required: true
+        type: string
       coverage:
         required: false
         type: boolean
@@ -45,16 +48,22 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .venv
-          key: v1-venv-${{ runner.os }}-${{ inputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          key: v1-venv-${{ runner.os }}-${{ inputs.python-version }}-${{ inputs.pydantic-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Load cached pip wheels
         if: runner.os == 'Windows'
         id: cached-pip-wheels
         uses: actions/cache@v3
         with:
           path: ~/.cache
-          key: cache-${{ runner.os }}-${{ inputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          key: cache-${{ runner.os }}-${{ inputs.python-version }}-${{ inputs.pydantic-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
-        run: poetry install --no-interaction
+        run: poetry install --no-interaction --extras full
+      - if: ${{ inputs.pydantic-version == '1' }}
+        name: Install pydantic v1
+        run: poetry remove pydantic-extra-types && poetry add "pydantic>=1.10.10,<2" piccolo beanie
+      - if: ${{ inputs.pydantic-version == '2' }}
+        name: Install pydantic v2
+        run: poetry add "pydantic>=2" pydantic-extra-types
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
       - name: Test

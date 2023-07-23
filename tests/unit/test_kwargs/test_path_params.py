@@ -1,11 +1,11 @@
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
+from unittest.mock import MagicMock
 from uuid import UUID, uuid1, uuid4
 
 import pytest
-from pydantic import UUID4
 
 from litestar import Litestar, MediaType, get, post
 from litestar.exceptions import ImproperlyConfiguredException
@@ -60,7 +60,7 @@ from litestar.testing import create_test_client
                 "user_id": "abc",
                 "order_id": str(uuid1()),
             },
-            True,
+            False,
         ),
     ],
 )
@@ -69,7 +69,7 @@ def test_path_params(params_dict: dict, should_raise: bool) -> None:
 
     @get(path=test_path)
     def test_method(
-        order_id: UUID4,
+        order_id: UUID,
         version: float = Parameter(gt=0.1, le=4.0),
         service_id: int = Parameter(gt=0, le=100),
         user_id: str = Parameter(min_length=1, max_length=10),
@@ -122,37 +122,38 @@ def test_duplicate_path_param_validation() -> None:
 
 
 @pytest.mark.parametrize(
-    "param_type_name, param_type_class, value",
+    "param_type_name, param_type_class, value, expected_value",
     [
-        ["str", str, "abc"],
-        ["int", int, 1],
-        ["float", float, 1.01],
-        ["uuid", UUID, uuid4()],
-        ["decimal", Decimal, Decimal("1.00001")],
-        ["date", date, date.today().isoformat()],
-        ["datetime", datetime, datetime.now().isoformat()],
-        ["timedelta", timedelta, timedelta(days=1).total_seconds()],
-        ["path", Path, "/1/2/3/4/some-file.txt"],
-        ["path", Path, "1/2/3/4/some-file.txt"],
+        ["str", str, "abc", "abc"],
+        ["int", int, "1", 1],
+        ["float", float, "1.01", 1.01],
+        ["uuid", UUID, "0fcb1054c56e4dd4a127f70a97d1fc21", UUID("0fcb1054c56e4dd4a127f70a97d1fc21")],
+        ["uuid", UUID, "542226d1-7199-41a0-9cba-aaa6d85932a3", UUID("542226d1-7199-41a0-9cba-aaa6d85932a3")],
+        ["decimal", Decimal, "1.00001", Decimal("1.00001")],
+        ["date", date, "2023-07-15", date(year=2023, month=7, day=15)],
+        ["time", time, "01:02:03", time(1, 2, 3)],
+        ["datetime", datetime, "2023-07-15T15:45:34.073314", datetime.fromisoformat("2023-07-15T15:45:34.073314")],
+        ["timedelta", timedelta, "86400.0", timedelta(days=1)],
+        ["timedelta", timedelta, "P1D", timedelta(days=1)],
+        ["timedelta", timedelta, "PT1H1S", timedelta(hours=1, seconds=1)],
+        ["path", Path, "/1/2/3/4/some-file.txt", Path("/1/2/3/4/some-file.txt")],
+        ["path", Path, "1/2/3/4/some-file.txt", Path("/1/2/3/4/some-file.txt")],
     ],
 )
-def test_path_param_type_resolution(param_type_name: str, param_type_class: Any, value: Any) -> None:
+def test_path_param_type_resolution(
+    param_type_name: str, param_type_class: Any, value: str, expected_value: Any
+) -> None:
+    mock = MagicMock()
+
     @get("/some/test/path/{test:" + param_type_name + "}")
     def handler(test: param_type_class) -> None:
-        if isinstance(test, (date, datetime)):
-            assert test.isoformat() == value
-        elif isinstance(test, timedelta):
-            assert test.total_seconds() == value
-        elif isinstance(test, Decimal):
-            assert str(test) == str(value)
-        elif isinstance(test, Path):
-            assert str(test) == str(Path("/1/2/3/4/some-file.txt"))
-        else:
-            assert test == value
+        mock(test)
 
-    with create_test_client(handler) as client:
-        response = client.get(f"/some/test/path/{value!s}")
-        assert response.status_code == HTTP_200_OK, response.json()
+    with create_test_client(handler, debug=True) as client:
+        response = client.get(f"/some/test/path/{value}")
+
+    assert response.status_code == HTTP_200_OK
+    mock.assert_called_once_with(expected_value)
 
 
 def test_differently_named_path_params_on_same_level() -> None:

@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from litestar.openapi.spec.xml import XML
     from litestar.types import DataclassProtocol
 
-__all__ = ("Schema",)
+__all__ = ("Schema", "SchemaDataContainer")
 
 
 def _recursive_hash(value: Hashable | Sequence | Mapping | DataclassProtocol | type[DataclassProtocol]) -> int:

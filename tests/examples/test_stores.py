@@ -31,7 +31,7 @@ async def test_delete_expired_after_response(frozen_datetime) -> None:
 
     with TestClient(app) as client:
         assert client.get("/").content == b"bar"
-        frozen_datetime.tick(1)
+        frozen_datetime.shift(1)
         client.get("/")
         assert client.get("/").content == b""
 

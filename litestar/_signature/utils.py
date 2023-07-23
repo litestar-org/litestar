@@ -1,151 +1,66 @@
 from __future__ import annotations
 
-from inspect import getmembers, isclass
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, cast
 
-import pydantic
-
-from litestar._signature.models.pydantic_signature_model import PydanticSignatureModel
 from litestar.constants import SKIP_VALIDATION_NAMES
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import DependencyKwarg
-from litestar.types import AnyCallable, Empty
-from litestar.utils.helpers import unwrap_partial
-from litestar.utils.predicates import is_attrs_class
-
-pydantic_types: tuple[Any, ...] = tuple(
-    cls for _, cls in getmembers(pydantic.types, isclass) if "pydantic.types" in repr(cls)
-)
-
+from litestar.types import Empty
 
 if TYPE_CHECKING:
-    from typing_extensions import TypeAlias
-
-    from litestar._signature.models.base import SignatureModel
-    from litestar.typing import FieldDefinition
     from litestar.utils.signature import ParsedSignature
 
-__all__ = (
-    "create_signature_model",
-    "get_signature_model",
-)
+    from .model import SignatureModel
 
-
-SignatureModelType: TypeAlias = "type[SignatureModel]"
-
-
-def create_signature_model(
-    dependency_name_set: set[str],
-    fn: AnyCallable,
-    preferred_validation_backend: Literal["pydantic", "attrs"],
-    parsed_signature: ParsedSignature,
-    has_data_dto: bool = False,
-) -> type[SignatureModel]:
-    """Create a model for a callable's signature. The model can than be used to parse and validate before passing it to
-    the callable.
-
-    Args:
-        dependency_name_set: A set of dependency names
-        fn: A callable.
-        preferred_validation_backend: Validation/Parsing backend to prefer, if installed
-        parsed_signature: A parsed signature for the handler/dependency function.
-        has_data_dto: Is a data DTO defined for the handler?
-
-    Returns:
-        A signature model.
-    """
-
-    unwrapped_fn = cast("AnyCallable", unwrap_partial(fn))
-    fn_name = getattr(fn, "__name__", "anonymous")
-    fn_module = getattr(fn, "__module__", None)
-
-    if fn_name == "<lambda>":
-        fn_name = "anonymous"
-
-    dependency_names = _validate_dependencies(
-        dependency_name_set=dependency_name_set, fn=unwrapped_fn, parsed_signature=parsed_signature
-    )
-
-    model_class = _get_signature_model_type(
-        preferred_validation_backend=preferred_validation_backend, parsed_signature=parsed_signature
-    )
-
-    type_overrides = _create_type_overrides(parsed_signature, has_data_dto)
-
-    return model_class.create(
-        fn_name=fn_name,
-        fn_module=fn_module,
-        parsed_signature=parsed_signature,
-        dependency_names={*dependency_name_set, *dependency_names},
-        type_overrides=type_overrides,
-    )
+__all__ = ("create_type_overrides", "validate_signature_dependencies", "get_signature_model")
 
 
 def get_signature_model(value: Any) -> type[SignatureModel]:
     """Retrieve and validate the signature model from a provider or handler."""
     try:
-        return cast(SignatureModelType, value.signature_model)
+        return cast("type[SignatureModel]", value.signature_model)
     except AttributeError as e:  # pragma: no cover
         raise ImproperlyConfiguredException(f"The 'signature_model' attribute for {value} is not set") from e
 
 
-def _any_attrs_annotation(parsed_signature: ParsedSignature) -> bool:
-    return any(
-        any(is_attrs_class(t.annotation) for t in field_definition.inner_types)
-        or is_attrs_class(field_definition.annotation)
-        for field_definition in parsed_signature.parameters.values()
-    )
+def create_type_overrides(parsed_signature: ParsedSignature, has_data_dto: bool) -> dict[str, Any]:
+    """Create typing overrides for field definitions.
 
+    Args:
+        parsed_signature: A parsed function signature.
+        has_data_dto: Whether the signature contains a data DTO.
 
-def _create_type_overrides(parsed_signature: ParsedSignature, has_data_dto: bool) -> dict[str, Any]:
+    Returns:
+        A dictionary of typing overrides
+    """
     type_overrides = {}
-    for parameter in parsed_signature.parameters.values():
-        if _should_skip_validation(parameter):
-            type_overrides[parameter.name] = Any
+    for field_definition in parsed_signature.parameters.values():
+        if field_definition.name in SKIP_VALIDATION_NAMES or (
+            isinstance(field_definition.kwarg_definition, DependencyKwarg)
+            and field_definition.kwarg_definition.skip_validation
+        ):
+            type_overrides[field_definition.name] = Any
+
         if has_data_dto and "data" in parsed_signature.parameters:
             type_overrides["data"] = Any
+
     return type_overrides
 
 
-def _get_signature_model_type(
-    preferred_validation_backend: Literal["pydantic", "attrs"],
-    parsed_signature: ParsedSignature,
-) -> type[SignatureModel]:
-    if preferred_validation_backend == "attrs" or _any_attrs_annotation(parsed_signature):
-        from litestar._signature.models.attrs_signature_model import AttrsSignatureModel
-
-        return AttrsSignatureModel
-    return PydanticSignatureModel
-
-
-def _should_skip_validation(field_definition: FieldDefinition) -> bool:
-    """Whether the parameter should skip validation.
-
-    Returns:
-        A boolean indicating whether the parameter should be validated.
-    """
-    return field_definition.name in SKIP_VALIDATION_NAMES or (
-        isinstance(field_definition.kwarg_definition, DependencyKwarg)
-        and field_definition.kwarg_definition.skip_validation
-    )
-
-
-def _validate_dependencies(
-    dependency_name_set: set[str], fn: AnyCallable, parsed_signature: ParsedSignature
+def validate_signature_dependencies(
+    dependency_name_set: set[str], fn_name: str, parsed_signature: ParsedSignature
 ) -> set[str]:
     """Validate dependencies of ``parsed_signature``.
 
     Args:
         dependency_name_set: A set of dependency names
-        fn: A callable.
+        fn_name: A callable's name.
         parsed_signature: A parsed signature.
 
     Returns:
         A set of validated dependency names.
     """
-    fn_name = getattr(fn, "__name__", "anonymous")
-
-    dependency_names: set[str] = set()
+    dependency_names: set[str] = set(dependency_name_set)
 
     for parameter in parsed_signature.parameters.values():
         if isinstance(parameter.kwarg_definition, DependencyKwarg) and parameter.name not in dependency_name_set:

@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING, Any, Dict, Generator, List, Tuple, Union
 
 import pytest
 
-from litestar.dto.factory import DTOConfig, DTOField
-from litestar.dto.factory._backends.abc import AbstractDTOBackend, BackendContext
-from litestar.dto.factory._backends.types import (
+from litestar.dto import DTOConfig, DTOField
+from litestar.dto._backend import BackendContext, DTOBackend
+from litestar.dto._types import (
     CollectionType,
     CompositeType,
     MappingType,
@@ -15,7 +15,7 @@ from litestar.dto.factory._backends.types import (
     TupleType,
     UnionType,
 )
-from litestar.dto.factory.data_structures import DTOFieldDefinition
+from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.types import ForType
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
@@ -23,7 +23,7 @@ from litestar.typing import FieldDefinition
 if TYPE_CHECKING:
     from typing import AbstractSet
 
-    from litestar.dto.factory._backends.types import FieldDefinitionsType, TransferType
+    from litestar.dto._types import FieldDefinitionsType, TransferType
     from litestar.dto.interface import ConnectionContext
 
 
@@ -94,8 +94,8 @@ def fx_context(data_model_type: type[Model], field_definitions: list[DTOFieldDef
 
 
 @pytest.fixture(name="backend")
-def fx_backend(context: BackendContext) -> AbstractDTOBackend:
-    class _Backend(AbstractDTOBackend[Any]):
+def fx_backend(context: BackendContext) -> DTOBackend:
+    class _Backend(DTOBackend):
         def create_transfer_model_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[Any]:
             """Create a model for data transfer.
 
@@ -136,14 +136,17 @@ def fx_backend(context: BackendContext) -> AbstractDTOBackend:
 
 
 def create_transfer_type(
-    backend: AbstractDTOBackend,
+    backend: DTOBackend,
     field_definition: FieldDefinition,
     exclude: AbstractSet[str] | None = None,
+    include: AbstractSet[str] | None = None,
     field_name: str = "name",
     unique_name: str = "some_module.SomeModel.name",
     nested_depth: int = 0,
 ) -> TransferType:
-    return backend._create_transfer_type(field_definition, exclude or set(), field_name, unique_name, nested_depth)
+    return backend._create_transfer_type(
+        field_definition, exclude or set(), include or set(), field_name, unique_name, nested_depth
+    )
 
 
 @pytest.mark.parametrize(
@@ -160,7 +163,7 @@ def test_create_transfer_type_union(
     field_definition: FieldDefinition,
     should_have_nested: bool,
     has_nested_field_info: tuple[bool, ...],
-    backend: AbstractDTOBackend,
+    backend: DTOBackend,
 ) -> None:
     transfer_type = create_transfer_type(backend, field_definition)
     assert isinstance(transfer_type, UnionType)
@@ -188,7 +191,7 @@ def test_create_transfer_type_tuple(
     field_definition: FieldDefinition,
     should_have_nested: bool,
     has_nested_field_info: tuple[bool, ...],
-    backend: AbstractDTOBackend,
+    backend: DTOBackend,
 ) -> None:
     transfer_type = create_transfer_type(backend, field_definition)
     assert isinstance(transfer_type, CompositeType)
@@ -221,7 +224,7 @@ def test_create_transfer_type_mapping(
     field_definition: FieldDefinition,
     should_have_nested: bool,
     has_nested_field_info: tuple[bool, ...],
-    backend: AbstractDTOBackend,
+    backend: DTOBackend,
 ) -> None:
     transfer_type = create_transfer_type(backend, field_definition)
     assert isinstance(transfer_type, MappingType)
@@ -244,7 +247,7 @@ def test_create_transfer_type_collection(
     field_definition: FieldDefinition,
     should_have_nested: bool,
     has_nested_field_info: bool,
-    backend: AbstractDTOBackend,
+    backend: DTOBackend,
 ) -> None:
     transfer_type = create_transfer_type(backend, field_definition)
     assert isinstance(transfer_type, CollectionType)
@@ -254,7 +257,7 @@ def test_create_transfer_type_collection(
     assert bool(inner_type.nested_field_info) is has_nested_field_info
 
 
-def test_create_collection_type_nested_union(backend: AbstractDTOBackend) -> None:
+def test_create_collection_type_nested_union(backend: DTOBackend) -> None:
     field_definition = FieldDefinition.from_annotation(List[Union[Model, Model2]])
     transfer_type = create_transfer_type(backend, field_definition)
     assert isinstance(transfer_type, CollectionType)
@@ -271,12 +274,12 @@ def test_create_collection_type_nested_union(backend: AbstractDTOBackend) -> Non
 
 @pytest.mark.parametrize("dto_for", ["data", "return"])
 def test_parse_model_respects_field_definition_dto_for(
-    dto_for: ForType, backend: AbstractDTOBackend, field_definitions: list[DTOFieldDefinition]
+    dto_for: ForType, backend: DTOBackend, field_definitions: list[DTOFieldDefinition]
 ) -> None:
     object.__setattr__(field_definitions[0], "dto_for", "data")
     object.__setattr__(field_definitions[1], "dto_for", "return")
-    backend.context.dto_for = dto_for  # type:ignore[misc]
+    backend.context.dto_for = dto_for  # type: ignore
     backend.context.field_definition_generator = lambda _: iter(field_definitions)  # type: ignore
-    transfer_field_defs = backend.parse_model(None, exclude=set())
+    transfer_field_defs = backend.parse_model(None, exclude=set(), include=set())
     assert len(transfer_field_defs) == 1
     assert transfer_field_defs[0].dto_for == dto_for

@@ -13,7 +13,7 @@ from litestar.status_codes import (
     HTTP_304_NOT_MODIFIED,
     HTTP_307_TEMPORARY_REDIRECT,
 )
-from tests import Person
+from tests import PydanticPerson
 
 
 def test_route_handler_validation_http_method() -> None:
@@ -92,7 +92,7 @@ async def test_function_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
 
         @get("/person")
-        def test_function_2(self, data: Person) -> None:  # type: ignore
+        def test_function_2(self, data: PydanticPerson) -> None:  # type: ignore
             return None
 
         test_function_2.on_registration(Litestar())

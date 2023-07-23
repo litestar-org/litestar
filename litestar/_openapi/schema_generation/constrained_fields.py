@@ -8,7 +8,7 @@ from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.schema import Schema
 
 if TYPE_CHECKING:
-    from _decimal import Decimal
+    from decimal import Decimal
 
     from litestar.params import KwargDefinition
 

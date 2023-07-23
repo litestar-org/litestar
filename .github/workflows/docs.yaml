@@ -2,6 +2,9 @@ name: Documentation Building
 on:
   release:
     types: [published]
+  push:
+    branches:
+      - main
 jobs:
   docs:
     permissions:
@@ -25,11 +28,15 @@ jobs:
           path: .venv
           key: venv-${{ hashFiles('**/poetry.lock') }}
       - name: Install App Dependencies
-        run: poetry install --no-interaction --with docs
+        run: poetry install --no-interaction --with docs --extras full
       - name: Fetch gh pages
         run: git fetch origin gh-pages --depth=1
-      - name: Build docs
+      - name: Build release docs
         run: poetry run python tools/build_docs.py docs-build
+        if: github.event_name == 'release'
+      - name: Build dev docs
+        run: poetry run python tools/build_docs.py docs-build --version dev
+        if: github.event_name == 'push'
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:

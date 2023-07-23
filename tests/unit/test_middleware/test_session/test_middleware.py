@@ -16,7 +16,7 @@ def test_session_middleware_not_installed_raises() -> None:
         if request.session:
             raise AssertionError("this line should not be hit")
 
-    with create_test_client(handler) as client:
+    with create_test_client(handler, debug=False) as client:
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
         assert response.json()["detail"] == "Internal Server Error"

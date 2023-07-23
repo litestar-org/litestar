@@ -1,9 +1,7 @@
 Litestar library documentation
 ==============================
 
-Litestar is a powerful, flexible, highly performant, and opinionated ASGI framework,
-offering first class typing support and a full `Pydantic <https://github.com/pydantic/pydantic>`_
-integration.
+Litestar is a powerful, flexible, highly performant, and opinionated ASGI framework.
 
 The Litestar framework supports :doc:`/usage/plugins`, ships
 with :doc:`dependency injection </usage/dependency-injection>`, :doc:`security primitives </usage/security/index>`,
@@ -17,9 +15,19 @@ Installation
 
    pip install litestar
 
+.. tip:: ``litestar[standard]`` includes everything you need to get started with Litestar. It has: ``click`` and ``rich`` for a great CLI experience, ``jinja2`` for templating,
+        and ``uvicorn`` for running your app.
+
+        You can also install just the :doc:`CLI </usage/cli>` with ``litestar[cli]``!
 
 .. dropdown:: Extras
     :icon: star
+
+    `Pydantic <https://docs.pydantic.dev/latest/>`_
+        :code:`pip install litestar[pydantic]`
+
+    `Attrs <https://www.attrs.org>`_
+        :code:`pip install litestar[attrs]`
 
     :ref:`Brotli Compression Middleware <usage/middleware/builtin-middleware:brotli>`:
         :code:`pip install litestar[brotli]`
@@ -43,7 +51,7 @@ Installation
         :code:`pip install litestar[prometheus]`
 
     :doc:`Open Telemetry Instrumentation </usage/contrib/open-telemetry>`
-        :code:`pip install litestar[openetelemetry]`
+        :code:`pip install litestar[opentelemetry]`
 
     :doc:`SQLAlchemy </usage/contrib/sqlalchemy/index>`
         :code:`pip install litestar[sqlalchemy]`
@@ -54,18 +62,16 @@ Installation
     :doc:`Jinja Templating </usage/templating>`
         :code:`pip install litestar[jinja]`
 
-    `Attrs <https://www.attrs.org>`_
-        :code:`pip install litestar[attrs]`
+    :doc:`Mako Templating </usage/templating>`
+        :code:`pip install litestar[mako]`
 
     Standard Installation (includes CLI and Jinja templating):
         :code:`pip install litestar[standard]`
 
-    .. tip:: ``litestar[standard]`` includes everything you need to get started with Litestar, including
-        an ASGI web server. It has: ``click`` and ``rich`` for a great CLI experience, ``jinja2`` for templating,
-        ``jsbeautifier`` for keeping your Javascript tidy , and ``uvicorn`` for running your app.
-
     All Extras:
         :code:`pip install litestar[full]`
+
+    .. note:: the full extras is not recommended because it will add a lot of unnecessary extras.
 
 
 Minimal Example
@@ -86,7 +92,7 @@ First, create a file named ``app.py`` with the following contents:
 
 
    @get("/books/{book_id:int}")
-   async def get_book(book_id: int) -> JSONResponse:
+   async def get_book(book_id: int) -> dict[str, int]:
        return {"book_id": book_id}
 
 
@@ -146,8 +152,8 @@ You can also use dataclasses (standard library and Pydantic),
 
    from uuid import UUID
 
-   # from pydantic.dataclasses import dataclass
    from dataclasses import dataclass
+   from litestar.dto import DTOConfig, DataclassDTO
 
 
    @dataclass
@@ -156,16 +162,21 @@ You can also use dataclasses (standard library and Pydantic),
        last_name: str
        id: UUID
 
+
+   class PartialUserDTO(DataclassDTO[User]):
+       config = DTOConfig(exclude={"id"}, partial=True)
+
 **Define a Controller for your data model:**
 
 .. code-block:: python
 
     from typing import List
 
-    from pydantic import UUID4
     from litestar import Controller, get, post, put, patch, delete
-    from litestar.partial import Partial
-    from my_app.models import User
+    from litestar.dto import DTOData
+    from pydantic import UUID4
+
+    from my_app.models import User, PartialUserDTO
 
 
     class UserController(Controller):
@@ -179,8 +190,8 @@ You can also use dataclasses (standard library and Pydantic),
         async def list_users(self) -> List[User]:
             ...
 
-        @patch(path="/{user_id:uuid}")
-        async def partial_update_user(self, user_id: UUID4, data: Partial[User]) -> User:
+        @patch(path="/{user_id:uuid}", dto=PartialUserDTO)
+        async def partial_update_user(self, user_id: UUID4, data: PartialUserDTO) -> User:
             ...
 
         @put(path="/{user_id:uuid}")

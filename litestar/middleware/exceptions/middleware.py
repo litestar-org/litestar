@@ -55,9 +55,11 @@ def get_exception_handler(exception_handlers: ExceptionHandlersMap, exc: Excepti
     """
     if not exception_handlers:
         return None
+
     status_code: int | None = getattr(exc, "status_code", None)
     if status_code and (exception_handler := exception_handlers.get(status_code)):
         return exception_handler
+
     return next(
         (exception_handlers[cast("Type[Exception]", cls)] for cls in getmro(type(exc)) if cls in exception_handlers),
         exception_handlers[HTTP_500_INTERNAL_SERVER_ERROR]
@@ -217,6 +219,7 @@ class ExceptionHandlerMiddleware:
         else:
             code = 4000 + getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
             reason = getattr(exc, "detail", repr(exc))
+
         event: WebSocketCloseEvent = {"type": "websocket.close", "code": code, "reason": reason}
         await send(event)
 

@@ -16,10 +16,8 @@ __all__ = ("ASGIConnection", "empty_receive", "empty_send")
 if TYPE_CHECKING:
     from typing import NoReturn
 
-    from pydantic import BaseModel
-
     from litestar.app import Litestar
-    from litestar.types import EmptyType
+    from litestar.types import DataContainerType, EmptyType
     from litestar.types.asgi_types import Message, Receive, Scope, Send
     from litestar.types.protocols import Logger
 
@@ -260,7 +258,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         """
         return self.app.get_logger()
 
-    def set_session(self, value: dict[str, Any] | BaseModel | EmptyType) -> None:
+    def set_session(self, value: dict[str, Any] | DataContainerType | EmptyType) -> None:
         """Set the session in the connection's ``Scope``.
 
         If the :class:`SessionMiddleware <.middleware.session.base.SessionMiddleware>` is enabled, the session will be added

@@ -68,7 +68,7 @@ def create_test_client(
     compression_config: CompressionConfig | None = None,
     cors_config: CORSConfig | None = None,
     csrf_config: CSRFConfig | None = None,
-    debug: bool = False,
+    debug: bool = True,
     dependencies: Dependencies | None = None,
     dto: type[DTOInterface] | None | EmptyType = Empty,
     etag: ETag | None = None,
@@ -107,7 +107,6 @@ def create_test_client(
     timeout: float | None = None,
     type_encoders: TypeEncodersMap | None = None,
     websocket_class: type[WebSocket] | None = None,
-    _preferred_validation_backend: Literal["pydantic", "attrs"] | None = None,
 ) -> TestClient[Litestar]:
     """Create a Litestar app instance and initializes it.
 
@@ -281,7 +280,6 @@ def create_test_client(
         template_config=template_config,
         type_encoders=type_encoders,
         websocket_class=websocket_class,
-        _preferred_validation_backend=_preferred_validation_backend,
     )
 
     return TestClient[Litestar](
@@ -312,7 +310,7 @@ def create_async_test_client(
     compression_config: CompressionConfig | None = None,
     cors_config: CORSConfig | None = None,
     csrf_config: CSRFConfig | None = None,
-    debug: bool = False,
+    debug: bool = True,
     dependencies: Dependencies | None = None,
     dto: type[DTOInterface] | None | EmptyType = Empty,
     etag: ETag | None = None,
@@ -351,7 +349,6 @@ def create_async_test_client(
     timeout: float | None = None,
     type_encoders: TypeEncodersMap | None = None,
     websocket_class: type[WebSocket] | None = None,
-    _preferred_validation_backend: Literal["pydantic", "attrs"] | None = None,
 ) -> AsyncTestClient[Litestar]:
     """Create a Litestar app instance and initializes it.
 
@@ -525,7 +522,6 @@ def create_async_test_client(
         template_config=template_config,
         type_encoders=type_encoders,
         websocket_class=websocket_class,
-        _preferred_validation_backend=_preferred_validation_backend,
     )
 
     return AsyncTestClient[Litestar](

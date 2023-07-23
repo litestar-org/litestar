@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import date
 from typing import TYPE_CHECKING
 from uuid import UUID
@@ -25,8 +27,7 @@ if TYPE_CHECKING:
 class BaseModel(_BaseModel):
     """Extend Pydantic's BaseModel to enable ORM mode"""
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 
 # the SQLAlchemy base includes a declarative model for you to use in your models.
@@ -36,7 +37,7 @@ class AuthorModel(UUIDBase):
     __tablename__ = "author"  #  type: ignore[assignment]
     name: Mapped[str]
     dob: Mapped[date | None]
-    books: Mapped[list["BookModel"]] = relationship(back_populates="author", lazy="noload")
+    books: Mapped[list[BookModel]] = relationship(back_populates="author", lazy="noload")
 
 
 # The `AuditBase` class includes the same UUID` based primary key (`id`) and 2
@@ -46,7 +47,7 @@ class BookModel(UUIDAuditBase):
     __tablename__ = "book"  #  type: ignore[assignment]
     title: Mapped[str]
     author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))
-    author: Mapped["AuthorModel"] = relationship(lazy="joined", innerjoin=True, viewonly=True)
+    author: Mapped[AuthorModel] = relationship(lazy="joined", innerjoin=True, viewonly=True)
 
 
 # we will explicitly define the schema instead of using DTO objects for clarity.
@@ -74,14 +75,14 @@ class AuthorRepository(SQLAlchemySyncRepository[AuthorModel]):
     model_type = AuthorModel
 
 
-async def provide_authors_repo(db_session: "Session") -> AuthorRepository:
+async def provide_authors_repo(db_session: Session) -> AuthorRepository:
     """This provides the default Authors repository."""
     return AuthorRepository(session=db_session)
 
 
 # we can optionally override the default `select` used for the repository to pass in
 # specific SQL options such as join details
-async def provide_author_details_repo(db_session: "Session") -> AuthorRepository:
+async def provide_author_details_repo(db_session: Session) -> AuthorRepository:
     """This provides a simple example demonstrating how to override the join options
     for the repository."""
     return AuthorRepository(

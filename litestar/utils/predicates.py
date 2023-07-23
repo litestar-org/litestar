@@ -36,6 +36,7 @@ from typing_extensions import (
     is_typeddict,
 )
 
+from litestar.constants import UNDEFINED_SENTINELS
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.typing import get_origin_or_inner_type
@@ -44,7 +45,6 @@ if TYPE_CHECKING:
     from litestar.types.builtin_types import TypedDictClass
     from litestar.types.callable_types import AnyGenerator
     from litestar.types.protocols import DataclassProtocol
-
 
 try:
     import pydantic
@@ -73,8 +73,10 @@ __all__ = (
     "is_pydantic_constrained_field",
     "is_pydantic_model_class",
     "is_pydantic_model_instance",
+    "is_struct_class",
     "is_sync_or_async_generator",
     "is_typed_dict",
+    "is_undefined_sentinel",
     "is_union",
 )
 
@@ -96,7 +98,7 @@ def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[
         value = value.func  # type: ignore[unreachable]
 
     return iscoroutinefunction(value) or (
-        callable(value) and iscoroutinefunction(value.__call__)  #  type: ignore[operator]
+        callable(value) and iscoroutinefunction(value.__call__)  # type: ignore[operator]
     )
 
 
@@ -350,7 +352,7 @@ def is_pydantic_constrained_field(
         )
 
         return any(
-            is_class_and_subclass(annotation, constrained_type)
+            is_class_and_subclass(annotation, constrained_type)  # type: ignore[arg-type]
             for constrained_type in (
                 ConstrainedBytes,
                 ConstrainedDate,
@@ -414,3 +416,15 @@ def is_annotated_type(annotation: Any) -> bool:
         A boolean.
     """
     return isinstance(annotation, _AnnotatedAlias) and getattr(annotation, "__args__", None) is not None
+
+
+def is_undefined_sentinel(value: Any) -> bool:
+    """Check if the given value is the undefined sentinel.
+
+    Args:
+        value: A value to be tested for undefined sentinel.
+
+    Returns:
+        A boolean.
+    """
+    return any(v is value for v in UNDEFINED_SENTINELS)
