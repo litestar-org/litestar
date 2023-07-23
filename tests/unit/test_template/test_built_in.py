@@ -90,7 +90,9 @@ def test_raise_for_invalid_template_name(template_config: TemplateConfig) -> Non
     def invalid_template_name_handler() -> Template:
         return Template(template_name="invalid.html", context={"test": "yep"})
 
-    with create_test_client(route_handlers=[invalid_template_name_handler], template_config=template_config) as client:
+    with create_test_client(
+        route_handlers=[invalid_template_name_handler], template_config=template_config, debug=False
+    ) as client:
         response = client.request("GET", "/")
         assert response.status_code == 500
         assert response.json() == {"detail": "Internal Server Error", "status_code": 500}
