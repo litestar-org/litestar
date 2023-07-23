@@ -69,11 +69,11 @@ class DTOFieldDefinition(FieldDefinition):
         "default_factory",
         "dto_field",
         "dto_for",
-        "unique_model_name",
+        "model_name",
     )
 
-    unique_model_name: str
-    """Unique identifier of model that owns the field."""
+    model_name: str
+    """The name of the model for which the field is generated."""
     default_factory: Callable[[], Any] | None
     """Default factory of the field."""
     dto_field: DTOField
@@ -92,14 +92,11 @@ class DTOFieldDefinition(FieldDefinition):
     user.
     """
 
-    def unique_name(self) -> str:
-        return f"{self.unique_model_name}.{self.name}"
-
     @classmethod
     def from_field_definition(
         cls,
         field_definition: FieldDefinition,
-        unique_model_name: str,
+        model_name: str,
         default_factory: Callable[[], Any] | None,
         dto_field: DTOField,
         dto_for: ForType | None,
@@ -108,7 +105,7 @@ class DTOFieldDefinition(FieldDefinition):
 
         Args:
             field_definition: A :class:`FieldDefinition` to create a :class:`FieldDefinition` from.
-            unique_model_name: The unique name of the model.
+            model_name: The name of the model.
             default_factory: Default factory function, if any.
             dto_field: DTOField instance.
             dto_for: DTO type.
@@ -130,7 +127,7 @@ class DTOFieldDefinition(FieldDefinition):
             raw=field_definition.raw,
             safe_generic_origin=field_definition.safe_generic_origin,
             type_wrappers=field_definition.type_wrappers,
-            unique_model_name=unique_model_name,
+            model_name=model_name,
             default_factory=default_factory,
             dto_field=dto_field,
             dto_for=dto_for,

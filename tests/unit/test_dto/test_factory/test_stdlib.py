@@ -10,7 +10,6 @@ import pytest
 from litestar.dto import DataclassDTO, DTOField
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.typing import FieldDefinition
-from litestar.utils.helpers import get_fully_qualified_class_name
 
 
 @dataclass
@@ -28,7 +27,6 @@ def fx_dto_type() -> type[DataclassDTO[Model]]:
 
 @pytest.mark.skipif(sys.version_info > (3, 8), reason="generic builtin collection")
 def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> None:
-    fqdn = get_fully_qualified_class_name(Model)
     expected = [
         replace(
             DTOFieldDefinition.from_field_definition(
@@ -37,7 +35,7 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
                     annotation=int,
                 ),
                 default_factory=None,
-                unique_model_name=fqdn,
+                model_name=Model.__name__,
                 dto_field=DTOField(),
                 dto_for=None,
             ),
@@ -49,7 +47,7 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
             DTOFieldDefinition.from_field_definition(
                 field_definition=FieldDefinition.from_kwarg(name="b", annotation=str, default="b"),
                 default_factory=None,
-                unique_model_name=fqdn,
+                model_name=Model.__name__,
                 dto_field=DTOField(),
                 dto_for=None,
             ),
@@ -64,7 +62,7 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
                     annotation=list[int],
                 ),
                 default_factory=list,
-                unique_model_name=fqdn,
+                model_name=Model.__name__,
                 dto_field=DTOField(),
                 dto_for=None,
             ),
@@ -78,7 +76,6 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
 
 
 def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> None:
-    fqdn = get_fully_qualified_class_name(Model)
     expected = [
         replace(
             DTOFieldDefinition.from_field_definition(
@@ -87,7 +84,7 @@ def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> 
                     annotation=int,
                 ),
                 default_factory=None,
-                unique_model_name=fqdn,
+                model_name=Model.__name__,
                 dto_field=DTOField(),
                 dto_for=None,
             ),
@@ -99,7 +96,7 @@ def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> 
             DTOFieldDefinition.from_field_definition(
                 field_definition=FieldDefinition.from_kwarg(name="b", annotation=str, default="b"),
                 default_factory=None,
-                unique_model_name=fqdn,
+                model_name=Model.__name__,
                 dto_field=DTOField(),
                 dto_for=None,
             ),
@@ -114,7 +111,7 @@ def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> 
                     annotation=List[int],
                 ),
                 default_factory=list,
-                unique_model_name=fqdn,
+                model_name=Model.__name__,
                 dto_field=DTOField(),
                 dto_for=None,
             ),

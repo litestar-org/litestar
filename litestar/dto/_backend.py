@@ -4,7 +4,7 @@ back again, to bytes.
 from __future__ import annotations
 
 import secrets
-from typing import TYPE_CHECKING, AbstractSet, Any, Callable, Collection, Final, Mapping, Union, cast
+from typing import TYPE_CHECKING, AbstractSet, Any, Callable, ClassVar, Collection, Final, Mapping, Union, cast
 
 from msgspec import UNSET, Struct, UnsetType, convert, defstruct, field
 from typing_extensions import get_origin
@@ -27,7 +27,6 @@ from litestar.exceptions import SerializationException
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils.helpers import get_fully_qualified_class_name
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
@@ -44,37 +43,42 @@ class DTOBackend:
     __slots__ = (
         "annotation",
         "dto_data_type",
-        "field_definition",
         "dto_factory",
+        "field_definition",
+        "handler_id",
+        "is_data_field",
         "model_type",
         "parsed_field_definitions",
         "reverse_name_map",
         "transfer_model_type",
         "wrapper_attribute_name",
-        "is_data_field",
     )
+
+    _seen_model_names: ClassVar[set[str]] = set()
 
     def __init__(
         self,
         dto_factory: type[AbstractDTOFactory],
         field_definition: FieldDefinition,
+        handler_id: str,
+        is_data_field: bool,
         model_type: type[Any],
         wrapper_attribute_name: str | None,
-        is_data_field: bool,
     ) -> None:
         """Create dto backend instance.
 
         Args:
-            field_definition: Parsed type.
             dto_factory: The DTO factory class calling this backend.
-            model_type: Model type.
-            wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure, this is the
-                name of the attribute that the data is stored in.
+            field_definition: Parsed type.
+            handler_id: The name of the handler that this backend is for.
             is_data_field: Whether or not the field is a subclass of DTOData.
+            model_type: Model type.
+            wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure, this is the name of the attribute that the data is stored in.
         """
         self.dto_factory: Final[type[AbstractDTOFactory]] = dto_factory
         self.field_definition: Final[FieldDefinition] = field_definition
         self.is_data_field: Final[bool] = is_data_field
+        self.handler_id: Final[str] = handler_id
         self.model_type: Final[type[Any]] = model_type
         self.wrapper_attribute_name: Final[str | None] = wrapper_attribute_name
 
@@ -82,7 +86,7 @@ class DTOBackend:
             model_type=model_type, exclude=self.dto_factory.config.exclude, include=self.dto_factory.config.include
         )
         self.transfer_model_type = self.create_transfer_model_type(
-            get_fully_qualified_class_name(model_type), self.parsed_field_definitions
+            model_name=model_type.__name__, field_definitions=self.parsed_field_definitions
         )
         self.dto_data_type: type[DTOData] | None = None
 
@@ -140,7 +144,7 @@ class DTOBackend:
                     exclude=exclude,
                     include=include,
                     field_name=field_definition.name,
-                    unique_name=field_definition.unique_name(),
+                    unique_name=field_definition.model_name,
                     nested_depth=nested_depth,
                 )
             except RecursionError:
@@ -170,19 +174,28 @@ class DTOBackend:
             defined_fields.append(transfer_field_definition)
         return tuple(defined_fields)
 
-    def create_transfer_model_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
+    def create_transfer_model_type(self, model_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
         """Create a model for data transfer.
 
         Args:
-            unique_name: name for the type that should be unique across all transfer types.
+            model_name: name for the type that should be unique across all transfer types.
             field_definitions: field definitions for the container type.
 
         Returns:
             A ``BackendT`` class.
         """
-        fqn_uid: str = self._gen_unique_name_id(unique_name)
-        struct = _create_struct_for_field_definitions(fqn_uid, field_definitions)
-        setattr(struct, "__schema_name__", unique_name)
+        short_name_prefix = _camelize(self.handler_id.split(".")[-1], True)
+        long_name_prefix = self.handler_id
+        name_suffix = "RequestBody" if self.is_data_field else "ResponseBody"
+
+        if f"{short_name_prefix}{model_name}{name_suffix}" not in self._seen_model_names:
+            struct_name = f"{short_name_prefix}{model_name}{name_suffix}"
+            self._seen_model_names.add(struct_name)
+        else:
+            struct_name = f"{long_name_prefix}{model_name}{name_suffix}"
+
+        struct = _create_struct_for_field_definitions(struct_name, field_definitions)
+        setattr(struct, "__schema_name__", struct_name)
         return struct
 
     def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> Struct | Collection[Struct]:

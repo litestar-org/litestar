@@ -8,7 +8,6 @@ from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField
 from litestar.exceptions import MissingDependencyException
 from litestar.types.empty import Empty
-from litestar.utils.helpers import get_fully_qualified_class_name
 
 if TYPE_CHECKING:
     from typing import ClassVar, Generator
@@ -64,7 +63,7 @@ class PydanticDTO(AbstractDTOFactory[T], Generic[T]):
                 DTOFieldDefinition.from_field_definition(
                     field_definition=field_definition,
                     dto_field=dto_field,
-                    unique_model_name=get_fully_qualified_class_name(model_type),
+                    model_name=model_type.__name__,
                     default_factory=field_info.default_factory
                     if field_info.default_factory and field_info.default_factory is not PydanticUndefined  # type: ignore[comparison-overlap]
                     else Empty,

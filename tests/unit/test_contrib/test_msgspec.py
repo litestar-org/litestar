@@ -24,10 +24,7 @@ def test_field_definition_generation(
         e: int = field(default_factory=int_factory)
 
     field_defs = list(MsgspecDTO.generate_field_definitions(TestStruct))
-    assert (
-        field_defs[0].unique_model_name
-        == "tests.unit.test_contrib.test_msgspec.test_field_definition_generation.<locals>.TestStruct"
-    )
+    assert field_defs[0].model_name == "TestStruct"
     for field_def, exp in zip(field_defs, expected_field_defs):
         assert field_def == exp
 
