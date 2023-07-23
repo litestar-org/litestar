@@ -522,10 +522,7 @@ def _rename_field(name: str, strategy: RenameStrategy) -> str:
     if strategy == "pascal":
         return _camelize(value=name, capitalize_first_letter=True)
 
-    if strategy == "lower":
-        return name.lower()
-
-    return name.upper()
+    return name.lower() if strategy == "lower" else name.upper()
 
 
 def _filter_nested_field(field_name_set: AbstractSet[str], field_name: str) -> AbstractSet[str]:
