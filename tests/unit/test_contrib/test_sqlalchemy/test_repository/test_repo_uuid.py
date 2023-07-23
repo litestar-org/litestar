@@ -639,10 +639,14 @@ async def test_repo_filter_not_in_collection(author_repo: AuthorAsyncRepository)
         author_repo (AuthorAsyncRepository): The author mock repository
     """
 
-    existing_obj = await maybe_async(author_repo.list(NotInCollectionFilter(field_name="id", values=[2023])))
+    existing_obj = await maybe_async(
+        author_repo.list(NotInCollectionFilter(field_name="id", values=[UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")]))
+    )
     assert existing_obj[0].name == "Leo Tolstoy"
 
-    existing_obj = await maybe_async(author_repo.list(NotInCollectionFilter(field_name="id", values=[2024])))
+    existing_obj = await maybe_async(
+        author_repo.list(NotInCollectionFilter(field_name="id", values=[UUID("5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2")]))
+    )
     assert existing_obj[0].name == "Agatha Christie"
 
 
