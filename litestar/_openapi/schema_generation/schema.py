@@ -4,6 +4,7 @@ from collections import deque
 from copy import copy
 from dataclasses import MISSING, fields
 from datetime import date, datetime, time, timedelta
+from decimal import Decimal
 from enum import EnumMeta
 from ipaddress import IPv4Address, IPv4Interface, IPv4Network, IPv6Address, IPv6Interface, IPv6Network
 from pathlib import Path
@@ -32,7 +33,6 @@ from typing import (
 )
 from uuid import UUID
 
-from _decimal import Decimal
 from msgspec.structs import FieldInfo
 from msgspec.structs import fields as msgspec_struct_fields
 from typing_extensions import NotRequired, Required, get_args, get_type_hints
