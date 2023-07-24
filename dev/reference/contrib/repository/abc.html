@@ -1403,6 +1403,27 @@ existing instance exists is the value of an attribute on <code class="docutils l
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="litestar.contrib.repository.abc.AbstractAsyncRepository.upsert_many">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">upsert_many</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.contrib.repository.abc.AbstractAsyncRepository.upsert_many" title="Permalink to this definition">#</a></dt>
+<dd><p>Update or create multiple instances.</p>
+<p>Update instances with the attribute values present on <code class="docutils literal notranslate"><span class="pre">data</span></code>, or create a new instance if
+one doesn’t exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – Instances to update or created. Identifier used to determine if an
+existing instance exists is the value of an attribute on <code class="docutils literal notranslate"><span class="pre">data</span></code> named as value of
+<a class="reference internal" href="#litestar.contrib.repository.abc.AbstractAsyncRepository.id_attribute" title="litestar.contrib.repository.abc.AbstractAsyncRepository.id_attribute"><code class="xref py py-attr docutils literal notranslate"><span class="pre">id_attribute</span></code></a>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated or created instances.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.contrib.repository.exceptions.NotFoundError" title="litestar.contrib.repository.exceptions.NotFoundError"><strong>NotFoundError</strong></a> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="litestar.contrib.repository.abc.AbstractAsyncRepository.list_and_count">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_and_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="filters.html#litestar.contrib.repository.filters.FilterTypes" title="litestar.contrib.repository.filters.FilterTypes"><span class="pre">FilterTypes</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.contrib.repository.abc.AbstractAsyncRepository.list_and_count" title="Permalink to this definition">#</a></dt>
 <dd><p>List records with total count.</p>
@@ -1747,6 +1768,27 @@ existing instance exists is the value of an attribute on <code class="docutils l
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="litestar.contrib.repository.abc.AbstractSyncRepository.upsert_many">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">upsert_many</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.contrib.repository.abc.AbstractSyncRepository.upsert_many" title="Permalink to this definition">#</a></dt>
+<dd><p>Update or create multiple instances.</p>
+<p>Update instances with the attribute values present on <code class="docutils literal notranslate"><span class="pre">data</span></code>, or create a new instance if
+one doesn’t exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – Instances to update or created. Identifier used to determine if an
+existing instance exists is the value of an attribute on <code class="docutils literal notranslate"><span class="pre">data</span></code> named as value of
+<a class="reference internal" href="#litestar.contrib.repository.abc.AbstractAsyncRepository.id_attribute" title="litestar.contrib.repository.abc.AbstractAsyncRepository.id_attribute"><code class="xref py py-attr docutils literal notranslate"><span class="pre">id_attribute</span></code></a>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated or created instances.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.contrib.repository.exceptions.NotFoundError" title="litestar.contrib.repository.exceptions.NotFoundError"><strong>NotFoundError</strong></a> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="litestar.contrib.repository.abc.AbstractSyncRepository.list_and_count">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_and_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="filters.html#litestar.contrib.repository.filters.FilterTypes" title="litestar.contrib.repository.filters.FilterTypes"><span class="pre">FilterTypes</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.contrib.repository.abc.AbstractSyncRepository.list_and_count" title="Permalink to this definition">#</a></dt>
 <dd><p>List records with total count.</p>
@@ -1921,6 +1963,7 @@ Defaults to <cite>None</cite>, but can reference any surrogate or candidate key 
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.abc.AbstractAsyncRepository.update"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncRepository.update()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.abc.AbstractAsyncRepository.update_many"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncRepository.update_many()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.abc.AbstractAsyncRepository.upsert"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncRepository.upsert()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.abc.AbstractAsyncRepository.upsert_many"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncRepository.upsert_many()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.abc.AbstractAsyncRepository.list_and_count"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncRepository.list_and_count()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.abc.AbstractAsyncRepository.list"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncRepository.list()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.abc.AbstractAsyncRepository.filter_collection_by_kwargs"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncRepository.filter_collection_by_kwargs()</span></code></a></li>
@@ -1946,6 +1989,7 @@ Defaults to <cite>None</cite>, but can reference any surrogate or candidate key 
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.abc.AbstractSyncRepository.update"><code class="docutils literal notranslate"><span class="pre">AbstractSyncRepository.update()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.abc.AbstractSyncRepository.update_many"><code class="docutils literal notranslate"><span class="pre">AbstractSyncRepository.update_many()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.abc.AbstractSyncRepository.upsert"><code class="docutils literal notranslate"><span class="pre">AbstractSyncRepository.upsert()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.abc.AbstractSyncRepository.upsert_many"><code class="docutils literal notranslate"><span class="pre">AbstractSyncRepository.upsert_many()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.abc.AbstractSyncRepository.list_and_count"><code class="docutils literal notranslate"><span class="pre">AbstractSyncRepository.list_and_count()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.abc.AbstractSyncRepository.list"><code class="docutils literal notranslate"><span class="pre">AbstractSyncRepository.list()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.abc.AbstractSyncRepository.filter_collection_by_kwargs"><code class="docutils literal notranslate"><span class="pre">AbstractSyncRepository.filter_collection_by_kwargs()</span></code></a></li>
