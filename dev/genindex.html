@@ -1543,6 +1543,12 @@ document.write(`
 </li>
         <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.LimitOffset.__init__">(litestar.contrib.repository.filters.LimitOffset method)</a>
 </li>
+        <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.NotInCollectionFilter.__init__">(litestar.contrib.repository.filters.NotInCollectionFilter method)</a>
+</li>
+        <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.NotInSearchFilter.__init__">(litestar.contrib.repository.filters.NotInSearchFilter method)</a>
+</li>
+        <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.OnBeforeAfter.__init__">(litestar.contrib.repository.filters.OnBeforeAfter method)</a>
+</li>
         <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.OrderBy.__init__">(litestar.contrib.repository.filters.OrderBy method)</a>
 </li>
         <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.SearchFilter.__init__">(litestar.contrib.repository.filters.SearchFilter method)</a>
@@ -3373,6 +3379,12 @@ document.write(`
       <ul>
         <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.CollectionFilter.field_name">(litestar.contrib.repository.filters.CollectionFilter attribute)</a>
 </li>
+        <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.NotInCollectionFilter.field_name">(litestar.contrib.repository.filters.NotInCollectionFilter attribute)</a>
+</li>
+        <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.NotInSearchFilter.field_name">(litestar.contrib.repository.filters.NotInSearchFilter attribute)</a>
+</li>
+        <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.OnBeforeAfter.field_name">(litestar.contrib.repository.filters.OnBeforeAfter attribute)</a>
+</li>
         <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.OrderBy.field_name">(litestar.contrib.repository.filters.OrderBy attribute)</a>
 </li>
         <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.SearchFilter.field_name">(litestar.contrib.repository.filters.SearchFilter attribute)</a>
@@ -3408,12 +3420,12 @@ document.write(`
 </li>
       <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.FilterTypes">FilterTypes (in module litestar.contrib.repository.filters)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.SecurityScheme.flows">flows (litestar.openapi.spec.SecurityScheme attribute)</a>
 </li>
       <li><a href="reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.flush_all">flush_all() (litestar.channels.backends.redis.RedisChannelsStreamBackend method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.fn">fn (litestar.handlers.BaseRouteHandler property)</a>
 </li>
       <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.for_pydantic_model">for_pydantic_model() (litestar.contrib.pydantic.PydanticSchemaPlugin class method)</a>
@@ -3946,8 +3958,12 @@ document.write(`
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.License.identifier">(litestar.openapi.spec.License attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.SearchFilter.ignore_case">ignore_case (litestar.contrib.repository.filters.SearchFilter attribute)</a>
+      <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.NotInSearchFilter.ignore_case">ignore_case (litestar.contrib.repository.filters.NotInSearchFilter attribute)</a>
+
+      <ul>
+        <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.SearchFilter.ignore_case">(litestar.contrib.repository.filters.SearchFilter attribute)</a>
 </li>
+      </ul></li>
       <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.immutable">immutable (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
       <li><a href="reference/datastructures.html#litestar.datastructures.MultiDict.immutable">immutable() (litestar.datastructures.MultiDict method)</a>
@@ -5439,10 +5455,10 @@ document.write(`
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.name">(litestar.typing.FieldDefinition attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.XML.namespace">namespace (litestar.openapi.spec.XML attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/stores/base.html#litestar.stores.base.NamespacedStore">NamespacedStore (class in litestar.stores.base)</a>
 </li>
       <li><a href="reference/datastructures.html#litestar.datastructures.URL.netloc">netloc (litestar.datastructures.URL attribute)</a>
@@ -5464,6 +5480,10 @@ document.write(`
       <li><a href="reference/contrib/repository/exceptions.html#litestar.contrib.repository.exceptions.NotFoundError">NotFoundError</a>
 </li>
       <li><a href="reference/exceptions.html#litestar.exceptions.NotFoundException">NotFoundException</a>
+</li>
+      <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.NotInCollectionFilter">NotInCollectionFilter (class in litestar.contrib.repository.filters)</a>
+</li>
+      <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.NotInSearchFilter">NotInSearchFilter (class in litestar.contrib.repository.filters)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -5517,6 +5537,10 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener.on_disconnect">(litestar.handlers.WebsocketListener attribute)</a>
 </li>
       </ul></li>
+      <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.OnBeforeAfter.on_or_after">on_or_after (litestar.contrib.repository.filters.OnBeforeAfter attribute)</a>
+</li>
+      <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.OnBeforeAfter.on_or_before">on_or_before (litestar.contrib.repository.filters.OnBeforeAfter attribute)</a>
+</li>
       <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener.on_receive">on_receive() (litestar.handlers.WebsocketListener method)</a>
 </li>
       <li><a href="reference/dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory.on_registration">on_registration() (litestar.dto.base_factory.AbstractDTOFactory class method)</a>
@@ -5561,6 +5585,8 @@ document.write(`
       </ul></li>
       <li><a href="reference/types.html#litestar.types.OnAppInitHandler">OnAppInitHandler (in module litestar.types)</a>
 </li>
+      <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.OnBeforeAfter">OnBeforeAfter (class in litestar.contrib.repository.filters)</a>
+</li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.one_of">one_of (litestar.openapi.spec.Schema attribute)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.FileSystemProtocol.open">open() (litestar.types.FileSystemProtocol method)</a>
@@ -5569,10 +5595,10 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI">OpenAPI (class in litestar.openapi.spec)</a>
 </li>
-      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI.openapi">openapi (litestar.openapi.spec.OpenAPI attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI.openapi">openapi (litestar.openapi.spec.OpenAPI attribute)</a>
+</li>
       <li><a href="reference/contrib/jwt.html#litestar.contrib.jwt.BaseJWTAuth.openapi_components">openapi_components (litestar.contrib.jwt.BaseJWTAuth property)</a>
 
       <ul>
@@ -7241,9 +7267,11 @@ document.write(`
 </li>
       <li><a href="reference/exceptions.html#litestar.exceptions.ValidationException">ValidationException</a>
 </li>
-      <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.SearchFilter.value">value (litestar.contrib.repository.filters.SearchFilter attribute)</a>
+      <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.NotInSearchFilter.value">value (litestar.contrib.repository.filters.NotInSearchFilter attribute)</a>
 
       <ul>
+        <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.SearchFilter.value">(litestar.contrib.repository.filters.SearchFilter attribute)</a>
+</li>
         <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.value">(litestar.datastructures.Cookie attribute)</a>
 </li>
         <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.value">(litestar.datastructures.ResponseHeader attribute)</a>
@@ -7254,7 +7282,11 @@ document.write(`
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.CollectionFilter.values">values (litestar.contrib.repository.filters.CollectionFilter attribute)</a>
+
+      <ul>
+        <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.NotInCollectionFilter.values">(litestar.contrib.repository.filters.NotInCollectionFilter attribute)</a>
 </li>
+      </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Server.variables">variables (litestar.openapi.spec.Server attribute)</a>
 </li>
       <li><a href="reference/logging/config.html#litestar.logging.config.LoggingConfig.version">version (litestar.logging.config.LoggingConfig attribute)</a>

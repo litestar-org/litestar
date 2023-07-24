@@ -1224,7 +1224,7 @@ document.write(`
 
 <dl class="py data">
 <dt class="sig sig-object py" id="litestar.contrib.repository.filters.FilterTypes">
-<span class="sig-prename descclassname"><span class="pre">litestar.contrib.repository.filters.</span></span><span class="sig-name descname"><span class="pre">FilterTypes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">TypeAlias</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BeforeAfter</span> <span class="pre">|</span> <span class="pre">CollectionFilter[Any]</span> <span class="pre">|</span> <span class="pre">LimitOffset</span> <span class="pre">|</span> <span class="pre">OrderBy</span> <span class="pre">|</span> <span class="pre">SearchFilter'</span></em><a class="headerlink" href="#litestar.contrib.repository.filters.FilterTypes" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">litestar.contrib.repository.filters.</span></span><span class="sig-name descname"><span class="pre">FilterTypes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">TypeAlias</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BeforeAfter</span> <span class="pre">|</span> <span class="pre">OnBeforeAfter</span> <span class="pre">|</span> <span class="pre">CollectionFilter[Any]</span> <span class="pre">|</span> <span class="pre">LimitOffset</span> <span class="pre">|</span> <span class="pre">OrderBy</span> <span class="pre">|</span> <span class="pre">SearchFilter</span> <span class="pre">|</span> <span class="pre">NotInCollectionFilter[Any]</span> <span class="pre">|</span> <span class="pre">NotInSearchFilter'</span></em><a class="headerlink" href="#litestar.contrib.repository.filters.FilterTypes" title="Permalink to this definition">#</a></dt>
 <dd><p>Aggregate type alias of the types supported for collection filtering.</p>
 </dd></dl>
 
@@ -1301,6 +1301,90 @@ document.write(`
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.contrib.repository.filters.SearchFilter.ignore_case">
 <span class="sig-name descname"><span class="pre">ignore_case</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#litestar.contrib.repository.filters.SearchFilter.ignore_case" title="Permalink to this definition">#</a></dt>
+<dd><p>Should the search be case insensitive.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.contrib.repository.filters.NotInCollectionFilter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.repository.filters.</span></span><span class="sig-name descname"><span class="pre">NotInCollectionFilter</span></span><a class="headerlink" href="#litestar.contrib.repository.filters.NotInCollectionFilter" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>Data required to construct a <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">...</span> <span class="pre">NOT</span> <span class="pre">IN</span> <span class="pre">(...)</span></code> clause.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.contrib.repository.filters.NotInCollectionFilter.field_name">
+<span class="sig-name descname"><span class="pre">field_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.contrib.repository.filters.NotInCollectionFilter.field_name" title="Permalink to this definition">#</a></dt>
+<dd><p>Name of the model attribute to filter on.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.contrib.repository.filters.NotInCollectionFilter.values">
+<span class="sig-name descname"><span class="pre">values</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.11)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.contrib.repository.filters.NotInCollectionFilter.values" title="Permalink to this definition">#</a></dt>
+<dd><p>Values for <code class="docutils literal notranslate"><span class="pre">NOT</span> <span class="pre">IN</span></code> clause.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.contrib.repository.filters.NotInCollectionFilter.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.11)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.repository.filters.NotInCollectionFilter.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.contrib.repository.filters.OnBeforeAfter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.repository.filters.</span></span><span class="sig-name descname"><span class="pre">OnBeforeAfter</span></span><a class="headerlink" href="#litestar.contrib.repository.filters.OnBeforeAfter" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Data required to filter a query on a <code class="docutils literal notranslate"><span class="pre">datetime</span></code> column.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.contrib.repository.filters.OnBeforeAfter.field_name">
+<span class="sig-name descname"><span class="pre">field_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.contrib.repository.filters.OnBeforeAfter.field_name" title="Permalink to this definition">#</a></dt>
+<dd><p>Name of the model attribute to filter on.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.contrib.repository.filters.OnBeforeAfter.on_or_before">
+<span class="sig-name descname"><span class="pre">on_or_before</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.11)"><span class="pre">datetime.datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.contrib.repository.filters.OnBeforeAfter.on_or_before" title="Permalink to this definition">#</a></dt>
+<dd><p>Filter results where field is on or earlier than this.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.contrib.repository.filters.OnBeforeAfter.on_or_after">
+<span class="sig-name descname"><span class="pre">on_or_after</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.11)"><span class="pre">datetime.datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.contrib.repository.filters.OnBeforeAfter.on_or_after" title="Permalink to this definition">#</a></dt>
+<dd><p>Filter results where field on or later than this.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.contrib.repository.filters.OnBeforeAfter.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_or_before</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.11)"><span class="pre">datetime.datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_or_after</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.11)"><span class="pre">datetime.datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.repository.filters.OnBeforeAfter.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.contrib.repository.filters.NotInSearchFilter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.repository.filters.</span></span><span class="sig-name descname"><span class="pre">NotInSearchFilter</span></span><a class="headerlink" href="#litestar.contrib.repository.filters.NotInSearchFilter" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Data required to construct a <code class="docutils literal notranslate"><span class="pre">WHERE</span> <span class="pre">field_name</span> <span class="pre">NOT</span> <span class="pre">LIKE</span> <span class="pre">'%'</span> <span class="pre">||</span> <span class="pre">:value</span> <span class="pre">||</span> <span class="pre">'%'</span></code> clause.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.contrib.repository.filters.NotInSearchFilter.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_case</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.repository.filters.NotInSearchFilter.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.contrib.repository.filters.NotInSearchFilter.field_name">
+<span class="sig-name descname"><span class="pre">field_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.contrib.repository.filters.NotInSearchFilter.field_name" title="Permalink to this definition">#</a></dt>
+<dd><p>Name of the model attribute to search on.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.contrib.repository.filters.NotInSearchFilter.value">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.contrib.repository.filters.NotInSearchFilter.value" title="Permalink to this definition">#</a></dt>
+<dd><p>Values for <code class="docutils literal notranslate"><span class="pre">NOT</span> <span class="pre">LIKE</span></code> clause.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.contrib.repository.filters.NotInSearchFilter.ignore_case">
+<span class="sig-name descname"><span class="pre">ignore_case</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#litestar.contrib.repository.filters.NotInSearchFilter.ignore_case" title="Permalink to this definition">#</a></dt>
 <dd><p>Should the search be case insensitive.</p>
 </dd></dl>
 
@@ -1386,6 +1470,26 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.filters.SearchFilter.field_name"><code class="docutils literal notranslate"><span class="pre">SearchFilter.field_name</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.filters.SearchFilter.value"><code class="docutils literal notranslate"><span class="pre">SearchFilter.value</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.filters.SearchFilter.ignore_case"><code class="docutils literal notranslate"><span class="pre">SearchFilter.ignore_case</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.filters.NotInCollectionFilter"><code class="docutils literal notranslate"><span class="pre">NotInCollectionFilter</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.filters.NotInCollectionFilter.field_name"><code class="docutils literal notranslate"><span class="pre">NotInCollectionFilter.field_name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.filters.NotInCollectionFilter.values"><code class="docutils literal notranslate"><span class="pre">NotInCollectionFilter.values</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.filters.NotInCollectionFilter.__init__"><code class="docutils literal notranslate"><span class="pre">NotInCollectionFilter.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.filters.OnBeforeAfter"><code class="docutils literal notranslate"><span class="pre">OnBeforeAfter</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.filters.OnBeforeAfter.field_name"><code class="docutils literal notranslate"><span class="pre">OnBeforeAfter.field_name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.filters.OnBeforeAfter.on_or_before"><code class="docutils literal notranslate"><span class="pre">OnBeforeAfter.on_or_before</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.filters.OnBeforeAfter.on_or_after"><code class="docutils literal notranslate"><span class="pre">OnBeforeAfter.on_or_after</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.filters.OnBeforeAfter.__init__"><code class="docutils literal notranslate"><span class="pre">OnBeforeAfter.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.filters.NotInSearchFilter"><code class="docutils literal notranslate"><span class="pre">NotInSearchFilter</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.filters.NotInSearchFilter.__init__"><code class="docutils literal notranslate"><span class="pre">NotInSearchFilter.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.filters.NotInSearchFilter.field_name"><code class="docutils literal notranslate"><span class="pre">NotInSearchFilter.field_name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.filters.NotInSearchFilter.value"><code class="docutils literal notranslate"><span class="pre">NotInSearchFilter.value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.repository.filters.NotInSearchFilter.ignore_case"><code class="docutils literal notranslate"><span class="pre">NotInSearchFilter.ignore_case</span></code></a></li>
 </ul>
 </li>
 </ul>
