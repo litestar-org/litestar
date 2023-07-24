@@ -711,7 +711,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             session: through which we run a check statement
 
         Returns:
-            `True` if healthy.
+            ``True`` if healthy.
         """
 
         return (  # type:ignore[no-any-return]
