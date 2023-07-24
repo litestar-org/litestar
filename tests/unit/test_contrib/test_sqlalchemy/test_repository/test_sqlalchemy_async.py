@@ -215,6 +215,7 @@ async def test_sqlalchemy_repo_delete_many_uuid(mock_repo: SQLAlchemyAsyncReposi
     monkeypatch.setattr(mock_repo, "model_type", UUIDModel)
     monkeypatch.setattr(mock_repo.session, "execute", AsyncMock(return_value=mock_instances))
     monkeypatch.setattr(mock_repo, "list", AsyncMock(return_value=mock_instances))
+    monkeypatch.setattr(mock_repo.session.bind.dialect, "insertmanyvalues_max_parameters", 2)
 
     added_instances = await mock_repo.add_many(mock_instances)
     instances = await mock_repo.delete_many([obj.id for obj in added_instances])
@@ -239,6 +240,7 @@ async def test_sqlalchemy_repo_delete_many_bigint(
     monkeypatch.setattr(mock_repo, "model_type", BigIntModel)
     monkeypatch.setattr(mock_repo.session, "execute", AsyncMock(return_value=mock_instances))
     monkeypatch.setattr(mock_repo, "list", AsyncMock(return_value=mock_instances))
+    monkeypatch.setattr(mock_repo.session.bind.dialect, "insertmanyvalues_max_parameters", 2)
 
     added_instances = await mock_repo.add_many(mock_instances)
     instances = await mock_repo.delete_many([obj.id for obj in added_instances])
