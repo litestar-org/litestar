@@ -200,7 +200,8 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
     @abstractmethod
     def upsert_many(self, data: list[T]) -> list[T]:
         """Update or create multiple instances.
-        Updates instances with the attribute values present on ``data``, or creates a new instance if
+
+        Update instances with the attribute values present on ``data``, or create a new instance if
         one doesn't exist.
 
         Args:
