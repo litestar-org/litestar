@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Generic, Iterable, Literal, cast
 
-from sqlalchemy import Result, Select, delete, over, select, text, update
+from sqlalchemy import Result, Select, TextClause, delete, over, select, text, update
 from sqlalchemy import func as sql_func
 
 from litestar.contrib.repository import AbstractAsyncRepository, RepositoryError
@@ -711,11 +711,18 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             session: through which we run a check statement
 
         Returns:
-            `True` if healthy.
+            ``True`` if healthy.
         """
-        return (  # type:ignore[no-any-return]  # pragma: no cover
-            await session.execute(text("SELECT 1"))
+
+        return (  # type:ignore[no-any-return]
+            await session.execute(cls._get_health_check_statement(session))
         ).scalar_one() == 1
+
+    @staticmethod
+    def _get_health_check_statement(session: AsyncSession) -> TextClause:
+        if session.bind and session.bind.dialect.name == "oracle":
+            return text("SELECT 1 FROM DUAL")
+        return text("SELECT 1")
 
     async def _attach_to_session(self, model: ModelT, strategy: Literal["add", "merge"] = "add") -> ModelT:
         """Attach detached instance to the session.
