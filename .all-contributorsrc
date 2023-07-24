@@ -1178,6 +1178,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "therealzanfar",
+      "name": "Matthew",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10294685?v=4",
+      "profile": "http://zanfar.com/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

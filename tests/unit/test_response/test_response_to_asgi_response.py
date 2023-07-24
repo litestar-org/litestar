@@ -37,17 +37,13 @@ if TYPE_CHECKING:
 
 
 def my_generator() -> Generator[str, None, None]:
-    count = 0
-    while count < 10:
-        count += 1
+    for count in range(1, 11):
         yield str(count)
     return
 
 
 async def my_async_generator() -> AsyncGenerator[str, None]:
-    count = 0
-    while count < 10:
-        count += 1
+    for count in range(1, 11):
         yield str(count)
     return
 

@@ -691,3 +691,14 @@ async def test_lazy_load(item_repo: ItemAsyncRepository, tag_repo: TagAsyncRepos
     await maybe_async(item_repo.session.commit())
     assert len(updated_obj.tags) > 0
     assert updated_obj.tags[0].name == "A new tag"
+
+
+async def test_repo_health_check(author_repo: AuthorAsyncRepository) -> None:
+    """Test SQLALchemy health check.
+
+    Args:
+        author_repo (AuthorAsyncRepository): The mock repository
+    """
+
+    healthy = await maybe_async(author_repo.check_health(author_repo.session))
+    assert healthy

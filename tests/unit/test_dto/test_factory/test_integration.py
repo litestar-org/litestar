@@ -11,7 +11,7 @@ from msgspec import Struct
 from pydantic import BaseModel
 from typing_extensions import Annotated
 
-from litestar import Litestar, patch, post
+from litestar import Controller, Litestar, patch, post
 from litestar.connection.request import Request
 from litestar.contrib.pydantic import PydanticDTO, _model_dump_json
 from litestar.datastructures import UploadFile
@@ -117,6 +117,7 @@ def test_fields_alias_generator(
     tested_fields: list[str],
     data: dict[str, str],
 ) -> None:
+    DataclassDTO._dto_backends = {}
     config = DTOConfig(rename_strategy=rename_strategy)
     dto = DataclassDTO[Annotated[Foo, config]]
 
@@ -263,29 +264,61 @@ def test_dto_data_with_patch_request() -> None:
         assert response.json() == {"name": "John", "age": 41, "read_only": "read-only"}
 
 
-def test_dto_openapi_model_name_collision() -> None:
+def test_dto_openapi_with_unique_handler_names() -> None:
     @dataclass
-    class Bar:
+    class UniqueModelName:
         id: int
         foo: str
 
-    write_dto = DataclassDTO[Annotated[Bar, DTOConfig(exclude={"id"})]]
-    read_dto = DataclassDTO[Bar]
+    write_dto = DataclassDTO[Annotated[UniqueModelName, DTOConfig(exclude={"id"})]]
+    read_dto = DataclassDTO[UniqueModelName]
 
-    @post(dto=write_dto, return_dto=read_dto, signature_namespace={"Bar": Bar})
-    def handler(data: Bar) -> Bar:
+    @post(dto=write_dto, return_dto=read_dto, signature_namespace={"UniqueModelName": UniqueModelName})
+    def handler(data: UniqueModelName) -> UniqueModelName:
         return data
 
     with create_test_client(route_handlers=[handler]) as client:
         response = client.get("/schema/openapi.json")
         schemas = list(response.json()["components"]["schemas"].values())
         assert len(schemas) == 2
-        assert schemas[0] != schemas[1]
-        assert all(
-            k.startswith(
-                "tests.unit.test_dto.test_factory.test_integration.test_dto_openapi_model_name_collision.<locals>.Bar"
-            )
-            for k in response.json()["components"]["schemas"]
+        assert schemas[0]["title"] == "HandlerUniqueModelNameRequestBody"
+        assert schemas[1]["title"] == "HandlerUniqueModelNameResponseBody"
+
+
+@dataclass
+class SharedModelName:
+    id: int
+    foo: str
+
+
+def test_dto_openapi_without_unique_handler_names() -> None:
+    write_dto = DataclassDTO[Annotated[SharedModelName, DTOConfig(exclude={"id"})]]
+    read_dto = DataclassDTO[SharedModelName]
+
+    @post(dto=write_dto, return_dto=read_dto, signature_namespace={"UniqueModelName": SharedModelName})
+    def handler(data: SharedModelName) -> SharedModelName:
+        return data
+
+    class MyController(Controller):
+        path = "/sub-path"
+
+        @post(dto=write_dto, return_dto=read_dto, signature_namespace={"SharedModelName": SharedModelName})
+        def handler(self, data: SharedModelName) -> SharedModelName:
+            return data
+
+    with create_test_client(route_handlers=[handler, MyController]) as client:
+        response = client.get("/schema/openapi.json")
+        schemas = list(response.json()["components"]["schemas"].values())
+        assert len(schemas) == 4
+        assert schemas[0]["title"] == "HandlerSharedModelNameRequestBody"
+        assert schemas[1]["title"] == "HandlerSharedModelNameResponseBody"
+        assert (
+            schemas[2]["title"]
+            == "tests.unit.test_dto.test_factory.test_integration.test_dto_openapi_without_unique_handler_names.<locals>.MyController.handlerSharedModelNameRequestBody"
+        )
+        assert (
+            schemas[3]["title"]
+            == "tests.unit.test_dto.test_factory.test_integration.test_dto_openapi_without_unique_handler_names.<locals>.MyController.handlerSharedModelNameResponseBody"
         )
 
 
