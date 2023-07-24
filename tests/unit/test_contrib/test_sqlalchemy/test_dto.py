@@ -135,6 +135,7 @@ async def test_model_read_dto(
 
 
 async def test_model_list_dto(author_model: type[DeclarativeBase], connection_context: ConnectionContext) -> None:
+    SQLAlchemyDTO._dto_backends = {}
     dto_type = SQLAlchemyDTO[author_model]
     raw = b'[{"id": "97108ac1-ffcb-411d-8b1e-d9183399f63b","name":"Agatha Christie","dob":"1890-09-15","created":"0001-01-01T00:00:00","updated":"0001-01-01T00:00:00"}]'
     dto_data = await get_model_from_dto(dto_type, List[author_model], connection_context, raw)
@@ -152,6 +153,7 @@ async def test_model_list_dto(author_model: type[DeclarativeBase], connection_co
 async def test_dto_exclude(
     author_model: type[DeclarativeBase], raw_author: bytes, connection_context: ConnectionContext
 ) -> None:
+    SQLAlchemyDTO._dto_backends = {}
     config = DTOConfig(exclude={"id"})
     model = await get_model_from_dto(
         SQLAlchemyDTO[Annotated[author_model, config]], author_model, connection_context, raw_author
@@ -160,6 +162,8 @@ async def test_dto_exclude(
 
 
 async def test_write_dto_field_default(base: type[DeclarativeBase], connection_context: ConnectionContext) -> None:
+    SQLAlchemyDTO._dto_backends = {}
+
     class Model(base):
         field: Mapped[int] = mapped_column(default=3)
 
@@ -171,6 +175,7 @@ async def test_write_dto_field_default(base: type[DeclarativeBase], connection_c
 async def test_write_dto_for_model_field_factory_default(
     base: type[DeclarativeBase], connection_context: ConnectionContext
 ) -> None:
+    SQLAlchemyDTO._dto_backends = {}
     val = uuid4()
 
     class Model(base):
@@ -186,6 +191,7 @@ async def test_write_dto_for_model_field_unsupported_default(
 ) -> None:
     """Test for error condition where we don't know what to do with a default
     type."""
+    SQLAlchemyDTO._dto_backends = {}
 
     class Model(base):
         field: Mapped[datetime] = mapped_column(default=func.now())
@@ -198,6 +204,8 @@ async def test_write_dto_for_model_field_unsupported_default(
 async def test_dto_for_private_model_field(
     dto_for: ForType | None, base: type[DeclarativeBase], connection_context: ConnectionContext
 ) -> None:
+    SQLAlchemyDTO._dto_backends = {}
+
     class Model(base):
         field: Mapped[datetime] = mapped_column(
             info={DTO_FIELD_META_KEY: DTOField(mark=Mark.PRIVATE)},
@@ -222,6 +230,8 @@ async def test_dto_for_private_model_field(
 async def test_dto_for_non_mapped_model_field(
     base: type[DeclarativeBase], connection_context: ConnectionContext
 ) -> None:
+    SQLAlchemyDTO._dto_backends = {}
+
     class Model(base):
         field: ClassVar[datetime]
 
@@ -234,6 +244,8 @@ async def test_dto_mapped_as_dataclass_model_type(
     base: type[DeclarativeBase], connection_context: ConnectionContext
 ) -> None:
     """Test declare pydantic type on `dto.DTOField`."""
+
+    SQLAlchemyDTO._dto_backends = {}
 
     class Model(base, MappedAsDataclass):
         clz_var: ClassVar[str]
@@ -249,6 +261,7 @@ async def test_to_mapped_model_with_collection_relationship(
 ) -> None:
     """Test building a DTO with collection relationship, and parsing data."""
 
+    SQLAlchemyDTO._dto_backends = {}
     module = create_module(
         """
 from __future__ import annotations
@@ -290,6 +303,7 @@ async def test_to_mapped_model_with_scalar_relationship(
 ) -> None:
     """Test building DTO with Scalar relationship, and parsing data."""
 
+    SQLAlchemyDTO._dto_backends = {}
     module = create_module(
         """
 from __future__ import annotations
@@ -327,6 +341,7 @@ async def test_dto_mapped_union(
 ) -> None:
     """Test where a column type declared as e.g., `Mapped[str | None]`."""
 
+    SQLAlchemyDTO._dto_backends = {}
     module = create_module(
         """
 from __future__ import annotations
@@ -360,6 +375,7 @@ async def test_dto_mapped_union_type(
 ) -> None:
     """Test where a column type declared as e.g., `Mapped[str | None]`."""
 
+    SQLAlchemyDTO._dto_backends = {}
     module = create_module(
         """
 from __future__ import annotations
@@ -392,6 +408,7 @@ dto_type = SQLAlchemyDTO[A]
 async def test_dto_self_referencing_relationships(
     create_module: Callable[[str], ModuleType], connection_context: ConnectionContext
 ) -> None:
+    SQLAlchemyDTO._dto_backends = {}
     module = create_module(
         """
 from __future__ import annotations
@@ -430,6 +447,7 @@ dto_type = SQLAlchemyDTO[A]
 async def test_dto_optional_relationship_with_none_value(
     create_module: Callable[[str], ModuleType], connection_context: ConnectionContext
 ) -> None:
+    SQLAlchemyDTO._dto_backends = {}
     module = create_module(
         """
 from __future__ import annotations
@@ -474,6 +492,7 @@ async def test_forward_ref_relationship_resolution(
     works due to related mapped classes (via `mapper.registry.mappers`) being added to foward-ref resolution
     namespace.
     """
+    SQLAlchemyDTO._dto_backends = {}
     base_module = create_module(
         """
 from __future__ import annotations
@@ -484,6 +503,7 @@ class Base(DeclarativeBase):
 """
     )
 
+    SQLAlchemyDTO._dto_backends = {}
     b_module = create_module(
         f"""
 from __future__ import annotations
@@ -495,6 +515,7 @@ class B(Base):
 """
     )
 
+    SQLAlchemyDTO._dto_backends = {}
     a_module = create_module(
         f"""
 from __future__ import annotations
@@ -534,6 +555,7 @@ async def test_dto_mapped_builtin_collection(
 ) -> None:
     """Test where a column type declared as e.g., `Mapped[dict]`."""
 
+    SQLAlchemyDTO._dto_backends = {}
     module = create_module(
         """
 from __future__ import annotations
@@ -570,6 +592,8 @@ dto_type = SQLAlchemyDTO[A]
 
 
 async def test_no_type_hint_column(base: type[DeclarativeBase], connection_context: ConnectionContext) -> None:
+    SQLAlchemyDTO._dto_backends = {}
+
     class Model(base):
         nullable_field = mapped_column(sqlalchemy.String)
         not_nullable_field = mapped_column(sqlalchemy.String, nullable=False, default="")
@@ -583,6 +607,8 @@ async def test_no_type_hint_column(base: type[DeclarativeBase], connection_conte
 async def test_no_type_hint_scalar_relationship_with_nullable_fk(
     base: type[DeclarativeBase], connection_context: ConnectionContext
 ) -> None:
+    SQLAlchemyDTO._dto_backends = {}
+
     class Child(base):
         ...
 
@@ -598,6 +624,8 @@ async def test_no_type_hint_scalar_relationship_with_nullable_fk(
 async def test_no_type_hint_scalar_relationship_with_not_nullable_fk(
     base: type[DeclarativeBase], connection_context: ConnectionContext
 ) -> None:
+    SQLAlchemyDTO._dto_backends = {}
+
     class Child(base):
         ...
 
@@ -613,6 +641,8 @@ async def test_no_type_hint_scalar_relationship_with_not_nullable_fk(
 async def test_no_type_hint_collection_relationship(
     base: type[DeclarativeBase], connection_context: ConnectionContext
 ) -> None:
+    SQLAlchemyDTO._dto_backends = {}
+
     class Child(base):
         model_id = mapped_column(ForeignKey("model.id"))
 
@@ -627,6 +657,8 @@ async def test_no_type_hint_collection_relationship(
 async def test_no_type_hint_collection_relationship_alt_collection_class(
     base: type[DeclarativeBase], connection_context: ConnectionContext
 ) -> None:
+    SQLAlchemyDTO._dto_backends = {}
+
     class Child(base):
         model_id = mapped_column(ForeignKey("model.id"))
 
