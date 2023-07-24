@@ -512,6 +512,32 @@ async def test_repo_upsert_method(author_repo: AuthorAsyncRepository) -> None:
     assert upsert2_insert_obj.name == "Another Author"
 
 
+async def test_repo_upsert_many_method(author_repo: AuthorAsyncRepository) -> None:
+    """Test SQLALchemy upsert.
+
+    Args:
+        author_repo (AuthorAsyncRepository): The author mock repository
+    """
+    existing_obj = await maybe_async(author_repo.get_one(name="Agatha Christie"))
+    existing_obj.name = "Agatha C."
+    upsert_update_objs = await maybe_async(
+        author_repo.upsert_many(
+            [
+                existing_obj,
+                UUIDAuthor(id=UUID("97108ac1-ffcb-411d-8b1e-d9183399f63c"), name="Inserted Author"),
+                UUIDAuthor(name="Custom Author"),
+            ]
+        )
+    )
+    assert len(upsert_update_objs) == 3
+    assert upsert_update_objs[0].id == UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")
+    assert upsert_update_objs[0].name == "Agatha C."
+    assert upsert_update_objs[1].id == UUID("97108ac1-ffcb-411d-8b1e-d9183399f63c")
+    assert upsert_update_objs[1].name == "Inserted Author"
+    assert upsert_update_objs[2].id is not None
+    assert upsert_update_objs[2].name == "Custom Author"
+
+
 async def test_repo_filter_before_after(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy before after filter.
 
@@ -739,3 +765,14 @@ async def test_lazy_load(item_repo: ItemAsyncRepository, tag_repo: TagAsyncRepos
     await maybe_async(item_repo.session.commit())
     assert len(updated_obj.tags) > 0
     assert updated_obj.tags[0].name == "A new tag"
+
+
+async def test_repo_health_check(author_repo: AuthorAsyncRepository) -> None:
+    """Test SQLALchemy health check.
+
+    Args:
+        author_repo (AuthorAsyncRepository): The mock repository
+    """
+
+    healthy = await maybe_async(author_repo.check_health(author_repo.session))
+    assert healthy

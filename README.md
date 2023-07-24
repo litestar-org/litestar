@@ -24,7 +24,8 @@
 
 # Starlite → Litestar
 
-**[Starlite has been renamed to Litestar](https://litestar.dev/about/organization.html#litestar-and-starlite)**
+> [!IMPORTANT]\
+> [**_Starlite has been renamed to Litestar_**](https://litestar.dev/about/organization.html#litestar-and-starlite)
 
 <hr>
 
@@ -433,6 +434,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/lazyc97"><img src="https://avatars.githubusercontent.com/u/8538104?v=4?s=100" width="100px;" alt="Nguyễn Hoàng Đức"/><br /><sub><b>Nguyễn Hoàng Đức</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3Alazyc97" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/RavanaBhrama"><img src="https://avatars.githubusercontent.com/u/131459969?v=4?s=100" width="100px;" alt="RavanaBhrama"/><br /><sub><b>RavanaBhrama</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=RavanaBhrama" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mj0nez"><img src="https://avatars.githubusercontent.com/u/20128340?v=4?s=100" width="100px;" alt="Marcel Johannesmann"/><br /><sub><b>Marcel Johannesmann</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=mj0nez" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://zanfar.com/"><img src="https://avatars.githubusercontent.com/u/10294685?v=4?s=100" width="100px;" alt="Matthew"/><br /><sub><b>Matthew</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=therealzanfar" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>

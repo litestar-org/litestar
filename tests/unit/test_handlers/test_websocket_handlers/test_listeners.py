@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from typing import AsyncGenerator, Dict, List, Optional, Type, Union, cast
+from typing import Any, AsyncGenerator, Dict, List, Optional, Type, Union, cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -104,29 +104,31 @@ def test_listener_receive_json(receive_mode: WebSocketMode, mock: MagicMock) -> 
     mock.assert_called_once_with(["foo", "bar"])
 
 
-@pytest.mark.parametrize("receive_mode", ["text", "binary"])
-def test_listener_receive_with_dto(receive_mode: WebSocketMode, mock: MagicMock) -> None:
-    @dataclass
-    class User:
-        name: str
-        hidden: str = field(default="super secret", metadata=dto_field("private"))
+@dataclass
+class User:
+    name: str
+    hidden: str = field(default="super secret", metadata=dto_field("private"))
 
+
+@pytest.mark.parametrize("receive_mode", ["text", "binary"])
+def test_listener_receive_with_dto(receive_mode: WebSocketMode) -> None:
     user_dto = DataclassDTO[User]
+    value: Any = None
 
     @websocket_listener(
         "/", receive_mode=receive_mode, dto=user_dto, return_dto=None, signature_namespace={"User": User}
     )
     def handler(data: User) -> None:
-        mock(data)
+        nonlocal value
+        value = data
 
     client = create_test_client([handler], openapi_config=None)
     with client.websocket_connect("/") as ws:
         ws.send_json({"name": "litestar user", "hidden": "whoops"}, mode=receive_mode)
 
-    called_with = mock.mock_calls[0].args[0]
-    assert isinstance(called_with, User)
-    assert called_with.name == "litestar user"
-    assert called_with.hidden == "super secret"
+    assert isinstance(value, User)
+    assert value.name == "litestar user"
+    assert value.hidden == "super secret"
 
 
 @pytest.mark.parametrize("send_mode", ["text", "binary"])

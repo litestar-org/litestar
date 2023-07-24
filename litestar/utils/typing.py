@@ -1,27 +1,39 @@
 from __future__ import annotations
 
 import re
-import typing as t
 from collections import abc, defaultdict, deque
 from typing import (
     AbstractSet,
     Any,
+    AsyncGenerator,
+    AsyncIterable,
+    AsyncIterator,
+    Awaitable,
+    Collection,
+    Container,
+    Coroutine,
     DefaultDict,
     Deque,
     Dict,
     FrozenSet,
+    Generator,
+    ItemsView,
     Iterable,
     Iterator,
+    KeysView,
     List,
     Mapping,
+    MappingView,
     MutableMapping,
     MutableSequence,
     MutableSet,
+    Reversible,
     Sequence,
     Set,
     Tuple,
     TypeVar,
     Union,
+    ValuesView,
     cast,
 )
 
@@ -80,36 +92,36 @@ instantiable_type_mapping = {
     tuple: tuple,
 }
 
-_safe_generic_origin_map = {
-    set: t.AbstractSet,
-    defaultdict: t.DefaultDict,
-    deque: t.Deque,
-    dict: t.Dict,
-    frozenset: t.FrozenSet,
-    list: t.List,
-    tuple: t.Tuple,
-    abc.Mapping: t.Mapping,
-    abc.MutableMapping: t.MutableMapping,
-    abc.MutableSequence: t.MutableSequence,
-    abc.MutableSet: t.MutableSet,
-    abc.Sequence: t.Sequence,
-    abc.Set: t.AbstractSet,
-    abc.Collection: t.Collection,
-    abc.Container: t.Container,
-    abc.ItemsView: t.ItemsView,
-    abc.KeysView: t.KeysView,
-    abc.MappingView: t.MappingView,
-    abc.ValuesView: t.ValuesView,
-    abc.Iterable: t.Iterable,
-    abc.Iterator: t.Iterator,
-    abc.Generator: t.Generator,
-    abc.Reversible: t.Reversible,
-    abc.Coroutine: t.Coroutine,
-    abc.AsyncGenerator: t.AsyncGenerator,
-    abc.AsyncIterable: t.AsyncIterable,
-    abc.AsyncIterator: t.AsyncIterator,
-    abc.Awaitable: t.Awaitable,
-    **{union_t: t.Union for union_t in UnionTypes},
+safe_generic_origin_map = {
+    set: AbstractSet,
+    defaultdict: DefaultDict,
+    deque: Deque,
+    dict: Dict,
+    frozenset: FrozenSet,
+    list: List,
+    tuple: Tuple,
+    abc.Mapping: Mapping,
+    abc.MutableMapping: MutableMapping,
+    abc.MutableSequence: MutableSequence,
+    abc.MutableSet: MutableSet,
+    abc.Sequence: Sequence,
+    abc.Set: AbstractSet,
+    abc.Collection: Collection,
+    abc.Container: Container,
+    abc.ItemsView: ItemsView,
+    abc.KeysView: KeysView,
+    abc.MappingView: MappingView,
+    abc.ValuesView: ValuesView,
+    abc.Iterable: Iterable,
+    abc.Iterator: Iterator,
+    abc.Generator: Generator,
+    abc.Reversible: Reversible,
+    abc.Coroutine: Coroutine,
+    abc.AsyncGenerator: AsyncGenerator,
+    abc.AsyncIterable: AsyncIterable,
+    abc.AsyncIterator: AsyncIterator,
+    abc.Awaitable: Awaitable,
+    **{union_t: Union for union_t in UnionTypes},
 }
 """A mapping of types to equivalent types that are safe to be used as generics across all Python versions.
 
@@ -242,8 +254,8 @@ def get_safe_generic_origin(origin_type: Any, annotation: Any) -> Any:
         The ``typing`` module equivalent of the given type, if it exists. Otherwise, the original type is returned.
     """
     if origin_type is None:
-        return _safe_generic_origin_map.get(annotation)
-    return _safe_generic_origin_map.get(origin_type, origin_type)
+        return safe_generic_origin_map.get(annotation)
+    return safe_generic_origin_map.get(origin_type, origin_type)
 
 
 def get_instantiable_origin(origin_type: Any, annotation: Any) -> Any:

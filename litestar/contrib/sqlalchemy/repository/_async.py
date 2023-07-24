@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Generic, Iterable, Literal, cast
 
-from sqlalchemy import Result, Select, delete, over, select, text, update
+from sqlalchemy import Result, Select, TextClause, delete, over, select, text, update
 from sqlalchemy import func as sql_func
 
 from litestar.contrib.repository import AbstractAsyncRepository, RepositoryError
@@ -618,37 +618,6 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                 instances.append(instance)
             return instances, count
 
-    async def list(
-        self,
-        *filters: FilterTypes,
-        auto_expunge: bool | None = None,
-        statement: Select[tuple[ModelT]] | None = None,
-        **kwargs: Any,
-    ) -> list[ModelT]:
-        """Get a list of instances, optionally filtered.
-
-        Args:
-            *filters: Types for specific filtering operations.
-            auto_expunge: Remove object from session before returning. Defaults to
-                :class:`SQLAlchemyAsyncRepository.auto_expunge <SQLAlchemyAsyncRepository>`
-            statement: To facilitate customization of the underlying select query.
-                Defaults to :class:`SQLAlchemyAsyncRepository.statement <SQLAlchemyAsyncRepository>`
-            **kwargs: Instance attribute value filters.
-
-        Returns:
-            The list of instances, after filtering applied.
-        """
-        statement = statement if statement is not None else self.statement
-        statement = self._apply_filters(*filters, statement=statement)
-        statement = self._filter_select_by_kwargs(statement, **kwargs)
-
-        with wrap_sqlalchemy_exception():
-            result = await self._execute(statement)
-            instances = list(result.scalars())
-            for instance in instances:
-                self._expunge(instance, auto_expunge=auto_expunge)
-            return instances
-
     async def upsert(
         self,
         data: ModelT,
@@ -693,6 +662,85 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             self._expunge(instance, auto_expunge=auto_expunge)
             return instance
 
+    async def upsert_many(
+        self,
+        data: list[ModelT],
+        attribute_names: Iterable[str] | None = None,
+        with_for_update: bool | None = None,
+        auto_expunge: bool | None = None,
+        auto_commit: bool | None = None,
+        auto_refresh: bool | None = None,
+    ) -> list[ModelT]:
+        """Update or create instance.
+
+        Update instances with the attribute values present on `data`, or create a new instance if
+        one doesn't exist.
+
+        Args:
+            data: Instance to update existing, or be created. Identifier used to determine if an
+                existing instance exists is the value of an attribute on ``data`` named as value of
+                :attr:`~litestar.contrib.repository.AbstractAsyncRepository.id_attribute`.
+            attribute_names: an iterable of attribute names to pass into the ``update`` method.
+            with_for_update: indicating FOR UPDATE should be used, or may be a dictionary containing flags to indicate a more specific set of FOR UPDATE flags for the SELECT
+            auto_expunge: Remove object from session before returning. Defaults to
+                :class:`SQLAlchemyAsyncRepository.auto_expunge <SQLAlchemyAsyncRepository>`.
+            auto_refresh: Refresh object from session before returning. Defaults to
+                :class:`SQLAlchemyAsyncRepository.auto_refresh <SQLAlchemyAsyncRepository>`
+            auto_commit: Commit objects before returning. Defaults to
+                :class:`SQLAlchemyAsyncRepository.auto_commit <SQLAlchemyAsyncRepository>`
+
+        Returns:
+            The updated or created instance.
+
+        Raises:
+            NotFoundError: If no instance found with same identifier as ``data``.
+        """
+        instances = []
+        with wrap_sqlalchemy_exception():
+            for datum in data:
+                instance = await self._attach_to_session(datum, strategy="merge")
+                await self._flush_or_commit(auto_commit=auto_commit)
+                await self._refresh(
+                    instance,
+                    attribute_names=attribute_names,
+                    with_for_update=with_for_update,
+                    auto_refresh=auto_refresh,
+                )
+                self._expunge(instance, auto_expunge=auto_expunge)
+                instances.append(instance)
+        return instances
+
+    async def list(
+        self,
+        *filters: FilterTypes,
+        auto_expunge: bool | None = None,
+        statement: Select[tuple[ModelT]] | None = None,
+        **kwargs: Any,
+    ) -> list[ModelT]:
+        """Get a list of instances, optionally filtered.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            auto_expunge: Remove object from session before returning. Defaults to
+                :class:`SQLAlchemyAsyncRepository.auto_expunge <SQLAlchemyAsyncRepository>`
+            statement: To facilitate customization of the underlying select query.
+                Defaults to :class:`SQLAlchemyAsyncRepository.statement <SQLAlchemyAsyncRepository>`
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            The list of instances, after filtering applied.
+        """
+        statement = statement if statement is not None else self.statement
+        statement = self._apply_filters(*filters, statement=statement)
+        statement = self._filter_select_by_kwargs(statement, **kwargs)
+
+        with wrap_sqlalchemy_exception():
+            result = await self._execute(statement)
+            instances = list(result.scalars())
+            for instance in instances:
+                self._expunge(instance, auto_expunge=auto_expunge)
+            return instances
+
     def filter_collection_by_kwargs(  # type:ignore[override]
         self, collection: SelectT, /, **kwargs: Any
     ) -> SelectT:
@@ -714,11 +762,18 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             session: through which we run a check statement
 
         Returns:
-            `True` if healthy.
+            ``True`` if healthy.
         """
-        return (  # type:ignore[no-any-return]  # pragma: no cover
-            await session.execute(text("SELECT 1"))
+
+        return (  # type:ignore[no-any-return]
+            await session.execute(cls._get_health_check_statement(session))
         ).scalar_one() == 1
+
+    @staticmethod
+    def _get_health_check_statement(session: AsyncSession) -> TextClause:
+        if session.bind and session.bind.dialect.name == "oracle":
+            return text("SELECT 1 FROM DUAL")
+        return text("SELECT 1")
 
     async def _attach_to_session(self, model: ModelT, strategy: Literal["add", "merge"] = "add") -> ModelT:
         """Attach detached instance to the session.

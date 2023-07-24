@@ -28,10 +28,7 @@ def test_field_definition_generation(
         e: int = Field(default_factory=int_factory)
 
     field_defs = list(PydanticDTO.generate_field_definitions(TestModel))
-    assert (
-        field_defs[0].unique_model_name
-        == "tests.unit.test_contrib.test_pydantic.test_pydanticdt_dto_factory.test_field_definition_generation.<locals>.TestModel"
-    )
+    assert field_defs[0].model_name == "TestModel"
     for field_def, exp in zip(field_defs, expected_field_defs):
         assert field_def == exp
 

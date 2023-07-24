@@ -59,9 +59,8 @@ async def test_controller_http_method(
     with create_test_client(MyController) as client:
         response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
-        if return_value:
-            if isinstance(return_value, BaseModel):
-                assert response.json() == _model_dump(return_value)
+        if return_value and isinstance(return_value, BaseModel):
+            assert response.json() == _model_dump(return_value)
 
 
 def test_controller_with_websocket_handler() -> None:
