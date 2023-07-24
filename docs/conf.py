@@ -136,6 +136,8 @@ nitpick_ignore_regex = [
     (PY_RE, r".*UserType"),
     (PY_RE, r"litestar\.middleware\.session\.base\.BaseSessionBackendT"),
     (r"py:obj", r"typing\..*"),
+    (r"py:attr", "litestar.contrib.repository.AbstractAsyncRepository.id_attribute"),
+    (r"py:attr", "litestar.contrib.repository.AbstractSyncRepository.id_attribute"),
     (PY_RE, r"httpx.*"),
     # type vars
     (PY_RE, r"litestar\.pagination\.C"),

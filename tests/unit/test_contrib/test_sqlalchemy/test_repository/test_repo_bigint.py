@@ -13,7 +13,15 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy.orm import Session
 
 from litestar.contrib.repository.exceptions import RepositoryError
-from litestar.contrib.repository.filters import BeforeAfter, CollectionFilter, OrderBy, SearchFilter
+from litestar.contrib.repository.filters import (
+    BeforeAfter,
+    CollectionFilter,
+    NotInCollectionFilter,
+    NotInSearchFilter,
+    OnBeforeAfter,
+    OrderBy,
+    SearchFilter,
+)
 from litestar.contrib.sqlalchemy import base
 from tests.unit.test_contrib.test_sqlalchemy.models_bigint import (
     AuthorAsyncRepository,
@@ -398,6 +406,28 @@ async def test_repo_upsert_method(author_repo: AuthorAsyncRepository) -> None:
     assert upsert2_insert_obj.name == "Another Author"
 
 
+async def test_repo_upsert_many_method(author_repo: AuthorAsyncRepository) -> None:
+    """Test SQLALchemy upsert.
+
+    Args:
+        author_repo (AuthorAsyncRepository): The author mock repository
+    """
+    existing_obj = await maybe_async(author_repo.get_one(name="Agatha Christie"))
+    existing_obj.name = "Agatha C."
+    upsert_update_objs = await maybe_async(
+        author_repo.upsert_many(
+            [existing_obj, BigIntAuthor(id=15, name="Inserted Author"), BigIntAuthor(name="Custom Author")]
+        )
+    )
+    assert len(upsert_update_objs) == 3
+    assert upsert_update_objs[0].id == 2023
+    assert upsert_update_objs[0].name == "Agatha C."
+    assert upsert_update_objs[1].id == 15
+    assert upsert_update_objs[1].name == "Inserted Author"
+    assert upsert_update_objs[2].id is not None
+    assert upsert_update_objs[2].name == "Custom Author"
+
+
 async def test_repo_filter_before_after(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy before after filter.
 
@@ -421,6 +451,32 @@ async def test_repo_filter_before_after(author_repo: AuthorAsyncRepository) -> N
     assert existing_obj[0].name == "Agatha Christie"
 
 
+async def test_repo_filter_on_before_after(author_repo: AuthorAsyncRepository) -> None:
+    """Test SQLALchemy before after filter.
+    Args:
+        author_repo (AuthorAsyncRepository): The author mock repository
+    """
+    before_filter = OnBeforeAfter(
+        field_name="created_at",
+        on_or_before=datetime.strptime("2023-05-01T00:00:00", "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc),
+        on_or_after=None,
+    )
+    existing_obj = await maybe_async(
+        author_repo.list(*[before_filter, OrderBy(field_name="created_at", sort_order="desc")])  # type: ignore
+    )
+    assert existing_obj[0].name == "Agatha Christie"
+
+    after_filter = OnBeforeAfter(
+        field_name="created_at",
+        on_or_after=datetime.strptime("2023-03-01T00:00:00", "%Y-%m-%dT%H:%M:%S").astimezone(timezone.utc),
+        on_or_before=None,
+    )
+    existing_obj = await maybe_async(
+        author_repo.list(*[after_filter, OrderBy(field_name="created_at", sort_order="desc")])  # type: ignore
+    )
+    assert existing_obj[0].name == "Agatha Christie"
+
+
 async def test_repo_filter_search(author_repo: AuthorAsyncRepository) -> None:
     """Test SQLALchemy search filter.
 
@@ -437,6 +493,29 @@ async def test_repo_filter_search(author_repo: AuthorAsyncRepository) -> None:
     assert len(existing_obj) == expected_objs
     existing_obj = await maybe_async(author_repo.list(SearchFilter(field_name="name", value="GATH", ignore_case=True)))
     assert existing_obj[0].name == "Agatha Christie"
+
+
+async def test_repo_filter_not_in_search(author_repo: AuthorAsyncRepository) -> None:
+    """Test SQLALchemy not in search filter.
+    Args:
+        author_repo (AuthorAsyncRepository): The author mock repository
+    """
+
+    existing_obj = await maybe_async(
+        author_repo.list(NotInSearchFilter(field_name="name", value="gath", ignore_case=False))
+    )
+    assert existing_obj[0].name == "Leo Tolstoy"
+    existing_obj = await maybe_async(
+        author_repo.list(NotInSearchFilter(field_name="name", value="GATH", ignore_case=False))
+    )
+    # sqlite & mysql are case insensitive by default with a `LIKE`
+    dialect = author_repo.session.bind.dialect.name if author_repo.session.bind else "default"
+    expected_objs = 1 if dialect in {"sqlite", "mysql"} else 2
+    assert len(existing_obj) == expected_objs
+    existing_obj = await maybe_async(
+        author_repo.list(NotInSearchFilter(field_name="name", value="GATH", ignore_case=True))
+    )
+    assert existing_obj[0].name == "Leo Tolstoy"
 
 
 async def test_repo_filter_order_by(author_repo: AuthorAsyncRepository) -> None:
@@ -464,6 +543,19 @@ async def test_repo_filter_collection(author_repo: AuthorAsyncRepository) -> Non
 
     existing_obj = await maybe_async(author_repo.list(CollectionFilter(field_name="id", values=[2024])))
     assert existing_obj[0].name == "Leo Tolstoy"
+
+
+async def test_repo_filter_not_in_collection(author_repo: AuthorAsyncRepository) -> None:
+    """Test SQLALchemy collection filter.
+    Args:
+        author_repo (AuthorAsyncRepository): The author mock repository
+    """
+
+    existing_obj = await maybe_async(author_repo.list(NotInCollectionFilter(field_name="id", values=[2023])))
+    assert existing_obj[0].name == "Leo Tolstoy"
+
+    existing_obj = await maybe_async(author_repo.list(NotInCollectionFilter(field_name="id", values=[2024])))
+    assert existing_obj[0].name == "Agatha Christie"
 
 
 async def test_repo_json_methods(

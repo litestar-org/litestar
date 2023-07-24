@@ -67,6 +67,9 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
     def _find_or_raise_not_found(self, item_id: Any) -> ModelT:
         return self.check_not_found(self.collection.get(item_id))
 
+    def _find_or_none(self, item_id: Any) -> ModelT | None:
+        return self.collection.get(item_id)
+
     def _now(self) -> datetime:
         return datetime.now(tz=self.tz).replace(tzinfo=None)
 
@@ -313,6 +316,27 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
             return await self.update(data)
         return await self.add(data)
 
+    async def upsert_many(self, data: list[ModelT]) -> list[ModelT]:
+        """Update or create multiple instance.
+
+        Update instance with the attribute values present on ``data``, or create a new instance if
+        one doesn't exist.
+
+        Args:
+            data: List of instances to update existing, or be created. Identifier used to determine if an
+                existing instance exists is the value of an attribute on `data` named as value of
+                :attr:`id_attribute <AsyncGenericMockRepository.id_attribute>`.
+
+        Returns:
+            The updated or created instances.
+        """
+        data_to_update = [row for row in data if self._find_or_none(self.get_id_attribute_value(row)) is not None]
+        data_to_add = [row for row in data if self._find_or_none(self.get_id_attribute_value(row)) is None]
+
+        updated_items = await self.update_many(data_to_update)
+        added_items = await self.add_many(data_to_add)
+        return updated_items + added_items
+
     async def list_and_count(
         self,
         *filters: FilterTypes,
@@ -421,6 +445,9 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
 
     def _find_or_raise_not_found(self, item_id: Any) -> ModelT:
         return self.check_not_found(self.collection.get(item_id))
+
+    def _find_or_none(self, item_id: Any) -> ModelT | None:
+        return self.collection.get(item_id)
 
     def _now(self) -> datetime:
         return datetime.now(tz=self.tz).replace(tzinfo=None)
@@ -663,6 +690,27 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         """
         item_id = self.get_id_attribute_value(data)
         return self.update(data) if item_id in self.collection else self.add(data)
+
+    def upsert_many(self, data: list[ModelT]) -> list[ModelT]:
+        """Update or create multiple instance.
+
+        Update instance with the attribute values present on ``data``, or create a new instance if
+        one doesn't exist.
+
+        Args:
+            data: List of instances to update existing, or be created. Identifier used to determine if an
+                existing instance exists is the value of an attribute on `data` named as value of
+                :attr:`id_attribute <AsyncGenericMockRepository.id_attribute>`.
+
+        Returns:
+            The updated or created instances.
+        """
+        data_to_update = [row for row in data if self._find_or_none(self.get_id_attribute_value(row)) is not None]
+        data_to_add = [row for row in data if self._find_or_none(self.get_id_attribute_value(row)) is None]
+
+        updated_items = self.update_many(data_to_update)
+        added_items = self.add_many(data_to_add)
+        return updated_items + added_items
 
     def list_and_count(
         self,

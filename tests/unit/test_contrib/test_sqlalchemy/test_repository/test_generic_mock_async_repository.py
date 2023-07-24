@@ -299,6 +299,26 @@ async def test_upsert() -> None:
     assert updated_instance == instance
 
 
+async def test_upsert_many() -> None:
+    """Test that the repository upsert method works correctly`."""
+
+    class Model(base.UUIDAuditBase):
+        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
+        columns."""
+
+        random_column: Mapped[str]
+
+    mock_repo = GenericAsyncMockRepository[Model]()
+
+    instance = await mock_repo.upsert(Model(random_column="A"))
+    instance.random_column = "B"
+    new_instance = Model(random_column="C")
+    updated_instances = await mock_repo.upsert_many([instance, new_instance])
+
+    assert new_instance in updated_instances
+    assert instance in updated_instances
+
+
 async def test_list() -> None:
     """Test that the repository list returns records."""
 
