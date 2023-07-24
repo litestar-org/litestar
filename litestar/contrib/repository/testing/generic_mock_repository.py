@@ -692,7 +692,8 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
 
     def upsert_many(self, data: list[ModelT]) -> list[ModelT]:
         """Update or create multiple instance.
-        Updates instance with the attribute values present on ``data``, or creates a new instance if
+
+        Update instance with the attribute values present on ``data``, or create a new instance if
         one doesn't exist.
 
         Args:
