@@ -722,7 +722,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
 
     @staticmethod
     def _get_health_check_statement(session: Session) -> TextClause:
-        return text(session.bind.dialect._dialect_specific_select_one)  # type: ignore[union-attr]
+        if session.bind and session.bind.dialect.name == "oracle":
+            return text("SELECT 1 FROM DUAL")
+        return text("SELECT 1")
 
     def _attach_to_session(self, model: ModelT, strategy: Literal["add", "merge"] = "add") -> ModelT:
         """Attach detached instance to the session.
