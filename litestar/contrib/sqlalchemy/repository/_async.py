@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, Iterable, Literal, cast
+from typing import TYPE_CHECKING, Any, Final, Generic, Iterable, Literal, cast
 
 from sqlalchemy import Result, Select, TextClause, delete, over, select, text, update
 from sqlalchemy import func as sql_func
@@ -27,6 +27,8 @@ if TYPE_CHECKING:
 
     from sqlalchemy.engine.interfaces import _CoreSingleExecuteParams
     from sqlalchemy.ext.asyncio import AsyncSession
+
+DEFAULT_INSERTMANYVALUES_MAX_PARAMETERS: Final = 950
 
 
 class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]):
@@ -157,6 +159,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         auto_commit: bool | None = None,
         auto_expunge: bool | None = None,
         id_attribute: Any | None = None,
+        chunk_size: int | None = None,
     ) -> list[ModelT]:
         """Delete instance identified by `item_id`.
 
@@ -168,6 +171,8 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                 :class:`SQLAlchemyAsyncRepository.auto_commit <SQLAlchemyAsyncRepository>`
             id_attribute: Allows customization of the unique identifier to use for model fetching.
                 Defaults to `id`, but can reference any surrogate or candidate key for the table.
+            chunk_size: Allows customization of the ``insertmanyvalues_max_parameters`` setting for the driver.
+                Defaults to `950` if left unset.
 
         Returns:
             The deleted instances.
@@ -177,7 +182,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         with wrap_sqlalchemy_exception():
             id_attribute = id_attribute if id_attribute is not None else self.id_attribute
             instances: list[ModelT] = []
-            chunk_size = 450
+            chunk_size = self._get_insertmanyvalues_max_parameters(chunk_size)
             for idx in range(0, len(item_ids), chunk_size):
                 chunk = item_ids[idx : min(idx + chunk_size, len(item_ids))]
                 if self._dialect.delete_executemany_returning:
@@ -201,6 +206,9 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             for instance in instances:
                 self._expunge(instance, auto_expunge=auto_expunge)
             return instances
+
+    def _get_insertmanyvalues_max_parameters(self, chunk_size: int | None = None) -> int:
+        return chunk_size if chunk_size is not None else DEFAULT_INSERTMANYVALUES_MAX_PARAMETERS
 
     async def exists(self, **kwargs: Any) -> bool:
         """Return true if the object specified by ``kwargs`` exists.

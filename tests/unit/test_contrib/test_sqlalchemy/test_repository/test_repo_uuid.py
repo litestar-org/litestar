@@ -411,7 +411,7 @@ async def test_repo_delete_many_method(author_repo: AuthorAsyncRepository) -> No
         UUIDAuthor(
             name="author name %d" % chunk,
         )
-        for chunk in range(1000)
+        for chunk in range(2000)
     ]
     _ = await maybe_async(author_repo.add_many(data_to_insert))
     all_objs = await maybe_async(author_repo.list())

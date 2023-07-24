@@ -203,7 +203,7 @@ async def test_sqlalchemy_repo_delete(mock_repo: SQLAlchemyAsyncRepository, monk
     mock_repo.session.commit.assert_not_called()
 
 
-async def test_sqlalchemy_repo_delete_many(mock_repo: SQLAlchemyAsyncRepository, monkeypatch: MonkeyPatch) -> None:
+async def test_sqlalchemy_repo_delete_many_uuid(mock_repo: SQLAlchemyAsyncRepository, monkeypatch: MonkeyPatch) -> None:
     """Test expected method calls for delete operation."""
 
     class UUIDModel(base.UUIDAuditBase):
@@ -211,6 +211,25 @@ async def test_sqlalchemy_repo_delete_many(mock_repo: SQLAlchemyAsyncRepository,
         columns."""
 
         ...
+
+    mock_instances = [MagicMock(), MagicMock(id=uuid4())]
+    monkeypatch.setattr(mock_repo.session, "scalars", AsyncMock(return_value=mock_instances))
+    monkeypatch.setattr(mock_repo, "model_type", UUIDModel)
+    monkeypatch.setattr(mock_repo.session, "execute", AsyncMock(return_value=mock_instances))
+    monkeypatch.setattr(mock_repo, "list", AsyncMock(return_value=mock_instances))
+    monkeypatch.setattr(mock_repo.session.bind.dialect, "insertmanyvalues_max_parameters", 2)
+
+    added_instances = await mock_repo.add_many(mock_instances)
+    instances = await mock_repo.delete_many([obj.id for obj in added_instances])
+    assert len(instances) == len(mock_instances)
+    mock_repo.session.flush.assert_called()
+    mock_repo.session.commit.assert_not_called()
+
+
+async def test_sqlalchemy_repo_delete_many_bigint(
+    mock_repo: SQLAlchemyAsyncRepository, monkeypatch: MonkeyPatch
+) -> None:
+    """Test expected method calls for delete operation."""
 
     class BigIntModel(base.BigIntAuditBase):
         """Inheriting from BigIntAuditBase gives the model 'created_at' and 'updated_at'
@@ -220,11 +239,11 @@ async def test_sqlalchemy_repo_delete_many(mock_repo: SQLAlchemyAsyncRepository,
 
     mock_instances = [MagicMock(), MagicMock(id=uuid4())]
     monkeypatch.setattr(mock_repo.session, "scalars", AsyncMock(return_value=mock_instances))
-    monkeypatch.setattr(mock_repo, "model_type", UUIDModel)
-    monkeypatch.setattr(mock_repo.session, "execute", AsyncMock(return_value=mock_instances))
     monkeypatch.setattr(mock_repo, "model_type", BigIntModel)
     monkeypatch.setattr(mock_repo.session, "execute", AsyncMock(return_value=mock_instances))
     monkeypatch.setattr(mock_repo, "list", AsyncMock(return_value=mock_instances))
+    monkeypatch.setattr(mock_repo.session.bind.dialect, "insertmanyvalues_max_parameters", 2)
+
     added_instances = await mock_repo.add_many(mock_instances)
     instances = await mock_repo.delete_many([obj.id for obj in added_instances])
     assert len(instances) == len(mock_instances)
