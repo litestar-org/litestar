@@ -669,13 +669,14 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         auto_refresh: bool | None = None,
     ) -> list[ModelT]:
         """Update or create instance.
-        Updates instances with the attribute values present on `data`, or creates a new instance if
+
+        Update instances with the attribute values present on `data`, or create a new instance if
         one doesn't exist.
 
         Args:
             data: Instance to update existing, or be created. Identifier used to determine if an
-                existing instance exists is the value of an attribute on `data` named as value of
-                `self.id_attribute`.
+                existing instance exists is the value of an attribute on ``data`` named as value of
+                :attr:`~litestar.contrib.repository.AbstractAsyncRepository.id_attribute`.
             attribute_names: an iterable of attribute names to pass into the ``update`` method.
             with_for_update: indicating FOR UPDATE should be used, or may be a dictionary containing flags to indicate a more specific set of FOR UPDATE flags for the SELECT
             auto_expunge: Remove object from session before returning. Defaults to
@@ -689,7 +690,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             The updated or created instance.
 
         Raises:
-            NotFoundError: If no instance found with same identifier as `data`.
+            NotFoundError: If no instance found with same identifier as ``data``.
         """
         instances = []
         with wrap_sqlalchemy_exception():
