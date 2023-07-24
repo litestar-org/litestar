@@ -1263,6 +1263,68 @@ handler and application of the DTO.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.dto.base_factory.AbstractDTOFactory.resolve_generic_wrapper_type">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resolve_generic_wrapper_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dto_specialized_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.dto.base_factory.AbstractDTOFactory.resolve_generic_wrapper_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Handle where DTO supported data is wrapped in a generic container type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field_definition</strong> – A parsed type annotation that represents the annotation used to narrow the DTO type.</p></li>
+<li><p><strong>dto_specialized_type</strong> – The type used to specialize the DTO.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The data model type.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.dto.base_factory.AbstractDTOFactory.get_model_type_hints">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_model_type_hints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.dto.base_factory.AbstractDTOFactory.get_model_type_hints" title="Permalink to this definition">#</a></dt>
+<dd><p>Retrieve type annotations for <code class="docutils literal notranslate"><span class="pre">model_type</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_type</strong> – Any type-annotated class.</p></li>
+<li><p><strong>namespace</strong> – Optional namespace to use for resolving type hints.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Parsed type hints for <code class="docutils literal notranslate"><span class="pre">model_type</span></code> resolved within the scope of its module.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.dto.base_factory.AbstractDTOFactory.get_dto_config_from_annotated_type">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_dto_config_from_annotated_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="config.html#litestar.dto.config.DTOConfig" title="litestar.dto.config.DTOConfig"><span class="pre">litestar.dto.config.DTOConfig</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.dto.base_factory.AbstractDTOFactory.get_dto_config_from_annotated_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Extract data type and config instances from <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> annotation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>field_definition</strong> – A parsed type annotation that represents the annotation used to narrow the DTO type.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The type and config object extracted from the annotation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.dto.base_factory.AbstractDTOFactory.resolve_model_type">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resolve_model_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></span><a class="headerlink" href="#litestar.dto.base_factory.AbstractDTOFactory.resolve_model_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Resolve the data model type from a parsed type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>field_definition</strong> – A parsed type annotation that represents the annotation used to narrow the DTO type.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> that represents the data model type.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -1325,6 +1387,10 @@ handler and application of the DTO.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.base_factory.AbstractDTOFactory.detect_nested_field"><code class="docutils literal notranslate"><span class="pre">AbstractDTOFactory.detect_nested_field()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.base_factory.AbstractDTOFactory.on_registration"><code class="docutils literal notranslate"><span class="pre">AbstractDTOFactory.on_registration()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.base_factory.AbstractDTOFactory.create_openapi_schema"><code class="docutils literal notranslate"><span class="pre">AbstractDTOFactory.create_openapi_schema()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.base_factory.AbstractDTOFactory.resolve_generic_wrapper_type"><code class="docutils literal notranslate"><span class="pre">AbstractDTOFactory.resolve_generic_wrapper_type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.base_factory.AbstractDTOFactory.get_model_type_hints"><code class="docutils literal notranslate"><span class="pre">AbstractDTOFactory.get_model_type_hints()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.base_factory.AbstractDTOFactory.get_dto_config_from_annotated_type"><code class="docutils literal notranslate"><span class="pre">AbstractDTOFactory.get_dto_config_from_annotated_type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.base_factory.AbstractDTOFactory.resolve_model_type"><code class="docutils literal notranslate"><span class="pre">AbstractDTOFactory.resolve_model_type()</span></code></a></li>
 </ul>
 </li>
 </ul>
