@@ -174,7 +174,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         with wrap_sqlalchemy_exception():
             id_attribute = id_attribute if id_attribute is not None else self.id_attribute
             instances: list[ModelT] = []
-            chunk_size = 450
+            chunk_size = cast("int", self._dialect.insertmanyvalues_max_parameters)  # type: ignore[redundant-cast,unused-ignore]
             for idx in range(0, len(item_ids), chunk_size):
                 chunk = item_ids[idx : min(idx + chunk_size, len(item_ids))]
                 if self._dialect.delete_executemany_returning:
