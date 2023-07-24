@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Any, Dict, Generator, List, Tuple, Union
 
 import pytest
 
-from litestar.dto import DTOConfig, DTOField
-from litestar.dto._backend import BackendContext, DTOBackend
+from litestar.dto import DataclassDTO, DTOConfig, DTOField
+from litestar.dto._backend import DTOBackend
 from litestar.dto._types import (
     CollectionType,
     CompositeType,
@@ -17,7 +17,7 @@ from litestar.dto._types import (
 )
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.types import ForType
-from litestar.types.empty import Empty
+from litestar.types import DataclassProtocol
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
@@ -40,7 +40,7 @@ class Model2:
 
 
 @pytest.fixture(name="data_model_type")
-def fx_data_model_type() -> type[Model]:
+def fx_data_model_type() -> Any:
     return type("Model", (Model,), {})
 
 
@@ -56,47 +56,38 @@ def fx_field_definitions(data_model_type: type[Model]) -> list[DTOFieldDefinitio
             field_definition=FieldDefinition.from_kwarg(
                 annotation=int,
                 name="a",
-                default=Empty,
             ),
             default_factory=None,
             dto_field=DTOField(),
-            unique_model_name="some_module.SomeModel",
+            model_name="some_module.SomeModel",
             dto_for=None,
         ),
         DTOFieldDefinition.from_field_definition(
             field_definition=FieldDefinition.from_kwarg(
                 annotation=str,
                 name="b",
-                default=Empty,
             ),
             default_factory=None,
             dto_field=DTOField(),
-            unique_model_name="some_module.SomeModel",
+            model_name="some_module.SomeModel",
             dto_for=None,
         ),
     ]
 
 
-@pytest.fixture(name="context")
-def fx_context(data_model_type: type[Model], field_definitions: list[DTOFieldDefinition]) -> BackendContext:
-    def _generator(_: Any) -> Generator[DTOFieldDefinition, None, None]:
-        yield from field_definitions
-
-    return BackendContext(
-        dto_config=DTOConfig(),
-        dto_for="data",
-        field_definition=FieldDefinition.from_annotation(data_model_type),
-        field_definition_generator=_generator,
-        is_nested_field_predicate=lambda field_definition: field_definition.is_subclass_of((Model, Model2)),
-        model_type=data_model_type,
-        wrapper_attribute_name=None,
-    )
-
-
 @pytest.fixture(name="backend")
-def fx_backend(context: BackendContext) -> DTOBackend:
+def fx_backend(data_model_type: type[Model], field_definitions: list[DTOFieldDefinition]) -> DTOBackend:
+    class _Factory(DataclassDTO):
+        config = DTOConfig()
+
+        @classmethod
+        def generate_field_definitions(
+            cls, model_type: type[DataclassProtocol]
+        ) -> Generator[DTOFieldDefinition, None, None]:
+            yield from field_definitions
+
     class _Backend(DTOBackend):
-        def create_transfer_model_type(self, unique_name: str, field_definitions: FieldDefinitionsType) -> type[Any]:
+        def create_transfer_model_type(self, model_name: str, field_definitions: FieldDefinitionsType) -> type[Any]:
             """Create a model for data transfer.
 
             Args:
@@ -132,7 +123,14 @@ def fx_backend(context: BackendContext) -> DTOBackend:
             """
             return None
 
-    return _Backend(context)
+    return _Backend(
+        dto_factory=_Factory,
+        is_data_field=True,
+        field_definition=FieldDefinition.from_annotation(data_model_type),
+        model_type=data_model_type,
+        wrapper_attribute_name=None,
+        handler_id="test",
+    )
 
 
 def create_transfer_type(
@@ -278,8 +276,8 @@ def test_parse_model_respects_field_definition_dto_for(
 ) -> None:
     object.__setattr__(field_definitions[0], "dto_for", "data")
     object.__setattr__(field_definitions[1], "dto_for", "return")
-    backend.context.dto_for = dto_for  # type: ignore
-    backend.context.field_definition_generator = lambda _: iter(field_definitions)  # type: ignore
+    backend.is_data_field = dto_for == "data"  # type: ignore[misc]
+    backend.dto_factory.generate_field_definitions = lambda _: iter(field_definitions)  # type: ignore
     transfer_field_defs = backend.parse_model(None, exclude=set(), include=set())
     assert len(transfer_field_defs) == 1
     assert transfer_field_defs[0].dto_for == dto_for
