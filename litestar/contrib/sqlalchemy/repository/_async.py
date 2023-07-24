@@ -169,6 +169,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             id_attribute: Allows customization of the unique identifier to use for model fetching.
                 Defaults to `id`, but can reference any surrogate or candidate key for the table.
             chunk_size: Allows customization of the insertmanyvalues_max_parameters setting for the driver.
+                Defaults to `950` if left unset.
 
         Returns:
             The deleted instances.
