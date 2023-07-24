@@ -24,7 +24,8 @@
 
 # Starlite → Litestar
 
-**[Starlite has been renamed to Litestar](https://litestar.dev/about/organization.html#litestar-and-starlite)**
+> [!IMPORTANT]\
+> [**_Starlite has been renamed to Litestar_**](https://litestar.dev/about/organization.html#litestar-and-starlite)
 
 <hr>
 
