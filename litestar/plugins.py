@@ -4,12 +4,12 @@ from typing import TYPE_CHECKING, Any, Protocol, TypeVar, Union, runtime_checkab
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
+    from litestar.cli._utils import LitestarGroup
     from litestar.config.app import AppConfig
     from litestar.dto.interface import DTOInterface
     from litestar.dto.types import ForType
     from litestar.openapi.spec import Schema
     from litestar.typing import FieldDefinition
-
 
 __all__ = ("SerializationPluginProtocol", "InitPluginProtocol", "OpenAPISchemaPluginProtocol", "PluginProtocol")
 
@@ -54,6 +54,12 @@ class InitPluginProtocol(Protocol):
             The app config object.
         """
         return app_config  # pragma: no cover
+
+
+@runtime_checkable
+class CLIPluginProtocol(Protocol):
+    def on_cli_init(self, cli: LitestarGroup) -> None:
+        pass
 
 
 @runtime_checkable
@@ -117,4 +123,9 @@ class OpenAPISchemaPluginProtocol(Protocol):
         raise NotImplementedError()
 
 
-PluginProtocol = Union[SerializationPluginProtocol, InitPluginProtocol, OpenAPISchemaPluginProtocol]
+PluginProtocol = Union[
+    SerializationPluginProtocol,
+    InitPluginProtocol,
+    OpenAPISchemaPluginProtocol,
+    CLIPluginProtocol,
+]

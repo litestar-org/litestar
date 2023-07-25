@@ -30,6 +30,7 @@ from litestar.middleware.cors import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.spec.components import Components
 from litestar.plugins import (
+    CLIPluginProtocol,
     InitPluginProtocol,
     OpenAPISchemaPluginProtocol,
     SerializationPluginProtocol,
@@ -130,6 +131,7 @@ class Litestar(Router):
         "_lifespan_managers",
         "_debug",
         "_openapi_schema",
+        "cli_plugins",
         "after_exception",
         "allowed_hosts",
         "asgi_handler",
@@ -379,6 +381,7 @@ class Litestar(Router):
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
         self.before_send = [AsyncCallable(h) for h in config.before_send]
         self.compression_config = config.compression_config
+        self.cli_plugins = [p for p in config.plugins if isinstance(p, CLIPluginProtocol)]
         self.cors_config = config.cors_config
         self.csrf_config = config.csrf_config
         self.event_emitter = config.event_emitter_backend(listeners=config.listeners)
