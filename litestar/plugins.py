@@ -11,7 +11,13 @@ if TYPE_CHECKING:
     from litestar.openapi.spec import Schema
     from litestar.typing import FieldDefinition
 
-__all__ = ("SerializationPluginProtocol", "InitPluginProtocol", "OpenAPISchemaPluginProtocol", "PluginProtocol")
+__all__ = (
+    "SerializationPluginProtocol",
+    "InitPluginProtocol",
+    "OpenAPISchemaPluginProtocol",
+    "PluginProtocol",
+    "CLIPluginProtocol",
+)
 
 
 T = TypeVar("T")
