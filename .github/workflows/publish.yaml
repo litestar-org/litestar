@@ -7,14 +7,15 @@ jobs:
     name: Test Minimal Application with Base Dependencies
     runs-on: ubuntu-latest
     env:
-      python_version: "3.11"
+      python_version: "3.12"
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: "3.12"
+          allow-prereleases: true
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
@@ -37,10 +38,11 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
-      - name: Set up python 3.11
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: "3.12"
+          allow-prereleases: true
       - name: Install Poetry
         uses: snok/install-poetry@v1
       - name: Install dependencies
