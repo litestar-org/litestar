@@ -3,8 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from litestar.contrib.sqlalchemy.plugins import _slots_base
+from litestar.contrib.sqlalchemy.commands import database_group
+
 from litestar.di import Provide
 from litestar.plugins import InitPluginProtocol
+from litestar.cli.main import litestar_group
 
 if TYPE_CHECKING:
     from litestar.config.app import AppConfig
@@ -43,4 +46,5 @@ class SQLAlchemyInitPlugin(InitPluginProtocol, _slots_base.SlotsBase):
         app_config.on_startup.insert(0, self._config.update_app_state)
         app_config.on_shutdown.append(self._config.on_shutdown)
         app_config.signature_namespace.update(self._config.signature_namespace)
+        litestar_group.add_command(database_group)
         return app_config
