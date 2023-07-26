@@ -98,7 +98,6 @@ class TransferDTOFieldDefinition(DTOFieldDefinition):
     __slots__ = (
         "default_factory",
         "dto_field",
-        "dto_for",
         "model_name",
         "is_excluded",
         "is_partial",
@@ -131,7 +130,6 @@ class TransferDTOFieldDefinition(DTOFieldDefinition):
             default=field_definition.default,
             default_factory=field_definition.default_factory,
             dto_field=field_definition.dto_field,
-            dto_for=field_definition.dto_for,
             extra=field_definition.extra,
             inner_types=field_definition.inner_types,
             instantiable_origin=field_definition.instantiable_origin,

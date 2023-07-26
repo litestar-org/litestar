@@ -24,7 +24,7 @@ def test_parses_values_from_connection_kwargs_raises() -> None:
     model = SignatureModel.create(
         dependency_name_set=set(),
         fn=fn,
-        has_data_dto=False,
+        data_dto=None,
         parsed_signature=ParsedSignature.from_fn(fn, {}),
         type_decoders=[],
     )
@@ -41,7 +41,7 @@ def test_create_signature_validation() -> None:
         SignatureModel.create(
             dependency_name_set=set(),
             fn=my_fn.fn.value,
-            has_data_dto=False,
+            data_dto=None,
             parsed_signature=ParsedSignature.from_fn(my_fn.fn.value, {}),
             type_decoders=[],
         )
@@ -120,7 +120,7 @@ def test_validation_error_exception_key() -> None:
     model = SignatureModel.create(
         dependency_name_set=set(),
         fn=handler,
-        has_data_dto=False,
+        data_dto=None,
         parsed_signature=ParsedSignature.from_fn(handler.fn.value, {}),
         type_decoders=[],
     )

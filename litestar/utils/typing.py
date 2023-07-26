@@ -48,6 +48,7 @@ __all__ = (
     "get_safe_generic_origin",
     "instantiable_type_mapping",
     "make_non_optional_union",
+    "safe_generic_origin_map",
     "unwrap_annotation",
     "unwrap_union",
 )

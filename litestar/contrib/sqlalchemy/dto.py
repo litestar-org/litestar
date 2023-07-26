@@ -18,7 +18,7 @@ from sqlalchemy.orm import (
     RelationshipProperty,
 )
 
-from litestar.dto.base_factory import AbstractDTOFactory
+from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField, Mark
 from litestar.exceptions import ImproperlyConfiguredException
@@ -27,7 +27,7 @@ from litestar.typing import FieldDefinition
 from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Generator
+    from typing import Any, Generator
 
     from typing_extensions import TypeAlias
 
@@ -39,12 +39,10 @@ ElementType: TypeAlias = "Column | RelationshipProperty"
 SQLA_NS = {**vars(orm), **vars(sql)}
 
 
-class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
+class SQLAlchemyDTO(AbstractDTO[T], Generic[T]):
     """Support for domain modelling with SQLAlchemy."""
 
     __slots__ = ()
-
-    model_type: ClassVar[type[DeclarativeBase]]
 
     @singledispatchmethod
     @classmethod
@@ -100,7 +98,6 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                 ),
                 default_factory=default_factory,
                 dto_field=elem.info.get(DTO_FIELD_META_KEY, DTOField()),
-                dto_for=None,
                 model_name=model_name,
             )
         ]
@@ -133,7 +130,6 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                 default_factory=None,
                 dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.READ_ONLY)),
                 model_name=model_name,
-                dto_for=None,
             )
         ]
 
@@ -162,7 +158,6 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                 default_factory=None,
                 dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.READ_ONLY)),
                 model_name=model_name,
-                dto_for="return",
             )
         ]
 
@@ -178,7 +173,6 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                     default_factory=None,
                     dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.WRITE_ONLY)),
                     model_name=model_name,
-                    dto_for="data",
                 )
             )
 

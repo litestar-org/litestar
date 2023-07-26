@@ -7,8 +7,7 @@ if TYPE_CHECKING:
 
     from litestar._openapi.schema_generation import SchemaCreator
     from litestar.config.app import AppConfig
-    from litestar.dto.interface import DTOInterface
-    from litestar.dto.types import ForType
+    from litestar.dto import AbstractDTO
     from litestar.openapi.spec import Schema
     from litestar.typing import FieldDefinition
 
@@ -109,7 +108,7 @@ class SerializationPluginProtocol(Protocol):
         """
         raise NotImplementedError()
 
-    def create_dto_for_type(self, field_definition: FieldDefinition) -> type[DTOInterface]:
+    def create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]:
         """Given a parsed type, create a DTO class.
 
         Args:
@@ -139,13 +138,12 @@ class OpenAPISchemaPluginProtocol(Protocol):
         """
         raise NotImplementedError()
 
-    def to_openapi_schema(self, annotation: Any, schema_creator: SchemaCreator, dto_for: ForType | None) -> Schema:
+    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
         """Given a type annotation, transform it into an OpenAPI schema class.
 
         Args:
-            annotation: A type annotation.
+            field_definition: An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
             schema_creator: An instance of the openapi SchemaCreator.
-            dto_for: The type of the DTO if any.
 
         Returns:
             An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.

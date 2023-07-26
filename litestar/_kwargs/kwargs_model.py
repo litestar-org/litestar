@@ -42,7 +42,7 @@ __all__ = ("KwargsModel",)
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.di import Provide
-    from litestar.dto.interface import DTOInterface
+    from litestar.dto import AbstractDTO
     from litestar.utils.signature import ParsedSignature
 
 
@@ -55,10 +55,10 @@ class KwargsModel:
     __slots__ = (
         "dependency_batches",
         "expected_cookie_params",
-        "expected_dto_data",
+        "expected_data_dto",
         "expected_form_data",
-        "expected_msgpack_data",
         "expected_header_params",
+        "expected_msgpack_data",
         "expected_path_params",
         "expected_query_params",
         "expected_reserved_kwargs",
@@ -72,40 +72,40 @@ class KwargsModel:
         self,
         *,
         expected_cookie_params: set[ParameterDefinition],
-        expected_dto_data: type[DTOInterface] | None,
+        expected_data_dto: type[AbstractDTO] | None,
         expected_dependencies: set[Dependency],
-        expected_form_data: tuple[RequestEncodingType | str, FieldDefinition, type[DTOInterface] | None] | None,
-        expected_msgpack_data: FieldDefinition | None,
+        expected_form_data: tuple[RequestEncodingType | str, FieldDefinition] | None,
         expected_header_params: set[ParameterDefinition],
+        expected_msgpack_data: FieldDefinition | None,
         expected_path_params: set[ParameterDefinition],
         expected_query_params: set[ParameterDefinition],
         expected_reserved_kwargs: set[str],
-        sequence_query_parameter_names: set[str],
         is_data_optional: bool,
+        sequence_query_parameter_names: set[str],
     ) -> None:
         """Initialize ``KwargsModel``.
 
         Args:
             expected_cookie_params: Any expected cookie parameter kwargs
             expected_dependencies: Any expected dependency kwargs
-            expected_dto_data: Any expected DTO data kwargs
             expected_form_data: Any expected form data kwargs
-            expected_msgpack_data: Any expected MessagePack data kwargs
             expected_header_params: Any expected header parameter kwargs
+            expected_msgpack_data: Any expected MessagePack data kwargs
             expected_path_params: Any expected path parameter kwargs
             expected_query_params: Any expected query parameter kwargs
             expected_reserved_kwargs: Any expected reserved kwargs, e.g. 'state'
-            sequence_query_parameter_names: Any query parameters that are sequences
+            expected_data_dto: A data DTO
             is_data_optional: Treat data as optional
+            sequence_query_parameter_names: Any query parameters that are sequences
         """
         self.expected_cookie_params = expected_cookie_params
-        self.expected_dto_data = expected_dto_data
         self.expected_form_data = expected_form_data
-        self.expected_msgpack_data = expected_msgpack_data
         self.expected_header_params = expected_header_params
+        self.expected_msgpack_data = expected_msgpack_data
         self.expected_path_params = expected_path_params
         self.expected_query_params = expected_query_params
         self.expected_reserved_kwargs = expected_reserved_kwargs
+        self.expected_data_dto = expected_data_dto
         self.sequence_query_parameter_names = tuple(sequence_query_parameter_names)
 
         self.has_kwargs = (
@@ -117,7 +117,7 @@ class KwargsModel:
             or expected_path_params
             or expected_query_params
             or expected_reserved_kwargs
-            or expected_dto_data
+            or expected_data_dto
         )
 
         self.is_data_optional = is_data_optional
@@ -259,7 +259,6 @@ class KwargsModel:
         dependencies: dict[str, Provide],
         path_parameters: set[str],
         layered_parameters: dict[str, FieldDefinition],
-        data_dto: type[DTOInterface] | None,
     ) -> KwargsModel:
         """Pre-determine what parameters are required for a given combination of route + route handler. It is executed
         during the application bootstrap process.
@@ -270,8 +269,6 @@ class KwargsModel:
             dependencies: A string keyed dictionary mapping dependency providers.
             path_parameters: Any expected path parameters.
             layered_parameters: A string keyed dictionary of layered parameters.
-            data_dto: A :class:`DTOInterface <litestar._dto.DTOInterface>` subclass if one is declared
-                for the route handler, or ``None``.
 
         Returns:
             An instance of KwargsModel
@@ -300,10 +297,9 @@ class KwargsModel:
         expected_query_parameters = {p for p in param_definitions if p.param_type == ParamType.QUERY}
         sequence_query_parameter_names = {p.field_alias for p in expected_query_parameters if p.is_sequence}
 
-        expected_form_data: tuple[RequestEncodingType | str, FieldDefinition, type[DTOInterface] | None] | None = None
+        expected_form_data: tuple[RequestEncodingType | str, FieldDefinition] | None = None
         expected_msgpack_data: FieldDefinition | None = None
-        expected_dto_data: type[DTOInterface] | None = None
-
+        expected_data_dto: type[AbstractDTO] | None = None
         data_field_definition = field_definitions.get("data")
 
         media_type: RequestEncodingType | str | None = None
@@ -312,9 +308,9 @@ class KwargsModel:
                 media_type = data_field_definition.kwarg_definition.media_type
 
             if media_type in (RequestEncodingType.MULTI_PART, RequestEncodingType.URL_ENCODED):
-                expected_form_data = (media_type, data_field_definition, data_dto)
-            elif data_dto:
-                expected_dto_data = data_dto
+                expected_form_data = (media_type, data_field_definition)
+            elif signature_model._data_dto:
+                expected_data_dto = signature_model._data_dto
             elif media_type == RequestEncodingType.MESSAGEPACK:
                 expected_msgpack_data = data_field_definition
 
@@ -325,7 +321,6 @@ class KwargsModel:
                 dependencies=dependencies,
                 path_parameters=path_parameters,
                 layered_parameters=layered_parameters,
-                data_dto=None,
             )
             expected_path_parameters = merge_parameter_sets(
                 expected_path_parameters, dependency_kwargs_model.expected_path_params
@@ -352,7 +347,7 @@ class KwargsModel:
         return KwargsModel(
             expected_cookie_params=expected_cookie_parameters,
             expected_dependencies=expected_dependencies,
-            expected_dto_data=expected_dto_data,
+            expected_data_dto=expected_data_dto,
             expected_form_data=expected_form_data,
             expected_header_params=expected_header_parameters,
             expected_msgpack_data=expected_msgpack_data,
@@ -415,7 +410,7 @@ class KwargsModel:
     @classmethod
     def _validate_dependency_data(
         cls,
-        expected_form_data: tuple[RequestEncodingType | str, FieldDefinition, type[DTOInterface] | None] | None,
+        expected_form_data: tuple[RequestEncodingType | str, FieldDefinition] | None,
         dependency_kwargs_model: KwargsModel,
     ) -> None:
         """Validate that the 'data' kwarg is compatible across dependencies."""

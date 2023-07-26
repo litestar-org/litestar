@@ -3,7 +3,7 @@ from litestar.utils import warn_deprecation
 
 def __getattr__(attr_name: str) -> object:
     if "MsgspecDTO" in attr_name:
-        from litestar.dto.msgspec_dto_factory import MsgspecDTO
+        from litestar.dto.msgspec_dto import MsgspecDTO
 
         warn_deprecation(
             deprecated_name="litestar.contrib.msgspec.MsgspecDTO",

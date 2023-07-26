@@ -18,7 +18,7 @@ __all__ = ("Controller",)
 
 if TYPE_CHECKING:
     from litestar.datastructures import CacheControlHeader, ETag
-    from litestar.dto.interface import DTOInterface
+    from litestar.dto import AbstractDTO
     from litestar.openapi.spec import SecurityRequirement
     from litestar.response import Response
     from litestar.router import Router
@@ -94,8 +94,8 @@ class Controller:
     """
     dependencies: Dependencies | None
     """A string keyed dictionary of dependency :class:`Provider <.di.Provide>` instances."""
-    dto: type[DTOInterface] | None | EmptyType
-    """:class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and validation of request data."""
+    dto: type[AbstractDTO] | None | EmptyType
+    """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and validation of request data."""
     etag: ETag | None
     """An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this controller.
 
@@ -131,8 +131,8 @@ class Controller:
     """A list of :class:`Cookie <.datastructures.Cookie>` instances."""
     response_headers: ResponseHeaders | None
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>` instances."""
-    return_dto: type[DTOInterface] | None | EmptyType
-    """:class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing outbound response
+    return_dto: type[AbstractDTO] | None | EmptyType
+    """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing outbound response
     data.
     """
     tags: OptionalSequence[str]

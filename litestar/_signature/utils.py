@@ -50,14 +50,10 @@ def _validate_signature_dependencies(
     return dependency_names
 
 
-def _normalize_annotation(field_definition: FieldDefinition, has_data_dto: bool) -> Any:
-    if (
-        field_definition.name in SKIP_VALIDATION_NAMES
-        or (
-            isinstance(field_definition.kwarg_definition, DependencyKwarg)
-            and field_definition.kwarg_definition.skip_validation
-        )
-        or (has_data_dto and field_definition.name == "data")
+def _normalize_annotation(field_definition: FieldDefinition) -> Any:
+    if field_definition.name in SKIP_VALIDATION_NAMES or (
+        isinstance(field_definition.kwarg_definition, DependencyKwarg)
+        and field_definition.kwarg_definition.skip_validation
     ):
         return Any
 
