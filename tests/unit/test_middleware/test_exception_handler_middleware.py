@@ -292,6 +292,7 @@ def test_get_exception_handler(mapping: ExceptionHandlersMap, exc: Exception, ex
     assert get_exception_handler(mapping, exc) == expected
 
 
+@pytest.mark.filterwarnings("ignore::litestar.utils.warnings.LitestarWarning:")
 def test_pdb_on_exception(mocker: MockerFixture) -> None:
     @get("/test")
     def handler() -> None:

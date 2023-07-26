@@ -13,7 +13,7 @@ async def my_generator() -> AsyncGenerator[bytes, None]:
         yield str(count)
 
 
-@get(path="/count")
+@get(path="/count", sync_to_thread=False)
 def sse_handler() -> ServerSentEvent:
     return ServerSentEvent(my_generator())
 

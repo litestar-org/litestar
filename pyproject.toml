@@ -242,7 +242,7 @@ exclude_lines = [
 addopts = "--ignore=examples -m='not sqlalchemy_integration'"
 asyncio_mode = "auto"
 filterwarnings = [
-    "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:164",
+    "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:",
     "ignore::DeprecationWarning:pkg_resources.*",
     "ignore::DeprecationWarning:google.rpc",
     "ignore::DeprecationWarning:google.gcloud",
@@ -250,6 +250,7 @@ filterwarnings = [
     "ignore::DeprecationWarning:google",
     "ignore::DeprecationWarning:sphinxcontrib",
     "ignore::DeprecationWarning:litestar.*",
+    "ignore::pydantic.PydanticDeprecatedSince20:"
 ]
 markers = [
     "sqlalchemy_integration: SQLAlchemy integration tests",
