@@ -9,9 +9,9 @@ def __getattr__(attr_name: str) -> object:
 
         value: Any = DataclassDTO
     elif "AbstractDTOFactory" in attr_name:
-        from litestar.dto.base_factory import AbstractDTOFactory
+        from litestar.dto.base_dto import AbstractDTO
 
-        value = AbstractDTOFactory
+        value = AbstractDTO
     elif "DTOData" in attr_name:
         from litestar.dto import DTOData
 

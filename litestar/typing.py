@@ -221,13 +221,13 @@ class FieldDefinition:
     def _extract_metadata(
         cls, annotation: Any, name: str | None, default: Any, metadata: tuple[Any, ...], extra: dict[str, Any] | None
     ) -> tuple[KwargDefinition | None, dict[str, Any]]:
-        from litestar.dto.base_factory import AbstractDTOFactory
+        from litestar.dto.base_dto import AbstractDTO
 
         model = BodyKwarg if name == "data" else ParameterKwarg
         if isinstance(default, FieldInfo):
             return _create_metadata_from_type(metadata=[default], model=model, annotation=annotation, extra=extra)
 
-        if is_pydantic_constrained_field(annotation) or isinstance(annotation, AbstractDTOFactory):
+        if is_pydantic_constrained_field(annotation) or isinstance(annotation, AbstractDTO):
             return _create_metadata_from_type(metadata=[annotation], model=model, annotation=annotation, extra=extra)
 
         if any(isinstance(arg, KwargDefinition) for arg in get_args(annotation)):

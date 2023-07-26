@@ -441,14 +441,14 @@ DTOs
 DTOs are now defined using the ``dto`` and ``return_dto`` arguments to
 handlers/controllers/routers and the application.
 
-A DTO is any type that conforms to the :class:`litestar.dto.interface.DTOInterface`
+A DTO is any type that conforms to the :class:`litestar.dto.base_dto.AbstractDTO`
 protocol.
 
-Litestar provides a suite of factory types that implement the ``DTOInterface`` protocol
+Litestar provides a suite of factory types that implement the ``AbstractDTO`` abstract class
 and can be used to define DTOs:
 
-- :class:`litestar.dto.dataclass_dto_factory.DataclassDTO`
-- :class:`litestar.dto.msgspec_dto_factory.MsgspecDTO`
+- :class:`litestar.dto.dataclass_dto.DataclassDTO`
+- :class:`litestar.dto.msgspec_dto.MsgspecDTO`
 - :class:`litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO`
 - :class:`litestar.contrib.pydantic.PydanticDTO`
 - ``litestar.contrib.piccolo.PiccoloDTO`` (TODO)

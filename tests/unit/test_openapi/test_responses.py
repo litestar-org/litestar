@@ -18,7 +18,7 @@ from litestar._openapi.responses import (
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar.contrib.pydantic import PydanticSchemaPlugin
 from litestar.datastructures import Cookie, ResponseHeader
-from litestar.dto.interface import DTOInterface
+from litestar.dto import AbstractDTO
 from litestar.exceptions import (
     HTTPException,
     PermissionDeniedException,
@@ -427,7 +427,7 @@ def handler() -> int:
 
 
 def test_response_generation_with_dto() -> None:
-    mock_dto = MagicMock(spec=DTOInterface)
+    mock_dto = MagicMock(spec=AbstractDTO)
     mock_dto.create_openapi_schema.return_value = Schema()
 
     @post(path="/form-upload", return_dto=mock_dto)

@@ -3,14 +3,14 @@ from __future__ import annotations
 from dataclasses import MISSING, fields, replace
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from litestar.dto.base_factory import AbstractDTOFactory
+from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField
 from litestar.params import DependencyKwarg, KwargDefinition
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
-    from typing import ClassVar, Collection, Generator
+    from typing import Collection, Generator
 
     from litestar.types.protocols import DataclassProtocol
     from litestar.typing import FieldDefinition
@@ -22,12 +22,8 @@ T = TypeVar("T", bound="DataclassProtocol | Collection[DataclassProtocol]")
 AnyDataclass = TypeVar("AnyDataclass", bound="DataclassProtocol")
 
 
-class DataclassDTO(AbstractDTOFactory[T], Generic[T]):
+class DataclassDTO(AbstractDTO[T], Generic[T]):
     """Support for domain modelling with dataclasses."""
-
-    __slots__ = ()
-
-    model_type: ClassVar[type[DataclassProtocol]]
 
     @classmethod
     def generate_field_definitions(
@@ -46,7 +42,6 @@ class DataclassDTO(AbstractDTOFactory[T], Generic[T]):
                     default_factory=default_factory,
                     dto_field=dc_field.metadata.get(DTO_FIELD_META_KEY, DTOField()),
                     model_name=model_type.__name__,
-                    dto_for=None,
                 ),
                 name=key,
                 default=default,

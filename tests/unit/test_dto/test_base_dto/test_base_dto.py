@@ -8,12 +8,11 @@ from unittest.mock import patch
 import pytest
 from typing_extensions import Annotated
 
+from litestar import Request, get
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar.dto import DataclassDTO, DTOConfig
-from litestar.dto.interface import ConnectionContext, HandlerContext
-from litestar.enums import RequestEncodingType
+from litestar.enums import MediaType
 from litestar.exceptions.dto_exceptions import InvalidAnnotationException
-from litestar.serialization import default_deserializer
 from litestar.typing import FieldDefinition
 
 from . import Model
@@ -21,16 +20,24 @@ from . import Model
 if TYPE_CHECKING:
     from typing import Any
 
-    from pytest import MonkeyPatch
-
     from litestar.dto._backend import DTOBackend
     from litestar.testing import RequestFactory
 
 T = TypeVar("T", bound=Model)
 
 
+@pytest.fixture(name="asgi_connection")
+def fx_asgi_connection() -> Request[Any, Any, Any]:
+    @get("/", name="handler_id", media_type=MediaType.JSON)
+    def _handler() -> None:
+        ...
+
+    return RequestFactory().get(path="/", route_handler=_handler)
+
+
 def get_backend(dto_type: type[DataclassDTO[Any]]) -> DTOBackend:
-    return next(iter(dto_type._dto_backends.values()))
+    value = next(iter(dto_type._dto_backends.values()))
+    return value["data_backend"]  # pyright: ignore
 
 
 def test_forward_referenced_type_argument_raises_exception() -> None:
@@ -49,14 +56,14 @@ def test_union_type_argument_raises_exception() -> None:
 def test_type_narrowing_with_scalar_type_arg() -> None:
     dto = DataclassDTO[Model]
     assert dto.config == DTOConfig()
-    assert dto.model_type is Model
+    assert dto.model_type is Model  # type: ignore[misc]
 
 
 def test_type_narrowing_with_annotated_scalar_type_arg() -> None:
     config = DTOConfig()
     dto = DataclassDTO[Annotated[Model, config]]
     assert dto.config is config
-    assert dto.model_type is Model
+    assert dto.model_type is Model  # type: ignore[misc]
 
 
 def test_type_narrowing_with_only_type_var() -> None:
@@ -106,29 +113,18 @@ def test_config_assigned_via_subclassing() -> None:
     assert concrete_dto.config.exclude == {"a"}
 
 
-async def test_from_bytes(request_factory: RequestFactory) -> None:
+async def test_from_bytes(asgi_connection: Request[Any, Any, Any]) -> None:
     DataclassDTO._dto_backends = {}
     dto_type = DataclassDTO[Model]
-    dto_type.on_registration(
-        HandlerContext(handler_id="handler", dto_for="data", field_definition=FieldDefinition.from_annotation(Model))
-    )
-    conn_ctx = ConnectionContext(
-        handler_id="handler",
-        request_encoding_type=RequestEncodingType.JSON,
-        default_deserializer=default_deserializer,
-        type_decoders=None,
-    )
-    assert dto_type(conn_ctx).bytes_to_data_type(b'{"a":1,"b":"two"}') == Model(a=1, b="two")
+    assert dto_type(asgi_connection).decode(b'{"a":1,"b":"two"}') == Model(a=1, b="two")
 
 
 def test_config_field_rename() -> None:
     DataclassDTO._dto_backends = {}
     config = DTOConfig(rename_fields={"a": "z"})
     dto_type = DataclassDTO[Annotated[Model, config]]
-    dto_type.on_registration(
-        HandlerContext(handler_id="handler", dto_for="data", field_definition=FieldDefinition.from_annotation(Model))
-    )
-    field_definitions = dto_type.get_backend(for_type="data", handler_id="handler").parsed_field_definitions
+
+    field_definitions = dto_type._dto_backends["handler"]["data_backend"].parsed_field_definitions  # pyright: ignore
     assert field_definitions[0].serialization_name == "z"
 
 
@@ -143,12 +139,9 @@ def test_raises_invalid_annotation_for_non_homogenous_collection_types() -> None
     dto_type = DataclassDTO[Model]
 
     with pytest.raises(InvalidAnnotationException):
-        dto_type.on_registration(
-            HandlerContext(
-                handler_id="handler",
-                dto_for="data",
-                field_definition=FieldDefinition.from_annotation(Tuple[Model, str]),
-            )
+        dto_type.create_for_field_definition(
+            handler_id="handler",
+            field_definition=FieldDefinition.from_annotation(Tuple[Model, str]),
         )
 
 
@@ -160,10 +153,8 @@ def test_raises_invalid_annotation_for_mismatched_types() -> None:
         a: int
 
     with pytest.raises(InvalidAnnotationException):
-        dto_type.on_registration(
-            HandlerContext(
-                handler_id="handler", dto_for="data", field_definition=FieldDefinition.from_annotation(OtherModel)
-            )
+        dto_type.create_for_field_definition(
+            handler_id="handler", field_definition=FieldDefinition.from_annotation(OtherModel)
         )
 
 
@@ -175,19 +166,17 @@ def test_sub_types_supported() -> None:
     class SubType(Model):
         c: int
 
-    dto_type.on_registration(
-        HandlerContext(handler_id="handler", dto_for="data", field_definition=FieldDefinition.from_annotation(SubType))
+    dto_type.create_for_field_definition(
+        handler_id="handler", field_definition=FieldDefinition.from_annotation(SubType)
     )
-    assert dto_type.get_backend("data", "handler").parsed_field_definitions[-1].name == "c"
+    assert dto_type._dto_backends["handler"]["data_backend"].parsed_field_definitions[-1].name == "c"  # pyright: ignore
 
 
-def test_create_openapi_schema(monkeypatch: MonkeyPatch) -> None:
+def test_create_openapi_schema(monkeypatch: pytest.MonkeyPatch) -> None:
     dto_type = DataclassDTO[Model]
-    dto_type.on_registration(
-        HandlerContext(handler_id="handler", dto_for="data", field_definition=FieldDefinition.from_annotation(Model))
-    )
+    dto_type.create_for_field_definition(handler_id="handler", field_definition=FieldDefinition.from_annotation(Model))
 
     with patch("litestar.dto._backend.DTOBackend.create_openapi_schema") as mock:
         schema_creator = SchemaCreator()
-        dto_type.create_openapi_schema("data", "handler", schema_creator)
+        dto_type.create_openapi_schema(FieldDefinition.from_annotation(Any), "handler", schema_creator)
         mock.assert_called_once_with(schema_creator)

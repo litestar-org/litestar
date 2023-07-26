@@ -314,11 +314,11 @@ def test_dto_openapi_without_unique_handler_names() -> None:
         assert schemas[1]["title"] == "HandlerSharedModelNameResponseBody"
         assert (
             schemas[2]["title"]
-            == "tests.unit.test_dto.test_factory.test_integration.test_dto_openapi_without_unique_handler_names.<locals>.MyController.handlerSharedModelNameRequestBody"
+            == "tests.unit.test_dto.test_base_dto.test_integration.test_dto_openapi_without_unique_handler_names.<locals>.MyController.handlerSharedModelNameRequestBody"
         )
         assert (
             schemas[3]["title"]
-            == "tests.unit.test_dto.test_factory.test_integration.test_dto_openapi_without_unique_handler_names.<locals>.MyController.handlerSharedModelNameResponseBody"
+            == "tests.unit.test_dto.test_base_dto.test_integration.test_dto_openapi_without_unique_handler_names.<locals>.MyController.handlerSharedModelNameResponseBody"
         )
 
 

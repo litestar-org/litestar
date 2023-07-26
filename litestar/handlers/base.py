@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence, cast
 
 from litestar._signature import SignatureModel
 from litestar.di import Provide
-from litestar.dto.interface import HandlerContext
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import default_deserializer
 from litestar.types import (
@@ -23,7 +22,7 @@ from litestar.typing import FieldDefinition
 from litestar.utils import AsyncCallable, Ref, async_partial, get_name, normalize_path
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.predicates import is_async_callable
-from litestar.utils.signature import ParsedSignature, infer_request_encoding_from_field_definition
+from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -31,7 +30,7 @@ if TYPE_CHECKING:
     from litestar import Litestar
     from litestar.connection import ASGIConnection
     from litestar.controller import Controller
-    from litestar.dto.interface import DTOInterface
+    from litestar.dto import AbstractDTO
     from litestar.params import ParameterKwarg
     from litestar.plugins import SerializationPluginProtocol
     from litestar.router import Router
@@ -51,7 +50,7 @@ class BaseRouteHandler:
         "_fn",
         "_parsed_fn_signature",
         "_resolved_dependencies",
-        "_resolved_dto",
+        "_resolved_data_dto",
         "_resolved_guards",
         "_resolved_layered_parameters",
         "_resolved_return_dto",
@@ -79,13 +78,13 @@ class BaseRouteHandler:
         path: str | Sequence[str] | None = None,
         *,
         dependencies: Dependencies | None = None,
-        dto: type[DTOInterface] | None | EmptyType = Empty,
+        dto: type[AbstractDTO] | None | EmptyType = Empty,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: Sequence[Guard] | None = None,
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
-        return_dto: type[DTOInterface] | None | EmptyType = Empty,
+        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         type_encoders: TypeEncodersMap | None = None,
         type_decoders: TypeDecodersSequence | None = None,
@@ -97,7 +96,7 @@ class BaseRouteHandler:
             path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
                 to ``/``
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
-            dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
+            dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
                 validation of request data.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
@@ -106,7 +105,7 @@ class BaseRouteHandler:
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or
                 :class:`ASGI Scope <.types.Scope>`.
-            return_dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing
+            return_dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing
                 outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature
                 modelling.
@@ -115,14 +114,14 @@ class BaseRouteHandler:
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self._parsed_fn_signature: ParsedSignature | EmptyType = Empty
+        self._resolved_data_dto: type[AbstractDTO] | None | EmptyType = Empty
         self._resolved_dependencies: dict[str, Provide] | EmptyType = Empty
-        self._resolved_dto: type[DTOInterface] | None | EmptyType = Empty
         self._resolved_guards: list[Guard] | EmptyType = Empty
         self._resolved_layered_parameters: dict[str, FieldDefinition] | EmptyType = Empty
-        self._resolved_return_dto: type[DTOInterface] | None | EmptyType = Empty
+        self._resolved_return_dto: type[AbstractDTO] | None | EmptyType = Empty
         self._resolved_signature_namespace: dict[str, Any] | EmptyType = Empty
-        self._resolved_type_encoders: TypeEncodersMap | EmptyType = Empty
         self._resolved_type_decoders: TypeDecodersSequence | EmptyType = Empty
+        self._resolved_type_encoders: TypeEncodersMap | EmptyType = Empty
 
         self.dependencies = dependencies
         self.dto = dto
@@ -150,6 +149,11 @@ class BaseRouteHandler:
         return self
 
     @property
+    def handler_id(self) -> str:
+        """A unique idenrtifier used for generation of DTOs and schemas."""
+        return self.name or str(self)
+
+    @property
     def default_deserializer(self) -> Callable[[Any, Any], Any]:
         """Get a default serializer for the route handler.
 
@@ -170,7 +174,7 @@ class BaseRouteHandler:
             Handler function
         """
         if not hasattr(self, "_fn"):
-            raise ImproperlyConfiguredException("Handler has not decorated a function")
+            raise ImproperlyConfiguredException("handler does not decorate a function")
         return self._fn
 
     @property
@@ -345,76 +349,39 @@ class BaseRouteHandler:
             self._resolved_signature_namespace = ns
         return cast("dict[str, Any]", self._resolved_signature_namespace)
 
-    def resolve_dto(self) -> type[DTOInterface] | None:
+    def resolve_data_dto(self) -> type[AbstractDTO] | None:
         """Resolve the data_dto by starting from the route handler and moving up.
         If a handler is found it is returned, otherwise None is set.
         This method is memoized so the computation occurs only once.
 
         Returns:
-            An optional :class:`DTO type <.dto.interface.DTOInterface>`
+            An optional :class:`DTO type <.dto.base_dto.AbstractDTO>`
         """
-        if self._resolved_dto is Empty:
-            dtos: list[type[DTOInterface] | None] = [
-                layer_dto  # type:ignore[misc]
-                for layer in self.ownership_layers
-                if (layer_dto := layer.dto) is not Empty
-            ]
-            self._resolved_dto = dtos[-1] if dtos else None
+        if self._resolved_data_dto is Empty:
+            layered_dtos: list[type[AbstractDTO] | None | EmptyType] = [layer.dto for layer in self.ownership_layers]
+            self._resolved_data_dto = (
+                data_dtos[-1] if (data_dtos := [d for d in layered_dtos if d is not Empty]) else None
+            )
 
-        return cast("type[DTOInterface] | None", self._resolved_dto)
+        return cast("type[AbstractDTO] | None", self._resolved_data_dto)
 
-    def resolve_return_dto(self) -> type[DTOInterface] | None:
+    def resolve_return_dto(self) -> type[AbstractDTO] | None:
         """Resolve the return_dto by starting from the route handler and moving up.
         If a handler is found it is returned, otherwise None is set.
         This method is memoized so the computation occurs only once.
 
         Returns:
-            An optional :class:`DTO type <.dto.interface.DTOInterface>`
+            An optional :class:`DTO type <.dto.base_dto.AbstractDTO>`
         """
         if self._resolved_return_dto is Empty:
-            return_dtos: list[type[DTOInterface] | None] = [
-                layer_dto_type  # type:ignore[misc]
-                for layer in self.ownership_layers
-                if (layer_dto_type := layer.return_dto) is not Empty
+            layered_dtos: list[type[AbstractDTO] | None | EmptyType] = [
+                layer.return_dto for layer in self.ownership_layers
             ]
-            self._resolved_return_dto = return_dtos[-1] if return_dtos else self.resolve_dto()
-
-        return cast("type[DTOInterface] | None", self._resolved_return_dto)
-
-    def _set_dto(self, dto: type[DTOInterface]) -> None:
-        """Set the dto for the handler.
-
-        Args:
-            dto: The :class:`DTO type <.dto.interface.DTOInterface>` to set.
-        """
-        self._resolved_dto = dto
-
-    def _set_return_dto(self, dto: type[DTOInterface]) -> None:
-        """Set the return_dto for the handler.
-
-        Args:
-            dto: The :class:`DTO type <.dto.interface.DTOInterface>` to set.
-        """
-        self._resolved_return_dto = dto
-
-    def _init_handler_dtos(self) -> None:
-        """Initialize the data and return DTOs for the handler."""
-        if (dto := self.resolve_dto()) and (data_parameter := self.parsed_fn_signature.parameters.get("data")):
-            dto.on_registration(
-                HandlerContext(
-                    dto_for="data",
-                    handler_id=str(self),
-                    field_definition=data_parameter,
-                    request_encoding_type=infer_request_encoding_from_field_definition(data_parameter),
-                )
+            self._resolved_return_dto = (
+                return_dtos[-1] if (return_dtos := [d for d in layered_dtos if d is not Empty]) else None
             )
 
-        if return_dto := self.resolve_return_dto():
-            return_dto.on_registration(
-                HandlerContext(
-                    dto_for="return", handler_id=str(self), field_definition=self.parsed_fn_signature.return_type
-                )
-            )
+        return cast("type[AbstractDTO] | None", self._resolved_return_dto)
 
     async def authorize_connection(self, connection: ASGIConnection) -> None:
         """Ensure the connection is authorized by running all the route guards in scope."""
@@ -434,11 +401,9 @@ class BaseRouteHandler:
     def on_registration(self, app: Litestar) -> None:
         """Called once per handler when the app object is instantiated."""
         self._validate_handler_function()
-        self._handle_serialization_plugins(app.plugins.serialization)
-        self._init_handler_dtos()
+        self._register_serialization_plugins(app.plugins.serialization)
         self._set_runtime_callables()
         self._create_signature_model()
-        self._create_provider_signature_models()
         self.resolve_guards()
         self.resolve_middleware()
         self.resolve_opts()
@@ -461,45 +426,48 @@ class BaseRouteHandler:
                     provider.has_sync_callable = True
 
     def _create_signature_model(self) -> None:
-        """Create signature model for handler function."""
+        """Create the signature model for the handler and its dependencies, if any."""
         if not self.signature_model:
             self.signature_model = SignatureModel.create(
                 dependency_name_set=self.dependency_name_set,
                 fn=cast("AnyCallable", self.fn.value),
-                has_data_dto=bool(self.resolve_dto()),
                 parsed_signature=self.parsed_fn_signature,
+                data_dto=self.resolve_data_dto(),
                 type_decoders=self.resolve_type_decoders(),
             )
 
-    def _create_provider_signature_models(self) -> None:
-        """Create signature models for dependency providers."""
         for provider in self.resolve_dependencies().values():
             if not getattr(provider, "signature_model", None):
                 provider.signature_model = SignatureModel.create(
                     dependency_name_set=self.dependency_name_set,
                     fn=provider.dependency.value,
-                    has_data_dto=bool(self.resolve_dto()),
                     parsed_signature=ParsedSignature.from_fn(
                         unwrap_partial(provider.dependency.value), self.resolve_signature_namespace()
                     ),
+                    data_dto=self.resolve_data_dto(),
                     type_decoders=self.resolve_type_decoders(),
                 )
 
-    def _handle_serialization_plugins(self, plugins: tuple[SerializationPluginProtocol, ...]) -> None:
-        """Handle the serialization plugins for the handler."""
-        # must do the return dto first, otherwise it will resolve to the same as the data dto
-        if self.resolve_return_dto() is None:
-            return_type = self.parsed_fn_signature.return_type
-            for plugin in plugins:
-                if plugin.supports_type(return_type):
-                    self._set_return_dto(plugin.create_dto_for_type(return_type))
-                    break
+    def _register_serialization_plugins(self, plugins: tuple[SerializationPluginProtocol, ...]) -> None:
+        data_dto = self.resolve_data_dto()
+        return_dto = self.resolve_return_dto()
+        data_param = self.parsed_fn_signature.parameters.get("data")
 
-        if (data_param := self.parsed_fn_signature.parameters.get("data")) and self.resolve_dto() is None:
-            for plugin in plugins:
-                if plugin.supports_type(data_param):
-                    self._set_dto(plugin.create_dto_for_type(data_param))
-                    break
+        if (
+            data_param
+            and not data_dto
+            and (plugins_for_data_type := [plugin for plugin in plugins if plugin.supports_type(data_param)])
+        ):
+            self._resolved_data_dto = plugins_for_data_type[0].create_dto_for_type(data_param)
+
+        if not return_dto and (
+            plugins_for_return_type := [
+                plugin for plugin in plugins if plugin.supports_type(self.parsed_fn_signature.return_type)
+            ]
+        ):
+            self._resolved_return_dto = plugins_for_return_type[0].create_dto_for_type(
+                self.parsed_fn_signature.return_type
+            )
 
     def __str__(self) -> str:
         """Return a unique identifier for the route handler.

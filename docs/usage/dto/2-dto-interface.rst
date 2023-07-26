@@ -2,15 +2,15 @@ DTO Interface
 =============
 
 While Litestar maintains a suite of DTO factories, it is possible to create your own DTOs. To do so, you must implement
-the :class:`DTOInterface <litestar.dto.interface.DTOInterface>` abc.
+the :class:`AbstractDTO <litestar.dto.base_dto.AbstractDTO>` abc.
 
 The following is a description of the methods of the protocol, and how they are used by Litestar. For detailed
-information on the signature of each method, see the :class:`reference docs <litestar.dto.interface.DTOInterface>`.
+information on the signature of each method, see the :class:`reference docs <litestar.dto.base_dto.AbstractDTO>`.
 
 Abstract Methods
 ~~~~~~~~~~~~~~~~
 
-These methods must be implemented on any :class:`DTOInterface <litestar.dto.interface.DTOInterface>` subtype.
+These methods must be implemented on any :class:`AbstractDTO <litestar.dto.base_dto.AbstractDTO>` subtype.
 
 ``data_to_encodable_type``
 --------------------------
@@ -43,14 +43,14 @@ The return value of this method is injected into the handler as the ``data`` arg
 Additional Methods
 ~~~~~~~~~~~~~~~~~~
 
-The following methods have default implementations on the :class:`DTOInterface <litestar.dto.interface.DTOInterface>`
+The following methods have default implementations on the :class:`AbstractDTO <litestar.dto.base_dto.AbstractDTO>`
 types, but can be overridden if necessary.
 
 ``__init__``
 ------------
 
 A DTO instance is created for each use per connection. The ``__init__`` method receives an instance of
-:class:`ConnectionContext <litestar.dto.interface.ConnectionContext>` which contains information about the connection
+:class:`ConnectionContext <litestar.dto.context.ConnectionContext>` which contains information about the connection
 such as the ID of the handler that is being called and the request encoding type.
 
 ``create_openapi_schema``
@@ -63,7 +63,7 @@ This method is called when generating the OpenAPI schema for the handler. It sho
 -------------------
 
 This class method is called for each handler that the DTO type is registered upon. It receives an instance of
-:class:`HandlerContext <litestar.dto.interface.HandlerContext>` which contains information about the handler and the
+:class:`HandlerContext <litestar.dto.context.HandlerContext>` which contains information about the handler and the
 DTOs application including whether the DTO is being applied to "data" or "return" type of the handler, the type
 annotation, the handler ID, and request encoding for the handler.
 

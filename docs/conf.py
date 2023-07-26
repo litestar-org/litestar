@@ -117,14 +117,17 @@ nitpick_ignore = [
     (PY_ATTR, "litestar.dto.factory.DTOConfig.underscore_fields_private"),
     (PY_CLASS, "anyio.abc.BlockingPortal"),
     (PY_CLASS, "litestar.contrib.msgspec.MsgspecDTO"),
+    (PY_CLASS, "litestar.dto.base_factory.AbstractDTOFactory"),
     (PY_CLASS, "litestar.dto.factory.DTOConfig"),
     (PY_CLASS, "litestar.dto.factory.DTOData"),
+    (PY_CLASS, "litestar.dto.interface.DTOInterface"),
+    (PY_CLASS, "litestar.partial.Partial"),
     (PY_CLASS, "litestar.response.RedirectResponse"),
     (PY_CLASS, "litestar.response_containers.Redirect"),
     (PY_CLASS, "litestar.response_containers.Template"),
     (PY_CLASS, "litestar.typing.ParsedType"),
-    (PY_CLASS, "litestar.partial.Partial"),
     (PY_METH, "litestar.dto.factory.DTOData.create_instance"),
+    (PY_METH, "litestar.dto.interface.DTOInterface.data_to_encodable_type"),
 ]
 
 nitpick_ignore_regex = [
