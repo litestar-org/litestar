@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 def root_command() -> LitestarGroup:
     import litestar.cli.main
 
-    return cast(LitestarGroup, importlib.reload(litestar.cli.main).litestar_group)
+    return cast("LitestarGroup", importlib.reload(litestar.cli.main).litestar_group)
 
 
 @pytest.fixture
