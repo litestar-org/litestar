@@ -1403,11 +1403,15 @@ For example:</p>
 </section>
 <section id="extending-the-cli">
 <h2>Extending the CLI<a class="headerlink" href="#extending-the-cli" title="Permalink to this heading">#</a></h2>
-<p>Litestar’s CLI is built with <a class="reference external" href="https://click.palletsprojects.com/">click</a> and can be easily extended.
-To add subcommands under the <cite>litestar</cite> command, you need to add an
-<a class="reference external" href="https://packaging.python.org/en/latest/specifications/entry-points/">entry point</a> that points to a
-<a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Command" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Command</span></code></a> or <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> under the
-<cite>litestar.commands</cite> group.</p>
+<p>Litestar’s CLI is built with <a class="reference external" href="https://click.palletsprojects.com/">click</a> and can be
+extended by making use of
+<a class="reference external" href="https://packaging.python.org/en/latest/specifications/entry-points/">entry points</a>,
+or by creating a plugin that conforms to the
+<a class="reference internal" href="../reference/plugins.html#litestar.plugins.CLIPluginProtocol" title="litestar.plugins.CLIPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code></a>.</p>
+<section id="using-entry-points">
+<h3>Using entry points<a class="headerlink" href="#using-entry-points" title="Permalink to this heading">#</a></h3>
+<p>Entry points for the CLI can be added under the <code class="docutils literal notranslate"><span class="pre">litestar.commands</span></code> group. These
+entries should point to a <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Command" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Command</span></code></a> or <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a>:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-0">
@@ -1433,11 +1437,35 @@ poetry</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
+</section>
+<section id="using-a-plugin">
+<h3>Using a plugin<a class="headerlink" href="#using-a-plugin" title="Permalink to this heading">#</a></h3>
+<p>A plugin extending the CLI can be created using the
+<a class="reference internal" href="../reference/plugins.html#litestar.plugins.CLIPluginProtocol" title="litestar.plugins.CLIPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code></a>. Its
+<a class="reference internal" href="../reference/plugins.html#litestar.plugins.CLIPluginProtocol.on_cli_init" title="litestar.plugins.CLIPluginProtocol.on_cli_init"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_cli_init()</span></code></a> will be called during the
+initialization of the CLI, and receive the root <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> as its first
+argument, which can then be used to add or override commands:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">CLIPluginProtocol</span>
+<span class="kn">from</span> <span class="nn">click</span> <span class="kn">import</span> <span class="n">Group</span>
+
+
+<span class="k">class</span> <span class="nc">CLIPlugin</span><span class="p">(</span><span class="n">CLIPluginProtocol</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_cli_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cli</span><span class="p">:</span> <span class="n">Group</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nd">@cli</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+        <span class="k">def</span> <span class="nf">is_debug_mode</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">CLIPlugin</span><span class="p">()])</span>
+</pre></div>
+</div>
+</section>
 <section id="accessing-the-app-instance">
 <h3>Accessing the app instance<a class="headerlink" href="#accessing-the-app-instance" title="Permalink to this heading">#</a></h3>
-<p>When extending the Litestar CLI, you will most likely need access to the loaded <cite>Litestar</cite> instance.
-You can achieve this by adding the special <cite>app</cite> parameter to your CLI functions. This will cause the
-<cite>Litestar</cite> instance to be injected into the function whenever it is called from a click-context.</p>
+<p>When extending the Litestar CLI, you will most likely need access to the loaded <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> instance.
+You can achieve this by adding the special <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter to your CLI functions. This will cause the
+<code class="docutils literal notranslate"><span class="pre">Litestar</span></code> instance to be injected into the function whenever it is called from a click-context.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
 
@@ -1535,6 +1563,8 @@ You can achieve this by adding the special <cite>app</cite> parameter to your CL
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extending-the-cli">Extending the CLI</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-entry-points">Using entry points</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-a-plugin">Using a plugin</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#accessing-the-app-instance">Accessing the app instance</a></li>
 </ul>
 </li>
