@@ -5,7 +5,7 @@ import multiprocessing
 import os
 import subprocess
 import sys
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 import uvicorn
 from rich.tree import Tree
@@ -110,7 +110,15 @@ def run_command(
     if pdb:
         os.environ["LITESTAR_PDB"] = "1"
 
-    env = cast(LitestarEnv, ctx.obj())
+    if not isinstance(ctx.obj, LitestarEnv):
+        ctx.obj = ctx.obj()
+    else:
+        if debug:
+            ctx.obj.app.debug = True
+        if pdb:
+            ctx.obj.app.pdb_on_exception = True
+
+    env = ctx.obj
     app = env.app
 
     reload_dirs = env.reload_dirs or reload_dir

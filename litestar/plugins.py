@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Protocol, TypeVar, Union, runtime_checkable
 
 if TYPE_CHECKING:
+    from click import Group
+
     from litestar._openapi.schema_generation import SchemaCreator
     from litestar.config.app import AppConfig
     from litestar.dto.interface import DTOInterface
@@ -10,8 +12,13 @@ if TYPE_CHECKING:
     from litestar.openapi.spec import Schema
     from litestar.typing import FieldDefinition
 
-
-__all__ = ("SerializationPluginProtocol", "InitPluginProtocol", "OpenAPISchemaPluginProtocol", "PluginProtocol")
+__all__ = (
+    "SerializationPluginProtocol",
+    "InitPluginProtocol",
+    "OpenAPISchemaPluginProtocol",
+    "PluginProtocol",
+    "CLIPluginProtocol",
+)
 
 
 T = TypeVar("T")
@@ -54,6 +61,37 @@ class InitPluginProtocol(Protocol):
             The app config object.
         """
         return app_config  # pragma: no cover
+
+
+@runtime_checkable
+class CLIPluginProtocol(Protocol):
+    """Plugin protocol to extend the CLI."""
+
+    def on_cli_init(self, cli: Group) -> None:
+        """Called when the CLI is initialized.
+
+        This can be used to extend or override existing commands.
+
+        Args:
+            cli: The root :class:`click.Group` of the Litestar CLI
+
+        Examples:
+            .. code-block:: python
+
+                from litestar import Litestar
+                from litestar.plugins import CLIPluginProtocol
+                from click import Group
+
+
+                class CLIPlugin(CLIPluginProtocol):
+                    def on_cli_init(self, cli: Group) -> None:
+                        @cli.command()
+                        def is_debug_mode(app: Litestar):
+                            print(app.debug)
+
+
+                app = Litestar(plugins=[CLIPlugin()])
+        """
 
 
 @runtime_checkable
@@ -117,4 +155,9 @@ class OpenAPISchemaPluginProtocol(Protocol):
         raise NotImplementedError()
 
 
-PluginProtocol = Union[SerializationPluginProtocol, InitPluginProtocol, OpenAPISchemaPluginProtocol]
+PluginProtocol = Union[
+    SerializationPluginProtocol,
+    InitPluginProtocol,
+    OpenAPISchemaPluginProtocol,
+    CLIPluginProtocol,
+]

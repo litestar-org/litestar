@@ -48,7 +48,9 @@ __all__ = ("litestar_group",)
 def litestar_group(ctx: Context, app_path: str | None, app_dir: Path | None = None) -> None:
     """Litestar CLI."""
     sys.path.append(str(app_dir))
-    ctx.obj = lambda: LitestarEnv.from_env(app_path)
+
+    if ctx.obj is None:  # env has not been loaded yet, so we can lazy load it
+        ctx.obj = lambda: LitestarEnv.from_env(app_path)
 
 
 # add sub commands here
