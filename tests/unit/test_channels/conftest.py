@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
 from redis.asyncio import Redis as AsyncRedis
 
@@ -20,7 +18,7 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
     # https://github.com/litestar-org/litestar/actions/runs/5629765460/job/15255093668
     # https://github.com/litestar-org/litestar/actions/runs/5647890525/job/15298927200
 
-    test_module_path = config.rootpath / Path("tests/unit/test_channels")
+    test_module_path = config.rootpath / "tests/unit/test_channels"
     for item in items:
         if test_module_path in item.path.parents:
             item.add_marker(pytest.mark.timeout(30))
