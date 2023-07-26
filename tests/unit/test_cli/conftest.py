@@ -25,6 +25,15 @@ from . import (
 if TYPE_CHECKING:
     from unittest.mock import MagicMock
 
+    from litestar.cli._utils import LitestarGroup
+
+
+@pytest.fixture()
+def root_command() -> LitestarGroup:
+    import litestar.cli.main
+
+    return cast(LitestarGroup, importlib.reload(litestar.cli.main).litestar_group)
+
 
 @pytest.fixture
 def patch_autodiscovery_paths(request: FixtureRequest) -> Callable[[list[str]], None]:
