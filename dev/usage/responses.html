@@ -2306,7 +2306,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
         <span class="k">yield</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/count&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/count&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">sse_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">my_generator</span><span class="p">())</span>
 
@@ -2333,7 +2333,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
         <span class="k">yield</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/count&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/count&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">sse_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">my_generator</span><span class="p">())</span>
 
