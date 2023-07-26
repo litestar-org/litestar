@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from litestar.types import ASGIApp, Receive, Scope, Send
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def _route_handler() -> None:
     pass
 
