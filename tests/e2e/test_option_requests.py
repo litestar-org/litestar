@@ -7,7 +7,7 @@ from litestar import get, route
 from litestar.config.cors import CORSConfig
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
-from tests import RANDOM
+from tests.helpers import RANDOM
 
 if TYPE_CHECKING:
     from litestar.types import Method

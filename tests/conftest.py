@@ -316,11 +316,3 @@ async def redis_client(docker_ip: str, redis_service: None) -> AsyncGenerator[As
         await client.close()
     except RuntimeError:
         pass
-
-
-#
-# class CustomScheduler(LoadGroupScheduling):
-#     def _split_scope(self, nodeid):
-#
-#
-# def pytest_xdist_make_scheduler(config, log):
