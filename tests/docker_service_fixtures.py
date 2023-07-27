@@ -47,13 +47,13 @@ async def wait_until_responsive(
 
 
 class DockerServiceRegistry:
-    def __init__(self) -> None:
+    def __init__(self, worker_id: str) -> None:
         self._running_services: set[str] = set()
         self.docker_ip = self._get_docker_ip()
         self._base_command = [
             "docker-compose",
             "--file=tests/docker-compose.yml",
-            "--project-name=litestar_pytest",
+            f"--project-name=litestar_pytest-{worker_id}",
         ]
 
     def _get_docker_ip(self) -> str:
@@ -101,11 +101,11 @@ class DockerServiceRegistry:
 
 
 @pytest.fixture(scope="session")
-def docker_services() -> Generator[DockerServiceRegistry, None, None]:
+def docker_services(worker_id: str) -> Generator[DockerServiceRegistry, None, None]:
     if sys.platform not in ("linux", "darwin") or os.environ.get("SKIP_DOCKER_TESTS"):
         pytest.skip("Docker not available on this platform")
 
-    registry = DockerServiceRegistry()
+    registry = DockerServiceRegistry(worker_id)
     try:
         yield registry
     finally:

@@ -91,7 +91,9 @@ def file_store(tmp_path: Path) -> FileStore:
     return FileStore(path=tmp_path)
 
 
-@pytest.fixture(params=["redis_store", "memory_store", "file_store"])
+@pytest.fixture(
+    params=[pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")), "memory_store", "file_store"]
+)
 def store(request: FixtureRequest) -> Store:
     return cast("Store", request.getfixturevalue(request.param))
 
@@ -314,3 +316,11 @@ async def redis_client(docker_ip: str, redis_service: None) -> AsyncGenerator[As
         await client.close()
     except RuntimeError:
         pass
+
+
+#
+# class CustomScheduler(LoadGroupScheduling):
+#     def _split_scope(self, nodeid):
+#
+#
+# def pytest_xdist_make_scheduler(config, log):

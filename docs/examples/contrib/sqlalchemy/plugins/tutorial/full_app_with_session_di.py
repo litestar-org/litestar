@@ -30,7 +30,7 @@ class TodoItem(Base):
 async def db_connection(app: Litestar) -> AsyncGenerator[None, None]:
     engine = getattr(app.state, "engine", None)
     if engine is None:
-        engine = create_async_engine("sqlite+aiosqlite:///todo.sqlite", echo=True)
+        engine = create_async_engine("sqlite+aiosqlite:///todo.sqlite")
         app.state.engine = engine
 
     try:

@@ -16,6 +16,7 @@ from docs.examples.contrib.piccolo.app import Task, app  # noqa: E402
 from piccolo.testing.model_builder import ModelBuilder  # noqa: E402
 
 
+@pytest.mark.xdist_group("examples-piccolo")
 class TestCrud(TestCase):
     def setUp(self):
         Task.create_table(if_not_exists=True).run_sync()

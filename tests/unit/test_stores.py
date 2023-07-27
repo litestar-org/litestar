@@ -179,6 +179,7 @@ def test_redis_with_non_default(connection_pool_from_url_mock: Mock, mock_redis:
     assert backend._redis is mock_redis.return_value
 
 
+@pytest.mark.xdist_group("redis")
 async def test_redis_delete_all(redis_store: RedisStore) -> None:
     await redis_store._redis.set("test_key", b"test_value")
 
@@ -197,6 +198,7 @@ async def test_redis_delete_all(redis_store: RedisStore) -> None:
     assert stored_value == b"test_value"  # check it doesn't delete other values
 
 
+@pytest.mark.xdist_group("redis")
 async def test_redis_delete_all_no_namespace_raises(redis_client: Redis) -> None:
     redis_store = RedisStore(redis=redis_client, namespace=None)
 
@@ -204,11 +206,13 @@ async def test_redis_delete_all_no_namespace_raises(redis_client: Redis) -> None
         await redis_store.delete_all()
 
 
+@pytest.mark.xdist_group("redis")
 def test_redis_namespaced_key(redis_store: RedisStore) -> None:
     assert redis_store.namespace == "LITESTAR"
     assert redis_store._make_key("foo") == "LITESTAR:foo"
 
 
+@pytest.mark.xdist_group("redis")
 def test_redis_with_namespace(redis_store: RedisStore) -> None:
     namespaced_test = redis_store.with_namespace("TEST")
     namespaced_test_foo = namespaced_test.with_namespace("FOO")
@@ -217,6 +221,7 @@ def test_redis_with_namespace(redis_store: RedisStore) -> None:
     assert namespaced_test._redis is redis_store._redis
 
 
+@pytest.mark.xdist_group("redis")
 def test_redis_namespace_explicit_none(redis_client: Redis) -> None:
     assert RedisStore.with_client(url="redis://127.0.0.1", namespace=None).namespace is None
     assert RedisStore(redis=redis_client, namespace=None).namespace is None
@@ -244,7 +249,7 @@ def test_file_with_namespace_invalid_namespace_char(file_store: FileStore, inval
         file_store.with_namespace(f"foo{invalid_char}")
 
 
-@pytest.fixture(params=["redis_store", "file_store"])
+@pytest.fixture(params=[pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")), "file_store"])
 def namespaced_store(request: FixtureRequest) -> NamespacedStore:
     return cast("NamespacedStore", request.getfixturevalue(request.param))
 

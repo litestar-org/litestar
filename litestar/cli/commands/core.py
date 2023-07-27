@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any
 import uvicorn
 from rich.tree import Tree
 
-from litestar.cli._utils import RICH_CLICK_INSTALLED, LitestarEnv, console, show_app_info
+from litestar.cli._utils import RICH_CLICK_INSTALLED, console, show_app_info
 from litestar.routes import HTTPRoute, WebSocketRoute
 from litestar.utils.helpers import unwrap_partial
 
@@ -110,7 +110,7 @@ def run_command(
     if pdb:
         os.environ["LITESTAR_PDB"] = "1"
 
-    if not isinstance(ctx.obj, LitestarEnv):
+    if callable(ctx.obj):
         ctx.obj = ctx.obj()
     else:
         if debug:

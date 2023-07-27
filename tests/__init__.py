@@ -1,3 +1,4 @@
+import random
 from dataclasses import dataclass as vanilla_dataclass
 from enum import Enum
 from typing import Dict, List, Optional
@@ -103,3 +104,6 @@ class User(BaseModel):
 
 class UserFactory(ModelFactory[User]):
     __model__ = User
+
+
+RANDOM = random.Random(b"bA\xcd\x00\xa9$\xa7\x17\x1c\x10")
