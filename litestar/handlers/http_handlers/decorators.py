@@ -36,6 +36,7 @@ if TYPE_CHECKING:
         ResponseType,
         TypeEncodersMap,
     )
+    from litestar.types.callable_types import OperationIDCreator
 
 
 __all__ = ("get", "head", "post", "put", "patch", "delete")
@@ -83,7 +84,7 @@ class delete(HTTPRouteHandler):
         description: str | None = None,
         include_in_schema: bool = True,
         operation_class: type[Operation] = Operation,
-        operation_id: str | None = None,
+        operation_id: str | OperationIDCreator | None = None,
         raises: list[type[HTTPException]] | None = None,
         response_description: str | None = None,
         responses: dict[int, ResponseSpec] | None = None,
@@ -150,7 +151,7 @@ class delete(HTTPRouteHandler):
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             operation_class: :class:`Operation <.openapi.spec.operation.Operation>` to be used with the route's OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
+            operation_id: Either a string or a callable returning a string. An identifier used for the route's schema operationId.
             raises:  A list of exception classes extending from litestar.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Litestar
                 ValidationException will be added automatically for the schema if any validation is involved.
@@ -247,7 +248,7 @@ class get(HTTPRouteHandler):
         description: str | None = None,
         include_in_schema: bool = True,
         operation_class: type[Operation] = Operation,
-        operation_id: str | None = None,
+        operation_id: str | OperationIDCreator | None = None,
         raises: list[type[HTTPException]] | None = None,
         response_description: str | None = None,
         responses: dict[int, ResponseSpec] | None = None,
@@ -314,7 +315,7 @@ class get(HTTPRouteHandler):
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             operation_class: :class:`Operation <.openapi.spec.operation.Operation>` to be used with the route's OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
+            operation_id: Either a string or a callable returning a string. An identifier used for the route's schema operationId.
             raises:  A list of exception classes extending from litestar.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Litestar
                 ValidationException will be added automatically for the schema if any validation is involved.
@@ -411,7 +412,7 @@ class head(HTTPRouteHandler):
         description: str | None = None,
         include_in_schema: bool = True,
         operation_class: type[Operation] = Operation,
-        operation_id: str | None = None,
+        operation_id: str | OperationIDCreator | None = None,
         raises: list[type[HTTPException]] | None = None,
         response_description: str | None = None,
         responses: dict[int, ResponseSpec] | None = None,
@@ -483,7 +484,7 @@ class head(HTTPRouteHandler):
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             operation_class: :class:`Operation <.openapi.spec.operation.Operation>` to be used with the route's OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
+            operation_id: Either a string or a callable returning a string. An identifier used for the route's schema operationId.
             raises:  A list of exception classes extending from litestar.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Litestar
                 ValidationException will be added automatically for the schema if any validation is involved.
@@ -594,7 +595,7 @@ class patch(HTTPRouteHandler):
         description: str | None = None,
         include_in_schema: bool = True,
         operation_class: type[Operation] = Operation,
-        operation_id: str | None = None,
+        operation_id: str | OperationIDCreator | None = None,
         raises: list[type[HTTPException]] | None = None,
         response_description: str | None = None,
         responses: dict[int, ResponseSpec] | None = None,
@@ -661,7 +662,7 @@ class patch(HTTPRouteHandler):
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             operation_class: :class:`Operation <.openapi.spec.operation.Operation>` to be used with the route's OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
+            operation_id: Either a string or a callable returning a string. An identifier used for the route's schema operationId.
             raises:  A list of exception classes extending from litestar.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Litestar
                 ValidationException will be added automatically for the schema if any validation is involved.
@@ -758,7 +759,7 @@ class post(HTTPRouteHandler):
         description: str | None = None,
         include_in_schema: bool = True,
         operation_class: type[Operation] = Operation,
-        operation_id: str | None = None,
+        operation_id: str | OperationIDCreator | None = None,
         raises: list[type[HTTPException]] | None = None,
         response_description: str | None = None,
         responses: dict[int, ResponseSpec] | None = None,
@@ -825,7 +826,7 @@ class post(HTTPRouteHandler):
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             operation_class: :class:`Operation <.openapi.spec.operation.Operation>` to be used with the route's OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
+            operation_id: Either a string or a callable returning a string. An identifier used for the route's schema operationId.
             raises:  A list of exception classes extending from litestar.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Litestar
                 ValidationException will be added automatically for the schema if any validation is involved.
@@ -922,7 +923,7 @@ class put(HTTPRouteHandler):
         description: str | None = None,
         include_in_schema: bool = True,
         operation_class: type[Operation] = Operation,
-        operation_id: str | None = None,
+        operation_id: str | OperationIDCreator | None = None,
         raises: list[type[HTTPException]] | None = None,
         response_description: str | None = None,
         responses: dict[int, ResponseSpec] | None = None,
@@ -989,7 +990,7 @@ class put(HTTPRouteHandler):
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             operation_class: :class:`Operation <.openapi.spec.operation.Operation>` to be used with the route's OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
+            operation_id: Either a string or a callable returning a string. An identifier used for the route's schema operationId.
             raises:  A list of exception classes extending from litestar.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Litestar
                 ValidationException will be added automatically for the schema if any validation is involved.

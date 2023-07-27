@@ -27,6 +27,7 @@ __all__ = (
     "TypeEncodersMap",
 )
 
+
 if TYPE_CHECKING:
     from os import PathLike
     from pathlib import Path
