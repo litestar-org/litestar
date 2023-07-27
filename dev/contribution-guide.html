@@ -1234,6 +1234,11 @@ If you are adding a test case, it should be located within the correct submodule
 <li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test-all</span></code> to run all tests</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">coverage</span></code> to run tests with coverage and generate an html report</p></li>
 </ul>
+<p>The tests make use of <a class="reference external" href="https://pytest-xdist.readthedocs.io">pytest-xdist</a> to speed up
+test runs. These are enabled by default when running <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code>, <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test-all</span></code>
+or <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">coverage</span></code>. Due to the nature of pytest-xdist, attaching a debugger isn’t as
+straightforward. For debugging, it’s recommended to run the tests individually with
+<code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">&lt;test</span> <span class="pre">name&gt;</span></code> or via an IDE, which will skip pytest-xdist.</p>
 </section>
 </section>
 <section id="project-documentation">
