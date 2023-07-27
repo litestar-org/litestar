@@ -22,9 +22,11 @@ def test_parses_values_from_connection_kwargs_raises() -> None:
         pass
 
     model = SignatureModel.create(
-        fn=fn,
         dependency_name_set=set(),
+        fn=fn,
+        has_data_dto=False,
         parsed_signature=ParsedSignature.from_fn(fn, {}),
+        type_decoders=[],
     )
     with pytest.raises(ValidationException):
         model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), a="not an int")
@@ -37,9 +39,11 @@ def test_create_signature_validation() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         SignatureModel.create(
-            fn=my_fn.fn.value,
             dependency_name_set=set(),
+            fn=my_fn.fn.value,
+            has_data_dto=False,
             parsed_signature=ParsedSignature.from_fn(my_fn.fn.value, {}),
+            type_decoders=[],
         )
 
 
@@ -114,9 +118,11 @@ def test_validation_error_exception_key() -> None:
         pass
 
     model = SignatureModel.create(
-        fn=handler,
         dependency_name_set=set(),
+        fn=handler,
+        has_data_dto=False,
         parsed_signature=ParsedSignature.from_fn(handler.fn.value, {}),
+        type_decoders=[],
     )
 
     with pytest.raises(ValidationException) as exc_info:

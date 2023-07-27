@@ -29,9 +29,11 @@ def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
     assert callable(handler)
 
     handler_fields = SignatureModel.create(
-        fn=handler,
         dependency_name_set=set(),
+        fn=handler,
+        has_data_dto=False,
         parsed_signature=route_handler.parsed_fn_signature,
+        type_decoders=[],
     )._fields
 
     return create_parameter_for_handler(
