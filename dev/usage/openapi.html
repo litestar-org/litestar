@@ -1224,8 +1224,7 @@ values for this key are string keyed dictionaries with the values being a list o
 <dt><code class="docutils literal notranslate"><span class="pre">operation_class</span></code></dt><dd><p>A subclass of <a class="reference internal" href="../reference/openapi/spec.html#litestar.openapi.spec.Operation" title="litestar.openapi.spec.operation.Operation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Operation</span></code></a> which can be used to fully
 customize the <a class="reference external" href="https://spec.openapis.org/oas/v3.1.0#operation-object">operation object</a> for the handler.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">operation_id</span></code></dt><dd><p>An identifier used for the route’s schema <em>operationId</em>. Defaults to the <code class="docutils literal notranslate"><span class="pre">__name__</span></code> attribute of the
-wrapped function.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">operation_id</span></code></dt><dd><p>A string or callable that returns a string, which servers as an identifier used for the route’s schema <em>operationId</em>.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">deprecated</span></code></dt><dd><p>A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema. Defaults
 to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>

@@ -89,8 +89,7 @@ You can also modify the generated schema for the route handler using the followi
     customize the `operation object <https://spec.openapis.org/oas/v3.1.0#operation-object>`_ for the handler.
 
 ``operation_id``
-    An identifier used for the route's schema *operationId*. Defaults to the ``__name__`` attribute of the
-    wrapped function.
+    A string or callable that returns a string, which servers as an identifier used for the route's schema *operationId*.
 
 ``deprecated``
     A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema. Defaults
