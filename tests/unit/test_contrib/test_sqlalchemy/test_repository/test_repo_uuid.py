@@ -55,10 +55,38 @@ from .helpers import maybe_async, update_raw_records
 @pytest.fixture(
     params=[
         pytest.param("sqlite_engine", marks=pytest.mark.sqlalchemy_sqlite),
-        pytest.param("duckdb_engine", marks=[pytest.mark.sqlalchemy_duckdb, pytest.mark.sqlalchemy_integration]),
-        pytest.param("oracle_engine", marks=[pytest.mark.sqlalchemy_oracledb, pytest.mark.sqlalchemy_integration]),
-        pytest.param("psycopg_engine", marks=[pytest.mark.sqlalchemy_psycopg_sync, pytest.mark.sqlalchemy_integration]),
-        pytest.param("spanner_engine", marks=[pytest.mark.sqlalchemy_spanner, pytest.mark.sqlalchemy_integration]),
+        pytest.param(
+            "duckdb_engine",
+            marks=[
+                pytest.mark.sqlalchemy_duckdb,
+                pytest.mark.sqlalchemy_integration,
+                pytest.mark.xdist_group("duckdb"),
+            ],
+        ),
+        pytest.param(
+            "oracle_engine",
+            marks=[
+                pytest.mark.sqlalchemy_oracledb,
+                pytest.mark.sqlalchemy_integration,
+                pytest.mark.xdist_group("oracle"),
+            ],
+        ),
+        pytest.param(
+            "psycopg_engine",
+            marks=[
+                pytest.mark.sqlalchemy_psycopg_sync,
+                pytest.mark.sqlalchemy_integration,
+                pytest.mark.xdist_group("postgres"),
+            ],
+        ),
+        pytest.param(
+            "spanner_engine",
+            marks=[
+                pytest.mark.sqlalchemy_spanner,
+                pytest.mark.sqlalchemy_integration,
+                pytest.mark.xdist_group("spanner"),
+            ],
+        ),
     ]
 )
 def engine(request: FixtureRequest) -> Engine:

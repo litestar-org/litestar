@@ -127,6 +127,7 @@ sqlalchemy-spanner = "*"
 starlette = "*"
 time-machine = "^2.11.0"
 trio = "*"
+pytest-xdist = "^3.3.1"
 
 [tool.poetry.group.docs]
 optional = true
@@ -235,7 +236,7 @@ exclude_lines = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "--ignore=examples -m='not sqlalchemy_integration'"
+addopts = "--ignore=examples -m='not sqlalchemy_integration' --dist=loadgroup"
 asyncio_mode = "auto"
 filterwarnings = [
     "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:",

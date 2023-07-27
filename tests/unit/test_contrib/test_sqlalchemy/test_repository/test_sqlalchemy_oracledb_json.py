@@ -13,6 +13,7 @@ from tests.unit.test_contrib.test_sqlalchemy.models_uuid import UUIDEventLog
 pytestmark = [
     pytest.mark.skipif(platform.uname()[4] != "x86_64", reason="oracle not available on this platform"),
     pytest.mark.sqlalchemy_integration,
+    pytest.mark.xdist_group("oracle"),
 ]
 
 

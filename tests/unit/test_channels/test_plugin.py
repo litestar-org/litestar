@@ -22,9 +22,9 @@ from .util import get_from_stream
 
 @pytest.fixture(
     params=[
+        pytest.param("redis_pub_sub_backend", id="redis:pubsub", marks=pytest.mark.xdist_group("redis")),
+        pytest.param("redis_stream_backend", id="redis:stream", marks=pytest.mark.xdist_group("redis")),
         pytest.param("memory_backend", id="memory"),
-        pytest.param("redis_stream_backend", id="redis:stream"),
-        pytest.param("redis_pub_sub_backend", id="redis:pubsub"),
     ]
 )
 def channels_backend(request: FixtureRequest) -> ChannelsBackend:

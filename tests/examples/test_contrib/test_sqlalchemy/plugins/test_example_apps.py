@@ -6,6 +6,8 @@ import pytest
 
 from litestar.testing import TestClient
 
+pytestmark = pytest.mark.xdist_group("sqla-plugin-examples")
+
 
 @pytest.fixture
 def data() -> list[dict[str, Any]]:
