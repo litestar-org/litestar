@@ -5,7 +5,7 @@ from copy import copy
 from dataclasses import MISSING, fields
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
-from enum import EnumMeta
+from enum import Enum, EnumMeta
 from ipaddress import IPv4Address, IPv4Interface, IPv4Network, IPv6Address, IPv6Interface, IPv6Network
 from pathlib import Path
 from typing import (
@@ -184,7 +184,7 @@ def _iter_flat_literal_args(annotation: Any) -> Iterable[Any]:
         if get_origin_or_inner_type(arg) is Literal:
             yield from _iter_flat_literal_args(arg)
         else:
-            yield arg
+            yield arg if not isinstance(arg, Enum) else arg.value
 
 
 def create_literal_schema(annotation: Any) -> Schema:

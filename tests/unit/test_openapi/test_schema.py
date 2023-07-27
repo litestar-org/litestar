@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import date
-from enum import Enum
-from typing import TYPE_CHECKING, Dict, Literal
+from enum import Enum, auto
+from typing import TYPE_CHECKING, Dict, List, Literal
 
 import annotated_types
 import msgspec
@@ -306,3 +306,19 @@ def test_annotated_types() -> None:
     assert schema.properties["constrainted_upper_case"].description == "must be in upper case"  # type: ignore
     assert schema.properties["constrainted_is_ascii"].pattern == "[[:ascii:]]"  # type: ignore
     assert schema.properties["constrainted_is_digit"].pattern == "[[:digit:]]"  # type: ignore
+
+
+def test_literal_enums() -> None:
+    class Foo(Enum):
+        A = auto()
+        B = auto()
+
+    @dataclass
+    class MyDataclass:
+        bar: List[Literal[Foo.A]]
+
+    schemas: Dict[str, Schema] = {}
+    SchemaCreator(schemas=schemas).for_field_definition(
+        FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass)
+    )
+    assert schemas["MyDataclass"].properties["bar"].items.const == 1  # type: ignore
