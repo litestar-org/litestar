@@ -112,6 +112,7 @@ def test_set_debug_updates_logging_level() -> None:
         ("1", True, True),
     ],
 )
+@pytest.mark.filterwarnings("ignore::litestar.utils.warnings.LitestarWarning:")
 def test_set_env_flags(
     monkeypatch: MonkeyPatch,
     env_value: str | None,

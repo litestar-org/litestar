@@ -153,12 +153,12 @@ def test_invalid_input_pydantic() -> None:
         ...
 
     with create_test_client(route_handlers=[test]) as client:
+        client.cookies.update({"int-cookie": "cookie"})
         response = client.post(
             "/",
             json={"child": {"val": "a", "other_val": "b"}, "other_child": {"val": [1, "c"]}},
             params={"int_param": "param", "length_param": "d"},
             headers={"X-SOME-INT": "header"},
-            cookies={"int-cookie": "cookie"},
         )
 
         assert response.status_code == HTTP_400_BAD_REQUEST
@@ -214,12 +214,12 @@ def test_invalid_input_attrs() -> None:
         ...
 
     with create_test_client(route_handlers=[test]) as client:
+        client.cookies.update({"int-cookie": "cookie"})
         response = client.post(
             "/",
             json={"child": {"val": "a", "other_val": "b"}, "other_child": {"val": [1, "c"]}},
             params={"int_param": "param"},
             headers={"X-SOME-INT": "header"},
-            cookies={"int-cookie": "cookie"},
         )
 
         assert response.status_code == HTTP_400_BAD_REQUEST
@@ -261,12 +261,12 @@ def test_invalid_input_dataclass() -> None:
         ...
 
     with create_test_client(route_handlers=[test]) as client:
+        client.cookies.update({"int-cookie": "cookie"})
         response = client.post(
             "/",
             json={"child": {"val": "a", "other_val": "b"}, "other_child": {"val": [1, "c"]}},
             params={"int_param": "param", "length_param": "d"},
             headers={"X-SOME-INT": "header"},
-            cookies={"int-cookie": "cookie"},
         )
 
         assert response.status_code == HTTP_400_BAD_REQUEST
@@ -306,12 +306,12 @@ def test_invalid_input_typed_dict() -> None:
         ...
 
     with create_test_client(route_handlers=[test]) as client:
+        client.cookies.update({"int-cookie": "cookie"})
         response = client.post(
             "/",
             json={"child": {"val": "a", "other_val": "b"}, "other_child": {"val": [1, "c"]}},
             params={"int_param": "param", "length_param": "d"},
             headers={"X-SOME-INT": "header"},
-            cookies={"int-cookie": "cookie"},
         )
 
         assert response.status_code == HTTP_400_BAD_REQUEST
