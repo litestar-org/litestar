@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import re
+from functools import partial
+from pathlib import Path, PurePath
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -16,28 +18,32 @@ from typing import (
     Union,
     cast,
 )
+from uuid import UUID
 
 from msgspec import NODEFAULT, Meta, Struct, ValidationError, convert, defstruct
 from msgspec.structs import asdict
 from typing_extensions import Annotated
 
-from litestar._signature.utils import create_type_overrides, validate_signature_dependencies
+from litestar._signature.types import ExtendedMsgSpecValidationError
+from litestar._signature.utils import (
+    _get_decoder_for_type,
+    _normalize_annotation,
+    _validate_signature_dependencies,
+)
+from litestar.datastructures import ImmutableState
 from litestar.enums import ParamType, ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
-from litestar.params import DependencyKwarg, KwargDefinition, ParameterKwarg
-from litestar.serialization._msgspec_utils import ExtendedMsgSpecValidationError
+from litestar.params import KwargDefinition, ParameterKwarg
 from litestar.typing import FieldDefinition  # noqa
-from litestar.utils import make_non_optional_union
+from litestar.utils import is_class_and_subclass
 from litestar.utils.dataclass import simple_asdict
-from litestar.utils.typing import unwrap_union
 
 if TYPE_CHECKING:
     from typing_extensions import NotRequired
 
     from litestar.connection import ASGIConnection
-    from litestar.types import AnyCallable
+    from litestar.types import AnyCallable, TypeDecodersSequence
     from litestar.utils.signature import ParsedSignature
-
 
 __all__ = (
     "ErrorMessage",
@@ -66,6 +72,20 @@ MSGSPEC_CONSTRAINT_FIELDS = (
 )
 
 ERR_RE = re.compile(r"`\$\.(.+)`$")
+
+DEFAULT_TYPE_DECODERS = [
+    (lambda x: is_class_and_subclass(x, (Path, PurePath, ImmutableState, UUID)), lambda t, v: t(v))
+]
+
+
+def _deserializer(target_type: Any, value: Any, default_deserializer: Callable[[Any, Any], Any]) -> Any:
+    if isinstance(value, target_type):
+        return value
+
+    if hasattr(target_type, "_decoder"):
+        return target_type._decoder(target_type, value)
+
+    return default_deserializer(target_type, value)
 
 
 class SignatureModel(Struct):
@@ -131,15 +151,13 @@ class SignatureModel(Struct):
         return message
 
     @classmethod
-    def _collect_errors(
-        cls, default_deserializer: Callable[[Any, Any], Any], **kwargs: Any
-    ) -> list[tuple[str, Exception]]:
+    def _collect_errors(cls, deserializer: Callable[[Any, Any], Any], **kwargs: Any) -> list[tuple[str, Exception]]:
         exceptions: list[tuple[str, Exception]] = []
         for field_name in cls._fields:
             try:
                 raw_value = kwargs[field_name]
                 annotation = cls.__annotations__[field_name]
-                convert(raw_value, type=annotation, strict=False, dec_hook=default_deserializer, str_keys=True)
+                convert(raw_value, type=annotation, strict=False, dec_hook=deserializer, str_keys=True)
             except Exception as e:  # noqa: BLE001
                 exceptions.append((field_name, e))
 
@@ -161,10 +179,9 @@ class SignatureModel(Struct):
             A dictionary of parsed values
         """
         messages: list[ErrorMessage] = []
+        deserializer = partial(_deserializer, default_deserializer=connection.route_handler.default_deserializer)
         try:
-            return convert(
-                kwargs, cls, strict=False, dec_hook=connection.route_handler.default_deserializer, str_keys=True
-            ).to_dict()
+            return convert(kwargs, cls, strict=False, dec_hook=deserializer, str_keys=True).to_dict()
         except ExtendedMsgSpecValidationError as e:
             for exc in e.errors:
                 keys = [str(loc) for loc in exc["loc"]]
@@ -172,7 +189,7 @@ class SignatureModel(Struct):
                 messages.append(message)
             raise cls._create_exception(messages=messages, connection=connection) from e
         except ValidationError as e:
-            for field_name, exc in cls._collect_errors(default_deserializer=connection.route_handler.default_deserializer, **kwargs):  # type: ignore[assignment]
+            for field_name, exc in cls._collect_errors(deserializer=deserializer, **kwargs):  # type: ignore[assignment]
                 match = ERR_RE.search(str(exc))
                 keys = [field_name, str(match.group(1))] if match else [field_name]
                 message = cls._build_error_message(keys=keys, exc_msg=str(e), connection=connection)
@@ -192,22 +209,22 @@ class SignatureModel(Struct):
         cls,
         dependency_name_set: set[str],
         fn: AnyCallable,
+        has_data_dto: bool,
         parsed_signature: ParsedSignature,
-        has_data_dto: bool = False,
+        type_decoders: TypeDecodersSequence,
     ) -> type[SignatureModel]:
         fn_name = (
             fn_name if (fn_name := getattr(fn, "__name__", "anonymous")) and fn_name != "<lambda>" else "anonymous"
         )
 
-        dependency_names = validate_signature_dependencies(
+        dependency_names = _validate_signature_dependencies(
             dependency_name_set=dependency_name_set, fn_name=fn_name, parsed_signature=parsed_signature
         )
-        type_overrides = create_type_overrides(parsed_signature, has_data_dto)
 
         struct_fields: list[tuple[str, Any, Any]] = []
 
         for field_definition in parsed_signature.parameters.values():
-            annotation = type_overrides.get(field_definition.name, field_definition.annotation)
+            meta_data: Meta | None = None
 
             if isinstance(field_definition.kwarg_definition, KwargDefinition):
                 meta_kwargs: dict[str, Any] = {"extra": {}}
@@ -224,23 +241,14 @@ class SignatureModel(Struct):
                     else:
                         meta_kwargs["extra"][k] = v
 
-                meta = Meta(**meta_kwargs)
-                if field_definition.is_optional:
-                    annotation = Optional[Annotated[make_non_optional_union(annotation), meta]]
-                elif field_definition.is_union and meta_kwargs.keys() & MSGSPEC_CONSTRAINT_FIELDS:
-                    # unwrap inner types of a union and apply constraints to each individual type
-                    # see https://github.com/jcrist/msgspec/issues/447
-                    annotation = Union[
-                        tuple(Annotated[inner_type, meta] for inner_type in unwrap_union(annotation))  # pyright: ignore
-                    ]
-                else:
-                    annotation = Annotated[annotation, meta]
+                meta_data = Meta(**meta_kwargs)
 
-            elif (
-                isinstance(field_definition.kwarg_definition, DependencyKwarg)
-                and field_definition.kwarg_definition.skip_validation
-            ):
-                annotation = Any
+            annotation = cls._create_annotation(
+                field_definition=field_definition,
+                has_data_dto=has_data_dto,
+                type_decoders=[*(type_decoders or []), *DEFAULT_TYPE_DECODERS],
+                meta_data=meta_data,
+            )
 
             default = field_definition.default if field_definition.has_default else NODEFAULT
             struct_fields.append((field_definition.name, annotation, default))
@@ -257,3 +265,37 @@ class SignatureModel(Struct):
             },
             kw_only=True,
         )
+
+    @classmethod
+    def _create_annotation(
+        cls,
+        field_definition: FieldDefinition,
+        has_data_dto: bool,
+        type_decoders: TypeDecodersSequence,
+        meta_data: Meta | None = None,
+    ) -> Any:
+        annotation = _normalize_annotation(field_definition=field_definition, has_data_dto=has_data_dto)
+
+        if annotation is Any:
+            return annotation
+
+        if field_definition.is_union:
+            types = [
+                cls._create_annotation(
+                    field_definition=inner_type,
+                    has_data_dto=has_data_dto,
+                    type_decoders=type_decoders,
+                    meta_data=meta_data,
+                )
+                for inner_type in (t for t in field_definition.inner_types if t.annotation is not type(None))
+            ]
+            return Optional[types[0]] if field_definition.is_optional else Union[tuple(types)]  # pyright: ignore
+
+        if decoder := _get_decoder_for_type(annotation, type_decoders=type_decoders):
+            # FIXME: temporary (hopefully) hack, see: https://github.com/jcrist/msgspec/issues/497
+            setattr(annotation, "_decoder", decoder)
+
+        if meta_data:
+            annotation = Annotated[annotation, meta_data]  # pyright: ignore
+
+        return annotation

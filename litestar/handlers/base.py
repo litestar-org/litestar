@@ -437,8 +437,8 @@ class BaseRouteHandler:
         self._handle_serialization_plugins(app.serialization_plugins)
         self._init_handler_dtos()
         self._set_runtime_callables()
-        self._create_signature_model(app)
-        self._create_provider_signature_models(app)
+        self._create_signature_model()
+        self._create_provider_signature_models()
         self.resolve_guards()
         self.resolve_middleware()
         self.resolve_opts()
@@ -460,27 +460,29 @@ class BaseRouteHandler:
                 else:
                     provider.has_sync_callable = True
 
-    def _create_signature_model(self, app: Litestar) -> None:
+    def _create_signature_model(self) -> None:
         """Create signature model for handler function."""
         if not self.signature_model:
             self.signature_model = SignatureModel.create(
                 dependency_name_set=self.dependency_name_set,
                 fn=cast("AnyCallable", self.fn.value),
-                parsed_signature=self.parsed_fn_signature,
                 has_data_dto=bool(self.resolve_dto()),
+                parsed_signature=self.parsed_fn_signature,
+                type_decoders=self.resolve_type_decoders(),
             )
 
-    def _create_provider_signature_models(self, app: Litestar) -> None:
+    def _create_provider_signature_models(self) -> None:
         """Create signature models for dependency providers."""
         for provider in self.resolve_dependencies().values():
             if not getattr(provider, "signature_model", None):
                 provider.signature_model = SignatureModel.create(
                     dependency_name_set=self.dependency_name_set,
                     fn=provider.dependency.value,
+                    has_data_dto=bool(self.resolve_dto()),
                     parsed_signature=ParsedSignature.from_fn(
                         unwrap_partial(provider.dependency.value), self.resolve_signature_namespace()
                     ),
-                    has_data_dto=bool(self.resolve_dto()),
+                    type_decoders=self.resolve_type_decoders(),
                 )
 
     def _handle_serialization_plugins(self, plugins: list[SerializationPluginProtocol]) -> None:

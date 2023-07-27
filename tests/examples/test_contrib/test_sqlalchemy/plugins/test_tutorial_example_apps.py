@@ -34,30 +34,30 @@ async def _clean_db() -> AsyncGenerator[None, None]:
     "app", [with_session_di_app, no_plugins_app, with_serialization_plugin_app, with_init_plugin_app, with_plugin_app]
 )
 def test_no_plugins_full_app(app: Litestar) -> None:
-    TODO = {"title": "Start writing TODO list", "done": True}
-    TODO_LIST = [TODO]
+    todo = {"title": "Start writing todo list", "done": True}
+    todo_list = [todo]
 
     with TestClient(app) as client:
-        response = client.post("/", json=TODO)
+        response = client.post("/", json=todo)
         assert response.status_code == 201
-        assert response.json() == TODO
+        assert response.json() == todo
 
-        response = client.post("/", json=TODO)
+        response = client.post("/", json=todo)
         assert response.status_code == 409
 
         response = client.get("/")
         assert response.status_code == 200
-        assert response.json() == TODO_LIST
+        assert response.json() == todo_list
 
         response = client.get("/?done=false")
         assert response.status_code == 200
         assert response.json() == []
 
-        response = client.put("/Start writing another list", json=TODO)
+        response = client.put("/Start writing another list", json=todo)
         assert response.status_code == 404
 
-        updated_todo = dict(TODO)
+        updated_todo = dict(todo)
         updated_todo["done"] = False
-        response = client.put("/Start writing TODO list", json=updated_todo)
+        response = client.put("/Start writing todo list", json=updated_todo)
         assert response.status_code == 200
         assert response.json() == updated_todo
