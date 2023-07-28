@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
-from typing import Any
+from typing import TYPE_CHECKING, Any, cast
 
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from litestar.contrib.repository import ConflictError, RepositoryError
+
+if TYPE_CHECKING:
+    from sqlalchemy.orm import InstrumentedAttribute
+
+    from litestar.contrib.sqlalchemy.base import ModelProtocol
 
 
 @contextmanager
@@ -29,3 +34,9 @@ def wrap_sqlalchemy_exception() -> Any:
         raise RepositoryError(f"An exception occurred: {exc}") from exc
     except AttributeError as exc:
         raise RepositoryError from exc
+
+
+def get_instrumented_attr(model: type[ModelProtocol], key: str | InstrumentedAttribute) -> InstrumentedAttribute:
+    if isinstance(key, str):
+        return cast("InstrumentedAttribute", getattr(model, key))
+    return key
