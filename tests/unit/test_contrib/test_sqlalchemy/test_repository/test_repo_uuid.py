@@ -28,6 +28,7 @@ from litestar.contrib.repository.filters import (
     SearchFilter,
 )
 from litestar.contrib.sqlalchemy import base
+from tests.helpers import maybe_async
 from tests.unit.test_contrib.test_sqlalchemy.models_uuid import (
     AuthorAsyncRepository,
     AuthorSyncRepository,
@@ -49,7 +50,7 @@ from tests.unit.test_contrib.test_sqlalchemy.models_uuid import (
     UUIDTag,
 )
 
-from .helpers import maybe_async, update_raw_records
+from .helpers import update_raw_records
 
 
 @pytest.fixture(
