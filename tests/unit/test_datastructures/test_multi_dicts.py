@@ -1,8 +1,10 @@
 from typing import Type, Union
 
 import pytest
+from pytest_mock import MockerFixture
 
-from litestar.datastructures.multi_dicts import ImmutableMultiDict, MultiDict
+from litestar.datastructures import UploadFile
+from litestar.datastructures.multi_dicts import FormMultiDict, ImmutableMultiDict, MultiDict
 
 
 @pytest.mark.parametrize("multi_class", [MultiDict, ImmutableMultiDict])
@@ -30,3 +32,18 @@ def test_immutable_multi_dict_as_mutable() -> None:
     data = [("key", "value"), ("key", "value2"), ("key2", "value3")]
     multi = ImmutableMultiDict[str](data)
     assert multi.mutable_copy().dict() == MultiDict(data).dict()
+
+
+async def test_form_multi_dict_close(mocker: MockerFixture) -> None:
+    close = mocker.patch("litestar.datastructures.multi_dicts.UploadFile.close")
+
+    multi = FormMultiDict(
+        [
+            ("foo", UploadFile(filename="foo", content_type="text/plain")),
+            ("bar", UploadFile(filename="foo", content_type="text/plain")),
+        ]
+    )
+
+    await multi.close()
+
+    assert close.call_count == 2
