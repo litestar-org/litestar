@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from unittest import TestCase
 
 import pytest
@@ -24,6 +25,9 @@ class TestCrud(TestCase):
 
     def tearDown(self):
         Task.alter().drop_table().run_sync()
+        from docs.examples.contrib.piccolo.piccolo_conf import DB
+
+        Path(DB.path).unlink()
 
     def test_get_tasks(self):
         with TestClient(app=app) as client:

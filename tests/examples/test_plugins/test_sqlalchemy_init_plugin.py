@@ -1,20 +1,26 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-import pytest
-from docs.examples.plugins.sqlalchemy_init_plugin.sqlalchemy_async import app as async_sqla_app
-from docs.examples.plugins.sqlalchemy_init_plugin.sqlalchemy_sync import app as sync_sqla_app
+from _pytest.monkeypatch import MonkeyPatch
 
 from litestar.testing import TestClient
 
-if TYPE_CHECKING:
-    from litestar import Litestar
+
+def test_sync_app(monkeypatch: MonkeyPatch) -> None:
+    from docs.examples.plugins.sqlalchemy_init_plugin import sqlalchemy_sync
+
+    monkeypatch.setattr(sqlalchemy_sync.sqlalchemy_config, "connection_string", "sqlite://")
+    with TestClient(app=sqlalchemy_sync.app) as client:
+        res = client.get("/sqlalchemy-app")
+        assert res.status_code == 200
+        assert res.text == "1 2"
 
 
-@pytest.mark.parametrize("app", [async_sqla_app, sync_sqla_app])
-def test_app(app: Litestar) -> None:
-    with TestClient(app=app) as client:
+def test_async_app(monkeypatch: MonkeyPatch) -> None:
+    from docs.examples.plugins.sqlalchemy_init_plugin import sqlalchemy_async
+
+    monkeypatch.setattr(sqlalchemy_async.sqlalchemy_config, "connection_string", "sqlite+aiosqlite://")
+
+    with TestClient(app=sqlalchemy_async.app) as client:
         res = client.get("/sqlalchemy-app")
         assert res.status_code == 200
         assert res.text == "1 2"
