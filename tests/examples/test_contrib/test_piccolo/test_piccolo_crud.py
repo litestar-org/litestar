@@ -22,7 +22,6 @@ def create_test_data():
     Path(DB.path).unlink()
 
 
-@pytest.mark.xdist_group("examples-piccolo")
 def test_get_tasks():
     with TestClient(app=app) as client:
         response = client.get("/tasks")
@@ -30,7 +29,6 @@ def test_get_tasks():
         assert len(response.json()) == 1
 
 
-@pytest.mark.xdist_group("examples-piccolo")
 def test_task_crud():
     with TestClient(app=app) as client:
         payload = {
