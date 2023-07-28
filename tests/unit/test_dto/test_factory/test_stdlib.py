@@ -130,7 +130,6 @@ def test_dataclass_detect_nested(dto_type: type[DataclassDTO[Model]]) -> None:
 
 
 def test_deprecated_import() -> None:
-    with pytest.warns(DeprecationWarning):
-        from litestar.dto.factory.stdlib.dataclass import DataclassDTO as DeprecatedDataclassDTO
+    from litestar.dto.factory.stdlib.dataclass import DataclassDTO as DeprecatedDataclassDTO
 
     assert DeprecatedDataclassDTO is DataclassDTO

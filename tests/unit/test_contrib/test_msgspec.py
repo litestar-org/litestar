@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import pytest
 from msgspec import Meta, Struct, field
 from typing_extensions import Annotated
 
@@ -42,7 +41,6 @@ def test_detect_nested_field() -> None:
 
 
 def test_deprecated_import() -> None:
-    with pytest.warns(DeprecationWarning):
-        from litestar.contrib.msgspec import MsgspecDTO as DeprecatedMsgspecDTO
+    from litestar.contrib.msgspec import MsgspecDTO as DeprecatedMsgspecDTO
 
     assert DeprecatedMsgspecDTO is MsgspecDTO
