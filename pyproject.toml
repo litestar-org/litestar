@@ -221,7 +221,7 @@ ignore-words-list = "selectin"
 skip = 'poetry.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
-omit = ["*/tests/*", "litestar/contrib/sqlalchemy_1/*"]
+omit = ["*/tests/*"]
 
 [tool.coverage.report]
 exclude_lines = [
@@ -236,7 +236,7 @@ exclude_lines = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "--ignore=examples -m='not sqlalchemy_integration' --dist=loadgroup"
+addopts = "-m='not sqlalchemy_integration' --dist=loadgroup"
 asyncio_mode = "auto"
 filterwarnings = [
     "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:",
