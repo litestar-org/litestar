@@ -6,9 +6,6 @@ from _pytest.monkeypatch import MonkeyPatch
 
 from litestar.testing import TestClient
 
-if TYPE_CHECKING:
-    pass
-
 
 def test_sync_app(monkeypatch: MonkeyPatch) -> None:
     from docs.examples.plugins.sqlalchemy_init_plugin import sqlalchemy_sync
