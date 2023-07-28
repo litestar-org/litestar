@@ -127,3 +127,10 @@ def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> 
 def test_dataclass_detect_nested(dto_type: type[DataclassDTO[Model]]) -> None:
     assert dto_type.detect_nested_field(FieldDefinition.from_annotation(Model)) is True
     assert dto_type.detect_nested_field(FieldDefinition.from_annotation(int)) is False
+
+
+def test_deprecated_import() -> None:
+    with pytest.warns(DeprecationWarning):
+        from litestar.dto.factory.stdlib.dataclass import DataclassDTO as DeprecatedDataclassDTO
+
+    assert DeprecatedDataclassDTO is DataclassDTO
