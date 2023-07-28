@@ -11,7 +11,7 @@ from litestar._openapi.typescript_converter.converter import (
 )
 from litestar.cli._utils import RICH_CLICK_INSTALLED, LitestarCLIException, LitestarGroup
 
-if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
+if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     from click import Path as ClickPath
     from click import group, option
 else:
