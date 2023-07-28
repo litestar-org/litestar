@@ -1,17 +1,21 @@
 from typing import Any
 
 import pytest
+from docs.examples.todo_app import full_app
+from docs.examples.todo_app import update as update_app
+from docs.examples.todo_app.create import dataclass as dataclass_create_app
+from docs.examples.todo_app.create import dict as dict_create_app
+from docs.examples.todo_app.get_list import dataclass as get_dataclass_app
+from docs.examples.todo_app.get_list import dict as get_dict_app
+from docs.examples.todo_app.get_list import (
+    query_param,
+    query_param_default,
+    query_param_validate,
+    query_param_validate_manually,
+)
 from msgspec import to_builtins
 
 from litestar.testing import TestClient
-
-from .todo_app import full_app
-from .todo_app import update as update_app
-from .todo_app.create import dataclass as dataclass_create_app
-from .todo_app.create import dict as dict_create_app
-from .todo_app.get_list import dataclass as get_dataclass_app
-from .todo_app.get_list import dict as get_dict_app
-from .todo_app.get_list import query_param, query_param_default, query_param_validate, query_param_validate_manually
 
 
 @pytest.mark.parametrize("module", [update_app, full_app])
