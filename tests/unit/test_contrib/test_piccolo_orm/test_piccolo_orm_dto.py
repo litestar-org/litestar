@@ -130,6 +130,7 @@ def test_piccolo_dto_openapi_spec_generation() -> None:
         "properties": {
             "facilities": {"oneOf": [{"type": "null"}, {"type": "string"}]},
             "facilities_b": {"oneOf": [{"type": "null"}, {"type": "string"}]},
+            "microphones": {"oneOf": [{"type": "null"}, {"items": {"type": "string"}, "type": "array"}]},
             "id": {"oneOf": [{"type": "null"}, {"type": "integer"}]},
         },
         "required": [],
