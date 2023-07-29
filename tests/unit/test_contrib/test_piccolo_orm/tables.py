@@ -3,13 +3,14 @@
 https://github.com/piccolo-orm/piccolo/blob/master/tests/example_apps/music/tables.py
 """
 
-from piccolo.columns.column_types import JSON, JSONB, ForeignKey, Integer, Varchar
+from piccolo.columns.column_types import JSON, JSONB, Array, ForeignKey, Integer, Varchar
 from piccolo.table import Table
 
 
 class RecordingStudio(Table):
     facilities = JSON()
     facilities_b = JSONB()
+    microphones = Array(Varchar())
 
 
 class Manager(Table):
