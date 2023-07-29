@@ -83,6 +83,7 @@ jobs:
       - test
       - validate
     if: github.event.pull_request.head.repo.fork == false && github.repository_owner == 'litestar-org'
+    runs-on: ubuntu-latest
     steps:
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@main
