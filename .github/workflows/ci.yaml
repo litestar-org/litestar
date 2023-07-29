@@ -78,14 +78,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  - name: 'Qodana Scan'
+  qodona:
     needs:
       - test
       - validate
     if: github.event.pull_request.head.repo.fork == false && github.repository_owner == 'litestar-org'
-    uses: JetBrains/qodana-action@main
-    env:
-      QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+    steps:
+      - name: 'Qodana Scan'
+        uses: JetBrains/qodana-action@main
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
 
   snyk:
     needs:
