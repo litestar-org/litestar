@@ -295,7 +295,7 @@ def create_multipart_extractor(
     Args:
         field_definition: A FieldDefinition instance.
         is_data_optional: Boolean dictating whether the field is optional.
-        data_dto: A DTO type, if configuredconfigured for handler.
+        data_dto: A data DTO type, if configured for handler.
 
     Returns:
         An extractor function.
@@ -343,7 +343,7 @@ def create_url_encoded_data_extractor(
 
     Args:
         is_data_optional: Boolean dictating whether the field is optional.
-        data_dto: A DTO type, if configuredconfigured for handler.
+        data_dto: A data DTO type, if configured for handler.
 
     Returns:
         An extractor function.
@@ -423,6 +423,7 @@ def create_dto_extractor(
     """
 
     async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
-        return data_dto(connection).decode(await connection.body())
+        body = await connection.body()
+        return data_dto(connection).decode(body)
 
     return dto_extractor  # type:ignore[return-value]

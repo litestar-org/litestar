@@ -3,15 +3,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Tuple, TypeVar, Union
-from unittest.mock import patch
 
 import pytest
 from typing_extensions import Annotated
 
-from litestar import Request, get
-from litestar._openapi.schema_generation import SchemaCreator
+from litestar import Request
 from litestar.dto import DataclassDTO, DTOConfig
-from litestar.enums import MediaType
 from litestar.exceptions.dto_exceptions import InvalidAnnotationException
 from litestar.typing import FieldDefinition
 
@@ -21,18 +18,8 @@ if TYPE_CHECKING:
     from typing import Any
 
     from litestar.dto._backend import DTOBackend
-    from litestar.testing import RequestFactory
 
 T = TypeVar("T", bound=Model)
-
-
-@pytest.fixture(name="asgi_connection")
-def fx_asgi_connection() -> Request[Any, Any, Any]:
-    @get("/", name="handler_id", media_type=MediaType.JSON)
-    def _handler() -> None:
-        ...
-
-    return RequestFactory().get(path="/", route_handler=_handler)
 
 
 def get_backend(dto_type: type[DataclassDTO[Any]]) -> DTOBackend:
@@ -114,17 +101,17 @@ def test_config_assigned_via_subclassing() -> None:
 
 
 async def test_from_bytes(asgi_connection: Request[Any, Any, Any]) -> None:
-    DataclassDTO._dto_backends = {}
     dto_type = DataclassDTO[Model]
+    dto_type.create_for_field_definition(FieldDefinition.from_kwarg(Model, name="data"), handler_id="handler_id")
     assert dto_type(asgi_connection).decode(b'{"a":1,"b":"two"}') == Model(a=1, b="two")
 
 
-def test_config_field_rename() -> None:
-    DataclassDTO._dto_backends = {}
+def test_config_field_rename(asgi_connection: Request[Any, Any, Any]) -> None:
     config = DTOConfig(rename_fields={"a": "z"})
+    DataclassDTO._dto_backends = {}
     dto_type = DataclassDTO[Annotated[Model, config]]
-
-    field_definitions = dto_type._dto_backends["handler"]["data_backend"].parsed_field_definitions  # pyright: ignore
+    dto_type.create_for_field_definition(FieldDefinition.from_kwarg(Model, name="data"), handler_id="handler_id")
+    field_definitions = dto_type._dto_backends["handler_id"]["data_backend"].parsed_field_definitions  # pyright: ignore
     assert field_definitions[0].serialization_name == "z"
 
 
@@ -167,16 +154,8 @@ def test_sub_types_supported() -> None:
         c: int
 
     dto_type.create_for_field_definition(
-        handler_id="handler", field_definition=FieldDefinition.from_annotation(SubType)
+        handler_id="handler_id", field_definition=FieldDefinition.from_kwarg(SubType, name="data")
     )
-    assert dto_type._dto_backends["handler"]["data_backend"].parsed_field_definitions[-1].name == "c"  # pyright: ignore
-
-
-def test_create_openapi_schema(monkeypatch: pytest.MonkeyPatch) -> None:
-    dto_type = DataclassDTO[Model]
-    dto_type.create_for_field_definition(handler_id="handler", field_definition=FieldDefinition.from_annotation(Model))
-
-    with patch("litestar.dto._backend.DTOBackend.create_openapi_schema") as mock:
-        schema_creator = SchemaCreator()
-        dto_type.create_openapi_schema(FieldDefinition.from_annotation(Any), "handler", schema_creator)
-        mock.assert_called_once_with(schema_creator)
+    assert (
+        dto_type._dto_backends["handler_id"]["data_backend"].parsed_field_definitions[-1].name == "c"  # pyright: ignore
+    )

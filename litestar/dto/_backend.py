@@ -23,7 +23,6 @@ from litestar.dto._types import (
 from litestar.dto.data_structures import DTOData, DTOFieldDefinition
 from litestar.dto.field import Mark
 from litestar.enums import RequestEncodingType
-from litestar.exceptions import SerializationException
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
@@ -100,39 +99,13 @@ class DTOBackend:
     def parse_model(
         self, model_type: Any, exclude: AbstractSet[str], include: AbstractSet[str], nested_depth: int = 0
     ) -> FieldDefinitionsType:
-        """Reduce :attr:`model_type` to :class:`FieldDefinitionsType`.
-
-        .. important::
-            Implementations must respect the :attr:`config` object. For example:
-                - fields marked private must never be included in the field definitions.
-                - if a ``purpose`` is declared, then read-only fields must be taken into account.
-                - field renaming must be implemented.
-                - additional fields must be included, subject to ``purpose``.
-                - nested depth and nested recursion depth must be adhered to.
-
-        Returns:
-            Fields for data transfer.
-
-            Key is the name of the new field, and value is a tuple of type and default value pairs.
-
-            Add a new field called "new_field", that is a string, and required:
-            {"new_field": (str, ...)}
-
-            Add a new field called "new_field", that is a string, and not-required:
-            {"new_field": (str, "default")}
-
-            Add a new field called "new_field", that may be `None`:
-            {"new_field": (str | None, None)}
-        """
         defined_fields = []
         for field_definition in self.dto_factory.generate_field_definitions(model_type):
-            if field_definition.name and (
-                field_definition.name == "data"
-                and not self.is_data_field
-                or field_definition.name != "data"
-                and self.is_data_field
-            ):
-                continue
+            # if field_definition.name and (
+            #     and not self.is_data_field
+            #     or field_definition.name != "data"
+            #     and self.is_data_field
+            # ):
 
             if _should_mark_private(field_definition, self.dto_factory.config.underscore_fields_private):
                 field_definition.dto_field.mark = Mark.PRIVATE
@@ -209,15 +182,12 @@ class DTOBackend:
         Returns:
             The raw bytes parsed into transfer model type.
         """
-        request_encoding = (
-            content_type[0]
-            if (content_type := getattr(asgi_connection, "content_type", [RequestEncodingType.JSON]))
-            else RequestEncodingType.JSON
-        )
-        type_decoders = asgi_connection.route_handler.resolve_type_decoders()
+        request_encoding = RequestEncodingType.JSON
 
-        if request_encoding not in [RequestEncodingType.JSON, RequestEncodingType.MESSAGEPACK]:
-            raise SerializationException(f"Unsupported request encoding type: '{request_encoding}'")
+        if (content_type := getattr(asgi_connection, "content_type", None)) and (media_type := content_type[0]):
+            request_encoding = media_type
+
+        type_decoders = asgi_connection.route_handler.resolve_type_decoders()
 
         if request_encoding == RequestEncodingType.MESSAGEPACK:
             result = decode_msgpack(value=raw, target_type=self.annotation, type_decoders=type_decoders)
@@ -353,12 +323,15 @@ class DTOBackend:
     ) -> Callable[[FieldDefinition, AbstractSet[str], AbstractSet[str], str, int], CompositeType] | None:
         if field_definition.is_union:
             return self._create_union_type
+
         if field_definition.is_tuple:
             if len(field_definition.inner_types) == 2 and field_definition.inner_types[1].annotation is Ellipsis:
                 return self._create_collection_type
             return self._create_tuple_type
+
         if field_definition.is_mapping:
             return self._create_mapping_type
+
         if field_definition.is_non_string_collection:
             return self._create_collection_type
         return None
@@ -692,10 +665,7 @@ def _create_msgspec_field(field_definition: TransferDTOFieldDefinition) -> Any:
 
 def _create_struct_for_field_definitions(model_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
     struct_fields: list[tuple[str, type] | tuple[str, type, type]] = []
-    for field_definition in field_definitions:
-        if field_definition.is_excluded:
-            continue
-
+    for field_definition in (f for f in field_definitions if not f.is_excluded):
         field_type = _create_transfer_model_type_annotation(field_definition.transfer_type)
         if field_definition.is_partial:
             field_type = Union[field_type, UnsetType]

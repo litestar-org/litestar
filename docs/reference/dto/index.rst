@@ -4,7 +4,6 @@ dto
 .. toctree::
     :maxdepth: 1
 
-    context
     config
     data_structures
     field

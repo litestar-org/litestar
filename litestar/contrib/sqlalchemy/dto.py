@@ -42,8 +42,6 @@ SQLA_NS = {**vars(orm), **vars(sql)}
 class SQLAlchemyDTO(AbstractDTO[T], Generic[T]):
     """Support for domain modelling with SQLAlchemy."""
 
-    __slots__ = ()
-
     @singledispatchmethod
     @classmethod
     def handle_orm_descriptor(

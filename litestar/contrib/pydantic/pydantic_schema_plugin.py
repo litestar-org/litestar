@@ -136,19 +136,19 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
     def is_plugin_supported_type(value: Any) -> bool:
         return isinstance(value, _supported_types) or is_class_and_subclass(value, _supported_types)  # type: ignore
 
-    def to_openapi_schema(self, annotation: Any, schema_creator: SchemaCreator) -> Schema:
+    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
         """Given a type annotation, transform it into an OpenAPI schema class.
 
         Args:
-            annotation: A type annotation.
+            field_definition: FieldDefinition instance.
             schema_creator: An instance of the schema creator class
 
         Returns:
             An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
         """
-        if is_pydantic_model_class(annotation):
-            return self.for_pydantic_model(annotation=annotation, schema_creator=schema_creator)
-        return PYDANTIC_TYPE_MAP[annotation]  # pragma: no cover
+        if is_pydantic_model_class(field_definition.annotation):
+            return self.for_pydantic_model(annotation=field_definition.annotation, schema_creator=schema_creator)
+        return PYDANTIC_TYPE_MAP[field_definition.annotation]  # pragma: no cover
 
     @classmethod
     def for_pydantic_model(

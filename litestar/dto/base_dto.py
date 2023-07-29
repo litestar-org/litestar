@@ -16,7 +16,6 @@ from litestar.exceptions.dto_exceptions import InvalidAnnotationException
 from litestar.types.builtin_types import NoneType
 from litestar.types.composite_types import TypeEncodersMap
 from litestar.typing import FieldDefinition
-from litestar.utils import find_index
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Generator
@@ -118,8 +117,34 @@ class AbstractDTO(Generic[T]):
         """
 
     @classmethod
+    def is_supported_model_type_field(cls, field_definition: FieldDefinition) -> bool:
+        """Check support for the given type.
+
+        Args:
+            field_definition: A :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance.
+
+        Returns:
+            Whether the type of the field definition is supported by the DTO.
+        """
+        return field_definition.is_subclass_of(cls.model_type) or (
+            field_definition.origin
+            and any(
+                cls.resolve_model_type(inner_field).is_subclass_of(cls.model_type)
+                for inner_field in field_definition.inner_types
+            )
+        )
+
+    @classmethod
     def create_for_field_definition(cls, field_definition: FieldDefinition, handler_id: str) -> None:
-        """Creates a DTO subclass for a field definition."""
+        """Creates a DTO subclass for a field definition.
+
+        Args:
+            field_definition: A :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance.
+            handler_id: ID of the route handler for which to create a DTO instance.
+
+        Returns:
+            None
+        """
 
         if handler_id not in cls._dto_backends:
             cls._dto_backends[handler_id] = {}
@@ -133,7 +158,7 @@ class AbstractDTO(Generic[T]):
 
             if not model_type_field_definition.is_subclass_of(cls.model_type):
                 if resolved_generic_result := cls.resolve_generic_wrapper_type(
-                    model_type_field_definition, cls.model_type
+                    field_definition=model_type_field_definition
                 ):
                     model_type_field_definition, field_definition, wrapper_attribute_name = resolved_generic_result
                 else:
@@ -165,38 +190,41 @@ class AbstractDTO(Generic[T]):
 
     @classmethod
     def resolve_generic_wrapper_type(
-        cls, field_definition: FieldDefinition, dto_specialized_type: type[Any]
+        cls, field_definition: FieldDefinition
     ) -> tuple[FieldDefinition, FieldDefinition, str] | None:
         """Handle where DTO supported data is wrapped in a generic container type.
 
         Args:
             field_definition: A parsed type annotation that represents the annotation used to narrow the DTO type.
-            dto_specialized_type: The type used to specialize the DTO.
 
         Returns:
             The data model type.
         """
-        if (origin := field_definition.origin) and (parameters := getattr(origin, "__parameters__", None)):
-            param_index = find_index(
-                field_definition.inner_types, lambda x: cls.resolve_model_type(x).is_subclass_of(dto_specialized_type)
-            )
+        if field_definition.origin:
+            if inner_fields := [
+                inner_field
+                for inner_field in field_definition.inner_types
+                if cls.resolve_model_type(inner_field).is_subclass_of(cls.model_type)
+            ]:
+                inner_field = inner_fields[0]
+                model_field_definition = cls.resolve_model_type(inner_field)
 
-            if param_index == -1:
-                return None
-
-            inner_type = field_definition.inner_types[param_index]
-            model_type = cls.resolve_model_type(inner_type)
-            type_var = parameters[param_index]
-
-            for attr, attr_type in cls.get_model_type_hints(origin).items():
-                if attr_type.annotation is type_var or any(t.annotation is type_var for t in attr_type.inner_types):
-                    if attr_type.is_non_string_collection:
-                        # the inner type of the collection type is the type var, so we need to specialize the
-                        # collection type with the DTO supported type.
-                        specialized_annotation = attr_type.safe_generic_origin[model_type.annotation]
-                        return model_type, FieldDefinition.from_annotation(specialized_annotation), attr
-                    return model_type, inner_type, attr
-
+                for attr, attr_type in cls.get_model_type_hints(field_definition.origin).items():
+                    if isinstance(attr_type.annotation, TypeVar) or any(
+                        isinstance(t.annotation, TypeVar) for t in attr_type.inner_types
+                    ):
+                        if attr_type.is_non_string_collection:
+                            # the inner type of the collection type is the type var, so we need to specialize the
+                            # collection type with the DTO supported type.
+                            specialized_annotation = attr_type.safe_generic_origin[model_field_definition.annotation]
+                            return model_field_definition, FieldDefinition.from_annotation(specialized_annotation), attr
+                        return model_field_definition, inner_field, attr
+            elif nested_generic_wrapper_fields := [
+                inner_field
+                for inner_field in field_definition.inner_types
+                if bool(cls.resolve_generic_wrapper_type(inner_field))
+            ]:
+                return cls.resolve_generic_wrapper_type(nested_generic_wrapper_fields[0])
         return None
 
     @staticmethod

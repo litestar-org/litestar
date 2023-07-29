@@ -106,13 +106,13 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.contrib.sqlalchemy.repository.SelectT"),
     (PY_OBJ, "litestar.security.base.AuthType"),
     # intentionally undocumented
-    (PY_CLASS, "NoneType"),
-    (PY_CLASS, "litestar._signature.field.FieldDefinition"),
-    (PY_CLASS, "litestar.utils.signature.FieldDefinition"),
-    (PY_CLASS, "litestar.utils.signature.ParsedSignature"),
-    (PY_CLASS, "litestar.utils.sync.AsyncCallable"),
     (PY_CLASS, "BacklogStrategy"),
     (PY_CLASS, "ExceptionT"),
+    (PY_CLASS, "NoneType"),
+    (PY_CLASS, "litestar._openapi.schema_generation.schema.SchemaCreator"),
+    (PY_CLASS, "litestar.utils.signature.ParsedSignature"),
+    (PY_CLASS, "litestar.utils.sync.AsyncCallable"),
+    (PY_CLASS, "litestar._signature.model.SignatureModel"),
     # types in changelog that no longer exist
     (PY_ATTR, "litestar.dto.factory.DTOConfig.underscore_fields_private"),
     (PY_CLASS, "anyio.abc.BlockingPortal"),

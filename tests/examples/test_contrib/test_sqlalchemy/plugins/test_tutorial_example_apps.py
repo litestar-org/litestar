@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
-from _pytest.fixtures import FixtureRequest
 from _pytest.monkeypatch import MonkeyPatch
 from docs.examples.contrib.sqlalchemy.plugins.tutorial import (
     full_app_no_plugins,
@@ -12,27 +13,23 @@ from docs.examples.contrib.sqlalchemy.plugins.tutorial import (
 )
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from litestar import Litestar
 from litestar.testing import TestClient
 
 
-@pytest.fixture(
-    params=[
+@pytest.mark.parametrize(
+    "app_module",
+    [
         full_app_no_plugins,
         full_app_with_init_plugin,
         full_app_with_plugin,
         full_app_with_serialization_plugin,
         full_app_with_session_di,
-    ]
+    ],
 )
-async def app(monkeypatch: MonkeyPatch, request: FixtureRequest) -> Litestar:
-    from docs.examples.contrib.sqlalchemy.plugins.tutorial.full_app_no_plugins import Base
-
-    app_module = request.param
-
+async def test_tutorial_example_apps(monkeypatch: MonkeyPatch, app_module: Any) -> None:
     engine = create_async_engine("sqlite+aiosqlite://")
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(app_module.Base.metadata.create_all)
 
     try:
         monkeypatch.setattr(app_module, "create_async_engine", lambda *a, **kw: engine)
@@ -40,14 +37,10 @@ async def app(monkeypatch: MonkeyPatch, request: FixtureRequest) -> Litestar:
         app_module.db_config.connection_string = None
         app_module.db_config.engine_instance = engine
 
-    return app_module.app
-
-
-def test_no_plugins_full_app(app: Litestar) -> None:
     todo = {"title": "Start writing todo list", "done": True}
     todo_list = [todo]
 
-    with TestClient(app) as client:
+    with TestClient(app_module.app) as client:
         response = client.post("/", json=todo)
         assert response.status_code == 201
         assert response.json() == todo

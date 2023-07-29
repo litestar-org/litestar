@@ -8,6 +8,7 @@ from polyfactory.utils.predicates import is_annotated
 from typing_extensions import get_args
 
 from litestar import Litestar
+from litestar.dto._backend import DTOBackend
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
@@ -79,7 +80,8 @@ def test_piccolo_dto_type_conversion(piccolo_type: type[Column], py_type: type, 
 
 
 def test_piccolo_dto_openapi_spec_generation() -> None:
-    app = Litestar(route_handlers=[retrieve_studio, retrieve_venues, create_concert], dto=PiccoloDTO)
+    DTOBackend._seen_model_names = set()
+    app = Litestar(route_handlers=[retrieve_studio, retrieve_venues, create_concert])
     schema = app.openapi_schema
 
     assert schema.paths

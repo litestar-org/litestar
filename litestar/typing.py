@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from collections import abc, deque
+from copy import copy, deepcopy
 from dataclasses import dataclass, replace
 from inspect import Parameter, Signature
-from typing import Any, AnyStr, Collection, ForwardRef, Literal, Mapping, Sequence, TypeVar, cast
+from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Sequence, TypeVar, cast
 
 from msgspec import UnsetType
-from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin
+from typing_extensions import Annotated, NotRequired, Required, Self, get_args, get_origin
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Example
@@ -204,6 +205,16 @@ class FieldDefinition:
     """Kwarg Parameter."""
     name: str
     """Field name."""
+
+    def __deepcopy__(self, memo: dict[str, Any]) -> Self:
+        values = {}
+        for attr in self.__slots__:
+            value = getattr(self, attr)
+            try:
+                values[attr] = deepcopy(value)
+            except (ValueError, AttributeError):
+                values[attr] = copy(value)
+        return type(self)(**values)
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, FieldDefinition):
@@ -529,3 +540,14 @@ class FieldDefinition:
             name=parameter.name,
             default=Empty if parameter.default is Signature.empty else parameter.default,
         )
+
+    def test_predicate_recursively(self, predicate: Callable[[FieldDefinition], bool]) -> bool:
+        """Recursively test the passed in predicate against the field and any of its inner fields.
+
+        Args:
+            predicate: A callable that receives a field definition instance as an arg and returns a boolean.
+
+        Returns:
+            A boolean.
+        """
+        return predicate(self) or any(t.test_predicate_recursively(predicate) for t in self.inner_types)

@@ -31,7 +31,7 @@ from litestar._signature.utils import (
     _validate_signature_dependencies,
 )
 from litestar.datastructures import ImmutableState
-from litestar.dto import AbstractDTO  # noqa
+from litestar.dto import AbstractDTO, DTOData
 from litestar.enums import ParamType, ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
 from litestar.params import KwargDefinition, ParameterKwarg
@@ -80,6 +80,9 @@ DEFAULT_TYPE_DECODERS = [
 
 
 def _deserializer(target_type: Any, value: Any, default_deserializer: Callable[[Any, Any], Any]) -> Any:
+    if isinstance(value, DTOData):
+        return value
+
     if isinstance(value, target_type):
         return value
 

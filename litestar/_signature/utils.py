@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, cast
+from typing import TYPE_CHECKING, Any, Callable
 
 from litestar.constants import SKIP_VALIDATION_NAMES
 from litestar.exceptions import ImproperlyConfiguredException
@@ -11,17 +11,8 @@ if TYPE_CHECKING:
     from litestar.typing import FieldDefinition
     from litestar.utils.signature import ParsedSignature
 
-    from .model import SignatureModel
 
-__all__ = ("_validate_signature_dependencies", "get_signature_model", "_normalize_annotation", "_get_decoder_for_type")
-
-
-def get_signature_model(value: Any) -> type[SignatureModel]:
-    """Retrieve and validate the signature model from a provider or handler."""
-    try:
-        return cast("type[SignatureModel]", value.signature_model)
-    except AttributeError as e:  # pragma: no cover
-        raise ImproperlyConfiguredException(f"The 'signature_model' attribute for {value} is not set") from e
+__all__ = ("_validate_signature_dependencies", "_normalize_annotation", "_get_decoder_for_type")
 
 
 def _validate_signature_dependencies(
