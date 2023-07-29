@@ -2,25 +2,19 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from contextlib import AbstractAsyncContextManager, asynccontextmanager
-from functools import partial
 from typing import (
     TYPE_CHECKING,
     Any,
     AsyncGenerator,
     Callable,
-    Dict,
     Mapping,
-    Optional,
     cast,
     overload,
 )
 
-from msgspec.json import Encoder as JsonEncoder
-
 from litestar._signature import SignatureModel
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
-from litestar.serialization import default_serializer
 from litestar.types import (
     AnyCallable,
     Dependencies,
@@ -31,15 +25,13 @@ from litestar.types import (
     Middleware,
     TypeEncodersMap,
 )
-from litestar.types.builtin_types import NoneType
 from litestar.utils import AsyncCallable
-from litestar.utils.signature import ParsedSignature
+from litestar.utils.signature import ParsedSignature, get_fn_type_hints
 
 from ._utils import (
-    ListenerContext,
+    ListenerHandler,
     create_handle_receive,
     create_handle_send,
-    create_handler_function,
     create_handler_signature,
     create_stub_dependency,
 )
@@ -48,31 +40,44 @@ from .route_handler import WebsocketRouteHandler
 if TYPE_CHECKING:
     from typing import Coroutine
 
-    from litestar import Litestar, Router
+    from typing_extensions import Self
+
+    from litestar import Router
     from litestar.dto import AbstractDTO
     from litestar.types.asgi_types import WebSocketMode
 
-__all__ = ("WebsocketListener", "websocket_listener")
+__all__ = ("WebsocketListener", "WebsocketListenerRouteHandler", "websocket_listener")
 
 
-class websocket_listener(WebsocketRouteHandler):
+class WebsocketListenerRouteHandler(WebsocketRouteHandler):
     """A websocket listener that automatically accepts a connection, handles disconnects,
     invokes a callback function every time new data is received and sends any data
     returned
     """
 
     __slots__ = {
-        "connection_accept_handler": "Callback to accept a WebSocket connection. By default, calls WebSocket.accept",
-        "on_accept": "Callback invoked after a WebSocket connection has been accepted",
-        "on_disconnect": "Callback invoked after a WebSocket connection has been closed",
-        "_initialized": None,
-        "_pass_socket": None,
-        "_receive_mode": None,
-        "_send_mode": None,
-        "_listener_context": None,
-        "_connection_lifespan": None,
-        "_dependency_stubs": None,
+        "_connection_lifespan",
+        "_dependency_stubs",
+        "_initialized",
+        "_listener_context",
+        "_pass_socket",
+        "_receive_mode",
+        "_send_mode",
+        "_original_fn",
+        "connection_accept_handler",
+        "handle_receive",
+        "handle_send",
+        "handler_function",
+        "listener_callback",
+        "listener_callback_signature",
+        "on_accept",
+        "on_disconnect",
+        "pass_socket",
+        "resolved_data_dto",
+        "resolved_return_dto",
     }
+
+    _original_fn: AnyCallable
 
     @overload
     def __init__(
@@ -180,114 +185,99 @@ class websocket_listener(WebsocketRouteHandler):
                 "connection_lifespan can not be used with connection hooks "
                 "(on_accept, on_disconnect, connection_accept_handler)",
             )
-        self._listener_context = ListenerContext()
+
         self._receive_mode: WebSocketMode = receive_mode
         self._send_mode: WebSocketMode = send_mode
         self._connection_lifespan = connection_lifespan
+        self._send_handler: Callable[[WebSocket, Any], Coroutine[None, None, None]] | EmptyType = Empty
+        self._receive_handler: Callable[[WebSocket], Any] | EmptyType = Empty
 
         self.connection_accept_handler = connection_accept_handler
         self.on_accept = AsyncCallable(on_accept) if on_accept else None
         self.on_disconnect = AsyncCallable(on_disconnect) if on_disconnect else None
         self.type_encoders = type_encoders
 
+        listener_dependencies = dict(dependencies or {})
+
+        listener_dependencies["connection_lifespan_dependencies"] = create_stub_dependency(
+            connection_lifespan or self.default_connection_lifespan
+        )
+
+        if self.on_accept:
+            listener_dependencies["on_accept_dependencies"] = create_stub_dependency(self.on_accept.ref.value)
+
+        if self.on_disconnect:
+            listener_dependencies["on_disconnect_dependencies"] = create_stub_dependency(self.on_disconnect.ref.value)
+
         super().__init__(
             path=path,
-            dependencies=dependencies,
+            dependencies=listener_dependencies,
             exception_handlers=exception_handlers,
             guards=guards,
             middleware=middleware,
             name=name,
             opt=opt,
             signature_namespace=signature_namespace,
+            dto=dto,
+            return_dto=return_dto,
             **kwargs,
         )
 
-        # its important that this is assigned after the super() call
-        self.dto = dto
-        self.return_dto = return_dto
+    def __call__(self, fn: AnyCallable) -> Self:
+        parsed_signature = ParsedSignature.from_fn(fn, self.resolve_signature_namespace())
 
-        if not self.dependencies:
-            self.dependencies = {}
-
-        self.dependencies = dict(self.dependencies)
-        self.dependencies["connection_lifespan_dependencies"] = create_stub_dependency(
-            self._connection_lifespan or self.default_connection_lifespan
-        )
-
-        if self.on_accept:
-            self.dependencies["on_accept_dependencies"] = create_stub_dependency(self.on_accept.ref.value)
-
-        if self.on_disconnect:
-            self.dependencies["on_disconnect_dependencies"] = create_stub_dependency(self.on_disconnect.ref.value)
-
-    def __call__(self, listener_callback: AnyCallable) -> websocket_listener:
-        self._listener_context.listener_callback = listener_callback
-        self._listener_context.handler_function = handler_function = create_handler_function(
-            listener_context=self._listener_context,
-            lifespan_manager=self._connection_lifespan or self.default_connection_lifespan,
-        )
-        return super().__call__(handler_function)
-
-    def _validate_handler_function(self) -> None:
-        """Validate the route handler function once it's set by inspecting its return annotations."""
-        # since none of the validation rules of WebsocketRouteHandler apply here, this is let empty. Validation of the
-        # user supplied method happens at init time of this handler instead in __call__
-
-    def _create_signature_model(self) -> None:
-        """Create signature model for handler function."""
-        if not self.signature_model:
-            self.signature_model = SignatureModel.create(
-                dependency_name_set=self.dependency_name_set,
-                fn=cast("AnyCallable", self.fn.value),
-                parsed_signature=ParsedSignature.from_signature(
-                    create_handler_signature(self._listener_context.listener_callback_signature.original_signature),
-                    self.resolve_signature_namespace(),
-                ),
-                type_decoders=self.resolve_type_decoders(),
-            )
-
-    def _set_listener_context(self) -> None:
-        listener_callback_signature = ParsedSignature.from_fn(
-            self._listener_context.listener_callback, self.resolve_signature_namespace()
-        )
-
-        if "data" not in listener_callback_signature.parameters:
+        if "data" not in parsed_signature.parameters:
             raise ImproperlyConfiguredException("Websocket listeners must accept a 'data' parameter")
 
         for param in ("request", "body"):
-            if param in listener_callback_signature.parameters:
+            if param in parsed_signature.parameters:
                 raise ImproperlyConfiguredException(f"The {param} kwarg is not supported with websocket listeners")
 
-        resolved_data_dto = self.resolve_data_dto()
-        resolved_return_dto = self.resolve_return_dto()
-
-        self._listener_context.listener_callback_signature = listener_callback_signature
-        self._listener_context.can_send_data = not listener_callback_signature.return_type.is_subclass_of(NoneType)
-        self._listener_context.pass_socket = "socket" in listener_callback_signature.parameters
-        self._listener_context.resolved_data_dto = resolved_data_dto
-        self._listener_context.resolved_return_dto = resolved_return_dto
-        self._listener_context.handle_receive = create_handle_receive(
-            resolved_data_dto, self._receive_mode, listener_callback_signature.parameters["data"].annotation
+        # we are manipulating the signature of the decorated function below, so we must store the original values for
+        # use elsewhere.
+        self._parsed_return_field = parsed_signature.return_type
+        self._parsed_data_field = parsed_signature.parameters.get("data")
+        self._parsed_fn_signature = ParsedSignature.from_signature(
+            create_handler_signature(parsed_signature.original_signature),
+            fn_type_hints={
+                **get_fn_type_hints(fn, namespace=self.resolve_signature_namespace()),
+                **get_fn_type_hints(ListenerHandler.__call__, namespace=self.resolve_signature_namespace()),
+            },
         )
-        should_encode_to_json = not (
-            listener_callback_signature.return_type.is_subclass_of((str, bytes))
-            or (
-                listener_callback_signature.return_type.is_optional
-                and listener_callback_signature.return_type.has_inner_subclass_of((str, bytes))
+
+        return super().__call__(
+            ListenerHandler(
+                listener=self, fn=fn, parsed_signature=parsed_signature, namespace=self.resolve_signature_namespace()
             )
         )
-        json_encoder = JsonEncoder(enc_hook=partial(default_serializer, type_encoders=self.resolve_type_encoders()))
 
-        self._listener_context.handle_send = create_handle_send(
-            resolved_return_dto, json_encoder, should_encode_to_json, self._send_mode
-        )
+    def _validate_handler_function(self) -> None:
+        """Validate the route handler function once it's set by inspecting its return annotations."""
+        # validation occurs in the call method
+
+    @property
+    def signature_model(self) -> type[SignatureModel]:
+        """Get the signature model for the route handler.
+
+        Returns:
+            A signature model for the route handler.
+
+        """
+        if self._signature_model is Empty:
+            self._signature_model = SignatureModel.create(
+                dependency_name_set=self.dependency_name_set,
+                fn=cast("AnyCallable", self.fn.value),
+                parsed_signature=self.parsed_fn_signature,
+                type_decoders=self.resolve_type_decoders(),
+            )
+        return cast("type[SignatureModel]", self._signature_model)
 
     @asynccontextmanager
     async def default_connection_lifespan(
         self,
         socket: WebSocket,
-        on_accept_dependencies: Optional[Dict[str, Any]] = None,  # noqa: UP007, UP006
-        on_disconnect_dependencies: Optional[Dict[str, Any]] = None,  # noqa: UP007, UP006
+        on_accept_dependencies: dict[str, Any] | None = None,
+        on_disconnect_dependencies: dict[str, Any] | None = None,
     ) -> AsyncGenerator[None, None]:
         """Handle the connection lifespan of a :class:`WebSocket <.connection.WebSocket>`.
 
@@ -315,9 +305,18 @@ class websocket_listener(WebsocketRouteHandler):
             if self.on_disconnect:
                 await self.on_disconnect(**(on_disconnect_dependencies or {}))
 
-    def on_registration(self, app: Litestar) -> None:
-        self._set_listener_context()
-        super().on_registration(app)
+    def resolve_receive_handler(self) -> Callable[[WebSocket], Any]:
+        if self._receive_handler is Empty:
+            self._receive_handler = create_handle_receive(self)
+        return cast("Callable[[WebSocket], Any]", self._receive_handler)
+
+    def resolve_send_handler(self) -> Callable[[WebSocket, Any], Coroutine[None, None, None]]:
+        if self._send_handler is Empty:
+            self._send_handler = create_handle_send(self)
+        return cast("Callable[[WebSocket, Any], Coroutine[None, None, None]]", self._send_handler)
+
+
+websocket_listener = WebsocketListenerRouteHandler
 
 
 class WebsocketListener(ABC):
@@ -367,8 +366,8 @@ class WebsocketListener(ABC):
         """
         self._owner = owner
 
-    def to_handler(self) -> websocket_listener:
-        handler = websocket_listener(
+    def to_handler(self) -> WebsocketListenerRouteHandler:
+        handler = WebsocketListenerRouteHandler(
             dependencies=self.dependencies,
             dto=self.dto,
             exception_handlers=self.exception_handlers,

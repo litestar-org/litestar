@@ -1,5 +1,5 @@
-base_factory
-============
+base_dto
+========
 
 .. automodule:: litestar.dto.base_dto
     :members:

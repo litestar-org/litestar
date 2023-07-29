@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Callable, List, Optional
 import pytest
 from msgspec import Struct, to_builtins
 
-from litestar import Request, get
+from litestar import Litestar, Request, get, post
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar.contrib.pydantic import PydanticInitPlugin
 from litestar.dto import DataclassDTO, DTOConfig, DTOField
@@ -91,8 +91,14 @@ def test_backend_parse_raw_json(dto_factory: type[DataclassDTO], asgi_connection
     )
 
 
-def test_backend_parse_raw_msgpack(dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any]) -> None:
-    asgi_connection._headers["Content-Type"] = MediaType.MESSAGEPACK
+def test_backend_parse_raw_msgpack(dto_factory: type[DataclassDTO]) -> None:
+    @get("/", name="handler_id", media_type=MediaType.MESSAGEPACK)
+    def _handler() -> None:
+        ...
+
+    asgi_connection = RequestFactory().get(
+        path="/", route_handler=_handler, headers={"Content-Type": MediaType.MESSAGEPACK}
+    )
     assert (
         to_builtins(
             DTOBackend(
@@ -114,7 +120,12 @@ def test_backend_parse_raw_msgpack(dto_factory: type[DataclassDTO], asgi_connect
 def test_backend_parse_unsupported_media_type(
     dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any]
 ) -> None:
-    asgi_connection._headers["Content-Type"] = MediaType.CSS
+    @get("/", name="handler_id", media_type="text/css")
+    def _handler() -> None:
+        ...
+
+    asgi_connection = RequestFactory().get(path="/", route_handler=_handler, headers={"Content-Type": "text/css"})
+
     with pytest.raises(SerializationException):
         DTOBackend(
             dto_factory=dto_factory,
@@ -168,9 +179,15 @@ def test_backend_populate_data_from_builtins(
 
 
 def test_backend_create_openapi_schema(dto_factory: type[DataclassDTO]) -> None:
+    @post("/", dto=dto_factory)
+    def handler(data: DC) -> DC:
+        return data
+
+    Litestar(route_handlers=[handler])
+
     schemas: dict[str, Any] = {}
     ref = dto_factory.create_openapi_schema(
-        handler_id="test",
+        handler_id=handler.handler_id,
         field_definition=FieldDefinition.from_annotation(DC),
         schema_creator=SchemaCreator(schemas=schemas),
     )

@@ -179,7 +179,7 @@ def _iter_flat_literal_args(annotation: Any) -> Iterable[Any]:
         if get_origin_or_inner_type(arg) is Literal:
             yield from _iter_flat_literal_args(arg)
         else:
-            yield arg if not isinstance(arg, Enum) else arg.value
+            yield arg.value if isinstance(arg, Enum) else arg
 
 
 def create_literal_schema(annotation: Any) -> Schema:

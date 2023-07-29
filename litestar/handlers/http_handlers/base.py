@@ -474,12 +474,18 @@ class HTTPRouteHandler(BaseRouteHandler):
         response_handler = self.get_response_handler(is_response_type_data=isinstance(data, Response))
         return await response_handler(app=app, data=data, request=request)  # type: ignore
 
-    def on_registration(self, app: Litestar) -> None:
+    def on_registration(self) -> None:
         if before_request := self.resolve_before_request():
             before_request.set_parsed_signature(self.resolve_signature_namespace())
 
-        super().on_registration(app)
+        super().on_registration()
         self.resolve_after_response()
+
+        if self.sync_to_thread and not is_async_callable(self.fn.value):
+            self.fn.value = async_partial(self.fn.value)
+            self.has_sync_callable = False
+        else:
+            self.has_sync_callable = not is_async_callable(self.fn.value)
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it is set by inspecting its return annotations."""
@@ -519,16 +525,6 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         if "data" in self.parsed_fn_signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
-
-    def _set_runtime_callables(self) -> None:
-        """Set the runtime callables for the route handler."""
-        super()._set_runtime_callables()
-        self.has_sync_callable = False
-        if not is_async_callable(self.fn.value):
-            if self.sync_to_thread:
-                self.fn.value = async_partial(self.fn.value)
-            else:
-                self.has_sync_callable = True
 
 
 route = HTTPRouteHandler

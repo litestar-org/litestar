@@ -29,7 +29,6 @@ from litestar._kwargs.parameter_definition import (
     create_parameter_definition,
     merge_parameter_sets,
 )
-from litestar._signature import SignatureModel, get_signature_model
 from litestar.constants import RESERVED_KWARGS
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
@@ -40,6 +39,7 @@ __all__ = ("KwargsModel",)
 
 
 if TYPE_CHECKING:
+    from litestar._signature import SignatureModel
     from litestar.connection import ASGIConnection
     from litestar.di import Provide
     from litestar.dto import AbstractDTO
@@ -94,7 +94,7 @@ class KwargsModel:
             expected_path_params: Any expected path parameter kwargs
             expected_query_params: Any expected query parameter kwargs
             expected_reserved_kwargs: Any expected reserved kwargs, e.g. 'state'
-            expected_data_dto: A data DTO
+            expected_data_dto: A data DTO, if defined
             is_data_optional: Treat data as optional
             sequence_query_parameter_names: Any query parameters that are sequences
         """
@@ -309,6 +309,7 @@ class KwargsModel:
 
             if media_type in (RequestEncodingType.MULTI_PART, RequestEncodingType.URL_ENCODED):
                 expected_form_data = (media_type, data_field_definition)
+                expected_data_dto = signature_model._data_dto
             elif signature_model._data_dto:
                 expected_data_dto = signature_model._data_dto
             elif media_type == RequestEncodingType.MESSAGEPACK:
@@ -316,7 +317,7 @@ class KwargsModel:
 
         for dependency in expected_dependencies:
             dependency_kwargs_model = cls.create_for_signature_model(
-                signature_model=get_signature_model(dependency.provide),
+                signature_model=dependency.provide.signature_model,
                 parsed_signature=parsed_signature,
                 dependencies=dependencies,
                 path_parameters=path_parameters,
@@ -400,7 +401,7 @@ class KwargsModel:
         list.
         """
         provide = dependencies[key]
-        sub_dependency_keys = [k for k in get_signature_model(provide)._fields if k in dependencies]
+        sub_dependency_keys = [k for k in provide.signature_model._fields if k in dependencies]
         return Dependency(
             key=key,
             provide=provide,

@@ -37,6 +37,7 @@ from litestar.status_codes import (
     HTTP_400_BAD_REQUEST,
     HTTP_406_NOT_ACCEPTABLE,
 )
+from litestar.typing import FieldDefinition
 from tests import PydanticPerson, PydanticPersonFactory
 
 from .utils import PetException
@@ -434,6 +435,11 @@ def test_response_generation_with_dto() -> None:
     async def handler(data: Dict[str, Any]) -> Dict[str, Any]:
         return data
 
-    schema_creator = SchemaCreator(generate_examples=False)
+    Litestar(route_handlers=[handler])
+
+    field_definition = FieldDefinition.from_annotation(Dict[str, Any])
+    schema_creator = SchemaCreator()
     create_success_response(handler, schema_creator)
-    mock_dto.create_openapi_schema.assert_called_once_with("return", str(handler), schema_creator)
+    mock_dto.create_openapi_schema.assert_called_once_with(
+        field_definition=field_definition, handler_id=handler.handler_id, schema_creator=schema_creator
+    )

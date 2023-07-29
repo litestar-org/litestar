@@ -1,9 +1,9 @@
-DTO Factory
+AbstractDTO
 ===========
 
 Litestar maintains a suite of DTO factory types that can be used to create DTOs for use with popular data modelling
 libraries, such as ORMs. These take a model type as a generic type argument, and create subtypes of
-:class:`AbstractDTOFactory <litestar.dto.base_dto.AbstractDTO>` that support conversion of that model type to
+:class:`AbstractDTO <litestar.dto.base_dto.AbstractDTO>` that support conversion of that model type to
 and from raw bytes.
 
 The following factories are currently available:
