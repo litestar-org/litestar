@@ -23,14 +23,9 @@ documentation = "https://docs.litestar.dev/"
 keywords = [
     "api",
     "rest",
-    "http",
     "asgi",
-    "pydantic",
     "litestar",
     "starlite",
-    "framework",
-    "websocket",
-    "litestar",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -132,6 +127,7 @@ sqlalchemy-spanner = "*"
 starlette = "*"
 time-machine = "^2.11.0"
 trio = "*"
+pytest-xdist = "^3.3.1"
 
 [tool.poetry.group.docs]
 optional = true
@@ -225,7 +221,9 @@ ignore-words-list = "selectin"
 skip = 'poetry.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
-omit = ["*/tests/*", "litestar/contrib/sqlalchemy_1/*"]
+omit = ["*/tests/*"]
+parallel = true
+concurrency = ["multiprocessing", "thread"]
 
 [tool.coverage.report]
 exclude_lines = [
@@ -240,7 +238,7 @@ exclude_lines = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "--ignore=examples -m='not sqlalchemy_integration'"
+addopts = "-m='not sqlalchemy_integration' --dist=loadgroup"
 asyncio_mode = "auto"
 filterwarnings = [
     "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:",

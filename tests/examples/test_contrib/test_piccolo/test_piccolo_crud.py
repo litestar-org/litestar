@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from unittest import TestCase
 
 import pytest
@@ -16,6 +17,7 @@ from docs.examples.contrib.piccolo.app import Task, app  # noqa: E402
 from piccolo.testing.model_builder import ModelBuilder  # noqa: E402
 
 
+@pytest.mark.xdist_group("examples-piccolo")
 class TestCrud(TestCase):
     def setUp(self):
         Task.create_table(if_not_exists=True).run_sync()
@@ -23,6 +25,9 @@ class TestCrud(TestCase):
 
     def tearDown(self):
         Task.alter().drop_table().run_sync()
+        from docs.examples.contrib.piccolo.piccolo_conf import DB
+
+        Path(DB.path).unlink()
 
     def test_get_tasks(self):
         with TestClient(app=app) as client:

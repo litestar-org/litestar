@@ -823,3 +823,10 @@ def test_schema_required_fields_with_msgspec_dto_and_default_fields() -> None:
         )
         required = next(iter(received.json()["components"]["schemas"].values()))["required"]
         assert required == ["age"]
+
+
+def test_deprecated_imports_raises_when_not_available() -> None:
+    import litestar.dto.factory
+
+    with pytest.raises(AttributeError):
+        litestar.dto.factory.foo

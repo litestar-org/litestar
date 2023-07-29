@@ -68,13 +68,13 @@ jobs:
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
       - name: Test
         if: ${{ !inputs.coverage }}
-        run: poetry run pytest docs/examples tests
+        run: poetry run pytest docs/examples tests -n auto
       - name: Test with coverage
         if: inputs.coverage
-        run: poetry run pytest docs/examples tests --cov=litestar --cov-report=xml
+        run: poetry run pytest docs/examples tests --cov=litestar --cov-report=xml -n auto
       - name: Integration tests
         if: inputs.integration
-        run: poetry run pytest -m="sqlalchemy_integration"
+        run: poetry run pytest -m="sqlalchemy_integration" -n auto
       - uses: actions/upload-artifact@v3
         if: inputs.coverage
         with:

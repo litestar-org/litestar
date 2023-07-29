@@ -58,6 +58,7 @@ if TYPE_CHECKING:
     from litestar.dto.interface import DTOInterface
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
+    from litestar.types.callable_types import OperationIDCreator
 
 __all__ = ("HTTPRouteHandler", "route")
 
@@ -145,7 +146,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         description: str | None = None,
         include_in_schema: bool = True,
         operation_class: type[Operation] = Operation,
-        operation_id: str | None = None,
+        operation_id: str | OperationIDCreator | None = None,
         raises: Sequence[type[HTTPException]] | None = None,
         response_description: str | None = None,
         responses: Mapping[int, ResponseSpec] | None = None,
@@ -214,7 +215,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             operation_class: :class:`Operation <.openapi.spec.operation.Operation>` to be used with the route's OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
+            operation_id: Either a string or a callable returning a string. An identifier used for the route's schema operationId.
             raises:  A list of exception classes extending from litestar.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Litestar
                 ValidationException will be added automatically for the schema if any validation is involved.

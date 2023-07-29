@@ -23,6 +23,7 @@ from litestar.contrib.repository.filters import (
     SearchFilter,
 )
 from litestar.contrib.sqlalchemy import base
+from tests.helpers import maybe_async
 from tests.unit.test_contrib.test_sqlalchemy.models_bigint import (
     AuthorAsyncRepository,
     AuthorSyncRepository,
@@ -44,7 +45,7 @@ from tests.unit.test_contrib.test_sqlalchemy.models_bigint import (
     TagSyncRepository,
 )
 
-from .helpers import maybe_async, update_raw_records
+from .helpers import update_raw_records
 
 
 @pytest.fixture()
@@ -146,6 +147,7 @@ async def test_repo_count_method(author_repo: AuthorAsyncRepository) -> None:
     Args:
         author_repo (AuthorAsyncRepository): The author mock repository
     """
+    # TODO: Test with kwargs
     assert await maybe_async(author_repo.count()) == 2
 
 

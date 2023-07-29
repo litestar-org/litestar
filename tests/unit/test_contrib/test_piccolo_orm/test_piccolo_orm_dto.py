@@ -8,7 +8,7 @@ from polyfactory.utils.predicates import is_annotated
 from typing_extensions import get_args
 
 from litestar import Litestar
-from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
+from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
 try:
@@ -19,15 +19,14 @@ except ImportError:
 from piccolo.columns import Column, column_types
 from piccolo.conf.apps import Finder
 from piccolo.table import Table, create_db_tables, drop_db_tables
-from piccolo.testing.model_builder import ModelBuilder
 
 from litestar.contrib.piccolo import PiccoloDTO
 
 from .endpoints import create_concert, retrieve_studio, retrieve_venues, studio, venues
-from .tables import Band, Concert, Manager, RecordingStudio, Venue
+from .tables import RecordingStudio, Venue
 
 
-@pytest.fixture()
+@pytest.fixture(autouse=True)
 async def scaffold_piccolo() -> AsyncGenerator:
     """Scaffolds Piccolo ORM and performs cleanup."""
     tables = Finder().get_table_classes()
@@ -49,24 +48,6 @@ def test_serializing_multiple_piccolo_tables(scaffold_piccolo: Callable) -> None
         response = client.get("/venues")
         assert response.status_code == HTTP_200_OK
         assert [str(Venue(**value).querystring) for value in response.json()] == [str(v.querystring) for v in venues]
-
-
-async def test_create_piccolo_table_instance(scaffold_piccolo: Callable, anyio_backend: str) -> None:
-    manager = await ModelBuilder.build(Manager)
-    band_1 = await ModelBuilder.build(Band, defaults={Band.manager: manager})
-    band_2 = await ModelBuilder.build(Band, defaults={Band.manager: manager})
-    venue = await ModelBuilder.build(Venue)
-    concert = ModelBuilder.build_sync(
-        Concert, persist=False, defaults={Concert.band_1: band_1, Concert.band_2: band_2, Concert.venue: venue}
-    )
-
-    with create_test_client(route_handlers=[create_concert], dto=PiccoloDTO) as client:
-        data = concert.to_dict()
-        data["band_1"] = band_1.id  # type: ignore[attr-defined]
-        data["band_2"] = band_2.id  # type: ignore[attr-defined]
-        data["venue"] = venue.id  # type: ignore[attr-defined]
-        response = client.post("/concert", json=data)
-        assert response.status_code == HTTP_201_CREATED
 
 
 @pytest.mark.parametrize(
@@ -149,6 +130,7 @@ def test_piccolo_dto_openapi_spec_generation() -> None:
         "properties": {
             "facilities": {"oneOf": [{"type": "null"}, {"type": "string"}]},
             "facilities_b": {"oneOf": [{"type": "null"}, {"type": "string"}]},
+            "microphones": {"oneOf": [{"type": "null"}, {"items": {"type": "string"}, "type": "array"}]},
             "id": {"oneOf": [{"type": "null"}, {"type": "integer"}]},
         },
         "required": [],

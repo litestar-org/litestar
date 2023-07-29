@@ -284,7 +284,7 @@ class websocket_listener(WebsocketRouteHandler):
         self._set_listener_context()
         super().on_registration(app)
 
-    def _create_signature_model(self, app: Litestar) -> None:
+    def _create_signature_model(self) -> None:
         """Create signature model for handler function."""
         if not self.signature_model:
             new_signature = create_handler_signature(
@@ -293,7 +293,9 @@ class websocket_listener(WebsocketRouteHandler):
             self.signature_model = SignatureModel.create(
                 dependency_name_set=self.dependency_name_set,
                 fn=cast("AnyCallable", self.fn.value),
+                has_data_dto=False,
                 parsed_signature=ParsedSignature.from_signature(new_signature, self.resolve_signature_namespace()),
+                type_decoders=self.resolve_type_decoders(),
             )
 
     def _set_listener_context(self) -> None:

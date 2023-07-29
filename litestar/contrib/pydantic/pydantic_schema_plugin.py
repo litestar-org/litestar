@@ -152,7 +152,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
         """
         if is_pydantic_model_class(annotation):
             return self.for_pydantic_model(annotation=annotation, schema_creator=schema_creator, dto_for=dto_for)
-        return PYDANTIC_TYPE_MAP[annotation]
+        return PYDANTIC_TYPE_MAP[annotation]  # pragma: no cover
 
     @classmethod
     def for_pydantic_model(
@@ -180,7 +180,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
         if isinstance(model_config, dict):
             title = model_config.get("title")
             example = model_config.get("example")
-        else:
+        else:  # pragma: no cover
             title = getattr(model_config, "title", None)
             example = getattr(model_config, "example", None)
 

@@ -52,13 +52,13 @@ test-sqlalchemy-integration:
 
 .PHONY: tests
 test:
-	pytest tests
+	pytest tests -n auto
 
 .PHONY: test-all
 test-all:
-	pytest -m=""
+	pytest -m="" -n auto
 
 .PHONY: coverage
 coverage:
-	pytest tests --cov=litestar
+	pytest tests --cov=litestar -n auto
 	coverage html

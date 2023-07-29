@@ -35,20 +35,6 @@ def routes_with_router(person_controller: Type[Controller]) -> Tuple["HTTPRoute"
     return cast("HTTPRoute", app.routes[index_v1]), cast("HTTPRoute", app.routes[index_v2])
 
 
-@pytest.fixture()
-def route_with_multiple_methods() -> "HTTPRoute":
-    class MultipleMethodsRouteController(Controller):
-        path = "/"
-
-        @HTTPRouteHandler("/", http_method=["GET", "HEAD"])
-        async def root(self, *, request: Request[str, str, Any]) -> None:
-            pass
-
-    app = Litestar(route_handlers=[MultipleMethodsRouteController], openapi_config=None)
-    index = find_index(app.routes, lambda x: x.path_format == "/")
-    return cast("HTTPRoute", app.routes[index])
-
-
 def test_create_path_item(route: "HTTPRoute") -> None:
     schema, _ = create_path_item(
         route=route,
@@ -72,13 +58,49 @@ def test_create_path_item(route: "HTTPRoute") -> None:
     assert schema.put.summary == "UpdatePerson"
 
 
-def test_unique_operation_ids_for_multiple_http_methods(route_with_multiple_methods: "HTTPRoute") -> None:
+def test_unique_operation_ids_for_multiple_http_methods() -> None:
+    class MultipleMethodsRouteController(Controller):
+        path = "/"
+
+        @HTTPRouteHandler("/", http_method=["GET", "HEAD"])
+        async def root(self, *, request: Request[str, str, Any]) -> None:
+            pass
+
+    app = Litestar(route_handlers=[MultipleMethodsRouteController], openapi_config=None)
+    index = find_index(app.routes, lambda x: x.path_format == "/")
+    route_with_multiple_methods = cast("HTTPRoute", app.routes[index])
     schema, _ = create_path_item(
         route=route_with_multiple_methods,
         create_examples=True,
         plugins=[],
         use_handler_docstrings=False,
         operation_id_creator=default_operation_id_creator,
+        schemas={},
+    )
+    assert schema.get
+    assert schema.get.operation_id
+    assert schema.head
+    assert schema.head.operation_id
+    assert schema.get.operation_id != schema.head.operation_id
+
+
+def test_unique_operation_ids_for_multiple_http_methods_with_handler_level_operation_creator() -> None:
+    class MultipleMethodsRouteController(Controller):
+        path = "/"
+
+        @HTTPRouteHandler("/", http_method=["GET", "HEAD"], operation_id=default_operation_id_creator)
+        async def root(self, *, request: Request[str, str, Any]) -> None:
+            pass
+
+    app = Litestar(route_handlers=[MultipleMethodsRouteController], openapi_config=None)
+    index = find_index(app.routes, lambda x: x.path_format == "/")
+    route_with_multiple_methods = cast("HTTPRoute", app.routes[index])
+    schema, _ = create_path_item(
+        route=route_with_multiple_methods,
+        create_examples=True,
+        plugins=[],
+        use_handler_docstrings=False,
+        operation_id_creator=lambda x: "abc",  # type: ignore
         schemas={},
     )
     assert schema.get

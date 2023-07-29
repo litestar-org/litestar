@@ -267,9 +267,30 @@ def spanner_engine(docker_ip: str, spanner_service: None, monkeypatch: MonkeyPat
 
 @pytest.fixture(
     params=[
-        pytest.param("duckdb_engine", marks=[pytest.mark.sqlalchemy_duckdb, pytest.mark.sqlalchemy_integration]),
-        pytest.param("oracle_engine", marks=[pytest.mark.sqlalchemy_oracledb, pytest.mark.sqlalchemy_integration]),
-        pytest.param("psycopg_engine", marks=[pytest.mark.sqlalchemy_psycopg_sync, pytest.mark.sqlalchemy_integration]),
+        pytest.param(
+            "duckdb_engine",
+            marks=[
+                pytest.mark.sqlalchemy_duckdb,
+                pytest.mark.sqlalchemy_integration,
+                pytest.mark.xdist_group("duckdb"),
+            ],
+        ),
+        pytest.param(
+            "oracle_engine",
+            marks=[
+                pytest.mark.sqlalchemy_oracledb,
+                pytest.mark.sqlalchemy_integration,
+                pytest.mark.xdist_group("oracle"),
+            ],
+        ),
+        pytest.param(
+            "psycopg_engine",
+            marks=[
+                pytest.mark.sqlalchemy_psycopg_sync,
+                pytest.mark.sqlalchemy_integration,
+                pytest.mark.xdist_group("postgres"),
+            ],
+        ),
         pytest.param("sqlite_engine", marks=pytest.mark.sqlalchemy_sqlite),
     ]
 )
@@ -355,10 +376,29 @@ async def psycopg_async_engine(docker_ip: str, postgres_service: None) -> AsyncE
 @pytest.fixture(
     params=[
         pytest.param("aiosqlite_engine", marks=pytest.mark.sqlalchemy_aiosqlite),
-        pytest.param("asyncmy_engine", marks=[pytest.mark.sqlalchemy_asyncmy, pytest.mark.sqlalchemy_integration]),
-        pytest.param("asyncpg_engine", marks=[pytest.mark.sqlalchemy_asyncpg, pytest.mark.sqlalchemy_integration]),
         pytest.param(
-            "psycopg_async_engine", marks=[pytest.mark.sqlalchemy_psycopg_async, pytest.mark.sqlalchemy_integration]
+            "asyncmy_engine",
+            marks=[
+                pytest.mark.sqlalchemy_asyncmy,
+                pytest.mark.sqlalchemy_integration,
+                pytest.mark.xdist_group("mysql"),
+            ],
+        ),
+        pytest.param(
+            "asyncpg_engine",
+            marks=[
+                pytest.mark.sqlalchemy_asyncpg,
+                pytest.mark.sqlalchemy_integration,
+                pytest.mark.xdist_group("postgres"),
+            ],
+        ),
+        pytest.param(
+            "psycopg_async_engine",
+            marks=[
+                pytest.mark.sqlalchemy_psycopg_async,
+                pytest.mark.sqlalchemy_integration,
+                pytest.mark.xdist_group("postgres"),
+            ],
         ),
     ]
 )
