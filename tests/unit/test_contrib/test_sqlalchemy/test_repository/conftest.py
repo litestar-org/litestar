@@ -57,7 +57,7 @@ def fx_raw_authors_uuid() -> list[dict[str, Any]]:
             "updated_at": "2023-05-11T00:00:00",
         },
         {
-            "id": "5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2",
+            "id": UUID("5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2"),
             "name": "Leo Tolstoy",
             "dob": "1828-09-09",
             "created_at": "2023-03-01T00:00:00",
