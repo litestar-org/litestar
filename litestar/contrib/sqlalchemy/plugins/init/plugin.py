@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from litestar.contrib.sqlalchemy.plugins import _slots_base
 from litestar.contrib.sqlalchemy.commands import database_group
-
+from litestar.contrib.sqlalchemy.plugins import _slots_base
 from litestar.di import Provide
-from litestar.plugins import InitPluginProtocol
-from litestar.cli.main import litestar_group
+from litestar.plugins import CLIPluginProtocol, InitPluginProtocol
 
 if TYPE_CHECKING:
+    from click import Group
+
     from litestar.config.app import AppConfig
 
     from .config import SQLAlchemyAsyncConfig, SQLAlchemySyncConfig
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 __all__ = ("SQLAlchemyInitPlugin",)
 
 
-class SQLAlchemyInitPlugin(InitPluginProtocol, _slots_base.SlotsBase):
+class SQLAlchemyInitPlugin(InitPluginProtocol, CLIPluginProtocol, _slots_base.SlotsBase):
     """SQLAlchemy application lifecycle configuration."""
 
     __slots__ = ()
@@ -29,6 +29,10 @@ class SQLAlchemyInitPlugin(InitPluginProtocol, _slots_base.SlotsBase):
             config: configure DB connection and hook handlers and dependencies.
         """
         self._config = config
+
+    def on_cli_init(self, cli: Group) -> None:
+        cli.add_command(database_group)
+        return super().on_cli_init(cli)
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         """Configure application for use with SQLAlchemy.
@@ -46,5 +50,5 @@ class SQLAlchemyInitPlugin(InitPluginProtocol, _slots_base.SlotsBase):
         app_config.on_startup.insert(0, self._config.update_app_state)
         app_config.on_shutdown.append(self._config.on_shutdown)
         app_config.signature_namespace.update(self._config.signature_namespace)
-        litestar_group.add_command(database_group)
+
         return app_config

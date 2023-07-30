@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Callable, Generic, TypeVar, cast
 
 from litestar.constants import HTTP_DISCONNECT, HTTP_RESPONSE_START, WEBSOCKET_CLOSE, WEBSOCKET_DISCONNECT
+from litestar.contrib.sqlalchemy.plugins.init.config.alembic import AlembicConfig
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
 from litestar.utils import get_litestar_scope_state, set_litestar_scope_state
@@ -122,6 +123,11 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
     """Configuration for the SQLAlchemy engine.
 
     The configuration options are documented in the SQLAlchemy documentation.
+    """
+    alembic_config: AlembicConfig = field(default_factory=AlembicConfig)
+    """Configuration for the SQLAlchemy Alembic migrations.
+
+    The configuration options are documented in the Alembic documentation.
     """
     session_maker_app_state_key: str = "session_maker_class"
     """Key under which to store the SQLAlchemy :class:`sessionmaker <sqlalchemy.orm.sessionmaker>` in the application

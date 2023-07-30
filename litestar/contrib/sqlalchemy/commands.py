@@ -1,14 +1,15 @@
-from typing import TYPE_CHECKING
 import sys
+from typing import TYPE_CHECKING
+
 from rich.prompt import Confirm
 
 from litestar.cli._utils import RICH_CLICK_INSTALLED, LitestarGroup
-from litestar.contrib.sqlalchemy import utils as db_utils
+from litestar.contrib.sqlalchemy.alembic import utils as db_utils
 
 if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
-    from click import argument, group, option, BOOL, echo
+    from click import BOOL, echo, group, option
 else:
-    from rich_click import argument, group, option, BOOL
+    from rich_click import BOOL, echo, group, option
 
 
 @group(cls=LitestarGroup, name="db")
