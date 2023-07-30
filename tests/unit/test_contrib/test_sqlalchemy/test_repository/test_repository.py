@@ -4,7 +4,7 @@ from __future__ import annotations
 import asyncio
 import os
 from datetime import datetime, timezone
-from typing import Any, Generator, Literal, Union, cast
+from typing import Any, Generator, Literal, Type, Union, cast
 from uuid import uuid4
 
 import pytest
@@ -34,11 +34,11 @@ from tests.unit.test_contrib.test_sqlalchemy import models_bigint, models_uuid
 from .helpers import update_raw_records
 
 RepositoryPKType = Literal["uuid", "bigint"]
-AuthorModel = type[models_uuid.UUIDAuthor | models_bigint.BigIntAuthor]
-RuleModel = type[models_uuid.UUIDRule | models_bigint.BigIntRule]
-ModelWithFetchedValue = type[models_uuid.UUIDModelWithFetchedValue | models_bigint.BigIntModelWithFetchedValue]
-ItemModel = type[models_uuid.UUIDItem | models_bigint.BigIntItem]
-TagModel = type[models_uuid.UUIDTag | models_bigint.BigIntTag]
+AuthorModel = Type[Union[models_uuid.UUIDAuthor, models_bigint.BigIntAuthor]]
+RuleModel = Type[Union[models_uuid.UUIDRule, models_bigint.BigIntRule]]
+ModelWithFetchedValue = Type[Union[models_uuid.UUIDModelWithFetchedValue, models_bigint.BigIntModelWithFetchedValue]]
+ItemModel = Type[Union[models_uuid.UUIDItem, models_bigint.BigIntItem]]
+TagModel = Type[Union[models_uuid.UUIDTag, models_bigint.BigIntTag]]
 
 AuthorRepository = Union[
     models_uuid.AuthorAsyncRepository,
@@ -197,7 +197,7 @@ def raw_authors(request: FixtureRequest, repository_pk_type: RepositoryPKType) -
         authors = request.getfixturevalue("raw_authors_bigint")
     else:
         authors = request.getfixturevalue("raw_authors_uuid")
-    return cast(list[dict[str, Any]], authors)
+    return cast("list[dict[str, Any]]", authors)
 
 
 @pytest.fixture()
@@ -206,7 +206,7 @@ def raw_rules(request: FixtureRequest, repository_pk_type: RepositoryPKType) -> 
         rules = request.getfixturevalue("raw_rules_bigint")
     else:
         rules = request.getfixturevalue("raw_rules_uuid")
-    return cast(list[dict[str, Any]], rules)
+    return cast("list[dict[str, Any]]", rules)
 
 
 def _seed_db_sync(
