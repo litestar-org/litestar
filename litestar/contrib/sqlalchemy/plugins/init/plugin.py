@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from litestar.contrib.sqlalchemy.cli import database_group
 from litestar.contrib.sqlalchemy.plugins import _slots_base
 from litestar.di import Provide
 from litestar.plugins import CLIPluginProtocol, InitPluginProtocol
@@ -32,6 +31,8 @@ class SQLAlchemyInitPlugin(InitPluginProtocol, CLIPluginProtocol, _slots_base.Sl
         self._alembic_config = config.alembic_config
 
     def on_cli_init(self, cli: Group) -> None:
+        from litestar.contrib.sqlalchemy.cli import database_group
+
         cli.add_command(database_group)
         return super().on_cli_init(cli)
 
