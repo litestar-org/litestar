@@ -132,9 +132,7 @@ def book_model(repository_pk_type: RepositoryPKType) -> type[models_uuid.UUIDBoo
 
 @pytest.fixture()
 def new_pk_id(repository_pk_type: RepositoryPKType) -> Any:
-    if repository_pk_type == "uuid":
-        return uuid4()
-    return 10
+    return uuid4() if repository_pk_type == "uuid" else 10
 
 
 @pytest.fixture()
@@ -341,9 +339,7 @@ def any_session(request: FixtureRequest) -> AsyncSession | Session:
 
 @pytest.fixture()
 def repository_module(repository_pk_type: RepositoryPKType) -> Any:
-    if repository_pk_type == "uuid":
-        return models_uuid
-    return models_bigint
+    return models_uuid if repository_pk_type == "uuid" else models_bigint
 
 
 @pytest.fixture()
