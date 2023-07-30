@@ -3737,17 +3737,6 @@ files = [
 types-html5lib = "*"
 
 [[package]]
-name = "types-click"
-version = "7.1.8"
-description = "Typing stubs for click"
-optional = false
-python-versions = "*"
-files = [
-    {file = "types-click-7.1.8.tar.gz", hash = "sha256:b6604968be6401dc516311ca50708a0a28baa7a0cb840efd7412f0dbbff4e092"},
-    {file = "types_click-7.1.8-py3-none-any.whl", hash = "sha256:8cb030a669e2e927461be9827375f83c16b8178c365852c060a34e24871e7e81"},
-]
-
-[[package]]
 name = "types-html5lib"
 version = "1.1.11.15"
 description = "Typing stubs for html5lib"
@@ -4186,4 +4175,4 @@ structlog = ["structlog"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "2bc8e2e4fe2ca80291302c5bf83352b2b143a2c30ea2f2c562f2d6135a9d54d4"
+content-hash = "4c83899b6606499ba0e9c1462f2e61b203d5315eaf0c9c647f9cde2ac4512acd"
