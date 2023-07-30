@@ -157,6 +157,7 @@ ruff = '*'
 slotscheck = "*"
 sourcery = "*"
 types-beautifulsoup4 = "*"
+types-click = "*"
 types-python-jose = "*"
 types-pyyaml = "*"
 types-redis = "*"

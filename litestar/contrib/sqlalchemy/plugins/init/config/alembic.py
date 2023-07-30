@@ -15,9 +15,9 @@ __all__ = ("AlembicConfig",)
 
 @dataclass
 class AlembicConfig:
-    """Configuration for Alembic's :class:`Config <alembic.Config>`.
+    """Configuration for Alembic's :class:`Config <alembic.config.Config>`.
 
-    For details see: https://docs.sqlalchemy.org/en/20/core/engines.html
+    For details see: https://alembic.sqlalchemy.org/en/latest/api/config.html
     """
 
     alembic_config: str | Path | EmptyType = Empty
@@ -27,6 +27,6 @@ class AlembicConfig:
     version_table_name: str | EmptyType = Empty
     """Configure the name of the table used to hold the applied alembic revisions. Defaults to ``alembic``.  THe name of the table
     """
-    scrip_location: str | Path | EmptyType = Empty
+    script_location: str | Path | EmptyType = Empty
     """A path to save generated migrations.
     """
