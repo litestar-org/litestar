@@ -5,10 +5,10 @@ import logging
 import os
 from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager, suppress
 from datetime import date, datetime, time, timedelta
-from functools import partial
+from functools import lru_cache, partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Mapping, Sequence, TypedDict, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Mapping, Sequence, TypedDict, TypeVar, cast
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
@@ -33,6 +33,7 @@ from litestar.plugins import (
     CLIPluginProtocol,
     InitPluginProtocol,
     OpenAPISchemaPluginProtocol,
+    PluginProtocol,
     SerializationPluginProtocol,
 )
 from litestar.router import Router
@@ -58,7 +59,6 @@ if TYPE_CHECKING:
     from litestar.logging.config import BaseLoggingConfig
     from litestar.openapi.spec import SecurityRequirement
     from litestar.openapi.spec.open_api import OpenAPI
-    from litestar.plugins import PluginProtocol
     from litestar.static_files.config import StaticFilesConfig
     from litestar.stores.base import Store
     from litestar.template.config import TemplateConfig
@@ -94,6 +94,9 @@ if TYPE_CHECKING:
         TypeEncodersMap,
     )
     from litestar.types.callable_types import LifespanHook
+
+
+PluginT = TypeVar("PluginT", bound=PluginProtocol)
 
 __all__ = ("HandlerIndex", "Litestar", "DEFAULT_OPENAPI_CONFIG")
 
@@ -131,7 +134,7 @@ class Litestar(Router):
         "_lifespan_managers",
         "_debug",
         "_openapi_schema",
-        "cli_plugins",
+        "_plugins",
         "after_exception",
         "allowed_hosts",
         "asgi_handler",
@@ -148,11 +151,9 @@ class Litestar(Router):
         "on_shutdown",
         "on_startup",
         "openapi_config",
-        "openapi_schema_plugins",
         "request_class",
         "response_cache_config",
         "route_map",
-        "serialization_plugins",
         "signature_namespace",
         "state",
         "static_files_config",
@@ -370,6 +371,7 @@ class Litestar(Router):
         self._openapi_schema: OpenAPI | None = None
         self._debug: bool = True
         self._lifespan_managers = config.lifespan
+        self._plugins: Mapping[type[PluginProtocol], PluginProtocol] = {type(p): p for p in config.plugins}
 
         self.get_logger: GetLogger = get_logger_placeholder
         self.logger: Logger | None = None
@@ -381,7 +383,6 @@ class Litestar(Router):
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
         self.before_send = [AsyncCallable(h) for h in config.before_send]
         self.compression_config = config.compression_config
-        self.cli_plugins = [p for p in config.plugins if isinstance(p, CLIPluginProtocol)]
         self.cors_config = config.cors_config
         self.csrf_config = config.csrf_config
         self.event_emitter = config.event_emitter_backend(listeners=config.listeners)
@@ -390,10 +391,8 @@ class Litestar(Router):
         self.on_shutdown = config.on_shutdown
         self.on_startup = config.on_startup
         self.openapi_config = config.openapi_config
-        self.openapi_schema_plugins = [p for p in config.plugins if isinstance(p, OpenAPISchemaPluginProtocol)]
         self.request_class = config.request_class or Request
         self.response_cache_config = config.response_cache_config
-        self.serialization_plugins = [p for p in config.plugins if isinstance(p, SerializationPluginProtocol)]
         self.state = config.state
         self.static_files_config = config.static_files_config
         self.template_engine = config.template_config.engine_instance if config.template_config else None
@@ -449,6 +448,33 @@ class Litestar(Router):
         self.stores: StoreRegistry = (
             config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
         )
+
+    @property
+    def cli_plugins(self) -> list[CLIPluginProtocol]:
+        return self.get_plugins_of_type(CLIPluginProtocol)
+
+    @property
+    def openapi_schema_plugins(self) -> list[OpenAPISchemaPluginProtocol]:
+        return self.get_plugins_of_type(OpenAPISchemaPluginProtocol)
+
+    @property
+    def serialization_plugins(self) -> list[SerializationPluginProtocol]:
+        return self.get_plugins_of_type(SerializationPluginProtocol)
+
+    def get_plugin(self, type_: type[PluginT]) -> PluginT:
+        """Return the registered plugin of ``type_``.
+
+        This should be used with subclasses of the plugin protocols.
+        """
+        try:
+            return cast(PluginT, self._plugins[type_])
+        except KeyError as e:
+            raise KeyError(f"No plugin of type {type_!r} registered") from e
+
+    @lru_cache  # noqa: B019
+    def get_plugins_of_type(self, type_: type[PluginT]) -> list[PluginT]:
+        """Return all registered plugins that are subclasses of ``type_``."""
+        return [p for p in self._plugins.values() if isinstance(p, type_)]
 
     @property
     def default_plugins(self) -> list[PluginProtocol]:
