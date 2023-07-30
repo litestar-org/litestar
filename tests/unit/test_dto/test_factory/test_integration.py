@@ -1,8 +1,8 @@
-# ruff: noqa: UP007
+# ruff: noqa: UP007, UP006
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Dict, Generic, Optional, Sequence, TypeVar, cast
+from typing import TYPE_CHECKING, Dict, Generic, List, Optional, Sequence, TypeVar, cast
 from unittest.mock import MagicMock
 from uuid import UUID
 
@@ -164,7 +164,7 @@ class NestingBar:
 
 def test_dto_data_injection_with_nested_model() -> None:
     @post(dto=DataclassDTO[Annotated[NestingBar, DTOConfig(exclude={"foo.baz"})]], return_dto=None)
-    def handler(data: DTOData[NestingBar]) -> dict[str, Any]:
+    def handler(data: DTOData[NestingBar]) -> Dict[str, Any]:
         assert isinstance(data, DTOData)
         return cast("dict[str, Any]", data.as_builtins())
 
@@ -296,7 +296,7 @@ def test_url_encoded_form_data_patch_request() -> None:
     dto = DataclassDTO[Annotated[User, DTOConfig(partial=True)]]
 
     @post(dto=dto, return_dto=None, signature_namespace={"User": User, "dict": Dict})
-    def handler(data: DTOData[User] = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict[str, Any]:
+    def handler(data: DTOData[User] = Body(media_type=RequestEncodingType.URL_ENCODED)) -> Dict[str, Any]:
         return data.as_builtins()  # type:ignore[no-any-return]
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -461,7 +461,7 @@ class Wrapped(Generic[T, V]):
 
 def test_dto_generic_dataclass_wrapped_list_response() -> None:
     @get(dto=DataclassDTO[Annotated[PaginatedUser, DTOConfig(exclude={"age"})]])
-    def handler() -> Wrapped[list[PaginatedUser], int]:
+    def handler() -> Wrapped[List[PaginatedUser], int]:
         return Wrapped(
             data=[PaginatedUser(name="John", age=42), PaginatedUser(name="Jane", age=43)],
             other=2,
@@ -490,7 +490,7 @@ def test_dto_generic_dataclass_wrapped_scalar_response() -> None:
 @dataclass
 class WrappedWithDict(Generic[K, V, T]):
     data: T
-    other: dict[K, V]
+    other: Dict[K, V]
 
 
 def test_dto_generic_dataclass_wrapped_scalar_response_with_additional_mapping_data() -> None:
@@ -518,7 +518,7 @@ def test_dto_response_wrapped_scalar_return_type() -> None:
 
 def test_dto_response_wrapped_collection_return_type() -> None:
     @get(dto=DataclassDTO[Annotated[PaginatedUser, DTOConfig(exclude={"age"})]])
-    def handler() -> Response[list[PaginatedUser]]:
+    def handler() -> Response[List[PaginatedUser]]:
         return Response(content=[PaginatedUser(name="John", age=42), PaginatedUser(name="Jane", age=43)])
 
     with create_test_client(handler) as client:

@@ -7,7 +7,9 @@ from typing import (
     Any,
     AsyncGenerator,
     Callable,
+    Dict,
     Mapping,
+    Optional,
     cast,
     overload,
 )
@@ -276,8 +278,8 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
     async def default_connection_lifespan(
         self,
         socket: WebSocket,
-        on_accept_dependencies: dict[str, Any] | None = None,
-        on_disconnect_dependencies: dict[str, Any] | None = None,
+        on_accept_dependencies: Optional[Dict[str, Any]] = None,  # noqa: UP006, UP007
+        on_disconnect_dependencies: Optional[Dict[str, Any]] = None,  # noqa: UP006, UP007
     ) -> AsyncGenerator[None, None]:
         """Handle the connection lifespan of a :class:`WebSocket <.connection.WebSocket>`.
 
