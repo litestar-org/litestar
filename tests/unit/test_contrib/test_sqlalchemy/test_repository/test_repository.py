@@ -11,10 +11,7 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 from pytest_lazyfixture import lazy_fixture
 from sqlalchemy import Engine, Table, insert
-from sqlalchemy.ext.asyncio import (
-    AsyncEngine,
-    AsyncSession,
-)
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy.orm import Session, sessionmaker
 
 from litestar.contrib.repository.exceptions import RepositoryError
@@ -28,6 +25,7 @@ from litestar.contrib.repository.filters import (
     SearchFilter,
 )
 from litestar.contrib.sqlalchemy import base
+from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
 from tests.helpers import maybe_async
 from tests.unit.test_contrib.test_sqlalchemy import models_bigint, models_uuid
 
@@ -40,47 +38,23 @@ ModelWithFetchedValue = Type[Union[models_uuid.UUIDModelWithFetchedValue, models
 ItemModel = Type[Union[models_uuid.UUIDItem, models_bigint.BigIntItem]]
 TagModel = Type[Union[models_uuid.UUIDTag, models_bigint.BigIntTag]]
 
-AuthorRepository = Union[
-    models_uuid.AuthorAsyncRepository,
-    models_uuid.AuthorSyncRepository,
-    models_bigint.AuthorSyncRepository,
-    models_bigint.AuthorSyncRepository,
-]
+AnyAuthor = Union[models_uuid.UUIDAuthor, models_bigint.BigIntAuthor]
+AuthorRepository = SQLAlchemyAsyncRepository[AnyAuthor]
 
-RuleRepository = Union[
-    models_uuid.RuleSyncRepository,
-    models_uuid.RuleAsyncRepository,
-    models_bigint.RuleSyncRepository,
-    models_bigint.RuleAsyncRepository,
-]
+AnyRule = Union[models_uuid.UUIDRule, models_bigint.BigIntRule]
+RuleRepository = SQLAlchemyAsyncRepository[AnyRule]
 
-BookRepository = Union[
-    models_uuid.BookSyncRepository,
-    models_uuid.BookAsyncRepository,
-    models_bigint.BookSyncRepository,
-    models_bigint.BookAsyncRepository,
-]
+AnyBook = Union[models_uuid.UUIDBook, models_bigint.BigIntBook]
+BookRepository = SQLAlchemyAsyncRepository[AnyBook]
 
-TagRepository = Union[
-    models_uuid.TagSyncRepository,
-    models_uuid.TagAsyncRepository,
-    models_bigint.TagSyncRepository,
-    models_bigint.TagAsyncRepository,
-]
+AnyTag = Union[models_uuid.UUIDTag, models_bigint.BigIntTag]
+TagRepository = SQLAlchemyAsyncRepository[AnyTag]
 
-ItemRepository = Union[
-    models_uuid.ItemSyncRepository,
-    models_uuid.ItemAsyncRepository,
-    models_bigint.ItemSyncRepository,
-    models_bigint.ItemAsyncRepository,
-]
+AnyItem = Union[models_uuid.UUIDItem, models_bigint.BigIntItem]
+ItemRepository = SQLAlchemyAsyncRepository[AnyItem]
 
-ModelWithFetchedValueRepository = Union[
-    models_uuid.ModelWithFetchedValueSyncRepository,
-    models_uuid.ModelWithFetchedValueAsyncRepository,
-    models_bigint.ModelWithFetchedValueSyncRepository,
-    models_bigint.ModelWithFetchedValueAsyncRepository,
-]
+AnyModelWithFetchedValue = Union[models_uuid.UUIDModelWithFetchedValue, models_bigint.BigIntModelWithFetchedValue]
+ModelWithFetchedValueRepository = SQLAlchemyAsyncRepository[AnyModelWithFetchedValue]
 
 
 @pytest.fixture(params=["uuid", "bigint"])
@@ -452,7 +426,7 @@ async def test_repo_list_and_count_method_empty(book_repo: BookRepository) -> No
 
 
 async def test_repo_created_updated(
-    author_repo: AuthorRepository, book_model: type[models_uuid.UUIDBook | models_bigint.BigIntBook]
+    author_repo: AuthorRepository, book_model: type[AnyBook], repository_pk_type: RepositoryPKType
 ) -> None:
     """Test SQLALchemy created_at - updated_at.
 
@@ -464,7 +438,16 @@ async def test_repo_created_updated(
     assert author.updated_at is not None
     original_update_dt = author.updated_at
 
-    author.books.append(book_model(title="Testing"))
+    # looks odd, but we want to get correct type checking here
+    if repository_pk_type == "uuid":
+        author = cast(models_uuid.UUIDAuthor, author)
+        book_model = cast("type[models_uuid.UUIDBook]", book_model)
+        author.books.append(book_model(title="Testing"))
+    else:
+        author = cast(models_bigint.BigIntAuthor, author)
+        book_model = cast("type[models_bigint.BigIntBook]", book_model)
+        author.books.append(book_model(title="Testing"))
+
     author = await maybe_async(author_repo.update(author))
     assert author.updated_at > original_update_dt
 
@@ -689,7 +672,7 @@ async def test_repo_upsert_method(
 
 
 async def test_repo_upsert_many_method(
-    author_repo: AuthorRepository, existing_author_ids: Generator[Any], author_model: AuthorModel
+    author_repo: AuthorRepository, existing_author_ids: Generator[Any, None, None], author_model: AuthorModel
 ) -> None:
     """Test SQLALchemy upsert.
 
@@ -821,7 +804,9 @@ async def test_repo_filter_order_by(author_repo: AuthorRepository) -> None:
     assert existing_obj[0].name == "Leo Tolstoy"
 
 
-async def test_repo_filter_collection(author_repo: AuthorRepository, existing_author_ids: Generator[Any]) -> None:
+async def test_repo_filter_collection(
+    author_repo: AuthorRepository, existing_author_ids: Generator[Any, None, None]
+) -> None:
     """Test SQLALchemy collection filter.
 
     Args:
@@ -837,7 +822,7 @@ async def test_repo_filter_collection(author_repo: AuthorRepository, existing_au
 
 
 async def test_repo_filter_not_in_collection(
-    author_repo: AuthorRepository, existing_author_ids: Generator[Any]
+    author_repo: AuthorRepository, existing_author_ids: Generator[Any, None, None]
 ) -> None:
     """Test SQLALchemy collection filter.
     Args:
@@ -945,7 +930,7 @@ async def test_lazy_load(
     tags_to_add = await maybe_async(tag_repo.list(CollectionFilter("name", update_data.pop("tag_names", []))))  # type: ignore
     assert len(tags_to_add) > 0
     assert tags_to_add[0].id is not None
-    update_data["tags"] = tags_to_add
+    update_data["tags"] = tags_to_add  # type: ignore[assignment]
     updated_obj = await maybe_async(item_repo.update(item_model(**update_data), auto_refresh=False))
     await maybe_async(item_repo.session.commit())
     assert len(updated_obj.tags) > 0
