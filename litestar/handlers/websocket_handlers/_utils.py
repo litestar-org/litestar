@@ -93,7 +93,11 @@ class ListenerHandler:
         self._pass_socket = "socket" in parsed_signature.parameters
 
     async def __call__(
-        self, *args: Any, socket: WebSocket, connection_lifespan_dependencies: dict[str, Any], **kwargs: Any
+        self,
+        *args: Any,
+        socket: WebSocket,
+        connection_lifespan_dependencies: Dict[str, Any],  # noqa: UP006
+        **kwargs: Any,
     ) -> None:
         lifespan_mananger = self._listener._connection_lifespan or self._listener.default_connection_lifespan
         handle_send = self._listener.resolve_send_handler() if self._can_send_data else None

@@ -1,4 +1,4 @@
-# ruff: noqa: UP006
+# ruff: noqa: UP006, UP007
 from __future__ import annotations
 
 import re
@@ -14,6 +14,7 @@ from typing import (
     Optional,
     Sequence,
     Set,
+    Type,
     TypedDict,
     Union,
     cast,
@@ -95,7 +96,7 @@ def _deserializer(target_type: Any, value: Any, default_deserializer: Callable[[
 class SignatureModel(Struct):
     """Model that represents a function signature that uses a msgspec specific type or types."""
 
-    _data_dto: ClassVar[type[AbstractDTO] | None]
+    _data_dto: ClassVar[Optional[Type[AbstractDTO]]]
     _dependency_name_set: ClassVar[Set[str]]
     # NOTE: we have to use Set and Dict here because python 3.8 goes haywire if we use 'set' and 'dict'
     _fields: ClassVar[Dict[str, FieldDefinition]]
