@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from typing import Type, cast
+from typing import Protocol, Type, Union, cast
 from uuid import uuid4
 
 import pytest
 from _pytest.fixtures import FixtureRequest
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from litestar.contrib.repository.exceptions import ConflictError, RepositoryError
@@ -19,6 +20,13 @@ from tests.unit.test_contrib.test_sqlalchemy.models_uuid import UUIDAuthor, UUID
 
 AuthorRepository = GenericAsyncMockRepository[UUIDAuthor]
 AuthorRepositoryType = Type[AuthorRepository]
+ModelType = Type[Union[base.UUIDBase, base.BigIntBase]]
+AuditModelType = Type[Union[base.UUIDAuditBase, base.BigIntAuditBase]]
+
+
+class CreateAuditModelFixture(Protocol):
+    def __call__(self, extra_columns: dict[str, type[Mapped] | Mapped] | None = None) -> AuditModelType:
+        ...
 
 
 @pytest.fixture(name="authors")
@@ -51,6 +59,24 @@ def fx_author_repository(
 ) -> GenericAsyncMockRepository[UUIDAuthor]:
     """Mock Author repository instance."""
     return author_repository_type()
+
+
+@pytest.fixture(params=[base.UUIDBase, base.BigIntBase])
+def model_type(request: FixtureRequest) -> ModelType:
+    return cast(ModelType, type(f"{request.node.nodeid}Model", (request.param,), {}))
+
+
+@pytest.fixture(params=[base.UUIDAuditBase, base.BigIntAuditBase])
+def create_audit_model_type(request: FixtureRequest) -> CreateAuditModelFixture:
+    def create(extra_columns: dict[str, type[Mapped] | Mapped] | None = None) -> AuditModelType:
+        return cast(AuditModelType, type(f"{request.node.nodeid}AuditModel", (request.param,), extra_columns or {}))
+
+    return create
+
+
+@pytest.fixture()
+def audit_model_type(create_audit_model_type: CreateAuditModelFixture) -> AuditModelType:
+    return create_audit_model_type()
 
 
 async def test_repo_raises_conflict_if_add_with_id(
@@ -114,37 +140,19 @@ def test_generic_mock_repository_raises_repository_exception_if_named_attribute_
         _ = author_repository.filter_collection_by_kwargs(author_repository.collection, cricket="ball")
 
 
-async def test_sets_created_updated_on_add(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_sets_created_updated_on_add(
+    repository_type: type[GenericAsyncMockRepository], audit_model_type: AuditModelType
+) -> None:
     """Test that the repository updates the 'created_at' and 'updated_at' timestamps
     if necessary."""
 
-    class UUIDModel(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
+    instance = audit_model_type()
+    assert "created_at" not in vars(instance)
+    assert "updated_at" not in vars(instance)
 
-        ...
-
-    class BigIntModel(base.BigIntAuditBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        ...
-
-    uuid_instance = UUIDModel()
-    assert "created_at" not in vars(uuid_instance)
-    assert "updated_at" not in vars(uuid_instance)
-
-    uuid_instance = await maybe_async(repository_type[UUIDModel]().add(uuid_instance))  # type: ignore[index]
-    assert "created_at" in vars(uuid_instance)
-    assert "updated_at" in vars(uuid_instance)
-
-    bigint_instance = BigIntModel()
-    assert "created_at" not in vars(bigint_instance)
-    assert "updated_at" not in vars(bigint_instance)
-
-    bigint_instance = await maybe_async(repository_type[BigIntModel]().add(bigint_instance))  # type: ignore[index]
-    assert "created_at" in vars(bigint_instance)
-    assert "updated_at" in vars(bigint_instance)
+    instance = await maybe_async(repository_type[audit_model_type]().add(instance))  # type: ignore[index]
+    assert "created_at" in vars(instance)
+    assert "updated_at" in vars(instance)
 
 
 async def test_sets_updated_on_update(author_repository: AuthorRepository) -> None:
@@ -157,108 +165,51 @@ async def test_sets_updated_on_update(author_repository: AuthorRepository) -> No
     assert instance.updated_at > original_updated
 
 
-async def test_does_not_set_created_updated(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_does_not_set_created_updated(
+    repository_type: type[GenericAsyncMockRepository], model_type: ModelType
+) -> None:
     """Test that the repository does not update the 'updated' timestamps when
     appropriate."""
 
-    class UUIDModel(base.UUIDBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
+    instance = model_type()
+    repo = repository_type[model_type]()  # type: ignore[index]
+    assert "created_at" not in vars(instance)
+    assert "updated_at" not in vars(instance)
 
-        ...
+    instance = await maybe_async(repo.add(instance))
+    assert "created_at" not in vars(instance)
+    assert "updated_at" not in vars(instance)
 
-    class BigIntModel(base.BigIntBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        ...
-
-    uuid_instance = UUIDModel()
-    uuid_repo = repository_type[UUIDModel]()  # type: ignore[index]
-    assert "created_at" not in vars(uuid_instance)
-    assert "updated_at" not in vars(uuid_instance)
-
-    uuid_instance = await maybe_async(uuid_repo.add(uuid_instance))
-    assert "created_at" not in vars(uuid_instance)
-    assert "updated_at" not in vars(uuid_instance)
-
-    uuid_instance = await maybe_async(uuid_repo.update(uuid_instance))
-    assert "created_at" not in vars(uuid_instance)
-    assert "updated_at" not in vars(uuid_instance)
-
-    bigint_instance = BigIntModel()
-    bigint_repo = repository_type[BigIntModel]()  # type: ignore[index]
-    assert "created_at" not in vars(bigint_instance)
-    assert "updated_at" not in vars(bigint_instance)
-
-    bigint_instance = await maybe_async(bigint_repo.add(bigint_instance))
-    assert "created_at" not in vars(bigint_instance)
-    assert "updated_at" not in vars(bigint_instance)
-
-    bigint_instance = await maybe_async(bigint_repo.update(bigint_instance))
-    assert "created_at" not in vars(bigint_instance)
-    assert "updated_at" not in vars(bigint_instance)
+    instance = await maybe_async(repo.update(instance))
+    assert "created_at" not in vars(instance)
+    assert "updated_at" not in vars(instance)
 
 
-async def test_add(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_add(repository_type: type[GenericAsyncMockRepository], model_type: ModelType) -> None:
     """Test that the repository add method works correctly`."""
 
-    class UUIDModel(base.UUIDBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
+    instance = model_type()
 
-        ...
-
-    class BigIntModel(base.BigIntBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        ...
-
-    uuid_instance = UUIDModel()
-
-    inserted_uuid_instance = await maybe_async(repository_type[UUIDModel]().add(uuid_instance))  # type: ignore[index]
-    assert inserted_uuid_instance == uuid_instance
-
-    bigint_instance = BigIntModel()
-
-    inserted_bigint_instance = await maybe_async(repository_type[BigIntModel]().add(bigint_instance))  # type: ignore[index]
-    assert inserted_bigint_instance == bigint_instance
+    inserted_uuid_instance = await maybe_async(repository_type[model_type]().add(instance))  # type: ignore[index]
+    assert inserted_uuid_instance == instance
 
 
-async def test_add_many(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_add_many(repository_type: type[GenericAsyncMockRepository], model_type: ModelType) -> None:
     """Test that the repository add_many method works correctly`."""
 
-    class UUIDModel(base.UUIDBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
+    instances = [model_type(), model_type()]
 
-        ...
+    inserted_uuid_instances = await maybe_async(repository_type[model_type]().add_many(instances))  # type: ignore[index]
 
-    class BigIntModel(base.BigIntBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        ...
-
-    uuid_instances = [UUIDModel(), UUIDModel()]
-    bigint_instance = [BigIntModel(), BigIntModel()]
-
-    inserted_uuid_instances = await maybe_async(repository_type[UUIDModel]().add_many(uuid_instances))  # type: ignore[index]
-    inserted_bigint_instance = await maybe_async(repository_type[BigIntModel]().add_many(bigint_instance))  # type: ignore[index]
-
-    assert len(uuid_instances) == len(inserted_uuid_instances)
-    assert len(bigint_instance) == len(inserted_bigint_instance)
+    assert len(instances) == len(inserted_uuid_instances)
 
 
-async def test_update(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_update(
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+) -> None:
     """Test that the repository update method works correctly`."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        random_column: Mapped[str]
+    Model = create_audit_model_type({"random_column": Mapped[str]})
 
     mock_repo = repository_type[Model]()  # type: ignore[index]
 
@@ -269,14 +220,12 @@ async def test_update(repository_type: type[GenericAsyncMockRepository]) -> None
     assert updated_instance == instance
 
 
-async def test_update_many(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_update_many(
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+) -> None:
     """Test that the repository add_many method works correctly`."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        random_column: Mapped[str]
+    Model = create_audit_model_type({"random_column": Mapped[str]})
 
     mock_repo = repository_type[Model]()  # type: ignore[index]
     instances = [Model(random_column="A"), Model(random_column="B")]
@@ -289,14 +238,12 @@ async def test_update_many(repository_type: type[GenericAsyncMockRepository]) ->
     assert len(instances) == len(updated_instances)
 
 
-async def test_upsert(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_upsert(
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+) -> None:
     """Test that the repository upsert method works correctly`."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        random_column: Mapped[str]
+    Model = create_audit_model_type({"random_column": Mapped[str]})
 
     mock_repo = repository_type[Model]()  # type: ignore[index]
 
@@ -307,14 +254,12 @@ async def test_upsert(repository_type: type[GenericAsyncMockRepository]) -> None
     assert updated_instance == instance
 
 
-async def test_upsert_many(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_upsert_many(
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+) -> None:
     """Test that the repository upsert method works correctly`."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        random_column: Mapped[str]
+    Model = create_audit_model_type({"random_column": Mapped[str]})
 
     mock_repo = repository_type[Model]()  # type: ignore[index]
 
@@ -327,80 +272,56 @@ async def test_upsert_many(repository_type: type[GenericAsyncMockRepository]) ->
     assert instance in updated_instances
 
 
-async def test_list(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_list(repository_type: type[GenericAsyncMockRepository], audit_model_type: AuditModelType) -> None:
     """Test that the repository list returns records."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        ...
-
-    mock_repo = repository_type[Model]()  # type: ignore[index]
-    inserted_instances = await maybe_async(mock_repo.add_many([Model(), Model()]))
+    mock_repo = repository_type[audit_model_type]()  # type: ignore[index]
+    inserted_instances = await maybe_async(mock_repo.add_many([audit_model_type(), audit_model_type()]))
     listed_instances = await maybe_async(mock_repo.list())
     assert inserted_instances == listed_instances
 
 
-async def test_delete(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_delete(repository_type: type[GenericAsyncMockRepository], audit_model_type: AuditModelType) -> None:
     """Test that the repository delete functionality."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        ...
-
-    mock_repo = repository_type[Model]()  # type: ignore[index]
-    inserted_instances = await maybe_async(mock_repo.add_many([Model(), Model()]))
+    mock_repo = repository_type[audit_model_type]()  # type: ignore[index]
+    inserted_instances = await maybe_async(mock_repo.add_many([audit_model_type(), audit_model_type()]))
     delete_instance = await maybe_async(mock_repo.delete(inserted_instances[0].id))
     assert delete_instance.id == inserted_instances[0].id
     count = await maybe_async(mock_repo.count())
     assert count == 1
 
 
-async def test_delete_many(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_delete_many(repository_type: type[GenericAsyncMockRepository], audit_model_type: AuditModelType) -> None:
     """Test that the repository delete many functionality."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        ...
-
-    mock_repo = repository_type[Model]()  # type: ignore[index]
-    inserted_instances = await maybe_async(mock_repo.add_many([Model(), Model()]))
+    mock_repo = repository_type[audit_model_type]()  # type: ignore[index]
+    inserted_instances = await maybe_async(mock_repo.add_many([audit_model_type(), audit_model_type()]))
     delete_instances = await maybe_async(mock_repo.delete_many([obj.id for obj in inserted_instances]))
     assert len(delete_instances) == 2
     count = await maybe_async(mock_repo.count())
     assert count == 0
 
 
-async def test_list_and_count(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_list_and_count(
+    repository_type: type[GenericAsyncMockRepository], audit_model_type: AuditModelType
+) -> None:
     """Test that the repository list_and_count returns records and the total record count."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        ...
-
-    instances = [Model(), Model()]
-    mock_repo = repository_type[Model]()  # type: ignore[index]
+    instances = [audit_model_type(), audit_model_type()]
+    mock_repo = repository_type[audit_model_type]()  # type: ignore[index]
     inserted_instances = await maybe_async(mock_repo.add_many(instances))
     listed_instances, count = await maybe_async(mock_repo.list_and_count())
     assert inserted_instances == listed_instances
     assert count == len(instances)
 
 
-async def test_exists(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_exists(
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+) -> None:
     """Test that the repository exists returns booleans."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        random_column: Mapped[str]
+    Model = create_audit_model_type({"random_column": Mapped[str]})
 
     instances = [Model(random_column="value 1"), Model(random_column="value 2")]
     mock_repo = repository_type[Model]()  # type: ignore[index]
@@ -409,30 +330,22 @@ async def test_exists(repository_type: type[GenericAsyncMockRepository]) -> None
     assert exists
 
 
-async def test_count(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_count(repository_type: type[GenericAsyncMockRepository], audit_model_type: AuditModelType) -> None:
     """Test that the repository count returns the total record count."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        ...
-
-    instances = [Model(), Model()]
-    mock_repo = repository_type[Model]()  # type: ignore[index]
+    instances = [audit_model_type(), audit_model_type()]
+    mock_repo = repository_type[audit_model_type]()  # type: ignore[index]
     _ = await maybe_async(mock_repo.add_many(instances))
     count = await maybe_async(mock_repo.count())
     assert count == len(instances)
 
 
-async def test_get(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_get(
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+) -> None:
     """Test that the repository get returns a model record correctly."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        random_column: Mapped[str]
+    Model = create_audit_model_type({"random_column": Mapped[str]})
 
     instances = [Model(random_column="value 1"), Model(random_column="value 2")]
     mock_repo = repository_type[Model]()  # type: ignore[index]
@@ -442,14 +355,12 @@ async def test_get(repository_type: type[GenericAsyncMockRepository]) -> None:
     assert inserted_instances[0] == fetched_instance
 
 
-async def test_get_one(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_get_one(
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+) -> None:
     """Test that the repository get_one returns a model record correctly."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        random_column: Mapped[str]
+    Model = create_audit_model_type({"random_column": Mapped[str]})
 
     instances = [Model(random_column="value 1"), Model(random_column="value 2")]
     mock_repo = repository_type[Model]()  # type: ignore[index]
@@ -460,14 +371,12 @@ async def test_get_one(repository_type: type[GenericAsyncMockRepository]) -> Non
         _ = await maybe_async(mock_repo.get_one(random_column="value 3"))
 
 
-async def test_get_one_or_none(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_get_one_or_none(
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+) -> None:
     """Test that the repository get_one_or_none returns a model record correctly."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        random_column: Mapped[str]
+    Model = create_audit_model_type({"random_column": Mapped[str]})
 
     instances = [Model(random_column="value 1"), Model(random_column="value 2")]
     mock_repo = repository_type[Model]()  # type: ignore[index]
@@ -478,15 +387,14 @@ async def test_get_one_or_none(repository_type: type[GenericAsyncMockRepository]
     assert none_instance is None
 
 
-async def test_get_or_create(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_get_or_create(
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+) -> None:
     """Test that the repository get_or_create returns a model record correctly."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        random_column: Mapped[str]
-        cool_attribute: Mapped[str] = mapped_column(nullable=True)  # pyright: ignore
+    Model = create_audit_model_type(
+        {"random_column": Mapped[str], "cool_attribute": mapped_column(String, nullable=True)}
+    )
 
     instances = [Model(random_column="value 1", cool_attribute="yep"), Model(random_column="value 2")]
     mock_repo = repository_type[Model]()  # type: ignore[index]
@@ -500,15 +408,14 @@ async def test_get_or_create(repository_type: type[GenericAsyncMockRepository]) 
     assert created
 
 
-async def test_get_or_create_match_fields(repository_type: type[GenericAsyncMockRepository]) -> None:
+async def test_get_or_create_match_fields(
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+) -> None:
     """Test that the repository get_or_create returns a model record correctly."""
 
-    class Model(base.UUIDAuditBase):
-        """Inheriting from AuditBase gives the model 'created_at' and 'updated_at'
-        columns."""
-
-        random_column: Mapped[str]
-        cool_attribute: Mapped[str] = mapped_column(nullable=True)  # pyright: ignore
+    Model = create_audit_model_type(
+        {"random_column": Mapped[str], "cool_attribute": mapped_column(String, nullable=True)}
+    )
 
     instances = [Model(random_column="value 1", cool_attribute="yep"), Model(random_column="value 2")]
     mock_repo = repository_type[Model]()  # type: ignore[index]
