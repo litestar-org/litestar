@@ -4,8 +4,8 @@ from __future__ import annotations
 import asyncio
 import os
 from datetime import datetime, timezone
-from typing import Any, Generator, Literal, Type, Union, cast
-from uuid import uuid4
+from typing import Any, Callable, Generator, Literal, Type, Union, cast
+from uuid import UUID, uuid4
 
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -119,6 +119,16 @@ def existing_author_ids(raw_authors: list[dict[str, Any]]) -> Generator[Any, Non
 @pytest.fixture()
 def first_author_id(raw_authors: list[dict[str, Any]]) -> Any:
     return raw_authors[0]["id"]
+
+
+SerializeID = Callable[[Union[str, int, UUID]], Union[str, int, UUID]]
+
+
+@pytest.fixture(params=["str", "raw"], ids=["raw_pk", "str_pk"])
+def serialize_id(request: FixtureRequest) -> SerializeID:
+    if request.param == "str":
+        return str
+    return lambda id_: id_
 
 
 @pytest.fixture(
@@ -452,10 +462,7 @@ async def test_repo_created_updated(
     assert author.updated_at > original_update_dt
 
 
-async def test_repo_list_method(
-    raw_authors_uuid: list[dict[str, Any]],
-    author_repo: AuthorRepository,
-) -> None:
+async def test_repo_list_method(raw_authors_uuid: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
     """Test SQLALchemy list.
 
     Args:
@@ -531,35 +538,41 @@ async def test_repo_update_many_method(author_repo: AuthorRepository) -> None:
         assert obj.name.startswith("Update")
 
 
-async def test_repo_exists_method(author_repo: AuthorRepository, first_author_id: Any) -> None:
+async def test_repo_exists_method(
+    author_repo: AuthorRepository, first_author_id: Any, serialize_id: SerializeID
+) -> None:
     """Test SQLALchemy exists.
 
     Args:
         author_repo (AuthorAsyncRepository): The author mock repository
     """
-    exists = await maybe_async(author_repo.exists(id=first_author_id))
+    exists = await maybe_async(author_repo.exists(id=serialize_id(first_author_id)))
     assert exists
 
 
-async def test_repo_update_method(author_repo: AuthorRepository, first_author_id: Any) -> None:
+async def test_repo_update_method(
+    author_repo: AuthorRepository, first_author_id: Any, serialize_id: SerializeID
+) -> None:
     """Test SQLALchemy Update.
 
     Args:
         author_repo (AuthorAsyncRepository): The author mock repository
     """
-    obj = await maybe_async(author_repo.get(first_author_id))
+    obj = await maybe_async(author_repo.get(serialize_id(first_author_id)))
     obj.name = "Updated Name"
     updated_obj = await maybe_async(author_repo.update(obj))
     assert updated_obj.name == obj.name
 
 
-async def test_repo_delete_method(author_repo: AuthorRepository, first_author_id: Any) -> None:
+async def test_repo_delete_method(
+    author_repo: AuthorRepository, first_author_id: Any, serialize_id: SerializeID
+) -> None:
     """Test SQLALchemy delete.
 
     Args:
         author_repo (AuthorAsyncRepository): The author mock repository
     """
-    obj = await maybe_async(author_repo.delete(first_author_id))
+    obj = await maybe_async(author_repo.delete(serialize_id(first_author_id)))
     assert obj.id == first_author_id
 
 
@@ -581,36 +594,40 @@ async def test_repo_delete_many_method(author_repo: AuthorRepository, author_mod
     assert count == 0
 
 
-async def test_repo_get_method(author_repo: AuthorRepository, first_author_id: Any) -> None:
+async def test_repo_get_method(author_repo: AuthorRepository, first_author_id: Any, serialize_id: SerializeID) -> None:
     """Test SQLALchemy Get.
 
     Args:
         author_repo (AuthorAsyncRepository): The author mock repository
     """
-    obj = await maybe_async(author_repo.get(first_author_id))
+    obj = await maybe_async(author_repo.get(serialize_id(first_author_id)))
     assert obj.name == "Agatha Christie"
 
 
-async def test_repo_get_one_or_none_method(author_repo: AuthorRepository, first_author_id: Any) -> None:
+async def test_repo_get_one_or_none_method(
+    author_repo: AuthorRepository, first_author_id: Any, serialize_id: SerializeID
+) -> None:
     """Test SQLALchemy Get One.
 
     Args:
         author_repo (AuthorAsyncRepository): The author mock repository
     """
-    obj = await maybe_async(author_repo.get_one_or_none(id=first_author_id))
+    obj = await maybe_async(author_repo.get_one_or_none(id=serialize_id(first_author_id)))
     assert obj is not None
     assert obj.name == "Agatha Christie"
     none_obj = await maybe_async(author_repo.get_one_or_none(name="I don't exist"))
     assert none_obj is None
 
 
-async def test_repo_get_one_method(author_repo: AuthorRepository, first_author_id: Any) -> None:
+async def test_repo_get_one_method(
+    author_repo: AuthorRepository, first_author_id: Any, serialize_id: SerializeID
+) -> None:
     """Test SQLALchemy Get One.
 
     Args:
         author_repo (AuthorAsyncRepository): The author mock repository
     """
-    obj = await maybe_async(author_repo.get_one(id=first_author_id))
+    obj = await maybe_async(author_repo.get_one(id=serialize_id(first_author_id)))
     assert obj is not None
     assert obj.name == "Agatha Christie"
     with pytest.raises(RepositoryError):
@@ -648,7 +665,11 @@ async def test_repo_get_or_create_match_filter(author_repo: AuthorRepository, fi
 
 
 async def test_repo_upsert_method(
-    author_repo: AuthorRepository, first_author_id: Any, author_model: AuthorModel, new_pk_id: Any
+    author_repo: AuthorRepository,
+    first_author_id: Any,
+    author_model: AuthorModel,
+    new_pk_id: Any,
+    serialize_id: SerializeID,
 ) -> None:
     """Test SQLALchemy upsert.
 
@@ -666,13 +687,18 @@ async def test_repo_upsert_method(
     assert upsert_insert_obj.name == "An Author"
 
     # ensures that it still works even if the ID is added before insert
-    upsert2_insert_obj = await maybe_async(author_repo.upsert(author_model(id=new_pk_id, name="Another Author")))
+    upsert2_insert_obj = await maybe_async(
+        author_repo.upsert(author_model(id=serialize_id(new_pk_id), name="Another Author"))
+    )
     assert upsert2_insert_obj.id is not None
     assert upsert2_insert_obj.name == "Another Author"
 
 
 async def test_repo_upsert_many_method(
-    author_repo: AuthorRepository, existing_author_ids: Generator[Any, None, None], author_model: AuthorModel
+    author_repo: AuthorRepository,
+    existing_author_ids: Generator[Any, None, None],
+    author_model: AuthorModel,
+    serialize_id: SerializeID,
 ) -> None:
     """Test SQLALchemy upsert.
 
@@ -687,7 +713,7 @@ async def test_repo_upsert_many_method(
         author_repo.upsert_many(
             [
                 existing_obj,
-                author_model(id=second_author_id, name="Inserted Author"),
+                author_model(id=serialize_id(second_author_id), name="Inserted Author"),
                 author_model(name="Custom Author"),
             ]
         )
@@ -805,7 +831,7 @@ async def test_repo_filter_order_by(author_repo: AuthorRepository) -> None:
 
 
 async def test_repo_filter_collection(
-    author_repo: AuthorRepository, existing_author_ids: Generator[Any, None, None]
+    author_repo: AuthorRepository, existing_author_ids: Generator[Any, None, None], serialize_id: SerializeID
 ) -> None:
     """Test SQLALchemy collection filter.
 
@@ -814,15 +840,19 @@ async def test_repo_filter_collection(
     """
     first_author_id = next(existing_author_ids)
     second_author_id = next(existing_author_ids)
-    existing_obj = await maybe_async(author_repo.list(CollectionFilter(field_name="id", values=[first_author_id])))
+    existing_obj = await maybe_async(
+        author_repo.list(CollectionFilter(field_name="id", values=[serialize_id(first_author_id)]))
+    )
     assert existing_obj[0].name == "Agatha Christie"
 
-    existing_obj = await maybe_async(author_repo.list(CollectionFilter(field_name="id", values=[second_author_id])))
+    existing_obj = await maybe_async(
+        author_repo.list(CollectionFilter(field_name="id", values=[serialize_id(second_author_id)]))
+    )
     assert existing_obj[0].name == "Leo Tolstoy"
 
 
 async def test_repo_filter_not_in_collection(
-    author_repo: AuthorRepository, existing_author_ids: Generator[Any, None, None]
+    author_repo: AuthorRepository, existing_author_ids: Generator[Any, None, None], serialize_id: SerializeID
 ) -> None:
     """Test SQLALchemy collection filter.
     Args:
@@ -831,11 +861,13 @@ async def test_repo_filter_not_in_collection(
 
     first_author_id = next(existing_author_ids)
     second_author_id = next(existing_author_ids)
-    existing_obj = await maybe_async(author_repo.list(NotInCollectionFilter(field_name="id", values=[first_author_id])))
+    existing_obj = await maybe_async(
+        author_repo.list(NotInCollectionFilter(field_name="id", values=[serialize_id(first_author_id)]))
+    )
     assert existing_obj[0].name == "Leo Tolstoy"
 
     existing_obj = await maybe_async(
-        author_repo.list(NotInCollectionFilter(field_name="id", values=[second_author_id]))
+        author_repo.list(NotInCollectionFilter(field_name="id", values=[serialize_id(second_author_id)]))
     )
     assert existing_obj[0].name == "Agatha Christie"
 
