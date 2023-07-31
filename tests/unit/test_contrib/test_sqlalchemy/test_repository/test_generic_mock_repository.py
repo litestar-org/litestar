@@ -186,7 +186,7 @@ async def test_does_not_set_created_updated(
 
 
 async def test_add(repository_type: type[GenericAsyncMockRepository], model_type: ModelType) -> None:
-    """Test that the repository add method works correctly`."""
+    """Test that the repository add method works correctly."""
 
     instance = model_type()
 
@@ -195,7 +195,7 @@ async def test_add(repository_type: type[GenericAsyncMockRepository], model_type
 
 
 async def test_add_many(repository_type: type[GenericAsyncMockRepository], model_type: ModelType) -> None:
-    """Test that the repository add_many method works correctly`."""
+    """Test that the repository add_many method works correctly."""
 
     instances = [model_type(), model_type()]
 
@@ -207,7 +207,7 @@ async def test_add_many(repository_type: type[GenericAsyncMockRepository], model
 async def test_update(
     repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
 ) -> None:
-    """Test that the repository update method works correctly`."""
+    """Test that the repository update method works correctly."""
 
     Model = create_audit_model_type({"random_column": Mapped[str]})
 
@@ -223,7 +223,7 @@ async def test_update(
 async def test_update_many(
     repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
 ) -> None:
-    """Test that the repository add_many method works correctly`."""
+    """Test that the repository add_many method works correctly."""
 
     Model = create_audit_model_type({"random_column": Mapped[str]})
 
@@ -241,7 +241,7 @@ async def test_update_many(
 async def test_upsert(
     repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
 ) -> None:
-    """Test that the repository upsert method works correctly`."""
+    """Test that the repository upsert method works correctly."""
 
     Model = create_audit_model_type({"random_column": Mapped[str]})
 
@@ -257,7 +257,7 @@ async def test_upsert(
 async def test_upsert_many(
     repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
 ) -> None:
-    """Test that the repository upsert method works correctly`."""
+    """Test that the repository upsert method works correctly."""
 
     Model = create_audit_model_type({"random_column": Mapped[str]})
 
