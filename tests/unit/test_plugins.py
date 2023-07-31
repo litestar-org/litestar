@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import pytest
 from click import Group
 
 from litestar import Litestar, MediaType, get
@@ -62,3 +63,16 @@ def test_plugin_registry() -> None:
     assert cli_plugin in registry
 
     assert set(registry) == {openapi_plugin, cli_plugin, init_plugin, serialization_plugin}
+
+
+def test_plugin_registry_get() -> None:
+    class CLIPlugin(CLIPluginProtocol):
+        def on_cli_init(self, cli: Group) -> None:
+            pass
+
+    cli_plugin = CLIPlugin()
+
+    with pytest.raises(KeyError, match="No plugin of type 'CLIPlugin' registered"):
+        PluginRegistry([]).get(CLIPlugin)
+
+    assert PluginRegistry([cli_plugin]).get(CLIPlugin) is cli_plugin
