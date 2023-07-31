@@ -188,9 +188,9 @@ class PluginRegistry:
         This should be used with subclasses of the plugin protocols.
         """
         try:
-            return cast(PluginT, self._plugins[type_])  # type: ignore[index]
+            return cast(PluginT, self._plugins_by_type[type_])  # type: ignore[index]
         except KeyError as e:
-            raise KeyError(f"No plugin of type {type_!r} registered") from e
+            raise KeyError(f"No plugin of type {type_.__name__!r} registered") from e
 
     def __iter__(self) -> Iterator[PluginProtocol]:
         return iter(self._plugins)
