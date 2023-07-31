@@ -10,7 +10,8 @@ from litestar.exceptions import LitestarException
 
 if TYPE_CHECKING:
     from litestar import Litestar
-    from litestar.contrib.sqlalchemy.plugins.init.config.alembic import AlembicConfig
+    from litestar.contrib.sqlalchemy.plugins.init.config.asyncio import AlembicAsyncConfig
+    from litestar.contrib.sqlalchemy.plugins.init.config.sync import AlembicSyncConfig
 
 
 if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
@@ -24,8 +25,8 @@ def database_group() -> None:
     """Manage SQLAlchemy database components."""
 
 
-def get_alembic_config(app: Litestar) -> AlembicConfig:
-    config: AlembicConfig | None = None
+def get_alembic_config(app: Litestar) -> AlembicAsyncConfig | AlembicSyncConfig:
+    config: AlembicAsyncConfig | AlembicSyncConfig | None = None
     for cli_plugin in app.cli_plugins:
         if hasattr(cli_plugin, "_alembic_config"):
             config = cli_plugin._alembic_config

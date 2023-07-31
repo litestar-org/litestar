@@ -3,8 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Callable, Generic, TypeVar, cast
 
+from alembic import context
+
 from litestar.constants import HTTP_DISCONNECT, HTTP_RESPONSE_START, WEBSOCKET_CLOSE, WEBSOCKET_DISCONNECT
-from litestar.contrib.sqlalchemy.plugins.init.config.alembic import AlembicConfig
+from litestar.contrib.sqlalchemy.base import orm_registry
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
 from litestar.utils import get_litestar_scope_state, set_litestar_scope_state
@@ -13,9 +15,10 @@ from litestar.utils.dataclass import simple_asdict
 from .engine import EngineConfig
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any
 
-    from sqlalchemy import Connection, Engine
+    from sqlalchemy import Connection, Engine, MetaData
     from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine, AsyncSession, async_sessionmaker
     from sqlalchemy.orm import Mapper, Query, Session, sessionmaker
     from sqlalchemy.orm.session import JoinTransactionMode
@@ -123,11 +126,6 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
     """Configuration for the SQLAlchemy engine.
 
     The configuration options are documented in the SQLAlchemy documentation.
-    """
-    alembic_config: AlembicConfig = field(default_factory=AlembicConfig)
-    """Configuration for the SQLAlchemy Alembic migrations.
-
-    The configuration options are documented in the Alembic documentation.
     """
     session_maker_app_state_key: str = "session_maker_class"
     """Key under which to store the SQLAlchemy :class:`sessionmaker <sqlalchemy.orm.sessionmaker>` in the application
@@ -256,3 +254,45 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
             app: The ``Litestar`` instance.
         """
         app.state.update(self.create_app_state_items())
+
+
+@dataclass
+class GenericAlembicConfig:
+    """Configuration for Alembic's :class:`Config <alembic.config.Config>`.
+
+    For details see: https://alembic.sqlalchemy.org/en/latest/api/config.html
+    """
+
+    alembic_config: str | Path | EmptyType = Empty
+    """A path to the Alembic configuration file such as ``alembic.ini``.  If left unset, the default configuration
+    will be used.
+    """
+    version_table_name: str | EmptyType = Empty
+    """Configure the name of the table used to hold the applied alembic revisions. Defaults to ``alembic``.  THe name of the table
+    """
+    script_location: str | Path | EmptyType = Empty
+    """A path to save generated migrations.
+    """
+    target_metadata: MetaData = orm_registry.metadata
+    """Metadata to use."""
+    user_module_prefix: str | None = "sa."
+    """User module prefix."""
+    render_as_batch: bool = True
+    """Render as batch."""
+    compare_type: bool = False
+    """Compare type."""
+
+    def do_run_migrations(self, connection: Connection) -> None:
+        """Run migrations."""
+        context.configure(
+            connection=connection,
+            target_metadata=self.target_metadata,
+            compare_type=self.compare_type,
+            version_table_pk=bool(connection.dialect.name != "spanner+spanner"),
+            version_table=self.version_table_name,
+            user_module_prefix=self.user_module_prefix,
+            render_as_batch=self.render_as_batch,
+        )
+
+        with context.begin_transaction():
+            context.run_migrations()

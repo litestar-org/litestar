@@ -9,7 +9,13 @@ from litestar.constants import HTTP_RESPONSE_START
 from litestar.types import Empty
 from litestar.utils import delete_litestar_scope_state, get_litestar_scope_state
 
-from .common import SESSION_SCOPE_KEY, SESSION_TERMINUS_ASGI_EVENTS, GenericSessionConfig, GenericSQLAlchemyConfig
+from .common import (
+    SESSION_SCOPE_KEY,
+    SESSION_TERMINUS_ASGI_EVENTS,
+    GenericAlembicConfig,
+    GenericSessionConfig,
+    GenericSQLAlchemyConfig,
+)
 
 if TYPE_CHECKING:
     from typing import Any, Callable
@@ -23,6 +29,7 @@ if TYPE_CHECKING:
 __all__ = (
     "SQLAlchemyAsyncConfig",
     "AsyncSessionConfig",
+    "AlembicAsyncConfig",
     "default_before_send_handler",
     "autocommit_before_send_handler",
 )
@@ -80,6 +87,17 @@ class AsyncSessionConfig(GenericSessionConfig[AsyncConnection, AsyncEngine, Asyn
 
 
 @dataclass
+class AlembicAsyncConfig(GenericAlembicConfig):
+    """Configuration for an Async Alembic's :class:`Config <alembic.config.Config>`.
+
+    For details see: https://alembic.sqlalchemy.org/en/latest/api/config.html
+    """
+
+    async def run_migrations_online(self, connection: AsyncConnection) -> None:
+        await connection.run_sync(self.do_run_migrations)
+
+
+@dataclass
 class SQLAlchemyAsyncConfig(GenericSQLAlchemyConfig[AsyncEngine, AsyncSession, async_sessionmaker]):
     """Async SQLAlchemy Configuration."""
 
@@ -96,6 +114,11 @@ class SQLAlchemyAsyncConfig(GenericSQLAlchemyConfig[AsyncEngine, AsyncSession, a
 
     The handler should handle closing the session stored in the ASGI scope, if it's still open, and committing and
     uncommitted data.
+    """
+    alembic_config: AlembicAsyncConfig = field(default_factory=AlembicAsyncConfig)
+    """Configuration for the SQLAlchemy Alembic migrations.
+
+    The configuration options are documented in the Alembic documentation.
     """
 
     @property
