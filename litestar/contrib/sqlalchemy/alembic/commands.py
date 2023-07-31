@@ -36,7 +36,7 @@ def get_alembic_config(
 ) -> AlembicCommandConfig:
     kwargs = {}
     if migration_config:
-        kwargs.update({"file_": migration_config})
+        kwargs["file_"] = migration_config
     alembic_cfg = AlembicCommandConfig(**kwargs)  # type: ignore
     alembic_cfg.set_main_option("script_location", script_location)
     return alembic_cfg
