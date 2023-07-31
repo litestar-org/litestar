@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Protocol, TypeVar, Union, runtime_checkable
+from typing import TYPE_CHECKING, Any, Iterator, Protocol, TypeVar, Union, cast, runtime_checkable
 
 if TYPE_CHECKING:
     from click import Group
@@ -18,10 +18,8 @@ __all__ = (
     "OpenAPISchemaPluginProtocol",
     "PluginProtocol",
     "CLIPluginProtocol",
+    "PluginRegistry",
 )
-
-
-T = TypeVar("T")
 
 
 @runtime_checkable
@@ -161,3 +159,41 @@ PluginProtocol = Union[
     OpenAPISchemaPluginProtocol,
     CLIPluginProtocol,
 ]
+
+PluginT = TypeVar("PluginT", bound=PluginProtocol)
+
+
+class PluginRegistry:
+    __slots__ = {
+        "init": "Plugins that implement the InitPluginProtocol",
+        "openapi": "Plugins that implement the OpenAPISchemaPluginProtocol",
+        "serialization": "Plugins that implement the SerializationPluginProtocol",
+        "cli": "Plugins that implement the CLIPluginProtocol",
+        "_plugins_by_type": None,
+        "_plugins": None,
+        "_get_plugins_of_type": None,
+    }
+
+    def __init__(self, plugins: list[PluginProtocol]) -> None:
+        self._plugins_by_type = {type(p): p for p in plugins}
+        self._plugins = frozenset(plugins)
+        self.init = tuple(p for p in plugins if isinstance(p, InitPluginProtocol))
+        self.openapi = tuple(p for p in plugins if isinstance(p, OpenAPISchemaPluginProtocol))
+        self.serialization = tuple(p for p in plugins if isinstance(p, SerializationPluginProtocol))
+        self.cli = tuple(p for p in plugins if isinstance(p, CLIPluginProtocol))
+
+    def get(self, type_: type[PluginT]) -> PluginT:
+        """Return the registered plugin of ``type_``.
+
+        This should be used with subclasses of the plugin protocols.
+        """
+        try:
+            return cast(PluginT, self._plugins_by_type[type_])  # type: ignore[index]
+        except KeyError as e:
+            raise KeyError(f"No plugin of type {type_.__name__!r} registered") from e
+
+    def __iter__(self) -> Iterator[PluginProtocol]:
+        return iter(self._plugins)
+
+    def __contains__(self, item: PluginProtocol) -> bool:
+        return item in self._plugins

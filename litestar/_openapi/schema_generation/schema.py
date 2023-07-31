@@ -230,7 +230,7 @@ class SchemaCreator:
     def __init__(
         self,
         generate_examples: bool = False,
-        plugins: list[OpenAPISchemaPluginProtocol] | None = None,
+        plugins: Iterable[OpenAPISchemaPluginProtocol] | None = None,
         schemas: dict[str, Schema] | None = None,
         prefer_alias: bool = True,
     ) -> None:

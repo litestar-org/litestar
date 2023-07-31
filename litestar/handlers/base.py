@@ -434,7 +434,7 @@ class BaseRouteHandler:
     def on_registration(self, app: Litestar) -> None:
         """Called once per handler when the app object is instantiated."""
         self._validate_handler_function()
-        self._handle_serialization_plugins(app.serialization_plugins)
+        self._handle_serialization_plugins(app.plugins.serialization)
         self._init_handler_dtos()
         self._set_runtime_callables()
         self._create_signature_model()
@@ -485,7 +485,7 @@ class BaseRouteHandler:
                     type_decoders=self.resolve_type_decoders(),
                 )
 
-    def _handle_serialization_plugins(self, plugins: list[SerializationPluginProtocol]) -> None:
+    def _handle_serialization_plugins(self, plugins: tuple[SerializationPluginProtocol, ...]) -> None:
         """Handle the serialization plugins for the handler."""
         # must do the return dto first, otherwise it will resolve to the same as the data dto
         if self.resolve_return_dto() is None:
