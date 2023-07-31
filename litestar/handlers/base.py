@@ -431,7 +431,7 @@ class BaseRouteHandler:
             elif self.parsed_data_field and (
                 plugins_for_data_type := [
                     plugin
-                    for plugin in self.app.serialization_plugins
+                    for plugin in self.app.plugins.serialization
                     if self.parsed_data_field.test_predicate_recursively(plugin.supports_type)
                 ]
             ):
@@ -464,7 +464,7 @@ class BaseRouteHandler:
                 return_dto: type[AbstractDTO] | None = return_dtos[-1]
             elif plugins_for_return_type := [
                 plugin
-                for plugin in self.app.serialization_plugins
+                for plugin in self.app.plugins.serialization
                 if self.parsed_return_field.test_predicate_recursively(plugin.supports_type)
             ]:
                 return_dto = plugins_for_return_type[0].create_dto_for_type(self.parsed_return_field)
