@@ -5,10 +5,10 @@ import logging
 import os
 from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager, suppress
 from datetime import date, datetime, time, timedelta
-from functools import lru_cache, partial
+from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Mapping, Sequence, TypedDict, TypeVar, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Mapping, Sequence, TypedDict, cast
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
@@ -34,6 +34,7 @@ from litestar.plugins import (
     InitPluginProtocol,
     OpenAPISchemaPluginProtocol,
     PluginProtocol,
+    PluginRegistry,
     SerializationPluginProtocol,
 )
 from litestar.router import Router
@@ -42,7 +43,7 @@ from litestar.static_files.base import StaticFiles
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition
-from litestar.utils import AsyncCallable, join_paths, unique
+from litestar.utils import AsyncCallable, deprecated, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
 from litestar.utils.predicates import is_async_callable
 from litestar.utils.warnings import warn_pdb_on_exception
@@ -96,8 +97,6 @@ if TYPE_CHECKING:
     from litestar.types.callable_types import LifespanHook
 
 
-PluginT = TypeVar("PluginT", bound=PluginProtocol)
-
 __all__ = ("HandlerIndex", "Litestar", "DEFAULT_OPENAPI_CONFIG")
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Litestar API", version="1.0.0")
@@ -134,7 +133,7 @@ class Litestar(Router):
         "_lifespan_managers",
         "_debug",
         "_openapi_schema",
-        "_plugins",
+        "plugins",
         "after_exception",
         "allowed_hosts",
         "asgi_handler",
@@ -338,12 +337,7 @@ class Litestar(Router):
             opt=dict(opt or {}),
             parameters=parameters or {},
             pdb_on_exception=pdb_on_exception,
-            plugins=list(
-                chain(
-                    plugins or [],
-                    self.default_plugins,
-                )
-            ),
+            plugins=[*(plugins or []), *self._get_default_plugins()],
             request_class=request_class,
             response_cache_config=response_cache_config or ResponseCacheConfig(),
             response_class=response_class,
@@ -368,10 +362,11 @@ class Litestar(Router):
         ):
             config = handler(config)  # pyright: ignore
 
+        self.plugins = PluginRegistry(config.plugins)
+
         self._openapi_schema: OpenAPI | None = None
         self._debug: bool = True
         self._lifespan_managers = config.lifespan
-        self._plugins: Mapping[type[PluginProtocol], PluginProtocol] = {type(p): p for p in config.plugins}
 
         self.get_logger: GetLogger = get_logger_placeholder
         self.logger: Logger | None = None
@@ -450,34 +445,22 @@ class Litestar(Router):
         )
 
     @property
+    @deprecated(version="2.0", alternative="Litestar.plugins.cli", kind="property")
     def cli_plugins(self) -> list[CLIPluginProtocol]:
-        return self.get_plugins_of_type(CLIPluginProtocol)
+        return list(self.plugins.cli)
 
     @property
+    @deprecated(version="2.0", alternative="Litestar.plugins.openapi", kind="property")
     def openapi_schema_plugins(self) -> list[OpenAPISchemaPluginProtocol]:
-        return self.get_plugins_of_type(OpenAPISchemaPluginProtocol)
+        return list(self.plugins.openapi)
 
     @property
+    @deprecated(version="2.0", alternative="Litestar.plugins.serialization", kind="property")
     def serialization_plugins(self) -> list[SerializationPluginProtocol]:
-        return self.get_plugins_of_type(SerializationPluginProtocol)
+        return list(self.plugins.serialization)
 
-    def get_plugin(self, type_: type[PluginT]) -> PluginT:
-        """Return the registered plugin of ``type_``.
-
-        This should be used with subclasses of the plugin protocols.
-        """
-        try:
-            return cast(PluginT, self._plugins[type_])
-        except KeyError as e:
-            raise KeyError(f"No plugin of type {type_!r} registered") from e
-
-    @lru_cache  # noqa: B019
-    def get_plugins_of_type(self, type_: type[PluginT]) -> list[PluginT]:
-        """Return all registered plugins that are subclasses of ``type_``."""
-        return [p for p in self._plugins.values() if isinstance(p, type_)]
-
-    @property
-    def default_plugins(self) -> list[PluginProtocol]:
+    @staticmethod
+    def _get_default_plugins() -> list[PluginProtocol]:
         default_plugins: list[PluginProtocol] = []
         with suppress(MissingDependencyException):
             from litestar.contrib.pydantic import PydanticInitPlugin, PydanticSchemaPlugin
@@ -835,7 +818,7 @@ class Litestar(Router):
                 path_item, created_operation_ids = create_path_item(
                     route=route,
                     create_examples=self.openapi_config.create_examples,
-                    plugins=self.openapi_schema_plugins,
+                    plugins=self.plugins.openapi,
                     use_handler_docstrings=self.openapi_config.use_handler_docstrings,
                     operation_id_creator=self.openapi_config.operation_id_creator,
                     schemas=schemas,

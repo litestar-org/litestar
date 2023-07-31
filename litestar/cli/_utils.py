@@ -217,7 +217,7 @@ class LitestarExtensionGroup(LitestarGroup):
                 env = None
 
         if env:
-            for plugin in env.app.cli_plugins:
+            for plugin in env.app.plugins.cli:
                 plugin.on_cli_init(self)
 
         self._prepare_done = True

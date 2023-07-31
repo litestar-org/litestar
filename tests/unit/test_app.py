@@ -24,7 +24,7 @@ from litestar.exceptions import (
     NotFoundException,
 )
 from litestar.logging.config import LoggingConfig
-from litestar.plugins import CLIPluginProtocol, InitPluginProtocol
+from litestar.plugins import CLIPluginProtocol
 from litestar.router import Router
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
@@ -383,46 +383,13 @@ def test_registering_route_handler_generates_openapi_docs() -> None:
     assert paths.get("/path2")
 
 
-def test_get_plugin() -> None:
-    class PluginOne(InitPluginProtocol):
-        def on_app_init(self, app_config: AppConfig) -> AppConfig:
-            return app_config
-
-    class PluginTwo(InitPluginProtocol):
-        def on_app_init(self, app_config: AppConfig) -> AppConfig:
-            return app_config
-
-    plugin_one = PluginOne()
-    plugin_two = PluginTwo()
-
-    app = Litestar(plugins=[plugin_one, plugin_two])
-
-    assert app.get_plugin(PluginOne) is plugin_one
-    assert app.get_plugin(PluginTwo) is plugin_two
-
-
-def test_get_plugin_not_found() -> None:
-    class PluginOne(InitPluginProtocol):
-        def on_app_init(self, app_config: AppConfig) -> AppConfig:
-            return app_config
-
-    with pytest.raises(KeyError):
-        Litestar().get_plugin(PluginOne)
-
-
-def test_get_plugins_of_type() -> None:
-    class PluginOne(CLIPluginProtocol):
+def test_plugin_registry() -> None:
+    class FooPlugin(CLIPluginProtocol):
         def on_cli_init(self, cli: Group) -> None:
-            return None
+            return
 
-    class PluginTwo(CLIPluginProtocol):
-        def on_cli_init(self, cli: Group) -> None:
-            return None
+    foo = FooPlugin()
 
-    plugin_one = PluginOne()
-    plugin_two = PluginTwo()
+    app = Litestar(plugins=[foo])
 
-    app = Litestar(plugins=[plugin_one, plugin_two])
-
-    assert set(app.get_plugins_of_type(CLIPluginProtocol)) == {plugin_one, plugin_two}
-    assert app.get_plugins_of_type(PluginOne) == [plugin_one]
+    assert foo in app.plugins.cli
