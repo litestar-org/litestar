@@ -375,6 +375,30 @@ class FieldDefinition:
         """Whether the annotation is a non-string collection type or not."""
         return self.is_collection and not self.is_subclass_of((str, bytes))
 
+    @property
+    def bound_types(self) -> tuple[FieldDefinition, ...] | None:
+        """A tuple of bound types - if the annotation is a TypeVar with bound types, otherwise None."""
+        if self.is_type_var and (bound := getattr(self.annotation, "__bound__", None)):
+            if is_non_string_sequence(bound):
+                return tuple([FieldDefinition.from_annotation(t) for t in bound])
+            return (FieldDefinition.from_annotation(bound),)
+        return None
+
+    @property
+    def generic_types(self) -> tuple[FieldDefinition, ...] | None:
+        """A tuple of generic types passed into the annotation - if its generic."""
+        if bases := getattr(self.annotation, "__orig_bases__", None):
+            args: list[FieldDefinition] = []
+            for base_args in [getattr(base, "__args__", ()) for base in bases]:
+                for arg in base_args:
+                    field_definition = FieldDefinition.from_annotation(arg)
+                    if field_definition.generic_types:
+                        args.extend(field_definition.generic_types)
+                    else:
+                        args.append(field_definition)
+            return tuple(args)
+        return None
+
     def is_subclass_of(self, cl: type[Any] | tuple[type[Any], ...]) -> bool:
         """Whether the annotation is a subclass of the given type.
 
