@@ -4,6 +4,7 @@ back again, to bytes.
 from __future__ import annotations
 
 import secrets
+from dataclasses import replace
 from typing import TYPE_CHECKING, AbstractSet, Any, Callable, ClassVar, Collection, Final, Mapping, Union, cast
 
 from msgspec import UNSET, Struct, UnsetType, convert, defstruct, field
@@ -100,12 +101,13 @@ class DTOBackend:
         self, model_type: Any, exclude: AbstractSet[str], include: AbstractSet[str], nested_depth: int = 0
     ) -> FieldDefinitionsType:
         defined_fields = []
+        generic_field_definitons = list(FieldDefinition.from_annotation(model_type).generic_types or ())
         for field_definition in self.dto_factory.generate_field_definitions(model_type):
-            # if field_definition.name and (
-            #     and not self.is_data_field
-            #     or field_definition.name != "data"
-            #     and self.is_data_field
-            # ):
+            if field_definition.is_type_var:
+                base_arg_field = generic_field_definitons.pop()
+                field_definition = replace(
+                    field_definition, annotation=base_arg_field.annotation, raw=base_arg_field.raw
+                )
 
             if _should_mark_private(field_definition, self.dto_factory.config.underscore_fields_private):
                 field_definition.dto_field.mark = Mark.PRIVATE
@@ -352,6 +354,12 @@ class DTOBackend:
             return composite_type_handler(field_definition, exclude, include, unique_name, nested_depth)
 
         transfer_model: NestedFieldInfo | None = None
+
+        if field_definition.bound_types and (
+            bound_nested_fields := [t for t in field_definition.bound_types if self.dto_factory.detect_nested_field(t)]
+        ):
+            field_definition = bound_nested_fields[0]
+
         if self.dto_factory.detect_nested_field(field_definition):
             if nested_depth == self.dto_factory.config.max_nested_depth:
                 raise RecursionError

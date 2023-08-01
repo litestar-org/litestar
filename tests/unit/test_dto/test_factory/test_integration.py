@@ -21,6 +21,7 @@ from litestar.dto.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.params import Body
+from litestar.serialization import encode_json
 from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
@@ -625,6 +626,41 @@ def test_schema_required_fields_with_msgspec_dto_and_default_fields() -> None:
         )
         required = next(iter(received.json()["components"]["schemas"].values()))["required"]
         assert required == ["age"]
+
+
+X = TypeVar("X", bound=Struct)
+
+
+class ClassicNameStyle(Struct):
+    first_name: str
+    surname: str
+
+
+class BoundUser(Struct, Generic[X]):
+    age: int
+    data: X
+
+
+class Superuser(BoundUser[ClassicNameStyle]):
+    pass
+
+
+def test_dto_with_msgspec_with_bound_generic_and_inherited_models() -> None:
+    @post(dto=MsgspecDTO[Superuser])
+    def handler(data: Superuser) -> Superuser:
+        return data
+
+    with create_test_client(
+        handler,
+        signature_namespace={"Superuser": Superuser, "BoundUser": BoundUser, "ClassicNameStyle": ClassicNameStyle},
+    ) as client:
+        data = Superuser(data=ClassicNameStyle(first_name="A", surname="B"), age=10)
+        received = client.post(
+            "/",
+            content=encode_json(data),
+            headers={"Content-Type": "application/json; charset=utf-8"},
+        )
+        assert msgspec.json.decode(received.content, type=Superuser) == data
 
 
 def test_deprecated_imports_raises_when_not_available() -> None:
