@@ -200,31 +200,26 @@ class AbstractDTO(Generic[T]):
         Returns:
             The data model type.
         """
-        if field_definition.origin:
-            if inner_fields := [
+        if field_definition.origin and (
+            inner_fields := [
                 inner_field
                 for inner_field in field_definition.inner_types
                 if cls.resolve_model_type(inner_field).is_subclass_of(cls.model_type)
-            ]:
-                inner_field = inner_fields[0]
-                model_field_definition = cls.resolve_model_type(inner_field)
+            ]
+        ):
+            inner_field = inner_fields[0]
+            model_field_definition = cls.resolve_model_type(inner_field)
 
-                for attr, attr_type in cls.get_model_type_hints(field_definition.origin).items():
-                    if isinstance(attr_type.annotation, TypeVar) or any(
-                        isinstance(t.annotation, TypeVar) for t in attr_type.inner_types
-                    ):
-                        if attr_type.is_non_string_collection:
-                            # the inner type of the collection type is the type var, so we need to specialize the
-                            # collection type with the DTO supported type.
-                            specialized_annotation = attr_type.safe_generic_origin[model_field_definition.annotation]
-                            return model_field_definition, FieldDefinition.from_annotation(specialized_annotation), attr
-                        return model_field_definition, inner_field, attr
-            elif nested_generic_wrapper_fields := [
-                inner_field
-                for inner_field in field_definition.inner_types
-                if bool(cls.resolve_generic_wrapper_type(inner_field))
-            ]:
-                return cls.resolve_generic_wrapper_type(nested_generic_wrapper_fields[0])
+            for attr, attr_type in cls.get_model_type_hints(field_definition.origin).items():
+                if isinstance(attr_type.annotation, TypeVar) or any(
+                    isinstance(t.annotation, TypeVar) for t in attr_type.inner_types
+                ):
+                    if attr_type.is_non_string_collection:
+                        # the inner type of the collection type is the type var, so we need to specialize the
+                        # collection type with the DTO supported type.
+                        specialized_annotation = attr_type.safe_generic_origin[model_field_definition.annotation]
+                        return model_field_definition, FieldDefinition.from_annotation(specialized_annotation), attr
+                    return model_field_definition, inner_field, attr
         return None
 
     @staticmethod

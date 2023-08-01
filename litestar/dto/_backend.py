@@ -355,11 +355,6 @@ class DTOBackend:
 
         transfer_model: NestedFieldInfo | None = None
 
-        if field_definition.bound_types and (
-            bound_nested_fields := [t for t in field_definition.bound_types if self.dto_factory.detect_nested_field(t)]
-        ):
-            field_definition = bound_nested_fields[0]
-
         if self.dto_factory.detect_nested_field(field_definition):
             if nested_depth == self.dto_factory.config.max_nested_depth:
                 raise RecursionError
@@ -477,12 +472,6 @@ class DTOBackend:
             inner_types=inner_types,
             has_nested=any(t.has_nested for t in inner_types),
         )
-
-    @staticmethod
-    def _gen_unique_name_id(unique_name: str) -> str:
-        # Generate a unique ID
-        # Convert the ID to a short alphanumeric string
-        return f"{unique_name}-{secrets.token_hex(8)}"
 
 
 def _camelize(value: str, capitalize_first_letter: bool) -> str:

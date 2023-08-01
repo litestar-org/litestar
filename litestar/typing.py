@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import abc, deque
-from copy import copy, deepcopy
+from copy import deepcopy
 from dataclasses import dataclass, replace
 from inspect import Parameter, Signature
 from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Sequence, TypeVar, cast
@@ -207,14 +207,7 @@ class FieldDefinition:
     """Field name."""
 
     def __deepcopy__(self, memo: dict[str, Any]) -> Self:
-        values = {}
-        for attr in self.__slots__:
-            value = getattr(self, attr)
-            try:
-                values[attr] = deepcopy(value)
-            except (ValueError, AttributeError):
-                values[attr] = copy(value)
-        return type(self)(**values)
+        return type(self)(**{attr: deepcopy(getattr(self, attr)) for attr in self.__slots__})
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, FieldDefinition):
