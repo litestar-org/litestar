@@ -67,7 +67,7 @@ def get_a() -> A:
 
 
 class User(UUIDAuditBase):
-    first_name: Mapped[str]
+    first_name: Mapped[str] = mapped_column(String(200))
 
 
 def test_pagination_serialization() -> None:
