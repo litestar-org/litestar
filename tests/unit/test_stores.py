@@ -5,11 +5,13 @@ import math
 import shutil
 import string
 from datetime import timedelta
+from pathlib import Path
 from typing import TYPE_CHECKING, cast
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 from _pytest.fixtures import FixtureRequest
+from pytest_mock import MockerFixture
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.stores.file import FileStore
@@ -339,3 +341,12 @@ def test_registry_register_exist_override(memory_store: MemoryStore) -> None:
 
     registry.register("foo", memory_store, allow_override=True)
     assert registry.get("foo") is memory_store
+
+
+async def test_file_store_handle_rename_fail(file_store: FileStore, mocker: MockerFixture) -> None:
+    mocker.patch("litestar.stores.file.shutil.move", side_effect=OSError)
+    mock_unlink = mocker.patch("litestar.stores.file.os.unlink")
+
+    await file_store.set("foo", "bar")
+    mock_unlink.assert_called_once()
+    assert Path(mock_unlink.call_args_list[0].args[0]).with_suffix("") == file_store.path.joinpath("foo")

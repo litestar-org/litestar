@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from inspect import cleandoc
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable
 
 from litestar._openapi.parameters import create_parameter_for_handler
 from litestar._openapi.request_body import create_request_body
@@ -65,7 +65,7 @@ def extract_layered_values(
 def create_path_item(
     create_examples: bool,
     operation_id_creator: OperationIDCreator,
-    plugins: list[OpenAPISchemaPluginProtocol],
+    plugins: Iterable[OpenAPISchemaPluginProtocol],
     route: HTTPRoute,
     schemas: dict[str, Schema],
     use_handler_docstrings: bool,

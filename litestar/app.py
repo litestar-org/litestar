@@ -33,6 +33,8 @@ from litestar.plugins import (
     CLIPluginProtocol,
     InitPluginProtocol,
     OpenAPISchemaPluginProtocol,
+    PluginProtocol,
+    PluginRegistry,
     SerializationPluginProtocol,
 )
 from litestar.router import Router
@@ -41,7 +43,7 @@ from litestar.static_files.base import StaticFiles
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition
-from litestar.utils import AsyncCallable, join_paths, unique
+from litestar.utils import AsyncCallable, deprecated, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
 from litestar.utils.predicates import is_async_callable
 from litestar.utils.warnings import warn_pdb_on_exception
@@ -58,7 +60,6 @@ if TYPE_CHECKING:
     from litestar.logging.config import BaseLoggingConfig
     from litestar.openapi.spec import SecurityRequirement
     from litestar.openapi.spec.open_api import OpenAPI
-    from litestar.plugins import PluginProtocol
     from litestar.static_files.config import StaticFilesConfig
     from litestar.stores.base import Store
     from litestar.template.config import TemplateConfig
@@ -94,6 +95,7 @@ if TYPE_CHECKING:
         TypeEncodersMap,
     )
     from litestar.types.callable_types import LifespanHook
+
 
 __all__ = ("HandlerIndex", "Litestar", "DEFAULT_OPENAPI_CONFIG")
 
@@ -131,7 +133,7 @@ class Litestar(Router):
         "_lifespan_managers",
         "_debug",
         "_openapi_schema",
-        "cli_plugins",
+        "plugins",
         "after_exception",
         "allowed_hosts",
         "asgi_handler",
@@ -148,11 +150,9 @@ class Litestar(Router):
         "on_shutdown",
         "on_startup",
         "openapi_config",
-        "openapi_schema_plugins",
         "request_class",
         "response_cache_config",
         "route_map",
-        "serialization_plugins",
         "signature_namespace",
         "state",
         "static_files_config",
@@ -337,12 +337,7 @@ class Litestar(Router):
             opt=dict(opt or {}),
             parameters=parameters or {},
             pdb_on_exception=pdb_on_exception,
-            plugins=list(
-                chain(
-                    plugins or [],
-                    self.default_plugins,
-                )
-            ),
+            plugins=[*(plugins or []), *self._get_default_plugins()],
             request_class=request_class,
             response_cache_config=response_cache_config or ResponseCacheConfig(),
             response_class=response_class,
@@ -367,6 +362,8 @@ class Litestar(Router):
         ):
             config = handler(config)  # pyright: ignore
 
+        self.plugins = PluginRegistry(config.plugins)
+
         self._openapi_schema: OpenAPI | None = None
         self._debug: bool = True
         self._lifespan_managers = config.lifespan
@@ -381,7 +378,6 @@ class Litestar(Router):
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
         self.before_send = [AsyncCallable(h) for h in config.before_send]
         self.compression_config = config.compression_config
-        self.cli_plugins = [p for p in config.plugins if isinstance(p, CLIPluginProtocol)]
         self.cors_config = config.cors_config
         self.csrf_config = config.csrf_config
         self.event_emitter = config.event_emitter_backend(listeners=config.listeners)
@@ -390,10 +386,8 @@ class Litestar(Router):
         self.on_shutdown = config.on_shutdown
         self.on_startup = config.on_startup
         self.openapi_config = config.openapi_config
-        self.openapi_schema_plugins = [p for p in config.plugins if isinstance(p, OpenAPISchemaPluginProtocol)]
         self.request_class = config.request_class or Request
         self.response_cache_config = config.response_cache_config
-        self.serialization_plugins = [p for p in config.plugins if isinstance(p, SerializationPluginProtocol)]
         self.state = config.state
         self.static_files_config = config.static_files_config
         self.template_engine = config.template_config.engine_instance if config.template_config else None
@@ -451,7 +445,22 @@ class Litestar(Router):
         )
 
     @property
-    def default_plugins(self) -> list[PluginProtocol]:
+    @deprecated(version="2.0", alternative="Litestar.plugins.cli", kind="property")
+    def cli_plugins(self) -> list[CLIPluginProtocol]:
+        return list(self.plugins.cli)
+
+    @property
+    @deprecated(version="2.0", alternative="Litestar.plugins.openapi", kind="property")
+    def openapi_schema_plugins(self) -> list[OpenAPISchemaPluginProtocol]:
+        return list(self.plugins.openapi)
+
+    @property
+    @deprecated(version="2.0", alternative="Litestar.plugins.serialization", kind="property")
+    def serialization_plugins(self) -> list[SerializationPluginProtocol]:
+        return list(self.plugins.serialization)
+
+    @staticmethod
+    def _get_default_plugins() -> list[PluginProtocol]:
         default_plugins: list[PluginProtocol] = []
         with suppress(MissingDependencyException):
             from litestar.contrib.pydantic import PydanticInitPlugin, PydanticSchemaPlugin
@@ -809,7 +818,7 @@ class Litestar(Router):
                 path_item, created_operation_ids = create_path_item(
                     route=route,
                     create_examples=self.openapi_config.create_examples,
-                    plugins=self.openapi_schema_plugins,
+                    plugins=self.plugins.openapi,
                     use_handler_docstrings=self.openapi_config.use_handler_docstrings,
                     operation_id_creator=self.openapi_config.operation_id_creator,
                     schemas=schemas,

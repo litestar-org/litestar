@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from ._utils import RICH_CLICK_INSTALLED, LitestarEnv, LitestarExtensionGroup
 from .commands import core, schema, sessions
 
-if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
+if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     import click
     from click import Context, group, option, pass_context
     from click import Path as ClickPath

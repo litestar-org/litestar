@@ -1,24 +1,7 @@
 from __future__ import annotations
 
-import inspect
 from datetime import datetime, timezone
-from typing import Any, Awaitable, TypeVar, cast, overload
-
-T = TypeVar("T")
-
-
-@overload
-async def maybe_async(obj: Awaitable[T]) -> T:
-    ...
-
-
-@overload
-async def maybe_async(obj: T) -> T:
-    ...
-
-
-async def maybe_async(obj: Awaitable[T] | T) -> T:
-    return cast(T, await obj) if inspect.isawaitable(obj) else cast(T, obj)
+from typing import Any
 
 
 def update_raw_records(raw_authors: list[dict[str, Any]], raw_rules: list[dict[str, Any]]) -> None:

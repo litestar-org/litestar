@@ -27,7 +27,7 @@ try:
 except ImportError:
     pass
 
-if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
+if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     from click import ClickException, Command, Context, Group, pass_context
 else:
     from rich_click import ClickException, Context, pass_context
@@ -217,7 +217,7 @@ class LitestarExtensionGroup(LitestarGroup):
                 env = None
 
         if env:
-            for plugin in env.app.cli_plugins:
+            for plugin in env.app.plugins.cli:
                 plugin.on_cli_init(self)
 
         self._prepare_done = True

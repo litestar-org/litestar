@@ -222,6 +222,8 @@ skip = 'poetry.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
 omit = ["*/tests/*"]
+parallel = true
+concurrency = ["multiprocessing", "thread"]
 
 [tool.coverage.report]
 exclude_lines = [

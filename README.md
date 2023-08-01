@@ -44,7 +44,7 @@ pip install litestar
 You can check out the latest pre-release version by instead running
 
 ```shell
-pip install litestar==2.0.0beta3
+pip install litestar==2.0.0beta4
 ```
 
 ## Quick Start
