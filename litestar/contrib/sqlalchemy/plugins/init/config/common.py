@@ -15,7 +15,6 @@ from litestar.utils.dataclass import simple_asdict
 from .engine import EngineConfig
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any
 
     from sqlalchemy import Connection, Engine, MetaData
@@ -263,14 +262,14 @@ class GenericAlembicConfig:
     For details see: https://alembic.sqlalchemy.org/en/latest/api/config.html
     """
 
-    alembic_config: str | Path | EmptyType = Empty
+    alembic_config: str | None = None
     """A path to the Alembic configuration file such as ``alembic.ini``.  If left unset, the default configuration
     will be used.
     """
-    version_table_name: str | EmptyType = Empty
+    version_table_name: str | None = None
     """Configure the name of the table used to hold the applied alembic revisions. Defaults to ``alembic``.  THe name of the table
     """
-    script_location: str | Path | EmptyType = Empty
+    script_location: str = "migrations"
     """A path to save generated migrations.
     """
     target_metadata: MetaData = orm_registry.metadata
