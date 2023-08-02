@@ -259,7 +259,7 @@ class StructLoggingConfig(BaseLoggingConfig, BaseModel):
 
     processors: Optional[List[Processor]] = Field(default_factory=default_structlog_processors)  # pyright: ignore
     """Iterable of structlog logging processors."""
-    wrapper_class: Optional[Type[BindableLogger]] = Field(default_factory=default_wrapper_class)  # pyright: ignore
+    wrapper_class: Any = Field(default_factory=default_wrapper_class)  # pyright: ignore
     """Structlog bindable logger."""
     context_class: Optional[Dict[str, Any]] = None
     """Context class (a 'contextvar' context) for the logger."""
