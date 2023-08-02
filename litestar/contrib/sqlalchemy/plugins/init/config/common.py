@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Generic, TypeVar, cast
 
 from alembic import context
@@ -36,7 +37,7 @@ __all__ = (
 
 SESSION_SCOPE_KEY = "_sqlalchemy_db_session"
 SESSION_TERMINUS_ASGI_EVENTS = {HTTP_RESPONSE_START, HTTP_DISCONNECT, WEBSOCKET_DISCONNECT, WEBSOCKET_CLOSE}
-
+ALEMBIC_TEMPLATE_PATH = f"{Path(__file__).parent.parent.parent.parent}/alembic/templates"
 ConnectionT = TypeVar("ConnectionT", bound="Connection | AsyncConnection")
 EngineT = TypeVar("EngineT", bound="Engine | AsyncEngine")
 SessionT = TypeVar("SessionT", bound="Session | AsyncSession")
@@ -262,7 +263,7 @@ class GenericAlembicConfig:
     For details see: https://alembic.sqlalchemy.org/en/latest/api/config.html
     """
 
-    alembic_config: str = "alembic.ini"
+    script_config: str = "alembic.ini"
     """A path to the Alembic configuration file such as ``alembic.ini``.  If left unset, the default configuration
     will be used.
     """
@@ -280,6 +281,8 @@ class GenericAlembicConfig:
     """Render as batch."""
     compare_type: bool = False
     """Compare type."""
+    template_path: str = ALEMBIC_TEMPLATE_PATH
+    """Template path."""
 
     def do_run_migrations(self, connection: Connection) -> None:
         """Run migrations."""

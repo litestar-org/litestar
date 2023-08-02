@@ -90,3 +90,40 @@ def init_alembic(app: Litestar, directory: str, multidb: bool, package: bool) ->
     """Upgrade the database to the latest revision."""
 
     db_utils.init(app=app, directory=directory, multidb=multidb, package=package)
+
+
+@database_group.command(
+    name="revision",
+    help="Create a new migration revision.",
+)
+@option("-m", "--message", default=None, help="Revision message")
+@option("--autogenerate", is_flag=True, default=True, help="Automatically populate revision with detected changes")
+@option("--sql", is_flag=True, default=False, help="Export to `.sql` instead of writing to the database.")
+@option("--head", default="head", help="Specify head revision to use as base for new revision.")
+@option("--splice", is_flag=True, default=False, help='Allow a non-head revision as the "head" to splice onto')
+@option("--branch-label", default=None, help="Specify a branch label to apply to the new revision")
+@option("--version-path", default=None, help="Specify specific path from config for version file")
+@option("--rev-id", default=None, help="Specify a ID to use for revision.")
+def create_revision(
+    app: Litestar,
+    message: str | None,
+    autogenerate: bool,
+    sql: bool,
+    head: str,
+    splice: bool,
+    branch_label: str | None,
+    version_path: str | None,
+    rev_id: str | None,
+) -> None:
+    """Create a new database revision."""
+    db_utils.revision(
+        app=app,
+        message=message,
+        autogenerate=autogenerate,
+        sql=sql,
+        head=head,
+        splice=splice,
+        branch_label=branch_label,
+        version_path=version_path,
+        rev_id=rev_id,
+    )
