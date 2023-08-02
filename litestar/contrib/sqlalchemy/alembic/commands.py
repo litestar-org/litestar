@@ -30,11 +30,13 @@ class AlembicCommandConfig(_AlembicCommandConfig):
         output_buffer: TextIO | None = None,
         stdout: TextIO = sys.stdout,
         cmd_opts: Namespace | None = None,
-        config_args: Mapping[str, Any] = ...,  # type: ignore[assignment]
+        config_args: Mapping[str, Any] | None = None,
         attributes: dict | None = None,
         template_directory: Path | None = None,
     ) -> None:
         self.template_directory = template_directory
+        if config_args is None:
+            config_args = {}
         super().__init__(file_, ini_section, output_buffer, stdout, cmd_opts, config_args, attributes)
 
     def get_template_directory(self) -> str:
@@ -46,9 +48,7 @@ class AlembicCommandConfig(_AlembicCommandConfig):
         """
         if self.template_directory is not None:
             return str(self.template_directory)
-
-        package_dir = Path(__file__).parent.resolve()
-        return str(Path(package_dir / "templates"))
+        return super().get_template_directory()
 
 
 class AlembicSpannerImpl(DefaultImpl):
@@ -58,11 +58,13 @@ class AlembicSpannerImpl(DefaultImpl):
 
 
 def get_alembic_command_config(
-    alembic_config: str | None = None, script_location: str = "migrations"
+    alembic_config: str | None = None, script_location: str = "migrations", template_directory: str | None = None
 ) -> AlembicCommandConfig:
     kwargs = {}
     if alembic_config:
         kwargs.update({"file_": alembic_config})
+    if template_directory:
+        kwargs.update({"template_directory": template_directory})
     alembic_cfg = AlembicCommandConfig(**kwargs)  # type: ignore
     alembic_cfg.set_main_option("script_location", script_location)
     return alembic_cfg
@@ -173,7 +175,8 @@ def merge(
     """Merge two revisions together. Creates a new migration file."""
     plugin = app.plugins.get(SQLAlchemyInitPlugin)
     alembic_cfg = get_alembic_command_config(
-        alembic_config=plugin._alembic_config.alembic_config, script_location=plugin._alembic_config.script_location
+        alembic_config=plugin._alembic_config.alembic_config,
+        script_location=plugin._alembic_config.script_location,
     )
     migration_command.merge(
         config=alembic_cfg, revisions=revisions, message=message, branch_label=branch_label, rev_id=rev_id
@@ -234,15 +237,25 @@ def init(
 ) -> None:
     """Initialize a new scripts directory."""
     plugin = app.plugins.get(SQLAlchemyInitPlugin)
-    alembic_cfg = get_alembic_command_config(
-        alembic_config=plugin._alembic_config.alembic_config, script_location=plugin._alembic_config.script_location
-    )
+
     template = "sync"
     if isinstance(plugin._config, SQLAlchemyAsyncConfig):
         template = "asyncio"
     if multidb:
         template = f"{template}-multidb"
-    migration_command.init(config=alembic_cfg, directory=directory, template=template, package=package)
+    if template_path is None:
+        template_path = f"{Path(__file__).parent}/templates"
+    alembic_cfg = get_alembic_command_config(
+        alembic_config=plugin._alembic_config.alembic_config,
+        script_location=plugin._alembic_config.script_location,
+        template_directory=template_path,
+    )
+    migration_command.init(
+        config=alembic_cfg,
+        directory=directory,
+        template=template,
+        package=package,
+    )
 
 
 def list_templates(app: Litestar) -> None:

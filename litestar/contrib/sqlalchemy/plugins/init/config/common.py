@@ -262,7 +262,7 @@ class GenericAlembicConfig:
     For details see: https://alembic.sqlalchemy.org/en/latest/api/config.html
     """
 
-    alembic_config: str | None = None
+    alembic_config: str = "alembic.ini"
     """A path to the Alembic configuration file such as ``alembic.ini``.  If left unset, the default configuration
     will be used.
     """
