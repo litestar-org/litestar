@@ -669,15 +669,11 @@ def test_filter_on_datetime_field(before: datetime, after: datetime, mock_repo: 
     mock_repo.model_type.updated_at = field_mock
     mock_repo._filter_on_datetime_field("updated_at", before=before, after=after, statement=mock_repo.statement)
 
-    # this doesn't have any asserts?
-
 
 def test_filter_collection_by_kwargs(mock_repo: SQLAlchemyAsyncRepository) -> None:
     """Test `filter_by()` called with kwargs."""
     _ = mock_repo.filter_collection_by_kwargs(mock_repo.statement, a=1, b=2)
     mock_repo.statement.filter_by.assert_called_once_with(a=1, b=2)
-
-    # this doesn't have any asserts?
 
 
 def test_filter_collection_by_kwargs_raises_repository_exception_for_attribute_error(
