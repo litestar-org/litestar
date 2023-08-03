@@ -5,18 +5,18 @@ While Litestar maintains a suite of DTO factories, it is possible to create your
 the :class:`AbstractDTO <litestar.dto.base_dto.AbstractDTO>` abc.
 
 The following is a description of the methods of the protocol, and how they are used by Litestar. For detailed
-information on the signature of each method, see the :class:`reference docs <litestar.dto.interface.AbstractDTO>`.
+information on the signature of each method, see the :class:`reference docs <litestar.dto.base_dto.AbstractDTO>`.
 
 Abstract Methods
 ~~~~~~~~~~~~~~~~
 
-These methods must be implemented on any :class:`AbstractDTO <litestar.dto.interface.AbstractDTO>` subtype.
+These methods must be implemented on any :class:`AbstractDTO <litestar.dto.base_dto.AbstractDTO>` subtype.
 
 ``generate_field_definitions``
 ------------------------------
 
 This method receives the model type for the DTO and it should return a generator yielding
-:class:`DTOFieldDefinition<litestar.dto.datastructures.DTOFieldDefinition>` instances corresponding with
+:class:`DTOFieldDefinition<litestar.dto.data_structures.DTOFieldDefinition>` instances corresponding with
 the model fields.
 
 ``detect_nested_field``

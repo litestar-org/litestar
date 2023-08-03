@@ -164,8 +164,9 @@ class DTOBackend:
         Returns:
             A ``BackendT`` class.
         """
-        short_name_prefix = _camelize(self.handler_id.split(".")[-1], True)
-        long_name_prefix = self.handler_id
+        long_name_prefix = self.handler_id.split("::")[0]
+        short_name_prefix = _camelize(long_name_prefix.split(".")[-1], True)
+
         name_suffix = "RequestBody" if self.is_data_field else "ResponseBody"
 
         if f"{short_name_prefix}{model_name}{name_suffix}" not in self._seen_model_names:

@@ -41,7 +41,7 @@ class _BackendDict(TypedDict):
 class AbstractDTO(Generic[T]):
     """Base class for DTO types."""
 
-    __slots__ = ("asgi_connection", "handler_id")
+    __slots__ = ("asgi_connection",)
 
     config: ClassVar[DTOConfig]
     """Config objects to define properties of the DTO."""
@@ -57,7 +57,6 @@ class AbstractDTO(Generic[T]):
             asgi_connection: A :class:`ASGIConnection <litestar.connection.base.ASGIConnection>` instance.
         """
         self.asgi_connection = asgi_connection
-        self.handler_id = self.asgi_connection.route_handler.name or str(self.asgi_connection.route_handler)
 
     def __class_getitem__(cls, annotation: Any) -> type[Self]:
         field_definition = FieldDefinition.from_annotation(annotation)
@@ -87,17 +86,17 @@ class AbstractDTO(Generic[T]):
     def decode_builtins(self, value: dict[str, Any]) -> Any:
         """Decode a dictionary of Python values into an the DTO's datatype."""
 
-        backend = self._dto_backends[self.handler_id]["data_backend"]  # pyright: ignore
+        backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["data_backend"]  # pyright: ignore
         return backend.populate_data_from_builtins(value, self.asgi_connection)
 
     def decode_bytes(self, value: bytes) -> Any:
         """Decode a byte string into an the DTO's datatype."""
 
-        backend = self._dto_backends[self.handler_id]["data_backend"]  # pyright: ignore
+        backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["data_backend"]  # pyright: ignore
         return backend.populate_data_from_raw(value, self.asgi_connection)
 
     def data_to_encodable_type(self, data: T | Collection[T]) -> LitestarEncodableType:
-        backend = self._dto_backends[self.handler_id]["return_backend"]  # pyright: ignore
+        backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["return_backend"]  # pyright: ignore
         return backend.encode_data(data)
 
     @classmethod

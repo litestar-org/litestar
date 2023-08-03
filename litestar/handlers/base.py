@@ -153,8 +153,8 @@ class BaseRouteHandler:
 
     @property
     def handler_id(self) -> str:
-        """A unique identifier used for generation of DTOs and schemas."""
-        return self.name or str(self)
+        """A unique identifier used for generation of DTOs."""
+        return f"{self!s}::{sum(id(layer) for layer in self.ownership_layers)}"
 
     @property
     def default_deserializer(self) -> Callable[[Any, Any], Any]:
