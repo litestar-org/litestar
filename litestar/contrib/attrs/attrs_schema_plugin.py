@@ -19,7 +19,6 @@ except ImportError as e:
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
-    from litestar.dto.types import ForType
 
 
 class AttrsSchemaPlugin(OpenAPISchemaPluginProtocol):
@@ -27,24 +26,23 @@ class AttrsSchemaPlugin(OpenAPISchemaPluginProtocol):
     def is_plugin_supported_type(value: Any) -> bool:
         return is_attrs_class(value) or is_attrs_class(type(value))
 
-    def to_openapi_schema(self, annotation: Any, schema_creator: SchemaCreator, dto_for: ForType | None) -> Schema:
+    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
         """Given a type annotation, transform it into an OpenAPI schema class.
 
         Args:
-            annotation: A type annotation.
+            field_definition: FieldDefinition instance.
             schema_creator: An instance of the schema creator class
-            dto_for: The type of the DTO if any.
 
         Returns:
             An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
         """
 
-        annotation_hints = get_type_hints(annotation, include_extras=True)
+        annotation_hints = get_type_hints(field_definition.annotation, include_extras=True)
         return Schema(
             required=sorted(
                 [
                     field_name
-                    for field_name, attribute in attr.fields_dict(annotation).items()
+                    for field_name, attribute in attr.fields_dict(field_definition.annotation).items()
                     if attribute.default is attrs.NOTHING and not is_optional_union(annotation_hints[field_name])
                 ]
             ),
@@ -53,5 +51,5 @@ class AttrsSchemaPlugin(OpenAPISchemaPluginProtocol):
                 for k, v in annotation_hints.items()
             },
             type=OpenAPIType.OBJECT,
-            title=_get_type_schema_name(annotation, dto_for),
+            title=_get_type_schema_name(field_definition.annotation),
         )

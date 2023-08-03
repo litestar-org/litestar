@@ -23,7 +23,7 @@ def test_create_function_signature_model_parameter_parsing() -> None:
     model = SignatureModel.create(
         dependency_name_set=set(),
         fn=my_fn.fn.value,
-        has_data_dto=False,
+        data_dto=None,
         parsed_signature=ParsedSignature.from_fn(my_fn.fn.value, {}),
         type_decoders=[],
     )
@@ -50,7 +50,7 @@ def test_create_function_signature_model_ignore_return_annotation() -> None:
     signature_model_type = SignatureModel.create(
         dependency_name_set=set(),
         fn=health_check.fn.value,
-        has_data_dto=False,
+        data_dto=None,
         parsed_signature=ParsedSignature.from_fn(health_check.fn.value, {}),
         type_decoders=[],
     )
@@ -104,7 +104,7 @@ def test_field_definition_is_non_string_iterable() -> None:
     model = SignatureModel.create(
         dependency_name_set=set(),
         fn=fn,
-        has_data_dto=False,
+        data_dto=None,
         parsed_signature=ParsedSignature.from_fn(fn, {}),
         type_decoders=[],
     )
@@ -120,7 +120,7 @@ def test_field_definition_is_non_string_sequence() -> None:
     model = SignatureModel.create(
         dependency_name_set=set(),
         fn=fn,
-        has_data_dto=False,
+        data_dto=None,
         parsed_signature=ParsedSignature.from_fn(fn, signature_namespace={}),
         type_decoders=[],
     )

@@ -79,7 +79,7 @@ def test_piccolo_dto_type_conversion(piccolo_type: type[Column], py_type: type, 
 
 
 def test_piccolo_dto_openapi_spec_generation() -> None:
-    app = Litestar(route_handlers=[retrieve_studio, retrieve_venues, create_concert], dto=PiccoloDTO)
+    app = Litestar(route_handlers=[retrieve_studio, retrieve_venues, create_concert])
     schema = app.openapi_schema
 
     assert schema.paths

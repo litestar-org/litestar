@@ -107,7 +107,9 @@ def create_path_item(
             request_body = None
             if "data" in handler_fields:
                 request_body = create_request_body(
-                    route_handler=route_handler, field=handler_fields["data"], schema_creator=request_schema_creator
+                    route_handler=route_handler,
+                    field_definition=handler_fields["data"],
+                    schema_creator=request_schema_creator,
                 )
 
             if isinstance(route_handler.operation_id, str):

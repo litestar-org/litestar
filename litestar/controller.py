@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from copy import copy, deepcopy
+from copy import deepcopy
 from functools import partial
 from typing import TYPE_CHECKING, Any, Mapping, cast
 
@@ -18,7 +18,7 @@ __all__ = ("Controller",)
 
 if TYPE_CHECKING:
     from litestar.datastructures import CacheControlHeader, ETag
-    from litestar.dto.interface import DTOInterface
+    from litestar.dto import AbstractDTO
     from litestar.openapi.spec import SecurityRequirement
     from litestar.response import Response
     from litestar.router import Router
@@ -94,8 +94,8 @@ class Controller:
     """
     dependencies: Dependencies | None
     """A string keyed dictionary of dependency :class:`Provider <.di.Provide>` instances."""
-    dto: type[DTOInterface] | None | EmptyType
-    """:class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and validation of request data."""
+    dto: type[AbstractDTO] | None | EmptyType
+    """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and validation of request data."""
     etag: ETag | None
     """An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this controller.
 
@@ -131,8 +131,8 @@ class Controller:
     """A list of :class:`Cookie <.datastructures.Cookie>` instances."""
     response_headers: ResponseHeaders | None
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>` instances."""
-    return_dto: type[DTOInterface] | None | EmptyType
-    """:class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing outbound response
+    return_dto: type[AbstractDTO] | None | EmptyType
+    """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing outbound response
     data.
     """
     tags: OptionalSequence[str]
@@ -184,14 +184,12 @@ class Controller:
         Returns:
             A list containing a copy of the route handlers defined on the controller
         """
-        from litestar import websocket_listener
 
         route_handlers: list[BaseRouteHandler] = []
 
         for field_name in set(dir(self)) - set(dir(Controller)):
             if (attr := getattr(self, field_name, None)) and isinstance(attr, BaseRouteHandler):
-                # we are special casing here because the websocket_listener context cannot be deep copied without breaking
-                route_handler = copy(attr) if isinstance(attr, websocket_listener) else deepcopy(attr)
+                route_handler = deepcopy(attr)
                 route_handler.fn.value = partial(route_handler.fn.value, self)
                 route_handler.owner = self
                 route_handlers.append(route_handler)

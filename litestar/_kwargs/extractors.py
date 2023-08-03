@@ -11,7 +11,6 @@ from litestar._parsers import (
     parse_url_encoded_form_data,
 )
 from litestar.datastructures.upload_file import UploadFile
-from litestar.dto.interface import ConnectionContext
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ValidationException
 from litestar.params import BodyKwarg
@@ -21,7 +20,7 @@ if TYPE_CHECKING:
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.parameter_definition import ParameterDefinition
     from litestar.connection import ASGIConnection, Request
-    from litestar.dto.interface import DTOInterface
+    from litestar.dto import AbstractDTO
     from litestar.typing import FieldDefinition
 
 
@@ -289,14 +288,14 @@ async def msgpack_extractor(connection: Request[Any, Any, Any]) -> Any:
 
 
 def create_multipart_extractor(
-    field_definition: FieldDefinition, is_data_optional: bool, dto_type: type[DTOInterface] | None
+    field_definition: FieldDefinition, is_data_optional: bool, data_dto: type[AbstractDTO] | None
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create a multipart form-data extractor.
 
     Args:
         field_definition: A FieldDefinition instance.
         is_data_optional: Boolean dictating whether the field is optional.
-        dto_type: The DTO type, if configured for handler.
+        data_dto: A data DTO type, if configured for handler.
 
     Returns:
         An extractor function.
@@ -332,23 +331,19 @@ def create_multipart_extractor(
         if not form_values and is_data_optional:
             return None
 
-        if dto_type:
-            ctx = ConnectionContext.from_connection(connection)
-            return dto_type(ctx).builtins_to_data_type(form_values)
-
-        return form_values
+        return data_dto(connection).decode_builtins(form_values) if data_dto else form_values
 
     return cast("Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_multipart)
 
 
 def create_url_encoded_data_extractor(
-    is_data_optional: bool, dto_type: type[DTOInterface] | None
+    is_data_optional: bool, data_dto: type[AbstractDTO] | None
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create extractor for url encoded form-data.
 
     Args:
         is_data_optional: Boolean dictating whether the field is optional.
-        dto_type: The DTO type, if configured for handler.
+        data_dto: A data DTO type, if configured for handler.
 
     Returns:
         An extractor function.
@@ -362,14 +357,11 @@ def create_url_encoded_data_extractor(
             if "_form" in connection.scope
             else parse_url_encoded_form_data(await connection.body())
         )
+
         if not form_values and is_data_optional:
             return None
 
-        if dto_type:
-            ctx = ConnectionContext.from_connection(connection)
-            return dto_type(ctx).builtins_to_data_type(form_values)
-
-        return form_values
+        return data_dto(connection).decode_builtins(form_values) if data_dto else form_values
 
     return cast(
         "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_url_encoded_extractor
@@ -387,24 +379,25 @@ def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any]
     """
 
     if kwargs_model.expected_form_data:
-        media_type, field_definition, dto_type = kwargs_model.expected_form_data
+        media_type, field_definition = kwargs_model.expected_form_data
 
         if media_type == RequestEncodingType.MULTI_PART:
             data_extractor = create_multipart_extractor(
                 field_definition=field_definition,
                 is_data_optional=kwargs_model.is_data_optional,
-                dto_type=dto_type,
+                data_dto=kwargs_model.expected_data_dto,
             )
         else:
             data_extractor = create_url_encoded_data_extractor(
-                is_data_optional=kwargs_model.is_data_optional, dto_type=dto_type
+                is_data_optional=kwargs_model.is_data_optional,
+                data_dto=kwargs_model.expected_data_dto,
             )
     elif kwargs_model.expected_msgpack_data:
         data_extractor = cast(
             "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor
         )
-    elif kwargs_model.expected_dto_data:
-        data_extractor = create_dto_extractor(kwargs_model.expected_dto_data)
+    elif kwargs_model.expected_data_dto:
+        data_extractor = create_dto_extractor(data_dto=kwargs_model.expected_data_dto)
     else:
         data_extractor = cast(
             "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor
@@ -420,19 +413,17 @@ def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any]
 
 
 def create_dto_extractor(
-    dto_type: type[DTOInterface],
+    data_dto: type[AbstractDTO],
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create a DTO data extractor.
 
-    Args:
-        dto_type: The :class:`DTOInterface` subclass.
 
     Returns:
         An extractor function.
     """
 
     async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
-        ctx = ConnectionContext.from_connection(connection)
-        return dto_type(ctx).bytes_to_data_type(await connection.body())
+        body = await connection.body()
+        return data_dto(connection).decode_bytes(body)
 
     return dto_extractor  # type:ignore[return-value]

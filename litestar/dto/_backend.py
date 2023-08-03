@@ -4,6 +4,7 @@ back again, to bytes.
 from __future__ import annotations
 
 import secrets
+from dataclasses import replace
 from typing import TYPE_CHECKING, AbstractSet, Any, Callable, ClassVar, Collection, Final, Mapping, Union, cast
 
 from msgspec import UNSET, Struct, UnsetType, convert, defstruct, field
@@ -23,18 +24,14 @@ from litestar.dto._types import (
 from litestar.dto.data_structures import DTOData, DTOFieldDefinition
 from litestar.dto.field import Mark
 from litestar.enums import RequestEncodingType
-from litestar.exceptions import SerializationException
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.typing import safe_generic_origin_map
 
 if TYPE_CHECKING:
-    from litestar._openapi.schema_generation import SchemaCreator
-    from litestar.dto import AbstractDTOFactory, RenameStrategy
-    from litestar.dto._types import FieldDefinitionsType
-    from litestar.dto.interface import ConnectionContext
-    from litestar.openapi.spec import Reference, Schema
+    from litestar.connection import ASGIConnection
+    from litestar.dto import AbstractDTO, RenameStrategy
     from litestar.types.serialization import LitestarEncodableType
 
 __all__ = ("DTOBackend",)
@@ -59,7 +56,7 @@ class DTOBackend:
 
     def __init__(
         self,
-        dto_factory: type[AbstractDTOFactory],
+        dto_factory: type[AbstractDTO],
         field_definition: FieldDefinition,
         handler_id: str,
         is_data_field: bool,
@@ -76,7 +73,7 @@ class DTOBackend:
             model_type: Model type.
             wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure, this is the name of the attribute that the data is stored in.
         """
-        self.dto_factory: Final[type[AbstractDTOFactory]] = dto_factory
+        self.dto_factory: Final[type[AbstractDTO]] = dto_factory
         self.field_definition: Final[FieldDefinition] = field_definition
         self.is_data_field: Final[bool] = is_data_field
         self.handler_id: Final[str] = handler_id
@@ -101,40 +98,20 @@ class DTOBackend:
 
     def parse_model(
         self, model_type: Any, exclude: AbstractSet[str], include: AbstractSet[str], nested_depth: int = 0
-    ) -> FieldDefinitionsType:
-        """Reduce :attr:`model_type` to :class:`FieldDefinitionsType`.
-
-        .. important::
-            Implementations must respect the :attr:`config` object. For example:
-                - fields marked private must never be included in the field definitions.
-                - if a ``purpose`` is declared, then read-only fields must be taken into account.
-                - field renaming must be implemented.
-                - additional fields must be included, subject to ``purpose``.
-                - nested depth and nested recursion depth must be adhered to.
+    ) -> tuple[TransferDTOFieldDefinition, ...]:
+        """Reduce :attr:`model_type` to a tuple :class:`TransferDTOFieldDefinition` instances.
 
         Returns:
-            Fields for data transfer.
-
-            Key is the name of the new field, and value is a tuple of type and default value pairs.
-
-            Add a new field called "new_field", that is a string, and required:
-            {"new_field": (str, ...)}
-
-            Add a new field called "new_field", that is a string, and not-required:
-            {"new_field": (str, "default")}
-
-            Add a new field called "new_field", that may be `None`:
-            {"new_field": (str | None, None)}
+        Fields for data transfer.
         """
         defined_fields = []
+        generic_field_definitons = list(FieldDefinition.from_annotation(model_type).generic_types or ())
         for field_definition in self.dto_factory.generate_field_definitions(model_type):
-            if field_definition.dto_for and (
-                field_definition.dto_for == "data"
-                and not self.is_data_field
-                or field_definition.dto_for == "return"
-                and self.is_data_field
-            ):
-                continue
+            if field_definition.is_type_var:
+                base_arg_field = generic_field_definitons.pop()
+                field_definition = replace(
+                    field_definition, annotation=base_arg_field.annotation, raw=base_arg_field.raw
+                )
 
             if _should_mark_private(field_definition, self.dto_factory.config.underscore_fields_private):
                 field_definition.dto_field.mark = Mark.PRIVATE
@@ -175,7 +152,9 @@ class DTOBackend:
             defined_fields.append(transfer_field_definition)
         return tuple(defined_fields)
 
-    def create_transfer_model_type(self, model_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
+    def create_transfer_model_type(
+        self, model_name: str, field_definitions: tuple[TransferDTOFieldDefinition, ...]
+    ) -> type[Struct]:
         """Create a model for data transfer.
 
         Args:
@@ -185,8 +164,9 @@ class DTOBackend:
         Returns:
             A ``BackendT`` class.
         """
-        short_name_prefix = _camelize(self.handler_id.split(".")[-1], True)
-        long_name_prefix = self.handler_id
+        long_name_prefix = self.handler_id.split("::")[0]
+        short_name_prefix = _camelize(long_name_prefix.split(".")[-1], True)
+
         name_suffix = "RequestBody" if self.is_data_field else "ResponseBody"
 
         if f"{short_name_prefix}{model_name}{name_suffix}" not in self._seen_model_names:
@@ -201,37 +181,36 @@ class DTOBackend:
         setattr(struct, "__schema_name__", struct_name)
         return struct
 
-    def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> Struct | Collection[Struct]:
+    def parse_raw(self, raw: bytes, asgi_connection: ASGIConnection) -> Struct | Collection[Struct]:
         """Parse raw bytes into transfer model type.
 
         Args:
             raw: bytes
-            connection_context: Information about the active connection.
+            asgi_connection: The current ASGI Connection
 
         Returns:
             The raw bytes parsed into transfer model type.
         """
+        request_encoding = RequestEncodingType.JSON
 
-        if connection_context.request_encoding_type not in [RequestEncodingType.JSON, RequestEncodingType.MESSAGEPACK]:
-            raise SerializationException(
-                f"Unsupported request encoding type: '{connection_context.request_encoding_type}'"
-            )
+        if (content_type := getattr(asgi_connection, "content_type", None)) and (media_type := content_type[0]):
+            request_encoding = media_type
 
-        if connection_context.request_encoding_type == RequestEncodingType.JSON:
-            result = decode_json(value=raw, target_type=self.annotation, type_decoders=connection_context.type_decoders)
+        type_decoders = asgi_connection.route_handler.resolve_type_decoders()
+
+        if request_encoding == RequestEncodingType.MESSAGEPACK:
+            result = decode_msgpack(value=raw, target_type=self.annotation, type_decoders=type_decoders)
         else:
-            result = decode_msgpack(
-                value=raw, target_type=self.annotation, type_decoders=connection_context.type_decoders
-            )
+            result = decode_json(value=raw, target_type=self.annotation, type_decoders=type_decoders)
 
         return cast("Struct | Collection[Struct]", result)
 
-    def parse_builtins(self, builtins: Any, connection_context: ConnectionContext) -> Any:
+    def parse_builtins(self, builtins: Any, asgi_connection: ASGIConnection) -> Any:
         """Parse builtin types into transfer model type.
 
         Args:
             builtins: Builtin type.
-            connection_context: Information about the active connection.
+            asgi_connection: The current ASGI Connection
 
         Returns:
             The builtin type parsed into transfer model type.
@@ -239,17 +218,17 @@ class DTOBackend:
         return convert(
             obj=builtins,
             type=self.annotation,
-            dec_hook=connection_context.default_deserializer,
+            dec_hook=asgi_connection.route_handler.default_deserializer,
             strict=False,
             str_keys=True,
         )
 
-    def populate_data_from_builtins(self, builtins: Any, connection_context: ConnectionContext) -> Any:
+    def populate_data_from_builtins(self, builtins: Any, asgi_connection: ASGIConnection) -> Any:
         """Populate model instance from builtin types.
 
         Args:
             builtins: Builtin type.
-            connection_context: Information about the active connection.
+            asgi_connection: The current ASGI Connection
 
         Returns:
             Instance or collection of ``model_type`` instances.
@@ -259,13 +238,13 @@ class DTOBackend:
                 backend=self,
                 data_as_builtins=_transfer_data(
                     destination_type=dict,
-                    source_data=self.parse_builtins(builtins, connection_context),
+                    source_data=self.parse_builtins(builtins, asgi_connection),
                     field_definitions=self.parsed_field_definitions,
                     field_definition=self.field_definition,
                     is_data_field=self.is_data_field,
                 ),
             )
-        return self.transfer_data_from_builtins(self.parse_builtins(builtins, connection_context))
+        return self.transfer_data_from_builtins(self.parse_builtins(builtins, asgi_connection))
 
     def transfer_data_from_builtins(self, builtins: Any) -> Any:
         """Populate model instance from builtin types.
@@ -284,12 +263,12 @@ class DTOBackend:
             is_data_field=self.is_data_field,
         )
 
-    def populate_data_from_raw(self, raw: bytes, connection_context: ConnectionContext) -> Any:
+    def populate_data_from_raw(self, raw: bytes, asgi_connection: ASGIConnection) -> Any:
         """Parse raw bytes into instance of `model_type`.
 
         Args:
             raw: bytes
-            connection_context: Information about the active connection.
+            asgi_connection: The current ASGI Connection
 
         Returns:
             Instance or collection of ``model_type`` instances.
@@ -299,7 +278,7 @@ class DTOBackend:
                 backend=self,
                 data_as_builtins=_transfer_data(
                     destination_type=dict,
-                    source_data=self.parse_raw(raw, connection_context),
+                    source_data=self.parse_raw(raw, asgi_connection),
                     field_definitions=self.parsed_field_definitions,
                     field_definition=self.field_definition,
                     is_data_field=self.is_data_field,
@@ -307,7 +286,7 @@ class DTOBackend:
             )
         return _transfer_data(
             destination_type=self.model_type,
-            source_data=self.parse_raw(raw, connection_context),
+            source_data=self.parse_raw(raw, asgi_connection),
             field_definitions=self.parsed_field_definitions,
             field_definition=self.field_definition,
             is_data_field=self.is_data_field,
@@ -348,21 +327,20 @@ class DTOBackend:
             ),
         )
 
-    def create_openapi_schema(self, schema_creator: SchemaCreator) -> Reference | Schema:
-        """Create an openAPI schema for the given DTO."""
-        return schema_creator.for_field_definition(FieldDefinition.from_annotation(self.annotation))
-
     def _get_handler_for_field_definition(
         self, field_definition: FieldDefinition
     ) -> Callable[[FieldDefinition, AbstractSet[str], AbstractSet[str], str, int], CompositeType] | None:
         if field_definition.is_union:
             return self._create_union_type
+
         if field_definition.is_tuple:
             if len(field_definition.inner_types) == 2 and field_definition.inner_types[1].annotation is Ellipsis:
                 return self._create_collection_type
             return self._create_tuple_type
+
         if field_definition.is_mapping:
             return self._create_mapping_type
+
         if field_definition.is_non_string_collection:
             return self._create_collection_type
         return None
@@ -383,6 +361,7 @@ class DTOBackend:
             return composite_type_handler(field_definition, exclude, include, unique_name, nested_depth)
 
         transfer_model: NestedFieldInfo | None = None
+
         if self.dto_factory.detect_nested_field(field_definition):
             if nested_depth == self.dto_factory.config.max_nested_depth:
                 raise RecursionError
@@ -501,12 +480,6 @@ class DTOBackend:
             has_nested=any(t.has_nested for t in inner_types),
         )
 
-    @staticmethod
-    def _gen_unique_name_id(unique_name: str) -> str:
-        # Generate a unique ID
-        # Convert the ID to a short alphanumeric string
-        return f"{unique_name}-{secrets.token_hex(8)}"
-
 
 def _camelize(value: str, capitalize_first_letter: bool) -> str:
     return "".join(
@@ -536,7 +509,7 @@ def _filter_nested_field(field_name_set: AbstractSet[str], field_name: str) -> A
 def _transfer_data(
     destination_type: type[Any],
     source_data: Any | Collection[Any],
-    field_definitions: FieldDefinitionsType,
+    field_definitions: tuple[TransferDTOFieldDefinition, ...],
     field_definition: FieldDefinition,
     is_data_field: bool,
 ) -> Any:
@@ -573,7 +546,10 @@ def _transfer_data(
 
 
 def _transfer_instance_data(
-    destination_type: type[Any], source_instance: Any, field_definitions: FieldDefinitionsType, is_data_field: bool
+    destination_type: type[Any],
+    source_instance: Any,
+    field_definitions: tuple[TransferDTOFieldDefinition, ...],
+    is_data_field: bool,
 ) -> Any:
     """Create instance of ``destination_type`` with data from ``source_instance``.
 
@@ -694,8 +670,11 @@ def _create_msgspec_field(field_definition: TransferDTOFieldDefinition) -> Any:
     return field(**kwargs)
 
 
-def _create_struct_for_field_definitions(model_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
+def _create_struct_for_field_definitions(
+    model_name: str, field_definitions: tuple[TransferDTOFieldDefinition, ...]
+) -> type[Struct]:
     struct_fields: list[tuple[str, type] | tuple[str, type, type]] = []
+
     for field_definition in field_definitions:
         if field_definition.is_excluded:
             continue

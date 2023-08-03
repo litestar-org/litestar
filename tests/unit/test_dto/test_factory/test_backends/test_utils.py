@@ -162,7 +162,6 @@ def test_should_mark_private_underscore_fields_private_true() -> None:
                 model_name="A",
                 default_factory=None,
                 dto_field=DTOField(),
-                dto_for=None,
             ),
             True,
         )
@@ -175,7 +174,6 @@ def test_should_mark_private_underscore_fields_private_true() -> None:
                 model_name="A",
                 default_factory=None,
                 dto_field=DTOField(),
-                dto_for=None,
             ),
             True,
         )
@@ -188,7 +186,6 @@ def test_should_mark_private_underscore_fields_private_true() -> None:
                 model_name="A",
                 default_factory=None,
                 dto_field=DTOField(mark="read-only"),
-                dto_for=None,
             ),
             True,
         )
@@ -204,7 +201,6 @@ def test_should_mark_private_underscore_fields_private_false() -> None:
                 model_name="A",
                 default_factory=None,
                 dto_field=DTOField(),
-                dto_for=None,
             ),
             False,
         )
@@ -217,7 +213,6 @@ def test_should_mark_private_underscore_fields_private_false() -> None:
                 model_name="A",
                 default_factory=None,
                 dto_field=DTOField(),
-                dto_for=None,
             ),
             False,
         )
@@ -230,7 +225,6 @@ def test_should_mark_private_underscore_fields_private_false() -> None:
                 model_name="A",
                 default_factory=None,
                 dto_field=DTOField(mark="read-only"),
-                dto_for=None,
             ),
             False,
         )

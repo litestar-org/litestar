@@ -3,14 +3,14 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import TYPE_CHECKING, Collection, Generic, TypeVar
 
-from litestar.dto.base_factory import AbstractDTOFactory
+from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField
 from litestar.exceptions import MissingDependencyException
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
-    from typing import ClassVar, Generator
+    from typing import Generator
 
     from litestar.typing import FieldDefinition
 
@@ -30,12 +30,8 @@ __all__ = ("PydanticDTO",)
 T = TypeVar("T", bound="pydantic.BaseModel | Collection[pydantic.BaseModel]")
 
 
-class PydanticDTO(AbstractDTOFactory[T], Generic[T]):
+class PydanticDTO(AbstractDTO[T], Generic[T]):
     """Support for domain modelling with Pydantic."""
-
-    __slots__ = ()
-
-    model_type: ClassVar[type[pydantic.BaseModel]]
 
     @classmethod
     def generate_field_definitions(
@@ -67,7 +63,6 @@ class PydanticDTO(AbstractDTOFactory[T], Generic[T]):
                     default_factory=field_info.default_factory
                     if field_info.default_factory and field_info.default_factory is not PydanticUndefined  # type: ignore[comparison-overlap]
                     else Empty,
-                    dto_for=None,
                 ),
                 default=default,
                 name=field_name,

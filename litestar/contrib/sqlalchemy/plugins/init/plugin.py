@@ -19,8 +19,6 @@ __all__ = ("SQLAlchemyInitPlugin",)
 class SQLAlchemyInitPlugin(InitPluginProtocol, CLIPluginProtocol, _slots_base.SlotsBase):
     """SQLAlchemy application lifecycle configuration."""
 
-    __slots__ = ()
-
     def __init__(self, config: SQLAlchemyAsyncConfig | SQLAlchemySyncConfig) -> None:
         """Initialize ``SQLAlchemyPlugin``.
 

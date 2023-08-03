@@ -1,22 +1,18 @@
-from .base_factory import AbstractDTOFactory
+from .base_dto import AbstractDTO
 from .config import DTOConfig
 from .data_structures import DTOData, DTOFieldDefinition
-from .dataclass_dto_factory import DataclassDTO
+from .dataclass_dto import DataclassDTO
 from .field import DTOField, Mark, dto_field
-from .interface import ConnectionContext, DTOInterface, HandlerContext
-from .msgspec_dto_factory import MsgspecDTO
+from .msgspec_dto import MsgspecDTO
 from .types import RenameStrategy
 
 __all__ = (
-    "AbstractDTOFactory",
-    "ConnectionContext",
+    "AbstractDTO",
     "DTOConfig",
     "DTOData",
     "DTOField",
     "DTOFieldDefinition",
-    "DTOInterface",
     "DataclassDTO",
-    "HandlerContext",
     "Mark",
     "MsgspecDTO",
     "RenameStrategy",
