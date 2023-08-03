@@ -331,7 +331,7 @@ def create_multipart_extractor(
         if not form_values and is_data_optional:
             return None
 
-        return data_dto(connection).decode(form_values) if data_dto else form_values
+        return data_dto(connection).decode_builtins(form_values) if data_dto else form_values
 
     return cast("Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_multipart)
 
@@ -361,7 +361,7 @@ def create_url_encoded_data_extractor(
         if not form_values and is_data_optional:
             return None
 
-        return data_dto(connection).decode(form_values) if data_dto else form_values
+        return data_dto(connection).decode_builtins(form_values) if data_dto else form_values
 
     return cast(
         "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_url_encoded_extractor
@@ -424,6 +424,6 @@ def create_dto_extractor(
 
     async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
         body = await connection.body()
-        return data_dto(connection).decode(body)
+        return data_dto(connection).decode_bytes(body)
 
     return dto_extractor  # type:ignore[return-value]

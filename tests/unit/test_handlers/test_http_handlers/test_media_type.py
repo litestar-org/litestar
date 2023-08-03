@@ -36,5 +36,5 @@ def test_media_type_inference(annotation: Any, expected_media_type: MediaType) -
 
     Litestar(route_handlers=[handler])
 
-    handler.on_registration()
+    handler.on_registration(Litestar())
     assert handler.media_type == expected_media_type

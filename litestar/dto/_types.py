@@ -8,7 +8,7 @@ from litestar.dto.data_structures import DTOFieldDefinition
 if TYPE_CHECKING:
     from typing import Any
 
-    from typing_extensions import Self, TypeAlias
+    from typing_extensions import Self
 
     from litestar.typing import FieldDefinition
 
@@ -20,7 +20,7 @@ class NestedFieldInfo:
     __slots__ = ("model", "field_definitions")
 
     model: type[Any]
-    field_definitions: FieldDefinitionsType
+    field_definitions: tuple[TransferDTOFieldDefinition, ...]
 
 
 @dataclass(frozen=True)
@@ -146,7 +146,3 @@ class TransferDTOFieldDefinition(DTOFieldDefinition):
             type_wrappers=field_definition.type_wrappers,
             model_name=field_definition.model_name,
         )
-
-
-FieldDefinitionsType: TypeAlias = "tuple[TransferDTOFieldDefinition, ...]"
-"""Generic representation of names and types."""

@@ -593,7 +593,7 @@ class Litestar(Router):
             route_handlers = get_route_handlers(route)
 
             for route_handler in route_handlers:
-                route_handler.on_registration()
+                route_handler.on_registration(self)
 
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()

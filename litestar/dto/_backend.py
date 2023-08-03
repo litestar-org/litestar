@@ -32,7 +32,6 @@ from litestar.utils.typing import safe_generic_origin_map
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.dto import AbstractDTO, RenameStrategy
-    from litestar.dto._types import FieldDefinitionsType
     from litestar.types.serialization import LitestarEncodableType
 
 __all__ = ("DTOBackend",)
@@ -99,7 +98,12 @@ class DTOBackend:
 
     def parse_model(
         self, model_type: Any, exclude: AbstractSet[str], include: AbstractSet[str], nested_depth: int = 0
-    ) -> FieldDefinitionsType:
+    ) -> tuple[TransferDTOFieldDefinition, ...]:
+        """Reduce :attr:`model_type` to a tuple :class:`TransferDTOFieldDefinition` instances.
+
+        Returns:
+        Fields for data transfer.
+        """
         defined_fields = []
         generic_field_definitons = list(FieldDefinition.from_annotation(model_type).generic_types or ())
         for field_definition in self.dto_factory.generate_field_definitions(model_type):
@@ -148,7 +152,9 @@ class DTOBackend:
             defined_fields.append(transfer_field_definition)
         return tuple(defined_fields)
 
-    def create_transfer_model_type(self, model_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
+    def create_transfer_model_type(
+        self, model_name: str, field_definitions: tuple[TransferDTOFieldDefinition, ...]
+    ) -> type[Struct]:
         """Create a model for data transfer.
 
         Args:
@@ -502,7 +508,7 @@ def _filter_nested_field(field_name_set: AbstractSet[str], field_name: str) -> A
 def _transfer_data(
     destination_type: type[Any],
     source_data: Any | Collection[Any],
-    field_definitions: FieldDefinitionsType,
+    field_definitions: tuple[TransferDTOFieldDefinition, ...],
     field_definition: FieldDefinition,
     is_data_field: bool,
 ) -> Any:
@@ -539,7 +545,10 @@ def _transfer_data(
 
 
 def _transfer_instance_data(
-    destination_type: type[Any], source_instance: Any, field_definitions: FieldDefinitionsType, is_data_field: bool
+    destination_type: type[Any],
+    source_instance: Any,
+    field_definitions: tuple[TransferDTOFieldDefinition, ...],
+    is_data_field: bool,
 ) -> Any:
     """Create instance of ``destination_type`` with data from ``source_instance``.
 
@@ -660,9 +669,15 @@ def _create_msgspec_field(field_definition: TransferDTOFieldDefinition) -> Any:
     return field(**kwargs)
 
 
-def _create_struct_for_field_definitions(model_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
+def _create_struct_for_field_definitions(
+    model_name: str, field_definitions: tuple[TransferDTOFieldDefinition, ...]
+) -> type[Struct]:
     struct_fields: list[tuple[str, type] | tuple[str, type, type]] = []
-    for field_definition in (f for f in field_definitions if not f.is_excluded):
+
+    for field_definition in field_definitions:
+        if field_definition.is_excluded:
+            continue
+
         field_type = _create_transfer_model_type_annotation(field_definition.transfer_type)
         if field_definition.is_partial:
             field_type = Union[field_type, UnsetType]

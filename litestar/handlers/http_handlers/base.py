@@ -469,16 +469,16 @@ class HTTPRouteHandler(BaseRouteHandler):
             A Response instance
         """
         if return_dto_type := self.resolve_return_dto():
-            data = return_dto_type(request).encode(data)
+            data = return_dto_type(request).data_to_encodable_type(data)
 
         response_handler = self.get_response_handler(is_response_type_data=isinstance(data, Response))
         return await response_handler(app=app, data=data, request=request)  # type: ignore
 
-    def on_registration(self) -> None:
+    def on_registration(self, app: Litestar) -> None:
         if before_request := self.resolve_before_request():
             before_request.set_parsed_signature(self.resolve_signature_namespace())
 
-        super().on_registration()
+        super().on_registration(app)
         self.resolve_after_response()
 
         if self.sync_to_thread and not is_async_callable(self.fn.value):

@@ -1227,13 +1227,13 @@ grpc = ["grpcio (>=1.38.0,<2.0dev)"]
 
 [[package]]
 name = "google-cloud-spanner"
-version = "3.38.0"
+version = "3.39.0"
 description = "Google Cloud Spanner API client library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-cloud-spanner-3.38.0.tar.gz", hash = "sha256:f89a6b918d8753a46391aad0ef821e9a40fc942dc25b9df1d240f086b5ff8d19"},
-    {file = "google_cloud_spanner-3.38.0-py2.py3-none-any.whl", hash = "sha256:073a4120c743372ee6cc04e786f7bd44758f8345d743ed250bf3a7c0e25f9152"},
+    {file = "google-cloud-spanner-3.39.0.tar.gz", hash = "sha256:e0e458e38139f26db46cf088aafd752ddee409d17934e1088646f0950c50b2e1"},
+    {file = "google_cloud_spanner-3.39.0-py2.py3-none-any.whl", hash = "sha256:6f30b2587fff2b990d91b6008b5b0072192f1d20483992eac54e813fd1caf9d3"},
 ]
 
 [package.dependencies]
@@ -2761,13 +2761,13 @@ plugins = ["importlib-metadata"]
 
 [[package]]
 name = "pyright"
-version = "1.1.318"
+version = "1.1.320"
 description = "Command line wrapper for pyright"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pyright-1.1.318-py3-none-any.whl", hash = "sha256:056c1b2e711c3526e32919de1684ae599d34b7ec27e94398858a43f56ac9ba9b"},
-    {file = "pyright-1.1.318.tar.gz", hash = "sha256:69dcf9c32d5be27d531750de627e76a7cadc741d333b547c09044278b508db7b"},
+    {file = "pyright-1.1.320-py3-none-any.whl", hash = "sha256:cdf739f7827374575cefb134311457d08c189793c3da3097c023debec9acaedb"},
+    {file = "pyright-1.1.320.tar.gz", hash = "sha256:94223e3b82d0b4c99c5125bab4d628ec749ce0b5b2ae0471fd4921dd4eff460d"},
 ]
 
 [package.dependencies]

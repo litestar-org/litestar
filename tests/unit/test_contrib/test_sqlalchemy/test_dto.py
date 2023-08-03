@@ -89,7 +89,7 @@ async def get_model_from_dto(
         handler_id=asgi_connection.route_handler.handler_id,
         field_definition=FieldDefinition.from_kwarg(annotation, name="return"),
     )
-    return dto_type(asgi_connection).decode(raw)
+    return dto_type(asgi_connection).decode_bytes(raw)
 
 
 def assert_model_values(model_instance: DeclarativeBase, expected_values: dict[str, Any]) -> None:
@@ -199,7 +199,7 @@ async def test_dto_for_private_model_field(
     assert "field" not in vars(await get_model_from_dto(dto_type, Model, asgi_connection, raw))
 
     dto_instance = dto_type(asgi_connection)
-    serializable = dto_instance.encode(
+    serializable = dto_instance.data_to_encodable_type(
         Model(
             id=UUID("0956ca9e-5671-4d7d-a862-b98e6368ed2c"),
             created=datetime.min,

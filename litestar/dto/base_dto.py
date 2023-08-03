@@ -84,14 +84,19 @@ class AbstractDTO(Generic[T]):
 
         return type(f"{cls.__name__}[{annotation}]", (cls,), cls_dict)
 
-    def decode(self, value: bytes | dict[str, Any]) -> Any:
-        """Coerce the unstructured data into the data type."""
+    def decode_builtins(self, value: dict[str, Any]) -> Any:
+        """Decode a dictionary of Python values into an the DTO's datatype."""
+
         backend = self._dto_backends[self.handler_id]["data_backend"]  # pyright: ignore
-        if isinstance(value, bytes):
-            return backend.populate_data_from_raw(value, self.asgi_connection)
         return backend.populate_data_from_builtins(value, self.asgi_connection)
 
-    def encode(self, data: T | Collection[T]) -> LitestarEncodableType:
+    def decode_bytes(self, value: bytes) -> Any:
+        """Decode a byte string into an the DTO's datatype."""
+
+        backend = self._dto_backends[self.handler_id]["data_backend"]  # pyright: ignore
+        return backend.populate_data_from_raw(value, self.asgi_connection)
+
+    def data_to_encodable_type(self, data: T | Collection[T]) -> LitestarEncodableType:
         backend = self._dto_backends[self.handler_id]["return_backend"]  # pyright: ignore
         return backend.encode_data(data)
 

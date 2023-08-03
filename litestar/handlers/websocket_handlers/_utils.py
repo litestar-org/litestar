@@ -24,7 +24,7 @@ def create_handle_receive(listener: WebsocketListenerRouteHandler) -> Callable[[
 
         async def handle_receive(socket: WebSocket) -> Any:
             received_data = await socket.receive_data(mode=listener._receive_mode)
-            return data_dto(socket).decode(
+            return data_dto(socket).decode_bytes(
                 received_data.encode("utf-8") if isinstance(received_data, str) else received_data
             )
 
@@ -57,7 +57,7 @@ def create_handle_send(
     if return_dto := listener.resolve_return_dto():
 
         async def handle_send(socket: WebSocket, data: Any) -> None:
-            encoded_data = return_dto(socket).encode(data)
+            encoded_data = return_dto(socket).data_to_encodable_type(data)
             data = json_encoder.encode(encoded_data)
             await socket.send_data(data=data, mode=listener._send_mode)
 

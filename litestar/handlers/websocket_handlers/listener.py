@@ -58,28 +58,15 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
     """
 
     __slots__ = {
-        "_connection_lifespan",
-        "_dependency_stubs",
-        "_initialized",
-        "_listener_context",
-        "_pass_socket",
-        "_receive_mode",
-        "_send_mode",
-        "_original_fn",
-        "connection_accept_handler",
-        "handle_receive",
-        "handle_send",
-        "handler_function",
-        "listener_callback",
-        "listener_callback_signature",
-        "on_accept",
-        "on_disconnect",
-        "pass_socket",
-        "resolved_data_dto",
-        "resolved_return_dto",
+        "connection_accept_handler": "Callback to accept a WebSocket connection. By default, calls WebSocket.accept",
+        "on_accept": "Callback invoked after a WebSocket connection has been accepted",
+        "on_disconnect": "Callback invoked after a WebSocket connection has been closed",
+        "_connection_lifespan": None,
+        "_handle_receive": None,
+        "_handle_send": None,
+        "_receive_mode": None,
+        "_send_mode": None,
     }
-
-    _original_fn: AnyCallable
 
     @overload
     def __init__(

@@ -24,19 +24,13 @@ C = TypeVar("C", int, str, UUID)
 
 
 @dataclass
-class BasePagination(Generic[T]):
-    __slots__ = ("items",)
+class ClassicPagination(Generic[T]):
+    """Container for data returned using limit/offset pagination."""
+
+    __slots__ = ("items", "page_size", "current_page", "total_pages")
 
     items: List[T]
     """List of data being sent as part of the response."""
-
-
-@dataclass
-class ClassicPagination(Generic[T], BasePagination[T]):
-    """Container for data returned using limit/offset pagination."""
-
-    __slots__ = ("page_size", "current_page", "total_pages")
-
     page_size: int
     """Number of items per page."""
     current_page: int
@@ -46,11 +40,13 @@ class ClassicPagination(Generic[T], BasePagination[T]):
 
 
 @dataclass
-class OffsetPagination(Generic[T], BasePagination[T]):
+class OffsetPagination(Generic[T]):
     """Container for data returned using limit/offset pagination."""
 
-    __slots__ = ("limit", "offset", "total")
+    __slots__ = ("items", "limit", "offset", "total")
 
+    items: List[T]
+    """List of data being sent as part of the response."""
     limit: int
     """Maximal number of items to send."""
     offset: int
@@ -63,11 +59,13 @@ class OffsetPagination(Generic[T], BasePagination[T]):
 
 
 @dataclass
-class CursorPagination(Generic[C, T], BasePagination[T]):
+class CursorPagination(Generic[C, T]):
     """Container for data returned using cursor pagination."""
 
-    __slots__ = ("results_per_page", "cursor", "next_cursor")
+    __slots__ = ("items", "results_per_page", "cursor", "next_cursor")
 
+    items: List[T]
+    """List of data being sent as part of the response."""
     results_per_page: int
     """Maximal number of items to send."""
     cursor: Optional[C]

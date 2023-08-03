@@ -2,7 +2,7 @@ import re
 import time
 from http.client import HTTPException
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
@@ -182,7 +182,7 @@ def test_prometheus_with_websocket() -> None:
     config = create_config()
 
     @websocket_listener("/test")
-    def test(data: str) -> Dict[str, str]:
+    def test(data: str) -> dict:
         return {"hello": data}
 
     with create_test_client([test, PrometheusController], middleware=[config.middleware]) as client:

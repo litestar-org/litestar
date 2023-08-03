@@ -13,6 +13,7 @@ from litestar.dto._types import (
     CompositeType,
     MappingType,
     SimpleType,
+    TransferDTOFieldDefinition,
     TupleType,
     UnionType,
 )
@@ -23,7 +24,7 @@ from litestar.typing import FieldDefinition
 if TYPE_CHECKING:
     from typing import AbstractSet
 
-    from litestar.dto._types import FieldDefinitionsType, TransferType
+    from litestar.dto._types import TransferType
 
 
 @dataclass
@@ -84,7 +85,9 @@ def fx_backend(data_model_type: type[Model], field_definitions: list[DTOFieldDef
             yield from field_definitions
 
     class _Backend(DTOBackend):
-        def create_transfer_model_type(self, model_name: str, field_definitions: FieldDefinitionsType) -> type[Any]:
+        def create_transfer_model_type(
+            self, model_name: str, field_definitions: tuple[TransferDTOFieldDefinition, ...]
+        ) -> type[Any]:
             """Create a model for data transfer.
 
             Args:

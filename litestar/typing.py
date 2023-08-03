@@ -558,7 +558,7 @@ class FieldDefinition:
             default=Empty if parameter.default is Signature.empty else parameter.default,
         )
 
-    def test_predicate_recursively(self, predicate: Callable[[FieldDefinition], bool]) -> bool:
+    def match_predicate_recursively(self, predicate: Callable[[FieldDefinition], bool]) -> bool:
         """Recursively test the passed in predicate against the field and any of its inner fields.
 
         Args:
@@ -567,4 +567,4 @@ class FieldDefinition:
         Returns:
             A boolean.
         """
-        return predicate(self) or any(t.test_predicate_recursively(predicate) for t in self.inner_types)
+        return predicate(self) or any(t.match_predicate_recursively(predicate) for t in self.inner_types)

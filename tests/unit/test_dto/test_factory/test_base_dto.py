@@ -103,7 +103,7 @@ def test_config_assigned_via_subclassing() -> None:
 async def test_from_bytes(asgi_connection: Request[Any, Any, Any]) -> None:
     dto_type = DataclassDTO[Model]
     dto_type.create_for_field_definition(FieldDefinition.from_kwarg(Model, name="data"), handler_id="handler_id")
-    assert dto_type(asgi_connection).decode(b'{"a":1,"b":"two"}') == Model(a=1, b="two")
+    assert dto_type(asgi_connection).decode_bytes(b'{"a":1,"b":"two"}') == Model(a=1, b="two")
 
 
 def test_config_field_rename(asgi_connection: Request[Any, Any, Any]) -> None:

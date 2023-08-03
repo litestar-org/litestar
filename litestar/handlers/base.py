@@ -19,9 +19,8 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.typing import FieldDefinition
-from litestar.utils import AsyncCallable, Ref, async_partial, get_name, normalize_path
+from litestar.utils import AsyncCallable, Ref, get_name, normalize_path
 from litestar.utils.helpers import unwrap_partial
-from litestar.utils.predicates import is_async_callable
 from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
@@ -357,11 +356,6 @@ class BaseRouteHandler:
                             data_dto=self.resolve_data_dto(),
                             type_decoders=self.resolve_type_decoders(),
                         )
-                    if provider.sync_to_thread and not is_async_callable(provider.dependency.value):
-                        provider.dependency.value = async_partial(provider.dependency.value)
-                        provider.has_sync_callable = False
-                    else:
-                        provider.has_sync_callable = not is_async_callable(provider.dependency.value)
 
                     self._resolved_dependencies[key] = provider
         return cast("dict[str, Provide]", self._resolved_dependencies)
@@ -432,7 +426,7 @@ class BaseRouteHandler:
                 plugins_for_data_type := [
                     plugin
                     for plugin in self.app.plugins.serialization
-                    if self.parsed_data_field.test_predicate_recursively(plugin.supports_type)
+                    if self.parsed_data_field.match_predicate_recursively(plugin.supports_type)
                 ]
             ):
                 data_dto = plugins_for_data_type[0].create_dto_for_type(self.parsed_data_field)
@@ -465,7 +459,7 @@ class BaseRouteHandler:
             elif plugins_for_return_type := [
                 plugin
                 for plugin in self.app.plugins.serialization
-                if self.parsed_return_field.test_predicate_recursively(plugin.supports_type)
+                if self.parsed_return_field.match_predicate_recursively(plugin.supports_type)
             ]:
                 return_dto = plugins_for_return_type[0].create_dto_for_type(self.parsed_return_field)
             else:
@@ -496,8 +490,15 @@ class BaseRouteHandler:
                     f"If you wish to override a provider, it must have the same key."
                 )
 
-    def on_registration(self) -> None:
-        """Called once per handler when the app object is instantiated."""
+    def on_registration(self, app: Litestar) -> None:
+        """Called once per handler when the app object is instantiated.
+
+        Args:
+            app: The :class:`Litestar<.app.Litestar>` app object.
+
+        Returns:
+            None
+        """
         self._validate_handler_function()
         self.resolve_dependencies()
         self.resolve_guards()
@@ -515,7 +516,7 @@ class BaseRouteHandler:
         Returns:
             A string
         """
-        target: type[AsyncAnyCallable] | AsyncAnyCallable
+        target: type[AsyncAnyCallable] | AsyncAnyCallable  # pyright: ignore
         target = unwrap_partial(self.fn.value)
         if not hasattr(target, "__qualname__"):
             target = type(target)
