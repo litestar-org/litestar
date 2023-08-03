@@ -921,8 +921,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../usage/dependency-injection.html">Dependency Injection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/dto/index.html">Data Transfer Object (DTO)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/dto/0-basic-use.html">Basic Use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/dto/1-dto-factory.html">DTO Factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/dto/2-dto-interface.html">DTO Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/dto/2-creating-custom-dto-classes.html">Implementing Cusotm DTO Classes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/websockets.html">WebSockets</a></li>
@@ -1013,14 +1013,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../di.html">di</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../dto/interface.html">interface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dto/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dto/data_structures.html">data_structures</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dto/field.html">field</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dto/types.html">types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dto/base_factory.html">base_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dto/msgspec_dto_factory.html">msgspec_dto_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dto/dataclass_dto_factory.html">dataclass_dto_factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dto/dataclass_dto.html">dataclass_dto</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../enums.html">enums</a></li>
@@ -1248,14 +1247,14 @@ document.write(`
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.openapi.OpenAPIController.dto">
-<span class="sig-name descname"><span class="pre">dto</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../dto/interface.html#litestar.dto.interface.DTOInterface" title="litestar.dto.interface.DTOInterface"><span class="pre">DTOInterface</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EmptyType</span></em><a class="headerlink" href="#litestar.openapi.OpenAPIController.dto" title="Permalink to this definition">#</a></dt>
-<dd><p><a class="reference internal" href="../dto/interface.html#litestar.dto.interface.DTOInterface" title="litestar.dto.interface.DTOInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOInterface</span></code></a> to use for (de)serializing and validation of request data.</p>
+<span class="sig-name descname"><span class="pre">dto</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../dto/base_dto.html#litestar.dto.base_dto.AbstractDTO" title="litestar.dto.base_dto.AbstractDTO"><span class="pre">AbstractDTO</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EmptyType</span></em><a class="headerlink" href="#litestar.openapi.OpenAPIController.dto" title="Permalink to this definition">#</a></dt>
+<dd><p><a class="reference internal" href="../dto/base_dto.html#litestar.dto.base_dto.AbstractDTO" title="litestar.dto.base_dto.AbstractDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDTO</span></code></a> to use for (de)serializing and validation of request data.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.openapi.OpenAPIController.return_dto">
-<span class="sig-name descname"><span class="pre">return_dto</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../dto/interface.html#litestar.dto.interface.DTOInterface" title="litestar.dto.interface.DTOInterface"><span class="pre">DTOInterface</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EmptyType</span></em><a class="headerlink" href="#litestar.openapi.OpenAPIController.return_dto" title="Permalink to this definition">#</a></dt>
-<dd><p><a class="reference internal" href="../dto/interface.html#litestar.dto.interface.DTOInterface" title="litestar.dto.interface.DTOInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOInterface</span></code></a> to use for serializing outbound response
+<span class="sig-name descname"><span class="pre">return_dto</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../dto/base_dto.html#litestar.dto.base_dto.AbstractDTO" title="litestar.dto.base_dto.AbstractDTO"><span class="pre">AbstractDTO</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EmptyType</span></em><a class="headerlink" href="#litestar.openapi.OpenAPIController.return_dto" title="Permalink to this definition">#</a></dt>
+<dd><p><a class="reference internal" href="../dto/base_dto.html#litestar.dto.base_dto.AbstractDTO" title="litestar.dto.base_dto.AbstractDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDTO</span></code></a> to use for serializing outbound response
 data.</p>
 </dd></dl>
 

@@ -55,7 +55,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Channels" href="channels.html" />
-    <link rel="prev" title="DTO Interface" href="dto/2-dto-interface.html" />
+    <link rel="prev" title="Implementing Cusotm DTO Classes" href="dto/2-creating-custom-dto-classes.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -921,8 +921,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="dependency-injection.html">Dependency Injection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="dto/index.html">Data Transfer Object (DTO)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="dto/0-basic-use.html">Basic Use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dto/1-dto-factory.html">DTO Factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dto/2-dto-interface.html">DTO Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dto/2-creating-custom-dto-classes.html">Implementing Cusotm DTO Classes</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">WebSockets</a></li>
@@ -1013,14 +1013,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/interface.html">interface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/data_structures.html">data_structures</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/field.html">field</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/types.html">types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/base_factory.html">base_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/msgspec_dto_factory.html">msgspec_dto_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/dataclass_dto_factory.html">dataclass_dto_factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/dataclass_dto.html">dataclass_dto</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">enums</a></li>
@@ -1651,12 +1650,12 @@ Async</label><div class="sd-tab-content docutils">
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="dto/2-dto-interface.html"
+       href="dto/2-creating-custom-dto-classes.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">DTO Interface</p>
+        <p class="prev-next-title">Implementing Cusotm DTO Classes</p>
       </div>
     </a>
     <a class="right-next"

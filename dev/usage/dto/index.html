@@ -923,8 +923,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../dependency-injection.html">Dependency Injection</a></li>
 <li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">Data Transfer Object (DTO)</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="0-basic-use.html">Basic Use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="1-dto-factory.html">DTO Factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html">DTO Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="2-creating-custom-dto-classes.html">Implementing Cusotm DTO Classes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../websockets.html">WebSockets</a></li>
@@ -1015,14 +1015,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/di.html">di</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/interface.html">interface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/dto/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/dto/data_structures.html">data_structures</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/dto/field.html">field</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/dto/types.html">types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/base_factory.html">base_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/msgspec_dto_factory.html">msgspec_dto_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/dataclass_dto_factory.html">dataclass_dto_factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/dataclass_dto.html">dataclass_dto</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/enums.html">enums</a></li>
@@ -1251,35 +1250,28 @@ DTO</p></li>
 <li class="toctree-l2"><a class="reference internal" href="0-basic-use.html#defining-dtos-on-layers">Defining DTOs on layers</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="1-dto-factory.html">DTO Factory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="1-dto-factory.html#using-dto-factories">Using DTO Factories</a></li>
-<li class="toctree-l2"><a class="reference internal" href="1-dto-factory.html#marking-fields">Marking fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="1-dto-factory.html#excluding-fields">Excluding fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="1-dto-factory.html#renaming-fields">Renaming fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="1-dto-factory.html#type-checking">Type checking</a></li>
-<li class="toctree-l2"><a class="reference internal" href="1-dto-factory.html#nested-fields">Nested fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="1-dto-factory.html#dto-data">DTO Data</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="1-dto-factory.html#providing-values-for-nested-data">Providing values for nested data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="1-abstract-dto.html">AbstractDTO</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="1-abstract-dto.html#using-dto-factories">Using DTO Factories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1-abstract-dto.html#marking-fields">Marking fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1-abstract-dto.html#excluding-fields">Excluding fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1-abstract-dto.html#renaming-fields">Renaming fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1-abstract-dto.html#type-checking">Type checking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1-abstract-dto.html#nested-fields">Nested fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1-abstract-dto.html#dto-data">DTO Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="1-abstract-dto.html#providing-values-for-nested-data">Providing values for nested data</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="1-dto-factory.html#dto-factory-and-patch-requests">DTO Factory and PATCH requests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="1-dto-factory.html#implicit-private-fields">Implicit Private Fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="1-dto-factory.html#wrapping-return-data">Wrapping Return Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="1-dto-factory.html#working-with-litestar-s-pagination-types">Working with Litestar’s Pagination Types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="1-dto-factory.html#using-litestar-s-response-type-with-dto-factory">Using Litestar’s Response Type with DTO Factory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1-abstract-dto.html#dto-factory-and-patch-requests">DTO Factory and PATCH requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1-abstract-dto.html#implicit-private-fields">Implicit Private Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1-abstract-dto.html#wrapping-return-data">Wrapping Return Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1-abstract-dto.html#working-with-litestar-s-pagination-types">Working with Litestar’s Pagination Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1-abstract-dto.html#using-litestar-s-response-type-with-dto-factory">Using Litestar’s Response Type with DTO Factory</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="2-dto-interface.html">DTO Interface</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="2-dto-interface.html#abstract-methods">Abstract Methods</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#data-to-encodable-type"><code class="docutils literal notranslate"><span class="pre">data_to_encodable_type</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#bytes-to-data-type"><code class="docutils literal notranslate"><span class="pre">bytes_to_data_type</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#builtins-to-data-type"><code class="docutils literal notranslate"><span class="pre">builtins_to_data_type</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="2-dto-interface.html#additional-methods">Additional Methods</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#init"><code class="docutils literal notranslate"><span class="pre">__init__</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#create-openapi-schema"><code class="docutils literal notranslate"><span class="pre">create_openapi_schema</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#on-registration"><code class="docutils literal notranslate"><span class="pre">on_registration</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="2-creating-custom-dto-classes.html">Implementing Cusotm DTO Classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="2-creating-custom-dto-classes.html#abstract-methods">Abstract Methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="2-creating-custom-dto-classes.html#generate-field-definitions"><code class="docutils literal notranslate"><span class="pre">generate_field_definitions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="2-creating-custom-dto-classes.html#detect-nested-field"><code class="docutils literal notranslate"><span class="pre">detect_nested_field</span></code></a></li>
 </ul>
 </li>
 </ul>

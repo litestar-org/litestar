@@ -18,7 +18,7 @@ that will take responsibility for the data received and returned from handlers:
   provided, the DTO described by the ``dto`` parameter is used.
 
 The object provided to both of these parameters must be a class that conforms to the
-:class:`DTOInterface <litestar.dto.interface.DTOInterface>` protocol.
+:class:`AbstractDTO <litestar.dto.base_dto.AbstractDTO>` protocol.
 
 Defining DTOs on handlers
 ~~~~~~~~~~~~~~~~~~~~~~~~~

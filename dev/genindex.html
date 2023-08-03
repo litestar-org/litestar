@@ -916,8 +916,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="usage/dependency-injection.html">Dependency Injection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="usage/dto/index.html">Data Transfer Object (DTO)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="usage/dto/0-basic-use.html">Basic Use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/dto/1-dto-factory.html">DTO Factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/dto/2-dto-interface.html">DTO Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/dto/2-creating-custom-dto-classes.html">Implementing Cusotm DTO Classes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="usage/websockets.html">WebSockets</a></li>
@@ -1008,14 +1008,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="reference/datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/di.html">di</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/interface.html">interface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/dto/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/dto/data_structures.html">data_structures</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/dto/field.html">field</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/dto/types.html">types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/base_factory.html">base_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/msgspec_dto_factory.html">msgspec_dto_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/dataclass_dto_factory.html">dataclass_dto_factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/dto/dataclass_dto.html">dataclass_dto</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="reference/enums.html">enums</a></li>
@@ -1623,7 +1622,7 @@ document.write(`
 </li>
         <li><a href="reference/di.html#litestar.di.Provide.__init__">(litestar.di.Provide method)</a>
 </li>
-        <li><a href="reference/dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory.__init__">(litestar.dto.base_factory.AbstractDTOFactory method)</a>
+        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.__init__">(litestar.dto.base_dto.AbstractDTO method)</a>
 </li>
         <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.__init__">(litestar.dto.config.DTOConfig method)</a>
 </li>
@@ -1632,12 +1631,6 @@ document.write(`
         <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOFieldDefinition.__init__">(litestar.dto.data_structures.DTOFieldDefinition method)</a>
 </li>
         <li><a href="reference/dto/field.html#litestar.dto.field.DTOField.__init__">(litestar.dto.field.DTOField method)</a>
-</li>
-        <li><a href="reference/dto/interface.html#litestar.dto.interface.ConnectionContext.__init__">(litestar.dto.interface.ConnectionContext method)</a>
-</li>
-        <li><a href="reference/dto/interface.html#litestar.dto.interface.DTOInterface.__init__">(litestar.dto.interface.DTOInterface method)</a>
-</li>
-        <li><a href="reference/dto/interface.html#litestar.dto.interface.HandlerContext.__init__">(litestar.dto.interface.HandlerContext method)</a>
 </li>
         <li><a href="reference/events.html#litestar.events.BaseEventEmitterBackend.__init__">(litestar.events.BaseEventEmitterBackend method)</a>
 </li>
@@ -1675,9 +1668,9 @@ document.write(`
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.put.__init__">(litestar.handlers.put method)</a>
 </li>
-        <li><a href="reference/handlers.html#litestar.handlers.websocket_listener.__init__">(litestar.handlers.websocket_listener method)</a>
-</li>
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener.__init__">(litestar.handlers.WebsocketListener method)</a>
+</li>
+        <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.__init__">(litestar.handlers.WebsocketListenerRouteHandler method)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.__init__">(litestar.handlers.WebsocketRouteHandler method)</a>
 </li>
@@ -1980,7 +1973,7 @@ document.write(`
         <li><a href="reference/middleware/authentication.html#litestar.middleware.authentication.AbstractAuthenticationMiddleware">(class in litestar.middleware.authentication)</a>
 </li>
       </ul></li>
-      <li><a href="reference/dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory">AbstractDTOFactory (class in litestar.dto.base_factory)</a>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO">AbstractDTO (class in litestar.dto.base_dto)</a>
 </li>
       <li><a href="reference/middleware/index.html#litestar.middleware.AbstractMiddleware">AbstractMiddleware (class in litestar.middleware)</a>
 </li>
@@ -2350,6 +2343,8 @@ document.write(`
 </li>
       <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails.boosted">boosted (litestar.contrib.htmx.request.HTMXDetails property)</a>
 </li>
+      <li><a href="reference/typing.html#litestar.typing.FieldDefinition.bound_types">bound_types (litestar.typing.FieldDefinition property)</a>
+</li>
       <li><a href="usage/channels.html#term-broker"><strong>broker</strong></a>
 </li>
       <li><a href="reference/config.html#litestar.config.compression.CompressionConfig.brotli_gzip_fallback">brotli_gzip_fallback (litestar.config.compression.CompressionConfig attribute)</a>
@@ -2362,18 +2357,6 @@ document.write(`
 </li>
       <li><a href="reference/config.html#litestar.config.compression.CompressionConfig.brotli_quality">brotli_quality (litestar.config.compression.CompressionConfig attribute)</a>
 </li>
-      <li><a href="reference/dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory.builtins_to_data_type">builtins_to_data_type() (litestar.dto.base_factory.AbstractDTOFactory method)</a>
-
-      <ul>
-        <li><a href="reference/dto/interface.html#litestar.dto.interface.DTOInterface.builtins_to_data_type">(litestar.dto.interface.DTOInterface method)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory.bytes_to_data_type">bytes_to_data_type() (litestar.dto.base_factory.AbstractDTOFactory method)</a>
-
-      <ul>
-        <li><a href="reference/dto/interface.html#litestar.dto.interface.DTOInterface.bytes_to_data_type">(litestar.dto.interface.DTOInterface method)</a>
-</li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -2494,7 +2477,7 @@ document.write(`
 </li>
       <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware">CompressionMiddleware (class in litestar.middleware.compression)</a>
 </li>
-      <li><a href="reference/dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory.config">config (litestar.dto.base_factory.AbstractDTOFactory attribute)</a>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.config">config (litestar.dto.base_dto.AbstractDTO attribute)</a>
 </li>
       <li><a href="reference/logging/config.html#litestar.logging.config.BaseLoggingConfig.configure">configure() (litestar.logging.config.BaseLoggingConfig method)</a>
 
@@ -2508,11 +2491,9 @@ document.write(`
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.connect_args">connect_args (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
-      <li><a href="reference/handlers.html#litestar.handlers.websocket_listener.connection_accept_handler">connection_accept_handler (litestar.handlers.websocket_listener attribute)</a>
+      <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.connection_accept_handler">connection_accept_handler (litestar.handlers.WebsocketListenerRouteHandler attribute)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.connection_string">connection_string (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
-</li>
-      <li><a href="reference/dto/interface.html#litestar.dto.interface.ConnectionContext">ConnectionContext (class in litestar.dto.interface)</a>
 </li>
       <li><a href="reference/data_extractors.html#litestar.data_extractors.ConnectionDataExtractor">ConnectionDataExtractor (class in litestar.data_extractors)</a>
 </li>
@@ -2636,18 +2617,16 @@ document.write(`
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.create_examples">create_examples (litestar.openapi.OpenAPIConfig attribute)</a>
 </li>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_for_field_definition">create_for_field_definition() (litestar.dto.base_dto.AbstractDTO class method)</a>
+</li>
       <li><a href="reference/routes.html#litestar.routes.BaseRoute.create_handler_kwargs_model">create_handler_kwargs_model() (litestar.routes.BaseRoute method)</a>
 </li>
       <li><a href="reference/routes.html#litestar.routes.HTTPRoute.create_handler_map">create_handler_map() (litestar.routes.HTTPRoute method)</a>
 </li>
       <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOData.create_instance">create_instance() (litestar.dto.data_structures.DTOData method)</a>
 </li>
-      <li><a href="reference/dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory.create_openapi_schema">create_openapi_schema() (litestar.dto.base_factory.AbstractDTOFactory class method)</a>
-
-      <ul>
-        <li><a href="reference/dto/interface.html#litestar.dto.interface.DTOInterface.create_openapi_schema">(litestar.dto.interface.DTOInterface class method)</a>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_openapi_schema">create_openapi_schema() (litestar.dto.base_dto.AbstractDTO class method)</a>
 </li>
-      </ul></li>
       <li><a href="reference/routes.html#litestar.routes.HTTPRoute.create_options_handler">create_options_handler() (litestar.routes.HTTPRoute method)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.create_registry">create_registry() (in module litestar.contrib.sqlalchemy.base)</a>
@@ -2708,13 +2687,7 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.ResponseSpec.data_container">data_container (litestar.openapi.ResponseSpec attribute)</a>
 </li>
-      <li><a href="reference/dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory.data_to_encodable_type">data_to_encodable_type() (litestar.dto.base_factory.AbstractDTOFactory method)</a>
-
-      <ul>
-        <li><a href="reference/dto/interface.html#litestar.dto.interface.DTOInterface.data_to_encodable_type">(litestar.dto.interface.DTOInterface method)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/dto/dataclass_dto_factory.html#litestar.dto.dataclass_dto_factory.DataclassDTO">DataclassDTO (class in litestar.dto.dataclass_dto_factory)</a>
+      <li><a href="reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO">DataclassDTO (class in litestar.dto.dataclass_dto)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.DateTimeUTC">DateTimeUTC (class in litestar.contrib.sqlalchemy.types)</a>
 </li>
@@ -2723,6 +2696,10 @@ document.write(`
       <li><a href="reference/types.html#litestar.types.Logger.debug">debug() (litestar.types.Logger method)</a>
 </li>
       <li><a href="reference/contrib/jwt.html#litestar.contrib.jwt.Token.decode">decode() (litestar.contrib.jwt.Token class method)</a>
+</li>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.decode_builtins">decode_builtins() (litestar.dto.base_dto.AbstractDTO method)</a>
+</li>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.decode_bytes">decode_bytes() (litestar.dto.base_dto.AbstractDTO method)</a>
 </li>
       <li><a href="reference/serialization.html#litestar.serialization.decode_json">decode_json() (in module litestar.serialization)</a>
 </li>
@@ -2742,7 +2719,7 @@ document.write(`
       </ul></li>
       <li><a href="reference/config.html#litestar.config.response_cache.default_cache_key_builder">default_cache_key_builder() (in module litestar.config.response_cache)</a>
 </li>
-      <li><a href="reference/handlers.html#litestar.handlers.websocket_listener.default_connection_lifespan">default_connection_lifespan() (litestar.handlers.websocket_listener method)</a>
+      <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.default_connection_lifespan">default_connection_lifespan() (litestar.handlers.WebsocketListenerRouteHandler method)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.default_deserializer">default_deserializer (litestar.handlers.BaseRouteHandler property)</a>
 </li>
@@ -2753,6 +2730,8 @@ document.write(`
       <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOFieldDefinition.default_factory">default_factory (litestar.dto.data_structures.DTOFieldDefinition attribute)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.DEFAULT_OPENAPI_CONFIG">DEFAULT_OPENAPI_CONFIG (in module litestar.app)</a>
+</li>
+      <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.default_serializer">default_serializer (litestar.handlers.BaseRouteHandler property)</a>
 </li>
       <li><a href="reference/serialization.html#litestar.serialization.default_serializer">default_serializer() (in module litestar.serialization)</a>
 </li>
@@ -2864,6 +2843,8 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.dependent_schemas">dependent_schemas (litestar.openapi.spec.Schema attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.deprecated">deprecated (litestar.datastructures.ResponseHeader attribute)</a>
 
       <ul>
@@ -2876,8 +2857,6 @@ document.write(`
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.deprecated">(litestar.openapi.spec.Schema attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/contrib/jwt.html#litestar.contrib.jwt.BaseJWTAuth.description">description (litestar.contrib.jwt.BaseJWTAuth attribute)</a>
 
       <ul>
@@ -2943,11 +2922,11 @@ document.write(`
 </li>
         <li><a href="reference/contrib/sqlalchemy/dto.html#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO.detect_nested_field">(litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO class method)</a>
 </li>
-        <li><a href="reference/dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory.detect_nested_field">(litestar.dto.base_factory.AbstractDTOFactory class method)</a>
+        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.detect_nested_field">(litestar.dto.base_dto.AbstractDTO class method)</a>
 </li>
-        <li><a href="reference/dto/dataclass_dto_factory.html#litestar.dto.dataclass_dto_factory.DataclassDTO.detect_nested_field">(litestar.dto.dataclass_dto_factory.DataclassDTO class method)</a>
+        <li><a href="reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO.detect_nested_field">(litestar.dto.dataclass_dto.DataclassDTO class method)</a>
 </li>
-        <li><a href="reference/dto/msgspec_dto_factory.html#litestar.dto.msgspec_dto_factory.MsgspecDTO.detect_nested_field">(litestar.dto.msgspec_dto_factory.MsgspecDTO class method)</a>
+        <li><a href="reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO.detect_nested_field">(litestar.dto.msgspec_dto.MsgspecDTO class method)</a>
 </li>
       </ul></li>
       <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.dict">dict (litestar.datastructures.Cookie property)</a>
@@ -3006,8 +2985,6 @@ document.write(`
 </li>
       <li><a href="reference/dto/field.html#litestar.dto.field.dto_field">dto_field() (in module litestar.dto.field)</a>
 </li>
-      <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOFieldDefinition.dto_for">dto_for (litestar.dto.data_structures.DTOFieldDefinition attribute)</a>
-</li>
       <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig">DTOConfig (class in litestar.dto.config)</a>
 </li>
       <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOData">DTOData (class in litestar.dto.data_structures)</a>
@@ -3017,8 +2994,6 @@ document.write(`
       <li><a href="reference/dto/field.html#litestar.dto.field.DTOField">DTOField (class in litestar.dto.field)</a>
 </li>
       <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOFieldDefinition">DTOFieldDefinition (class in litestar.dto.data_structures)</a>
-</li>
-      <li><a href="reference/dto/interface.html#litestar.dto.interface.DTOInterface">DTOInterface (class in litestar.dto.interface)</a>
 </li>
       <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data">dump_data() (litestar.middleware.session.client_side.ClientSideSessionBackend method)</a>
 </li>
@@ -3446,8 +3421,6 @@ document.write(`
 </li>
       <li><a href="reference/datastructures.html#litestar.datastructures.FormMultiDict">FormMultiDict (class in litestar.datastructures)</a>
 </li>
-      <li><a href="reference/dto/types.html#litestar.dto.types.ForType">ForType (in module litestar.dto.types)</a>
-</li>
       <li><a href="reference/datastructures.html#litestar.datastructures.URL.fragment">fragment (litestar.datastructures.URL attribute)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.from_annotation">from_annotation() (litestar.typing.FieldDefinition class method)</a>
@@ -3497,14 +3470,16 @@ document.write(`
 </li>
         <li><a href="reference/contrib/sqlalchemy/dto.html#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO.generate_field_definitions">(litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO class method)</a>
 </li>
-        <li><a href="reference/dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory.generate_field_definitions">(litestar.dto.base_factory.AbstractDTOFactory class method)</a>
+        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.generate_field_definitions">(litestar.dto.base_dto.AbstractDTO class method)</a>
 </li>
-        <li><a href="reference/dto/dataclass_dto_factory.html#litestar.dto.dataclass_dto_factory.DataclassDTO.generate_field_definitions">(litestar.dto.dataclass_dto_factory.DataclassDTO class method)</a>
+        <li><a href="reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO.generate_field_definitions">(litestar.dto.dataclass_dto.DataclassDTO class method)</a>
 </li>
-        <li><a href="reference/dto/msgspec_dto_factory.html#litestar.dto.msgspec_dto_factory.MsgspecDTO.generate_field_definitions">(litestar.dto.msgspec_dto_factory.MsgspecDTO class method)</a>
+        <li><a href="reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO.generate_field_definitions">(litestar.dto.msgspec_dto.MsgspecDTO class method)</a>
 </li>
       </ul></li>
       <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.generate_session_id">generate_session_id() (litestar.middleware.session.server_side.ServerSideSessionBackend method)</a>
+</li>
+      <li><a href="reference/typing.html#litestar.typing.FieldDefinition.generic_types">generic_types (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSessionConfig">GenericSessionConfig (class in litestar.contrib.sqlalchemy.plugins)</a>
 </li>
@@ -3546,7 +3521,7 @@ document.write(`
       </ul></li>
       <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys">get_cookie_keys() (litestar.middleware.session.client_side.ClientSideSessionBackend method)</a>
 </li>
-      <li><a href="reference/dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory.get_dto_config_from_annotated_type">get_dto_config_from_annotated_type() (litestar.dto.base_factory.AbstractDTOFactory static method)</a>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_dto_config_from_annotated_type">get_dto_config_from_annotated_type() (litestar.dto.base_dto.AbstractDTO static method)</a>
 </li>
       <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.get_fs_info">get_fs_info() (litestar.static_files.StaticFiles method)</a>
 </li>
@@ -3582,8 +3557,10 @@ document.write(`
         <li><a href="reference/pagination.html#litestar.pagination.AbstractSyncOffsetPaginator.get_items">(litestar.pagination.AbstractSyncOffsetPaginator method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory.get_model_type_hints">get_model_type_hints() (litestar.dto.base_factory.AbstractDTOFactory static method)</a>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_model_type_hints">get_model_type_hints() (litestar.dto.base_dto.AbstractDTO static method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/contrib/repository/abc.html#litestar.contrib.repository.abc.AbstractAsyncRepository.get_one">get_one() (litestar.contrib.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
@@ -3594,8 +3571,6 @@ document.write(`
         <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.get_one">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/contrib/repository/abc.html#litestar.contrib.repository.abc.AbstractAsyncRepository.get_one_or_none">get_one_or_none() (litestar.contrib.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
@@ -3710,9 +3685,9 @@ document.write(`
       </ul></li>
       <li><a href="reference/app.html#litestar.app.HandlerIndex.handler">handler (litestar.app.HandlerIndex attribute)</a>
 </li>
-      <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.handler_name">handler_name (litestar.handlers.BaseRouteHandler property)</a>
+      <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.handler_id">handler_id (litestar.handlers.BaseRouteHandler property)</a>
 </li>
-      <li><a href="reference/dto/interface.html#litestar.dto.interface.HandlerContext">HandlerContext (class in litestar.dto.interface)</a>
+      <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.handler_name">handler_name (litestar.handlers.BaseRouteHandler property)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.HandlerIndex">HandlerIndex (class in litestar.app)</a>
 </li>
@@ -4069,6 +4044,8 @@ document.write(`
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_simple_type">is_simple_type (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_subclass_of">is_subclass_of() (litestar.typing.FieldDefinition method)</a>
+</li>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.is_supported_model_type_field">is_supported_model_type_field() (litestar.dto.base_dto.AbstractDTO class method)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_tuple">is_tuple (litestar.typing.FieldDefinition property)</a>
 </li>
@@ -4570,6 +4547,8 @@ document.write(`
         <li><a href="reference/controller.html#module-litestar.controller">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.data_extractors
 
@@ -4577,8 +4556,6 @@ document.write(`
         <li><a href="reference/data_extractors.html#module-litestar.data_extractors">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.datastructures
 
@@ -4594,10 +4571,10 @@ document.write(`
 </li>
       </ul></li>
       <li>
-    litestar.dto.base_factory
+    litestar.dto.base_dto
 
       <ul>
-        <li><a href="reference/dto/base_factory.html#module-litestar.dto.base_factory">module</a>
+        <li><a href="reference/dto/base_dto.html#module-litestar.dto.base_dto">module</a>
 </li>
       </ul></li>
       <li>
@@ -4615,10 +4592,10 @@ document.write(`
 </li>
       </ul></li>
       <li>
-    litestar.dto.dataclass_dto_factory
+    litestar.dto.dataclass_dto
 
       <ul>
-        <li><a href="reference/dto/dataclass_dto_factory.html#module-litestar.dto.dataclass_dto_factory">module</a>
+        <li><a href="reference/dto/dataclass_dto.html#module-litestar.dto.dataclass_dto">module</a>
 </li>
       </ul></li>
       <li>
@@ -4629,17 +4606,10 @@ document.write(`
 </li>
       </ul></li>
       <li>
-    litestar.dto.interface
+    litestar.dto.msgspec_dto
 
       <ul>
-        <li><a href="reference/dto/interface.html#module-litestar.dto.interface">module</a>
-</li>
-      </ul></li>
-      <li>
-    litestar.dto.msgspec_dto_factory
-
-      <ul>
-        <li><a href="reference/dto/msgspec_dto_factory.html#module-litestar.dto.msgspec_dto_factory">module</a>
+        <li><a href="reference/dto/msgspec_dto.html#module-litestar.dto.msgspec_dto">module</a>
 </li>
       </ul></li>
       <li>
@@ -5046,6 +5016,8 @@ document.write(`
 </li>
       <li><a href="reference/dto/field.html#litestar.dto.field.DTOField.mark">mark (litestar.dto.field.DTOField attribute)</a>
 </li>
+      <li><a href="reference/typing.html#litestar.typing.FieldDefinition.match_predicate_recursively">match_predicate_recursively() (litestar.typing.FieldDefinition method)</a>
+</li>
       <li><a href="reference/config.html#litestar.config.cors.CORSConfig.max_age">max_age (litestar.config.cors.CORSConfig attribute)</a>
 
       <ul>
@@ -5188,20 +5160,12 @@ document.write(`
 </li>
       <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOFieldDefinition.model_name">model_name (litestar.dto.data_structures.DTOFieldDefinition attribute)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO.model_type">model_type (litestar.contrib.pydantic.PydanticDTO attribute)</a>
+      <li><a href="reference/contrib/repository/abc.html#litestar.contrib.repository.abc.AbstractAsyncRepository.model_type">model_type (litestar.contrib.repository.abc.AbstractAsyncRepository attribute)</a>
 
       <ul>
-        <li><a href="reference/contrib/repository/abc.html#litestar.contrib.repository.abc.AbstractAsyncRepository.model_type">(litestar.contrib.repository.abc.AbstractAsyncRepository attribute)</a>
-</li>
         <li><a href="reference/contrib/repository/abc.html#litestar.contrib.repository.abc.AbstractSyncRepository.model_type">(litestar.contrib.repository.abc.AbstractSyncRepository attribute)</a>
 </li>
-        <li><a href="reference/contrib/sqlalchemy/dto.html#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO.model_type">(litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO attribute)</a>
-</li>
-        <li><a href="reference/dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory.model_type">(litestar.dto.base_factory.AbstractDTOFactory attribute)</a>
-</li>
-        <li><a href="reference/dto/dataclass_dto_factory.html#litestar.dto.dataclass_dto_factory.DataclassDTO.model_type">(litestar.dto.dataclass_dto_factory.DataclassDTO attribute)</a>
-</li>
-        <li><a href="reference/dto/msgspec_dto_factory.html#litestar.dto.msgspec_dto_factory.MsgspecDTO.model_type">(litestar.dto.msgspec_dto_factory.MsgspecDTO attribute)</a>
+        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.model_type">(litestar.dto.base_dto.AbstractDTO attribute)</a>
 </li>
       </ul></li>
       <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.ModelProtocol">ModelProtocol (class in litestar.contrib.sqlalchemy.base)</a>
@@ -5280,19 +5244,17 @@ document.write(`
 </li>
         <li><a href="reference/di.html#module-litestar.di">litestar.di</a>
 </li>
-        <li><a href="reference/dto/base_factory.html#module-litestar.dto.base_factory">litestar.dto.base_factory</a>
+        <li><a href="reference/dto/base_dto.html#module-litestar.dto.base_dto">litestar.dto.base_dto</a>
 </li>
         <li><a href="reference/dto/config.html#module-litestar.dto.config">litestar.dto.config</a>
 </li>
         <li><a href="reference/dto/data_structures.html#module-litestar.dto.data_structures">litestar.dto.data_structures</a>
 </li>
-        <li><a href="reference/dto/dataclass_dto_factory.html#module-litestar.dto.dataclass_dto_factory">litestar.dto.dataclass_dto_factory</a>
+        <li><a href="reference/dto/dataclass_dto.html#module-litestar.dto.dataclass_dto">litestar.dto.dataclass_dto</a>
 </li>
         <li><a href="reference/dto/field.html#module-litestar.dto.field">litestar.dto.field</a>
 </li>
-        <li><a href="reference/dto/interface.html#module-litestar.dto.interface">litestar.dto.interface</a>
-</li>
-        <li><a href="reference/dto/msgspec_dto_factory.html#module-litestar.dto.msgspec_dto_factory">litestar.dto.msgspec_dto_factory</a>
+        <li><a href="reference/dto/msgspec_dto.html#module-litestar.dto.msgspec_dto">litestar.dto.msgspec_dto</a>
 </li>
         <li><a href="reference/dto/types.html#module-litestar.dto.types">litestar.dto.types</a>
 </li>
@@ -5393,7 +5355,7 @@ document.write(`
 </li>
       <li><a href="reference/connection.html#litestar.connection.Request.msgpack">msgpack() (litestar.connection.Request method)</a>
 </li>
-      <li><a href="reference/dto/msgspec_dto_factory.html#litestar.dto.msgspec_dto_factory.MsgspecDTO">MsgspecDTO (class in litestar.dto.msgspec_dto_factory)</a>
+      <li><a href="reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO">MsgspecDTO (class in litestar.dto.msgspec_dto)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.FileInfo.mtime">mtime (litestar.types.FileInfo attribute)</a>
 </li>
@@ -5515,10 +5477,10 @@ document.write(`
       </ul></li>
       <li><a href="reference/pagination.html#litestar.pagination.OffsetPagination">OffsetPagination (class in litestar.pagination)</a>
 </li>
-      <li><a href="reference/handlers.html#litestar.handlers.websocket_listener.on_accept">on_accept (litestar.handlers.websocket_listener attribute)</a>
+      <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener.on_accept">on_accept (litestar.handlers.WebsocketListener attribute)</a>
 
       <ul>
-        <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener.on_accept">(litestar.handlers.WebsocketListener attribute)</a>
+        <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.on_accept">(litestar.handlers.WebsocketListenerRouteHandler attribute)</a>
 </li>
       </ul></li>
       <li><a href="reference/contrib/repository/handlers.html#litestar.contrib.repository.handlers.on_app_init">on_app_init() (in module litestar.contrib.repository.handlers)</a>
@@ -5537,10 +5499,10 @@ document.write(`
       </ul></li>
       <li><a href="reference/plugins.html#litestar.plugins.CLIPluginProtocol.on_cli_init">on_cli_init() (litestar.plugins.CLIPluginProtocol method)</a>
 </li>
-      <li><a href="reference/handlers.html#litestar.handlers.websocket_listener.on_disconnect">on_disconnect (litestar.handlers.websocket_listener attribute)</a>
+      <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener.on_disconnect">on_disconnect (litestar.handlers.WebsocketListener attribute)</a>
 
       <ul>
-        <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener.on_disconnect">(litestar.handlers.WebsocketListener attribute)</a>
+        <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.on_disconnect">(litestar.handlers.WebsocketListenerRouteHandler attribute)</a>
 </li>
       </ul></li>
       <li><a href="reference/contrib/repository/filters.html#litestar.contrib.repository.filters.OnBeforeAfter.on_or_after">on_or_after (litestar.contrib.repository.filters.OnBeforeAfter attribute)</a>
@@ -5549,16 +5511,10 @@ document.write(`
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener.on_receive">on_receive() (litestar.handlers.WebsocketListener method)</a>
 </li>
-      <li><a href="reference/dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory.on_registration">on_registration() (litestar.dto.base_factory.AbstractDTOFactory class method)</a>
+      <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.on_registration">on_registration() (litestar.handlers.BaseRouteHandler method)</a>
 
       <ul>
-        <li><a href="reference/dto/interface.html#litestar.dto.interface.DTOInterface.on_registration">(litestar.dto.interface.DTOInterface class method)</a>
-</li>
-        <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.on_registration">(litestar.handlers.BaseRouteHandler method)</a>
-</li>
         <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.on_registration">(litestar.handlers.HTTPRouteHandler method)</a>
-</li>
-        <li><a href="reference/handlers.html#litestar.handlers.websocket_listener.on_registration">(litestar.handlers.websocket_listener method)</a>
 </li>
       </ul></li>
       <li><a href="reference/config.html#litestar.config.app.AppConfig.on_shutdown">on_shutdown (litestar.config.app.AppConfig attribute)</a>
@@ -5599,12 +5555,12 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.SecurityScheme.open_id_connect_url">open_id_connect_url (litestar.openapi.spec.SecurityScheme attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI">OpenAPI (class in litestar.openapi.spec)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI.openapi">openapi (litestar.openapi.spec.OpenAPI attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/contrib/jwt.html#litestar.contrib.jwt.BaseJWTAuth.openapi_components">openapi_components (litestar.contrib.jwt.BaseJWTAuth property)</a>
 
       <ul>
@@ -6211,13 +6167,13 @@ document.write(`
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_before_request">resolve_before_request() (litestar.handlers.HTTPRouteHandler method)</a>
 </li>
-      <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_dependencies">resolve_dependencies() (litestar.handlers.BaseRouteHandler method)</a>
+      <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_data_dto">resolve_data_dto() (litestar.handlers.BaseRouteHandler method)</a>
 </li>
-      <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_dto">resolve_dto() (litestar.handlers.BaseRouteHandler method)</a>
+      <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_dependencies">resolve_dependencies() (litestar.handlers.BaseRouteHandler method)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_exception_handlers">resolve_exception_handlers() (litestar.handlers.BaseRouteHandler method)</a>
 </li>
-      <li><a href="reference/dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory.resolve_generic_wrapper_type">resolve_generic_wrapper_type() (litestar.dto.base_factory.AbstractDTOFactory class method)</a>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.resolve_generic_wrapper_type">resolve_generic_wrapper_type() (litestar.dto.base_dto.AbstractDTO class method)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_guards">resolve_guards() (litestar.handlers.BaseRouteHandler method)</a>
 </li>
@@ -6225,7 +6181,7 @@ document.write(`
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_middleware">resolve_middleware() (litestar.handlers.BaseRouteHandler method)</a>
 </li>
-      <li><a href="reference/dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory.resolve_model_type">resolve_model_type() (litestar.dto.base_factory.AbstractDTOFactory class method)</a>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.resolve_model_type">resolve_model_type() (litestar.dto.base_dto.AbstractDTO class method)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_opts">resolve_opts() (litestar.handlers.BaseRouteHandler method)</a>
 </li>
@@ -6661,10 +6617,10 @@ document.write(`
       </ul></li>
       <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth">SessionAuth (class in litestar.security.session_auth)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/security/session_auth.html#litestar.security.session_auth.middleware.SessionAuthMiddleware">SessionAuthMiddleware (class in litestar.security.session_auth.middleware)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware">SessionMiddleware (class in litestar.middleware.session.base)</a>
 </li>
       <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.set">set() (litestar.middleware.session.server_side.ServerSideSessionBackend method)</a>
@@ -6721,6 +6677,12 @@ document.write(`
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.should_serve_endpoint">should_serve_endpoint() (litestar.openapi.OpenAPIController method)</a>
 </li>
+      <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.signature_model">signature_model (litestar.handlers.BaseRouteHandler property)</a>
+
+      <ul>
+        <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.signature_model">(litestar.handlers.WebsocketListenerRouteHandler property)</a>
+</li>
+      </ul></li>
       <li><a href="reference/config.html#litestar.config.app.AppConfig.signature_namespace">signature_namespace (litestar.config.app.AppConfig attribute)</a>
 
       <ul>
@@ -7329,7 +7291,7 @@ document.write(`
 </li>
       <li><a href="reference/testing.html#litestar.testing.TestClient.websocket_connect">websocket_connect() (litestar.testing.TestClient method)</a>
 </li>
-      <li><a href="reference/handlers.html#litestar.handlers.websocket_listener">websocket_listener (class in litestar.handlers)</a>
+      <li><a href="reference/handlers.html#litestar.handlers.websocket_listener">websocket_listener (in module litestar.handlers)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.WebSocketAcceptEvent">WebSocketAcceptEvent (class in litestar.types)</a>
 </li>
@@ -7344,6 +7306,8 @@ document.write(`
       <li><a href="reference/exceptions.html#litestar.exceptions.WebSocketException">WebSocketException</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener">WebsocketListener (class in litestar.handlers)</a>
+</li>
+      <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler">WebsocketListenerRouteHandler (class in litestar.handlers)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.WebSocketReceiveEvent">WebSocketReceiveEvent (class in litestar.types)</a>
 </li>

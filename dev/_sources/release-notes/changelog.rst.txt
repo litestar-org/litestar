@@ -465,7 +465,7 @@
         ``data.create_instance(foo__bar="baz")``.
 
         .. seealso::
-            :ref:`usage/dto/1-dto-factory:Providing values for nested data`
+            :ref:`usage/dto/1-abstract-dto:Providing values for nested data`
 
     .. change:: DTOs: Hybrid properties and association proxies in ``SQLAlchemyDTO``
         :type: feature

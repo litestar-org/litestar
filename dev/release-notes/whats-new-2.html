@@ -919,8 +919,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../usage/dependency-injection.html">Dependency Injection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/dto/index.html">Data Transfer Object (DTO)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/dto/0-basic-use.html">Basic Use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../usage/dto/1-dto-factory.html">DTO Factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../usage/dto/2-dto-interface.html">DTO Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/dto/2-creating-custom-dto-classes.html">Implementing Cusotm DTO Classes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/websockets.html">WebSockets</a></li>
@@ -1011,14 +1011,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/interface.html">interface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/data_structures.html">data_structures</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/field.html">field</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/types.html">types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/base_factory.html">base_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/msgspec_dto_factory.html">msgspec_dto_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/dataclass_dto_factory.html">dataclass_dto_factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/dataclass_dto.html">dataclass_dto</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">enums</a></li>
@@ -1677,17 +1676,15 @@ by accessing the store directly as described in <a class="reference internal" hr
 <h2>DTOs<a class="headerlink" href="#dtos" title="Permalink to this heading">#</a></h2>
 <p>DTOs are now defined using the <code class="docutils literal notranslate"><span class="pre">dto</span></code> and <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> arguments to
 handlers/controllers/routers and the application.</p>
-<p>A DTO is any type that conforms to the <a class="reference internal" href="../reference/dto/interface.html#litestar.dto.interface.DTOInterface" title="litestar.dto.interface.DTOInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.dto.interface.DTOInterface</span></code></a>
-protocol.</p>
-<p>Litestar provides a suite of factory types that implement the <code class="docutils literal notranslate"><span class="pre">DTOInterface</span></code> protocol
+<p>A DTO is any type that inherits from <a class="reference internal" href="../reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO" title="litestar.dto.base_dto.AbstractDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.dto.base_dto.AbstractDTO</span></code></a>.</p>
+<p>Litestar provides a suite of types that implement the <code class="docutils literal notranslate"><span class="pre">AbstractDTO</span></code> abstract class
 and can be used to define DTOs:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../reference/dto/dataclass_dto_factory.html#litestar.dto.dataclass_dto_factory.DataclassDTO" title="litestar.dto.dataclass_dto_factory.DataclassDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.dto.dataclass_dto_factory.DataclassDTO</span></code></a></p></li>
-<li><p><a class="reference internal" href="../reference/dto/msgspec_dto_factory.html#litestar.dto.msgspec_dto_factory.MsgspecDTO" title="litestar.dto.msgspec_dto_factory.MsgspecDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.dto.msgspec_dto_factory.MsgspecDTO</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO" title="litestar.dto.dataclass_dto.DataclassDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.dto.dataclass_dto.DataclassDTO</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO" title="litestar.dto.msgspec_dto.MsgspecDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.dto.msgspec_dto.MsgspecDTO</span></code></a></p></li>
 <li><p><a class="reference internal" href="../reference/contrib/sqlalchemy/dto.html#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO" title="litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO</span></code></a></p></li>
 <li><p><a class="reference internal" href="../reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO" title="litestar.contrib.pydantic.PydanticDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.contrib.pydantic.PydanticDTO</span></code></a></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">litestar.contrib.piccolo.PiccoloDTO</span></code> (TODO)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">litestar.contrib.tortoise.TortoiseDTO</span></code> (TODO)</p></li>
+<li><p><a class="reference internal" href="../reference/contrib/piccolo.html#litestar.contrib.piccolo.PiccoloDTO" title="litestar.contrib.piccolo.PiccoloDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.contrib.piccolo.PiccoloDTO</span></code></a></p></li>
 </ul>
 <p>For example, to define a DTO from a dataclass:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
@@ -1804,7 +1801,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;12e50c83-e77f-4d24-be45-0cca91b00a96&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;d5961bd3-795f-49d6-94e2-eb2c02f558db&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1989,7 +1986,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;20861880-eccf-4e11-8e02-c25a49b75e1e&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;c98d9944-3266-4d45-802a-678cac92c1ed&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>

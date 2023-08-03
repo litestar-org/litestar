@@ -919,8 +919,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../usage/dependency-injection.html">Dependency Injection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/dto/index.html">Data Transfer Object (DTO)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/dto/0-basic-use.html">Basic Use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../usage/dto/1-dto-factory.html">DTO Factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../usage/dto/2-dto-interface.html">DTO Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/dto/2-creating-custom-dto-classes.html">Implementing Cusotm DTO Classes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/websockets.html">WebSockets</a></li>
@@ -1011,14 +1011,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/interface.html">interface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/data_structures.html">data_structures</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/field.html">field</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/types.html">types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/base_factory.html">base_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/msgspec_dto_factory.html">msgspec_dto_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/dataclass_dto_factory.html">dataclass_dto_factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/dataclass_dto.html">dataclass_dto</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">enums</a></li>
@@ -1327,7 +1326,7 @@ DTOs.</p>
 <h3>Other changes<a class="headerlink" href="#2.0.0beta3-misc" title="Permalink to this heading">#</a></h3>
 <dl>
 <dt><code class="docutils literal notranslate"><span class="pre">AbstractDTOFactory</span></code> moved to <code class="docutils literal notranslate"><span class="pre">dto.factory.base</span></code><a class="headerlink reference internal" href="#2.0.0beta3-abstractdtofactory" id="2.0.0beta3-abstractdtofactory">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
-<p><a class="reference internal" href="../reference/dto/base_factory.html#litestar.dto.base_factory.AbstractDTOFactory" title="litestar.dto.base_factory.AbstractDTOFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDTOFactory</span></code></a> has moved from
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDTOFactory</span></code> has moved from
 <code class="docutils literal notranslate"><span class="pre">litestar.dto.factory.abc</span></code> to <code class="docutils literal notranslate"><span class="pre">litestar.dto.factory.base</span></code>.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1950">litestar-org/litestar#1950</a></span></p>
 </div>
@@ -1580,7 +1579,7 @@ using a double-underscore syntax, for example
 <code class="docutils literal notranslate"><span class="pre">data.create_instance(foo__bar=&quot;baz&quot;)</span></code>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../usage/dto/1-dto-factory.html#providing-values-for-nested-data"><span class="std std-ref">Providing values for nested data</span></a></p>
+<p><a class="reference internal" href="../usage/dto/1-abstract-dto.html#providing-values-for-nested-data"><span class="std std-ref">Providing values for nested data</span></a></p>
 </div>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1727">litestar-org/litestar#1727</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1741">litestar-org/litestar#1741</a></span></p>
 </div>
@@ -2285,7 +2284,7 @@ been added, providing the same functionality as their route handler counterparts
 </dd>
 <dt>DTO based serialization plugin<a class="headerlink reference internal" href="#2.0.0alpha5-dto based serialization plugin" id="2.0.0alpha5-dto based serialization plugin">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p><a class="reference internal" href="../reference/plugins.html#litestar.plugins.SerializationPluginProtocol" title="litestar.plugins.SerializationPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code></a> has been re-implemented,
-leveraging the new <a class="reference internal" href="../reference/dto/interface.html#litestar.dto.interface.DTOInterface" title="litestar.dto.interface.DTOInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOInterface</span></code></a>.</p>
+leveraging the new <code class="xref py py-class docutils literal notranslate"><span class="pre">DTOInterface</span></code>.</p>
 <p>If a handler defines a plugin supported type as either the <code class="docutils literal notranslate"><span class="pre">data</span></code> kwarg type annotation, or as the return
 annotation for a handler function, and no DTO has otherwise been resolved to handle the type, the protocol
 creates a DTO implementation to represent that type which is then used to de-serialize into, and serialize from
@@ -2364,7 +2363,7 @@ handle connections anymore, it can also be a synchronous method, improving symme
 <p>The signature of <code class="docutils literal notranslate"><span class="pre">from_data</span></code> has been changed to also accept the connection, matching <code class="docutils literal notranslate"><span class="pre">from_bytes</span></code>’
 signature.</p>
 <p>As a result of these changes,
-<a class="reference internal" href="../reference/dto/interface.html#litestar.dto.interface.DTOInterface.data_to_encodable_type" title="litestar.dto.interface.DTOInterface.data_to_encodable_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DTOInterface.from_bytes</span></code></a> no longer needs to
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">DTOInterface.from_bytes</span></code> no longer needs to
 receive the connection instance, so the <code class="docutils literal notranslate"><span class="pre">request</span></code> parameter has been dropped.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1500">litestar-org/litestar#1500</a></span></p>
 </div>

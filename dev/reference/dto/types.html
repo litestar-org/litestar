@@ -54,7 +54,7 @@
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="base_factory" href="base_factory.html" />
+    <link rel="next" title="base_dto" href="base_dto.html" />
     <link rel="prev" title="field" href="field.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -921,8 +921,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../usage/dependency-injection.html">Dependency Injection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/dto/index.html">Data Transfer Object (DTO)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/dto/0-basic-use.html">Basic Use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/dto/1-dto-factory.html">DTO Factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/dto/2-dto-interface.html">DTO Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/dto/2-creating-custom-dto-classes.html">Implementing Cusotm DTO Classes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/websockets.html">WebSockets</a></li>
@@ -1013,14 +1013,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../di.html">di</a></li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">dto</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="interface.html">interface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="data_structures.html">data_structures</a></li>
 <li class="toctree-l3"><a class="reference internal" href="field.html">field</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="base_factory.html">base_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgspec_dto_factory.html">msgspec_dto_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dataclass_dto_factory.html">dataclass_dto_factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dataclass_dto.html">dataclass_dto</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../enums.html">enums</a></li>
@@ -1163,12 +1162,6 @@ document.write(`
   <section id="module-litestar.dto.types">
 <span id="types"></span><h1>types<a class="headerlink" href="#module-litestar.dto.types" title="Permalink to this heading">#</a></h1>
 <dl class="py data">
-<dt class="sig sig-object py" id="litestar.dto.types.ForType">
-<span class="sig-prename descclassname"><span class="pre">litestar.dto.types.</span></span><span class="sig-name descname"><span class="pre">ForType</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">TypeAlias</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&quot;Literal['data',</span> <span class="pre">'return']&quot;</span></em><a class="headerlink" href="#litestar.dto.types.ForType" title="Permalink to this definition">#</a></dt>
-<dd><p>Type for parameters that express the purpose of DTO application.</p>
-</dd></dl>
-
-<dl class="py data">
 <dt class="sig sig-object py" id="litestar.dto.types.RenameStrategy">
 <span class="sig-prename descclassname"><span class="pre">litestar.dto.types.</span></span><span class="sig-name descname"><span class="pre">RenameStrategy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">TypeAlias</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Literal[&quot;lower&quot;,</span> <span class="pre">&quot;upper&quot;,</span> <span class="pre">&quot;camel&quot;,</span> <span class="pre">&quot;pascal&quot;]</span> <span class="pre">|</span> <span class="pre">Callable[[str],</span> <span class="pre">str]'</span></em><a class="headerlink" href="#litestar.dto.types.RenameStrategy" title="Permalink to this definition">#</a></dt>
 <dd><p>A pre-defined strategy or a custom callback for converting DTO field names.</p>
@@ -1197,11 +1190,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="base_factory.html"
+       href="base_dto.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">base_factory</p>
+        <p class="prev-next-title">base_dto</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1223,7 +1216,6 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.types.ForType"><code class="docutils literal notranslate"><span class="pre">ForType</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.types.RenameStrategy"><code class="docutils literal notranslate"><span class="pre">RenameStrategy</span></code></a></li>
 </ul>
   </nav></div>

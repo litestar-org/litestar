@@ -921,8 +921,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="dependency-injection.html">Dependency Injection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="dto/index.html">Data Transfer Object (DTO)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="dto/0-basic-use.html">Basic Use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dto/1-dto-factory.html">DTO Factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dto/2-dto-interface.html">DTO Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dto/2-creating-custom-dto-classes.html">Implementing Cusotm DTO Classes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="websockets.html">WebSockets</a></li>
@@ -1013,14 +1013,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/interface.html">interface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/data_structures.html">data_structures</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/field.html">field</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/types.html">types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/base_factory.html">base_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/msgspec_dto_factory.html">msgspec_dto_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/dataclass_dto_factory.html">dataclass_dto_factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/dataclass_dto.html">dataclass_dto</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">enums</a></li>
@@ -1280,10 +1279,10 @@ that are otherwise unsupported by the framework.</p>
 <p>The method takes a <a class="reference internal" href="../reference/typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance as an argument and returns a <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>
 indicating whether the plugin supports serialization for that type.</p>
 </section>
-<section id="create-dto-for-type-self-field-definition-fielddefinition-type-dtointerface">
-<h3><a class="reference internal" href="../reference/plugins.html#litestar.plugins.SerializationPluginProtocol.create_dto_for_type" title="litestar.plugins.SerializationPluginProtocol.create_dto_for_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[DTOInterface]:</span></code></a><a class="headerlink" href="#create-dto-for-type-self-field-definition-fielddefinition-type-dtointerface" title="Permalink to this heading">#</a></h3>
+<section id="create-dto-for-type-self-field-definition-fielddefinition-type-abstractdto">
+<h3><a class="reference internal" href="../reference/plugins.html#litestar.plugins.SerializationPluginProtocol.create_dto_for_type" title="litestar.plugins.SerializationPluginProtocol.create_dto_for_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[AbstractDTO]:</span></code></a><a class="headerlink" href="#create-dto-for-type-self-field-definition-fielddefinition-type-abstractdto" title="Permalink to this heading">#</a></h3>
 <p>This method accepts a <a class="reference internal" href="../reference/typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance as an argument and must return a
-<a class="reference internal" href="../reference/dto/interface.html#litestar.dto.interface.DTOInterface" title="litestar.dto.interface.DTOInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOInterface</span></code></a> implementation that can be used to serialize and deserialize
+<a class="reference internal" href="../reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO" title="litestar.dto.base_dto.AbstractDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDTO</span></code></a> implementation that can be used to serialize and deserialize
 the type.</p>
 <p>During application startup, if a data or return annotation is encountered that is not a supported type, is supported by
 the plugin, and doesn’t otherwise have a <code class="docutils literal notranslate"><span class="pre">dto</span></code> or <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> defined, the plugin is used to create a DTO type for
@@ -1311,8 +1310,6 @@ that annotation.</p>
 
 
 <span class="k">class</span> <span class="nc">SQLAlchemySerializationPlugin</span><span class="p">(</span><span class="n">SerializationPluginProtocol</span><span class="p">,</span> <span class="n">_slots_base</span><span class="o">.</span><span class="n">SlotsBase</span><span class="p">):</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_type_dto_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">DeclarativeBase</span><span class="p">],</span> <span class="nb">type</span><span class="p">[</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -1343,7 +1340,7 @@ that annotation.</p>
 <p><a class="reference internal" href="../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.supports_type" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.supports_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">supports_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">bool:</span></code></a>
 returns a <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> indicating whether the plugin supports serialization for the given type. Specifically, we return
 <code class="docutils literal notranslate"><span class="pre">True</span></code> if the parsed type is either a collection of SQLAlchemy models or a single SQLAlchemy model.</p>
-<p><a class="reference internal" href="../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[DTOInterface]:</span></code></a>
+<p><a class="reference internal" href="../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[AbstractDTO]:</span></code></a>
 takes a <a class="reference internal" href="../reference/typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance as an argument and returns a
 <a class="reference internal" href="../reference/contrib/sqlalchemy/dto.html#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO" title="litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a> subclass and includes some logic that may be
 interesting to potential serialization plugin authors.</p>
@@ -1412,7 +1409,7 @@ adds it to the <code class="docutils literal notranslate"><span class="pre">_typ
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#serializationpluginprotocol">SerializationPluginProtocol</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#supports-type-self-field-definition-fielddefinition-bool"><code class="xref py py-meth docutils literal notranslate"><span class="pre">supports_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">bool:</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-dto-for-type-self-field-definition-fielddefinition-type-dtointerface"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[DTOInterface]:</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-dto-for-type-self-field-definition-fielddefinition-type-abstractdto"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[AbstractDTO]:</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Example</a></li>
 </ul>
 </li>
