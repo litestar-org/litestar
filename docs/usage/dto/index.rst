@@ -80,3 +80,4 @@ Contents
 
     0-basic-use
     1-abstract-dto
+    2-creating-custom-dto-classes

@@ -68,7 +68,7 @@ class AbstractDTO(Generic[T]):
             raise InvalidAnnotationException("Unions are currently not supported as type argument to DTOs.")
 
         if field_definition.is_forward_ref:
-            raise InvalidAnnotationException("ForwardRefs are not supported as type argument to DTO")
+            raise InvalidAnnotationException("Forward references are not supported as type argument to DTO")
 
         # if a configuration is not provided, and the type narrowing is a type var, we don't want to create a subclass
         config = cls.get_dto_config_from_annotated_type(field_definition)
