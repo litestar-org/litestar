@@ -596,7 +596,7 @@ async def test_repo_created_updated(
     else:
         author = cast(models_bigint.BigIntAuthor, author)
         book_model = cast("type[models_bigint.BigIntBook]", book_model)
-    author.books.append(book_model(title="Testing"))
+    author.books.append(book_model(title="Testing"))  # type: ignore[arg-type]
     author = await maybe_async(author_repo.update(author))
     assert author.updated_at > original_update_dt
 
