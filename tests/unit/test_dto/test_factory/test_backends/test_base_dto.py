@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, Generator, List, Tuple, Union
 
 import pytest
 
+from litestar.connection import ASGIConnection
 from litestar.dto import DataclassDTO, DTOConfig, DTOField
 from litestar.dto._backend import DTOBackend
 from litestar.dto._types import (
@@ -12,19 +13,18 @@ from litestar.dto._types import (
     CompositeType,
     MappingType,
     SimpleType,
+    TransferDTOFieldDefinition,
     TupleType,
     UnionType,
 )
 from litestar.dto.data_structures import DTOFieldDefinition
-from litestar.dto.types import ForType
 from litestar.types import DataclassProtocol
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
     from typing import AbstractSet
 
-    from litestar.dto._types import FieldDefinitionsType, TransferType
-    from litestar.dto.interface import ConnectionContext
+    from litestar.dto._types import TransferType
 
 
 @dataclass
@@ -60,7 +60,6 @@ def fx_field_definitions(data_model_type: type[Model]) -> list[DTOFieldDefinitio
             default_factory=None,
             dto_field=DTOField(),
             model_name="some_module.SomeModel",
-            dto_for=None,
         ),
         DTOFieldDefinition.from_field_definition(
             field_definition=FieldDefinition.from_kwarg(
@@ -70,7 +69,6 @@ def fx_field_definitions(data_model_type: type[Model]) -> list[DTOFieldDefinitio
             default_factory=None,
             dto_field=DTOField(),
             model_name="some_module.SomeModel",
-            dto_for=None,
         ),
     ]
 
@@ -87,7 +85,9 @@ def fx_backend(data_model_type: type[Model], field_definitions: list[DTOFieldDef
             yield from field_definitions
 
     class _Backend(DTOBackend):
-        def create_transfer_model_type(self, model_name: str, field_definitions: FieldDefinitionsType) -> type[Any]:
+        def create_transfer_model_type(
+            self, model_name: str, field_definitions: tuple[TransferDTOFieldDefinition, ...]
+        ) -> type[Any]:
             """Create a model for data transfer.
 
             Args:
@@ -99,24 +99,24 @@ def fx_backend(data_model_type: type[Model], field_definitions: list[DTOFieldDef
             """
             return Model
 
-        def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> Any:
+        def parse_raw(self, raw: bytes, asgi_connection: ASGIConnection) -> Any:
             """Parse raw bytes into transfer model type.
 
             Args:
             raw: bytes
-            connection_context: Information about the active connection.
+            asgi_connection: Information about the active connection.
 
             Returns:
             The raw bytes parsed into transfer model type.
             """
             return None
 
-        def parse_builtins(self, builtins: Any, connection_context: ConnectionContext) -> Any:
+        def parse_builtins(self, builtins: Any, asgi_connection: ASGIConnection) -> Any:
             """Parse builtin types into transfer model type.
 
             Args:
             builtins: Builtin type.
-            connection_context: Information about the active connection.
+            asgi_connection: Information about the active connection.
 
             Returns:
             The builtin type parsed into transfer model type.
@@ -268,16 +268,3 @@ def test_create_collection_type_nested_union(backend: DTOBackend) -> None:
     for inner_type in inner_types:
         assert isinstance(inner_type, SimpleType)
         assert bool(inner_type.nested_field_info)
-
-
-@pytest.mark.parametrize("dto_for", ["data", "return"])
-def test_parse_model_respects_field_definition_dto_for(
-    dto_for: ForType, backend: DTOBackend, field_definitions: list[DTOFieldDefinition]
-) -> None:
-    object.__setattr__(field_definitions[0], "dto_for", "data")
-    object.__setattr__(field_definitions[1], "dto_for", "return")
-    backend.is_data_field = dto_for == "data"  # type: ignore[misc]
-    backend.dto_factory.generate_field_definitions = lambda _: iter(field_definitions)  # type: ignore
-    transfer_field_defs = backend.parse_model(None, exclude=set(), include=set())
-    assert len(transfer_field_defs) == 1
-    assert transfer_field_defs[0].dto_for == dto_for

@@ -1,4 +1,4 @@
-# ruff: noqa: UP006
+# ruff: noqa: UP006, UP007
 from __future__ import annotations
 
 import re
@@ -14,6 +14,7 @@ from typing import (
     Optional,
     Sequence,
     Set,
+    Type,
     TypedDict,
     Union,
     cast,
@@ -31,6 +32,7 @@ from litestar._signature.utils import (
     _validate_signature_dependencies,
 )
 from litestar.datastructures import ImmutableState
+from litestar.dto import AbstractDTO, DTOData
 from litestar.enums import ParamType, ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
 from litestar.params import KwargDefinition, ParameterKwarg
@@ -74,16 +76,19 @@ MSGSPEC_CONSTRAINT_FIELDS = (
 ERR_RE = re.compile(r"`\$\.(.+)`$")
 
 DEFAULT_TYPE_DECODERS = [
-    (lambda x: is_class_and_subclass(x, (Path, PurePath, ImmutableState, UUID)), lambda t, v: t(v))
+    (lambda x: is_class_and_subclass(x, (Path, PurePath, ImmutableState, UUID)), lambda t, v: t(v)),
 ]
 
 
 def _deserializer(target_type: Any, value: Any, default_deserializer: Callable[[Any, Any], Any]) -> Any:
+    if isinstance(value, DTOData):
+        return value
+
     if isinstance(value, target_type):
         return value
 
-    if hasattr(target_type, "_decoder"):
-        return target_type._decoder(target_type, value)
+    if decoder := getattr(target_type, "_decoder", None):
+        return decoder(target_type, value)
 
     return default_deserializer(target_type, value)
 
@@ -91,8 +96,9 @@ def _deserializer(target_type: Any, value: Any, default_deserializer: Callable[[
 class SignatureModel(Struct):
     """Model that represents a function signature that uses a msgspec specific type or types."""
 
-    # NOTE: we have to use Set and Dict here because python 3.8 goes haywire if we use 'set' and 'dict'
+    _data_dto: ClassVar[Optional[Type[AbstractDTO]]]
     _dependency_name_set: ClassVar[Set[str]]
+    # NOTE: we have to use Set and Dict here because python 3.8 goes haywire if we use 'set' and 'dict'
     _fields: ClassVar[Dict[str, FieldDefinition]]
     _return_annotation: ClassVar[Any]
 
@@ -209,9 +215,9 @@ class SignatureModel(Struct):
         cls,
         dependency_name_set: set[str],
         fn: AnyCallable,
-        has_data_dto: bool,
         parsed_signature: ParsedSignature,
         type_decoders: TypeDecodersSequence,
+        data_dto: type[AbstractDTO] | None = None,
     ) -> type[SignatureModel]:
         fn_name = (
             fn_name if (fn_name := getattr(fn, "__name__", "anonymous")) and fn_name != "<lambda>" else "anonymous"
@@ -245,7 +251,6 @@ class SignatureModel(Struct):
 
             annotation = cls._create_annotation(
                 field_definition=field_definition,
-                has_data_dto=has_data_dto,
                 type_decoders=[*(type_decoders or []), *DEFAULT_TYPE_DECODERS],
                 meta_data=meta_data,
             )
@@ -262,6 +267,7 @@ class SignatureModel(Struct):
                 "_return_annotation": parsed_signature.return_type.annotation,
                 "_dependency_name_set": dependency_names,
                 "_fields": parsed_signature.parameters,
+                "_data_dto": data_dto,
             },
             kw_only=True,
         )
@@ -270,11 +276,10 @@ class SignatureModel(Struct):
     def _create_annotation(
         cls,
         field_definition: FieldDefinition,
-        has_data_dto: bool,
         type_decoders: TypeDecodersSequence,
         meta_data: Meta | None = None,
     ) -> Any:
-        annotation = _normalize_annotation(field_definition=field_definition, has_data_dto=has_data_dto)
+        annotation = _normalize_annotation(field_definition=field_definition)
 
         if annotation is Any:
             return annotation
@@ -283,7 +288,6 @@ class SignatureModel(Struct):
             types = [
                 cls._create_annotation(
                     field_definition=inner_type,
-                    has_data_dto=has_data_dto,
                     type_decoders=type_decoders,
                     meta_data=meta_data,
                 )

@@ -31,7 +31,7 @@ def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
     handler_fields = SignatureModel.create(
         dependency_name_set=set(),
         fn=handler,
-        has_data_dto=False,
+        data_dto=None,
         parsed_signature=route_handler.parsed_fn_signature,
         type_decoders=[],
     )._fields

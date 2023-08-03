@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from litestar.config.csrf import CSRFConfig
     from litestar.config.response_cache import ResponseCacheConfig
     from litestar.datastructures import CacheControlHeader, ETag, ResponseHeader, State
-    from litestar.dto.interface import DTOInterface
+    from litestar.dto import AbstractDTO
     from litestar.events import BaseEventEmitterBackend, EventListener
     from litestar.logging.config import BaseLoggingConfig
     from litestar.middleware.session.base import BaseBackendConfig
@@ -70,7 +70,7 @@ def create_test_client(
     csrf_config: CSRFConfig | None = None,
     debug: bool = True,
     dependencies: Dependencies | None = None,
-    dto: type[DTOInterface] | None | EmptyType = Empty,
+    dto: type[AbstractDTO] | None | EmptyType = Empty,
     etag: ETag | None = None,
     event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
     exception_handlers: ExceptionHandlersMap | None = None,
@@ -94,7 +94,7 @@ def create_test_client(
     response_class: ResponseType | None = None,
     response_cookies: ResponseCookies | None = None,
     response_headers: OptionalSequence[ResponseHeader] | None = None,
-    return_dto: type[DTOInterface] | None | EmptyType = Empty,
+    return_dto: type[AbstractDTO] | None | EmptyType = Empty,
     root_path: str = "",
     security: OptionalSequence[SecurityRequirement] | None = None,
     session_config: BaseBackendConfig | None = None,
@@ -167,7 +167,7 @@ def create_test_client(
         csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
         debug: If ``True``, app errors rendered as HTML with a stack trace.
         dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
-        dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
+        dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
             validation of request data.
         etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
             Can be overridden by route handlers.
@@ -203,7 +203,7 @@ def create_test_client(
         response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>`.
         response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
         response_cache_config: Configures caching behavior of the application.
-        return_dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing
+        return_dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing
             outbound response data.
         route_handlers: A sequence of route handlers, which can include instances of
             :class:`Router <.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or any
@@ -312,7 +312,7 @@ def create_async_test_client(
     csrf_config: CSRFConfig | None = None,
     debug: bool = True,
     dependencies: Dependencies | None = None,
-    dto: type[DTOInterface] | None | EmptyType = Empty,
+    dto: type[AbstractDTO] | None | EmptyType = Empty,
     etag: ETag | None = None,
     event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
     exception_handlers: ExceptionHandlersMap | None = None,
@@ -336,7 +336,7 @@ def create_async_test_client(
     response_class: ResponseType | None = None,
     response_cookies: ResponseCookies | None = None,
     response_headers: OptionalSequence[ResponseHeader] | None = None,
-    return_dto: type[DTOInterface] | None | EmptyType = Empty,
+    return_dto: type[AbstractDTO] | None | EmptyType = Empty,
     root_path: str = "",
     security: OptionalSequence[SecurityRequirement] | None = None,
     session_config: BaseBackendConfig | None = None,
@@ -409,7 +409,7 @@ def create_async_test_client(
         csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
         debug: If ``True``, app errors rendered as HTML with a stack trace.
         dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
-        dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
+        dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
             validation of request data.
         etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
             Can be overridden by route handlers.
@@ -445,7 +445,7 @@ def create_async_test_client(
         response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>`.
         response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
         response_cache_config: Configures caching behavior of the application.
-        return_dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing
+        return_dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing
             outbound response data.
         route_handlers: A sequence of route handlers, which can include instances of
             :class:`Router <.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or any

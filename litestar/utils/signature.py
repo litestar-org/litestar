@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 import typing
+from copy import deepcopy
 from dataclasses import dataclass, replace
 from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain
@@ -92,6 +93,13 @@ class ParsedSignature:
     original_signature: Signature
     """The raw signature as returned by :func:`inspect.signature`"""
 
+    def __deepcopy__(self, memo: dict[str, Any]) -> Self:
+        return type(self)(
+            parameters={k: deepcopy(v) for k, v in self.parameters.items()},
+            return_type=deepcopy(self.return_type),
+            original_signature=deepcopy(self.original_signature),
+        )
+
     @classmethod
     def from_fn(cls, fn: AnyCallable, signature_namespace: dict[str, Any]) -> Self:
         """Parse a function signature.
@@ -106,6 +114,20 @@ class ParsedSignature:
         signature = Signature.from_callable(fn)
         fn_type_hints = get_fn_type_hints(fn, namespace=signature_namespace)
 
+        return cls.from_signature(signature, fn_type_hints)
+
+    @classmethod
+    def from_signature(cls, signature: Signature, fn_type_hints: dict[str, type]) -> Self:
+        """Parse an :class:`inspect.Signature` instance.
+
+        Args:
+            signature: An :class:`inspect.Signature` instance.
+            fn_type_hints: mapping of types
+
+        Returns:
+            ParsedSignature
+        """
+
         parameters = tuple(
             FieldDefinition.from_parameter(parameter=parameter, fn_type_hints=fn_type_hints)
             for name, parameter in signature.parameters.items()
@@ -119,28 +141,6 @@ class ParsedSignature:
             return_type=return_type if "return" in fn_type_hints else replace(return_type, annotation=Empty),
             original_signature=signature,
         )
-
-    @classmethod
-    def from_signature(cls, signature: Signature, signature_namespace: dict[str, Any]) -> Self:
-        """Parse an :class:`inspect.Signature` instance.
-
-        Python's `get_type_hints()` function does not support parsing signatures directly, so we need to create a dummy
-        function to pass to it. Maybe there's a better way to do this, but this does work.
-
-        Args:
-            signature: An :class:`inspect.Signature` instance.
-            signature_namespace: mapping of names to types for forward reference resolution
-
-        Returns:
-            ParsedSignature
-        """
-
-        def fn() -> None:
-            ...
-
-        fn.__signature__ = signature  # type:ignore[attr-defined]
-        fn.__annotations__ = {p.name: p.annotation for p in signature.parameters.values()}
-        return cls.from_fn(fn, signature_namespace)
 
 
 def infer_request_encoding_from_field_definition(field_definition: FieldDefinition) -> RequestEncodingType | str:

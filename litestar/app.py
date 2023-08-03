@@ -55,7 +55,7 @@ if TYPE_CHECKING:
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
     from litestar.datastructures import CacheControlHeader, ETag, ResponseHeader
-    from litestar.dto.interface import DTOInterface
+    from litestar.dto import AbstractDTO
     from litestar.events.listener import EventListener
     from litestar.logging.config import BaseLoggingConfig
     from litestar.openapi.spec import SecurityRequirement
@@ -176,7 +176,7 @@ class Litestar(Router):
         compression_config: CompressionConfig | None = None,
         cors_config: CORSConfig | None = None,
         csrf_config: CSRFConfig | None = None,
-        dto: type[DTOInterface] | None | EmptyType = Empty,
+        dto: type[AbstractDTO] | None | EmptyType = Empty,
         debug: bool | None = None,
         dependencies: Dependencies | None = None,
         etag: ETag | None = None,
@@ -199,7 +199,7 @@ class Litestar(Router):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: OptionalSequence[ResponseHeader] | None = None,
-        return_dto: type[DTOInterface] | None | EmptyType = Empty,
+        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         security: OptionalSequence[SecurityRequirement] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
         state: State | None = None,
@@ -240,7 +240,7 @@ class Litestar(Router):
             csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
             debug: If ``True``, app errors rendered as HTML with a stack trace.
             dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
-            dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
+            dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
                 validation of request data.
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
                 Can be overridden by route handlers.
@@ -276,7 +276,7 @@ class Litestar(Router):
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>`.
             response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
             response_cache_config: Configures caching behavior of the application.
-            return_dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing
+            return_dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing
                 outbound response data.
             route_handlers: A sequence of route handlers, which can include instances of
                 :class:`Router <.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or any

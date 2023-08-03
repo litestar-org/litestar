@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, AnyStr, Mapping, TypedDict, cast
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.datastructures.cookie import Cookie
 from litestar.datastructures.response_header import ResponseHeader
-from litestar.dto.interface import ConnectionContext
 from litestar.enums import HttpMethod, MediaType
 from litestar.exceptions import (
     HTTPException,
@@ -55,7 +54,7 @@ if TYPE_CHECKING:
     from litestar.config.response_cache import CACHE_FOREVER
     from litestar.connection import Request
     from litestar.datastructures import CacheControlHeader, ETag
-    from litestar.dto.interface import DTOInterface
+    from litestar.dto import AbstractDTO
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
     from litestar.types.callable_types import OperationIDCreator
@@ -124,7 +123,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         dependencies: Dependencies | None = None,
-        dto: type[DTOInterface] | None | EmptyType = Empty,
+        dto: type[AbstractDTO] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: Sequence[Guard] | None = None,
@@ -136,7 +135,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
-        return_dto: type[DTOInterface] | None | EmptyType = Empty,
+        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         status_code: int | None = None,
         sync_to_thread: bool | None = None,
         # OpenAPI related attributes
@@ -180,7 +179,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
-            dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
+            dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
                 validation of request data.
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
@@ -202,7 +201,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
-            return_dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing
+            return_dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing
                 outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
@@ -470,8 +469,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             A Response instance
         """
         if return_dto_type := self.resolve_return_dto():
-            ctx = ConnectionContext.from_connection(request)
-            data = return_dto_type(ctx).data_to_encodable_type(data)
+            data = return_dto_type(request).data_to_encodable_type(data)
 
         response_handler = self.get_response_handler(is_response_type_data=isinstance(data, Response))
         return await response_handler(app=app, data=data, request=request)  # type: ignore
@@ -482,6 +480,12 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         super().on_registration(app)
         self.resolve_after_response()
+
+        if self.sync_to_thread and not is_async_callable(self.fn.value):
+            self.fn.value = async_partial(self.fn.value)
+            self.has_sync_callable = False
+        else:
+            self.has_sync_callable = not is_async_callable(self.fn.value)
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it is set by inspecting its return annotations."""
@@ -521,16 +525,6 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         if "data" in self.parsed_fn_signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
-
-    def _set_runtime_callables(self) -> None:
-        """Set the runtime callables for the route handler."""
-        super()._set_runtime_callables()
-        self.has_sync_callable = False
-        if not is_async_callable(self.fn.value):
-            if self.sync_to_thread:
-                self.fn.value = async_partial(self.fn.value)
-            else:
-                self.has_sync_callable = True
 
 
 route = HTTPRouteHandler

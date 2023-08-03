@@ -17,16 +17,18 @@ if TYPE_CHECKING:
 
 
 def create_request_body(
-    route_handler: BaseRouteHandler, field: FieldDefinition, schema_creator: SchemaCreator
+    route_handler: BaseRouteHandler, field_definition: FieldDefinition, schema_creator: SchemaCreator
 ) -> RequestBody | None:
     """Create a RequestBody model for the given RouteHandler or return None."""
     media_type: RequestEncodingType | str = RequestEncodingType.JSON
-    if isinstance(field.kwarg_definition, BodyKwarg) and field.kwarg_definition.media_type:
-        media_type = field.kwarg_definition.media_type
+    if isinstance(field_definition.kwarg_definition, BodyKwarg) and field_definition.kwarg_definition.media_type:
+        media_type = field_definition.kwarg_definition.media_type
 
-    if dto := route_handler.resolve_dto():
-        schema = dto.create_openapi_schema("data", str(route_handler), schema_creator)
+    if dto := route_handler.resolve_data_dto():
+        schema = dto.create_openapi_schema(
+            field_definition=field_definition, handler_id=route_handler.handler_id, schema_creator=schema_creator
+        )
     else:
-        schema = schema_creator.for_field_definition(field)
+        schema = schema_creator.for_field_definition(field_definition)
 
     return RequestBody(required=True, content={media_type: OpenAPIMediaType(schema=schema)})

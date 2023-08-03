@@ -18,7 +18,7 @@ from litestar._openapi.responses import (
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar.contrib.pydantic import PydanticSchemaPlugin
 from litestar.datastructures import Cookie, ResponseHeader
-from litestar.dto.interface import DTOInterface
+from litestar.dto import AbstractDTO
 from litestar.exceptions import (
     HTTPException,
     PermissionDeniedException,
@@ -37,6 +37,7 @@ from litestar.status_codes import (
     HTTP_400_BAD_REQUEST,
     HTTP_406_NOT_ACCEPTABLE,
 )
+from litestar.typing import FieldDefinition
 from tests import PydanticPerson, PydanticPersonFactory
 
 from .utils import PetException
@@ -427,13 +428,18 @@ def handler() -> int:
 
 
 def test_response_generation_with_dto() -> None:
-    mock_dto = MagicMock(spec=DTOInterface)
+    mock_dto = MagicMock(spec=AbstractDTO)
     mock_dto.create_openapi_schema.return_value = Schema()
 
     @post(path="/form-upload", return_dto=mock_dto)
     async def handler(data: Dict[str, Any]) -> Dict[str, Any]:
         return data
 
-    schema_creator = SchemaCreator(generate_examples=False)
+    Litestar(route_handlers=[handler])
+
+    field_definition = FieldDefinition.from_annotation(Dict[str, Any])
+    schema_creator = SchemaCreator()
     create_success_response(handler, schema_creator)
-    mock_dto.create_openapi_schema.assert_called_once_with("return", str(handler), schema_creator)
+    mock_dto.create_openapi_schema.assert_called_once_with(
+        field_definition=field_definition, handler_id=handler.handler_id, schema_creator=schema_creator
+    )

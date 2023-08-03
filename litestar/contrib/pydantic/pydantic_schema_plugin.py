@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from typing_extensions import Annotated, get_type_hints
 
@@ -11,9 +11,6 @@ from litestar.plugins import OpenAPISchemaPluginProtocol
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass, is_pydantic_model_class, is_undefined_sentinel
-
-if TYPE_CHECKING:
-    from litestar.dto.types import ForType
 
 try:
     import pydantic
@@ -139,31 +136,29 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
     def is_plugin_supported_type(value: Any) -> bool:
         return isinstance(value, _supported_types) or is_class_and_subclass(value, _supported_types)  # type: ignore
 
-    def to_openapi_schema(self, annotation: Any, schema_creator: SchemaCreator, dto_for: ForType | None) -> Schema:
+    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
         """Given a type annotation, transform it into an OpenAPI schema class.
 
         Args:
-            annotation: A type annotation.
+            field_definition: FieldDefinition instance.
             schema_creator: An instance of the schema creator class
-            dto_for: The type of the DTO if any.
 
         Returns:
             An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
         """
-        if is_pydantic_model_class(annotation):
-            return self.for_pydantic_model(annotation=annotation, schema_creator=schema_creator, dto_for=dto_for)
-        return PYDANTIC_TYPE_MAP[annotation]  # pragma: no cover
+        if is_pydantic_model_class(field_definition.annotation):
+            return self.for_pydantic_model(annotation=field_definition.annotation, schema_creator=schema_creator)
+        return PYDANTIC_TYPE_MAP[field_definition.annotation]  # pragma: no cover
 
     @classmethod
     def for_pydantic_model(
-        cls, annotation: type[pydantic.BaseModel], schema_creator: SchemaCreator, dto_for: ForType | None
+        cls, annotation: type[pydantic.BaseModel], schema_creator: SchemaCreator
     ) -> Schema:  # pyright: ignore
         """Create a schema object for a given pydantic model class.
 
         Args:
             annotation: A pydantic model class.
             schema_creator: An instance of the schema creator class
-            dto_for: The type of the DTO if any.
 
         Returns:
             A schema instance.
@@ -201,6 +196,6 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
             required=sorted(f.name for f in field_definitions.values() if f.is_required),
             properties={k: schema_creator.for_field_definition(f) for k, f in field_definitions.items()},
             type=OpenAPIType.OBJECT,
-            title=title or _get_type_schema_name(annotation, dto_for),
+            title=title or _get_type_schema_name(annotation),
             examples=[Example(example)] if example else None,
         )

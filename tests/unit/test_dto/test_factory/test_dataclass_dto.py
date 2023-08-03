@@ -26,7 +26,7 @@ def fx_dto_type() -> type[DataclassDTO[Model]]:
 
 
 @pytest.mark.skipif(sys.version_info > (3, 8), reason="generic builtin collection")
-def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> None:
+def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> None:
     expected = [
         replace(
             DTOFieldDefinition.from_field_definition(
@@ -37,7 +37,6 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
                 default_factory=None,
                 model_name=Model.__name__,
                 dto_field=DTOField(),
-                dto_for=None,
             ),
             metadata=ANY,
             type_wrappers=ANY,
@@ -49,7 +48,6 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
                 default_factory=None,
                 model_name=Model.__name__,
                 dto_field=DTOField(),
-                dto_for=None,
             ),
             metadata=ANY,
             type_wrappers=ANY,
@@ -64,7 +62,6 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
                 default_factory=list,
                 model_name=Model.__name__,
                 dto_field=DTOField(),
-                dto_for=None,
             ),
             metadata=ANY,
             type_wrappers=ANY,
@@ -75,7 +72,7 @@ def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> Non
         assert field_def == exp
 
 
-def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> None:
+def test_dataclass_field_definitions(dto_type: type[DataclassDTO[Model]]) -> None:
     expected = [
         replace(
             DTOFieldDefinition.from_field_definition(
@@ -86,7 +83,6 @@ def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> 
                 default_factory=None,
                 model_name=Model.__name__,
                 dto_field=DTOField(),
-                dto_for=None,
             ),
             metadata=ANY,
             type_wrappers=ANY,
@@ -98,7 +94,6 @@ def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> 
                 default_factory=None,
                 model_name=Model.__name__,
                 dto_field=DTOField(),
-                dto_for=None,
             ),
             metadata=ANY,
             type_wrappers=ANY,
@@ -113,7 +108,6 @@ def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> 
                 default_factory=list,
                 model_name=Model.__name__,
                 dto_field=DTOField(),
-                dto_for=None,
             ),
             metadata=ANY,
             type_wrappers=ANY,

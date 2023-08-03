@@ -149,7 +149,7 @@ def test_path_param_type_resolution(
     def handler(test: param_type_class) -> None:
         mock(test)
 
-    with create_test_client(handler, debug=True) as client:
+    with create_test_client(handler) as client:
         response = client.get(f"/some/test/path/{value}")
 
     assert response.status_code == HTTP_200_OK

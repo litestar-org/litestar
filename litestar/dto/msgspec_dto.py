@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING, Collection, Generic, TypeVar, cast
 
 from msgspec import NODEFAULT, Struct, inspect
 
-from litestar.dto.base_factory import AbstractDTOFactory
+from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Generator
+    from typing import Any, Generator
 
     from litestar.typing import FieldDefinition
 
@@ -21,12 +21,8 @@ __all__ = ("MsgspecDTO",)
 T = TypeVar("T", bound="Struct | Collection[Struct]")
 
 
-class MsgspecDTO(AbstractDTOFactory[T], Generic[T]):
+class MsgspecDTO(AbstractDTO[T], Generic[T]):
     """Support for domain modelling with Msgspec."""
-
-    __slots__ = ()
-
-    model_type: ClassVar[type[Struct]]
 
     @classmethod
     def generate_field_definitions(cls, model_type: type[Struct]) -> Generator[DTOFieldDefinition, None, None]:
@@ -45,7 +41,6 @@ class MsgspecDTO(AbstractDTOFactory[T], Generic[T]):
                     dto_field=dto_field,
                     model_name=model_type.__name__,
                     default_factory=default_or_empty(msgspec_field.default_factory),
-                    dto_for=None,
                 ),
                 default=default_or_empty(msgspec_field.default),
                 name=key,
