@@ -17,10 +17,13 @@ class Model:
 
 
 class TestModelDataDTO(AbstractDTO[Model]):
-    def decode(self, value: Any) -> Model:
+    def decode_builtins(self, value: Any) -> Model:
         return Model(a=1, b="2")
 
-    def encode(self, data: Model | Collection[Model]) -> bytes | LitestarEncodableType:
+    def decode_bytes(self, value: bytes) -> Model:
+        return Model(a=1, b="2")
+
+    def data_to_encodable_type(self, data: Model | Collection[Model]) -> bytes | LitestarEncodableType:
         return Model(a=1, b="2")
 
     @classmethod
@@ -45,10 +48,13 @@ class TestModelDataDTO(AbstractDTO[Model]):
 
 
 class TestModelReturnDTO(AbstractDTO[Model]):
-    def decode(self, value: Any) -> Any:
+    def decode_builtins(self, value: Any) -> Any:
         raise RuntimeError("Return DTO should not have this method called")
 
-    def encode(self, data: Model | Collection[Model]) -> bytes | LitestarEncodableType:
+    def decode_bytes(self, value: Any) -> Any:
+        raise RuntimeError("Return DTO should not have this method called")
+
+    def data_to_encodable_type(self, data: Model | Collection[Model]) -> bytes | LitestarEncodableType:
         return b'{"a": 1, "b": "2"}'
 
     @classmethod

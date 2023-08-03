@@ -91,9 +91,9 @@ def test_media_type(media_type: Union[MediaType, str], tmp_path: Path) -> None:
         (".json", MediaType.JSON),
         (".html", MediaType.HTML),
         (".html.other", MediaType.HTML),
-        (".css", "text/css"),
-        (".xml", "application/xml"),
-        (".xml.other", "application/xml"),
+        (".css", MediaType.CSS),
+        (".xml", MediaType.XML),
+        (".xml.other", MediaType.XML),
         (".txt", MediaType.TEXT),
         (".unknown", MediaType.TEXT),
         ("", MediaType.TEXT),
@@ -113,9 +113,7 @@ def test_media_type_inferred(extension: str, expected_type: MediaType, tmp_path:
     ) as client:
         res = client.get("/")
         assert res.status_code == 200
-        assert res.headers["content-type"].startswith(
-            expected_type.value if isinstance(expected_type, MediaType) else expected_type
-        )
+        assert res.headers["content-type"].startswith(expected_type.value)
 
 
 def test_before_request_handler_content_type(tmp_path: Path) -> None:

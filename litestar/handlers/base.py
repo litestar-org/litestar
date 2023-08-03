@@ -153,7 +153,7 @@ class BaseRouteHandler:
 
     @property
     def handler_id(self) -> str:
-        """A unique idenrtifier used for generation of DTOs and schemas."""
+        """A unique identifier used for generation of DTOs and schemas."""
         return self.name or str(self)
 
     @property

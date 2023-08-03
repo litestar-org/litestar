@@ -30,6 +30,8 @@ class MediaType(str, Enum):
     MESSAGEPACK = "application/x-msgpack"
     HTML = "text/html"
     TEXT = "text/plain"
+    CSS = "text/css"
+    XML = "application/xml"
 
 
 class OpenAPIMediaType(str, Enum):

@@ -413,7 +413,7 @@ dto_type = SQLAlchemyDTO[A]
     assert isinstance(model.b, module.B)
     assert isinstance(model.b.a, module.A)
 
-    encodable_type = module.dto_type(asgi_connection).encode(model)
+    encodable_type = module.dto_type(asgi_connection).data_to_encodable_type(model)
     assert encodable_type.id == 1
     assert encodable_type.b_id == 1
     assert encodable_type.b.id == 1
