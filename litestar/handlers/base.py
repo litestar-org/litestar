@@ -205,7 +205,7 @@ class BaseRouteHandler:
             Handler function
         """
         if not hasattr(self, "_fn"):
-            raise ImproperlyConfiguredException("handler does not decorate a function")
+            raise ImproperlyConfiguredException("No callable has been registered for this handler")
         return self._fn
 
     @property
