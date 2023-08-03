@@ -473,9 +473,7 @@ def any_session(request: FixtureRequest) -> AsyncSession | Session:
 
 @pytest.fixture()
 def repository_module(repository_pk_type: RepositoryPKType) -> Any:
-    if repository_pk_type == "uuid":
-        return models_uuid
-    return models_bigint
+    return models_uuid if repository_pk_type == "uuid" else models_bigint
 
 
 @pytest.fixture()
@@ -595,12 +593,10 @@ async def test_repo_created_updated(
     if repository_pk_type == "uuid":
         author = cast(models_uuid.UUIDAuthor, author)
         book_model = cast("type[models_uuid.UUIDBook]", book_model)
-        author.books.append(book_model(title="Testing"))
     else:
         author = cast(models_bigint.BigIntAuthor, author)
         book_model = cast("type[models_bigint.BigIntBook]", book_model)
-        author.books.append(book_model(title="Testing"))
-
+    author.books.append(book_model(title="Testing"))
     author = await maybe_async(author_repo.update(author))
     assert author.updated_at > original_update_dt
 
