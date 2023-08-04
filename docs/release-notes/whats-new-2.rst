@@ -603,7 +603,7 @@ Basic support for HTMX requests and responses was added with the
 ``litestar.contrib.htmx`` module.
 
 .. seealso::
-   The :doc:`/usage/contrib/htmx` usage documentation
+   The :doc:`/usage/htmx` usage documentation
 
 
 Event bus

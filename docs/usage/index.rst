@@ -28,3 +28,4 @@ Usage
     contrib/index
     cli
     debugging
+    htmx

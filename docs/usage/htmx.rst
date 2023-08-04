@@ -1,7 +1,13 @@
-HTMX Request Class
-=====================
+HTMX
+====
 
-This class extends the Litestar request class to allow it to read headers sent by the `htmx` client and make them accessible via properties.
+Litestar HTMX integration.
+
+HTMXRequest
+------------
+
+A special :class:`~litestar.connection.Request` class, providing interaction with the
+HTMX client.
 
 .. code-block:: python
 
@@ -20,7 +26,8 @@ This class extends the Litestar request class to allow it to read headers sent b
         return HTMXTemplate(name="partial.html", context=context, push_url="/form")
 
 
-See :class:`HTMXDetails <litestar.contrib.htmx.request.HTMXDetails>` for a full list of available properties.
+See :class:`HTMXDetails <litestar.contrib.htmx.request.HTMXDetails>` for a full list of
+available properties.
 
 
 HTMX Response Classes
