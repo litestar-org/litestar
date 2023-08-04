@@ -35,25 +35,25 @@ Installation
     :ref:`Cookie Based Sessions <usage/middleware/builtin-middleware:client-side sessions>`
         :code:`pip install litestar[cryptography]`
 
-    :doc:`JWT Security Backends </usage/contrib/jwt>`
+    :doc:`JWT </usage/security/jwt>`
         :code:`pip install litestar[jwt]`
 
     :doc:`RedisStore </usage/stores>`
         :code:`pip install litestar[redis]`
 
-    :ref:`Picologging <usage/the-litestar-app:using picologging>`
+    :ref:`Picologging <usage/logging:using picologging>`
         :code:`pip install litestar[picologging]`
 
-    :ref:`StructLog <usage/the-litestar-app:using structlog>`
+    :ref:`StructLog <usage/logging:using structlog>`
         :code:`pip install litestar[structlog]`
 
-    :doc:`Prometheus Instrumentation </usage/contrib/prometheus>`
+    :doc:`Prometheus Instrumentation </usage/metrics/prometheus>`
         :code:`pip install litestar[prometheus]`
 
-    :doc:`Open Telemetry Instrumentation </usage/contrib/open-telemetry>`
+    :doc:`Open Telemetry Instrumentation </usage/metrics/open-telemetry>`
         :code:`pip install litestar[opentelemetry]`
 
-    :doc:`SQLAlchemy </usage/contrib/sqlalchemy/index>`
+    :doc:`SQLAlchemy </usage/databases/sqlalchemy/index>`
         :code:`pip install litestar[sqlalchemy]`
 
     :doc:`CLI </usage/cli>`
