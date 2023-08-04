@@ -35,7 +35,7 @@ Installation
     :ref:`Cookie Based Sessions <usage/middleware/builtin-middleware:client-side sessions>`
         :code:`pip install litestar[cryptography]`
 
-    :doc:`JWT Security Backends </usage/contrib/jwt>`
+    :doc:`JWT </usage/security/jwt>`
         :code:`pip install litestar[jwt]`
 
     :doc:`RedisStore </usage/stores>`
