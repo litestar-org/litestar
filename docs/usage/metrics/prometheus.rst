@@ -1,5 +1,5 @@
-Prometheus Instrumentation
-==============================
+Prometheus
+==========
 
 Litestar includes optional Prometheus exporter that is exported from ``litestar.contrib.prometheus``. To use
 this package, you should first install the required dependencies:

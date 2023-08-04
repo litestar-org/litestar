@@ -303,7 +303,7 @@ SQLAlchemy 2 only.
 TODO: Migration instructions
 
 .. seealso::
-    The :doc:`/usage/contrib/sqlalchemy/index` usage documentation and the
+    The :doc:`/usage/databases/sqlalchemy/index` usage documentation and the
     :doc:`/reference/contrib/sqlalchemy/index` API reference
 
 
@@ -603,7 +603,7 @@ Basic support for HTMX requests and responses was added with the
 ``litestar.contrib.htmx`` module.
 
 .. seealso::
-   The :doc:`/usage/contrib/htmx` usage documentation
+   The :doc:`/usage/htmx` usage documentation
 
 
 Event bus

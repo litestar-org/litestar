@@ -1428,7 +1428,7 @@
         providing support for managed synchronous and asynchronous sessions.
 
         .. seealso::
-            :doc:`/usage/contrib/sqlalchemy/index`
+            :doc:`/usage/databases/sqlalchemy/index`
 
     .. change:: Attrs signature modelling
         :type: feature
@@ -1974,8 +1974,9 @@
         :breaking:
         :pr: 1209
 
-        :ref:`usage/responses:Response Headers` and :ref:`usage/responses:Response Cookies` now have the same
-        interface, along with the ``headers`` and ``cookies`` keyword arguments to
+        :ref:`response headers <usage/responses:Setting Response Headers>` and
+        :ref:`response cookies <usage/responses:Setting Response Cookies>` now have the
+        same interface, along with the ``headers`` and ``cookies`` keyword arguments to
         ``starlite.response.Response``. They each allow to pass either a
         `:class:`Mapping[str, str] <typing.Mapping>`, e.g. a dictionary, or a :class:`Sequence <typing.Sequence>` of
         ``starlite.datastructures.response_header.ResponseHeader`` or

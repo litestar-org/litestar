@@ -4,27 +4,29 @@ Usage
 .. toctree::
     :titlesonly:
 
-    the-litestar-app
-    routing
-    route-handlers
-    parameters
-    request-data
+    applications
+    routing/index
+    requests
     responses
     dependency-injection
-    dto/index
     websockets
-    channels
+    dto/index
     middleware/index
-    security/index
-    stores
-    testing
     plugins
-    events
+    security/index
+    channels
+    databases/index
+    exceptions
+    stores
     openapi
     lifecycle-hooks
     caching
     templating
-    exceptions
-    contrib/index
+    events
+    logging
+    static-files
+    metrics/index
+    htmx
     cli
+    testing
     debugging

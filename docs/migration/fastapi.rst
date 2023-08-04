@@ -5,7 +5,7 @@ Routing Decorators
 ~~~~~~~~~~~~~~~~~~
 
 Litestar does not include any decorator as part of the ``Router`` or ``Litestar`` instances.
-Instead, all routes are declared using :doc:`route handlers </usage/route-handlers>`, either as standalone functions or
+Instead, all routes are declared using :doc:`route handlers </usage/routing/handlers>`, either as standalone functions or
 controller methods. The handler can then be registered on an application or router instance.
 
 .. tab-set::
@@ -62,7 +62,7 @@ controller methods. The handler can then be registered on an application or rout
 ..  seealso::
 
     To learn more about registering routes, check out this chapter
-    in the documentation: :ref:`registering routes <usage/routing:registering routes>`
+    in the documentation: :ref:`registering routes <usage/routing/overview:registering routes>`
 
 Routers and Routes
 ~~~~~~~~~~~~~~~~~~
@@ -70,10 +70,10 @@ Routers and Routes
 There are a few key differences between Litestar’s and Starlette’s ``Router`` class:
 
 1. The Litestar version is not an ASGI app
-2. The Litestar version does not include decorators: Use :doc:`route handlers </usage/route-handlers>`.
+2. The Litestar version does not include decorators: Use :doc:`route handlers </usage/routing/handlers>`.
 3. The Litestar version does not support lifecycle hooks: Those have to be handled on the application layer. See :doc:`lifecycle hooks </usage/lifecycle-hooks>`
 
-If you are using Starlette’s ``Route``\ s, you will need to replace these with :doc:`route handlers </usage/route-handlers>`.
+If you are using Starlette’s ``Route``\ s, you will need to replace these with :doc:`route handlers </usage/routing/handlers>`.
 
 Host based routing
 ~~~~~~~~~~~~~~~~~~
