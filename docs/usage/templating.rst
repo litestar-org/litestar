@@ -1,5 +1,5 @@
-Templates
-=========
+Templating
+==========
 
 Litestar has built-in support for both the `Jinja2 <https://jinja.palletsprojects.com/en/3.0.x/>`_
 and `Mako <https://www.makotemplates.org/>`_ template engines, as well as abstractions to

@@ -1,5 +1,5 @@
-OpenAPI integration
-===================
+OpenAPI
+=======
 
 Litestar has first class OpenAPI support offering the following features:
 

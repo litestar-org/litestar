@@ -11,22 +11,22 @@ Usage
     request-data
     responses
     dependency-injection
-    dto/index
     websockets
-    channels
+    dto/index
     middleware/index
-    security/index
-    stores
-    testing
     plugins
-    events
+    security/index
+    channels
+    databases/index
+    exceptions
+    stores
     openapi
     lifecycle-hooks
     caching
     templating
-    exceptions
-    cli
-    debugging
-    htmx
+    events
     metrics/index
-    databases/index
+    htmx
+    cli
+    testing
+    debugging
