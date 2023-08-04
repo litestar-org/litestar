@@ -1,5 +1,5 @@
-Open Telemetry Instrumentation
-==============================
+OpenTelemetry
+=============
 
 Litestar includes optional OpenTelemetry instrumentation that is exported from ``litestar.contrib.opentelemetry``. To use
 this package, you should first install the required dependencies:

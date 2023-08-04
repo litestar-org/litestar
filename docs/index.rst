@@ -47,10 +47,10 @@ Installation
     :ref:`StructLog <usage/the-litestar-app:using structlog>`
         :code:`pip install litestar[structlog]`
 
-    :doc:`Prometheus Instrumentation </usage/contrib/prometheus>`
+    :doc:`Prometheus Instrumentation </usage/metrics/prometheus>`
         :code:`pip install litestar[prometheus]`
 
-    :doc:`Open Telemetry Instrumentation </usage/contrib/open-telemetry>`
+    :doc:`Open Telemetry Instrumentation </usage/metrics/open-telemetry>`
         :code:`pip install litestar[opentelemetry]`
 
     :doc:`SQLAlchemy </usage/contrib/sqlalchemy/index>`

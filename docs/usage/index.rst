@@ -29,3 +29,4 @@ Usage
     cli
     debugging
     htmx
+    metrics/index
