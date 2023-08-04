@@ -6,11 +6,10 @@ from unittest.mock import MagicMock
 from litestar.openapi.spec.schema import Schema
 from litestar.typing import FieldDefinition
 
-from . import TestModelDataDTO
+from . import ModelDataDTO
 
 
 def test_dto_interface_create_openapi_schema_default_implementation() -> None:
     assert (
-        TestModelDataDTO.create_openapi_schema(FieldDefinition.from_annotation(Any), MagicMock(), MagicMock())
-        == Schema()
+        ModelDataDTO.create_openapi_schema(FieldDefinition.from_annotation(Any), MagicMock(), MagicMock()) == Schema()
     )
