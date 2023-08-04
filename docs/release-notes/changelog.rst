@@ -232,7 +232,7 @@
         :type: misc
         :pr: 2002
 
-        The :mod:`litestar.partial` and :class:`~litestar.partial.Partial` have been
+        The ``litestar.partial`` and ``litestar.partial.Partial`` have been
         deprecated and will be removed in a future release. Users are advised to upgrade
         to DTOs, making use of the :class:`~litestar.dto.config.DTOConfig` option
         ``partial=True``.
