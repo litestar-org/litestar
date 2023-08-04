@@ -16,7 +16,7 @@ class Model:
     b: str
 
 
-class TestModelDataDTO(AbstractDTO[Model]):
+class ModelDataDTO(AbstractDTO[Model]):
     def decode_builtins(self, value: Any) -> Model:
         return Model(a=1, b="2")
 
@@ -47,7 +47,7 @@ class TestModelDataDTO(AbstractDTO[Model]):
         return False
 
 
-class TestModelReturnDTO(AbstractDTO[Model]):
+class ModelReturnDTO(AbstractDTO[Model]):
     def decode_builtins(self, value: Any) -> Any:
         raise RuntimeError("Return DTO should not have this method called")
 

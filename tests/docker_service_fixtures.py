@@ -51,7 +51,8 @@ class DockerServiceRegistry:
         self._running_services: set[str] = set()
         self.docker_ip = self._get_docker_ip()
         self._base_command = [
-            "docker-compose",
+            "docker",
+            "compose",
             "--file=tests/docker-compose.yml",
             f"--project-name=litestar_pytest-{worker_id}",
         ]
@@ -67,10 +68,8 @@ class DockerServiceRegistry:
         raise ValueError(f'Invalid value for DOCKER_HOST: "{docker_host}".')
 
     def run_command(self, *args: str) -> None:
-        if sys.platform == "darwin":
-            subprocess.call([*self._base_command, *args], shell=True)
-        else:
-            subprocess.run([*self._base_command, *args], check=True, capture_output=True)
+        command = [*self._base_command, *args]
+        subprocess.run(command, check=True, capture_output=True)
 
     async def start(
         self,
