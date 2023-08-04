@@ -1,5 +1,5 @@
-Request data
-============
+Requests
+========
 
 Request body
 ------------
@@ -8,7 +8,6 @@ The body of HTTP requests can be accessed using the special ``data`` parameter i
 
 .. literalinclude:: /examples/request_data/request_data_1.py
     :language: python
-
 
 
 The type of ``data`` an be any supported type, including

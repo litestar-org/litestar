@@ -24,7 +24,7 @@ request data in the form of JSON and use the type annotation we gave it to conve
 into the correct format.
 
 .. seealso::
-    :doc:`/usage/request-data`
+    :doc:`/usage/requests`
 
 
 Using the interactive documentation to test a route

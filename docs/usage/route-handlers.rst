@@ -90,7 +90,7 @@ kwargs are inspected by Litestar and then injected into the request handler.
 The following sources can be accessed using annotated function kwargs:
 
 - :ref:`path, query, header, and cookie parameters <usage/parameters:the parameter function>`
-- :doc:`/usage/request-data`
+- :doc:`/usage/requests`
 - :doc:`injected dependencies </usage/dependency-injection>`
 
 Additionally, you can specify the following special kwargs, what's called "reserved keywords" internally:
