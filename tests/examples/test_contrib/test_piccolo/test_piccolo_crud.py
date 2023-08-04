@@ -12,6 +12,8 @@ except ImportError:
 from docs.examples.contrib.piccolo.app import DB, Task, app
 from piccolo.testing.model_builder import ModelBuilder
 
+pytestmark = pytest.mark.xdist_group("piccolo")
+
 
 @pytest.fixture(autouse=True, scope="module")
 def create_test_data():
