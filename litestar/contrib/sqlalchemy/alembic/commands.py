@@ -68,9 +68,9 @@ def get_alembic_command_config(config: SQLAlchemyAsyncConfig | SQLAlchemySyncCon
     kwargs = {}
     engine = config.create_engine()
     if config.alembic_config.script_config:
-        kwargs.update({"file_": config.alembic_config.script_config})
+        kwargs["file_"] = config.alembic_config.script_config
     if config.alembic_config.template_path:
-        kwargs.update({"template_directory": config.alembic_config.template_path})
+        kwargs["template_directory"] = config.alembic_config.template_path
     alembic_cfg = AlembicCommandConfig(**kwargs)  # type: ignore
     alembic_cfg.set_main_option("script_location", config.alembic_config.script_location)
     alembic_cfg.set_main_option("sqlalchemy.url", engine.url.render_as_string(hide_password=False).replace("%", "%%"))
