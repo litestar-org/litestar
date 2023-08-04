@@ -44,8 +44,8 @@ multiple paths, e.g.:
 To handle more complex path schemas you should use `routers`_ and `controllers`_
 
 
-Dynamic Route Registration
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Registering routes dynamically
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Occasionally there is a need for dynamic route registration. Litestar supports this via the ``.register`` method exposed
 by the Litestar app instance:
@@ -192,8 +192,8 @@ Registering components multiple times
 
 You can register both standalone route handler functions and controllers multiple times.
 
-Registering controllers multiple times
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Controllers
+^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -219,8 +219,8 @@ the controller, which ensures encapsulation.
 Therefore, in the above example, three different instances of ``MyController`` will be created, each mounted on a
 different sub-path, e.g. ``/internal/controller``\ , ``/partner/controller``, and ``/consumer/controller``.
 
-Registering standalone route handlers multiple times
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Route handlers
+^^^^^^^^^^^^^^
 
 You can also register standalone route handlers multiple times:
 

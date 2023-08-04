@@ -1,9 +1,8 @@
-The Litestar App
-================
+Applications
+=============
 
-
-Application object
-------------------
+Application objects
+-------------------
 
 At the root of every Litestar application is an instance of the :class:`Litestar <litestar.app.Litestar>`
 class. Typically, this code will be placed in a file called ``main.py`` at the project's root directory.
@@ -145,7 +144,6 @@ ensure that no mutation of state is allowed:
 .. literalinclude:: /examples/application_state/using_immutable_state.py
     :caption: Using Custom State
     :language: python
-
 
 
 Static Files
@@ -349,8 +347,8 @@ an ASGI message is sent. The hook receives the message instance and the applicat
 
 
 
-Application Init
-^^^^^^^^^^^^^^^^
+Application initialization
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Litestar includes a hook for intercepting the arguments passed to the :class:`Litestar constructor <litestar.app.Litestar>`,
 before they are used to instantiate the application.
@@ -363,8 +361,8 @@ develop third-party application configuration systems.
 
 .. note::
 
-    `on_app_init` handlers cannot be `async def` functions, as they are called within `Litestar.__init__()`, outside of
-    an async context.
+    ``on_app_init`` handlers cannot be ``async def`` functions, as they are called within ``Litestar.__init__()``,
+    outside of an async context.
 
 .. literalinclude:: /examples/application_hooks/on_app_init.py
     :caption: After Exception Hook

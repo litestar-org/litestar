@@ -24,9 +24,8 @@ The type of ``data`` an be any supported type, including
     :language: python
 
 
-
-Validation and customizing OpenAPI documentation
-------------------------------------------------
+Validation and customization of OpenAPI documentation
+-----------------------------------------------------
 
 With the help of :class:`Body <litestar.params.Body>`, you have fine-grained control over the validation
 of the request body, and can also customize the OpenAPI documentation:
@@ -35,9 +34,8 @@ of the request body, and can also customize the OpenAPI documentation:
     :language: python
 
 
-
-Specifying a content-type
--------------------------
+Content-type
+-----------
 
 By default, Litestar will try to parse the request body as JSON. While this may be desired
 in most cases, you might want to specify a different type. You can do so by passing a

@@ -66,8 +66,7 @@ Dependencies can be either callables - sync or async functions, methods, or clas
 .. include:: /admonitions/sync-to-thread-info.rst
 
 
-
-Pre-requisites and Scope
+Pre-requisites and scope
 ------------------------
 
 The pre-requisites for dependency injection are these:
@@ -172,8 +171,8 @@ and committing otherwise.
    re-raise
 
 
-Dependency Kwargs
------------------
+Dependency keyword arguments
+----------------------------
 
 As stated above dependencies can receive kwargs but no args. The reason for this is that dependencies are parsed using
 the same mechanism that parses route handler functions, and they too - like route handler functions, can have data
@@ -214,7 +213,7 @@ in turn makes it available as a kwarg in the ``update_user`` method.
 
 
 
-Overriding Dependencies
+Dependency overrides
 -----------------------
 
 Because dependencies are declared at each level of the app using a string keyed dictionary, overriding dependencies is
@@ -251,8 +250,8 @@ The lower scoped route handler function declares a dependency with the same key 
 controller. The lower scoped dependency therefore overrides the higher scoped one.
 
 
-The Provide Class
------------------
+The ``Provide`` class
+----------------------
 
 The :class:`Provide <.di.Provide>` class is a wrapper used for dependency injection. To inject a callable you must wrap
 it in ``Provide``:
@@ -289,8 +288,8 @@ it in ``Provide``:
 
 
 
-Using dependencies in dependencies
------------------------------------
+Dependencies within dependencies
+--------------------------------
 
 You can inject dependencies into other dependencies - exactly like you would into regular functions.
 
@@ -327,8 +326,8 @@ You can inject dependencies into other dependencies - exactly like you would int
    The same rules for `overriding dependencies`_ apply here as well.
 
 
-The Dependency Function
------------------------
+The ``Dependency`` function
+----------------------------
 
 Dependency validation
 ~~~~~~~~~~~~~~~~~~~~~
