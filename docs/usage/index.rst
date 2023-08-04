@@ -5,9 +5,7 @@ Usage
     :titlesonly:
 
     applications
-    routing
-    route-handlers
-    parameters
+    routing/index
     requests
     responses
     dependency-injection

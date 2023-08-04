@@ -442,4 +442,4 @@ after a client has connected:
 
     When using the ``arbitrary_channels_allowed`` flag on the :class:`ChannelsPlugin`, a
     single route handler will be generated instead, using a
-    :ref:`path parameter <usage/parameters:path parameters>` to specify the channel name
+    :ref:`path parameter <usage/routing/parameters:path parameters>` to specify the channel name

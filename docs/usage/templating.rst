@@ -250,7 +250,7 @@ Built-in callables
 ``url_for``
     To access urls for route handlers you can use the ``url_for`` function. Its signature and behaviour
     matches :meth:`route_reverse <litestar.app.Litestar.route_reverse>` behaviour. More details about route handler indexing
-    can be found :ref:`here <usage/route-handlers:route handler indexing>`.
+    can be found :ref:`here <usage/routing/handlers:route handler indexing>`.
 
 ``csrf_token``
     This function returns the request's unique :ref:`CSRF token <usage/middleware/builtin-middleware:csrf>` You can use this

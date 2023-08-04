@@ -87,7 +87,7 @@ Litestar that you only want to use this function when a ``GET`` request is being
 
 
 .. seealso::
-    :doc:`/usage/route-handlers`
+    :doc:`/usage/routing/handlers`
 
 
 Type annotations

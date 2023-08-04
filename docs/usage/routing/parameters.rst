@@ -78,7 +78,7 @@ Query Parameters
 ----------------
 
 Query parameters are defined as keyword arguments to handler functions. Every keyword argument
-that is not otherwise specified (for example as a :ref:`path parameter <usage/parameters:path parameters>`)
+that is not otherwise specified (for example as a :ref:`path parameter <usage/routing/parameters:path parameters>`)
 will be interpreted as a query parameter.
 
 .. literalinclude:: /examples/parameters/query_params.py

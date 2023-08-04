@@ -179,7 +179,7 @@ the same mechanism that parses route handler functions, and they too - like rout
 injected into them.
 
 In fact, you can inject the same data that you
-can :ref:`inject into route handlers <usage/route-handlers:"reserved" keyword arguments>`.
+can :ref:`inject into route handlers <usage/routing/handlers:"reserved" keyword arguments>`.
 
 .. code-block:: python
 

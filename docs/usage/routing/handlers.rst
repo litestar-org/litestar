@@ -66,7 +66,7 @@ And the value for this argument can be either a string path, as in the above exa
    async def my_route_handler() -> None:
        ...
 
-This is particularly useful when you want to have optional :ref:`path parameters <usage/parameters:Path Parameters>`:
+This is particularly useful when you want to have optional :ref:`path parameters <usage/routing/parameters:Path Parameters>`:
 
 .. code-block:: python
 
@@ -89,7 +89,7 @@ kwargs are inspected by Litestar and then injected into the request handler.
 
 The following sources can be accessed using annotated function kwargs:
 
-- :ref:`path, query, header, and cookie parameters <usage/parameters:the parameter function>`
+- :ref:`path, query, header, and cookie parameters <usage/routing/parameters:the parameter function>`
 - :doc:`/usage/requests`
 - :doc:`injected dependencies </usage/dependency-injection>`
 
