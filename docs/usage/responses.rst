@@ -834,7 +834,7 @@ kwargs>`
     :caption: Offset Pagination With SQLAlchemy
     :language: python
 
-See :ref:`SQLAlchemy plugin <usage/contrib/sqlalchemy/plugins/index:Plugins>` for sqlalchemy integration.
+See :ref:`SQLAlchemy plugin <usage/databases/sqlalchemy/plugins/index:Plugins>` for sqlalchemy integration.
 
 Cursor Pagination
 +++++++++++++++++

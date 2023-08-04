@@ -1428,7 +1428,7 @@
         providing support for managed synchronous and asynchronous sessions.
 
         .. seealso::
-            :doc:`/usage/contrib/sqlalchemy/index`
+            :doc:`/usage/databases/sqlalchemy/index`
 
     .. change:: Attrs signature modelling
         :type: feature

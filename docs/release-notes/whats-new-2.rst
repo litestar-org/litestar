@@ -303,7 +303,7 @@ SQLAlchemy 2 only.
 TODO: Migration instructions
 
 .. seealso::
-    The :doc:`/usage/contrib/sqlalchemy/index` usage documentation and the
+    The :doc:`/usage/databases/sqlalchemy/index` usage documentation and the
     :doc:`/reference/contrib/sqlalchemy/index` API reference
 
 

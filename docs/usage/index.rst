@@ -25,8 +25,8 @@ Usage
     caching
     templating
     exceptions
-    contrib/index
     cli
     debugging
     htmx
     metrics/index
+    databases/index

@@ -53,7 +53,7 @@ Installation
     :doc:`Open Telemetry Instrumentation </usage/metrics/open-telemetry>`
         :code:`pip install litestar[opentelemetry]`
 
-    :doc:`SQLAlchemy </usage/contrib/sqlalchemy/index>`
+    :doc:`SQLAlchemy </usage/databases/sqlalchemy/index>`
         :code:`pip install litestar[sqlalchemy]`
 
     :doc:`CLI </usage/cli>`
