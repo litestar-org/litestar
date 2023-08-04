@@ -25,6 +25,8 @@ Usage
     caching
     templating
     events
+    logging
+    static-files
     metrics/index
     htmx
     cli
