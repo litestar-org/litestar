@@ -282,7 +282,7 @@ The following example is identical in principle to the one above, but it uses `S
 
 .. admonition:: Why Litestar uses radix based routing
 
-    The regex matching used by popular frameworks such as Starlette, FastAPI or (formerly) Flask is very good at
+    The regex matching used by popular frameworks such as Starlette, FastAPI or Flask is very good at
     resolving path parameters fast, giving it an advantage when a URL has a lot of path parameters - what we can think
     of as ``vertical`` scaling. On the other hand, it is not good at scaling horizontally - the more routes, the less
     performant it becomes. Thus, there is an inverse relation between performance and application size with this
