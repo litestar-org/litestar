@@ -35,7 +35,7 @@ of the request body, and can also customize the OpenAPI documentation:
 
 
 Content-type
------------
+------------
 
 By default, Litestar will try to parse the request body as JSON. While this may be desired
 in most cases, you might want to specify a different type. You can do so by passing a

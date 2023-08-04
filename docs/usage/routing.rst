@@ -41,7 +41,7 @@ multiple paths, e.g.:
 
    app = Litestar(route_handlers=[handler])
 
-To handle more complex path schemas you should use `routers`_ and `controllers`_
+To handle more complex path schemas you should use routers and controllers
 
 
 Registering routes dynamically

@@ -134,7 +134,7 @@ as the first argument:
 
 
 .. seealso::
-    :doc:`/usage/the-litestar-app`
+    :doc:`/usage/applications`
 
 
 

@@ -41,10 +41,10 @@ Installation
     :doc:`RedisStore </usage/stores>`
         :code:`pip install litestar[redis]`
 
-    :ref:`Picologging <usage/the-litestar-app:using picologging>`
+    :ref:`Picologging <usage/logging:using picologging>`
         :code:`pip install litestar[picologging]`
 
-    :ref:`StructLog <usage/the-litestar-app:using structlog>`
+    :ref:`StructLog <usage/logging:using structlog>`
         :code:`pip install litestar[structlog]`
 
     :doc:`Prometheus Instrumentation </usage/metrics/prometheus>`

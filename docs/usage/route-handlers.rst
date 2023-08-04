@@ -175,12 +175,6 @@ above:
    async def my_endpoint() -> None:
        ...
 
-HTTP route handlers kwargs
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The ``route`` decorator **requires** an ``http_method`` kwarg, which is a member of the
-:class:`HttpMethod <.enums.HttpMethod>` enum or a list of members, e.g. ``HttpMethod.GET`` or
-``[HttpMethod.PATCH, HttpMethod.PUT]``.
 
 
 Semantic handler decorators

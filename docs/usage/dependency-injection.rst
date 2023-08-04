@@ -179,7 +179,7 @@ the same mechanism that parses route handler functions, and they too - like rout
 injected into them.
 
 In fact, you can inject the same data that you
-can :ref:`inject into route handlers <usage/route-handlers:handler function kwargs>`.
+can :ref:`inject into route handlers <usage/route-handlers:"reserved" keyword arguments>`.
 
 .. code-block:: python
 
@@ -214,7 +214,7 @@ in turn makes it available as a kwarg in the ``update_user`` method.
 
 
 Dependency overrides
------------------------
+--------------------
 
 Because dependencies are declared at each level of the app using a string keyed dictionary, overriding dependencies is
 very simple:
@@ -323,7 +323,7 @@ You can inject dependencies into other dependencies - exactly like you would int
 
 .. note::
 
-   The same rules for `overriding dependencies`_ apply here as well.
+   The rules for `dependency overrides`_ apply here as well.
 
 
 The ``Dependency`` function

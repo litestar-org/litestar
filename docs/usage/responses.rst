@@ -525,8 +525,8 @@ Setting Cookies dynamically
 ++++++++++++++++++++++++++++
 
 While the above scheme works great for static cookie values, it doesn't allow for dynamic cookies. Because cookies are
-fundamentally a type of response header, we can utilize the same patterns we use for
-setting :ref:`dynamic headers <usage/responses:dynamic headers>` also here.
+fundamentally a type of response header, we can utilize the same patterns we use to
+setting :ref:`set headers headers <usage/responses:setting headers dynamically>`.
 
 Using Annotated Responses
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -718,7 +718,7 @@ instances.
    set a response class on every layer of the application. If you have set a response
    class on multiple layers, the layer closest to the route handler will take precedence.
 
-   You can read more about this here: :ref:`usage/the-litestar-app:layered architecture`
+   You can read more about this here: :ref:`usage/applications:layered architecture`
 
 Background Tasks
 ----------------
@@ -827,8 +827,7 @@ Offset Pagination With SQLAlchemy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 When retrieving paginated data from the database using SQLAlchemy, the Paginator instance requires an SQLAlchemy session
-instance to make queries. This can be achieved with :ref:`dependency injection <usage/dependency-injection:dependency
-kwargs>`
+instance to make queries. This can be achieved with :doc:`/usage/dependency-injection`
 
 .. literalinclude:: /examples/pagination/using_offset_pagination_with_sqlalchemy.py
     :caption: Offset Pagination With SQLAlchemy

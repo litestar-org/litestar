@@ -242,8 +242,8 @@ Parameters that support layering are:
 * :doc:`middleware </usage/middleware/index>`
 * :ref:`opt <handler_opts>`
 * :ref:`response_class <usage/responses:custom responses>`
-* :ref:`response_cookies <usage/responses:response cookies>`
-* :ref:`response_headers <usage/responses:response headers>`
+* :ref:`response_cookies <usage/responses:setting response cookies>`
+* :ref:`response_headers <usage/responses:setting response headers>`
 * :doc:`return_dto </usage/dto/0-basic-use>`
 * ``security``
 * ``tags``

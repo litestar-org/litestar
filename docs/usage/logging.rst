@@ -1,7 +1,7 @@
 Logging
 =======
 
-Application and request level loggers can be configured using the :class:`~litestar.logging.LoggingConfig`:
+Application and request level loggers can be configured using the :class:`~litestar.logging.config.LoggingConfig`:
 
 .. code-block:: python
 

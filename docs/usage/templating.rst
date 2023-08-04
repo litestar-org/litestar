@@ -131,7 +131,7 @@ Accessing the request instance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The current :class:`Request <litestar.connection.request.Request>` is available within the
-template context under ``request``, which also provides access to the :doc:`app instance </usage/the-litestar-app>`.
+template context under ``request``, which also provides access to the :doc:`app instance </usage/applications>`.
 
 Accessing ``app.state.key`` for example would look like this:
 <strong>check_context_key: </strong>{{ check_context_key() }}

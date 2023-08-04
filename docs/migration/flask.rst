@@ -394,8 +394,8 @@ Setting cookies and headers
     To learn more about response headers and cookies, check out these chapters in the
     documentation:
 
-    - :ref:`Response headers <usage/responses:response headers>`
-    - :ref:`Response cookies <usage/responses:response cookies>`
+    - :ref:`Response headers <usage/responses:setting response headers>`
+    - :ref:`Response cookies <usage/responses:setting response cookies>`
 
 Redirects
 ~~~~~~~~~
