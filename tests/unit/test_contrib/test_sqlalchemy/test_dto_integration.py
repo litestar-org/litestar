@@ -3,8 +3,8 @@ from types import ModuleType
 from typing import Any, Callable, Dict, List, Tuple
 
 import pytest
-from sqlalchemy import ForeignKey, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, declared_attr, mapped_column, relationship
+from sqlalchemy import Column, ForeignKey, Integer, String, Table
+from sqlalchemy.orm import DeclarativeBase, Mapped, composite, declared_attr, mapped_column, relationship
 from typing_extensions import Annotated
 
 from litestar import get, post
@@ -326,6 +326,121 @@ def get_handler(data: Circle) -> Circle:
         response = client.post("/", json={"radius": 5})
         assert response.json() == {"id": 1, "radius": 5}
         assert module.DIAMETER == 10
+
+
+async def test_dto_with_composite_map() -> None:
+    @dataclass
+    class Point:
+        x: int
+        y: int
+
+    class Vertex1(Base):
+        start: Mapped[Point] = composite(mapped_column("x1"), mapped_column("y1"))
+        end: Mapped[Point] = composite(mapped_column("x2"), mapped_column("y2"))
+
+    dto = SQLAlchemyDTO[Vertex1]
+
+    @post(dto=dto, signature_namespace={"Vertex": Vertex1})
+    def post_handler(data: Vertex1) -> Vertex1:
+        return data
+
+    with create_test_client(route_handlers=[post_handler]) as client:
+        response = client.post(
+            "/",
+            json={
+                "id": "1",
+                "start": {"x": 10, "y": 20},
+                "end": {"x": 1, "y": 2},
+            },
+        )
+        assert response.json() == {
+            "id": "1",
+            "start": {"x": 10, "y": 20},
+            "end": {"x": 1, "y": 2},
+        }
+
+
+async def test_dto_with_composite_map_using_explicit_columns() -> None:
+    @dataclass
+    class Point:
+        x: int
+        y: int
+
+    class Vertex2(Base):
+        x1: Mapped[int]
+        y1: Mapped[int]
+        x2: Mapped[int]
+        y2: Mapped[int]
+
+        start: Mapped[Point] = composite("x1", "y1")
+        end: Mapped[Point] = composite("x2", "y2")
+
+    dto = SQLAlchemyDTO[Vertex2]
+
+    @post(dto=dto, signature_namespace={"Vertex": Vertex2})
+    def post_handler(data: Vertex2) -> Vertex2:
+        return data
+
+    with create_test_client(route_handlers=[post_handler]) as client:
+        response = client.post(
+            "/",
+            json={
+                "id": "1",
+                "start": {"x": 10, "y": 20},
+                "end": {"x": 1, "y": 2},
+            },
+        )
+        assert response.json() == {
+            "id": "1",
+            "start": {"x": 10, "y": 20},
+            "end": {"x": 1, "y": 2},
+        }
+
+
+async def test_dto_with_composite_map_using_hybrid_imperative_mapping() -> None:
+    @dataclass
+    class Point:
+        x: int
+        y: int
+
+    table = Table(
+        "vertices2",
+        Base.metadata,
+        Column("id", String, primary_key=True),
+        Column("x1", Integer),
+        Column("y1", Integer),
+        Column("x2", Integer),
+        Column("y2", Integer),
+    )
+
+    class Vertex3(Base):
+        __table__ = table
+
+        id: Mapped[str]
+
+        start = composite(Point, table.c.x1, table.c.y1)
+        end = composite(Point, table.c.x2, table.c.y2)
+
+    dto = SQLAlchemyDTO[Vertex3]
+
+    @post(dto=dto, signature_namespace={"Vertex": Vertex3})
+    def post_handler(data: Vertex3) -> Vertex3:
+        return data
+
+    with create_test_client(route_handlers=[post_handler]) as client:
+        response = client.post(
+            "/",
+            json={
+                "id": "1",
+                "start": {"x": 10, "y": 20},
+                "end": {"x": 1, "y": 2},
+            },
+        )
+        assert response.json() == {
+            "id": "1",
+            "start": {"x": 10, "y": 20},
+            "end": {"x": 1, "y": 2},
+        }
 
 
 async def test_field_with_sequence_default(create_module: Callable[[str], ModuleType]) -> None:
