@@ -214,6 +214,32 @@ def test_dto_data_with_url_encoded_form_data() -> None:
         assert response.json() == {"name": "John", "age": 42, "read_only": "read-only"}
 
 
+@dataclass
+class RenamedBar:
+    bar: str
+    foo_foo: str
+
+
+def test_dto_data_create_instance_renamed_fields() -> None:
+    @post(
+        dto=DataclassDTO[Annotated[RenamedBar, DTOConfig(exclude={"foo_foo"}, rename_strategy="camel")]],
+        return_dto=DataclassDTO[Annotated[RenamedBar, DTOConfig(rename_strategy="camel")]],
+    )
+    def handler(data: DTOData[RenamedBar]) -> RenamedBar:
+        assert isinstance(data, DTOData)
+        # changing `foo_foo="world"` to `fooFoo="world"`makes the test pass
+        result = data.create_instance(foo_foo="world")
+        assert result.foo_foo == "world"
+        return result
+
+    with create_test_client(
+        route_handlers=[handler], signature_namespace={"NestedFoo": NestedFoo, "NestingBar": NestingBar}
+    ) as client:
+        response = client.post("/", json={"bar": "hello"})
+        assert response.status_code == 201
+        assert response.json() == {"bar": "hello", "fooFoo": "world"}
+
+
 def test_dto_data_with_patch_request() -> None:
     class PatchDTO(DataclassDTO[User]):
         config = DTOConfig(partial=True)
