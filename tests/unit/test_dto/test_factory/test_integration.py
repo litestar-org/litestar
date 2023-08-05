@@ -227,7 +227,6 @@ def test_dto_data_create_instance_renamed_fields() -> None:
     )
     def handler(data: DTOData[RenamedBar]) -> RenamedBar:
         assert isinstance(data, DTOData)
-        # changing `foo_foo="world"` to `fooFoo="world"`makes the test pass
         result = data.create_instance(foo_foo="world")
         assert result.foo_foo == "world"
         return result
