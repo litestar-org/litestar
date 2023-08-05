@@ -686,10 +686,3 @@ def test_dto_with_msgspec_with_bound_generic_and_inherited_models() -> None:
             headers={"Content-Type": "application/json; charset=utf-8"},
         )
         assert msgspec.json.decode(received.content, type=Superuser) == data
-
-
-def test_deprecated_imports_raises_when_not_available() -> None:
-    import litestar.dto.factory
-
-    with pytest.raises(AttributeError):
-        litestar.dto.factory.foo
