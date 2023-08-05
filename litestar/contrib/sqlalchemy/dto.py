@@ -9,9 +9,11 @@ from sqlalchemy.ext.associationproxy import AssociationProxy, AssociationProxyEx
 from sqlalchemy.ext.hybrid import HybridExtensionType, hybrid_property
 from sqlalchemy.orm import (
     ColumnProperty,
+    CompositeProperty,
     DeclarativeBase,
     InspectionAttr,
     Mapped,
+    MappedColumn,
     NotExtension,
     QueryableAttribute,
     RelationshipDirection,
@@ -35,7 +37,7 @@ __all__ = ("SQLAlchemyDTO",)
 
 T = TypeVar("T", bound="DeclarativeBase | Collection[DeclarativeBase]")
 
-ElementType: TypeAlias = "Column | RelationshipProperty"
+ElementType: TypeAlias = "Column | RelationshipProperty | CompositeProperty"
 SQLA_NS = {**vars(orm), **vars(sql)}
 
 
@@ -72,7 +74,7 @@ class SQLAlchemyDTO(AbstractDTO[T], Generic[T]):
             if not isinstance(orm_descriptor.property.expression, Column):
                 raise NotImplementedError(f"Expected 'Column', got: '{orm_descriptor.property.expression}'")
             elem = orm_descriptor.property.expression
-        elif isinstance(orm_descriptor.property, RelationshipProperty):
+        elif isinstance(orm_descriptor.property, (RelationshipProperty, CompositeProperty)):
             elem = orm_descriptor.property
         else:
             raise NotImplementedError(f"Unhandled property type: '{orm_descriptor.property}'")
@@ -189,12 +191,22 @@ class SQLAlchemyDTO(AbstractDTO[T], Generic[T]):
         # the same hybrid property descriptor can be included in `all_orm_descriptors` multiple times, once
         # for each method name it is bound to. We only need to see it once, so track views of it here.
         seen_hybrid_descriptors: set[hybrid_property] = set()
+        skipped_columns: set[str] = set()
+        for composite_property in mapper.composites:
+            for attr in composite_property.attrs:
+                if isinstance(attr, (MappedColumn, Column)):
+                    skipped_columns.add(attr.name)
+                elif isinstance(attr, str):
+                    skipped_columns.add(attr)
         for key, orm_descriptor in mapper.all_orm_descriptors.items():
             if isinstance(orm_descriptor, hybrid_property):
                 if orm_descriptor in seen_hybrid_descriptors:
                     continue
 
                 seen_hybrid_descriptors.add(orm_descriptor)
+
+            if key in skipped_columns:
+                continue
 
             yield from cls.handle_orm_descriptor(
                 orm_descriptor.extension_type, key, orm_descriptor, model_type_hints, model_name
@@ -261,6 +273,9 @@ def parse_type_from_element(elem: ElementType) -> FieldDefinition:
             return FieldDefinition.from_annotation(Optional[elem.mapper.class_])
 
         return FieldDefinition.from_annotation(elem.mapper.class_)
+
+    if isinstance(elem, CompositeProperty):
+        return FieldDefinition.from_annotation(elem.composite_class)
 
     raise ImproperlyConfiguredException(
         f"Unable to parse type from element '{elem}'. Consider adding a type hint.",
