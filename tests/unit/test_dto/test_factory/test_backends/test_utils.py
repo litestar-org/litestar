@@ -53,7 +53,12 @@ def test_transfer_nested_union_type_data_raises_runtime_error_for_complex_union(
         has_nested=True,
     )
     with pytest.raises(RuntimeError):
-        _transfer_nested_union_type_data(transfer_type=transfer_type, is_data_field=True, source_value=1)
+        _transfer_nested_union_type_data(
+            transfer_type=transfer_type,
+            is_data_field=True,
+            source_value=1,
+            is_dto_data_type=True,
+        )
 
 
 def test_create_transfer_model_type_annotation_simple_type_without_nested_field_info() -> None:
