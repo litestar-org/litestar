@@ -46,6 +46,7 @@ jobs:
   test-platform-compat:
 #    if: github.event_name == 'push' disable temporarily
     strategy:
+      fail-fast: false
       matrix:
         os: ["macos-latest", "windows-latest"]
     uses: ./.github/workflows/test.yaml
