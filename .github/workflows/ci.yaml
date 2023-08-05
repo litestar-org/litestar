@@ -44,9 +44,8 @@ jobs:
       python-version: ${{ matrix.python-version }}
 
   test-platform-compat:
-    if: github.event_name == 'push'
+#    if: github.event_name == 'push' disable temporarily
     strategy:
-      fail-fast: true
       matrix:
         os: ["macos-latest", "windows-latest"]
     uses: ./.github/workflows/test.yaml
