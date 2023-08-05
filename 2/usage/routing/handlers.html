@@ -1,0 +1,1880 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Route handlers &#8212; Litestar Framework</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/litestar-theme.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'usage/routing/handlers';</script>
+    <script src="../../_static/versioning.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Parameters" href="parameters.html" />
+    <link rel="prev" title="Routing" href="overview.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+   
+
+<a class="navbar-brand logo" href="https://litestar.dev">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../_static/logo.svg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+
+
+
+    <nav class="hidden lg:flex lg:gap-x-4">
+        
+    
+        
+            <a href="../../index.html"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Documentation</a>
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Community
+            <div class="menu-state-indicator flex">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
+            <div class="
+            h-11 w-11 flex flex-none items-center justify-center
+            rounded-lg
+            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
+            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
+                
+    <svg class="h-6 w-6" fill="none"
+     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"/>
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z"/>
+</svg>
+
+            </div>
+            <div class="flex-auto">
+                
+    <a href="https://docs.litestar.dev/2/contribution-guide.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Contributing
+        <span class="absolute inset-0"></span>
+    </a>
+
+                <div class="mt-1 text-gray-600 dark:text-gray-300">Learn how to contribute to the Litestar project</div>
+            </div>
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
+            <div class="
+            h-11 w-11 flex flex-none items-center justify-center
+            rounded-lg
+            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
+            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
+                
+    <svg class="h-6 w-6" fill="none"
+     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/>
+</svg>
+
+            </div>
+            <div class="flex-auto">
+                
+    <a href="https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Code of Conduct
+        <span class="absolute inset-0"></span>
+    </a>
+
+                <div class="mt-1 text-gray-600 dark:text-gray-300">Review the etiquette for interacting with the Litestar community</div>
+            </div>
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            About
+            <div class="menu-state-indicator flex">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
+            <div class="
+            h-11 w-11 flex flex-none items-center justify-center
+            rounded-lg
+            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
+            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
+                
+    <svg class="h-6 w-6" aria-hidden="true"
+     fill="none" stroke="currentColor" stroke-width="1.5"
+     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
+          stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+            </div>
+            <div class="flex-auto">
+                
+    <a href="https://litestar.dev/about/organization"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Litestar Organization
+        <span class="absolute inset-0"></span>
+    </a>
+
+                <div class="mt-1 text-gray-600 dark:text-gray-300">Details about the Litestar organization</div>
+            </div>
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
+            <div class="
+            h-11 w-11 flex flex-none items-center justify-center
+            rounded-lg
+            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
+            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
+                
+    <svg class="h-6 w-6" aria-hidden="true"
+     fill="none" stroke="currentColor" stroke-width="1.5"
+     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M9 12.75l3 3m0 0l3-3m-3 3v-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+            </div>
+            <div class="flex-auto">
+                
+    <a href="https://litestar.dev/about/litestar-releases"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Releases
+        <span class="absolute inset-0"></span>
+    </a>
+
+                <div class="mt-1 text-gray-600 dark:text-gray-300">Details about the Litestar release process</div>
+            </div>
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Release notes
+            <div class="menu-state-indicator flex">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="../../release-notes/whats-new-2.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        What's new in 2.0
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/2/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/1/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        1.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            <a href="https://github.com/orgs/litestar-org/discussions"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Help</a>
+        
+    
+
+    </nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/X3FJqy8d2j" title="Discord" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discord"></i></span>
+            <label class="sr-only">Discord</label></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+
+
+
+
+    <nav class="hidden lg:flex lg:gap-x-4">
+        
+    
+        
+            <a href="../../index.html"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Documentation</a>
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Community
+            <div class="menu-state-indicator flex">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
+            <div class="
+            h-11 w-11 flex flex-none items-center justify-center
+            rounded-lg
+            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
+            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
+                
+    <svg class="h-6 w-6" fill="none"
+     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"/>
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z"/>
+</svg>
+
+            </div>
+            <div class="flex-auto">
+                
+    <a href="https://docs.litestar.dev/2/contribution-guide.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Contributing
+        <span class="absolute inset-0"></span>
+    </a>
+
+                <div class="mt-1 text-gray-600 dark:text-gray-300">Learn how to contribute to the Litestar project</div>
+            </div>
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
+            <div class="
+            h-11 w-11 flex flex-none items-center justify-center
+            rounded-lg
+            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
+            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
+                
+    <svg class="h-6 w-6" fill="none"
+     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/>
+</svg>
+
+            </div>
+            <div class="flex-auto">
+                
+    <a href="https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Code of Conduct
+        <span class="absolute inset-0"></span>
+    </a>
+
+                <div class="mt-1 text-gray-600 dark:text-gray-300">Review the etiquette for interacting with the Litestar community</div>
+            </div>
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            About
+            <div class="menu-state-indicator flex">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
+            <div class="
+            h-11 w-11 flex flex-none items-center justify-center
+            rounded-lg
+            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
+            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
+                
+    <svg class="h-6 w-6" aria-hidden="true"
+     fill="none" stroke="currentColor" stroke-width="1.5"
+     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
+          stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+            </div>
+            <div class="flex-auto">
+                
+    <a href="https://litestar.dev/about/organization"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Litestar Organization
+        <span class="absolute inset-0"></span>
+    </a>
+
+                <div class="mt-1 text-gray-600 dark:text-gray-300">Details about the Litestar organization</div>
+            </div>
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
+            <div class="
+            h-11 w-11 flex flex-none items-center justify-center
+            rounded-lg
+            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
+            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
+                
+    <svg class="h-6 w-6" aria-hidden="true"
+     fill="none" stroke="currentColor" stroke-width="1.5"
+     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M9 12.75l3 3m0 0l3-3m-3 3v-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+            </div>
+            <div class="flex-auto">
+                
+    <a href="https://litestar.dev/about/litestar-releases"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Releases
+        <span class="absolute inset-0"></span>
+    </a>
+
+                <div class="mt-1 text-gray-600 dark:text-gray-300">Details about the Litestar release process</div>
+            </div>
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Release notes
+            <div class="menu-state-indicator flex">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="../../release-notes/whats-new-2.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        What's new in 2.0
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/2/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/1/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        1.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            <a href="https://github.com/orgs/litestar-org/discussions"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Help</a>
+        
+    
+
+    </nav>
+</div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/X3FJqy8d2j" title="Discord" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discord"></i></span>
+            <label class="sr-only">Discord</label></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/todo-app/index.html">Developing a basic TODO application</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/todo-app/0-application-basics.html">Application basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/todo-app/1-accessing-the-list.html">Accessing the list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/todo-app/2-interacting-with-the-list.html">Making the list interactive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/todo-app/3-assembling-the-app.html">Recap and assembling the final application</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/sqlalchemy/0-introduction.html">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/sqlalchemy/1-provide-session-with-di.html">Providing the session with DI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/sqlalchemy/2-serialization-plugin.html">Using the serialization plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/sqlalchemy/3-init-plugin.html">Using the init plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/sqlalchemy/4-final-touches-and-recap.html">Final touches and recap</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/01-simple-dto-exclude.html">Our first DTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/02-nested-exclude.html">Excluding from nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/03-nested-collection-exclude.html">Excluding from collections of nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/04-max-nested-depth.html">Max nested depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/05-renaming-fields.html">Renaming fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/06-receiving-data.html">Receiving data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/07-read-only-fields.html">Read only fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/08-dto-data.html">Accessing the data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/09-updating.html">Updating instances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/dto-tutorial/10-layered-dto-declarations.html">Declaring DTOs on app layers</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
+
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/03-repository-controller.html">Working with Controllers and Repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/repository-tutorial/04-repository-other.html">Adding Additional Features to the Repository</a></li>
+
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Usage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../applications.html">Applications</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Routing</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="overview.html">Routing</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Route handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameters.html">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../requests.html">Requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../responses.html">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../websockets.html">WebSockets</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../dto/index.html">Data Transfer Object (DTO)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../dto/0-basic-use.html">Basic Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dto/2-creating-custom-dto-classes.html">Implementing Cusotm DTO Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../middleware/using-middleware.html">Using Middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../middleware/builtin-middleware.html">Built-in middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../middleware/creating-middleware.html">Creating Middleware</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../plugins.html">Plugins</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../security/security-backends.html">Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../security/guards.html">Guards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../security/jwt.html">JWT Security Backends</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../channels.html">Channels</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../databases/index.html">Databases</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../databases/sqlalchemy/index.html">SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../databases/sqlalchemy/plugins/index.html">Plugins</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../databases/piccolo.html">Piccolo ORM</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../stores.html">Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../openapi.html">OpenAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../lifecycle-hooks.html">Life Cycle Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../caching.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../templating.html">Templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../events.html">Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../static-files.html">Static Files</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../metrics/prometheus.html">Prometheus</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../htmx.html">HTMX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli.html">CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../testing.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging.html">Debugging</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/app.html">app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/background_tasks.html">background_tasks</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/channels/index.html">channels</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/channels/plugin.html">plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/channels/subscriber.html">subscriber</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/channels/backends/index.html">backends</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/memory.html">memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/redis.html">redis</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/connection.html">connection</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/htmx.html">HTMX</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/piccolo.html">piccolo_orm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/pydantic.html">pydantic</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/contrib/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/repository/abc.html">abc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/repository/filters.html">filters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/repository/exceptions.html">exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/repository/testing.html">testing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/repository/handlers.html">handlers</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/repository.html">repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/types.html">types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/contrib/sqlalchemy/dto.html">DTO</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/data_extractors.html">data_extractors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/datastructures.html">datastructures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/di.html">di</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/data_structures.html">data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/field.html">field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/types.html">types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/dto/dataclass_dto.html">dataclass_dto</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/enums.html">enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/events.html">events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/handlers.html">handlers</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/picologging.html">picologging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/logging/standard.html">standard</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/authentication.html">authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/compression.html">compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/cors.html">cors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/csrf.html">csrf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/logging.html">logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/rate_limit.html">rate_limit</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/client_side.html">client_side</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/server_side.html">server_side</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/openapi/openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/openapi/spec.html">spec</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/pagination.html">pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/plugins.html">plugins</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/response/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/response/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/response/redirect.html">redirect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/response/streaming.html">streaming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/response/sse.html">SSE (Server Sent Events)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/response/template.html">template</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/router.html">router</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/routes.html">routes</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/security/session_auth.html">session_auth</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/static_files.html">static_files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/status_codes.html">status_code</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/registry.html">registry</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/template.html">template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/testing.html">testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/types.html">types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/typing.html">typing</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../topics/sync-vs-async.html">Sync vs. Async</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../migration/flask.html">From Flask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../migration/fastapi.html">From Starlette / FastAPI</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks.html">Benchmarks</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Usage</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Routing</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Route handlers</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="route-handlers">
+<h1>Route handlers<a class="headerlink" href="#route-handlers" title="Permalink to this heading">#</a></h1>
+<p>Route handlers are the core of Litestar. They are constructed by decorating a function or class method with one of the
+handler decorators exported from Litestar.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">greet</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s2">&quot;hello world&quot;</span>
+</pre></div>
+</div>
+<p>In the above example, the decorator includes all the information required to define the endpoint operation for the
+combination of the path <code class="docutils literal notranslate"><span class="pre">&quot;/&quot;</span></code> and the http verb <code class="docutils literal notranslate"><span class="pre">GET</span></code>. In this case it will be a http response with a “Content-Type”
+header of <code class="docutils literal notranslate"><span class="pre">text/plain</span></code>.</p>
+<p>What the decorator does, is wrap the function or method within a class instance that inherits from
+<a class="reference internal" href="../../reference/handlers.html#litestar.handlers.BaseRouteHandler" title="litestar.handlers.base.BaseRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRouteHandler</span></code></a>. These classes are optimized
+descriptor classes that record all the data necessary for the given function or method - this includes a modelling of
+the function signature, which allows for injection of kwargs and dependencies, as well as data pertinent to OpenAPI
+spec generation.</p>
+<div class="important admonition">
+<p class="admonition-title">Synchronous and asynchronous callables</p>
+<p>Both synchronous and asynchronous callables are supported. One important aspect of
+this is that using a synchronous function which perform blocking operations, such
+as I/O or computationally intensive tasks, can potentially block the main thread
+running the event loop, and in turn block the whole application.</p>
+<p>To mitigate this, the <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> parameter can be set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, which
+will result in the function being run in a thread pool. Should the function be
+non-blocking, <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> should be set to <code class="docutils literal notranslate"><span class="pre">False</span></code> instead.</p>
+<p>If a synchronous function is passed, without setting an explicit <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code>
+value, a warning will be raised.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../../topics/sync-vs-async.html"><span class="doc">Sync vs. Async</span></a></p>
+</div>
+</div>
+<section id="declaring-paths">
+<h2>Declaring paths<a class="headerlink" href="#declaring-paths" title="Permalink to this heading">#</a></h2>
+<p>All route handler decorator accept an optional path argument. This argument can be declared as a kwarg using the <code class="docutils literal notranslate"><span class="pre">path</span></code>
+key word:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some-path&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>It can also be passed as an argument without the key-word:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>And the value for this argument can be either a string path, as in the above examples, or a list of string paths:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">([</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="s2">&quot;/some-other-path&quot;</span><span class="p">])</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>This is particularly useful when you want to have optional <a class="reference internal" href="parameters.html#path-parameters"><span class="std std-ref">path parameters</span></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span>
+    <span class="p">[</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="s2">&quot;/some-path/{some_id:int}&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">(</span><span class="n">some_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="reserved-keyword-arguments">
+<span id="handler-function-kwargs"></span><h2>“reserved” keyword arguments<a class="headerlink" href="#reserved-keyword-arguments" title="Permalink to this heading">#</a></h2>
+<p>Route handler functions or methods access various data by declaring these as annotated function kwargs. The annotated
+kwargs are inspected by Litestar and then injected into the request handler.</p>
+<p>The following sources can be accessed using annotated function kwargs:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="parameters.html#the-parameter-function"><span class="std std-ref">path, query, header, and cookie parameters</span></a></p></li>
+<li><p><a class="reference internal" href="../requests.html"><span class="doc">Requests</span></a></p></li>
+<li><p><a class="reference internal" href="../dependency-injection.html"><span class="doc">injected dependencies</span></a></p></li>
+</ul>
+<p>Additionally, you can specify the following special kwargs, what’s called “reserved keywords” internally:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cookies</span></code>: injects the request <a class="reference internal" href="../../reference/datastructures.html#litestar.datastructures.Cookie" title="litestar.datastructures.cookie.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">cookies</span></code></a> as a parsed dictionary.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">headers</span></code>: injects the request headers as an instance of <a class="reference internal" href="../../reference/datastructures.html#litestar.datastructures.Headers" title="litestar.datastructures.headers.Headers"><code class="xref py py-class docutils literal notranslate"><span class="pre">Headers</span></code></a> ,
+which is a case-insensitive mapping.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">query</span></code> : injects the request <code class="docutils literal notranslate"><span class="pre">query_params</span></code> as a parsed dictionary.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">request</span></code>: injects the <a class="reference internal" href="../../reference/connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance. Available only for <a class="reference internal" href="#http-route-handlers">http route handlers</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scope</span></code> : injects the ASGI scope dictionary.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">socket</span></code>: injects the <a class="reference internal" href="../../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> instance. Available only for <a class="reference internal" href="#websocket-route-handlers">websocket route handlers</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">state</span></code> : injects a copy of the application <a class="reference internal" href="../../reference/datastructures.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">body</span></code> : the raw request body. Available only for <a class="reference internal" href="#http-route-handlers">http route handlers</a></p></li>
+</ul>
+<p>For example:</p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">Headers</span><span class="p">,</span> <span class="n">State</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_request_handler</span><span class="p">(</span>
+    <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span>
+    <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
+    <span class="n">headers</span><span class="p">:</span> <span class="n">Headers</span><span class="p">,</span>
+    <span class="n">query</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">cookies</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">Headers</span><span class="p">,</span> <span class="n">State</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_request_handler</span><span class="p">(</span>
+    <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span>
+    <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
+    <span class="n">headers</span><span class="p">:</span> <span class="n">Headers</span><span class="p">,</span>
+    <span class="n">query</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">cookies</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can define a custom typing for your application state and then use it as a type instead of just using the
+State class from Litestar</p>
+</div>
+</section>
+<section id="type-annotations">
+<h2>Type annotations<a class="headerlink" href="#type-annotations" title="Permalink to this heading">#</a></h2>
+<p>Litestar enforces strict type annotations. Functions decorated by a route handler <strong>must</strong> have all their kwargs and
+return value type annotated. If a type annotation is missing, an
+<a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a> will be raised during the
+application boot-up process.</p>
+<p>There are several reasons for why this limitation is enforced:</p>
+<ol class="arabic simple">
+<li><p>to ensure best practices</p></li>
+<li><p>to ensure consistent OpenAPI schema generation</p></li>
+<li><p>to allow Litestar to compute during the application bootstrap all the kwargs required by a function</p></li>
+</ol>
+</section>
+<section id="http-route-handlers">
+<h2>HTTP route handlers<a class="headerlink" href="#http-route-handlers" title="Permalink to this heading">#</a></h2>
+<p>The most commonly used route handlers are those that handle http requests and responses. These route handlers all
+inherit from the class <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a>, which
+is aliased as the decorator called <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.route" title="litestar.handlers.route"><code class="xref py py-func docutils literal notranslate"><span class="pre">route</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">HttpMethod</span><span class="p">,</span> <span class="n">route</span>
+
+
+<span class="nd">@route</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">http_method</span><span class="o">=</span><span class="p">[</span><span class="n">HttpMethod</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">HttpMethod</span><span class="o">.</span><span class="n">POST</span><span class="p">])</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_endpoint</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>As mentioned above, <code class="docutils literal notranslate"><span class="pre">route</span></code> does is merely an alias for <code class="docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code>, thus the below code is equivalent to the one
+above:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">HttpMethod</span>
+<span class="kn">from</span> <span class="nn">litestar.handlers.http_handlers</span> <span class="kn">import</span> <span class="n">HTTPRouteHandler</span>
+
+
+<span class="nd">@HTTPRouteHandler</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">http_method</span><span class="o">=</span><span class="p">[</span><span class="n">HttpMethod</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">HttpMethod</span><span class="o">.</span><span class="n">POST</span><span class="p">])</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_endpoint</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<section id="semantic-handler-decorators">
+<h3>Semantic handler decorators<a class="headerlink" href="#semantic-handler-decorators" title="Permalink to this heading">#</a></h3>
+<p>Litestar also includes “semantic” decorators, that is, decorators the pre-set the <code class="docutils literal notranslate"><span class="pre">http_method</span></code> kwarg to a specific HTTP
+verb, which correlates with their name:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../reference/handlers.html#litestar.handlers.delete" title="litestar.handlers.delete"><code class="xref py py-func docutils literal notranslate"><span class="pre">delete</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../reference/handlers.html#litestar.handlers.get" title="litestar.handlers.get"><code class="xref py py-func docutils literal notranslate"><span class="pre">get</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../reference/handlers.html#litestar.handlers.head" title="litestar.handlers.head"><code class="xref py py-func docutils literal notranslate"><span class="pre">head</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../reference/handlers.html#litestar.handlers.patch" title="litestar.handlers.patch"><code class="xref py py-func docutils literal notranslate"><span class="pre">patch</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../reference/handlers.html#litestar.handlers.post" title="litestar.handlers.post"><code class="xref py py-func docutils literal notranslate"><span class="pre">post</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../reference/handlers.html#litestar.handlers.put" title="litestar.handlers.put"><code class="xref py py-func docutils literal notranslate"><span class="pre">put</span></code></a></p></li>
+</ul>
+<p>These are used exactly like <code class="docutils literal notranslate"><span class="pre">route</span></code> with the sole exception that you cannot configure the <code class="docutils literal notranslate"><span class="pre">http_method</span></code> kwarg:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">delete</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">head</span>
+<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DTOData</span>
+<span class="kn">from</span> <span class="nn">litestar.contrib.pydantic</span> <span class="kn">import</span> <span class="n">PydanticDTO</span>
+
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+
+<span class="k">class</span> <span class="nc">Resource</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="k">class</span> <span class="nc">PartialResourceDTO</span><span class="p">(</span><span class="n">PydanticDTO</span><span class="p">[</span><span class="n">Resource</span><span class="p">]):</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">partial</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">list_resources</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Resource</span><span class="p">]:</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">create_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Resource</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_resource</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@head</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_resource_head</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@put</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">update_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@patch</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">PartialResourceDTO</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">partially_update_resource</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">PartialResourceDTO</span><span class="p">],</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">delete_resource</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>Although these decorators are merely subclasses of <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a>
+that pre-set the <code class="docutils literal notranslate"><span class="pre">http_method</span></code>, using <em>get</em>, <em>patch</em>, <em>put</em>, <em>delete</em>, or <em>post</em> instead of <em>route</em> makes the
+code clearer and simpler.</p>
+<p>Furthermore, in the OpenAPI specification each unique combination of http verb (e.g. “GET”, “POST”, etc.) and path is
+regarded as a distinct <a class="reference external" href="https://spec.openapis.org/oas/latest.html#operation-object">operation</a>, and each operation
+should be distinguished by a unique <code class="docutils literal notranslate"><span class="pre">operation_id</span></code> and optimally also have a <code class="docutils literal notranslate"><span class="pre">summary</span></code> and <code class="docutils literal notranslate"><span class="pre">description</span></code> sections.</p>
+<p>As such, using the <code class="docutils literal notranslate"><span class="pre">route</span></code> decorator is discouraged. Instead, the preferred pattern is to share code using secondary
+class methods or by abstracting code to reusable functions.</p>
+</section>
+</section>
+<section id="websocket-route-handlers">
+<h2>Websocket route handlers<a class="headerlink" href="#websocket-route-handlers" title="Permalink to this heading">#</a></h2>
+<p>A WebSocket connection can be handled with a <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-func docutils literal notranslate"><span class="pre">websocket</span></code></a> route handler.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The websocket handler is a low level approach, requiring to handle the socket directly,
+and dealing with keeping it open, exceptions, client disconnects, and content negotiation.</p>
+<p>For a more high level approach to handling WebSockets, see <a class="reference internal" href="../websockets.html"><span class="doc">WebSockets</span></a></p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket</span>
+
+
+<span class="nd">@websocket</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/socket&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_websocket_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="o">...</span><span class="p">})</span>
+    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">websocket</span></code> decorator is an alias of the class
+<a class="reference internal" href="../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebsocketRouteHandler</span></code></a>. Thus, the below
+code is equivalent to the one above:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">WebSocket</span>
+<span class="kn">from</span> <span class="nn">litestar.handlers.websocket_handlers</span> <span class="kn">import</span> <span class="n">WebsocketRouteHandler</span>
+
+
+<span class="nd">@WebsocketRouteHandler</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/socket&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_websocket_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="o">...</span><span class="p">})</span>
+    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In difference to HTTP routes handlers, websocket handlers have the following requirements:</p>
+<ol class="arabic simple">
+<li><p>they <strong>must</strong> declare a <code class="docutils literal notranslate"><span class="pre">socket</span></code> kwarg.</p></li>
+<li><p>they <strong>must</strong> have a return annotation of <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p>they <strong>must</strong> be async functions.</p></li>
+</ol>
+<p>These requirements are enforced using inspection, and if any of them is unfulfilled an informative exception will be raised.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>OpenAPI currently does not support websockets. As such no schema will be generated for these route handlers.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebsocketRouteHandler</span></code></a>
+<a class="reference internal" href="../websockets.html"><span class="doc">WebSockets</span></a></p>
+</div>
+</section>
+<section id="asgi-route-handlers">
+<h2>ASGI route handlers<a class="headerlink" href="#asgi-route-handlers" title="Permalink to this heading">#</a></h2>
+<p>If you need to write your own ASGI application, you can do so using the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">asgi</span></code></a> decorator:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Send</span>
+<span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_400_BAD_REQUEST</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Response</span><span class="p">,</span> <span class="n">asgi</span>
+
+
+<span class="nd">@asgi</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/my-asgi-app&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_asgi_app</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">Response</span><span class="p">({</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">})</span>
+            <span class="k">await</span> <span class="n">response</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="o">=</span><span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="o">=</span><span class="n">send</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;unsupported request&quot;</span><span class="p">},</span> <span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_400_BAD_REQUEST</span>
+    <span class="p">)</span>
+    <span class="k">await</span> <span class="n">response</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="o">=</span><span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="o">=</span><span class="n">send</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Like other route handlers, the <code class="docutils literal notranslate"><span class="pre">asgi</span></code> decorator is an alias of the class
+<a class="reference internal" href="../../reference/handlers.html#litestar.handlers.ASGIRouteHandler" title="litestar.handlers.ASGIRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIRouteHandler</span></code></a>. Thus,
+the code below is equivalent to the one above:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Response</span>
+<span class="kn">from</span> <span class="nn">litestar.handlers.asgi_handlers</span> <span class="kn">import</span> <span class="n">ASGIRouteHandler</span>
+<span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_400_BAD_REQUEST</span>
+<span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Send</span>
+
+
+<span class="nd">@ASGIRouteHandler</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/my-asgi-app&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_asgi_app</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">Response</span><span class="p">({</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">})</span>
+            <span class="k">await</span> <span class="n">response</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="o">=</span><span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="o">=</span><span class="n">send</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;unsupported request&quot;</span><span class="p">},</span> <span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_400_BAD_REQUEST</span>
+    <span class="p">)</span>
+    <span class="k">await</span> <span class="n">response</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="o">=</span><span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="o">=</span><span class="n">send</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="limitations-of-asgi-route-handlers">
+<h3>Limitations of ASGI route handlers<a class="headerlink" href="#limitations-of-asgi-route-handlers" title="Permalink to this heading">#</a></h3>
+<p>In difference to the other route handlers, the <code class="docutils literal notranslate"><span class="pre">asgi</span></code> route handler accepts only 3 kwargs that <strong>must</strong> be defined:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">scope</span></code> , a mapping of values describing the ASGI connection. It always includes a <code class="docutils literal notranslate"><span class="pre">type</span></code> key, with the values being
+either <code class="docutils literal notranslate"><span class="pre">http</span></code> or <code class="docutils literal notranslate"><span class="pre">websocket</span></code> , and a <code class="docutils literal notranslate"><span class="pre">path</span></code> key. If the type is <code class="docutils literal notranslate"><span class="pre">http</span></code> , the scope dictionary will also include
+a <code class="docutils literal notranslate"><span class="pre">method</span></code> key with the value being one of <code class="docutils literal notranslate"><span class="pre">DELETE,</span> <span class="pre">GET,</span> <span class="pre">POST,</span> <span class="pre">PATCH,</span> <span class="pre">PUT,</span> <span class="pre">HEAD</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">receive</span></code> , an injected function by which the ASGI application receives messages.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">send</span></code> , an injected function by which the ASGI application sends messages.</p></li>
+</ul>
+<p>You can read more about these in the <a class="reference external" href="https://asgi.readthedocs.io/en/latest/specs/main.html">ASGI specification</a>.</p>
+<p>Additionally, ASGI route handler functions <strong>must</strong> be async functions. This is enforced using inspection, and if the
+function is not an async function, an informative exception will be raised.</p>
+<p>See the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.ASGIRouteHandler" title="litestar.handlers.asgi_handlers.ASGIRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">API</span> <span class="pre">Reference</span></code></a> for full details on the <code class="docutils literal notranslate"><span class="pre">asgi</span></code> decorator and the
+kwargs it accepts.</p>
+</section>
+</section>
+<section id="route-handler-indexing">
+<h2>Route handler indexing<a class="headerlink" href="#route-handler-indexing" title="Permalink to this heading">#</a></h2>
+<p>You can provide in all route handler decorators a <code class="docutils literal notranslate"><span class="pre">name</span></code> kwarg. The value for this kwarg <strong>must be unique</strong>, otherwise
+<a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a> exception will be raised. Default
+value for <code class="docutils literal notranslate"><span class="pre">name</span></code> is value returned by <code class="docutils literal notranslate"><span class="pre">handler.__str__</span></code> which should be the full dotted path to the handler
+(e.g. <code class="docutils literal notranslate"><span class="pre">app.controllers.projects.list</span></code> for <code class="docutils literal notranslate"><span class="pre">list</span></code> function residing in <code class="docutils literal notranslate"><span class="pre">app/controllers/projects.py</span></code> file). <code class="docutils literal notranslate"><span class="pre">name</span></code> can
+be used to dynamically retrieve (i.e. during runtime) a mapping containing the route handler instance and paths, also
+it can be used to build a URL path for that handler:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">NotFoundException</span>
+<span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">Redirect</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/abc&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;one&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler_one</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/xyz&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;two&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler_two</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/def/{param:int}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;three&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler_three</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{handler_name:str}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;four&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler_four</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
+    <span class="n">handler_index</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">get_handler_index_by_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">handler_index</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no handler matching the name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> was found&quot;</span><span class="p">)</span>
+
+    <span class="c1"># handler_index == { &quot;paths&quot;: [&quot;/&quot;], &quot;handler&quot;: ..., &quot;qualname&quot;: ... }</span>
+    <span class="c1"># do something with the handler index below, e.g. send a redirect response to the handler, or access</span>
+    <span class="c1"># handler.opt and some values stored there etc.</span>
+
+    <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">handler_index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/redirect/{param_value:int}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;five&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler_five</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">param_value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="s2">&quot;three&quot;</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="n">param_value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler_one</span><span class="p">,</span> <span class="n">handler_two</span><span class="p">,</span> <span class="n">handler_three</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="../../reference/app.html#litestar.app.Litestar.route_reverse" title="litestar.app.Litestar.route_reverse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">route_reverse</span></code></a> will raise
+<a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.NoRouteMatchFoundException" title="litestar.exceptions.NoRouteMatchFoundException"><code class="xref py py-class docutils literal notranslate"><span class="pre">NoMatchRouteFoundException</span></code></a> if route with given name was not found
+or if any of path parameters is missing or if any of passed path parameters types do not match types in the respective
+route declaration. However, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> is accepted in place of <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.date" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.date</span></code></a>,
+<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.time" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.time</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.timedelta</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, and <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a>
+parameters, so you can apply custom formatting and pass the result to <code class="docutils literal notranslate"><span class="pre">route_reverse</span></code>.</p>
+<p>If handler has multiple paths attached to it <code class="docutils literal notranslate"><span class="pre">route_reverse</span></code> will return the path that consumes the most number of
+keywords arguments passed to the function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Request</span>
+
+
+<span class="nd">@get</span><span class="p">(</span>
+    <span class="p">[</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="s2">&quot;/some-path/{id:int}&quot;</span><span class="p">,</span> <span class="s2">&quot;/some-path/{id:int}/{val:str}&quot;</span><span class="p">],</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;handler_name&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/path-info&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">path_info</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">path_optional</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="s2">&quot;handler_name&quot;</span><span class="p">)</span>
+    <span class="c1"># /some-path`</span>
+
+    <span class="n">path_partial</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="s2">&quot;handler_name&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="c1"># /some-path/100</span>
+
+    <span class="n">path_full</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="s2">&quot;handler_name&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+    <span class="c1"># /some-path/100/value`</span>
+
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path_optional</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">path_partial</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">path_full</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>If there are multiple paths attached to a handler that have the same path parameters (for example indexed handler
+has been registered on multiple routers) the result of <code class="docutils literal notranslate"><span class="pre">route_reverse</span></code> is not defined.
+The function will return a formatted path, but it might be picked randomly so reversing urls in such cases is highly
+discouraged.</p>
+<p>If you have access to <a class="reference internal" href="../../reference/connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">request</span></code></a> instance you can make reverse lookups using
+<a class="reference internal" href="../../reference/connection.html#litestar.connection.ASGIConnection.url_for" title="litestar.connection.ASGIConnection.url_for"><code class="xref py py-meth docutils literal notranslate"><span class="pre">url_for</span></code></a> function which is similar to <code class="docutils literal notranslate"><span class="pre">route_reverse</span></code> but returns
+absolute URL.</p>
+</section>
+<section id="adding-arbitrary-metadata-to-handlers">
+<span id="handler-opts"></span><h2>Adding arbitrary metadata to handlers<a class="headerlink" href="#adding-arbitrary-metadata-to-handlers" title="Permalink to this heading">#</a></h2>
+<p>All route handler decorators accept a key called <code class="docutils literal notranslate"><span class="pre">opt</span></code> which accepts a dictionary of arbitrary values, e.g.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">opt</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my_key&quot;</span><span class="p">:</span> <span class="s2">&quot;some-value&quot;</span><span class="p">})</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>This dictionary can be accessed by a <a class="reference internal" href="../security/guards.html"><span class="doc">route guard</span></a>, or by accessing the <code class="docutils literal notranslate"><span class="pre">route_handler</span></code>
+property on a <a class="reference internal" href="../../reference/connection.html#litestar.connection.Request" title="litestar.connection.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">request</span></code></a>, or using the
+<a class="reference internal" href="../../reference/types.html#litestar.types.Scope" title="litestar.types.Scope"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGI</span> <span class="pre">scope</span></code></a> object directly.</p>
+<p>Building on <code class="docutils literal notranslate"><span class="pre">opts</span></code> , you can pass any arbitrary kwarg to the route handler decorator, and it will be automatically set
+as a key in the opt dictionary:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">my_key</span><span class="o">=</span><span class="s2">&quot;some-value&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="k">assert</span> <span class="n">handler</span><span class="o">.</span><span class="n">opt</span><span class="p">[</span><span class="s2">&quot;my_key&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;some-value&quot;</span>
+</pre></div>
+</div>
+<p>You can specify the <code class="docutils literal notranslate"><span class="pre">opt</span></code> dictionary at all levels of your application. On specific route handlers, on a controller,
+a router, and even on the app instance itself.</p>
+<p>The resulting dictionary is constructed by merging opt dictionaries of all levels. If multiple layers define the same
+key, the value from the closest layer to the response handler will take precedence.</p>
+</section>
+<section id="signature-namespace">
+<span id="id1"></span><h2>Signature namespace<a class="headerlink" href="#signature-namespace" title="Permalink to this heading">#</a></h2>
+<p>Litestar produces a model of the arguments to any handler or dependency function, called a “signature model” which is
+used for parsing and validation of raw data to be injected into the function.</p>
+<p>Building the model requires inspection of the names and types of the signature parameters at runtime, and so it is
+necessary for the types to be available within the scope of the module - something that linting tools such as <code class="docutils literal notranslate"><span class="pre">ruff</span></code>
+or <code class="docutils literal notranslate"><span class="pre">flake8-type-checking</span></code> will actively monitor, and suggest against.</p>
+<p>For example, the name <code class="docutils literal notranslate"><span class="pre">Model</span></code> is <em>not</em> available at runtime in the following snippet:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">post</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">domain</span> <span class="kn">import</span> <span class="n">Model</span>
+
+
+<span class="k">class</span> <span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+    <span class="nd">@post</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">create_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">data</span>
+</pre></div>
+</div>
+<p>In this example, Litestar will be unable to generate the signature model because the type <code class="docutils literal notranslate"><span class="pre">Model</span></code> does not exist in
+the module scope at runtime. We can address this on a case-by-case basis by silencing our linters, for example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+</pre></div>
+</div>
+<p>However, this approach can get tedious, so as an alternative, Litestar accepts a <code class="docutils literal notranslate"><span class="pre">signature_namespace</span></code> mapping at
+every <a class="reference internal" href="../applications.html#layered-architecture"><span class="std std-ref">layer</span></a> of the application. The following is a demonstration of how to use this
+pattern.</p>
+<p>This module defines our domain type in some central place.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Model</span><span class="p">:</span>
+    <span class="n">a</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">b</span><span class="p">:</span> <span class="nb">str</span>
+</pre></div>
+</div>
+<p>This module defines our controller, note that we don’t import <code class="docutils literal notranslate"><span class="pre">Model</span></code> into the runtime namespace, nor do we require
+any directives to control behavior of linters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">post</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.domain</span> <span class="kn">import</span> <span class="n">Model</span>
+
+
+<span class="k">class</span> <span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+    <span class="nd">@post</span><span class="p">(</span><span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">post_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">data</span>
+</pre></div>
+</div>
+<p>Finally, we ensure that our application knows that when it encounters the name “Model” when parsing signatures, that it
+should reference our domain <code class="docutils literal notranslate"><span class="pre">Model</span></code> type.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+
+<span class="kn">from</span> <span class="nn">.controller</span> <span class="kn">import</span> <span class="n">MyController</span>
+<span class="kn">from</span> <span class="nn">.domain</span> <span class="kn">import</span> <span class="n">Model</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">],</span> <span class="n">signature_namespace</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Model&quot;</span><span class="p">:</span> <span class="n">Model</span><span class="p">})</span>
+</pre></div>
+</div>
+<section id="default-signature-namespace">
+<h3>Default signature namespace<a class="headerlink" href="#default-signature-namespace" title="Permalink to this heading">#</a></h3>
+<p>Litestar automatically adds some names to the signature namespace when parsing signature models in order to support
+injection of the <a class="reference internal" href="#handler-function-kwargs"><span class="std std-ref">“reserved” keyword arguments</span></a>.</p>
+<p>These names are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Headers</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ImmutableState</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Receive</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Request</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Scope</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Send</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">State</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WebSocket</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WebSocketScope</span></code></p></li>
+</ul>
+<p>The import of any of these names can be safely left inside an <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">TYPE_CHECKING:</span></code> block without any configuration
+required.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="overview.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Routing</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="parameters.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Parameters</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#declaring-paths">Declaring paths</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reserved-keyword-arguments">“reserved” keyword arguments</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#type-annotations">Type annotations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#http-route-handlers">HTTP route handlers</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#semantic-handler-decorators">Semantic handler decorators</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#websocket-route-handlers">Websocket route handlers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#asgi-route-handlers">ASGI route handlers</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#limitations-of-asgi-route-handlers">Limitations of ASGI route handlers</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#route-handler-indexing">Route handler indexing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-arbitrary-metadata-to-handlers">Adding arbitrary metadata to handlers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#signature-namespace">Signature namespace</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#default-signature-namespace">Default signature namespace</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, Litestar-Org.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

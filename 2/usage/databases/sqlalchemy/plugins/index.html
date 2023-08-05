@@ -1,0 +1,1306 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Plugins &#8212; Litestar Framework</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/litestar-sphinx-theme.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/clipboard.min.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script src="../../../../_static/litestar-theme.js"></script>
+    <script src="../../../../_static/design-tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'usage/databases/sqlalchemy/plugins/index';</script>
+    <script src="../../../../_static/versioning.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="SQLAlchemy Plugin" href="sqlalchemy_plugin.html" />
+    <link rel="prev" title="SQLAlchemy Models &amp; Repository" href="../models_and_repository.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+   
+
+<a class="navbar-brand logo" href="https://litestar.dev">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/logo.svg" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../../../_static/logo.svg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+
+
+
+    <nav class="hidden lg:flex lg:gap-x-4">
+        
+    
+        
+            <a href="../../../../index.html"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Documentation</a>
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Community
+            <div class="menu-state-indicator flex">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
+            <div class="
+            h-11 w-11 flex flex-none items-center justify-center
+            rounded-lg
+            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
+            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
+                
+    <svg class="h-6 w-6" fill="none"
+     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"/>
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z"/>
+</svg>
+
+            </div>
+            <div class="flex-auto">
+                
+    <a href="https://docs.litestar.dev/2/contribution-guide.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Contributing
+        <span class="absolute inset-0"></span>
+    </a>
+
+                <div class="mt-1 text-gray-600 dark:text-gray-300">Learn how to contribute to the Litestar project</div>
+            </div>
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
+            <div class="
+            h-11 w-11 flex flex-none items-center justify-center
+            rounded-lg
+            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
+            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
+                
+    <svg class="h-6 w-6" fill="none"
+     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/>
+</svg>
+
+            </div>
+            <div class="flex-auto">
+                
+    <a href="https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Code of Conduct
+        <span class="absolute inset-0"></span>
+    </a>
+
+                <div class="mt-1 text-gray-600 dark:text-gray-300">Review the etiquette for interacting with the Litestar community</div>
+            </div>
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            About
+            <div class="menu-state-indicator flex">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
+            <div class="
+            h-11 w-11 flex flex-none items-center justify-center
+            rounded-lg
+            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
+            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
+                
+    <svg class="h-6 w-6" aria-hidden="true"
+     fill="none" stroke="currentColor" stroke-width="1.5"
+     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
+          stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+            </div>
+            <div class="flex-auto">
+                
+    <a href="https://litestar.dev/about/organization"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Litestar Organization
+        <span class="absolute inset-0"></span>
+    </a>
+
+                <div class="mt-1 text-gray-600 dark:text-gray-300">Details about the Litestar organization</div>
+            </div>
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
+            <div class="
+            h-11 w-11 flex flex-none items-center justify-center
+            rounded-lg
+            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
+            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
+                
+    <svg class="h-6 w-6" aria-hidden="true"
+     fill="none" stroke="currentColor" stroke-width="1.5"
+     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M9 12.75l3 3m0 0l3-3m-3 3v-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+            </div>
+            <div class="flex-auto">
+                
+    <a href="https://litestar.dev/about/litestar-releases"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Releases
+        <span class="absolute inset-0"></span>
+    </a>
+
+                <div class="mt-1 text-gray-600 dark:text-gray-300">Details about the Litestar release process</div>
+            </div>
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Release notes
+            <div class="menu-state-indicator flex">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="../../../../release-notes/whats-new-2.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        What's new in 2.0
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/2/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/1/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        1.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            <a href="https://github.com/orgs/litestar-org/discussions"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Help</a>
+        
+    
+
+    </nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/X3FJqy8d2j" title="Discord" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discord"></i></span>
+            <label class="sr-only">Discord</label></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+
+
+
+
+    <nav class="hidden lg:flex lg:gap-x-4">
+        
+    
+        
+            <a href="../../../../index.html"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Documentation</a>
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Community
+            <div class="menu-state-indicator flex">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
+            <div class="
+            h-11 w-11 flex flex-none items-center justify-center
+            rounded-lg
+            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
+            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
+                
+    <svg class="h-6 w-6" fill="none"
+     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"/>
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z"/>
+</svg>
+
+            </div>
+            <div class="flex-auto">
+                
+    <a href="https://docs.litestar.dev/2/contribution-guide.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Contributing
+        <span class="absolute inset-0"></span>
+    </a>
+
+                <div class="mt-1 text-gray-600 dark:text-gray-300">Learn how to contribute to the Litestar project</div>
+            </div>
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
+            <div class="
+            h-11 w-11 flex flex-none items-center justify-center
+            rounded-lg
+            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
+            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
+                
+    <svg class="h-6 w-6" fill="none"
+     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/>
+</svg>
+
+            </div>
+            <div class="flex-auto">
+                
+    <a href="https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Code of Conduct
+        <span class="absolute inset-0"></span>
+    </a>
+
+                <div class="mt-1 text-gray-600 dark:text-gray-300">Review the etiquette for interacting with the Litestar community</div>
+            </div>
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            About
+            <div class="menu-state-indicator flex">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
+            <div class="
+            h-11 w-11 flex flex-none items-center justify-center
+            rounded-lg
+            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
+            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
+                
+    <svg class="h-6 w-6" aria-hidden="true"
+     fill="none" stroke="currentColor" stroke-width="1.5"
+     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
+          stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+            </div>
+            <div class="flex-auto">
+                
+    <a href="https://litestar.dev/about/organization"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Litestar Organization
+        <span class="absolute inset-0"></span>
+    </a>
+
+                <div class="mt-1 text-gray-600 dark:text-gray-300">Details about the Litestar organization</div>
+            </div>
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
+            <div class="
+            h-11 w-11 flex flex-none items-center justify-center
+            rounded-lg
+            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
+            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
+                
+    <svg class="h-6 w-6" aria-hidden="true"
+     fill="none" stroke="currentColor" stroke-width="1.5"
+     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M9 12.75l3 3m0 0l3-3m-3 3v-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+            </div>
+            <div class="flex-auto">
+                
+    <a href="https://litestar.dev/about/litestar-releases"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Releases
+        <span class="absolute inset-0"></span>
+    </a>
+
+                <div class="mt-1 text-gray-600 dark:text-gray-300">Details about the Litestar release process</div>
+            </div>
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Release notes
+            <div class="menu-state-indicator flex">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="../../../../release-notes/whats-new-2.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        What's new in 2.0
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/2/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/1/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        1.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            <a href="https://github.com/orgs/litestar-org/discussions"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Help</a>
+        
+    
+
+    </nav>
+</div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/X3FJqy8d2j" title="Discord" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discord"></i></span>
+            <label class="sr-only">Discord</label></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../tutorials/todo-app/index.html">Developing a basic TODO application</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/todo-app/0-application-basics.html">Application basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/todo-app/1-accessing-the-list.html">Accessing the list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/todo-app/2-interacting-with-the-list.html">Making the list interactive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/todo-app/3-assembling-the-app.html">Recap and assembling the final application</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/sqlalchemy/0-introduction.html">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/sqlalchemy/1-provide-session-with-di.html">Providing the session with DI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/sqlalchemy/2-serialization-plugin.html">Using the serialization plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/sqlalchemy/3-init-plugin.html">Using the init plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/sqlalchemy/4-final-touches-and-recap.html">Final touches and recap</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/01-simple-dto-exclude.html">Our first DTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/02-nested-exclude.html">Excluding from nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/03-nested-collection-exclude.html">Excluding from collections of nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/04-max-nested-depth.html">Max nested depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/05-renaming-fields.html">Renaming fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/06-receiving-data.html">Receiving data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/07-read-only-fields.html">Read only fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/08-dto-data.html">Accessing the data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/09-updating.html">Updating instances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/dto-tutorial/10-layered-dto-declarations.html">Declaring DTOs on app layers</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
+
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/03-repository-controller.html">Working with Controllers and Repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../tutorials/repository-tutorial/04-repository-other.html">Adding Additional Features to the Repository</a></li>
+
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../index.html">Usage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../applications.html">Applications</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../routing/handlers.html">Route handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../routing/parameters.html">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../requests.html">Requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../responses.html">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../websockets.html">WebSockets</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../dto/index.html">Data Transfer Object (DTO)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../dto/0-basic-use.html">Basic Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dto/2-creating-custom-dto-classes.html">Implementing Cusotm DTO Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../middleware/using-middleware.html">Using Middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../middleware/builtin-middleware.html">Built-in middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../middleware/creating-middleware.html">Creating Middleware</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../plugins.html">Plugins</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../security/security-backends.html">Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../security/guards.html">Guards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../security/jwt.html">JWT Security Backends</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../channels.html">Channels</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../../index.html">Databases</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="../index.html">SQLAlchemy</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
+<li class="toctree-l4 current active"><a class="current reference internal" href="#">Plugins</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../piccolo.html">Piccolo ORM</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../stores.html">Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../openapi.html">OpenAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../lifecycle-hooks.html">Life Cycle Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../caching.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../templating.html">Templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../events.html">Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../static-files.html">Static Files</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../metrics/prometheus.html">Prometheus</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../htmx.html">HTMX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cli.html">CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../testing.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../debugging.html">Debugging</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/app.html">app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/background_tasks.html">background_tasks</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../reference/channels/index.html">channels</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/channels/plugin.html">plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/channels/subscriber.html">subscriber</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../reference/channels/backends/index.html">backends</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/channels/backends/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/channels/backends/memory.html">memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/channels/backends/redis.html">redis</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/connection.html">connection</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/contrib/htmx.html">HTMX</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/contrib/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/contrib/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/contrib/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/contrib/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/contrib/piccolo.html">piccolo_orm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/contrib/pydantic.html">pydantic</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../reference/contrib/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/contrib/repository/abc.html">abc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/contrib/repository/filters.html">filters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/contrib/repository/exceptions.html">exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/contrib/repository/testing.html">testing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/contrib/repository/handlers.html">handlers</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/contrib/sqlalchemy/repository.html">repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/contrib/sqlalchemy/types.html">types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/contrib/sqlalchemy/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/contrib/sqlalchemy/dto.html">DTO</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/data_extractors.html">data_extractors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/datastructures.html">datastructures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/di.html">di</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/dto/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/dto/data_structures.html">data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/dto/field.html">field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/dto/types.html">types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/dto/dataclass_dto.html">dataclass_dto</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/enums.html">enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/events.html">events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/handlers.html">handlers</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/logging/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/logging/picologging.html">picologging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/logging/standard.html">standard</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/middleware/authentication.html">authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/middleware/compression.html">compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/middleware/cors.html">cors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/middleware/csrf.html">csrf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/middleware/logging.html">logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/middleware/rate_limit.html">rate_limit</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/middleware/session/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/middleware/session/client_side.html">client_side</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../reference/middleware/session/server_side.html">server_side</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/openapi/openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/openapi/spec.html">spec</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/pagination.html">pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/plugins.html">plugins</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/response/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/response/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/response/redirect.html">redirect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/response/streaming.html">streaming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/response/sse.html">SSE (Server Sent Events)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/response/template.html">template</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/router.html">router</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/routes.html">routes</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/security/session_auth.html">session_auth</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/static_files.html">static_files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/status_codes.html">status_code</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../reference/stores/registry.html">registry</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/template.html">template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/testing.html">testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/types.html">types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../reference/typing.html">typing</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../topics/sync-vs-async.html">Sync vs. Async</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../migration/flask.html">From Flask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../migration/fastapi.html">From Starlette / FastAPI</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../benchmarks.html">Benchmarks</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">Usage</a></li>
+    
+    
+    <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">SQLAlchemy</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Plugins</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="plugins">
+<h1>Plugins<a class="headerlink" href="#plugins" title="Permalink to this heading">#</a></h1>
+<p>Litestar has a plugin system that allows you to extend the functionality of the application. Plugins are passed to the
+application at startup and can pre-configure the application to manage resources, add routes, and more.</p>
+<p>A suite of plugins is available in <a class="reference internal" href="../../../../reference/contrib/sqlalchemy/plugins.html"><span class="doc">contrib.sqlalchemy.plugins</span></a> to support
+using Litestar with SQLAlchemy, these include:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin</span></code></a>: Full SQLAlchemy support</p></li>
+<li><p><a class="reference internal" href="../../../../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin</span></code></a>: Application tooling</p></li>
+<li><p><a class="reference internal" href="../../../../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin</span></code></a>: Serialization support</p></li>
+</ul>
+<p>Each of the plugins is discussed in detail in the following sections.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sqlalchemy_plugin.html">SQLAlchemy Plugin</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sqlalchemy_plugin.html#example">Example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sqlalchemy_plugin.html#defining-the-database-models">Defining the Database Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sqlalchemy_plugin.html#setting-up-an-api-endpoint">Setting Up an API Endpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sqlalchemy_plugin.html#initializing-the-database">Initializing the Database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sqlalchemy_plugin.html#setting-up-the-plugin-and-the-app">Setting Up the Plugin and the App</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sqlalchemy_plugin.html#running-the-app">Running the App</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sqlalchemy_init_plugin.html#dependencies">Dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sqlalchemy_init_plugin.html#renaming-the-dependencies">Renaming the dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sqlalchemy_init_plugin.html#configuring-the-before-send-handler">Configuring the before send handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sqlalchemy_init_plugin.html#configuring-the-plugins">Configuring the plugins</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sqlalchemy_init_plugin.html#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sqlalchemy_serialization_plugin.html#example">Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlalchemy_serialization_plugin.html#how-it-works">How it works</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sqlalchemy_serialization_plugin.html#configuring-data-transfer">Configuring data transfer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../models_and_repository.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">SQLAlchemy Models &amp; Repository</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="sqlalchemy_plugin.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">SQLAlchemy Plugin</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, Litestar-Org.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

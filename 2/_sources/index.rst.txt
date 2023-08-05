@@ -15,6 +15,10 @@ Installation
 
    pip install litestar
 
+.. tip:: ``litestar[standard]`` includes everything you need to get started with Litestar. It has: ``click`` and ``rich`` for a great CLI experience, ``jinja2`` for templating,
+        and ``uvicorn`` for running your app.
+
+        You can also install just the :doc:`CLI </usage/cli>` with ``litestar[cli]``!
 
 .. dropdown:: Extras
     :icon: star
@@ -31,25 +35,25 @@ Installation
     :ref:`Cookie Based Sessions <usage/middleware/builtin-middleware:client-side sessions>`
         :code:`pip install litestar[cryptography]`
 
-    :doc:`JWT Security Backends </usage/contrib/jwt>`
+    :doc:`JWT </usage/security/jwt>`
         :code:`pip install litestar[jwt]`
 
     :doc:`RedisStore </usage/stores>`
         :code:`pip install litestar[redis]`
 
-    :ref:`Picologging <usage/the-litestar-app:using picologging>`
+    :ref:`Picologging <usage/logging:using picologging>`
         :code:`pip install litestar[picologging]`
 
-    :ref:`StructLog <usage/the-litestar-app:using structlog>`
+    :ref:`StructLog <usage/logging:using structlog>`
         :code:`pip install litestar[structlog]`
 
-    :doc:`Prometheus Instrumentation </usage/contrib/prometheus>`
+    :doc:`Prometheus Instrumentation </usage/metrics/prometheus>`
         :code:`pip install litestar[prometheus]`
 
-    :doc:`Open Telemetry Instrumentation </usage/contrib/open-telemetry>`
+    :doc:`Open Telemetry Instrumentation </usage/metrics/open-telemetry>`
         :code:`pip install litestar[opentelemetry]`
 
-    :doc:`SQLAlchemy </usage/contrib/sqlalchemy/index>`
+    :doc:`SQLAlchemy </usage/databases/sqlalchemy/index>`
         :code:`pip install litestar[sqlalchemy]`
 
     :doc:`CLI </usage/cli>`
@@ -63,10 +67,6 @@ Installation
 
     Standard Installation (includes CLI and Jinja templating):
         :code:`pip install litestar[standard]`
-
-    .. tip:: ``litestar[standard]`` includes everything you need to get started with Litestar, including
-        an ASGI web server. It has: ``click`` and ``rich`` for a great CLI experience, ``jinja2`` for templating,
-        ``jsbeautifier`` for keeping your Javascript tidy , and ``uvicorn`` for running your app.
 
     All Extras:
         :code:`pip install litestar[full]`
@@ -92,7 +92,7 @@ First, create a file named ``app.py`` with the following contents:
 
 
    @get("/books/{book_id:int}")
-   async def get_book(book_id: int) -> JSONResponse:
+   async def get_book(book_id: int) -> dict[str, int]:
        return {"book_id": book_id}
 
 

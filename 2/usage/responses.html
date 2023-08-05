@@ -55,7 +55,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Dependency Injection" href="dependency-injection.html" />
-    <link rel="prev" title="Request data" href="request-data.html" />
+    <link rel="prev" title="Requests" href="requests.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -912,66 +912,74 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Usage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="the-litestar-app.html">The Litestar App</a></li>
-<li class="toctree-l2"><a class="reference internal" href="routing.html">Routing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="route-handlers.html">Route handlers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="parameters.html">Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="request-data.html">Request data</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Responses</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dependency-injection.html">Dependency Injection</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="dto/index.html">Data Transfer Object (DTO)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="dto/0-basic-use.html">Basic Use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dto/1-dto-factory.html">DTO Factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dto/2-dto-interface.html">DTO Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="applications.html">Applications</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="routing/handlers.html">Route handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="routing/parameters.html">Parameters</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="requests.html">Requests</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dependency-injection.html">Dependency Injection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="websockets.html">WebSockets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="channels.html">Channels</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="dto/index.html">Data Transfer Object (DTO)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="dto/0-basic-use.html">Basic Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dto/2-creating-custom-dto-classes.html">Implementing Cusotm DTO Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="middleware/using-middleware.html">Using Middleware</a></li>
 <li class="toctree-l3"><a class="reference internal" href="middleware/builtin-middleware.html">Built-in middleware</a></li>
 <li class="toctree-l3"><a class="reference internal" href="middleware/creating-middleware.html">Creating Middleware</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins.html">Plugins</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/security-backends.html">Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/guards.html">Guards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="security/jwt.html">JWT Security Backends</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="channels.html">Channels</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="databases/index.html">Databases</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="databases/sqlalchemy/index.html">SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="databases/sqlalchemy/plugins/index.html">Plugins</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="databases/piccolo.html">Piccolo ORM</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html">Exceptions and exception handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="stores.html">Stores</a></li>
-<li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins.html">Plugins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="events.html">Event Emitters and Listeners</a></li>
-<li class="toctree-l2"><a class="reference internal" href="openapi.html">OpenAPI integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="openapi.html">OpenAPI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="caching.html">Caching</a></li>
-<li class="toctree-l2"><a class="reference internal" href="templating.html">Templates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="exceptions.html">Exceptions and exception handling</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="contrib/htmx.html">HTMX Request Class</a></li>
-<li class="toctree-l3"><a class="reference internal" href="contrib/jwt.html">JWT Security Backends</a></li>
-<li class="toctree-l3"><a class="reference internal" href="contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="contrib/prometheus.html">Prometheus Instrumentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="contrib/piccolo.html">Piccolo ORM</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="contrib/sqlalchemy/index.html">SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="contrib/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="contrib/sqlalchemy/plugins/index.html">Plugins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="templating.html">Templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="events.html">Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="static-files.html">Static Files</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="htmx.html">HTMX</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cli.html">CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="debugging.html">Debugging</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/app.html">app</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/background_tasks.html">background_tasks</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/channels/index.html">channels</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/channels/index.html">channels</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/channels/plugin.html">plugin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/channels/subscriber.html">subscriber</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/channels/backends/index.html">backends</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/channels/backends/index.html">backends</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/memory.html">memory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/redis.html">redis</a></li>
@@ -982,7 +990,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/cli.html">cli</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/connection.html">connection</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/htmx.html">HTMX</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jwt.html">jwt</a></li>
@@ -990,7 +998,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/piccolo.html">piccolo_orm</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/pydantic.html">pydantic</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/repository/abc.html">abc</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/repository/filters.html">filters</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/repository/exceptions.html">exceptions</a></li>
@@ -998,7 +1006,7 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/repository/handlers.html">handlers</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/repository.html">repository</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/types.html">types</a></li>
@@ -1012,28 +1020,27 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/interface.html">interface</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/data_structures.html">data_structures</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/field.html">field</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/types.html">types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/base_factory.html">base_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/msgspec_dto_factory.html">msgspec_dto_factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/dto/dataclass_dto_factory.html">dataclass_dto_factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/dataclass_dto.html">dataclass_dto</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">enums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/picologging.html">picologging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/standard.html">standard</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/compression.html">compression</a></li>
@@ -1041,7 +1048,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/client_side.html">client_side</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/server_side.html">server_side</a></li>
@@ -1049,33 +1056,33 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/openapi.html">openapi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/spec.html">spec</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/partial.html">partial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/plugins.html">plugins</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/response/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/response/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/response/redirect.html">redirect</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/response/streaming.html">streaming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/response/sse.html">SSE (Server Sent Events)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/response/template.html">template</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/router.html">router</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/routes.html">routes</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/static_files.html">static_files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/status_codes.html">status_code</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/memory.html">memory</a></li>
@@ -1089,11 +1096,11 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/typing.html">typing</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -1491,8 +1498,8 @@ that special <a class="reference external" href="https://docs.python.org/3/refer
 </div>
 </section>
 </section>
-<section id="returning-other-library-responses">
-<h4>Returning other library responses<a class="headerlink" href="#returning-other-library-responses" title="Permalink to this heading">#</a></h4>
+<section id="returning-responses-from-third-party-libraries">
+<h4>Returning responses from third party libraries<a class="headerlink" href="#returning-responses-from-third-party-libraries" title="Permalink to this heading">#</a></h4>
 <p>Because you can return any ASGI Application from a route handler, you can also use any ASGI application from other
 libraries. For example, you can return the response classes from Starlette or FastAPI directly from route handlers:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlette.responses</span> <span class="kn">import</span> <span class="n">JSONResponse</span>
@@ -1516,8 +1523,8 @@ Nonetheless, the above example will work perfectly fine.</p>
 </section>
 </section>
 </section>
-<section id="response-headers">
-<h2>Response Headers<a class="headerlink" href="#response-headers" title="Permalink to this heading">#</a></h2>
+<section id="setting-response-headers">
+<h2>Setting Response Headers<a class="headerlink" href="#setting-response-headers" title="Permalink to this heading">#</a></h2>
 <p>Litestar allows you to define response headers by using the <code class="docutils literal notranslate"><span class="pre">response_headers</span></code> kwarg. This kwarg is
 available on all layers of the app - individual route handlers, controllers, routers, and the app
 itself:</p>
@@ -1580,13 +1587,13 @@ as well:</p>
 </pre></div>
 </div>
 </div>
-<section id="dynamic-headers">
-<h3>Dynamic Headers<a class="headerlink" href="#dynamic-headers" title="Permalink to this heading">#</a></h3>
+<section id="setting-headers-dynamically">
+<h3>Setting Headers Dynamically<a class="headerlink" href="#setting-headers-dynamically" title="Permalink to this heading">#</a></h3>
 <p>The above detailed scheme works great for statically configured headers, but how would you go about handling dynamically
 setting headers? Litestar allows you to set headers dynamically in several ways and below we will detail the two
 primary patterns.</p>
-<section id="setting-response-headers-using-annotated-responses">
-<h4>Setting Response Headers Using Annotated Responses<a class="headerlink" href="#setting-response-headers-using-annotated-responses" title="Permalink to this heading">#</a></h4>
+<section id="using-annotated-responses">
+<h4>Using Annotated Responses<a class="headerlink" href="#using-annotated-responses" title="Permalink to this heading">#</a></h4>
 <p>We can simply return a response instance directly from the route handler and set the headers dictionary manually
 as you see fit, e.g.:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
@@ -1629,8 +1636,8 @@ to the OpenAPI documentation, but we set the value dynamically in as part of
 the <a class="reference internal" href="#annotating-responses"><span class="std std-ref">annotated response</span></a> we return. To this end we do not set a <code class="docutils literal notranslate"><span class="pre">value</span></code>
 for it and we designate it as <code class="docutils literal notranslate"><span class="pre">documentation_only=True</span></code>.</p>
 </section>
-<section id="setting-response-headers-using-the-after-request-hook">
-<h4>Setting Response Headers Using the After Request Hook<a class="headerlink" href="#setting-response-headers-using-the-after-request-hook" title="Permalink to this heading">#</a></h4>
+<section id="using-the-after-request-hook">
+<h4>Using the After Request Hook<a class="headerlink" href="#using-the-after-request-hook" title="Permalink to this heading">#</a></h4>
 <p>An alternative pattern would be to use an <a class="reference internal" href="lifecycle-hooks.html#after-request"><span class="std std-ref">after request handler</span></a>. We can define
 the handler on different layers of the application as explained in the pertinent docs. We should take care to document
 the headers on the corresponding layer:</p>
@@ -1750,9 +1757,9 @@ different value range:</p>
 </div>
 </section>
 </section>
-<section id="specific-headers-implementation">
-<h3>Specific Headers Implementation<a class="headerlink" href="#specific-headers-implementation" title="Permalink to this heading">#</a></h3>
-<p>Litestar has a dedicated implementation for a few headers that are commonly used. These headers can be set separately
+<section id="predefined-headers">
+<h3>Predefined Headers<a class="headerlink" href="#predefined-headers" title="Permalink to this heading">#</a></h3>
+<p>Litestar has a dedicated implementation for a few commonly used headers. These headers can be set separately
 with dedicated keyword arguments or as class attributes on all layers of the app (individual route handlers, controllers,
 routers, and the app itself). Each layer overrides the layer above it - thus, the headers defined for a specific route
 handler will override those defined on its router, which will in turn override those defined on the app level.</p>
@@ -1763,8 +1770,8 @@ specifications.</p>
 <p><a class="reference internal" href="../reference/datastructures.html#litestar.datastructures.CacheControlHeader" title="litestar.datastructures.headers.CacheControlHeader"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheControlHeader</span></code></a> represents a
 <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control">Cache-Control Header</a>.</p>
 <p>Here is a simple example that shows how to use it:</p>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Cache Control Header</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Cache Control Header</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -1813,8 +1820,8 @@ in any cache.</p></li>
 <p><a class="reference internal" href="../reference/datastructures.html#litestar.datastructures.ETag" title="litestar.datastructures.headers.ETag"><code class="xref py py-class docutils literal notranslate"><span class="pre">ETag</span></code></a> represents an
 <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag">ETag header</a>.</p>
 <p>Here are some usage examples:</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Returning ETag headers</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Returning ETag headers</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
@@ -1872,8 +1879,8 @@ in any cache.</p></li>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Parsing ETag headers</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Parsing ETag headers</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">ETag</span>
 
 <span class="k">assert</span> <span class="n">ETag</span><span class="o">.</span><span class="n">from_header</span><span class="p">(</span><span class="s1">&#39;&quot;foo&quot;&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">ETag</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
@@ -1884,8 +1891,8 @@ in any cache.</p></li>
 </section>
 </section>
 </section>
-<section id="response-cookies">
-<h2>Response Cookies<a class="headerlink" href="#response-cookies" title="Permalink to this heading">#</a></h2>
+<section id="setting-response-cookies">
+<h2>Setting Response Cookies<a class="headerlink" href="#setting-response-cookies" title="Permalink to this heading">#</a></h2>
 <p>Litestar allows you to define response cookies by using the <code class="docutils literal notranslate"><span class="pre">response_cookies</span></code> kwarg. This kwarg is
 available on all layers of the app - individual route handlers, controllers, routers, and the app
 itself:</p>
@@ -1982,13 +1989,13 @@ e.g.:</p>
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="../reference/datastructures.html#litestar.datastructures.Cookie" title="litestar.datastructures.cookie.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cookie</span> <span class="pre">reference</span></code></a></p>
 </div>
-<section id="dynamic-cookies">
-<h3>Dynamic Cookies<a class="headerlink" href="#dynamic-cookies" title="Permalink to this heading">#</a></h3>
+<section id="setting-cookies-dynamically">
+<h3>Setting Cookies dynamically<a class="headerlink" href="#setting-cookies-dynamically" title="Permalink to this heading">#</a></h3>
 <p>While the above scheme works great for static cookie values, it doesn’t allow for dynamic cookies. Because cookies are
-fundamentally a type of response header, we can utilize the same patterns we use for
-setting <a class="reference internal" href="#dynamic-headers"><span class="std std-ref">dynamic headers</span></a> also here.</p>
-<section id="setting-response-cookies-using-annotated-responses">
-<h4>Setting Response Cookies Using Annotated Responses<a class="headerlink" href="#setting-response-cookies-using-annotated-responses" title="Permalink to this heading">#</a></h4>
+fundamentally a type of response header, we can utilize the same patterns we use to
+setting <a class="reference internal" href="#setting-headers-dynamically"><span class="std std-ref">set headers headers</span></a>.</p>
+<section id="id2">
+<h4>Using Annotated Responses<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h4>
 <p>We can simply return a response instance directly from the route handler and set the cookies list manually
 as you see fit, e.g.:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
@@ -2033,8 +2040,8 @@ to the OpenAPI documentation, but we set the value dynamically in as part of
 the <a class="reference internal" href="#annotating-responses"><span class="std std-ref">annotated response</span></a> we return. To this end we do not set a <code class="docutils literal notranslate"><span class="pre">value</span></code>
 for it and we designate it as <code class="docutils literal notranslate"><span class="pre">documentation_only=True</span></code>.</p>
 </section>
-<section id="setting-response-cookies-using-the-after-request-hook">
-<h4>Setting Response Cookies Using the After Request Hook<a class="headerlink" href="#setting-response-cookies-using-the-after-request-hook" title="Permalink to this heading">#</a></h4>
+<section id="id3">
+<h4>Using the After Request Hook<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h4>
 <p>An alternative pattern would be to use an <a class="reference internal" href="lifecycle-hooks.html#after-request"><span class="std std-ref">after request handler</span></a>. We can define
 the handler on different layers of the application as explained in the pertinent docs. We should take care to document
 the cookies on the corresponding layer:</p>
@@ -2280,6 +2287,74 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 a generator itself, a sync or async iterator class, or an instance of a sync or async iterator class.</p>
 </div>
 </section>
+<section id="server-sent-event-responses">
+<h2>Server Sent Event Responses<a class="headerlink" href="#server-sent-event-responses" title="Permalink to this heading">#</a></h2>
+<p>To send <cite>server-sent-events</cite> or SSEs to the frontend, use the <a class="reference internal" href="../reference/response/index.html#litestar.response.ServerSentEvent" title="litestar.response.ServerSentEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerSentEvent</span></code></a>
+class. The class receives a content arg. You can additionally specify <code class="docutils literal notranslate"><span class="pre">event_type</span></code>, which is the
+name of the event as declared in the browser, the <code class="docutils literal notranslate"><span class="pre">event_id</span></code>, which sets the event source property, <code class="docutils literal notranslate"><span class="pre">comment_message</span></code>,
+which is used in for sending pings, and <code class="docutils literal notranslate"><span class="pre">retry_duration</span></code>, which dictates the duration for retrying.</p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">ServerSentEvent</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_generator</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">yield</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/count&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">sse_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">my_generator</span><span class="p">())</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">sse_handler</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-5">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">ServerSentEvent</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_generator</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">yield</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/count&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">sse_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">my_generator</span><span class="p">())</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">sse_handler</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can use different kinds of values for the iterator. It can be a callable returning a sync or async generator,
+a generator itself, a sync or async iterator class, or an instance of a sync or async iterator class.</p>
+</div>
+</section>
 <section id="template-responses">
 <h2>Template Responses<a class="headerlink" href="#template-responses" title="Permalink to this heading">#</a></h2>
 <p>Template responses are used to render templates into HTML. To use a template response you must first
@@ -2332,7 +2407,7 @@ instances.</p>
 <p>Response classes are part of Litestar’s layered architecture, which means you can
 set a response class on every layer of the application. If you have set a response
 class on multiple layers, the layer closest to the route handler will take precedence.</p>
-<p>You can read more about this here: <a class="reference internal" href="the-litestar-app.html#layered-architecture"><span class="std std-ref">Layered architecture</span></a></p>
+<p>You can read more about this here: <a class="reference internal" href="applications.html#layered-architecture"><span class="std std-ref">Layered architecture</span></a></p>
 </div>
 </section>
 <section id="background-tasks">
@@ -2345,11 +2420,11 @@ class on multiple layers, the layer closest to the route handler will take prece
 dunder method) that will be called after the response finishes sending the data.</p>
 <p>Thus, in the following example the passed in background task will be executed after the response sends:</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
+<input id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-6">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Background Task Passed into Response</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Background Task Passed into Response</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
@@ -2376,11 +2451,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-5">
+<input checked="checked" id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-7">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Background Task Passed into Response</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Background Task Passed into Response</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span>
@@ -2418,11 +2493,11 @@ enabling correct type checking for arguments and keyword arguments passed to it.
 </div>
 <p>Route decorators (e.g. <code class="docutils literal notranslate"><span class="pre">&#64;get</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;post</span></code>, etc.) also allow passing in a background task with the <code class="docutils literal notranslate"><span class="pre">background</span></code> kwarg:</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-6">
+<input id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-8">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Background Task Passed into Decorator</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Background Task Passed into Decorator</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
@@ -2446,11 +2521,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-7">
+<input checked="checked" id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-9">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Background Task Passed into Decorator</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Background Task Passed into Decorator</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -2483,11 +2558,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>You can also use the <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTasks" title="litestar.background_tasks.BackgroundTasks"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTasks</span></code></a> class and pass to it an iterable
 (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>, etc.) of <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> instances:</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-8">
+<input id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-10">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Multiple Background Tasks</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Multiple Background Tasks</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
@@ -2524,11 +2599,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-9">
+<input checked="checked" id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-11">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Multiple Background Tasks</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Multiple Background Tasks</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span>
@@ -2588,11 +2663,11 @@ of the box:</p>
 <h3>Classic Pagination<a class="headerlink" href="#classic-pagination" title="Permalink to this heading">#</a></h3>
 <p>In classic pagination the dataset is divided into pages of a specific size and the consumer then requests a specific page.</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-10">
+<input id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-12">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Classic Pagination</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">Classic Pagination</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
 <span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic_factory</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
@@ -2641,11 +2716,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-11">
+<input checked="checked" id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-13">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Classic Pagination</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">Classic Pagination</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic_factory</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 
@@ -2705,11 +2780,11 @@ the <a class="reference internal" href="../reference/pagination.html#litestar.pa
 <p>In offset pagination the consumer requests a number of items specified by <code class="docutils literal notranslate"><span class="pre">limit</span></code> and the <code class="docutils literal notranslate"><span class="pre">offset</span></code> from the beginning of the dataset.
 For example, given a list of 50 items, you could request <code class="docutils literal notranslate"><span class="pre">limit=10</span></code>, <code class="docutils literal notranslate"><span class="pre">offset=39</span></code> to request items 40-50.</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-12">
+<input id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-14">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Offset Pagination</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">Offset Pagination</span><a class="headerlink" href="#id15" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
@@ -2759,11 +2834,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-13">
+<input checked="checked" id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-15">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">Offset Pagination</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id16">
+<div class="code-block-caption"><span class="caption-text">Offset Pagination</span><a class="headerlink" href="#id16" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
 
 <span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic_factory</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
@@ -2822,13 +2897,13 @@ the <a class="reference internal" href="../reference/pagination.html#litestar.pa
 <section id="offset-pagination-with-sqlalchemy">
 <h4>Offset Pagination With SQLAlchemy<a class="headerlink" href="#offset-pagination-with-sqlalchemy" title="Permalink to this heading">#</a></h4>
 <p>When retrieving paginated data from the database using SQLAlchemy, the Paginator instance requires an SQLAlchemy session
-instance to make queries. This can be achieved with <a class="reference internal" href="dependency-injection.html#dependency-kwargs"><span class="std std-ref">dependency injection</span></a></p>
+instance to make queries. This can be achieved with <a class="reference internal" href="dependency-injection.html"><span class="doc">Dependency Injection</span></a></p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-14">
+<input id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-16">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id15">
-<div class="code-block-caption"><span class="caption-text">Offset Pagination With SQLAlchemy</span><a class="headerlink" href="#id15" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id17">
+<div class="code-block-caption"><span class="caption-text">Offset Pagination With SQLAlchemy</span><a class="headerlink" href="#id17" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">func</span><span class="p">,</span> <span class="n">select</span>
@@ -2857,7 +2932,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_session</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">id</span><span class="p">))))</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Person</span><span class="p">]:</span>
-        <span class="n">people</span><span class="p">:</span> <span class="s2">&quot;ScalarResult&quot;</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Person</span><span class="p">)</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">))</span>
+        <span class="n">people</span><span class="p">:</span> <span class="n">ScalarResult</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Person</span><span class="p">)</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">))</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">people</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
 
 
@@ -2885,11 +2960,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-15">
+<input checked="checked" id="sd-tab-item-17" name="sd-tab-set-8" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-17">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id16">
-<div class="code-block-caption"><span class="caption-text">Offset Pagination With SQLAlchemy</span><a class="headerlink" href="#id16" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id18">
+<div class="code-block-caption"><span class="caption-text">Offset Pagination With SQLAlchemy</span><a class="headerlink" href="#id18" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">func</span><span class="p">,</span> <span class="n">select</span>
@@ -2918,7 +2993,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_session</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">id</span><span class="p">))))</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Person</span><span class="p">]:</span>
-        <span class="n">people</span><span class="p">:</span> <span class="s2">&quot;ScalarResult&quot;</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Person</span><span class="p">)</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">))</span>
+        <span class="n">people</span><span class="p">:</span> <span class="n">ScalarResult</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Person</span><span class="p">)</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">))</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">people</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
 
 
@@ -2947,7 +3022,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<p>See <a class="reference internal" href="contrib/sqlalchemy/plugins/index.html#plugins"><span class="std std-ref">SQLAlchemy plugin</span></a> for sqlalchemy integration.</p>
+<p>See <a class="reference internal" href="databases/sqlalchemy/plugins/index.html#plugins"><span class="std std-ref">SQLAlchemy plugin</span></a> for sqlalchemy integration.</p>
 </section>
 </section>
 <section id="cursor-pagination">
@@ -2955,11 +3030,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>In cursor pagination the consumer requests a number of items specified by <code class="docutils literal notranslate"><span class="pre">results_per_page</span></code> and a <code class="docutils literal notranslate"><span class="pre">cursor</span></code> after which results are given.
 Cursor is unique identifier within the dataset that serves as a way to point the starting position.</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-16">
+<input id="sd-tab-item-18" name="sd-tab-set-9" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-18">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id17">
-<div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id17" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id19">
+<div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id19" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic_factory</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
@@ -3005,11 +3080,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-17" name="sd-tab-set-8" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-17">
+<input id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-19">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id18">
-<div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id18" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id20">
+<div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id20" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic_factory</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
@@ -3055,11 +3130,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-18" name="sd-tab-set-8" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-18">
+<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-9" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-20">
 Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id19">
-<div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id19" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id21">
+<div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id21" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic_factory</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 
@@ -3125,12 +3200,12 @@ the <a class="reference internal" href="../reference/pagination.html#litestar.pa
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="request-data.html"
+       href="requests.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Request data</p>
+        <p class="prev-next-title">Requests</p>
       </div>
     </a>
     <a class="right-next"
@@ -3178,28 +3253,28 @@ the <a class="reference internal" href="../reference/pagination.html#litestar.pa
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#class-asgi-application">Class ASGI Application</a></li>
 </ul>
 </li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#returning-other-library-responses">Returning other library responses</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#returning-responses-from-third-party-libraries">Returning responses from third party libraries</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#response-headers">Response Headers</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-headers">Dynamic Headers</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-response-headers-using-annotated-responses">Setting Response Headers Using Annotated Responses</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-response-headers-using-the-after-request-hook">Setting Response Headers Using the After Request Hook</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-response-headers">Setting Response Headers</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-headers-dynamically">Setting Headers Dynamically</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#using-annotated-responses">Using Annotated Responses</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-after-request-hook">Using the After Request Hook</a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specific-headers-implementation">Specific Headers Implementation</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#predefined-headers">Predefined Headers</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#cache-control">Cache Control</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#etag">ETag</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#response-cookies">Response Cookies</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-cookies">Dynamic Cookies</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-response-cookies-using-annotated-responses">Setting Response Cookies Using Annotated Responses</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-response-cookies-using-the-after-request-hook">Setting Response Cookies Using the After Request Hook</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-response-cookies">Setting Response Cookies</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-cookies-dynamically">Setting Cookies dynamically</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Using Annotated Responses</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Using the After Request Hook</a></li>
 </ul>
 </li>
 </ul>
@@ -3207,6 +3282,7 @@ the <a class="reference internal" href="../reference/pagination.html#litestar.pa
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#redirect-responses">Redirect Responses</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-responses">File Responses</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#streaming-responses">Streaming Responses</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#server-sent-event-responses">Server Sent Event Responses</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#template-responses">Template Responses</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-responses">Custom Responses</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#background-tasks">Background Tasks</a><ul class="visible nav section-nav flex-column">

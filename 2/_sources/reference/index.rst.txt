@@ -27,7 +27,6 @@ API reference
     openapi/index
     pagination
     params
-    partial
     plugins
     response/index
     router

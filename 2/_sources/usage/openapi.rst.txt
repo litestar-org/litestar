@@ -1,5 +1,5 @@
-OpenAPI integration
-===================
+OpenAPI
+=======
 
 Litestar has first class OpenAPI support offering the following features:
 
@@ -17,8 +17,8 @@ This is also highly configurable - and users can customize the OpenAPI spec in a
 configuration globally, to settings specific kwargs on route handler decorators.
 
 
-OpenAPI schema generation config
---------------------------------
+Configuring schema generation
+-----------------------------
 
 OpenAPI schema generation is enabled by default. To configure it you can pass an instance of
 :class:`OpenAPIConfig <.openapi.OpenAPIConfig>` to the :class:`Litestar <litestar.app.Litestar>` class using the
@@ -49,8 +49,8 @@ value for ``openapi_config``:
 
 
 
-Route handler OpenAPI configuration
-------------------------------------
+Configuring schema generation on a route handler
+-------------------------------------------------
 
 By default, an `operation <https://spec.openapis.org/oas/latest.html#operation-object>`_ schema is generated for all route
 handlers. You can omit a route handler from the schema by setting ``include_in_schema=False``:
@@ -89,8 +89,7 @@ You can also modify the generated schema for the route handler using the followi
     customize the `operation object <https://spec.openapis.org/oas/v3.1.0#operation-object>`_ for the handler.
 
 ``operation_id``
-    An identifier used for the route's schema *operationId*. Defaults to the ``__name__`` attribute of the
-    wrapped function.
+    A string or callable that returns a string, which servers as an identifier used for the route's schema *operationId*.
 
 ``deprecated``
     A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema. Defaults
@@ -190,8 +189,8 @@ app instance itself. For example:
 
 
 
-The OpenAPIController
----------------------
+Customizing schema endpoints with the OpenAPIController
+-------------------------------------------------------
 
 Litestar includes an :class:`OpenAPIController <litestar.openapi.controller.OpenAPIController>` class that is used as the
 default controller in the :class:`OpenAPIConfig <.config.OpenAPIConfig>`.
@@ -215,9 +214,6 @@ This controller exposes the following endpoints:
 
 Additionally, the root ``/schema/`` path is accessible, serving the site that is configured as the default in
 the :class:`OpenAPIConfig <.openapi.OpenAPIConfig>`.
-
-Subclassing OpenAPIController
-+++++++++++++++++++++++++++++
 
 You can use your own subclass of :class:`OpenAPIController <.openapi.controller.OpenAPIController>` by setting it as
 the controller to use in the :class:`OpenAPIConfig <.openapi.OpenAPIConfig>` ``openapi_controller`` kwarg.
@@ -366,7 +362,7 @@ The above will result in an OpenAPI schema object that looks like this:
 
 
 Customizing ``Operation`` class
----------------------------------------------
+-------------------------------
 
 You can customize the `operation object <https://spec.openapis.org/oas/v3.1.0#operation-object>`_ used for a path in
 the generated OpenAPI schemas by creating a subclass of :class:`Operation <.openapi.spec.operation.Operation>`.

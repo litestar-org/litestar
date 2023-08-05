@@ -261,7 +261,7 @@ Request methods
 
     To learn more about requests, check out these chapters in the documentation
 
-    * :doc:`/usage/request-data`
+    * :doc:`/usage/requests`
     * :doc:`/reference/connection`
 
 Static files
@@ -394,8 +394,8 @@ Setting cookies and headers
     To learn more about response headers and cookies, check out these chapters in the
     documentation:
 
-    - :ref:`Response headers <usage/responses:response headers>`
-    - :ref:`Response cookies <usage/responses:response cookies>`
+    - :ref:`Response headers <usage/responses:setting response headers>`
+    - :ref:`Response cookies <usage/responses:setting response cookies>`
 
 Redirects
 ~~~~~~~~~
@@ -636,4 +636,4 @@ Error handling
 ..  seealso::
 
     To learn more about exception handling, check out this chapter in the documentation:
-    `Exception handling <usage/17-exceptions/#exception-handling>`_
+    :ref:`usage/exceptions:exception handling`

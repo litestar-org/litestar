@@ -79,5 +79,5 @@ Contents
 .. toctree::
 
     0-basic-use
-    1-dto-factory
-    2-dto-interface
+    1-abstract-dto
+    2-creating-custom-dto-classes
