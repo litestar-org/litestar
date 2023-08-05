@@ -93,8 +93,7 @@
         :pr: 2054
 
         Support :class:`~sqlalchemy.orm.InstrumentedAttribute` for in the repository's
-        :attr:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.id_attribute`,
-        and the following methods:
+        ``id_attribute``, and the following methods:
 
 
         - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete`
@@ -118,7 +117,7 @@
         :type: feature
         :pr: 2096
 
-        :doc:`usage/events` now run concurrently inside a task group.
+        :doc:`/usage/events` now run concurrently inside a task group.
 
     .. change:: Support extending the CLI with plugins
         :type: feature
@@ -135,7 +134,8 @@
         :pr: 2065
 
         A bug was fixed that would cause field renaming to be skipped within
-        :class:`~litestar.dto.DTOData` and :func:`~litestar.dto.create_instance`.
+        :class:`~litestar.dto.data_structures.DTOData` and
+        :meth:`~litestar.dto.data_structures.DTOData.create_instance`.
 
     .. change:: SQLAlchemy repository: Fix ``health_check`` for oracle
         :type: bugfix
