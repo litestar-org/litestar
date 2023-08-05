@@ -1,4 +1,3 @@
-import dataclasses
 from dataclasses import dataclass
 from types import ModuleType
 from typing import Any, Callable, Dict, List, Tuple
@@ -330,7 +329,7 @@ def get_handler(data: Circle) -> Circle:
 
 
 async def test_dto_with_composite_map() -> None:
-    @dataclasses.dataclass
+    @dataclass
     class Point:
         x: int
         y: int
@@ -362,7 +361,7 @@ async def test_dto_with_composite_map() -> None:
 
 
 async def test_dto_with_composite_map_using_explicit_columns() -> None:
-    @dataclasses.dataclass
+    @dataclass
     class Point:
         x: int
         y: int
@@ -399,7 +398,7 @@ async def test_dto_with_composite_map_using_explicit_columns() -> None:
 
 
 async def test_dto_with_composite_map_using_hybrid_imperative_mapping() -> None:
-    @dataclasses.dataclass
+    @dataclass
     class Point:
         x: int
         y: int
