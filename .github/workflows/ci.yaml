@@ -44,7 +44,7 @@ jobs:
       python-version: ${{ matrix.python-version }}
 
   test-platform-compat:
-#    if: github.event_name == 'push' disable temporarily
+    if: github.event_name == 'push'
     strategy:
       fail-fast: false
       matrix:
