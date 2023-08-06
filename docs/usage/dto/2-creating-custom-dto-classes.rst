@@ -1,4 +1,4 @@
-Implementing Cusotm DTO Classes
+Implementing Custom DTO Classes
 ===============================
 
 While Litestar maintains a suite of DTO factories, it is possible to create your own DTOs. To do so, you must implement
