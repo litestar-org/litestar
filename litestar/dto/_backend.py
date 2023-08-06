@@ -583,13 +583,14 @@ def _transfer_instance_data(
         should_use_serialization_name = is_data_field and not is_dto_data_type
         source_name = field_definition.serialization_name if should_use_serialization_name else field_definition.name
 
-        source_has_value = (
+        if not is_data_field:
+            if field_definition.is_excluded:
+                continue
+        elif not (
             source_name in source_instance
             if isinstance(source_instance, Mapping)
             else hasattr(source_instance, source_name)
-        )
-
-        if (is_data_field and not source_has_value) or (not is_data_field and field_definition.is_excluded):
+        ):
             continue
 
         transfer_type = field_definition.transfer_type

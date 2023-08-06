@@ -4,6 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from types import ModuleType
 from typing import TYPE_CHECKING, Callable, List, Optional
+from unittest.mock import MagicMock
 
 import pytest
 from msgspec import Struct, to_builtins
@@ -292,6 +293,37 @@ def test_backend_encode_collection_data(
     )
     data = backend.encode_data([STRUCTURED])
     assert encode_json(data) == COLLECTION_RAW
+
+
+def test_transfer_only_touches_included_attributes() -> None:
+    """Ensure attribute that are not included are never touched in any way during
+    transfer.
+
+    https://github.com/litestar-org/litestar/issues/2125
+    """
+    mock = MagicMock()
+
+    @dataclass()
+    class Foo:
+        id: str
+        bar: str = ""
+
+    class Factory(DataclassDTO):
+        config = DTOConfig(include={"excluded"})
+
+    backend = DTOBackend(
+        handler_id="test",
+        dto_factory=Factory,
+        field_definition=TransferDTOFieldDefinition.from_annotation(Foo),
+        model_type=Foo,
+        wrapper_attribute_name=None,
+        is_data_field=False,
+    )
+
+    Foo.bar = property(fget=lambda s: mock(return_value=""), fset=lambda s, v: None)  # type: ignore[assignment]
+
+    backend.encode_data(Foo(id="1"))
+    assert mock.call_count == 0
 
 
 def test_parse_model_nested_exclude(create_module: Callable[[str], ModuleType]) -> None:
