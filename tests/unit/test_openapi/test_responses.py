@@ -443,3 +443,15 @@ def test_response_generation_with_dto() -> None:
     mock_dto.create_openapi_schema.assert_called_once_with(
         field_definition=field_definition, handler_id=handler.handler_id, schema_creator=schema_creator
     )
+
+
+@pytest.mark.parametrize(
+    "content_media_type, expected", ((MediaType.TEXT, MediaType.TEXT), (None, "application/octet-stream"))
+)
+def test_file_response_media_type(content_media_type: Any, expected: Any) -> None:
+    @get("/", content_media_type=content_media_type)
+    def handler() -> File:
+        return File("test.txt")
+
+    openapi_response = create_success_response(handler, SchemaCreator())
+    assert next(iter(openapi_response.content.values())).schema.content_media_type == expected  # type: ignore

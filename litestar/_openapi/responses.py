@@ -130,8 +130,8 @@ def create_success_response(  # noqa: C901
                 route_handler.media_type: OpenAPIMediaType(
                     schema=Schema(
                         type=OpenAPIType.STRING,
-                        content_encoding=route_handler.content_encoding or "application/octet-stream",
-                        content_media_type=route_handler.content_media_type,
+                        content_encoding=route_handler.content_encoding,
+                        content_media_type=route_handler.content_media_type or "application/octet-stream",
                     ),
                 )
             },
