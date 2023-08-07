@@ -5,8 +5,22 @@ from __future__ import annotations
 
 import secrets
 import textwrap
+from contextlib import contextmanager, nullcontext
 from dataclasses import replace
-from typing import TYPE_CHECKING, AbstractSet, Any, Callable, ClassVar, Collection, Final, Mapping, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    AbstractSet,
+    Any,
+    Callable,
+    ClassVar,
+    Collection,
+    Container,
+    Final,
+    Generator,
+    Mapping,
+    Union,
+    cast,
+)
 
 from msgspec import UNSET, Struct, UnsetType, convert, defstruct, field
 from typing_extensions import get_origin
@@ -564,72 +578,175 @@ def _transfer_data(
     )
 
 
-def _create_transfer_instance_data_fn(
-    destination_type: type[Any],
-    field_definitions: tuple[TransferDTOFieldDefinition, ...],
-    is_data_field: bool,
-    is_dto_data_type: bool,
-):
-    should_use_serialization_name = is_data_field and not is_dto_data_type
-    nested_as_dict = destination_type is dict
+def _gen_uniq_name(ctx: Container, name: str) -> str:
+    i = 0
+    while True:
+        unique_name = f"{name}_{i}"
+        if unique_name not in ctx:
+            return unique_name
+        i += 1
 
-    out = "def func(source_instance):\n unstructured_data = {}\n"
-    transfer_types = {}
-    _globals = {
-        "destination_type": destination_type,
-        "field_definitions": field_definitions,
-        "Mapping": Mapping,
-        "_transfer_type_data": _transfer_type_data,
-        "_transfer_instance_data_dynamic": _transfer_instance_data_dynamic,
-        "_transfer_nested_union_type_data": _transfer_nested_union_type_data,
-        "UNSET": UNSET,
-    }
 
-    for source_type in ("mapping", "object"):
-        if source_type == "mapping":
-            out += " if isinstance(source_instance, Mapping):\n"
-            test_contains = "source_instance.__contains__('{source_name}')"
-            get_value = "source_instance['{source_name}']"
-        else:
-            test_contains = "hasattr(source_instance, '{source_name}')"
-            get_value = "source_instance.{source_name}"
-            out += " else:\n"
+class TransferFunctionFactory:
+    def __init__(
+        self,
+        destination_type: type[Any],
+        field_definitions: tuple[TransferDTOFieldDefinition, ...],
+        is_data_field: bool,
+        is_dto_data_type: bool,
+    ) -> None:
+        self.destination_type = destination_type
+        self.field_definitions = field_definitions
+        self.is_data_field = is_data_field
+        self.is_dto_data_type = is_dto_data_type
+        self.fn_locals: dict[str, Any] = {
+            "destination_type": destination_type,
+            "field_definitions": field_definitions,
+            "Mapping": Mapping,
+            "_transfer_type_data": _transfer_type_data,
+            "_transfer_instance_data_dynamic": _transfer_instance_data_dynamic,
+            "_transfer_nested_union_type_data": _transfer_nested_union_type_data,
+            "UNSET": UNSET,
+        }
+        self.indentation = 1
+        self.body = ""
+        self.names: set[str] = set()
 
-        for i, field_definition in enumerate(field_definitions):
-            transfer_types[i] = field_definition.transfer_type
-            body = ""
+    def add_to_fn_globals(self, name: str, value: Any) -> str:
+        unique_name = _gen_uniq_name(self.fn_locals, name)
+        self.fn_locals[unique_name] = value
+        return unique_name
+
+    def create_local_name(self, name: str) -> str:
+        unique_name = _gen_uniq_name(self.names, name)
+        self.names.add(unique_name)
+        return unique_name
+
+    @contextmanager
+    def nested(self) -> Generator[None, None, None]:
+        self.indentation += 1
+        yield
+        self.indentation -= 1
+
+    def add_stmt(self, stmt: str, newline: bool = True) -> None:
+        self.body += textwrap.indent(stmt + ("\n" if newline else ""), " " * self.indentation)
+
+    def create_fn(self):
+        tmp_return_type_name = self.create_local_name("tmp_return_type")
+        self._create_transfer_instance_data(tmp_return_type_name)
+        self.add_stmt(f"return {tmp_return_type_name}")
+        out = "def func(source_instance):\n" + self.body
+        ctx = {}
+        exec(out, self.fn_locals, ctx)
+        return ctx["func"]
+
+    def _create_transfer_instance_data(self, tmp_return_type_name: str) -> None:
+        local_dict_name = self.create_local_name("unstructured_data")
+        self.add_stmt(f"{local_dict_name} = {{}}")
+
+        for source_type in ("mapping", "object"):
+            if source_type == "mapping":
+                self.add_stmt("if isinstance(source_instance, Mapping):")
+                test_contains = "source_instance.__contains__('{source_name}')"
+                get_value = "source_instance['{source_name}']"
+            else:
+                test_contains = "hasattr(source_instance, '{source_name}')"
+                get_value = "source_instance.{source_name}"
+                self.add_stmt("else:")
+            with self.nested():
+                self._create_transfer_instance_data_body(
+                    test_contains=test_contains,
+                    get_value=get_value,
+                    local_dict_name=local_dict_name,
+                )
+
+        self.add_stmt(f"{tmp_return_type_name} = destination_type(**{local_dict_name})")
+
+    def _create_transfer_instance_data_body(self, test_contains: str, get_value: str, local_dict_name: str) -> None:
+        should_use_serialization_name = self.is_data_field and not self.is_dto_data_type
+        nested_as_dict = self.destination_type is dict
+        for _i, field_definition in enumerate(self.field_definitions):
             source_name = (
                 field_definition.serialization_name if should_use_serialization_name else field_definition.name
             )
-            destination_name = field_definition.name if is_data_field else field_definition.serialization_name
+            destination_name = field_definition.name if self.is_data_field else field_definition.serialization_name
 
-            if not is_data_field and field_definition.is_excluded:
+            if not self.is_data_field and field_definition.is_excluded:
                 continue
 
-            body += f"if {test_contains.format(source_name=source_name)}:\n"
-            body += f" source_value = {get_value.format(source_name=source_name)}\n"
+            self.add_stmt(f"if {test_contains.format(source_name=source_name)}:")
+            with self.nested():
+                self.add_stmt(f"source_value = {get_value.format(source_name=source_name)}")
 
-            transfer_body = f" unstructured_data['{destination_name}'] = "
-            transfer_body += _create_transfer_type_data_fn(
-                transfer_type=field_definition.transfer_type,
-                nested_as_dict=nested_as_dict,
-                is_data_field=is_data_field,
-                is_dto_data_type=is_dto_data_type,
-                ctx=_globals,
+                if self.is_data_field and field_definition.is_partial:
+                    self.add_stmt("if source_value is not UNSET:")
+                    ctx = self.nested()
+                else:
+                    ctx = nullcontext()
+                with ctx:
+                    tmp_value_name = self.create_local_name("unstructured_value_tmp")
+                    self._create_transfer_type_data(
+                        transfer_type=field_definition.transfer_type,
+                        nested_as_dict=nested_as_dict,
+                        tmp_value_name=tmp_value_name,
+                    )
+                    self.add_stmt(f"{local_dict_name}['{destination_name}'] = {tmp_value_name}")
+
+    def _create_transfer_type_data(
+        self, transfer_type: TransferType, nested_as_dict: bool, tmp_value_name: str
+    ) -> None:
+        if isinstance(transfer_type, SimpleType) and transfer_type.nested_field_info:
+            if nested_as_dict:
+                destination_type: Any = dict
+            elif self.is_data_field:
+                destination_type = transfer_type.field_definition.annotation
+            else:
+                destination_type = transfer_type.nested_field_info.model
+
+            nested_field_definitions = transfer_type.nested_field_info.field_definitions
+            destination_type_name = self.add_to_fn_globals("destination_type", destination_type)
+            nested_field_definitions_name = self.add_to_fn_globals("nested_field_definitions", nested_field_definitions)
+
+            self.add_stmt(
+                f"{tmp_value_name} = _transfer_instance_data_dynamic("
+                f"destination_type={destination_type_name},"
+                "source_instance=source_value,"
+                f"field_definitions={nested_field_definitions_name},"
+                f"is_data_field={self.is_data_field},"
+                f"is_dto_data_type={self.is_dto_data_type})"
             )
-            transfer_body += "\n"
+            return
 
-            if is_data_field and field_definition.is_partial:
-                body += " if source_value is not UNSET:\n"
-                transfer_body = textwrap.indent(transfer_body, " ")
-            body += transfer_body
+        if isinstance(transfer_type, UnionType) and transfer_type.has_nested:
+            self.add_stmt(
+                f"{tmp_value_name} = _transfer_nested_union_type_data("
+                f"transfer_type={self.add_to_fn_globals('transfer_type', transfer_type)},"
+                "source_value=source_value,"
+                f"is_data_field={self.is_data_field},"
+                f"is_dto_data_type={self.is_dto_data_type})"
+            )
+            return
 
-            out += textwrap.indent(body, "  ")
+        if isinstance(transfer_type, CollectionType):
+            origin_name = self.add_to_fn_globals("origin", transfer_type.field_definition.instantiable_origin)
+            if transfer_type.has_nested:
+                self.fn_locals["transfer_type_data"] = _transfer_type_data
+                self.add_stmt(
+                    f"{tmp_value_name} = {origin_name}("
+                    "_transfer_type_data("
+                    "source_value=item,"
+                    f"transfer_type={self.add_to_fn_globals('inner_type', transfer_type.inner_type)},"
+                    "nested_as_dict=False,"
+                    f"is_data_field={self.is_data_field},"
+                    f"is_dto_data_type={self.is_dto_data_type},"
+                    ") for item in source_value)"
+                )
+                return
 
-    out += " return destination_type(**unstructured_data)"
-    ctx = {}
-    exec(out, _globals, ctx)
-    return ctx["func"]
+            self.add_stmt(f"{tmp_value_name} = {origin_name}(source_value)")
+            return
+
+        self.add_stmt(f"{tmp_value_name} = source_value")
 
 
 def _transfer_instance_data(
@@ -639,12 +756,12 @@ def _transfer_instance_data(
     is_data_field: bool,
     override_serialization_name: bool,
 ) -> Any:
-    fn = _create_transfer_instance_data_fn(
+    fn = TransferFunctionFactory(
         destination_type=destination_type,
         field_definitions=field_definitions,
         is_data_field=is_data_field,
         is_dto_data_type=is_dto_data_type,
-    )
+    ).create_fn()
     return fn(source_instance)
 
 
@@ -711,80 +828,6 @@ def _transfer_instance_data_dynamic(
         )
 
     return destination_type(**unstructured_data)
-
-
-def _gen_uniq_name(ctx: dict[str, Any], name: str) -> str:
-    i = 0
-    while True:
-        unique_name = f"{name}_{i}"
-        if unique_name not in ctx:
-            return unique_name
-        i += 1
-
-
-def _set_in_ctx(ctx: dict[str, Any], name: str, value: Any) -> str:
-    unique_name = _gen_uniq_name(ctx, name)
-    ctx[unique_name] = value
-    return unique_name
-
-
-def _create_transfer_type_data_fn(
-    transfer_type: TransferType,
-    nested_as_dict: bool,
-    is_data_field: bool,
-    is_dto_data_type: bool,
-    ctx: dict[str, Any],
-) -> str:
-    if isinstance(transfer_type, SimpleType) and transfer_type.nested_field_info:
-        if nested_as_dict:
-            destination_type: Any = dict
-        elif is_data_field:
-            destination_type = transfer_type.field_definition.annotation
-        else:
-            destination_type = transfer_type.nested_field_info.model
-
-        nested_field_definitions = transfer_type.nested_field_info.field_definitions
-        destination_type_name = _set_in_ctx(ctx, "destination_type", destination_type)
-        nested_field_definitions_name = _set_in_ctx(ctx, "nested_field_definitions", nested_field_definitions)
-
-        return (
-            "_transfer_instance_data_dynamic("
-            f"destination_type={destination_type_name},"
-            "source_instance=source_value,"
-            f"field_definitions={nested_field_definitions_name},"
-            f"is_data_field={is_data_field},"
-            f"is_dto_data_type={is_dto_data_type})"
-        )
-
-    if isinstance(transfer_type, UnionType) and transfer_type.has_nested:
-        return (
-            "_transfer_nested_union_type_data("
-            f"transfer_type={_set_in_ctx(ctx, 'transfer_type', transfer_type)},"
-            "source_value=source_value,"
-            f"is_data_field={is_data_field},"
-            f"is_dto_data_type={is_dto_data_type})"
-        )
-
-    if isinstance(transfer_type, CollectionType):
-        origin_name = _set_in_ctx(ctx, "origin", transfer_type.field_definition.instantiable_origin)
-        if transfer_type.has_nested:
-            inner_type_name = _gen_uniq_name(ctx, "inner_type")
-
-            ctx.update({inner_type_name: transfer_type.inner_type, "transfer_type_data": _transfer_type_data})
-            return (
-                f"{origin_name}("
-                "_transfer_type_data("
-                "source_value=item,"
-                f"transfer_type={inner_type_name},"
-                "nested_as_dict=False,"
-                f"is_data_field={is_data_field},"
-                f"is_dto_data_type={is_dto_data_type},"
-                ") for item in source_value)"
-            )
-
-        return f"{origin_name}(source_value)"
-
-    return "source_value"
 
 
 def _transfer_type_data(
