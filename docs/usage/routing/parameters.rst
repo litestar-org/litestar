@@ -78,7 +78,7 @@ Query Parameters
 ----------------
 
 Query parameters are defined as keyword arguments to handler functions. Every keyword argument
-that is not otherwise specified (for example as a :ref:`path parameter <usage/parameters:path parameters>`)
+that is not otherwise specified (for example as a :ref:`path parameter <usage/routing/parameters:path parameters>`)
 will be interpreted as a query parameter.
 
 .. literalinclude:: /examples/parameters/query_params.py
@@ -104,8 +104,9 @@ Query parameters come in three basic types:
 Query parameters are **required** by default. If one such a parameter has no value,
 a :class:`ValidationException <.exceptions.http_exceptions.ValidationException>` will be raised.
 
-Settings defaults
-~~~~~~~~~~~~~~~~~~
+
+Default values
+~~~~~~~~~~~~~~
 
 In this example, ``param`` will have the value ``"hello"`` if it's not specified in the request.
 If it's passed as a query parameter however, it will be overwritten:
@@ -140,8 +141,8 @@ everything that works there will work for query parameters as well.
 
 
 
-Specifying alternative names and constraints
---------------------------------------------
+Alternative names and constraints
+---------------------------------
 
 Sometimes you might want to "remap" query parameters to allow a different name in the URL
 than what's being used in the handler function. This can be done by making use of
@@ -164,7 +165,6 @@ will be used for the value of the ``snake_case`` parameter.
 In this case, ``param`` is validated to be an *integer larger than 5*.
 
 
-
 Header and Cookie Parameters
 ----------------------------
 
@@ -180,7 +180,6 @@ As you can see in the above, header parameters are declared using the ``header``
 the ``cookie`` kwarg. Aside form this difference they work the same as query parameters.
 
 
-
 The Parameter function
 -----------------------
 
@@ -191,7 +190,7 @@ the OpenAPI schema.
 Layered Parameters
 -------------------
 
-As part of Litestar's "layered" architecture, you can declare parameters not only as part of individual route handler
+As part of Litestar's layered architecture, you can declare parameters not only as part of individual route handler
 functions, but also on other layers of the application:
 
 .. literalinclude:: /examples/parameters/layered_parameters.py

@@ -1,9 +1,8 @@
-The Litestar App
-================
+Applications
+=============
 
-
-Application object
-------------------
+Application objects
+-------------------
 
 At the root of every Litestar application is an instance of the :class:`Litestar <litestar.app.Litestar>`
 class. Typically, this code will be placed in a file called ``main.py`` at the project's root directory.
@@ -23,7 +22,7 @@ and Route Handlers should be registered on it.
 .. seealso::
 
     To learn more about registering routes, check out this chapter in the documentation:
-    :ref:`usage/routing:Registering Routes`
+    :ref:`usage/routing/overview:Registering Routes`
 
 
 Startup and Shutdown
@@ -147,166 +146,6 @@ ensure that no mutation of state is allowed:
     :language: python
 
 
-
-Static Files
-------------
-
-Static files are served by the app from predefined locations. To configure static file serving, either pass an
-instance of :class:`StaticFilesConfig <.static_files.config.StaticFilesConfig>` or a list
-thereof to :class:`Litestar <.app.Litestar>` using the ``static_files_config`` kwarg.
-
-For example, lets say our Litestar app is going to serve **regular files** from the ``my_app/static`` folder and **html
-documents** from the ``my_app/html`` folder, and we would like to serve the **static files** on the ``/files`` path,
-and the **html files** on the ``/html`` path:
-
-.. code-block:: python
-
-   from litestar import Litestar
-   from litestar.static_files.config import StaticFilesConfig
-
-   app = Litestar(
-       route_handlers=[...],
-       static_files_config=[
-           StaticFilesConfig(directories=["static"], path="/files"),
-           StaticFilesConfig(directories=["html"], path="/html", html_mode=True),
-       ],
-   )
-
-Matching is done based on filename, for example, assume we have a request that is trying to retrieve the path
-``/files/file.txt``\ , the **directory for the base path** ``/files`` **will be searched** for the file ``file.txt``. If it is
-found, the file will be sent, otherwise a **404 response** will be sent.
-
-If ``html_mode`` is enabled and no specific file is requested, the application will fall back to serving ``index.html``. If
-no file is found the application will look for a ``404.html`` file in order to render a response, otherwise a 404
-:class:`NotFoundException <.exceptions.http_exceptions.NotFoundException>` will be returned.
-
-You can provide a ``name`` parameter to ``StaticFilesConfig`` to identify the given config and generate links to files in
-folders belonging to that config. ``name`` should be a unique string across all static configs and
-`route handlers <usage/route-handlers:Route Handler Indexing>`_.
-
-.. code-block:: python
-
-   from litestar import Litestar
-   from litestar.static_files.config import StaticFilesConfig
-
-   app = Litestar(
-       route_handlers=[...],
-       static_files_config=[
-           StaticFilesConfig(
-               directories=["static"], path="/some_folder/static/path", name="static"
-           ),
-       ],
-   )
-
-   url_path = app.url_for_static_asset("static", "file.pdf")
-   # /some_folder/static/path/file.pdf
-
-Sending files as attachments
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-By default, files are sent "inline", meaning they will have a ``Content-Disposition: inline`` header.
-To send them as attachments, use the ``send_as_attachment=True`` flag, which will add a
-``Content-Disposition: attachment`` header:
-
-.. code-block:: python
-
-   from litestar import Litestar
-   from litestar.static_files.config import StaticFilesConfig
-
-   app = Litestar(
-       route_handlers=[...],
-       static_files_config=[
-           StaticFilesConfig(
-               directories=["static"],
-               path="/some_folder/static/path",
-               name="static",
-               send_as_attachment=True,
-           ),
-       ],
-   )
-
-File System support and Cloud Files
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The :class:`StaticFilesConfig <.static_files.StaticFilesConfig>` class accepts a value called ``file_system``,
-which can be any class adhering to the Litestar :class:`FileSystemProtocol <litestar.types.FileSystemProtocol>`.
-
-This protocol is similar to the file systems defined by `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_,
-which cover all major cloud providers and a wide range of other use cases (e.g. HTTP based file service, ``ftp``, etc.).
-
-In order to use any file system, simply use `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_ or one of
-the libraries based upon it, or provide a custom implementation adhering to the
-:class:`FileSystemProtocol <litestar.types.FileSystemProtocol>`.
-
-Logging
--------
-
-Litestar has builtin pydantic based logging configuration that allows users to easily define logging:
-
-.. code-block:: python
-
-   from litestar import Litestar, Request, get
-   from litestar.logging import LoggingConfig
-
-
-   @get("/")
-   def my_router_handler(request: Request) -> None:
-       request.logger.info("inside a request")
-       return None
-
-
-   logging_config = LoggingConfig(
-       loggers={
-           "my_app": {
-               "level": "INFO",
-               "handlers": ["queue_listener"],
-           }
-       }
-   )
-
-   app = Litestar(route_handlers=[my_router_handler], logging_config=logging_config)
-
-.. attention::
-
-    Litestar configures a non-blocking `QueueListenerHandler` which
-    is keyed as `queue_listener` in the logging configuration. The above example is using this handler,
-    which is optimal for async applications. Make sure to use it in your own loggers as in the above example.
-
-Using Picologging
-^^^^^^^^^^^^^^^^^
-
-`Picologging <https://github.com/microsoft/picologging>`_ is a high performance logging library that is developed by
-Microsoft. Litestar will default to using this library automatically if its installed - requiring zero configuration on
-the part of the user. That is, if ``picologging`` is present the previous example will work with it automatically.
-
-Using StructLog
-^^^^^^^^^^^^^^^
-
-`StructLog <https://www.structlog.org/en/stable/>`_ is a powerful structured-logging library. Litestar ships with a dedicated
-logging config for using it:
-
-.. code-block:: python
-
-   from litestar import Litestar, Request, get
-   from litestar.logging import StructLoggingConfig
-
-
-   @get("/")
-   def my_router_handler(request: Request) -> None:
-       request.logger.info("inside a request")
-       return None
-
-
-   logging_config = StructLoggingConfig()
-
-   app = Litestar(route_handlers=[my_router_handler], logging_config=logging_config)
-
-Subclass Logging Configs
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-You can easily create you own ``LoggingConfig`` class by subclassing
-:class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>` and implementing the ``configure`` method.
-
 Application Hooks
 -----------------
 
@@ -348,9 +187,8 @@ an ASGI message is sent. The hook receives the message instance and the applicat
     :language: python
 
 
-
-Application Init
-^^^^^^^^^^^^^^^^
+Initialization
+^^^^^^^^^^^^^^
 
 Litestar includes a hook for intercepting the arguments passed to the :class:`Litestar constructor <litestar.app.Litestar>`,
 before they are used to instantiate the application.
@@ -363,8 +201,8 @@ develop third-party application configuration systems.
 
 .. note::
 
-    `on_app_init` handlers cannot be `async def` functions, as they are called within `Litestar.__init__()`, outside of
-    an async context.
+    ``on_app_init`` handlers cannot be ``async def`` functions, as they are called within ``Litestar.__init__()``,
+    outside of an async context.
 
 .. literalinclude:: /examples/application_hooks/on_app_init.py
     :caption: After Exception Hook
@@ -404,8 +242,8 @@ Parameters that support layering are:
 * :doc:`middleware </usage/middleware/index>`
 * :ref:`opt <handler_opts>`
 * :ref:`response_class <usage/responses:custom responses>`
-* :ref:`response_cookies <usage/responses:response cookies>`
-* :ref:`response_headers <usage/responses:response headers>`
+* :ref:`response_cookies <usage/responses:setting response cookies>`
+* :ref:`response_headers <usage/responses:setting response headers>`
 * :doc:`return_dto </usage/dto/0-basic-use>`
 * ``security``
 * ``tags``

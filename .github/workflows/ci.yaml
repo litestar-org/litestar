@@ -46,7 +46,7 @@ jobs:
   test-platform-compat:
     if: github.event_name == 'push'
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         os: ["macos-latest", "windows-latest"]
     uses: ./.github/workflows/test.yaml

@@ -50,6 +50,7 @@ class DTOBackend:
         "reverse_name_map",
         "transfer_model_type",
         "wrapper_attribute_name",
+        "is_dto_data_type",
     )
 
     _seen_model_names: ClassVar[set[str]] = set()
@@ -87,10 +88,12 @@ class DTOBackend:
             model_name=model_type.__name__, field_definitions=self.parsed_field_definitions
         )
         self.dto_data_type: type[DTOData] | None = None
+        self.is_dto_data_type: bool = False
 
         if field_definition.is_subclass_of(DTOData):
             self.dto_data_type = field_definition.annotation
             annotation = self.field_definition.inner_types[0].annotation
+            self.is_dto_data_type = True
         else:
             annotation = field_definition.annotation
 
@@ -242,6 +245,7 @@ class DTOBackend:
                     field_definitions=self.parsed_field_definitions,
                     field_definition=self.field_definition,
                     is_data_field=self.is_data_field,
+                    is_dto_data_type=self.is_dto_data_type,
                 ),
             )
         return self.transfer_data_from_builtins(self.parse_builtins(builtins, asgi_connection))
@@ -261,6 +265,7 @@ class DTOBackend:
             field_definitions=self.parsed_field_definitions,
             field_definition=self.field_definition,
             is_data_field=self.is_data_field,
+            is_dto_data_type=self.is_dto_data_type,
         )
 
     def populate_data_from_raw(self, raw: bytes, asgi_connection: ASGIConnection) -> Any:
@@ -282,6 +287,7 @@ class DTOBackend:
                     field_definitions=self.parsed_field_definitions,
                     field_definition=self.field_definition,
                     is_data_field=self.is_data_field,
+                    is_dto_data_type=self.is_dto_data_type,
                 ),
             )
         return _transfer_data(
@@ -290,6 +296,7 @@ class DTOBackend:
             field_definitions=self.parsed_field_definitions,
             field_definition=self.field_definition,
             is_data_field=self.is_data_field,
+            is_dto_data_type=self.is_dto_data_type,
         )
 
     def encode_data(self, data: Any) -> LitestarEncodableType:
@@ -308,6 +315,7 @@ class DTOBackend:
                 field_definitions=self.parsed_field_definitions,
                 field_definition=self.field_definition,
                 is_data_field=self.is_data_field,
+                is_dto_data_type=self.is_dto_data_type,
             )
             setattr(
                 data,
@@ -324,6 +332,7 @@ class DTOBackend:
                 field_definitions=self.parsed_field_definitions,
                 field_definition=self.field_definition,
                 is_data_field=self.is_data_field,
+                is_dto_data_type=self.is_dto_data_type,
             ),
         )
 
@@ -512,6 +521,7 @@ def _transfer_data(
     field_definitions: tuple[TransferDTOFieldDefinition, ...],
     field_definition: FieldDefinition,
     is_data_field: bool,
+    is_dto_data_type: bool,
 ) -> Any:
     """Create instance or iterable of instances of ``destination_type``.
 
@@ -521,6 +531,7 @@ def _transfer_data(
         field_definitions: model field definitions.
         field_definition: the parsed type that represents the handler annotation for which the DTO is being applied.
         is_data_field: whether the DTO is being applied to a ``data`` field.
+        is_dto_data_type: whether the field definition is an `DTOData` type.
 
     Returns:
         Data parsed into ``destination_type``.
@@ -533,6 +544,7 @@ def _transfer_data(
                 field_definitions=field_definitions,
                 field_definition=field_definition.inner_types[0],
                 is_data_field=is_data_field,
+                is_dto_data_type=is_dto_data_type,
             )
             for item in source_data
         )
@@ -542,6 +554,7 @@ def _transfer_data(
         source_instance=source_data,
         field_definitions=field_definitions,
         is_data_field=is_data_field,
+        is_dto_data_type=is_dto_data_type,
     )
 
 
@@ -550,6 +563,7 @@ def _transfer_instance_data(
     source_instance: Any,
     field_definitions: tuple[TransferDTOFieldDefinition, ...],
     is_data_field: bool,
+    is_dto_data_type: bool,
 ) -> Any:
     """Create instance of ``destination_type`` with data from ``source_instance``.
 
@@ -558,6 +572,7 @@ def _transfer_instance_data(
         source_instance: primitive data that has been parsed and validated via the backend.
         field_definitions: model field definitions.
         is_data_field: whether the given field is a 'data' kwarg field.
+        is_dto_data_type: whether the field definition is an `DTOData` type.
 
     Returns:
         Data parsed into ``model_type``.
@@ -565,15 +580,17 @@ def _transfer_instance_data(
     unstructured_data = {}
 
     for field_definition in field_definitions:
-        source_name = field_definition.serialization_name if is_data_field else field_definition.name
+        should_use_serialization_name = is_data_field and not is_dto_data_type
+        source_name = field_definition.serialization_name if should_use_serialization_name else field_definition.name
 
-        source_has_value = (
+        if not is_data_field:
+            if field_definition.is_excluded:
+                continue
+        elif not (
             source_name in source_instance
             if isinstance(source_instance, Mapping)
             else hasattr(source_instance, source_name)
-        )
-
-        if (is_data_field and not source_has_value) or (not is_data_field and field_definition.is_excluded):
+        ):
             continue
 
         transfer_type = field_definition.transfer_type
@@ -592,13 +609,18 @@ def _transfer_instance_data(
             transfer_type=transfer_type,
             nested_as_dict=destination_type is dict,
             is_data_field=is_data_field,
+            is_dto_data_type=is_dto_data_type,
         )
 
     return destination_type(**unstructured_data)
 
 
 def _transfer_type_data(
-    source_value: Any, transfer_type: TransferType, nested_as_dict: bool, is_data_field: bool
+    source_value: Any,
+    transfer_type: TransferType,
+    nested_as_dict: bool,
+    is_data_field: bool,
+    is_dto_data_type: bool,
 ) -> Any:
     if isinstance(transfer_type, SimpleType) and transfer_type.nested_field_info:
         if nested_as_dict:
@@ -613,11 +635,15 @@ def _transfer_type_data(
             source_instance=source_value,
             field_definitions=transfer_type.nested_field_info.field_definitions,
             is_data_field=is_data_field,
+            is_dto_data_type=is_dto_data_type,
         )
 
     if isinstance(transfer_type, UnionType) and transfer_type.has_nested:
         return _transfer_nested_union_type_data(
-            transfer_type=transfer_type, source_value=source_value, is_data_field=is_data_field
+            transfer_type=transfer_type,
+            source_value=source_value,
+            is_data_field=is_data_field,
+            is_dto_data_type=is_dto_data_type,
         )
 
     if isinstance(transfer_type, CollectionType):
@@ -628,6 +654,7 @@ def _transfer_type_data(
                     transfer_type=transfer_type.inner_type,
                     nested_as_dict=False,
                     is_data_field=is_data_field,
+                    is_dto_data_type=is_dto_data_type,
                 )
                 for item in source_value
             )
@@ -636,7 +663,12 @@ def _transfer_type_data(
     return source_value
 
 
-def _transfer_nested_union_type_data(transfer_type: UnionType, source_value: Any, is_data_field: bool) -> Any:
+def _transfer_nested_union_type_data(
+    transfer_type: UnionType,
+    source_value: Any,
+    is_data_field: bool,
+    is_dto_data_type: bool,
+) -> Any:
     for inner_type in transfer_type.inner_types:
         if isinstance(inner_type, CompositeType):
             raise RuntimeError("Composite inner types not (yet) supported for nested unions.")
@@ -652,6 +684,7 @@ def _transfer_nested_union_type_data(transfer_type: UnionType, source_value: Any
                 source_instance=source_value,
                 field_definitions=inner_type.nested_field_info.field_definitions,
                 is_data_field=is_data_field,
+                is_dto_data_type=is_dto_data_type,
             )
     return source_value
 

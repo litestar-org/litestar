@@ -15,8 +15,8 @@ which are examined in detail in the following sections. As such, this section de
 :class:`SQLAlchemyPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin>` with a Litestar application and a
 SQLite database.
 
-Or, skip ahead to :doc:`/usage/contrib/sqlalchemy/plugins/sqlalchemy_init_plugin` or
-:doc:`/usage/contrib/sqlalchemy/plugins/sqlalchemy_serialization_plugin` to learn more about the individual plugins.
+Or, skip ahead to :doc:`/usage/databases/sqlalchemy/plugins/sqlalchemy_init_plugin` or
+:doc:`/usage/databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin` to learn more about the individual plugins.
 
 .. tip::
 

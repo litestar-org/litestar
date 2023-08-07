@@ -29,8 +29,8 @@ spec generation.
 .. include:: /admonitions/sync-to-thread-info.rst
 
 
-Declaring path(s)
------------------
+Declaring paths
+---------------
 
 All route handler decorator accept an optional path argument. This argument can be declared as a kwarg using the ``path``
 key word:
@@ -66,7 +66,7 @@ And the value for this argument can be either a string path, as in the above exa
    async def my_route_handler() -> None:
        ...
 
-This is particularly useful when you want to have optional :ref:`path parameters <usage/parameters:Path Parameters>`:
+This is particularly useful when you want to have optional :ref:`path parameters <usage/routing/parameters:Path Parameters>`:
 
 .. code-block:: python
 
@@ -81,16 +81,16 @@ This is particularly useful when you want to have optional :ref:`path parameters
 
 .. _handler-function-kwargs:
 
-Handler function kwargs
------------------------
+"reserved" keyword arguments
+----------------------------
 
 Route handler functions or methods access various data by declaring these as annotated function kwargs. The annotated
 kwargs are inspected by Litestar and then injected into the request handler.
 
 The following sources can be accessed using annotated function kwargs:
 
-- :ref:`path, query, header, and cookie parameters <usage/parameters:the parameter function>`
-- :doc:`/usage/request-data`
+- :ref:`path, query, header, and cookie parameters <usage/routing/parameters:the parameter function>`
+- :doc:`/usage/requests`
 - :doc:`injected dependencies </usage/dependency-injection>`
 
 Additionally, you can specify the following special kwargs, what's called "reserved keywords" internally:
@@ -130,8 +130,8 @@ For example:
     You can define a custom typing for your application state and then use it as a type instead of just using the
     State class from Litestar
 
-Handler function type annotations
----------------------------------
+Type annotations
+----------------
 
 Litestar enforces strict type annotations. Functions decorated by a route handler **must** have all their kwargs and
 return value type annotated. If a type annotation is missing, an
@@ -175,12 +175,6 @@ above:
    async def my_endpoint() -> None:
        ...
 
-HTTP route handlers kwargs
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The ``route`` decorator **requires** an ``http_method`` kwarg, which is a member of the
-:class:`HttpMethod <.enums.HttpMethod>` enum or a list of members, e.g. ``HttpMethod.GET`` or
-``[HttpMethod.PATCH, HttpMethod.PUT]``.
 
 
 Semantic handler decorators
@@ -319,6 +313,7 @@ These requirements are enforced using inspection, and if any of them is unfulfil
 .. seealso::
 
     :class:`WebsocketRouteHandler <litestar.handlers.WebsocketRouteHandler>`
+    :doc:`/usage/websockets`
 
 
 ASGI route handlers
@@ -489,8 +484,8 @@ absolute URL.
 
 .. _handler_opts:
 
-Handler ``opts``
-----------------
+Adding arbitrary metadata to handlers
+--------------------------------------
 
 All route handler decorators accept a key called ``opt`` which accepts a dictionary of arbitrary values, e.g.
 
@@ -506,9 +501,6 @@ All route handler decorators accept a key called ``opt`` which accepts a diction
 This dictionary can be accessed by a :doc:`route guard </usage/security/guards>`, or by accessing the ``route_handler``
 property on a :class:`request <litestar.connection.request.Request>`, or using the
 :class:`ASGI scope <litestar.types.Scope>` object directly.
-
-Passing keyword arguments to handlers
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Building on ``opts`` , you can pass any arbitrary kwarg to the route handler decorator, and it will be automatically set
 as a key in the opt dictionary:

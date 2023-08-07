@@ -1,5 +1,5 @@
-Event Emitters and Listeners
-============================
+Events
+======
 
 Litestar supports a simple implementation of the event emitter / listener pattern:
 

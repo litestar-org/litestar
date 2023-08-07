@@ -38,9 +38,3 @@ def test_detect_nested_field() -> None:
 
     assert MsgspecDTO.detect_nested_field(FieldDefinition.from_annotation(TestStruct)) is True
     assert MsgspecDTO.detect_nested_field(FieldDefinition.from_annotation(NotStruct)) is False
-
-
-def test_deprecated_import() -> None:
-    from litestar.contrib.msgspec import MsgspecDTO as DeprecatedMsgspecDTO
-
-    assert DeprecatedMsgspecDTO is MsgspecDTO
