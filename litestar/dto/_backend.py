@@ -600,8 +600,6 @@ class TransferFunctionFactory:
         self.is_data_field = is_data_field
         self.is_dto_data_type = is_dto_data_type
         self.fn_locals: dict[str, Any] = {
-            "destination_type": destination_type,
-            "field_definitions": field_definitions,
             "Mapping": Mapping,
             "_transfer_type_data": _transfer_type_data,
             "_transfer_instance_data_dynamic": _transfer_instance_data_dynamic,
@@ -623,7 +621,7 @@ class TransferFunctionFactory:
         return unique_name
 
     @contextmanager
-    def nested(self) -> Generator[None, None, None]:
+    def start_indented_block(self) -> Generator[None, None, None]:
         self.indentation += 1
         yield
         self.indentation -= 1
@@ -633,34 +631,45 @@ class TransferFunctionFactory:
 
     def create_fn(self):
         tmp_return_type_name = self.create_local_name("tmp_return_type")
-        self._create_transfer_instance_data(tmp_return_type_name)
+        source_instance_name = self.create_local_name("source_instance")
+        destination_type_name = self.add_to_fn_globals("destination_type", self.destination_type)
+        self._create_transfer_instance_data(
+            tmp_return_type_name=tmp_return_type_name,
+            source_instance_name=source_instance_name,
+            destination_type_name=destination_type_name,
+        )
         self.add_stmt(f"return {tmp_return_type_name}")
-        out = "def func(source_instance):\n" + self.body
+        out = f"def func({source_instance_name}):\n" + self.body
         ctx = {}
         exec(out, self.fn_locals, ctx)
         return ctx["func"]
 
-    def _create_transfer_instance_data(self, tmp_return_type_name: str) -> None:
+    def _create_transfer_instance_data(
+        self,
+        tmp_return_type_name: str,
+        source_instance_name: str,
+        destination_type_name: str,
+    ) -> None:
         local_dict_name = self.create_local_name("unstructured_data")
         self.add_stmt(f"{local_dict_name} = {{}}")
 
         for source_type in ("mapping", "object"):
             if source_type == "mapping":
-                self.add_stmt("if isinstance(source_instance, Mapping):")
-                test_contains = "source_instance.__contains__('{source_name}')"
-                get_value = "source_instance['{source_name}']"
+                self.add_stmt(f"if isinstance({source_instance_name}, Mapping):")
+                test_contains = f"'{{source_name}}' in {source_instance_name}"
+                get_value = f"{source_instance_name}['{{source_name}}']"
             else:
-                test_contains = "hasattr(source_instance, '{source_name}')"
-                get_value = "source_instance.{source_name}"
+                test_contains = f"hasattr({source_instance_name}, '{{source_name}}')"
+                get_value = f"{source_instance_name}.{{source_name}}"
                 self.add_stmt("else:")
-            with self.nested():
+            with self.start_indented_block():
                 self._create_transfer_instance_data_body(
                     test_contains=test_contains,
                     get_value=get_value,
                     local_dict_name=local_dict_name,
                 )
 
-        self.add_stmt(f"{tmp_return_type_name} = destination_type(**{local_dict_name})")
+        self.add_stmt(f"{tmp_return_type_name} = {destination_type_name}(**{local_dict_name})")
 
     def _create_transfer_instance_data_body(self, test_contains: str, get_value: str, local_dict_name: str) -> None:
         should_use_serialization_name = self.is_data_field and not self.is_dto_data_type
@@ -675,12 +684,13 @@ class TransferFunctionFactory:
                 continue
 
             self.add_stmt(f"if {test_contains.format(source_name=source_name)}:")
-            with self.nested():
-                self.add_stmt(f"source_value = {get_value.format(source_name=source_name)}")
+            with self.start_indented_block():
+                source_value_name = self.create_local_name("source_value")
+                self.add_stmt(f"{source_value_name} = {get_value.format(source_name=source_name)}")
 
                 if self.is_data_field and field_definition.is_partial:
-                    self.add_stmt("if source_value is not UNSET:")
-                    ctx = self.nested()
+                    self.add_stmt(f"if {source_value_name} is not UNSET:")
+                    ctx = self.start_indented_block()
                 else:
                     ctx = nullcontext()
                 with ctx:
@@ -689,11 +699,16 @@ class TransferFunctionFactory:
                         transfer_type=field_definition.transfer_type,
                         nested_as_dict=nested_as_dict,
                         tmp_value_name=tmp_value_name,
+                        source_value_name=source_value_name,
                     )
                     self.add_stmt(f"{local_dict_name}['{destination_name}'] = {tmp_value_name}")
 
     def _create_transfer_type_data(
-        self, transfer_type: TransferType, nested_as_dict: bool, tmp_value_name: str
+        self,
+        transfer_type: TransferType,
+        nested_as_dict: bool,
+        tmp_value_name: str,
+        source_value_name: str,
     ) -> None:
         if isinstance(transfer_type, SimpleType) and transfer_type.nested_field_info:
             if nested_as_dict:
@@ -710,7 +725,7 @@ class TransferFunctionFactory:
             self.add_stmt(
                 f"{tmp_value_name} = _transfer_instance_data_dynamic("
                 f"destination_type={destination_type_name},"
-                "source_instance=source_value,"
+                f"source_instance={source_value_name},"
                 f"field_definitions={nested_field_definitions_name},"
                 f"is_data_field={self.is_data_field},"
                 f"is_dto_data_type={self.is_dto_data_type})"
@@ -721,7 +736,7 @@ class TransferFunctionFactory:
             self.add_stmt(
                 f"{tmp_value_name} = _transfer_nested_union_type_data("
                 f"transfer_type={self.add_to_fn_globals('transfer_type', transfer_type)},"
-                "source_value=source_value,"
+                f"source_value={source_value_name},"
                 f"is_data_field={self.is_data_field},"
                 f"is_dto_data_type={self.is_dto_data_type})"
             )
@@ -739,14 +754,14 @@ class TransferFunctionFactory:
                     "nested_as_dict=False,"
                     f"is_data_field={self.is_data_field},"
                     f"is_dto_data_type={self.is_dto_data_type},"
-                    ") for item in source_value)"
+                    f") for item in {source_value_name})"
                 )
                 return
 
-            self.add_stmt(f"{tmp_value_name} = {origin_name}(source_value)")
+            self.add_stmt(f"{tmp_value_name} = {origin_name}({source_value_name})")
             return
 
-        self.add_stmt(f"{tmp_value_name} = source_value")
+        self.add_stmt(f"{tmp_value_name} = {source_value_name}")
 
 
 def _transfer_instance_data(
