@@ -186,7 +186,7 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
         engine_config = self.engine_config_dict
         try:
             self.engine_instance = self.create_engine_callable(self.connection_string, **engine_config)
-        except ValueError:
+        except TypeError:
             # likely due to a dialect that doesn't support json type
             del engine_config["json_deserializer"]
             del engine_config["json_serializer"]

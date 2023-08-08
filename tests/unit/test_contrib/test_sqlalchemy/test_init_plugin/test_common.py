@@ -66,7 +66,7 @@ def test_create_engine_if_no_engine_instance_or_connection_string_provided(
         config.create_engine()
 
 
-def test_call_create_engine_callable_value_error_handling(
+def test_call_create_engine_callable_type_error_handling(
     config_cls: type[SQLAlchemySyncConfig | SQLAlchemySyncConfig], monkeypatch: MonkeyPatch
 ) -> None:
     """If the dialect doesn't support JSON types, we get a ValueError.
@@ -78,7 +78,7 @@ def test_call_create_engine_callable_value_error_handling(
         nonlocal call_count
         call_count += 1
         if call_count == 1:
-            raise ValueError()
+            raise TypeError()
 
     config = config_cls(connection_string="sqlite://")
     create_engine_callable_mock = MagicMock(side_effect=side_effect)
