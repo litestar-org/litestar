@@ -589,16 +589,15 @@ class TransferFunctionFactory:
         destination_type: type[Any],
         field_definitions: tuple[TransferDTOFieldDefinition, ...],
         is_data_field: bool,
-        is_dto_data_type: bool,
+        override_serialization_name: bool,
     ) -> None:
         self.destination_type = destination_type
         self.field_definitions = field_definitions
         self.is_data_field = is_data_field
-        self.is_dto_data_type = is_dto_data_type
+        self.override_serialization_name = override_serialization_name
         self.fn_locals: dict[str, Any] = {
             "Mapping": Mapping,
             "_transfer_type_data": _transfer_type_data,
-            "_transfer_instance_data_dynamic": _transfer_instance_data_dynamic,
             "_transfer_nested_union_type_data": _transfer_nested_union_type_data,
             "UNSET": UNSET,
         }
@@ -625,7 +624,7 @@ class TransferFunctionFactory:
     def add_stmt(self, stmt: str, newline: bool = True) -> None:
         self.body += textwrap.indent(stmt + ("\n" if newline else ""), " " * self.indentation)
 
-    def create_fn(self):
+    def create_fn(self) -> Callable[[Any], Any]:
         tmp_return_type_name = self.create_local_name("tmp_return_type")
         source_instance_name = self.create_local_name("source_instance")
         destination_type_name = self.add_to_fn_globals("destination_type", self.destination_type)
@@ -633,6 +632,7 @@ class TransferFunctionFactory:
             tmp_return_type_name=tmp_return_type_name,
             source_instance_name=source_instance_name,
             destination_type_name=destination_type_name,
+            field_definitions=self.field_definitions,
         )
         self.add_stmt(f"return {tmp_return_type_name}")
         out = f"def func({source_instance_name}):\n" + self.body
@@ -645,6 +645,7 @@ class TransferFunctionFactory:
         tmp_return_type_name: str,
         source_instance_name: str,
         destination_type_name: str,
+        field_definitions: tuple[TransferDTOFieldDefinition, ...],
     ) -> None:
         local_dict_name = self.create_local_name("unstructured_data")
         self.add_stmt(f"{local_dict_name} = {{}}")
@@ -663,14 +664,22 @@ class TransferFunctionFactory:
                     test_contains=test_contains,
                     get_value=get_value,
                     local_dict_name=local_dict_name,
+                    field_definitions=field_definitions,
                 )
 
         self.add_stmt(f"{tmp_return_type_name} = {destination_type_name}(**{local_dict_name})")
 
-    def _create_transfer_instance_data_body(self, test_contains: str, get_value: str, local_dict_name: str) -> None:
-        should_use_serialization_name = self.is_data_field and not self.is_dto_data_type
+    def _create_transfer_instance_data_body(
+        self,
+        *,
+        test_contains: str,
+        get_value: str,
+        local_dict_name: str,
+        field_definitions: tuple[TransferDTOFieldDefinition, ...],
+    ) -> None:
+        should_use_serialization_name = not self.override_serialization_name and self.is_data_field
         nested_as_dict = self.destination_type is dict
-        for _i, field_definition in enumerate(self.field_definitions):
+        for field_definition in field_definitions:
             source_name = (
                 field_definition.serialization_name if should_use_serialization_name else field_definition.name
             )
@@ -718,17 +727,11 @@ class TransferFunctionFactory:
             else:
                 destination_type = transfer_type.nested_field_info.model
 
-            nested_field_definitions = transfer_type.nested_field_info.field_definitions
-            destination_type_name = self.add_to_fn_globals("destination_type", destination_type)
-            nested_field_definitions_name = self.add_to_fn_globals("nested_field_definitions", nested_field_definitions)
-
-            self.add_stmt(
-                f"{assignment_target} = _transfer_instance_data_dynamic("
-                f"destination_type={destination_type_name},"
-                f"source_instance={source_value_name},"
-                f"field_definitions={nested_field_definitions_name},"
-                f"is_data_field={self.is_data_field},"
-                f"is_dto_data_type={self.is_dto_data_type})"
+            self._create_transfer_instance_data(
+                field_definitions=transfer_type.nested_field_info.field_definitions,
+                tmp_return_type_name=assignment_target,
+                source_instance_name=source_value_name,
+                destination_type_name=self.add_to_fn_globals("destination_type", destination_type),
             )
             return
 
@@ -738,7 +741,7 @@ class TransferFunctionFactory:
                 f"transfer_type={self.add_to_fn_globals('transfer_type', transfer_type)},"
                 f"source_value={source_value_name},"
                 f"is_data_field={self.is_data_field},"
-                f"is_dto_data_type={self.is_dto_data_type})"
+                f"override_serialization_name={self.override_serialization_name})"
             )
             return
 
@@ -753,7 +756,7 @@ class TransferFunctionFactory:
                     f"transfer_type={self.add_to_fn_globals('inner_type', transfer_type.inner_type)},"
                     "nested_as_dict=False,"
                     f"is_data_field={self.is_data_field},"
-                    f"is_dto_data_type={self.is_dto_data_type},"
+                    f"override_serialization_name={self.override_serialization_name},"
                     f") for item in {source_value_name})"
                 )
                 return
@@ -775,74 +778,9 @@ def _transfer_instance_data(
         destination_type=destination_type,
         field_definitions=field_definitions,
         is_data_field=is_data_field,
-        is_dto_data_type=is_dto_data_type,
+        override_serialization_name=override_serialization_name,
     ).create_fn()
     return fn(source_instance)
-
-
-def _transfer_instance_data_dynamic(
-    destination_type: type[Any],
-    source_instance: Any,
-    field_definitions: tuple[TransferDTOFieldDefinition, ...],
-    is_data_field: bool,
-    is_dto_data_type: bool,
-) -> Any:
-    """Create instance of ``destination_type`` with data from ``source_instance``.
-
-    Args:
-        destination_type: the model type received by the DTO on type narrowing.
-        source_instance: primitive data that has been parsed and validated via the backend.
-        field_definitions: model field definitions.
-        is_data_field: whether the given field is a 'data' kwarg field.
-        override_serialization_name: Use the original field names, used when creating
-                                     an instance using `DTOData.create_instance`
-
-    Returns:
-        Data parsed into ``model_type``.
-    """
-    unstructured_data = {}
-
-    should_use_serialization_name = not override_serialization_name and is_data_field
-    nested_as_dict = destination_type is dict
-
-    # we assume that in most cases we will call these more than one so assigning them
-    # here is going to be more efficient in most cases
-    if isinstance(source_instance, Mapping):
-        get = source_instance.__getitem__  # pyright: ignore
-        has = source_instance.__contains__  # pyright: ignore
-    else:
-
-        def get(a: str) -> Any:
-            return getattr(source_instance, a)
-
-        def has(a: Any) -> bool:
-            return hasattr(source_instance, a)
-
-    for field_definition in field_definitions:
-        source_name = field_definition.serialization_name if should_use_serialization_name else field_definition.name
-
-        if not is_data_field:
-            if field_definition.is_excluded:
-                continue
-        elif not has(source_name):
-            continue
-
-        source_value = get(source_name)
-
-        if is_data_field and source_value is UNSET and field_definition.is_partial:
-            continue
-
-        destination_name = field_definition.name if is_data_field else field_definition.serialization_name
-
-        unstructured_data[destination_name] = _transfer_type_data(
-            source_value=source_value,
-            transfer_type=field_definition.transfer_type,
-            nested_as_dict=nested_as_dict,
-            is_data_field=is_data_field,
-            override_serialization_name=override_serialization_name,
-        )
-
-    return destination_type(**unstructured_data)
 
 
 def _transfer_type_data(
