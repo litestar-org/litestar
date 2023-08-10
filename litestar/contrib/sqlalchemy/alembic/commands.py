@@ -35,12 +35,10 @@ class AlembicCommandConfig(_AlembicCommandConfig):
         attributes: dict | None = None,
         template_directory: Path | None = None,
         version_table_name: str | None = None,
-        db_url: str | None = None,
         engine: Engine | AsyncEngine | None = None,
     ) -> None:
         self.template_directory = template_directory
         self.version_table_name = version_table_name
-        self.db_url = db_url
         self.engine = engine
         if config_args is None:
             config_args = {}
@@ -71,10 +69,15 @@ def get_alembic_command_config(config: SQLAlchemyAsyncConfig | SQLAlchemySyncCon
         kwargs.update({"file_": config.alembic_config.script_config})
     if config.alembic_config.template_path:
         kwargs.update({"template_directory": config.alembic_config.template_path})
+    kwargs.update({"engine": engine})  # type: ignore[dict-item]
     alembic_cfg = AlembicCommandConfig(**kwargs)  # type: ignore
     alembic_cfg.set_main_option("script_location", config.alembic_config.script_location)
-    alembic_cfg.set_main_option("sqlalchemy.url", engine.url.render_as_string(hide_password=False).replace("%", "%%"))
     return alembic_cfg
+
+
+def config_from_app(app: Litestar) -> AlembicCommandConfig:
+    plugin = app.plugins.get(SQLAlchemyInitPlugin)
+    return get_alembic_command_config(config=plugin._config)
 
 
 def upgrade(
@@ -84,8 +87,7 @@ def upgrade(
     tag: str | None = None,
 ) -> None:
     """Create or upgrade a database."""
-    plugin = app.plugins.get(SQLAlchemyInitPlugin)
-    alembic_cfg = get_alembic_command_config(config=plugin._config)
+    alembic_cfg = config_from_app(app=app)
     migration_command.upgrade(config=alembic_cfg, revision=revision, tag=tag, sql=sql)
 
 
@@ -96,8 +98,7 @@ def downgrade(
     tag: str | None = None,
 ) -> None:
     """Downgrade a database to a specific revision."""
-    plugin = app.plugins.get(SQLAlchemyInitPlugin)
-    alembic_cfg = get_alembic_command_config(config=plugin._config)
+    alembic_cfg = config_from_app(app=app)
     migration_command.downgrade(config=alembic_cfg, revision=revision, tag=tag, sql=sql)
 
 
@@ -105,36 +106,31 @@ def check(
     app: Litestar,
 ) -> None:
     """Check if revision command with autogenerate has pending upgrade ops."""
-    plugin = app.plugins.get(SQLAlchemyInitPlugin)
-    alembic_cfg = get_alembic_command_config(config=plugin._config)
+    alembic_cfg = config_from_app(app=app)
     migration_command.check(config=alembic_cfg)
 
 
 def current(app: Litestar, verbose: bool = False) -> None:
     """Display the current revision for a database."""
-    plugin = app.plugins.get(SQLAlchemyInitPlugin)
-    alembic_cfg = get_alembic_command_config(config=plugin._config)
+    alembic_cfg = config_from_app(app=app)
     migration_command.current(alembic_cfg, verbose=verbose)
 
 
 def edit(app: Litestar, revision: str) -> None:
     """Edit revision script(s) using $EDITOR."""
-    plugin = app.plugins.get(SQLAlchemyInitPlugin)
-    alembic_cfg = get_alembic_command_config(config=plugin._config)
+    alembic_cfg = config_from_app(app=app)
     migration_command.edit(config=alembic_cfg, rev=revision)
 
 
 def ensure_version(app: Litestar, sql: bool = False) -> None:
     """Create the alembic version table if it doesn't exist already."""
-    plugin = app.plugins.get(SQLAlchemyInitPlugin)
-    alembic_cfg = get_alembic_command_config(config=plugin._config)
+    alembic_cfg = config_from_app(app=app)
     migration_command.ensure_version(config=alembic_cfg, sql=sql)
 
 
 def heads(app: Litestar, verbose: bool = False, resolve_dependencies: bool = False) -> None:
     """Show current available heads in the script directory."""
-    plugin = app.plugins.get(SQLAlchemyInitPlugin)
-    alembic_cfg = get_alembic_command_config(config=plugin._config)
+    alembic_cfg = config_from_app(app=app)
     migration_command.heads(config=alembic_cfg, verbose=verbose, resolve_dependencies=resolve_dependencies)  # type: ignore[no-untyped-call]
 
 
@@ -145,8 +141,7 @@ def history(
     indicate_current: bool = False,
 ) -> None:
     """List changeset scripts in chronological order."""
-    plugin = app.plugins.get(SQLAlchemyInitPlugin)
-    alembic_cfg = get_alembic_command_config(config=plugin._config)
+    alembic_cfg = config_from_app(app=app)
     migration_command.history(
         config=alembic_cfg, rev_range=rev_range, verbose=verbose, indicate_current=indicate_current
     )
@@ -160,8 +155,7 @@ def merge(
     rev_id: str | None = None,
 ) -> None:
     """Merge two revisions together. Creates a new migration file."""
-    plugin = app.plugins.get(SQLAlchemyInitPlugin)
-    alembic_cfg = get_alembic_command_config(config=plugin._config)
+    alembic_cfg = config_from_app(app=app)
     migration_command.merge(
         config=alembic_cfg, revisions=revisions, message=message, branch_label=branch_label, rev_id=rev_id
     )
@@ -181,8 +175,7 @@ def revision(
     process_revision_directives: ProcessRevisionDirectiveFn | None = None,
 ) -> None:
     """Create a new revision file."""
-    plugin = app.plugins.get(SQLAlchemyInitPlugin)
-    alembic_cfg = get_alembic_command_config(config=plugin._config)
+    alembic_cfg = config_from_app(app=app)
     migration_command.revision(
         config=alembic_cfg,
         message=message,
@@ -203,8 +196,7 @@ def show(
     rev: Any,
 ) -> None:
     """Show the revision(s) denoted by the given symbol."""
-    plugin = app.plugins.get(SQLAlchemyInitPlugin)
-    alembic_cfg = get_alembic_command_config(config=plugin._config)
+    alembic_cfg = config_from_app(app=app)
     migration_command.show(config=alembic_cfg, rev=rev)  # type: ignore[no-untyped-call]
 
 
@@ -237,8 +229,7 @@ def init(
 
 def list_templates(app: Litestar) -> None:
     """List available templates."""
-    plugin = app.plugins.get(SQLAlchemyInitPlugin)
-    alembic_cfg = get_alembic_command_config(config=plugin._config)
+    alembic_cfg = config_from_app(app=app)
     migration_command.list_templates(config=alembic_cfg)
 
 
@@ -250,6 +241,5 @@ def stamp(
     purge: bool = False,
 ) -> None:
     """'stamp' the revision table with the given revision; don't run any migrations."""
-    plugin = app.plugins.get(SQLAlchemyInitPlugin)
-    alembic_cfg = get_alembic_command_config(config=plugin._config)
+    alembic_cfg = config_from_app(app=app)
     migration_command.stamp(config=alembic_cfg, revision=revision, sql=sql, tag=tag, purge=purge)
