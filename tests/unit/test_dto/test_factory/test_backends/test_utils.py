@@ -57,7 +57,7 @@ def test_transfer_nested_union_type_data_raises_runtime_error_for_complex_union(
             transfer_type=transfer_type,
             is_data_field=True,
             source_value=1,
-            is_dto_data_type=True,
+            override_serialization_name=True,
         )
 
 
