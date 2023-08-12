@@ -7,6 +7,7 @@ import secrets
 import textwrap
 from contextlib import contextmanager, nullcontext
 from dataclasses import replace
+from functools import partial
 from typing import (
     TYPE_CHECKING,
     AbstractSet,
@@ -20,6 +21,8 @@ from typing import (
     Mapping,
     Union,
     cast,
+    ContextManager,
+    Protocol,
 )
 
 from msgspec import UNSET, Struct, UnsetType, convert, defstruct, field
@@ -583,6 +586,11 @@ def _gen_uniq_name(ctx: Container, name: str) -> str:
         i += 1
 
 
+class FieldAccessManager(Protocol):
+    def __call__(self, source_instance_name: str, field_name: str, expect_optional: bool) -> ContextManager[str]:
+        ...
+
+
 class TransferFunctionFactory:
     def __init__(
         self,
@@ -656,43 +664,84 @@ class TransferFunctionFactory:
             for source_type in ("mapping", "object"):
                 if source_type == "mapping":
                     self.add_stmt(f"if isinstance({source_instance_name}, Mapping):")
-                    test_contains = f"'{{source_name}}' in {source_instance_name}"
-                    get_value = f"{source_instance_name}['{{source_name}}']"
+                    access_item = self._access_mapping_item
                 else:
-                    test_contains = f"hasattr({source_instance_name}, '{{source_name}}')"
-                    get_value = f"{source_instance_name}.{{source_name}}"
                     self.add_stmt("else:")
+                    access_item = self._access_attribute
 
                 with self.start_indented_block():
                     self._create_transfer_instance_data_body(
-                        test_contains=test_contains,
-                        get_value=get_value,
                         local_dict_name=local_dict_name,
                         field_definitions=field_definitions,
+                        access_field_safe=access_item,
+                        source_instance_name=source_instance_name,
                     )
 
         self.add_stmt(f"{tmp_return_type_name} = {destination_type_name}(**{local_dict_name})")
 
+    @contextmanager
+    def _access_mapping_item(
+        self, source_instance_name: str, field_name: str, expect_optional: bool
+    ) -> Generator[str, None, None]:
+        value_expr = f"{source_instance_name}['{field_name}']"
+
+        # if we expect an optional item, it's faster to check if it exists beforehand
+        if expect_optional:
+            self.add_stmt(f"if '{field_name}' in {source_instance_name}:")
+            with self.start_indented_block():
+                yield value_expr
+        # the happy path of a try/except will be faster than that, so we use that if
+        # we expect a value
+        else:
+            self.add_stmt("try:")
+            with self.start_indented_block():
+                yield value_expr
+            self.add_stmt("except KeyError:")
+            with self.start_indented_block():
+                self.add_stmt("pass")
+
+    @contextmanager
+    def _access_attribute(
+        self, source_instance_name: str, field_name: str, expect_optional: bool
+    ) -> Generator[str, None, None]:
+        value_expr = f"{source_instance_name}.{field_name}"
+
+        # if we expect an optional attribute it's faster to check with hasattr
+        if expect_optional:
+            self.add_stmt(f"if hasattr({source_instance_name}, '{field_name}'):")
+            with self.start_indented_block():
+                yield value_expr
+        # the happy path of a try/except will be faster than that, so we use that if
+        # we expect a value
+        else:
+            self.add_stmt("try:")
+            with self.start_indented_block():
+                yield value_expr
+            self.add_stmt("except AttributeError:")
+            with self.start_indented_block():
+                self.add_stmt("pass")
+
     def _create_transfer_instance_data_body(
         self,
         *,
-        test_contains: str,
-        get_value: str,
         local_dict_name: str,
         field_definitions: tuple[TransferDTOFieldDefinition, ...],
+        access_field_safe: FieldAccessManager,
+        source_instance_name: str,
     ) -> None:
         should_use_serialization_name = not self.override_serialization_name and self.is_data_field
         nested_as_dict = self.destination_type is dict
         for field_definition in field_definitions:
-            source_name = (
+            source_field_name = (
                 field_definition.serialization_name if should_use_serialization_name else field_definition.name
             )
             destination_name = field_definition.name if self.is_data_field else field_definition.serialization_name
 
-            self.add_stmt(f"if {test_contains.format(source_name=source_name)}:")
-            with self.start_indented_block():
-                source_value_expr = f"{get_value.format(source_name=source_name)}"
-
+            with access_field_safe(
+                source_instance_name=source_instance_name,
+                field_name=source_field_name,
+                expect_optional=field_definition.is_partial or field_definition.is_optional,
+            ) as source_value_expr:
                 if self.is_data_field and field_definition.is_partial:
                     # we assign the source value to a name here, so we can skip
                     # getting it twice from the source instance
