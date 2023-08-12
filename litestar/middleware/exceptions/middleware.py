@@ -153,15 +153,18 @@ class ExceptionHandlerMiddleware:
 
         Args:
             app: The ``next`` ASGI app to call.
-            debug: Whether ``debug`` mode is enabled. Deprecated. Debug mode will eb inferred from the request scope
+            debug: Whether ``debug`` mode is enabled. Deprecated. Debug mode will be inferred from the request scope
             exception_handlers: A dictionary mapping status codes and/or exception types to handler functions.
+
+        .. deprecated:: 2.0.0
+            The ``debug`` parameter is deprecated. It will be inferred from the request scope
         """
         self.app = app
         self.exception_handlers = exception_handlers
         self.debug = debug
         if debug is not None:
             warn_deprecation(
-                "2.0.0rc2",
+                "2.0.0",
                 deprecated_name="debug",
                 kind="parameter",
                 info="Debug mode will be inferred from the request scope",
