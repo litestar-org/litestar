@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any
 import uvicorn
 from rich.tree import Tree
 
-from litestar.cli._utils import RICH_CLICK_INSTALLED, console, show_app_info
+from litestar.cli._utils import RICH_CLICK_INSTALLED, LitestarEnv, console, show_app_info
 from litestar.routes import HTTPRoute, WebSocketRoute
 from litestar.utils.helpers import unwrap_partial
 
@@ -118,7 +118,7 @@ def run_command(
         if pdb:
             ctx.obj.app.pdb_on_exception = True
 
-    env = ctx.obj
+    env: LitestarEnv = ctx.obj
     app = env.app
 
     reload_dirs = env.reload_dirs or reload_dir
