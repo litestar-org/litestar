@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from litestar.cli._utils import RICH_CLICK_INSTALLED, LitestarGroup
-from litestar.contrib.sqlalchemy.alembic import commands as db_utils
+from litestar.contrib.sqlalchemy.alembic.commands import AlembicCommands
 
 if TYPE_CHECKING:
     from litestar import Litestar
@@ -27,8 +27,8 @@ def database_group() -> None:
 @option("--verbose", type=bool, help="Enable verbose output.", default=False, is_flag=True)
 def show_database_revision(app: Litestar, verbose: bool) -> None:
     """Show current database revision."""
-
-    db_utils.current(app=app, verbose=verbose)
+    alembic_commands = AlembicCommands(app=app)
+    alembic_commands.current(verbose=verbose)
 
 
 @database_group.command(
@@ -50,8 +50,8 @@ def show_database_revision(app: Litestar, verbose: bool) -> None:
 )
 def downgrade_database(app: Litestar, revision: str, sql: bool, tag: str | None) -> None:
     """Downgrade the database to the latest revision."""
-
-    db_utils.downgrade(app=app, revision=revision, sql=sql, tag=tag)
+    alembic_commands = AlembicCommands(app=app)
+    alembic_commands.downgrade(revision=revision, sql=sql, tag=tag)
 
 
 @database_group.command(
@@ -73,8 +73,8 @@ def downgrade_database(app: Litestar, revision: str, sql: bool, tag: str | None)
 )
 def upgrade_database(app: Litestar, revision: str, sql: bool, tag: str | None) -> None:
     """Upgrade the database to the latest revision."""
-
-    db_utils.upgrade(app=app, revision=revision, sql=sql, tag=tag)
+    alembic_commands = AlembicCommands(app=app)
+    alembic_commands.upgrade(revision=revision, sql=sql, tag=tag)
 
 
 @database_group.command(
@@ -88,8 +88,8 @@ def upgrade_database(app: Litestar, revision: str, sql: bool, tag: str | None) -
 @option("--package", is_flag=True, default=True, help="Create `__init__.py` for created folder")
 def init_alembic(app: Litestar, directory: str, multidb: bool, package: bool) -> None:
     """Upgrade the database to the latest revision."""
-
-    db_utils.init(app=app, directory=directory, multidb=multidb, package=package)
+    alembic_commands = AlembicCommands(app=app)
+    alembic_commands.init(directory=directory, multidb=multidb, package=package)
 
 
 @database_group.command(
@@ -116,8 +116,8 @@ def create_revision(
     rev_id: str | None,
 ) -> None:
     """Create a new database revision."""
-    db_utils.revision(
-        app=app,
+    alembic_commands = AlembicCommands(app=app)
+    alembic_commands.revision(
         message=message,
         autogenerate=autogenerate,
         sql=sql,

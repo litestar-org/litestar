@@ -20,7 +20,6 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncEngine
 
     from litestar.app import Litestar
-    from litestar.contrib.sqlalchemy.plugins.init.config.sync import SQLAlchemySyncConfig
 
 
 class AlembicCommandConfig(_AlembicCommandConfig):
@@ -62,184 +61,166 @@ class AlembicSpannerImpl(DefaultImpl):
     __dialect__ = "spanner+spanner"
 
 
-def get_alembic_command_config(config: SQLAlchemyAsyncConfig | SQLAlchemySyncConfig) -> AlembicCommandConfig:
-    kwargs = {}
-    engine = config.create_engine()
-    if config.alembic_config.script_config:
-        kwargs.update({"file_": config.alembic_config.script_config})
-    if config.alembic_config.template_path:
-        kwargs.update({"template_directory": config.alembic_config.template_path})
-    kwargs.update({"engine": engine})  # type: ignore[dict-item]
-    alembic_cfg = AlembicCommandConfig(**kwargs)  # type: ignore
-    alembic_cfg.set_main_option("script_location", config.alembic_config.script_location)
-    return alembic_cfg
+class AlembicCommands:
+    def __init__(self, app: Litestar) -> None:
+        self._app = app
+        self.plugin_config = app.plugins.get(SQLAlchemyInitPlugin)._config
+        self.config = self._get_alembic_command_config()
 
+    def upgrade(
+        self,
+        revision: str = "head",
+        sql: bool = False,
+        tag: str | None = None,
+    ) -> None:
+        """Create or upgrade a database."""
 
-def config_from_app(app: Litestar) -> AlembicCommandConfig:
-    plugin = app.plugins.get(SQLAlchemyInitPlugin)
-    return get_alembic_command_config(config=plugin._config)
+        return migration_command.upgrade(config=self.config, revision=revision, tag=tag, sql=sql)
 
+    def downgrade(
+        self,
+        revision: str = "head",
+        sql: bool = False,
+        tag: str | None = None,
+    ) -> None:
+        """Downgrade a database to a specific revision."""
 
-def upgrade(
-    app: Litestar,
-    revision: str = "head",
-    sql: bool = False,
-    tag: str | None = None,
-) -> None:
-    """Create or upgrade a database."""
-    alembic_cfg = config_from_app(app=app)
-    migration_command.upgrade(config=alembic_cfg, revision=revision, tag=tag, sql=sql)
+        return migration_command.downgrade(config=self.config, revision=revision, tag=tag, sql=sql)
 
+    def check(self) -> None:
+        """Check if revision command with autogenerate has pending upgrade ops."""
 
-def downgrade(
-    app: Litestar,
-    revision: str = "head",
-    sql: bool = False,
-    tag: str | None = None,
-) -> None:
-    """Downgrade a database to a specific revision."""
-    alembic_cfg = config_from_app(app=app)
-    migration_command.downgrade(config=alembic_cfg, revision=revision, tag=tag, sql=sql)
+        return migration_command.check(config=self.config)
 
+    def current(self, verbose: bool = False) -> None:
+        """Display the current revision for a database."""
 
-def check(
-    app: Litestar,
-) -> None:
-    """Check if revision command with autogenerate has pending upgrade ops."""
-    alembic_cfg = config_from_app(app=app)
-    migration_command.check(config=alembic_cfg)
+        return migration_command.current(self.config, verbose=verbose)
 
+    def edit(self, revision: str) -> None:
+        """Edit revision script(s) using $EDITOR."""
 
-def current(app: Litestar, verbose: bool = False) -> None:
-    """Display the current revision for a database."""
-    alembic_cfg = config_from_app(app=app)
-    migration_command.current(alembic_cfg, verbose=verbose)
+        return migration_command.edit(config=self.config, rev=revision)
 
+    def ensure_version(self, sql: bool = False) -> None:
+        """Create the alembic version table if it doesn't exist already."""
 
-def edit(app: Litestar, revision: str) -> None:
-    """Edit revision script(s) using $EDITOR."""
-    alembic_cfg = config_from_app(app=app)
-    migration_command.edit(config=alembic_cfg, rev=revision)
+        return migration_command.ensure_version(config=self.config, sql=sql)
 
+    def heads(self, verbose: bool = False, resolve_dependencies: bool = False) -> None:
+        """Show current available heads in the script directory."""
 
-def ensure_version(app: Litestar, sql: bool = False) -> None:
-    """Create the alembic version table if it doesn't exist already."""
-    alembic_cfg = config_from_app(app=app)
-    migration_command.ensure_version(config=alembic_cfg, sql=sql)
+        return migration_command.heads(config=self.config, verbose=verbose, resolve_dependencies=resolve_dependencies)  # type: ignore
 
+    def history(
+        self,
+        rev_range: str | None = None,
+        verbose: bool = False,
+        indicate_current: bool = False,
+    ) -> None:
+        """List changeset scripts in chronological order."""
 
-def heads(app: Litestar, verbose: bool = False, resolve_dependencies: bool = False) -> None:
-    """Show current available heads in the script directory."""
-    alembic_cfg = config_from_app(app=app)
-    migration_command.heads(config=alembic_cfg, verbose=verbose, resolve_dependencies=resolve_dependencies)  # type: ignore[no-untyped-call]
+        return migration_command.history(
+            config=self.config, rev_range=rev_range, verbose=verbose, indicate_current=indicate_current
+        )
 
+    def merge(
+        self,
+        revisions: str,
+        message: str | None = None,
+        branch_label: str | None = None,
+        rev_id: str | None = None,
+    ) -> None:
+        """Merge two revisions together. Creates a new migration file."""
 
-def history(
-    app: Litestar,
-    rev_range: str | None = None,
-    verbose: bool = False,
-    indicate_current: bool = False,
-) -> None:
-    """List changeset scripts in chronological order."""
-    alembic_cfg = config_from_app(app=app)
-    migration_command.history(
-        config=alembic_cfg, rev_range=rev_range, verbose=verbose, indicate_current=indicate_current
-    )
+        migration_command.merge(
+            config=self.config, revisions=revisions, message=message, branch_label=branch_label, rev_id=rev_id
+        )
 
+    def revision(
+        self,
+        message: str | None = None,
+        autogenerate: bool = False,
+        sql: bool = False,
+        head: str = "head",
+        splice: bool = False,
+        branch_label: str | None = None,
+        version_path: str | None = None,
+        rev_id: str | None = None,
+        depends_on: str | None = None,
+        process_revision_directives: ProcessRevisionDirectiveFn | None = None,
+    ) -> None:
+        """Create a new revision file."""
 
-def merge(
-    app: Litestar,
-    revisions: str,
-    message: str | None = None,
-    branch_label: str | None = None,
-    rev_id: str | None = None,
-) -> None:
-    """Merge two revisions together. Creates a new migration file."""
-    alembic_cfg = config_from_app(app=app)
-    migration_command.merge(
-        config=alembic_cfg, revisions=revisions, message=message, branch_label=branch_label, rev_id=rev_id
-    )
+        migration_command.revision(
+            config=self.config,
+            message=message,
+            autogenerate=autogenerate,
+            sql=sql,
+            head=head,
+            splice=splice,
+            branch_label=branch_label,
+            version_path=version_path,
+            rev_id=rev_id,
+            depends_on=depends_on,
+            process_revision_directives=process_revision_directives,
+        )
 
+    def show(
+        self,
+        rev: Any,
+    ) -> None:
+        """Show the revision(s) denoted by the given symbol."""
 
-def revision(
-    app: Litestar,
-    message: str | None = None,
-    autogenerate: bool = False,
-    sql: bool = False,
-    head: str = "head",
-    splice: bool = False,
-    branch_label: str | None = None,
-    version_path: str | None = None,
-    rev_id: str | None = None,
-    depends_on: str | None = None,
-    process_revision_directives: ProcessRevisionDirectiveFn | None = None,
-) -> None:
-    """Create a new revision file."""
-    alembic_cfg = config_from_app(app=app)
-    migration_command.revision(
-        config=alembic_cfg,
-        message=message,
-        autogenerate=autogenerate,
-        sql=sql,
-        head=head,
-        splice=splice,
-        branch_label=branch_label,
-        version_path=version_path,
-        rev_id=rev_id,
-        depends_on=depends_on,
-        process_revision_directives=process_revision_directives,
-    )
+        migration_command.show(config=self.config, rev=rev)  # type: ignore[no-untyped-call]
 
+    def init(
+        self,
+        directory: str,
+        template_path: str | None = None,
+        package: bool = False,
+        multidb: bool = False,
+    ) -> None:
+        """Initialize a new scripts directory."""
+        template = "sync"
+        if isinstance(self.plugin_config, SQLAlchemyAsyncConfig):
+            template = "asyncio"
+        if multidb:
+            template = f"{template}-multidb"
+            raise NotImplementedError("Multi database Alembic configurations are not currently supported.")
+        if template_path is None:
+            template_path = f"{Path(__file__).parent}/templates"
+        migration_command.init(
+            config=self.config,
+            directory=directory,
+            template=template,
+            package=package,
+        )
 
-def show(
-    app: Litestar,
-    rev: Any,
-) -> None:
-    """Show the revision(s) denoted by the given symbol."""
-    alembic_cfg = config_from_app(app=app)
-    migration_command.show(config=alembic_cfg, rev=rev)  # type: ignore[no-untyped-call]
+    def list_templates(self) -> None:
+        """List available templates."""
 
+        migration_command.list_templates(config=self.config)
 
-def init(
-    app: Litestar,
-    directory: str,
-    template_path: str | None = None,
-    package: bool = False,
-    multidb: bool = False,
-) -> None:
-    """Initialize a new scripts directory."""
-    plugin = app.plugins.get(SQLAlchemyInitPlugin)
+    def stamp(
+        self,
+        revision: str,
+        sql: bool = False,
+        tag: str | None[str] = None,
+        purge: bool = False,
+    ) -> None:
+        """'stamp' the revision table with the given revision; don't run any migrations."""
 
-    template = "sync"
-    if isinstance(plugin._config, SQLAlchemyAsyncConfig):
-        template = "asyncio"
-    if multidb:
-        template = f"{template}-multidb"
-        raise NotImplementedError("Multi database Alembic configurations are not currently supported.")
-    if template_path is None:
-        template_path = f"{Path(__file__).parent}/templates"
-    alembic_cfg = get_alembic_command_config(config=plugin._config)
-    migration_command.init(
-        config=alembic_cfg,
-        directory=directory,
-        template=template,
-        package=package,
-    )
+        migration_command.stamp(config=self.config, revision=revision, sql=sql, tag=tag, purge=purge)
 
-
-def list_templates(app: Litestar) -> None:
-    """List available templates."""
-    alembic_cfg = config_from_app(app=app)
-    migration_command.list_templates(config=alembic_cfg)
-
-
-def stamp(
-    app: Litestar,
-    revision: str,
-    sql: bool = False,
-    tag: str | None[str] = None,
-    purge: bool = False,
-) -> None:
-    """'stamp' the revision table with the given revision; don't run any migrations."""
-    alembic_cfg = config_from_app(app=app)
-    migration_command.stamp(config=alembic_cfg, revision=revision, sql=sql, tag=tag, purge=purge)
+    def _get_alembic_command_config(self) -> AlembicCommandConfig:
+        kwargs = {}
+        engine = self.plugin_config.create_engine()
+        if self.plugin_config.alembic_config.script_config:
+            kwargs.update({"file_": self.plugin_config.alembic_config.script_config})
+        if self.plugin_config.alembic_config.template_path:
+            kwargs.update({"template_directory": self.plugin_config.alembic_config.template_path})
+        kwargs.update({"engine": engine})  # type: ignore[dict-item]
+        self.config = AlembicCommandConfig(**kwargs)  # type: ignore
+        self.config.set_main_option("script_location", self.plugin_config.alembic_config.script_location)
+        return self.config

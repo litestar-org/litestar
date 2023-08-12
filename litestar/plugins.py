@@ -174,7 +174,7 @@ class PluginRegistry:
 
     def __init__(self, plugins: list[PluginProtocol]) -> None:
         self._plugins_by_type = {type(p): p for p in plugins}
-        self._plugins = frozenset(plugins)
+        self._plugins = set(plugins)
         self.init = tuple(p for p in plugins if isinstance(p, InitPluginProtocol))
         self.openapi = tuple(p for p in plugins if isinstance(p, OpenAPISchemaPluginProtocol))
         self.serialization = tuple(p for p in plugins if isinstance(p, SerializationPluginProtocol))
