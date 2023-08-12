@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 def test_get_session_backend() -> None:
     session_middleware = ServerSideSessionConfig().middleware
-    app = Litestar([], middleware=[RateLimitConfig(rate_limit=("second", 1)).middleware, session_middleware])
+    app = Litestar([], middleware=[RateLimitConfig(rate_limit=[("second", 1)]).middleware, session_middleware])
 
     assert get_session_backend(app) is session_middleware.kwargs["backend"]
 

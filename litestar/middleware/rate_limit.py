@@ -215,8 +215,8 @@ class RateLimitMiddleware(AbstractMiddleware):
 class RateLimitConfig:
     """Configuration for ``RateLimitMiddleware``"""
 
-    rate_limit: tuple[DurationUnit, int]
-    """A tuple containing a time unit (second, minute, hour, day) and quantity, e.g. ("day", 1) or ("minute", 5)."""
+    rate_limit: List[tuple[DurationUnit, int]]
+    """A list containing tuples with a time unit (second, minute, hour, day) and quantity, e.g. [("day", 1), ("minute", 5)]"""
     exclude: str | list[str] | None = field(default=None)
     """A pattern or list of patterns to skip in the rate limiting middleware."""
     exclude_opt_key: str | None = field(default=None)
@@ -255,7 +255,7 @@ class RateLimitConfig:
                 from litestar.middleware.rate_limit import RateLimitConfig
 
                 # limit to 10 requests per minute, excluding the schema path
-                throttle_config = RateLimitConfig(rate_limit=("minute", 10), exclude=["/schema"])
+                throttle_config = RateLimitConfig(rate_limit=[("minute", 10)], exclude=["/schema"])
 
                 @get("/")
                 def my_handler(request: Request) -> None:

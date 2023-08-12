@@ -12,6 +12,6 @@ app = Litestar(
     response_cache_config=ResponseCacheConfig(store="redis"),
     middleware=[
         ServerSideSessionConfig(store="file").middleware,
-        RateLimitConfig(rate_limit=("second", 10), store="redis").middleware,
+        RateLimitConfig(rate_limit=[("second", 10)], store="redis").middleware,
     ],
 )

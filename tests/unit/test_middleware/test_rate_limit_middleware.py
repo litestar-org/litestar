@@ -28,7 +28,7 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
     def handler() -> None:
         return None
 
-    config = RateLimitConfig(rate_limit=(unit, 1))
+    config = RateLimitConfig(rate_limit=[(unit, 1)])
     cache_key = "RateLimitMiddleware::testclient"
     app = Litestar(route_handlers=[handler], middleware=[config.middleware])
     store = app.stores.get("rate_limit")
@@ -100,7 +100,7 @@ async def test_reset() -> None:
     def handler() -> None:
         return None
 
-    config = RateLimitConfig(rate_limit=("second", 1))
+    config = RateLimitConfig(rate_limit=[("second", 1)])
     cache_key = "RateLimitMiddleware::testclient"
     app = Litestar(route_handlers=[handler], middleware=[config.middleware])
     store = app.stores.get("rate_limit")
@@ -129,7 +129,7 @@ def test_exclude_patterns() -> None:
     def handler2() -> None:
         return None
 
-    config = RateLimitConfig(rate_limit=("second", 1), exclude=["/excluded"])
+    config = RateLimitConfig(rate_limit=[("second", 1)], exclude=["/excluded"])
 
     with create_test_client(route_handlers=[handler, handler2], middleware=[config.middleware]) as client:
         response = client.get("/excluded")
@@ -154,7 +154,7 @@ def test_exclude_opt_key() -> None:
     def handler2() -> None:
         return None
 
-    config = RateLimitConfig(rate_limit=("second", 1), exclude_opt_key="skip_rate_limiting")
+    config = RateLimitConfig(rate_limit=[("second", 1)], exclude_opt_key="skip_rate_limiting")
 
     with create_test_client(route_handlers=[handler, handler2], middleware=[config.middleware]) as client:
         response = client.get("/excluded")
@@ -182,7 +182,7 @@ def test_check_throttle_handler() -> None:
     def check_throttle_handler(request: Request[Any, Any, Any]) -> bool:
         return request.url.path == "/path1"
 
-    config = RateLimitConfig(rate_limit=("minute", 1), check_throttle_handler=check_throttle_handler)
+    config = RateLimitConfig(rate_limit=[("minute", 1)], check_throttle_handler=check_throttle_handler)
 
     with create_test_client(route_handlers=[handler1, handler2], middleware=[config.middleware]) as client:
         response = client.get("/path1")
@@ -208,7 +208,7 @@ async def test_rate_limiting_works_with_mounted_apps(tmpdir: "Path") -> None:
     path1.write_text("styles content", "utf-8")
 
     static_files_config = StaticFilesConfig(directories=[tmpdir], path="/src/static")  # pyright: ignore
-    rate_limit_config = RateLimitConfig(rate_limit=("minute", 1), exclude=[r"^/src.*$"])
+    rate_limit_config = RateLimitConfig(rate_limit=[("minute", 1)], exclude=[r"^/src.*$"])
     with create_test_client(
         [handler], static_files_config=[static_files_config], middleware=[rate_limit_config.middleware]
     ) as client:
