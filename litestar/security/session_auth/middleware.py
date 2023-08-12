@@ -105,7 +105,7 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
         Returns:
             :class:`AuthenticationResult <.middleware.authentication.AuthenticationResult>`
         """
-        if not connection.session or connection.session is Empty:  # type: ignore
+        if not connection.session or connection.session is Empty:
             # the assignment of 'Empty' forces the session middleware to clear session data.
             connection.scope["session"] = Empty
             raise NotAuthorizedException("no session data found")

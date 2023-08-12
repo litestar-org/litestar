@@ -372,7 +372,7 @@ def test_dto_private_fields() -> None:
 
     mock = MagicMock()
 
-    @post(dto=DataclassDTO[Foo], return_dto=None, signature_namespace={"Foo": Foo})
+    @post(dto=DataclassDTO[Foo], signature_namespace={"Foo": Foo})
     def handler(data: DTOData[Foo]) -> Foo:
         mock.received_data = data.as_builtins()
         return data.create_instance(_baz=42)
