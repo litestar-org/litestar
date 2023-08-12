@@ -650,22 +650,26 @@ class TransferFunctionFactory:
         local_dict_name = self.create_local_name("unstructured_data")
         self.add_stmt(f"{local_dict_name} = {{}}")
 
-        for source_type in ("mapping", "object"):
-            if source_type == "mapping":
-                self.add_stmt(f"if isinstance({source_instance_name}, Mapping):")
-                test_contains = f"'{{source_name}}' in {source_instance_name}"
-                get_value = f"{source_instance_name}['{{source_name}}']"
-            else:
-                test_contains = f"hasattr({source_instance_name}, '{{source_name}}')"
-                get_value = f"{source_instance_name}.{{source_name}}"
-                self.add_stmt("else:")
-            with self.start_indented_block():
-                self._create_transfer_instance_data_body(
-                    test_contains=test_contains,
-                    get_value=get_value,
-                    local_dict_name=local_dict_name,
-                    field_definitions=field_definitions,
-                )
+        field_definitions = tuple(f for f in field_definitions if self.is_data_field or not f.is_excluded)
+
+        if field_definitions:
+            for source_type in ("mapping", "object"):
+                if source_type == "mapping":
+                    self.add_stmt(f"if isinstance({source_instance_name}, Mapping):")
+                    test_contains = f"'{{source_name}}' in {source_instance_name}"
+                    get_value = f"{source_instance_name}['{{source_name}}']"
+                else:
+                    test_contains = f"hasattr({source_instance_name}, '{{source_name}}')"
+                    get_value = f"{source_instance_name}.{{source_name}}"
+                    self.add_stmt("else:")
+
+                with self.start_indented_block():
+                    self._create_transfer_instance_data_body(
+                        test_contains=test_contains,
+                        get_value=get_value,
+                        local_dict_name=local_dict_name,
+                        field_definitions=field_definitions,
+                    )
 
         self.add_stmt(f"{tmp_return_type_name} = {destination_type_name}(**{local_dict_name})")
 
@@ -684,9 +688,6 @@ class TransferFunctionFactory:
                 field_definition.serialization_name if should_use_serialization_name else field_definition.name
             )
             destination_name = field_definition.name if self.is_data_field else field_definition.serialization_name
-
-            if not self.is_data_field and field_definition.is_excluded:
-                continue
 
             self.add_stmt(f"if {test_contains.format(source_name=source_name)}:")
             with self.start_indented_block():
