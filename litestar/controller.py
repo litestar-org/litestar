@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import defaultdict
 from copy import deepcopy
 from functools import partial
+from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Mapping, cast
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
@@ -186,13 +187,18 @@ class Controller:
         """
 
         route_handlers: list[BaseRouteHandler] = []
-
-        for field_name in set(dir(self)) - set(dir(Controller)):
-            if (attr := getattr(self, field_name, None)) and isinstance(attr, BaseRouteHandler):
-                route_handler = deepcopy(attr)
-                route_handler.fn.value = partial(route_handler.fn.value, self)
-                route_handler.owner = self
-                route_handlers.append(route_handler)
+        controller_names = set(dir(Controller))
+        self_handlers = [
+            getattr(self, name)
+            for name in dir(self)
+            if name not in controller_names and isinstance(getattr(self, name), BaseRouteHandler)
+        ]
+        self_handlers.sort(key=attrgetter("handler_id"))
+        for self_handler in self_handlers:
+            route_handler = deepcopy(self_handler)
+            route_handler.fn.value = partial(route_handler.fn.value, self)
+            route_handler.owner = self
+            route_handlers.append(route_handler)
 
         self.validate_route_handlers(route_handlers=route_handlers)
 
