@@ -15,6 +15,7 @@ from litestar.middleware.cors import CORSMiddleware
 from litestar.middleware.exceptions._debug_response import create_debug_response
 from litestar.serialization import encode_json
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
+from litestar.utils.deprecation import warn_deprecation
 
 __all__ = ("ExceptionHandlerMiddleware", "ExceptionResponseContent", "create_exception_response")
 
@@ -147,17 +148,30 @@ class ExceptionHandlerMiddleware:
     This used in multiple layers of Litestar.
     """
 
-    def __init__(self, app: ASGIApp, debug: bool, exception_handlers: ExceptionHandlersMap) -> None:
+    def __init__(self, app: ASGIApp, debug: bool | None, exception_handlers: ExceptionHandlersMap) -> None:
         """Initialize ``ExceptionHandlerMiddleware``.
 
         Args:
             app: The ``next`` ASGI app to call.
-            debug: Whether ``debug`` mode is enabled
+            debug: Whether ``debug`` mode is enabled. Deprecated. Debug mode will eb inferred from the request scope
             exception_handlers: A dictionary mapping status codes and/or exception types to handler functions.
         """
         self.app = app
         self.exception_handlers = exception_handlers
         self.debug = debug
+        if debug is not None:
+            warn_deprecation(
+                "2.0.0rc2",
+                deprecated_name="debug",
+                kind="parameter",
+                info="Debug mode will be inferred from the request scope",
+            )
+
+        self._get_debug = self._get_debug_scope if debug is None else lambda *a: debug
+
+    @staticmethod
+    def _get_debug_scope(scope: Scope) -> bool:
+        return scope["app"].debug
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI-callable.
@@ -249,7 +263,7 @@ class ExceptionHandlerMiddleware:
             An HTTP response.
         """
         status_code = getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
-        if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self.debug:
+        if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self._get_debug_scope(request.scope):
             return create_debug_response(request=request, exc=exc)
         return create_exception_response(request=request, exc=exc)
 
@@ -265,6 +279,7 @@ class ExceptionHandlerMiddleware:
             None
         """
         if (
-            logging_config.log_exceptions == "always" or (logging_config.log_exceptions == "debug" and self.debug)
+            logging_config.log_exceptions == "always"
+            or (logging_config.log_exceptions == "debug" and self._get_debug_scope(scope))
         ) and logging_config.exception_logging_handler:
             logging_config.exception_logging_handler(logger, scope, format_exception(*exc_info()))
