@@ -29,7 +29,7 @@ repos:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.282"
+    rev: "v0.0.284"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -64,7 +64,7 @@ repos:
       - id: slotscheck
         exclude: "test_*|docs"
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.4.1"
+    rev: "v1.5.0"
     hooks:
       - id: mypy
         exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures|tests/unit/test_partial"
@@ -123,7 +123,7 @@ repos:
             time-machine,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.320
+    rev: v1.1.322
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures|tests/unit/test_partial"
