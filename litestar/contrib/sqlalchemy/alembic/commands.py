@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from argparse import Namespace
 
     from alembic.runtime.environment import ProcessRevisionDirectiveFn
+    from alembic.script.base import Script
     from sqlalchemy import Engine
     from sqlalchemy.ext.asyncio import AsyncEngine
 
@@ -130,10 +131,10 @@ class AlembicCommands:
         message: str | None = None,
         branch_label: str | None = None,
         rev_id: str | None = None,
-    ) -> None:
+    ) -> Script | None:
         """Merge two revisions together. Creates a new migration file."""
 
-        migration_command.merge(
+        return migration_command.merge(
             config=self.config, revisions=revisions, message=message, branch_label=branch_label, rev_id=rev_id
         )
 
@@ -149,10 +150,10 @@ class AlembicCommands:
         rev_id: str | None = None,
         depends_on: str | None = None,
         process_revision_directives: ProcessRevisionDirectiveFn | None = None,
-    ) -> None:
+    ) -> Script | list[Script | None] | None:
         """Create a new revision file."""
 
-        migration_command.revision(
+        return migration_command.revision(
             config=self.config,
             message=message,
             autogenerate=autogenerate,
@@ -172,7 +173,7 @@ class AlembicCommands:
     ) -> None:
         """Show the revision(s) denoted by the given symbol."""
 
-        migration_command.show(config=self.config, rev=rev)  # type: ignore[no-untyped-call]
+        return migration_command.show(config=self.config, rev=rev)  # type: ignore
 
     def init(
         self,
@@ -190,7 +191,7 @@ class AlembicCommands:
             raise NotImplementedError("Multi database Alembic configurations are not currently supported.")
         if template_path is None:
             template_path = f"{Path(__file__).parent}/templates"
-        migration_command.init(
+        return migration_command.init(
             config=self.config,
             directory=directory,
             template=template,
@@ -200,7 +201,7 @@ class AlembicCommands:
     def list_templates(self) -> None:
         """List available templates."""
 
-        migration_command.list_templates(config=self.config)
+        return migration_command.list_templates(config=self.config)  # type: ignore
 
     def stamp(
         self,
@@ -210,8 +211,7 @@ class AlembicCommands:
         purge: bool = False,
     ) -> None:
         """'stamp' the revision table with the given revision; don't run any migrations."""
-
-        migration_command.stamp(config=self.config, revision=revision, sql=sql, tag=tag, purge=purge)
+        return migration_command.stamp(config=self.config, revision=revision, sql=sql, tag=tag, purge=purge)
 
     def _get_alembic_command_config(self) -> AlembicCommandConfig:
         kwargs = {}
