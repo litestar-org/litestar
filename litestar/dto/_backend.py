@@ -68,6 +68,9 @@ class DTOBackend:
         "reverse_name_map",
         "transfer_model_type",
         "wrapper_attribute_name",
+        "_transfer_to_dict",
+        "_transfer_to_model_type",
+        "_transfer_fns",
     )
 
     _seen_model_names: ClassVar[set[str]] = set()
@@ -114,6 +117,15 @@ class DTOBackend:
             annotation = field_definition.annotation
 
         self.annotation = _maybe_wrap_in_generic_annotation(annotation, self.transfer_model_type)
+        self._transfer_fns: dict[str, Callable[[Any], Any]] = {}
+        self._transfer_to_dict = self._create_transfer_data_fn(
+            destination_type=dict,
+            field_definition=self.field_definition,
+        )
+        self._transfer_to_model_type = self._create_transfer_data_fn(
+            destination_type=self.model_type,
+            field_definition=self.field_definition,
+        )
 
     def parse_model(
         self, model_type: Any, exclude: AbstractSet[str], include: AbstractSet[str], nested_depth: int = 0
@@ -255,11 +267,7 @@ class DTOBackend:
         if self.dto_data_type:
             return self.dto_data_type(
                 backend=self,
-                data_as_builtins=self._transfer_data(
-                    destination_type=dict,
-                    source_data=self.parse_builtins(builtins, asgi_connection),
-                    field_definition=self.field_definition,
-                ),
+                data_as_builtins=self._transfer_to_dict(self.parse_builtins(builtins, asgi_connection)),
             )
         return self.transfer_data_from_builtins(self.parse_builtins(builtins, asgi_connection))
 
@@ -275,11 +283,12 @@ class DTOBackend:
             Instance or collection of ``model_type`` instances.
         """
         self.override_serialization_name = override_serialization_name
-        data = self._transfer_data(
-            destination_type=self.model_type,
-            source_data=builtins,
-            field_definition=self.field_definition,
-        )
+        if not (transfer_fn := self._transfer_fns.get("transfer_data_from_builtins")):
+            transfer_fn = self._transfer_fns["transfer_data_from_builtins"] = self._create_transfer_data_fn(
+                destination_type=self.model_type,
+                field_definition=self.field_definition,
+            )
+        data = transfer_fn(builtins)
         self.override_serialization_name = False
         return data
 
@@ -296,17 +305,9 @@ class DTOBackend:
         if self.dto_data_type:
             return self.dto_data_type(
                 backend=self,
-                data_as_builtins=self._transfer_data(
-                    destination_type=dict,
-                    source_data=self.parse_raw(raw, asgi_connection),
-                    field_definition=self.field_definition,
-                ),
+                data_as_builtins=self._transfer_to_dict(self.parse_raw(raw, asgi_connection)),
             )
-        return self._transfer_data(
-            destination_type=self.model_type,
-            source_data=self.parse_raw(raw, asgi_connection),
-            field_definition=self.field_definition,
-        )
+        return self._transfer_to_model_type(self.parse_raw(raw, asgi_connection))
 
     def encode_data(self, data: Any) -> LitestarEncodableType:
         """Encode data into a ``LitestarEncodableType``.
@@ -317,35 +318,23 @@ class DTOBackend:
         Returns:
             Encoded data.
         """
-        if self.wrapper_attribute_name:
-            wrapped_transfer = self._transfer_data(
+        if not (transfer_fn := self._transfer_fns.get("encode_data")):
+            transfer_fn = self._transfer_fns["encode_data"] = self._create_transfer_data_fn(
                 destination_type=self.transfer_model_type,
-                source_data=getattr(data, self.wrapper_attribute_name),
                 field_definition=self.field_definition,
             )
+        if self.wrapper_attribute_name:
+            wrapped_transfer = transfer_fn(getattr(data, self.wrapper_attribute_name))
             setattr(data, self.wrapper_attribute_name, wrapped_transfer)
             return cast("LitestarEncodableType", data)
 
-        return cast(
-            "LitestarEncodableType",
-            self._transfer_data(
-                destination_type=self.transfer_model_type,
-                source_data=data,
-                field_definition=self.field_definition,
-            ),
-        )
+        return cast("LitestarEncodableType", transfer_fn(data))
 
-    def _transfer_data(
-        self,
-        destination_type: type[Any],
-        source_data: Any | Collection[Any],
-        field_definition: FieldDefinition,
-    ) -> Any:
+    def _create_transfer_data_fn(self, destination_type: type[Any], field_definition: FieldDefinition) -> Any:
         """Create instance or iterable of instances of ``destination_type``.
 
         Args:
             destination_type: the model type received by the DTO on type narrowing.
-            source_data: data that has been parsed and validated via the backend.
             field_definition: the parsed type that represents the handler annotation for which the DTO is being applied.
         Returns:
             Data parsed into ``destination_type``.
@@ -357,7 +346,7 @@ class DTOBackend:
             is_data_field=self.is_data_field,
             override_serialization_name=self.override_serialization_name,
             field_definition=field_definition,
-        )(source_data)
+        )
 
     def _get_handler_for_field_definition(
         self, field_definition: FieldDefinition
