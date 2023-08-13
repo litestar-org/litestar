@@ -5,6 +5,7 @@ from uuid import UUID
 
 import attrs
 import msgspec
+from polyfactory.factories import DataclassFactory
 from polyfactory.factories.pydantic_factory import ModelFactory
 from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass as pydantic_dataclass
@@ -56,6 +57,10 @@ class VanillaDataClassPerson:
     optional: Optional[str]
     complex: Dict[str, List[Dict[str, str]]]
     pets: Optional[List[PydanticPet]] = None
+
+
+class VanillaDataClassPersonFactory(DataclassFactory[VanillaDataClassPerson]):
+    __model__ = VanillaDataClassPerson
 
 
 @pydantic_dataclass
