@@ -3,12 +3,10 @@ back again, to bytes.
 """
 from __future__ import annotations
 
-import functools
 import secrets
 import textwrap
 from contextlib import contextmanager, nullcontext
 from dataclasses import replace
-from functools import partial
 from typing import (
     TYPE_CHECKING,
     AbstractSet,
@@ -257,13 +255,10 @@ class DTOBackend:
         if self.dto_data_type:
             return self.dto_data_type(
                 backend=self,
-                data_as_builtins=_transfer_data(
+                data_as_builtins=self._transfer_data(
                     destination_type=dict,
                     source_data=self.parse_builtins(builtins, asgi_connection),
-                    field_definitions=self.parsed_field_definitions,
                     field_definition=self.field_definition,
-                    is_data_field=self.is_data_field,
-                    override_serialization_name=self.override_serialization_name,
                 ),
             )
         return self.transfer_data_from_builtins(self.parse_builtins(builtins, asgi_connection))
@@ -280,13 +275,10 @@ class DTOBackend:
             Instance or collection of ``model_type`` instances.
         """
         self.override_serialization_name = override_serialization_name
-        data = _transfer_data(
+        data = self._transfer_data(
             destination_type=self.model_type,
             source_data=builtins,
-            field_definitions=self.parsed_field_definitions,
             field_definition=self.field_definition,
-            is_data_field=self.is_data_field,
-            override_serialization_name=self.override_serialization_name,
         )
         self.override_serialization_name = False
         return data
@@ -304,22 +296,16 @@ class DTOBackend:
         if self.dto_data_type:
             return self.dto_data_type(
                 backend=self,
-                data_as_builtins=_transfer_data(
+                data_as_builtins=self._transfer_data(
                     destination_type=dict,
                     source_data=self.parse_raw(raw, asgi_connection),
-                    field_definitions=self.parsed_field_definitions,
                     field_definition=self.field_definition,
-                    is_data_field=self.is_data_field,
-                    override_serialization_name=self.override_serialization_name,
                 ),
             )
-        return _transfer_data(
+        return self._transfer_data(
             destination_type=self.model_type,
             source_data=self.parse_raw(raw, asgi_connection),
-            field_definitions=self.parsed_field_definitions,
             field_definition=self.field_definition,
-            is_data_field=self.is_data_field,
-            override_serialization_name=self.override_serialization_name,
         )
 
     def encode_data(self, data: Any) -> LitestarEncodableType:
@@ -332,27 +318,54 @@ class DTOBackend:
             Encoded data.
         """
         if self.wrapper_attribute_name:
-            wrapped_transfer = _transfer_data(
+            wrapped_transfer = self._transfer_data(
                 destination_type=self.transfer_model_type,
                 source_data=getattr(data, self.wrapper_attribute_name),
-                field_definitions=self.parsed_field_definitions,
                 field_definition=self.field_definition,
-                is_data_field=self.is_data_field,
-                override_serialization_name=self.override_serialization_name,
             )
             setattr(data, self.wrapper_attribute_name, wrapped_transfer)
             return cast("LitestarEncodableType", data)
 
         return cast(
             "LitestarEncodableType",
-            _transfer_data(
+            self._transfer_data(
                 destination_type=self.transfer_model_type,
                 source_data=data,
-                field_definitions=self.parsed_field_definitions,
                 field_definition=self.field_definition,
-                is_data_field=self.is_data_field,
-                override_serialization_name=self.override_serialization_name,
             ),
+        )
+
+    def _transfer_data(
+        self,
+        destination_type: type[Any],
+        source_data: Any | Collection[Any],
+        field_definition: FieldDefinition,
+    ) -> Any:
+        """Create instance or iterable of instances of ``destination_type``.
+
+        Args:
+            destination_type: the model type received by the DTO on type narrowing.
+            source_data: data that has been parsed and validated via the backend.
+            field_definition: the parsed type that represents the handler annotation for which the DTO is being applied.
+        Returns:
+            Data parsed into ``destination_type``.
+        """
+        if field_definition.is_non_string_collection and not field_definition.is_mapping:
+            return field_definition.instantiable_origin(
+                self._transfer_data(
+                    destination_type=destination_type,
+                    source_data=item,
+                    field_definition=field_definition.inner_types[0],
+                )
+                for item in source_data
+            )
+
+        return _transfer_instance_data(
+            destination_type=destination_type,
+            source_instance=source_data,
+            field_definitions=self.parsed_field_definitions,
+            is_data_field=self.is_data_field,
+            override_serialization_name=self.override_serialization_name,
         )
 
     def _get_handler_for_field_definition(
@@ -546,50 +559,6 @@ def _gen_uniq_name(ctx: Container, name: str) -> str:
 class FieldAccessManager(Protocol):
     def __call__(self, source_instance_name: str, field_name: str, expect_optional: bool) -> ContextManager[str]:
         ...
-
-
-def _transfer_data(
-    destination_type: type[Any],
-    source_data: Any | Collection[Any],
-    field_definitions: tuple[TransferDTOFieldDefinition, ...],
-    field_definition: FieldDefinition,
-    is_data_field: bool,
-    override_serialization_name: bool,
-) -> Any:
-    """Create instance or iterable of instances of ``destination_type``.
-
-    Args:
-        destination_type: the model type received by the DTO on type narrowing.
-        source_data: data that has been parsed and validated via the backend.
-        field_definitions: model field definitions.
-        field_definition: the parsed type that represents the handler annotation for which the DTO is being applied.
-        is_data_field: whether the DTO is being applied to a ``data`` field.
-        override_serialization_name: Use the original field names, used when creating
-                                     an instance using `DTOData.create_instance`
-
-    Returns:
-        Data parsed into ``destination_type``.
-    """
-    if field_definition.is_non_string_collection and not field_definition.is_mapping:
-        return field_definition.instantiable_origin(
-            _transfer_data(
-                destination_type=destination_type,
-                source_data=item,
-                field_definitions=field_definitions,
-                field_definition=field_definition.inner_types[0],
-                is_data_field=is_data_field,
-                override_serialization_name=override_serialization_name,
-            )
-            for item in source_data
-        )
-
-    return _transfer_instance_data(
-        destination_type=destination_type,
-        source_instance=source_data,
-        field_definitions=field_definitions,
-        is_data_field=is_data_field,
-        override_serialization_name=override_serialization_name,
-    )
 
 
 class TransferFunctionFactory:
