@@ -71,6 +71,7 @@ repos:
         additional_dependencies:
           [
             polyfactory,
+            alembic,
             aiosqlite,
             annotated_types,
             async_timeout,
@@ -131,6 +132,7 @@ repos:
           [
             polyfactory,
             aiosqlite,
+            alembic,
             annotated_types,
             async_timeout,
             asyncmy,

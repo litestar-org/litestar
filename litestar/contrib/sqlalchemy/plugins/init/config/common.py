@@ -267,8 +267,8 @@ class GenericAlembicConfig:
     """A path to the Alembic configuration file such as ``alembic.ini``.  If left unset, the default configuration
     will be used.
     """
-    version_table_name: str | None = None
-    """Configure the name of the table used to hold the applied alembic revisions. Defaults to ``alembic``.  THe name of the table
+    version_table_name: str = "alembic_versions"
+    """Configure the name of the table used to hold the applied alembic revisions. Defaults to ``alembic_versions``.  THe name of the table
     """
     script_location: str = "migrations"
     """A path to save generated migrations.
