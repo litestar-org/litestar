@@ -290,7 +290,7 @@ class GenericAlembicConfig:
             connection=connection,
             target_metadata=self.target_metadata,
             compare_type=self.compare_type,
-            version_table_pk=bool(connection.dialect.name != "spanner+spanner"),
+            version_table_pk=connection.dialect.name != "spanner+spanner",
             version_table=self.version_table_name,
             user_module_prefix=self.user_module_prefix,
             render_as_batch=self.render_as_batch,
