@@ -350,23 +350,14 @@ class DTOBackend:
         Returns:
             Data parsed into ``destination_type``.
         """
-        if field_definition.is_non_string_collection and not field_definition.is_mapping:
-            return field_definition.instantiable_origin(
-                self._transfer_data(
-                    destination_type=destination_type,
-                    source_data=item,
-                    field_definition=field_definition.inner_types[0],
-                )
-                for item in source_data
-            )
 
-        return _transfer_instance_data(
+        return TransferFunctionFactory.create_transfer_data(
             destination_type=destination_type,
-            source_instance=source_data,
             field_definitions=self.parsed_field_definitions,
             is_data_field=self.is_data_field,
             override_serialization_name=self.override_serialization_name,
-        )
+            field_definition=field_definition,
+        )(source_data)
 
     def _get_handler_for_field_definition(
         self, field_definition: FieldDefinition
@@ -660,7 +651,7 @@ class TransferFunctionFactory:
             destination_type_name=destination_type_name,
             field_definitions=field_definitions,
         )
-        return factory.make_function(source_value_name=source_instance_name, return_value_name=tmp_return_type_name)
+        return factory._make_function(source_value_name=source_instance_name, return_value_name=tmp_return_type_name)
 
     @classmethod
     def create_transfer_type_data(
@@ -680,9 +671,61 @@ class TransferFunctionFactory:
             assignment_target=tmp_return_type_name,
             source_value_name=source_value_name,
         )
-        return factory.make_function(source_value_name=source_value_name, return_value_name=tmp_return_type_name)
+        return factory._make_function(source_value_name=source_value_name, return_value_name=tmp_return_type_name)
 
-    def make_function(self, source_value_name: str, return_value_name: str) -> Callable[[Any], Any]:
+    @classmethod
+    def create_transfer_data(
+        cls,
+        destination_type: type[Any],
+        field_definitions: tuple[TransferDTOFieldDefinition, ...],
+        is_data_field: bool,
+        override_serialization_name: bool,
+        field_definition: FieldDefinition | None = None,
+    ):
+        if field_definition and field_definition.is_non_string_collection and not field_definition.is_mapping:
+            factory = cls(
+                is_data_field=is_data_field,
+                override_serialization_name=override_serialization_name,
+                nested_as_dict=False,
+            )
+            source_value_name = factory.create_local_name("source_value")
+            return_value_name = factory.create_local_name("tmp_return_value")
+            factory._create_transfer_data_body_nested(
+                field_definitions=field_definitions,
+                field_definition=field_definition,
+                destination_type=destination_type,
+                source_data_name=source_value_name,
+                assignment_target=return_value_name,
+            )
+            return factory._make_function(source_value_name=source_value_name, return_value_name=return_value_name)
+
+        return cls.create_transfer_instance_data(
+            destination_type=destination_type,
+            field_definitions=field_definitions,
+            is_data_field=is_data_field,
+            override_serialization_name=override_serialization_name,
+        )
+
+    def _create_transfer_data_body_nested(
+        self,
+        field_definition: FieldDefinition,
+        field_definitions: tuple[TransferDTOFieldDefinition, ...],
+        destination_type: type[Any],
+        source_data_name: str,
+        assignment_target: str,
+    ) -> None:
+        origin_name = self.add_to_fn_globals("origin", field_definition.instantiable_origin)
+        transfer_func = TransferFunctionFactory.create_transfer_data(
+            is_data_field=self.is_data_field,
+            destination_type=destination_type,
+            field_definition=field_definition.inner_types[0],
+            field_definitions=field_definitions,
+            override_serialization_name=self.override_serialization_name,
+        )
+        transfer_func_name = self.add_to_fn_globals("transfer_data", transfer_func)
+        self.add_stmt(f"{assignment_target} = {origin_name}({transfer_func_name}(item) for item in {source_data_name})")
+
+    def _make_function(self, source_value_name: str, return_value_name: str) -> Callable[[Any], Any]:
         source = f"def func({source_value_name}):\n" + self.body + f" return {return_value_name}"
         ctx = {}
         exec(source, self.fn_locals, ctx)
