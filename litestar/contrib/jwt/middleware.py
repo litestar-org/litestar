@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Sequence
 
 from litestar.contrib.jwt.jwt_token import Token
 from litestar.exceptions import NotAuthorizedException
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from litestar.connection import ASGIConnection
-    from litestar.types import ASGIApp, Scopes
+    from litestar.types import ASGIApp, Method, Scopes
     from litestar.utils import AsyncCallable
 
 
@@ -26,12 +26,20 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
     This class provides JWT authentication functionalities.
     """
 
+    __slots__ = (
+        "algorithm",
+        "auth_header",
+        "retrieve_user_handler",
+        "token_secret",
+    )
+
     def __init__(
         self,
-        app: ASGIApp,
         algorithm: str,
+        app: ASGIApp,
         auth_header: str,
         exclude: str | list[str] | None,
+        exclude_http_methods: Sequence[Method] | None,
         exclude_opt_key: str,
         retrieve_user_handler: AsyncCallable[[Token, ASGIConnection[Any, Any, Any, Any]], Any],
         scopes: Scopes,
@@ -46,13 +54,20 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
             auth_header: Request header key from which to retrieve the token. E.g. ``Authorization`` or ``X-Api-Key``.
             exclude: A pattern or list of patterns to skip.
             exclude_opt_key: An identifier to use on routes to disable authentication for a particular route.
+            exclude_http_methods: A sequence of http methods that do not require authentication.
             retrieve_user_handler: A function that receives a :class:`Token <.contrib.jwt.Token>` and returns a user,
                 which can be any arbitrary value.
             scopes: ASGI scopes processed by the authentication middleware.
             token_secret: Secret for decoding the JWT token. This value should be equivalent to the secret used to
                 encode it.
         """
-        super().__init__(app=app, exclude=exclude, exclude_from_auth_key=exclude_opt_key, scopes=scopes)
+        super().__init__(
+            app=app,
+            exclude=exclude,
+            exclude_from_auth_key=exclude_opt_key,
+            exclude_http_methods=exclude_http_methods,
+            scopes=scopes,
+        )
         self.algorithm = algorithm
         self.auth_header = auth_header
         self.retrieve_user_handler = retrieve_user_handler
@@ -109,6 +124,8 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
 class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
     """Cookie based JWT authentication middleware."""
 
+    __slots__ = ("auth_cookie_key",)
+
     def __init__(
         self,
         algorithm: str,
@@ -117,6 +134,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         auth_header: str,
         exclude: str | list[str] | None,
         exclude_opt_key: str,
+        exclude_http_methods: Sequence[Method] | None,
         retrieve_user_handler: AsyncCallable[[Token, ASGIConnection[Any, Any, Any, Any]], Any],
         scopes: Scopes,
         token_secret: str,
@@ -131,6 +149,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
             auth_header: Request header key from which to retrieve the token. E.g. ``Authorization`` or ``X-Api-Key``.
             exclude: A pattern or list of patterns to skip.
             exclude_opt_key: An identifier to use on routes to disable authentication for a particular route.
+            exclude_http_methods: A sequence of http methods that do not require authentication.
             retrieve_user_handler: A function that receives a :class:`Token <.contrib.jwt.Token>` and returns a user,
                 which can be any arbitrary value.
             scopes: ASGI scopes processed by the authentication middleware.
@@ -142,6 +161,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
             app=app,
             auth_header=auth_header,
             exclude=exclude,
+            exclude_http_methods=exclude_http_methods,
             exclude_opt_key=exclude_opt_key,
             retrieve_user_handler=retrieve_user_handler,
             scopes=scopes,
