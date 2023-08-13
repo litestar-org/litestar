@@ -36,10 +36,18 @@ class AlembicCommandConfig(_AlembicCommandConfig):
         config_args: Mapping[str, Any] | None = None,
         attributes: dict | None = None,
         template_directory: Path | None = None,
+        version_table_schema: str | None = None,
+        render_as_batch: bool = True,
+        compare_type: bool = False,
+        user_module_prefix: str | None = "sa.",
     ) -> None:
         self.template_directory = template_directory
         self.version_table_name = version_table_name
         self.version_table_pk = engine.dialect.name != "spanner+spanner"
+        self.version_table_schema = version_table_schema
+        self.render_as_batch = render_as_batch
+        self.user_module_prefix = user_module_prefix
+        self.compare_type = compare_type
         self.db_url = engine.url.render_as_string(hide_password=False)
         if config_args is None:
             config_args = {}

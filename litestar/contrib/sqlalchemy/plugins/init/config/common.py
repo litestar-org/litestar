@@ -4,8 +4,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Generic, TypeVar, cast
 
-from alembic import context
-
 from litestar.constants import HTTP_DISCONNECT, HTTP_RESPONSE_START, WEBSOCKET_CLOSE, WEBSOCKET_DISCONNECT
 from litestar.contrib.sqlalchemy.base import orm_registry
 from litestar.exceptions import ImproperlyConfiguredException
@@ -270,6 +268,8 @@ class GenericAlembicConfig:
     version_table_name: str = "alembic_versions"
     """Configure the name of the table used to hold the applied alembic revisions. Defaults to ``alembic_versions``.  THe name of the table
     """
+    version_table_schema: str | None = None
+    """Configure the schema to use for the alembic revisions revisions. If unset, it defaults to connection's default schema."""
     script_location: str = "migrations"
     """A path to save generated migrations.
     """
@@ -283,18 +283,3 @@ class GenericAlembicConfig:
     """Compare type."""
     template_path: str = ALEMBIC_TEMPLATE_PATH
     """Template path."""
-
-    def do_run_migrations(self, connection: Connection) -> None:
-        """Run migrations."""
-        context.configure(
-            connection=connection,
-            target_metadata=self.target_metadata,
-            compare_type=self.compare_type,
-            version_table_pk=connection.dialect.name != "spanner+spanner",
-            version_table=self.version_table_name,
-            user_module_prefix=self.user_module_prefix,
-            render_as_batch=self.render_as_batch,
-        )
-
-        with context.begin_transaction():
-            context.run_migrations()

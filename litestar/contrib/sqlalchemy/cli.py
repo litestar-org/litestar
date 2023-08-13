@@ -127,3 +127,23 @@ def create_revision(
         version_path=version_path,
         rev_id=rev_id,
     )
+
+
+@database_group.command(
+    name="merge-migrations",
+    help="Merge multiple revisions into a single new revision.",
+)
+@option("--revisions", default="head", help="Specify head revision to use as base for new revision.")
+@option("-m", "--message", default=None, help="Revision message")
+@option("--branch-label", default=None, help="Specify a branch label to apply to the new revision")
+@option("--rev-id", default=None, help="Specify a ID to use for revision.")
+def merge_revisions(
+    app: Litestar,
+    revisions: str,
+    message: str | None,
+    branch_label: str | None,
+    rev_id: str | None,
+) -> None:
+    """Create a new database revision."""
+    alembic_commands = AlembicCommands(app=app)
+    alembic_commands.merge(message=message, revisions=revisions, branch_label=branch_label, rev_id=rev_id)
