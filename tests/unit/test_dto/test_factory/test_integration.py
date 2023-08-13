@@ -214,10 +214,24 @@ def test_dto_data_with_url_encoded_form_data() -> None:
         assert response.json() == {"name": "John", "age": 42, "read_only": "read-only"}
 
 
+RenamedBarT = TypeVar("RenamedBarT")
+
+
 @dataclass
-class RenamedBar:
+class GenericRenamedBar(Generic[RenamedBarT]):
     bar: str
+    spam_bar: RenamedBarT
     foo_foo: str
+
+
+@dataclass
+class InnerBar:
+    best_greeting: str
+
+
+@dataclass
+class RenamedBar(GenericRenamedBar[InnerBar]):
+    pass
 
 
 def test_dto_data_create_instance_renamed_fields() -> None:
@@ -229,14 +243,15 @@ def test_dto_data_create_instance_renamed_fields() -> None:
         assert isinstance(data, DTOData)
         result = data.create_instance(foo_foo="world")
         assert result.foo_foo == "world"
+        assert result.spam_bar.best_greeting == "hello world"
         return result
 
     with create_test_client(
         route_handlers=[handler], signature_namespace={"NestedFoo": NestedFoo, "NestingBar": NestingBar}
     ) as client:
-        response = client.post("/", json={"bar": "hello"})
+        response = client.post("/", json={"bar": "hello", "spamBar": {"bestGreeting": "hello world"}})
         assert response.status_code == 201
-        assert response.json() == {"bar": "hello", "fooFoo": "world"}
+        assert response.json() == {"bar": "hello", "fooFoo": "world", "spamBar": {"bestGreeting": "hello world"}}
 
 
 def test_dto_data_with_patch_request() -> None:
@@ -357,7 +372,7 @@ def test_dto_private_fields() -> None:
 
     mock = MagicMock()
 
-    @post(dto=DataclassDTO[Foo], return_dto=None, signature_namespace={"Foo": Foo})
+    @post(dto=DataclassDTO[Foo], signature_namespace={"Foo": Foo})
     def handler(data: DTOData[Foo]) -> Foo:
         mock.received_data = data.as_builtins()
         return data.create_instance(_baz=42)

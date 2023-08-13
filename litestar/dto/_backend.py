@@ -46,11 +46,11 @@ class DTOBackend:
         "handler_id",
         "is_data_field",
         "model_type",
+        "override_serialization_name",
         "parsed_field_definitions",
         "reverse_name_map",
         "transfer_model_type",
         "wrapper_attribute_name",
-        "is_dto_data_type",
     )
 
     _seen_model_names: ClassVar[set[str]] = set()
@@ -88,12 +88,11 @@ class DTOBackend:
             model_name=model_type.__name__, field_definitions=self.parsed_field_definitions
         )
         self.dto_data_type: type[DTOData] | None = None
-        self.is_dto_data_type: bool = False
 
+        self.override_serialization_name: bool = False
         if field_definition.is_subclass_of(DTOData):
             self.dto_data_type = field_definition.annotation
             annotation = self.field_definition.inner_types[0].annotation
-            self.is_dto_data_type = True
         else:
             annotation = field_definition.annotation
 
@@ -245,28 +244,33 @@ class DTOBackend:
                     field_definitions=self.parsed_field_definitions,
                     field_definition=self.field_definition,
                     is_data_field=self.is_data_field,
-                    is_dto_data_type=self.is_dto_data_type,
+                    override_serialization_name=self.override_serialization_name,
                 ),
             )
         return self.transfer_data_from_builtins(self.parse_builtins(builtins, asgi_connection))
 
-    def transfer_data_from_builtins(self, builtins: Any) -> Any:
+    def transfer_data_from_builtins(self, builtins: Any, override_serialization_name: bool = False) -> Any:
         """Populate model instance from builtin types.
 
         Args:
             builtins: Builtin type.
+            override_serialization_name: Use the original field names, used when creating
+                                         an instance using `DTOData.create_instance`
 
         Returns:
             Instance or collection of ``model_type`` instances.
         """
-        return _transfer_data(
+        self.override_serialization_name = override_serialization_name
+        data = _transfer_data(
             destination_type=self.model_type,
             source_data=builtins,
             field_definitions=self.parsed_field_definitions,
             field_definition=self.field_definition,
             is_data_field=self.is_data_field,
-            is_dto_data_type=self.is_dto_data_type,
+            override_serialization_name=self.override_serialization_name,
         )
+        self.override_serialization_name = False
+        return data
 
     def populate_data_from_raw(self, raw: bytes, asgi_connection: ASGIConnection) -> Any:
         """Parse raw bytes into instance of `model_type`.
@@ -287,7 +291,7 @@ class DTOBackend:
                     field_definitions=self.parsed_field_definitions,
                     field_definition=self.field_definition,
                     is_data_field=self.is_data_field,
-                    is_dto_data_type=self.is_dto_data_type,
+                    override_serialization_name=self.override_serialization_name,
                 ),
             )
         return _transfer_data(
@@ -296,7 +300,7 @@ class DTOBackend:
             field_definitions=self.parsed_field_definitions,
             field_definition=self.field_definition,
             is_data_field=self.is_data_field,
-            is_dto_data_type=self.is_dto_data_type,
+            override_serialization_name=self.override_serialization_name,
         )
 
     def encode_data(self, data: Any) -> LitestarEncodableType:
@@ -315,7 +319,7 @@ class DTOBackend:
                 field_definitions=self.parsed_field_definitions,
                 field_definition=self.field_definition,
                 is_data_field=self.is_data_field,
-                is_dto_data_type=self.is_dto_data_type,
+                override_serialization_name=self.override_serialization_name,
             )
             setattr(
                 data,
@@ -332,7 +336,7 @@ class DTOBackend:
                 field_definitions=self.parsed_field_definitions,
                 field_definition=self.field_definition,
                 is_data_field=self.is_data_field,
-                is_dto_data_type=self.is_dto_data_type,
+                override_serialization_name=self.override_serialization_name,
             ),
         )
 
@@ -521,7 +525,7 @@ def _transfer_data(
     field_definitions: tuple[TransferDTOFieldDefinition, ...],
     field_definition: FieldDefinition,
     is_data_field: bool,
-    is_dto_data_type: bool,
+    override_serialization_name: bool,
 ) -> Any:
     """Create instance or iterable of instances of ``destination_type``.
 
@@ -531,7 +535,8 @@ def _transfer_data(
         field_definitions: model field definitions.
         field_definition: the parsed type that represents the handler annotation for which the DTO is being applied.
         is_data_field: whether the DTO is being applied to a ``data`` field.
-        is_dto_data_type: whether the field definition is an `DTOData` type.
+        override_serialization_name: Use the original field names, used when creating
+                                     an instance using `DTOData.create_instance`
 
     Returns:
         Data parsed into ``destination_type``.
@@ -544,7 +549,7 @@ def _transfer_data(
                 field_definitions=field_definitions,
                 field_definition=field_definition.inner_types[0],
                 is_data_field=is_data_field,
-                is_dto_data_type=is_dto_data_type,
+                override_serialization_name=override_serialization_name,
             )
             for item in source_data
         )
@@ -554,7 +559,7 @@ def _transfer_data(
         source_instance=source_data,
         field_definitions=field_definitions,
         is_data_field=is_data_field,
-        is_dto_data_type=is_dto_data_type,
+        override_serialization_name=override_serialization_name,
     )
 
 
@@ -563,7 +568,7 @@ def _transfer_instance_data(
     source_instance: Any,
     field_definitions: tuple[TransferDTOFieldDefinition, ...],
     is_data_field: bool,
-    is_dto_data_type: bool,
+    override_serialization_name: bool,
 ) -> Any:
     """Create instance of ``destination_type`` with data from ``source_instance``.
 
@@ -572,7 +577,8 @@ def _transfer_instance_data(
         source_instance: primitive data that has been parsed and validated via the backend.
         field_definitions: model field definitions.
         is_data_field: whether the given field is a 'data' kwarg field.
-        is_dto_data_type: whether the field definition is an `DTOData` type.
+        override_serialization_name: Use the original field names, used when creating
+                                     an instance using `DTOData.create_instance`
 
     Returns:
         Data parsed into ``model_type``.
@@ -580,7 +586,7 @@ def _transfer_instance_data(
     unstructured_data = {}
 
     for field_definition in field_definitions:
-        should_use_serialization_name = is_data_field and not is_dto_data_type
+        should_use_serialization_name = not override_serialization_name and is_data_field
         source_name = field_definition.serialization_name if should_use_serialization_name else field_definition.name
 
         if not is_data_field:
@@ -609,7 +615,7 @@ def _transfer_instance_data(
             transfer_type=transfer_type,
             nested_as_dict=destination_type is dict,
             is_data_field=is_data_field,
-            is_dto_data_type=is_dto_data_type,
+            override_serialization_name=override_serialization_name,
         )
 
     return destination_type(**unstructured_data)
@@ -620,7 +626,7 @@ def _transfer_type_data(
     transfer_type: TransferType,
     nested_as_dict: bool,
     is_data_field: bool,
-    is_dto_data_type: bool,
+    override_serialization_name: bool,
 ) -> Any:
     if isinstance(transfer_type, SimpleType) and transfer_type.nested_field_info:
         if nested_as_dict:
@@ -635,7 +641,7 @@ def _transfer_type_data(
             source_instance=source_value,
             field_definitions=transfer_type.nested_field_info.field_definitions,
             is_data_field=is_data_field,
-            is_dto_data_type=is_dto_data_type,
+            override_serialization_name=override_serialization_name,
         )
 
     if isinstance(transfer_type, UnionType) and transfer_type.has_nested:
@@ -643,7 +649,7 @@ def _transfer_type_data(
             transfer_type=transfer_type,
             source_value=source_value,
             is_data_field=is_data_field,
-            is_dto_data_type=is_dto_data_type,
+            override_serialization_name=override_serialization_name,
         )
 
     if isinstance(transfer_type, CollectionType):
@@ -654,7 +660,7 @@ def _transfer_type_data(
                     transfer_type=transfer_type.inner_type,
                     nested_as_dict=False,
                     is_data_field=is_data_field,
-                    is_dto_data_type=is_dto_data_type,
+                    override_serialization_name=override_serialization_name,
                 )
                 for item in source_value
             )
@@ -667,7 +673,7 @@ def _transfer_nested_union_type_data(
     transfer_type: UnionType,
     source_value: Any,
     is_data_field: bool,
-    is_dto_data_type: bool,
+    override_serialization_name: bool,
 ) -> Any:
     for inner_type in transfer_type.inner_types:
         if isinstance(inner_type, CompositeType):
@@ -684,7 +690,7 @@ def _transfer_nested_union_type_data(
                 source_instance=source_value,
                 field_definitions=inner_type.nested_field_info.field_definitions,
                 is_data_field=is_data_field,
-                is_dto_data_type=is_dto_data_type,
+                override_serialization_name=override_serialization_name,
             )
     return source_value
 
