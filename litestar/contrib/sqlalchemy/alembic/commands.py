@@ -27,6 +27,7 @@ class AlembicCommandConfig(_AlembicCommandConfig):
     def __init__(
         self,
         engine: Engine | AsyncEngine,
+        version_table_name: str,
         file_: str | os.PathLike[str] | None = None,
         ini_section: str = "alembic",
         output_buffer: TextIO | None = None,
@@ -35,10 +36,10 @@ class AlembicCommandConfig(_AlembicCommandConfig):
         config_args: Mapping[str, Any] | None = None,
         attributes: dict | None = None,
         template_directory: Path | None = None,
-        version_table_name: str | None = None,
     ) -> None:
         self.template_directory = template_directory
         self.version_table_name = version_table_name
+        self.version_table_pk = bool(engine.dialect.name != "spanner+spanner")
         self.db_url = engine.url.render_as_string(hide_password=False)
         if config_args is None:
             config_args = {}
@@ -215,12 +216,16 @@ class AlembicCommands:
 
     def _get_alembic_command_config(self) -> AlembicCommandConfig:
         kwargs = {}
-        engine = self.plugin_config.create_engine()
         if self.plugin_config.alembic_config.script_config:
             kwargs.update({"file_": self.plugin_config.alembic_config.script_config})
         if self.plugin_config.alembic_config.template_path:
             kwargs.update({"template_directory": self.plugin_config.alembic_config.template_path})
-        kwargs.update({"engine": engine})  # type: ignore[dict-item]
+        kwargs.update(
+            {
+                "engine": self.plugin_config.create_engine(),  # type: ignore[dict-item]
+                "version_table_name": self.plugin_config.alembic_config.version_table_name,
+            }
+        )
         self.config = AlembicCommandConfig(**kwargs)  # type: ignore
         self.config.set_main_option("script_location", self.plugin_config.alembic_config.script_location)
         return self.config

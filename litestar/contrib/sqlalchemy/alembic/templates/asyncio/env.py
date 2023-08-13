@@ -48,6 +48,7 @@ def run_migrations_offline() -> None:
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
         version_table=config.version_table_name,
+        version_table_pk=config.version_table_pk,
         user_module_prefix="sa.",
         render_as_batch=True,
     )
@@ -63,6 +64,7 @@ def do_run_migrations(connection: Connection) -> None:
         target_metadata=target_metadata,
         compare_type=True,
         version_table=config.version_table_name,
+        version_table_pk=config.version_table_pk,
         user_module_prefix="sa.",
         render_as_batch=True,
     )
