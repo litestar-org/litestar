@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import re
 from copy import copy
 from dataclasses import asdict
@@ -188,28 +189,45 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
             grouped_exceptions[exc.status_code] = []
         grouped_exceptions[exc.status_code].append(exc)
     for status_code, exception_group in grouped_exceptions.items():
-        exceptions_schemas = [
-            Schema(
-                type=OpenAPIType.OBJECT,
-                required=["detail", "status_code"],
-                properties={
-                    "status_code": Schema(type=OpenAPIType.INTEGER),
-                    "detail": Schema(type=OpenAPIType.STRING),
-                    "extra": Schema(
-                        type=[OpenAPIType.NULL, OpenAPIType.OBJECT, OpenAPIType.ARRAY], additional_properties=Schema()
-                    ),
-                },
-                description=pascal_case_to_text(get_name(exc)),
-                examples=[{"status_code": status_code, "detail": HTTPStatus(status_code).phrase, "extra": {}}],
+        exceptions_schemas = []
+        group_description: str = ""
+        for exc in exception_group:
+            example_detail = ""
+            if hasattr(exc, "detail") and exc.detail:
+                group_description = exc.detail
+                example_detail = exc.detail
+
+            if not example_detail:
+                with contextlib.suppress(Exception):
+                    example_detail = HTTPStatus(status_code).phrase
+
+            exceptions_schemas.append(
+                Schema(
+                    type=OpenAPIType.OBJECT,
+                    required=["detail", "status_code"],
+                    properties={
+                        "status_code": Schema(type=OpenAPIType.INTEGER),
+                        "detail": Schema(type=OpenAPIType.STRING),
+                        "extra": Schema(
+                            type=[OpenAPIType.NULL, OpenAPIType.OBJECT, OpenAPIType.ARRAY],
+                            additional_properties=Schema(),
+                        ),
+                    },
+                    description=pascal_case_to_text(get_name(exc)),
+                    examples=[{"status_code": status_code, "detail": example_detail, "extra": {}}],
+                )
             )
-            for exc in exception_group
-        ]
         if len(exceptions_schemas) > 1:  # noqa: SIM108
             schema = Schema(one_of=exceptions_schemas)
         else:
             schema = exceptions_schemas[0]
+
+        if not group_description:
+            with contextlib.suppress(Exception):
+                group_description = HTTPStatus(status_code).description
+
         yield str(status_code), OpenAPIResponse(
-            description=HTTPStatus(status_code).description,
+            description=group_description,
             content={MediaType.JSON: OpenAPIMediaType(schema=schema)},
         )
 
