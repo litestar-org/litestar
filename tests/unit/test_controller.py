@@ -16,10 +16,11 @@ from litestar import (
     websocket,
 )
 from litestar.connection import WebSocket
+from litestar.contrib.pydantic import _model_dump
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from litestar.testing import create_test_client
-from tests import Person, PersonFactory
+from tests import PydanticPerson, PydanticPersonFactory
 
 
 @pytest.mark.parametrize(
@@ -29,13 +30,13 @@ from tests import Person, PersonFactory
             get,
             HttpMethod.GET,
             HTTP_200_OK,
-            Response(content=PersonFactory.build()),
-            Response[Person],
+            Response(content=PydanticPersonFactory.build()),
+            Response[PydanticPerson],
         ),
-        (get, HttpMethod.GET, HTTP_200_OK, PersonFactory.build(), Person),
-        (post, HttpMethod.POST, HTTP_201_CREATED, PersonFactory.build(), Person),
-        (put, HttpMethod.PUT, HTTP_200_OK, PersonFactory.build(), Person),
-        (patch, HttpMethod.PATCH, HTTP_200_OK, PersonFactory.build(), Person),
+        (get, HttpMethod.GET, HTTP_200_OK, PydanticPersonFactory.build(), PydanticPerson),
+        (post, HttpMethod.POST, HTTP_201_CREATED, PydanticPersonFactory.build(), PydanticPerson),
+        (put, HttpMethod.PUT, HTTP_200_OK, PydanticPersonFactory.build(), PydanticPerson),
+        (patch, HttpMethod.PATCH, HTTP_200_OK, PydanticPersonFactory.build(), PydanticPerson),
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT, None, None),
     ],
 )
@@ -58,8 +59,8 @@ async def test_controller_http_method(
     with create_test_client(MyController) as client:
         response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
-        if return_value:
-            assert response.json() == return_value.dict() if isinstance(return_value, BaseModel) else return_value
+        if return_value and isinstance(return_value, BaseModel):
+            assert response.json() == _model_dump(return_value)
 
 
 def test_controller_with_websocket_handler() -> None:
@@ -69,8 +70,8 @@ def test_controller_with_websocket_handler() -> None:
         path = test_path
 
         @get()
-        def get_person(self) -> Person:
-            return PersonFactory.build()
+        def get_person(self) -> PydanticPerson:
+            return PydanticPersonFactory.build()
 
         @websocket(path="/socket")
         async def ws(self, socket: WebSocket) -> None:

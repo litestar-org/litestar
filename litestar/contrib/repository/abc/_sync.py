@@ -19,7 +19,7 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
 
     model_type: type[T]
     """Type of object represented by the repository."""
-    id_attribute = "id"
+    id_attribute: Any = "id"
     """Name of the primary identifying attribute on :attr:`model_type`."""
 
     def __init__(self, **kwargs: Any) -> None:
@@ -198,6 +198,25 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
+    def upsert_many(self, data: list[T]) -> list[T]:
+        """Update or create multiple instances.
+
+        Update instances with the attribute values present on ``data``, or create a new instance if
+        one doesn't exist.
+
+        Args:
+            data: Instances to update or created. Identifier used to determine if an
+                existing instance exists is the value of an attribute on ``data`` named as value of
+                :attr:`id_attribute <AbstractAsyncRepository.id_attribute>`.
+
+        Returns:
+            The updated or created instances.
+
+        Raises:
+            NotFoundError: If no instance found with same identifier as ``data``.
+        """
+
+    @abstractmethod
     def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[list[T], int]:
         """List records with total count.
 
@@ -255,27 +274,31 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         return item_or_none
 
     @classmethod
-    def get_id_attribute_value(cls, item: T | type[T]) -> Any:
+    def get_id_attribute_value(cls, item: T | type[T], id_attribute: str | None = None) -> Any:
         """Get value of attribute named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` on ``item``.
 
         Args:
             item: Anything that should have an attribute named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` value.
+            id_attribute: Allows customization of the unique identifier to use for model fetching.
+                Defaults to `None`, but can reference any surrogate or candidate key for the table.
 
         Returns:
             The value of attribute on ``item`` named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>`.
         """
-        return getattr(item, cls.id_attribute)
+        return getattr(item, id_attribute if id_attribute is not None else cls.id_attribute)
 
     @classmethod
-    def set_id_attribute_value(cls, item_id: Any, item: T) -> T:
+    def set_id_attribute_value(cls, item_id: Any, item: T, id_attribute: str | None = None) -> T:
         """Return the ``item`` after the ID is set to the appropriate attribute.
 
         Args:
             item_id: Value of ID to be set on instance
             item: Anything that should have an attribute named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` value.
+            id_attribute: Allows customization of the unique identifier to use for model fetching.
+                Defaults to `None`, but can reference any surrogate or candidate key for the table.
 
         Returns:
             Item with ``item_id`` set to :attr:`id_attribute <AbstractAsyncRepository.id_attribute>`
         """
-        setattr(item, cls.id_attribute, item_id)
+        setattr(item, id_attribute if id_attribute is not None else cls.id_attribute, item_id)
         return item

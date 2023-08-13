@@ -22,9 +22,9 @@ from .util import get_from_stream
 
 @pytest.fixture(
     params=[
+        pytest.param("redis_pub_sub_backend", id="redis:pubsub", marks=pytest.mark.xdist_group("redis")),
+        pytest.param("redis_stream_backend", id="redis:stream", marks=pytest.mark.xdist_group("redis")),
         pytest.param("memory_backend", id="memory"),
-        pytest.param("redis_stream_backend", id="redis:stream"),
-        pytest.param("redis_pub_sub_backend", id="redis:pubsub"),
     ]
 )
 def channels_backend(request: FixtureRequest) -> ChannelsBackend:
@@ -74,26 +74,26 @@ async def test_pub_sub_wait_published(channels_backend: ChannelsBackend) -> None
     assert res == [b"foo"]
 
 
-@pytest.mark.flaky(reruns=5)
+@pytest.mark.flaky(reruns=10)
 async def test_pub_sub_non_blocking(channels_backend: ChannelsBackend) -> None:
     async with ChannelsPlugin(backend=channels_backend, channels=["something"]) as plugin:
         subscriber = await plugin.subscribe("something")
         plugin.publish(b"foo", "something")
 
-        await asyncio.sleep(10)  # give the worker time to process things
+        await asyncio.sleep(0.1)  # give the worker time to process things
 
         res = await get_from_stream(subscriber, 1)
 
     assert res == [b"foo"]
 
 
-@pytest.mark.flaky(reruns=5)
+@pytest.mark.flaky(reruns=10)
 async def test_pub_sub_run_in_background(channels_backend: ChannelsBackend, async_mock: AsyncMock) -> None:
     async with ChannelsPlugin(backend=channels_backend, channels=["something"]) as plugin:
         subscriber = await plugin.subscribe("something")
         async with subscriber.run_in_background(async_mock):
             plugin.publish(b"foo", "something")
-            await asyncio.sleep(10)
+            await asyncio.sleep(0.1)
 
     assert async_mock.call_count == 1
 

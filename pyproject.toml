@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "litestar"
-version = "2.0.0beta2"
+version = "2.0.0rc1"
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 authors = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
@@ -23,14 +23,9 @@ documentation = "https://docs.litestar.dev/"
 keywords = [
     "api",
     "rest",
-    "http",
     "asgi",
-    "pydantic",
     "litestar",
     "starlite",
-    "framework",
-    "websocket",
-    "litestar",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -48,9 +43,9 @@ classifiers = [
     "Topic :: Software Development",
     "Typing :: Typed",
     "Framework :: AsyncIO",
-#    Pending trove-classifiers#148
-#    "Framework :: Litestar",
-#    "Framework :: Litestar :: 2",
+    #    Pending trove-classifiers#148
+    #    "Framework :: Litestar",
+    #    "Framework :: Litestar :: 2",
     "Framework :: Pydantic",
     "Framework :: Pydantic :: 1",
     "Intended Audience :: Developers",
@@ -79,66 +74,46 @@ annotated-types = { version = "*", optional = true }
 anyio = ">=3"
 attrs = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
-cattrs = { version = "*", optional = true }
 click = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
-fast-query-parsers = "*"
+fast-query-parsers = ">=1.0.2"
 httpx = ">=0.22"
 importlib-metadata = { version = "*", python = "<3.10" }
 importlib-resources = { version = ">=5.12.0", python = "<3.9" }
 jinja2 = { version = ">=3.1.2", optional = true }
 jsbeautifier = { version = "*", optional = true }
 mako = { version = ">=1.2.4", optional = true }
-msgspec = ">=0.16.0"
+msgspec = ">=0.17.0"
 multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
+piccolo = { version = "*", optional = true }
 picologging = { version = "*", optional = true }
-polyfactory = ">=2.3.2"
-prometheus-client = {version = "*", optional = true}
-pydantic = "<2"
-python-dateutil = { version = "*", optional = true }
+polyfactory = ">=2.6.3,<=2.7.0"
+prometheus-client = { version = "*", optional = true }
+pydantic = { version = "*", optional = true, extras = ["email"] }
+pydantic-extra-types = { version = "*", optional = true }
 python-jose = { version = "*", optional = true }
-pytimeparse = { version = "*", optional = true }
 pyyaml = "*"
 redis = { version = ">=4.4.4, <4.5.0", optional = true, extras = ["hiredis"] }
 rich = { version = ">=13.0.0", optional = true }
 rich-click = { version = "*", optional = true }
 sqlalchemy = { version = ">=2.0.12", optional = true }
 structlog = { version = "*", optional = true }
-tortoise-orm = { version = ">=0.17.0", optional = true }
 typing-extensions = "*"
 uvicorn = { extras = ["standard"], version = ">=0.22.0", optional = true }
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
-alembic = "*"
-annotated-types = "*"
 asyncmy = "*"
 asyncpg = "*"
-attrs = "*"
-beanie = "*"
 beautifulsoup4 = "*"
-brotli = "*"
-cattrs = "*"
-click = "*"
-cryptography = "*"
 duckdb-engine = "*"
-fakeredis = { extras = ["lua"], version = "*" }
-freezegun = "*"
 fsspec = "*"
 greenlet = "*"
+httpx-sse = "*"
 hypothesis = "*"
-jinja2 = "*"
-jsbeautifier = "*"
-mako = "*"
-mongomock-motor = { version = "*", markers = "sys_platform != 'win32'" }
-opentelemetry-instrumentation-asgi = "*"
 opentelemetry-sdk = "*"
 oracledb = "*"
-piccolo = "*"
-picologging = "*"
-pre-commit = "*"
-prometheus-client = "*"
 psycopg = "*"
 pytest = "*"
 pytest-asyncio = "*"
@@ -146,20 +121,13 @@ pytest-cov = "*"
 pytest-lazy-fixture = "*"
 pytest-mock = "*"
 pytest-rerunfailures = "*"
-python-dateutil = "*"
+pytest-timeout = "^2.1.0"
 python-dotenv = "*"
-python-jose = "*"
-pytimeparse = "*"
-redis = ">=4.4.4, <4.5.0"
-rich = "*"
-rich-click = "*"
-sqlalchemy = ">=2.0"
 sqlalchemy-spanner = "*"
 starlette = "*"
-structlog = "*"
-tortoise-orm = "*"
+time-machine = "^2.11.0"
 trio = "*"
-uvicorn = "*"
+pytest-xdist = "^3.3.1"
 
 [tool.poetry.group.docs]
 optional = true
@@ -167,14 +135,13 @@ optional = true
 [tool.poetry.group.docs.dependencies]
 auto-pytabs = { extras = ["sphinx"], version = "*" }
 black = "*"
-httpx = "*"
 sphinx = ">=5.3.0,<=6"
 sphinx-autobuild = "*"
 sphinx-copybutton = ">=0.5.1"
 sphinx-design = ">=0.3.0,<1"
 sphinxcontrib-mermaid = ">=0.8.1,<1"
 litestar-sphinx-theme = { git = "https://github.com/litestar-org/litestar-sphinx-theme.git" }
-uvicorn = "*"
+sphinx-click = ">=4.4.0"
 
 [tool.poetry.group.lint]
 optional = true
@@ -184,48 +151,53 @@ asyncpg-stubs = "*"
 black = "*"
 blacken-docs = "*"
 mypy = "*"
+pre-commit = "*"
 pyright = "*"
 ruff = '*'
 slotscheck = "*"
 sourcery = "*"
 types-beautifulsoup4 = "*"
-types-freezegun = "*"
-types-python-dateutil = "*"
 types-python-jose = "*"
 types-pyyaml = "*"
 types-redis = "*"
 
 [tool.poetry.extras]
 annotated-types = ["annotated-types"]
-attrs = ["attrs", "cattrs", "python-dateutil", "pytimeparse"]
+attrs = ["attrs"]
 brotli = ["brotli"]
 cli = ["click", "rich", "rich-click", "jsbeautifier", "uvicorn"]
 cryptography = ["cryptography"]
 jinja = ["jinja2"]
 jwt = ["python-jose", "cryptography"]
+mako = ["mako"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
+piccolo = ["piccolo"]
 picologging = ["picologging"]
+prometheus = ["prometheus-client"]
+pydantic = ["pydantic", "pydantic-extra-types"]
 redis = ["redis"]
 sqlalchemy = ["sqlalchemy", "alembic"]
 standard = ["click", "jinja2", "jsbeautifier", "rich", "uvicorn", "rich-click"]
 structlog = ["structlog"]
-tortoise-orm = ["tortoise-orm"]
-prometheus = ["prometheus-client"]
 
 full = [
     "alembic",
+    "annotated-types",
     "attrs",
     "brotli",
-    "cattrs",
     "click",
+    "rich-click",
     "cryptography",
     "jinja2",
     "jsbeautifier",
+    "mako",
     "opentelemetry-instrumentation-asgi",
+    "piccolo",
+    "picologging",
     "prometheus-client",
-    "python-dateutil",
+    "pydantic",
+    "pydantic-extra-types",
     "python-jose",
-    "pytimeparse",
     "redis",
     "rich",
     "sqlalchemy",
@@ -249,7 +221,9 @@ ignore-words-list = "selectin"
 skip = 'poetry.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
-omit = ["*/tests/*", "litestar/contrib/sqlalchemy_1/*"]
+omit = ["*/tests/*"]
+parallel = true
+concurrency = ["multiprocessing", "thread"]
 
 [tool.coverage.report]
 exclude_lines = [
@@ -259,13 +233,15 @@ exclude_lines = [
     'except ImportError:',
     '\.\.\.',
     'raise NotImplementedError',
+    'if VERSION.startswith("1"):',
+    'if pydantic.VERSION.startswith("1"):',
 ]
 
 [tool.pytest.ini_options]
-addopts = "--ignore=examples -m='not sqlalchemy_integration'"
+addopts = "-m='not sqlalchemy_integration' --dist=loadgroup"
 asyncio_mode = "auto"
 filterwarnings = [
-    "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:164",
+    "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:",
     "ignore::DeprecationWarning:pkg_resources.*",
     "ignore::DeprecationWarning:google.rpc",
     "ignore::DeprecationWarning:google.gcloud",
@@ -273,6 +249,12 @@ filterwarnings = [
     "ignore::DeprecationWarning:google",
     "ignore::DeprecationWarning:sphinxcontrib",
     "ignore::DeprecationWarning:litestar.*",
+    "ignore:The `__fields__` attribute is deprecated:DeprecationWarning:pydantic*",
+    "ignore:Support for class-based `config` is deprecated:DeprecationWarning:pydantic*",
+    "ignore:The `dict` method is deprecated:DeprecationWarning:",
+    "ignore:The `parse_obj` method is deprecated:DeprecationWarning:",
+    "ignore:The `json` method is deprecated:DeprecationWarning:",
+    "ignore:Extra keyword arguments on `Field` is deprecated:DeprecationWarning:pydantic*",
 ]
 markers = [
     "sqlalchemy_integration: SQLAlchemy integration tests",
@@ -287,6 +269,42 @@ markers = [
     "sqlalchemy_duckdb: SQLAlchemy Duckdb (duckdb-engine) Tests",
 ]
 
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unreachable = true
+warn_return_any = true
+strict = true
+disallow_untyped_decorators = true
+disallow_any_generics = false
+implicit_reexport = false
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = ["tests.*.test_sqlalchemy", "tests.*.test_sqlalchemy"]
+disable_error_code = "attr-defined"
+
+[[tool.mypy.overrides]]
+module = "tests.unit.test_contrib.test_sqlalchemy.test_dto"
+disable_error_code = ["arg-type", "misc", "valid-type", "var-annotated"]
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_decorators = false
+
+[[tool.mypy.overrides]]
+module = ["mako.*", "pytimeparse.*", "brotli.*", "jsbeautifier.*"]
+ignore_missing_imports = true
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+warn_untyped_fields = true
+
 [tool.pyright]
 include = ["litestar", "tests", "examples"]
 exclude = [
@@ -300,59 +318,59 @@ strict-imports = false
 
 [tool.ruff]
 select = [
-    "A",   # flake8-builtins
-    "B",   # flake8-bugbear
+    "A", # flake8-builtins
+    "B", # flake8-bugbear
     "BLE", # flake8-blind-except
-    "C4",  # flake8-comprehensions
+    "C4", # flake8-comprehensions
     "C90", # mccabe
-    "D",   # pydocstyle
-    "DJ",  # flake8-django
+    "D", # pydocstyle
+    "DJ", # flake8-django
     "DTZ", # flake8-datetimez
-    "E",   # pycodestyle errors
+    "E", # pycodestyle errors
     "ERA", # eradicate
     "EXE", # flake8-executable
-    "F",   # pyflakes
-    "G",   # flake8-logging-format
-    "I",   # isort
+    "F", # pyflakes
+    "G", # flake8-logging-format
+    "I", # isort
     "ICN", # flake8-import-conventions
     "ISC", # flake8-implicit-str-concat
-    "N",   # pep8-naming
+    "N", # pep8-naming
     "PIE", # flake8-pie
     "PLC", # pylint - convention
     "PLE", # pylint - error
     "PLW", # pylint - warning
     "PTH", # flake8-use-pathlib
-    "Q",   # flake8-quotes
+    "Q", # flake8-quotes
     "RET", # flake8-return
     "RUF", # Ruff-specific rules
-    "S",   # flake8-bandit
+    "S", # flake8-bandit
     "SIM", # flake8-simplify
     "T10", # flake8-debugger
     "T20", # flake8-print
     "TCH", # flake8-type-checking
     "TID", # flake8-tidy-imports
-    "UP",  # pyupgrade
-    "W",   # pycodestyle - warning
+    "UP", # pyupgrade
+    "W", # pycodestyle - warning
     "YTT", # flake8-2020
 ]
 
 ignore = [
-    "A003",    # flake8-builtins - class attribute {name} is shadowing a python builtin
-    "B010",    # flake8-bugbear - do not call setattr with a constant attribute value
-    "D100",    # pydocstyle - missing docstring in public module
-    "D101",    # pydocstyle - missing docstring in public class
-    "D102",    # pydocstyle - missing docstring in public method
-    "D103",    # pydocstyle - missing docstring in public function
-    "D104",    # pydocstyle - missing docstring in public package
-    "D105",    # pydocstyle - missing docstring in magic method
-    "D106",    # pydocstyle - missing docstring in public nested class
-    "D107",    # pydocstyle - missing docstring in __init__
-    "D202",    # pydocstyle - no blank lines allowed after function docstring
-    "D205",    # pydocstyle - 1 blank line required between summary line and description
-    "D415",    # pydocstyle - first line should end with a period, question mark, or exclamation point
-    "E501",    # pycodestyle line too long, handled by black
+    "A003", # flake8-builtins - class attribute {name} is shadowing a python builtin
+    "B010", # flake8-bugbear - do not call setattr with a constant attribute value
+    "D100", # pydocstyle - missing docstring in public module
+    "D101", # pydocstyle - missing docstring in public class
+    "D102", # pydocstyle - missing docstring in public method
+    "D103", # pydocstyle - missing docstring in public function
+    "D104", # pydocstyle - missing docstring in public package
+    "D105", # pydocstyle - missing docstring in magic method
+    "D106", # pydocstyle - missing docstring in public nested class
+    "D107", # pydocstyle - missing docstring in __init__
+    "D202", # pydocstyle - no blank lines allowed after function docstring
+    "D205", # pydocstyle - 1 blank line required between summary line and description
+    "D415", # pydocstyle - first line should end with a period, question mark, or exclamation point
+    "E501", # pycodestyle line too long, handled by black
     "PLW2901", # pylint - for loop variable overwritten by assignment target
-    "RUF012",  # Ruff-specific rule - annotated with classvar
+    "RUF012", # Ruff-specific rule - annotated with classvar
 ]
 line-length = 120
 src = ["litestar", "tests", "docs/examples"]
@@ -402,32 +420,9 @@ known-first-party = ["litestar", "tests", "examples"]
     "TCH",
     "TRY",
 ]
+"tests/unit/test_contrib/test_sqlalchemy/**/*.*" = ["UP006"]
 "docs/examples/application_hooks/before_send_hook.py" = ["UP006"]
 "docs/examples/contrib/sqlalchemy/plugins/**/*.*" = ["UP006"]
-"docs/examples/tests/**/*.*" = [
-    "A",
-    "ARG",
-    "B",
-    "BLE",
-    "C901",
-    "D",
-    "DTZ",
-    "EM",
-    "FBT",
-    "G",
-    "N",
-    "PGH",
-    "PIE",
-    "PLR",
-    "PLW",
-    "PTH",
-    "RSE",
-    "S",
-    "S101",
-    "SIM",
-    "TCH",
-    "TRY",
-]
 "docs/**/*.*" = ["S", "B", "DTZ", "A", "TCH", "ERA", "D", "RET"]
 "docs/examples/**" = ["T201"]
 "docs/examples/data_transfer_objects**/*.*" = ["UP006"]

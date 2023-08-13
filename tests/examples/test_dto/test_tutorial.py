@@ -155,12 +155,10 @@ def test_controller():
 
     with TestClient(app=app) as client:
         response = client.put("/person/1", json={"name": "peter", "age": 50, "email": "email_of_peter@example.com"})
-    assert response.status_code == 200
+        assert response.status_code == 200
 
-    with TestClient(app=app) as client:
         response = client.patch("/person/1", json={"name": "peter"})
-    assert response.status_code == 200
+        assert response.status_code == 200
 
-    with TestClient(app=app) as client:
         response = client.post("/person", json={"name": "peter", "age": 40, "email": "email_of_peter@example.com"})
-    assert response.status_code == 201
+        assert response.status_code == 201

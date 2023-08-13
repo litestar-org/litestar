@@ -150,7 +150,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         now = int(time())
         cached_string = await store.get(key)
         if cached_string:
-            cache_object = CacheObject(**decode_json(cached_string))
+            cache_object = CacheObject(**decode_json(value=cached_string))
             if cache_object.reset <= now:
                 return CacheObject(history=[], reset=now + duration)
 

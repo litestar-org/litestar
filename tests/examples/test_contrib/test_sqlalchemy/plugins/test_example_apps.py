@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import Any
 
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
+from sqlalchemy import Engine, StaticPool, create_engine
 
 from litestar.testing import TestClient
 
@@ -12,45 +14,64 @@ def data() -> list[dict[str, Any]]:
     return [{"title": "test", "done": False}]
 
 
-def test_sqlalchemy_async_plugin_example(data: dict[str, Any]) -> None:
-    from docs.examples.contrib.sqlalchemy.plugins.sqlalchemy_async_plugin_example import app
+@pytest.fixture()
+def sqlite_engine() -> Engine:
+    return create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
 
-    with TestClient(app) as client:
+
+def test_sqlalchemy_async_plugin_example(data: dict[str, Any], monkeypatch: MonkeyPatch) -> None:
+    from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_async_plugin_example
+
+    monkeypatch.setattr(sqlalchemy_async_plugin_example.config, "connection_string", "sqlite+aiosqlite://")
+
+    with TestClient(sqlalchemy_async_plugin_example.app) as client:
         assert client.post("/", json=data[0]).json() == data
 
 
-def test_sqlalchemy_sync_plugin_example(data: dict[str, Any]) -> None:
-    from docs.examples.contrib.sqlalchemy.plugins.sqlalchemy_sync_plugin_example import app
+def test_sqlalchemy_sync_plugin_example(data: dict[str, Any], monkeypatch: MonkeyPatch, sqlite_engine: Engine) -> None:
+    from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_sync_plugin_example
 
-    with TestClient(app) as client:
+    monkeypatch.setattr(sqlalchemy_sync_plugin_example.config, "engine_instance", sqlite_engine)
+
+    with TestClient(sqlalchemy_sync_plugin_example.app) as client:
         assert client.post("/", json=data[0]).json() == data
 
 
-def test_sqlalchemy_async_init_plugin_example(data: dict[str, Any]) -> None:
-    from docs.examples.contrib.sqlalchemy.plugins.sqlalchemy_async_init_plugin_example import app
+def test_sqlalchemy_async_init_plugin_example(data: dict[str, Any], monkeypatch: MonkeyPatch) -> None:
+    from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_async_init_plugin_example
 
-    with TestClient(app) as client:
+    monkeypatch.setattr(sqlalchemy_async_init_plugin_example.config, "connection_string", "sqlite+aiosqlite://")
+
+    with TestClient(sqlalchemy_async_init_plugin_example.app) as client:
         assert client.post("/", json=data[0]).json() == data
 
 
-def test_sqlalchemy_sync_init_plugin_example(data: dict[str, Any]) -> None:
-    from docs.examples.contrib.sqlalchemy.plugins.sqlalchemy_sync_init_plugin_example import app
+def test_sqlalchemy_sync_init_plugin_example(
+    data: dict[str, Any], monkeypatch: MonkeyPatch, sqlite_engine: Engine
+) -> None:
+    from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_sync_init_plugin_example
 
-    with TestClient(app) as client:
+    monkeypatch.setattr(sqlalchemy_sync_init_plugin_example.config, "engine_instance", sqlite_engine)
+
+    with TestClient(sqlalchemy_sync_init_plugin_example.app) as client:
         assert client.post("/", json=data[0]).json() == data
 
 
-def test_sqlalchemy_async_init_plugin_dependencies() -> None:
-    from docs.examples.contrib.sqlalchemy.plugins.sqlalchemy_async_dependencies import app
+def test_sqlalchemy_async_init_plugin_dependencies(monkeypatch: MonkeyPatch) -> None:
+    from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_async_dependencies
 
-    with TestClient(app) as client:
+    monkeypatch.setattr(sqlalchemy_async_dependencies.config, "connection_string", "sqlite+aiosqlite://")
+
+    with TestClient(sqlalchemy_async_dependencies.app) as client:
         assert client.post("/").json() == [1, 2]
 
 
-def test_sqlalchemy_sync_init_plugin_dependencies() -> None:
-    from docs.examples.contrib.sqlalchemy.plugins.sqlalchemy_sync_dependencies import app
+def test_sqlalchemy_sync_init_plugin_dependencies(monkeypatch: MonkeyPatch) -> None:
+    from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_sync_dependencies
 
-    with TestClient(app) as client:
+    monkeypatch.setattr(sqlalchemy_sync_dependencies.config, "connection_string", "sqlite://")
+
+    with TestClient(sqlalchemy_sync_dependencies.app) as client:
         assert client.post("/").json() == [1, 2]
 
 

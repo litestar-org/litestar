@@ -44,7 +44,7 @@ def test_dependency_and_aliased_param_raises(param_field: str) -> None:
         Litestar([handler])
 
 
-@pytest.mark.parametrize("reserved_kwarg", RESERVED_KWARGS)
+@pytest.mark.parametrize("reserved_kwarg", sorted(RESERVED_KWARGS))
 def test_raises_when_reserved_kwargs_are_misused(reserved_kwarg: str) -> None:
     decorator = post if reserved_kwarg != "socket" else websocket
 

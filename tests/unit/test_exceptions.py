@@ -1,9 +1,11 @@
 from typing import Optional
 
+import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from litestar import get
 from litestar.enums import MediaType
 from litestar.exceptions import (
     HTTPException,
@@ -14,6 +16,7 @@ from litestar.exceptions import (
 )
 from litestar.middleware.exceptions.middleware import create_exception_response
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
+from litestar.testing import RequestFactory, create_test_client
 
 
 @given(detail=st.one_of(st.none(), st.text()))
@@ -66,28 +69,43 @@ def test_validation_exception() -> None:
     assert isinstance(result, ValueError)
 
 
-def test_create_exception_response_utility_litestar_http_exception() -> None:
+@pytest.mark.parametrize("media_type", [MediaType.JSON, MediaType.TEXT])
+def test_create_exception_response_utility_litestar_http_exception(media_type: MediaType) -> None:
     exc = HTTPException(detail="litestar http exception", status_code=HTTP_400_BAD_REQUEST, extra=["any"])
-    response = create_exception_response(exc)
+    request = RequestFactory(handler_kwargs={"media_type": media_type}).get()
+    response = create_exception_response(request=request, exc=exc)
     assert response.status_code == HTTP_400_BAD_REQUEST
-    assert response.media_type == MediaType.JSON
-    assert response.content == {"status_code": 400, "detail": "litestar http exception", "extra": ["any"]}
+    assert response.media_type == media_type
+    if media_type == MediaType.JSON:
+        assert response.content == {"status_code": 400, "detail": "litestar http exception", "extra": ["any"]}
+    else:
+        assert response.content == b'{"status_code":400,"detail":"litestar http exception","extra":["any"]}'
 
 
-def test_create_exception_response_utility_starlette_http_exception() -> None:
+@pytest.mark.parametrize("media_type", [MediaType.JSON, MediaType.TEXT])
+def test_create_exception_response_utility_starlette_http_exception(media_type: MediaType) -> None:
     exc = StarletteHTTPException(detail="starlette http exception", status_code=HTTP_400_BAD_REQUEST)
-    response = create_exception_response(exc)
+    request = RequestFactory(handler_kwargs={"media_type": media_type}).get()
+    response = create_exception_response(request=request, exc=exc)
     assert response.status_code == HTTP_400_BAD_REQUEST
-    assert response.media_type == MediaType.JSON
-    assert response.content == {"status_code": 400, "detail": "starlette http exception"}
+    assert response.media_type == media_type
+    if media_type == MediaType.JSON:
+        assert response.content == {"status_code": 400, "detail": "starlette http exception"}
+    else:
+        assert response.content == b'{"status_code":400,"detail":"starlette http exception"}'
 
 
-def test_create_exception_response_utility_non_http_exception() -> None:
+@pytest.mark.parametrize("media_type", [MediaType.JSON, MediaType.TEXT])
+def test_create_exception_response_utility_non_http_exception(media_type: MediaType) -> None:
     exc = RuntimeError("yikes")
-    response = create_exception_response(exc)
+    request = RequestFactory(handler_kwargs={"media_type": media_type}).get()
+    response = create_exception_response(request=request, exc=exc)
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert response.media_type == MediaType.JSON
-    assert response.content == {"status_code": 500, "detail": "Internal Server Error"}
+    assert response.media_type == media_type
+    if media_type == MediaType.JSON:
+        assert response.content == {"status_code": 500, "detail": "Internal Server Error"}
+    else:
+        assert response.content == b'{"status_code":500,"detail":"Internal Server Error"}'
 
 
 def test_missing_dependency_exception() -> None:
@@ -109,3 +127,20 @@ def test_missing_dependency_exception_differing_package_name() -> None:
     )
 
     assert str(exc) == expected
+
+
+@pytest.mark.parametrize("media_type", (MediaType.HTML, MediaType.JSON, MediaType.TEXT))
+def test_default_exception_handling_of_internal_server_errors(media_type: MediaType) -> None:
+    @get("/")
+    def handler() -> None:
+        raise ValueError("internal problem")
+
+    with create_test_client(handler) as client:
+        response = client.get("/", headers={"Accept": media_type})
+        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+        if media_type == MediaType.HTML:
+            assert response.text.startswith("<!doctype html>")
+        elif media_type == MediaType.JSON:
+            assert response.json().get("details").startswith("Traceback (most recent call last")
+        else:
+            assert response.text.startswith("Traceback (most recent call last")

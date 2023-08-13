@@ -17,19 +17,19 @@ repos:
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: trailing-whitespace
-  #  - repo: https://github.com/python-poetry/poetry
-  #    rev: "1.5.0"
-  #    hooks:
-  #      - id: poetry-check
-  #      - id: poetry-lock
-  #        args: ["--no-update"]
+  - repo: https://github.com/python-poetry/poetry
+    rev: "1.5.0"
+    hooks:
+      - id: poetry-check
+      - id: poetry-lock
+        args: ["--no-update"]
   - repo: https://github.com/provinzkraut/unasyncd
-    rev: "v0.4.0"
+    rev: "v0.6.0"
     hooks:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.277"
+    rev: "v0.0.284"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -48,7 +48,7 @@ repos:
     hooks:
       - id: blacken-docs
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "v3.0.0"
+    rev: "v3.0.1"
     hooks:
       - id: prettier
         exclude: "_templates|.git"
@@ -59,15 +59,15 @@ repos:
         exclude: "test*|examples*|tools"
         args: ["--use-tuple"]
   - repo: https://github.com/ariebovenberg/slotscheck
-    rev: v0.16.5
+    rev: v0.17.0
     hooks:
       - id: slotscheck
         exclude: "test_*|docs"
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.4.1"
+    rev: "v1.5.0"
     hooks:
       - id: mypy
-        exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures"
+        exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures|tests/unit/test_partial"
         additional_dependencies:
           [
             polyfactory,
@@ -81,13 +81,11 @@ repos:
             beanie,
             beautifulsoup4,
             brotli,
-            cattrs,
             click,
-            fakeredis>=2.10.2,
-            fast-query-parsers,
-            freezegun,
+            fast-query-parsers>=1.0.2,
             fsspec,
             httpx,
+            httpx_sse,
             hypothesis,
             jsbeautifier,
             mako,
@@ -100,34 +98,35 @@ repos:
             piccolo,
             picologging,
             psycopg,
-            pydantic,
+            pydantic>=2,
+            pydantic-extra-types,
             pytest,
             pytest-lazy-fixture,
             pytest-mock,
             pytest_docker,
             python-dotenv,
             python-jose,
-            pytimeparse,
+            pytest-timeout,
             pyyaml,
+            redis,
             rich,
             rich-click,
             sqlalchemy>=2.0.12,
             starlette,
-            structlog,
-            tortoise-orm,
             types-beautifulsoup4,
-            types-freezegun,
-            types-python-dateutil,
+            structlog,
             types-pyyaml,
             types-redis,
+            types-python-jose,
             uvicorn,
             prometheus_client,
+            time-machine,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.317
+    rev: v1.1.322
     hooks:
       - id: pyright
-        exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures"
+        exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures|tests/unit/test_partial"
         additional_dependencies:
           [
             polyfactory,
@@ -141,13 +140,11 @@ repos:
             beanie,
             beautifulsoup4,
             brotli,
-            cattrs,
             click,
-            fakeredis>=2.10.2,
-            fast-query-parsers,
-            freezegun,
+            fast-query-parsers>=1.0.2,
             fsspec,
             httpx,
+            httpx_sse,
             hypothesis,
             jsbeautifier,
             mako,
@@ -160,34 +157,38 @@ repos:
             piccolo,
             picologging,
             psycopg,
-            pydantic,
+            pydantic>=2,
+            pydantic-extra-types,
             pytest,
             pytest-lazy-fixture,
             pytest-mock,
             pytest_docker,
             python-dotenv,
             python-jose,
-            pytimeparse,
+            pytest-timeout,
             pyyaml,
+            redis,
             rich,
             rich-click,
             sqlalchemy>=2.0.12,
             starlette,
             structlog,
-            tortoise-orm,
             types-beautifulsoup4,
-            types-freezegun,
-            types-python-dateutil,
             types-pyyaml,
             types-redis,
+            types-python-jose,
             uvicorn,
             prometheus_client,
+            time-machine,
           ]
-  - repo: local
+  - repo: https://github.com/sphinx-contrib/sphinx-lint
+    rev: "v0.6.7"
     hooks:
       - id: sphinx-lint
-        name: sphinx-lint
+  - repo: local
+    hooks:
+      - id: pypi-readme
+        name: pypi-readme
         language: python
-        entry: sphinx-lint
-        additional_dependencies: [sphinx-lint]
-        types: [rst]
+        entry: python tools/pypi_readme.py
+        types: [markdown]

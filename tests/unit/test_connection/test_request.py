@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from litestar import MediaType, Request, get
+from litestar import MediaType, Request, asgi, get
 from litestar.connection.base import empty_send
 from litestar.datastructures import Address, Cookie
 from litestar.exceptions import InternalServerException, SerializationException
@@ -25,42 +25,47 @@ if TYPE_CHECKING:
     from litestar.types import ASGIApp, Receive, Scope, Send
 
 
+@get("/", sync_to_thread=False)
+def _route_handler() -> None:
+    pass
+
+
 async def test_request_empty_body_to_json(anyio_backend: str) -> None:
     with patch.object(Request, "body", return_value=b""):
-        request_empty_payload: Request = Request(scope={"type": "http"})  # type: ignore
+        request_empty_payload: Request = Request(scope={"type": "http", "route_handler": _route_handler})  # type: ignore
         request_json = await request_empty_payload.json()
         assert request_json is None
 
 
 async def test_request_invalid_body_to_json(anyio_backend: str) -> None:
     with patch.object(Request, "body", return_value=b"invalid"), pytest.raises(SerializationException):
-        request_empty_payload: Request = Request(scope={"type": "http"})  # type: ignore
+        request_empty_payload: Request = Request(scope={"type": "http", "route_handler": _route_handler})  # type: ignore
         await request_empty_payload.json()
 
 
 async def test_request_valid_body_to_json(anyio_backend: str) -> None:
     with patch.object(Request, "body", return_value=b'{"test": "valid"}'):
-        request_empty_payload: Request = Request(scope={"type": "http"})  # type: ignore
+        request_empty_payload: Request = Request(scope={"type": "http", "route_handler": _route_handler})  # type: ignore
         request_json = await request_empty_payload.json()
         assert request_json == {"test": "valid"}
 
 
 async def test_request_empty_body_to_msgpack(anyio_backend: str) -> None:
     with patch.object(Request, "body", return_value=b""):
-        request_empty_payload: Request = Request(scope={"type": "http"})  # type: ignore
+        request_empty_payload: Request = Request(scope={"type": "http", "route_handler": _route_handler})  # type: ignore
         request_msgpack = await request_empty_payload.msgpack()
         assert request_msgpack is None
 
 
 async def test_request_invalid_body_to_msgpack(anyio_backend: str) -> None:
     with patch.object(Request, "body", return_value=b"invalid"), pytest.raises(SerializationException):
-        request_empty_payload: Request = Request(scope={"type": "http"})  # type: ignore
+        request_empty_payload: Request = Request(scope={"type": "http", "route_handler": _route_handler})  # type: ignore
         await request_empty_payload.msgpack()
 
 
 async def test_request_valid_body_to_msgpack(anyio_backend: str) -> None:
     with patch.object(Request, "body", return_value=encode_msgpack({"test": "valid"})):
-        request_empty_payload: Request = Request(scope={"type": "http"})  # type: ignore
+        request_empty_payload: Request = Request(scope={"type": "http", "route_handler": _route_handler})  # type: ignore
         request_msgpack = await request_empty_payload.msgpack()
         assert request_msgpack == {"test": "valid"}
 
@@ -196,9 +201,9 @@ def test_request_accept_header() -> None:
 @pytest.mark.parametrize(
     "scope,expected_client",
     (
-        ({"type": "http", "client": ["client", 42]}, Address("client", 42)),
-        ({"type": "http", "client": None}, None),
-        ({"type": "http"}, None),
+        ({"type": "http", "route_handler": _route_handler, "client": ["client", 42]}, Address("client", 42)),
+        ({"type": "http", "route_handler": _route_handler, "client": None}, None),
+        ({"type": "http", "route_handler": _route_handler}, None),
     ),
 )
 def test_request_client(scope: "Scope", expected_client: Optional[Address]) -> None:
@@ -295,15 +300,16 @@ def test_request_stream_then_body() -> None:
 
 
 def test_request_json() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    @asgi("/")
+    async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any, Any](scope, receive)
         data = await request.json()
         response = ASGIResponse(body=encode_json({"json": data}))
         await response(scope, receive, send)
 
-    client = TestClient(app)
-    response = client.post("/", json={"a": "123"})
-    assert response.json() == {"json": {"a": "123"}}
+    with create_test_client(handler) as client:
+        response = client.post("/", json={"a": "123"})
+        assert response.json() == {"json": {"a": "123"}}
 
 
 def test_request_raw_path() -> None:
@@ -347,7 +353,7 @@ async def test_request_disconnect() -> None:
         return {"type": "http.disconnect"}
 
     with pytest.raises(InternalServerException):
-        await app({"type": "http", "method": "POST", "path": "/"}, receiver, empty_send)  # type: ignore
+        await app({"type": "http", "route_handler": _route_handler, "method": "POST", "path": "/"}, receiver, empty_send)  # type: ignore
 
 
 def test_request_state() -> None:

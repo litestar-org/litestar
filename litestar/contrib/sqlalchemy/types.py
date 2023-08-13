@@ -111,7 +111,7 @@ class ORA_JSONB(TypeDecorator, SchemaType):  # type: ignore  # noqa: N801
         return value if value is None else encode_json(value)
 
     def process_result_value(self, value: bytes | None, dialect: Dialect) -> Any | None:
-        return value if value is None else decode_json(value)
+        return value if value is None else decode_json(value=value)
 
     def _should_create_constraint(self, compiler: Any, **kw: Any) -> bool:
         return cast("bool", compiler.dialect.name == "oracle")

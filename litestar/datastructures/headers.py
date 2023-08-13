@@ -26,7 +26,7 @@ from typing_extensions import get_type_hints
 from litestar._multipart import parse_content_header
 from litestar._parsers import parse_headers
 from litestar.datastructures.multi_dicts import MultiMixin
-from litestar.dto.factory.utils import resolve_model_type
+from litestar.dto.base_dto import AbstractDTO
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 
 __all__ = ("Accept", "CacheControlHeader", "ETag", "Header", "Headers", "MutableScopeHeaders")
@@ -70,7 +70,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
             super().__init__(CIMultiDict(headers_))
         else:
             super().__init__(headers)
-        self._header_list: Optional["RawHeadersList"] = None
+        self._header_list: Optional[RawHeadersList] = None
 
     @classmethod
     def from_scope(cls, scope: "HeaderScope") -> "Headers":
@@ -112,7 +112,7 @@ class MutableScopeHeaders(MutableMapping):
         Args:
             scope: The ASGI connection scope.
         """
-        self.headers: "RawHeadersList"
+        self.headers: RawHeadersList
         if scope is not None:
             if not isinstance(scope["headers"], list):
                 scope["headers"] = list(scope["headers"])
@@ -369,7 +369,7 @@ class CacheControlHeader(Header):
             for key, value in get_type_hints(cls, include_extras=True).items():
                 definition = FieldDefinition.from_kwarg(annotation=value, name=key)
                 # resolve_model_type so that field_definition.raw has the real raw type e.g. <class 'bool'>
-                cls._field_definitions[key] = resolve_model_type(definition)
+                cls._field_definitions[key] = AbstractDTO.resolve_model_type(definition)
         return cls._field_definitions
 
     @classmethod

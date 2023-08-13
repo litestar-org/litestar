@@ -1,0 +1,11 @@
+blank_lines_enabled: true
+contact_links:
+  - name: Litestar Documentation
+    url: https://docs.litestar.dev/
+    about: Official Litestar documentation - please check here before opening an issue.
+  - name: Litestar Website
+    url: https://litestar.dev/
+    about: Main Litestar website - for details about Litestar's projects.
+  - name: Discord
+    url: https://discord.gg/MmcwxztmQb
+    about: Join our Discord community to chat or get in touch with the maintainers.

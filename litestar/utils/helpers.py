@@ -17,7 +17,6 @@ __all__ = (
     "encode_headers",
     "filter_cookies",
     "get_enum_string_value",
-    "get_fully_qualified_class_name",
     "get_name",
     "unwrap_partial",
     "url_quote",
@@ -38,12 +37,6 @@ def get_name(value: Any) -> str:
     if hasattr(value, "__name__"):
         return cast("str", value.__name__)
     return type(value).__name__
-
-
-def get_fully_qualified_class_name(value: type[Any]) -> str:
-    """Construct the full path name for a type."""
-    module = getattr(value, "__module__", "<no module>")
-    return f"{module}.{value.__qualname__}"
 
 
 def get_enum_string_value(value: Enum | str) -> str:

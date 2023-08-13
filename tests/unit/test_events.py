@@ -1,4 +1,3 @@
-from time import sleep
 from typing import Any
 from unittest.mock import MagicMock
 
@@ -37,17 +36,19 @@ def async_listener(mock: MagicMock) -> EventListener:
     return listener_fn
 
 
-@pytest.mark.parametrize("listener", [lazy_fixture("sync_listener"), lazy_fixture("async_listener")])
-def test_event_listener(mock: MagicMock, listener: EventListener, anyio_backend: AnyIOBackend) -> None:
+@pytest.mark.parametrize("event_listener", [lazy_fixture("sync_listener"), lazy_fixture("async_listener")])
+def test_event_listener(mock: MagicMock, event_listener: EventListener, anyio_backend: AnyIOBackend) -> None:
     @get("/")
     def route_handler(request: Request[Any, Any, Any]) -> None:
         request.app.emit("test_event", "positional", keyword="keyword-value")
 
-    with create_test_client(route_handlers=[route_handler], listeners=[listener], backend=anyio_backend) as client:
+    with create_test_client(
+        route_handlers=[route_handler], listeners=[event_listener], backend=anyio_backend
+    ) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        sleep(0.01)
-        mock.assert_called_with("positional", keyword="keyword-value")
+
+    mock.assert_called_with("positional", keyword="keyword-value")
 
 
 async def test_shutdown_awaits_pending(async_listener: EventListener, mock: MagicMock) -> None:
@@ -69,9 +70,9 @@ def test_multiple_event_listeners(
         route_handlers=[route_handler], listeners=[async_listener, sync_listener], backend=anyio_backend
     ) as client:
         response = client.get("/")
-        sleep(0.01)
         assert response.status_code == HTTP_200_OK
-        assert mock.call_count == 2
+
+    assert mock.call_count == 2
 
 
 def test_multiple_event_ids(mock: MagicMock, anyio_backend: AnyIOBackend) -> None:
@@ -84,14 +85,12 @@ def test_multiple_event_ids(mock: MagicMock, anyio_backend: AnyIOBackend) -> Non
         request.app.emit(f"test_event_{event_id}")
 
     with create_test_client(route_handlers=[route_handler], listeners=[event_handler], backend=anyio_backend) as client:
-        response = client.get("/1")
-        sleep(0.01)
-        assert response.status_code == HTTP_200_OK
-        assert mock.call_count == 1
-        response = client.get("/2")
-        sleep(0.01)
-        assert response.status_code == HTTP_200_OK
-        assert mock.call_count == 2
+        response_1 = client.get("/1")
+        response_2 = client.get("/2")
+        assert response_1.status_code == HTTP_200_OK
+        assert response_2.status_code == HTTP_200_OK
+
+    assert mock.call_count == 2
 
 
 async def test_raises_when_decorator_called_without_callable() -> None:

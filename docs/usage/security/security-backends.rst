@@ -23,5 +23,5 @@ middleware.
 JWT Auth
 --------
 
-Litestar also includes several JWT security backends under the contrib package, checkout
-the :doc:`jwt contrib documentation </usage/contrib/jwt>` for more details.
+Litestar includes several JWT security backends. Check out the
+:doc:`jwt documentation </usage/security/jwt>` for more details.

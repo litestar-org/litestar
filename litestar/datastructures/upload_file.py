@@ -1,18 +1,12 @@
 from __future__ import annotations
 
 from tempfile import SpooledTemporaryFile
-from typing import TYPE_CHECKING, Any
 
 from anyio.to_thread import run_sync
 
 from litestar.constants import ONE_MEGABYTE
-from litestar.openapi.spec.enums import OpenAPIType
 
 __all__ = ("UploadFile",)
-
-
-if TYPE_CHECKING:
-    from pydantic.fields import ModelField
 
 
 class UploadFile:
@@ -106,17 +100,3 @@ class UploadFile:
 
     def __repr__(self) -> str:
         return f"{self.filename} - {self.content_type}"
-
-    @classmethod
-    def __modify_schema__(cls, field_schema: dict[str, Any], field: ModelField | None) -> None:
-        """Create a pydantic JSON schema.
-
-        Args:
-            field_schema: The schema being generated for the field.
-            field: the model class field.
-
-        Returns:
-            None
-        """
-        if field:
-            field_schema.update({"type": OpenAPIType.STRING.value, "contentMediaType": "application/octet-stream"})

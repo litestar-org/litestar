@@ -47,13 +47,14 @@ async def wait_until_responsive(
 
 
 class DockerServiceRegistry:
-    def __init__(self) -> None:
+    def __init__(self, worker_id: str) -> None:
         self._running_services: set[str] = set()
         self.docker_ip = self._get_docker_ip()
         self._base_command = [
-            "docker-compose",
+            "docker",
+            "compose",
             "--file=tests/docker-compose.yml",
-            "--project-name=litestar_pytest",
+            f"--project-name=litestar_pytest-{worker_id}",
         ]
 
     def _get_docker_ip(self) -> str:
@@ -67,10 +68,8 @@ class DockerServiceRegistry:
         raise ValueError(f'Invalid value for DOCKER_HOST: "{docker_host}".')
 
     def run_command(self, *args: str) -> None:
-        if sys.platform == "darwin":
-            subprocess.call([*self._base_command, *args], shell=True)
-        else:
-            subprocess.run([*self._base_command, *args], check=True, capture_output=True)
+        command = [*self._base_command, *args]
+        subprocess.run(command, check=True, capture_output=True)
 
     async def start(
         self,
@@ -101,11 +100,11 @@ class DockerServiceRegistry:
 
 
 @pytest.fixture(scope="session")
-def docker_services() -> Generator[DockerServiceRegistry, None, None]:
-    if sys.platform not in ("linux", "darwin") or os.environ.get("SKIP_DOCKER_TESTS"):
+def docker_services(worker_id: str) -> Generator[DockerServiceRegistry, None, None]:
+    if os.getenv("GITHUB_ACTIONS") == "true" and sys.platform != "linux":
         pytest.skip("Docker not available on this platform")
 
-    registry = DockerServiceRegistry()
+    registry = DockerServiceRegistry(worker_id)
     try:
         yield registry
     finally:
@@ -211,7 +210,7 @@ def spanner_responsive(host: str) -> bool:
         except Exception:
             pass
         with database.snapshot() as snapshot:
-            resp = list(snapshot.execute_sql("SELECT 1"))[0]
+            resp = next(iter(snapshot.execute_sql("SELECT 1")))
         return resp[0] == 1
     except Exception:
         return False

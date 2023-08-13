@@ -1,10 +1,7 @@
 from __future__ import annotations
 
-import json
-from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Generator, cast
-from uuid import UUID
+from typing import TYPE_CHECKING, AsyncGenerator, Generator, cast
 
 import pytest
 from pytest import FixtureRequest
@@ -45,143 +42,6 @@ def _patch_bases(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.setattr(base, "BigIntAuditBase", NewBigIntAuditBase)
 
 
-@pytest.fixture(name="raw_authors_uuid")
-def fx_raw_authors_uuid() -> list[dict[str, Any]]:
-    """Unstructured author representations."""
-    return [
-        {
-            "id": UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"),
-            "name": "Agatha Christie",
-            "dob": "1890-09-15",
-            "created_at": "2023-05-01T00:00:00",
-            "updated_at": "2023-05-11T00:00:00",
-        },
-        {
-            "id": "5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2",
-            "name": "Leo Tolstoy",
-            "dob": "1828-09-09",
-            "created_at": "2023-03-01T00:00:00",
-            "updated_at": "2023-05-15T00:00:00",
-        },
-    ]
-
-
-@pytest.fixture(name="raw_books_uuid")
-def fx_raw_books_uuid(raw_authors_uuid: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Unstructured book representations."""
-    return [
-        {
-            "id": UUID("f34545b9-663c-4fce-915d-dd1ae9cea42a"),
-            "title": "Murder on the Orient Express",
-            "author_id": raw_authors_uuid[0]["id"],
-            "author": raw_authors_uuid[0],
-        },
-    ]
-
-
-@pytest.fixture(name="raw_log_events_uuid")
-def fx_raw_log_events_uuid() -> list[dict[str, Any]]:
-    """Unstructured log events representations."""
-    return [
-        {
-            "id": "f34545b9-663c-4fce-915d-dd1ae9cea42a",
-            "logged_at": "0001-01-01T00:00:00",
-            "payload": {"foo": "bar", "baz": datetime.now()},
-            "created_at": "0001-01-01T00:00:00",
-            "updated_at": "0001-01-01T00:00:00",
-        },
-    ]
-
-
-@pytest.fixture(name="raw_rules_uuid")
-def fx_raw_rules_uuid() -> list[dict[str, Any]]:
-    """Unstructured rules representations."""
-    return [
-        {
-            "id": "f34545b9-663c-4fce-915d-dd1ae9cea42a",
-            "name": "Initial loading rule.",
-            "config": json.dumps({"url": "https://litestar.dev", "setting_123": 1}),
-            "created_at": "2023-01-01T00:00:00",
-            "updated_at": "2023-02-01T00:00:00",
-        },
-        {
-            "id": "f34545b9-663c-4fce-915d-dd1ae9cea34b",
-            "name": "Secondary loading rule.",
-            "config": {"url": "https://litestar.dev", "bar": "foo", "setting_123": 4},
-            "created_at": "2023-02-01T00:00:00",
-            "updated_at": "2023-02-01T00:00:00",
-        },
-    ]
-
-
-@pytest.fixture(name="raw_authors_bigint")
-def fx_raw_authors_bigint() -> list[dict[str, Any]]:
-    """Unstructured author representations."""
-    return [
-        {
-            "id": 2023,
-            "name": "Agatha Christie",
-            "dob": "1890-09-15",
-            "created_at": "2023-05-01T00:00:00",
-            "updated_at": "2023-05-11T00:00:00",
-        },
-        {
-            "id": 2024,
-            "name": "Leo Tolstoy",
-            "dob": "1828-09-09",
-            "created_at": "2023-03-01T00:00:00",
-            "updated_at": "2023-05-15T00:00:00",
-        },
-    ]
-
-
-@pytest.fixture(name="raw_books_bigint")
-def fx_raw_books_bigint(raw_authors_bigint: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Unstructured book representations."""
-    return [
-        {
-            "title": "Murder on the Orient Express",
-            "author_id": raw_authors_bigint[0]["id"],
-            "author": raw_authors_bigint[0],
-        },
-    ]
-
-
-@pytest.fixture(name="raw_log_events_bigint")
-def fx_raw_log_events_bigint() -> list[dict[str, Any]]:
-    """Unstructured log events representations."""
-    return [
-        {
-            "id": 2025,
-            "logged_at": "0001-01-01T00:00:00",
-            "payload": {"foo": "bar", "baz": datetime.now()},
-            "created_at": "0001-01-01T00:00:00",
-            "updated_at": "0001-01-01T00:00:00",
-        },
-    ]
-
-
-@pytest.fixture(name="raw_rules_bigint")
-def fx_raw_rules_bigint() -> list[dict[str, Any]]:
-    """Unstructured rules representations."""
-    return [
-        {
-            "id": 2025,
-            "name": "Initial loading rule.",
-            "config": json.dumps({"url": "https://litestar.dev", "setting_123": 1}),
-            "created_at": "2023-01-01T00:00:00",
-            "updated_at": "2023-02-01T00:00:00",
-        },
-        {
-            "id": 2024,
-            "name": "Secondary loading rule.",
-            "config": {"url": "https://litestar.dev", "bar": "foo", "setting_123": 4},
-            "created_at": "2023-02-01T00:00:00",
-            "updated_at": "2023-02-01T00:00:00",
-        },
-    ]
-
-
 @pytest.fixture()
 def duckdb_engine(tmp_path: Path) -> Generator[Engine, None, None]:
     """SQLite engine for end-to-end testing.
@@ -202,6 +62,7 @@ def oracle_engine(docker_ip: str, oracle_service: None) -> Engine:
 
     Args:
         docker_ip: IP address for TCP connection to Docker containers.
+        oracle_service: ...
 
     Returns:
         Async SQLAlchemy engine instance.
@@ -224,14 +85,7 @@ def oracle_engine(docker_ip: str, oracle_service: None) -> Engine:
 
 @pytest.fixture()
 def psycopg_engine(docker_ip: str, postgres_service: None) -> Engine:
-    """Postgresql instance for end-to-end testing.
-
-    Args:
-        docker_ip: IP address for TCP connection to Docker containers.
-
-    Returns:
-        Async SQLAlchemy engine instance.
-    """
+    """Postgresql instance for end-to-end testing."""
     return create_engine(
         URL(
             drivername="postgresql+psycopg",
@@ -262,14 +116,7 @@ def sqlite_engine(tmp_path: Path) -> Generator[Engine, None, None]:
 
 @pytest.fixture()
 def spanner_engine(docker_ip: str, spanner_service: None, monkeypatch: MonkeyPatch) -> Engine:
-    """Postgresql instance for end-to-end testing.
-
-    Args:
-        docker_ip: IP address for TCP connection to Docker containers.
-
-    Returns:
-        Async SQLAlchemy engine instance.
-    """
+    """Postgresql instance for end-to-end testing."""
     monkeypatch.setenv("SPANNER_EMULATOR_HOST", "localhost:9010")
     monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "emulator-test-project")
 
@@ -280,9 +127,30 @@ def spanner_engine(docker_ip: str, spanner_service: None, monkeypatch: MonkeyPat
 
 @pytest.fixture(
     params=[
-        pytest.param("duckdb_engine", marks=[pytest.mark.sqlalchemy_duckdb, pytest.mark.sqlalchemy_integration]),
-        pytest.param("oracle_engine", marks=[pytest.mark.sqlalchemy_oracledb, pytest.mark.sqlalchemy_integration]),
-        pytest.param("psycopg_engine", marks=[pytest.mark.sqlalchemy_psycopg_sync, pytest.mark.sqlalchemy_integration]),
+        pytest.param(
+            "duckdb_engine",
+            marks=[
+                pytest.mark.sqlalchemy_duckdb,
+                pytest.mark.sqlalchemy_integration,
+                pytest.mark.xdist_group("duckdb"),
+            ],
+        ),
+        pytest.param(
+            "oracle_engine",
+            marks=[
+                pytest.mark.sqlalchemy_oracledb,
+                pytest.mark.sqlalchemy_integration,
+                pytest.mark.xdist_group("oracle"),
+            ],
+        ),
+        pytest.param(
+            "psycopg_engine",
+            marks=[
+                pytest.mark.sqlalchemy_psycopg_sync,
+                pytest.mark.sqlalchemy_integration,
+                pytest.mark.xdist_group("postgres"),
+            ],
+        ),
         pytest.param("sqlite_engine", marks=pytest.mark.sqlalchemy_sqlite),
     ]
 )
@@ -316,14 +184,7 @@ async def aiosqlite_engine(tmp_path: Path) -> AsyncGenerator[AsyncEngine, None]:
 
 @pytest.fixture()
 async def asyncmy_engine(docker_ip: str, mysql_service: None) -> AsyncEngine:
-    """Postgresql instance for end-to-end testing.
-
-    Args:
-        docker_ip: IP address for TCP connection to Docker containers.
-
-    Returns:
-        Async SQLAlchemy engine instance.
-    """
+    """Postgresql instance for end-to-end testing."""
     return create_async_engine(
         URL(
             drivername="mysql+asyncmy",
@@ -340,14 +201,7 @@ async def asyncmy_engine(docker_ip: str, mysql_service: None) -> AsyncEngine:
 
 @pytest.fixture()
 async def asyncpg_engine(docker_ip: str, postgres_service: None) -> AsyncEngine:
-    """Postgresql instance for end-to-end testing.
-
-    Args:
-        docker_ip: IP address for TCP connection to Docker containers.
-
-    Returns:
-        Async SQLAlchemy engine instance.
-    """
+    """Postgresql instance for end-to-end testing."""
     return create_async_engine(
         URL(
             drivername="postgresql+asyncpg",
@@ -364,14 +218,7 @@ async def asyncpg_engine(docker_ip: str, postgres_service: None) -> AsyncEngine:
 
 @pytest.fixture()
 async def psycopg_async_engine(docker_ip: str, postgres_service: None) -> AsyncEngine:
-    """Postgresql instance for end-to-end testing.
-
-    Args:
-        docker_ip: IP address for TCP connection to Docker containers.
-
-    Returns:
-        Async SQLAlchemy engine instance.
-    """
+    """Postgresql instance for end-to-end testing."""
     return create_async_engine(
         URL(
             drivername="postgresql+psycopg",
@@ -389,10 +236,29 @@ async def psycopg_async_engine(docker_ip: str, postgres_service: None) -> AsyncE
 @pytest.fixture(
     params=[
         pytest.param("aiosqlite_engine", marks=pytest.mark.sqlalchemy_aiosqlite),
-        pytest.param("asyncmy_engine", marks=[pytest.mark.sqlalchemy_asyncmy, pytest.mark.sqlalchemy_integration]),
-        pytest.param("asyncpg_engine", marks=[pytest.mark.sqlalchemy_asyncpg, pytest.mark.sqlalchemy_integration]),
         pytest.param(
-            "psycopg_async_engine", marks=[pytest.mark.sqlalchemy_psycopg_async, pytest.mark.sqlalchemy_integration]
+            "asyncmy_engine",
+            marks=[
+                pytest.mark.sqlalchemy_asyncmy,
+                pytest.mark.sqlalchemy_integration,
+                pytest.mark.xdist_group("mysql"),
+            ],
+        ),
+        pytest.param(
+            "asyncpg_engine",
+            marks=[
+                pytest.mark.sqlalchemy_asyncpg,
+                pytest.mark.sqlalchemy_integration,
+                pytest.mark.xdist_group("postgres"),
+            ],
+        ),
+        pytest.param(
+            "psycopg_async_engine",
+            marks=[
+                pytest.mark.sqlalchemy_psycopg_async,
+                pytest.mark.sqlalchemy_integration,
+                pytest.mark.xdist_group("postgres"),
+            ],
         ),
     ]
 )

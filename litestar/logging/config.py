@@ -230,6 +230,10 @@ class LoggingConfig(BaseLoggingConfig):
         return cast("Callable[[str], Logger]", getLogger)
 
 
+def default_json_serializer(value: Any, default: Callable[[Any], Any] | None = None) -> bytes:
+    return encode_json(value=value, serializer=default)
+
+
 def default_structlog_processors() -> list[Processor] | None:  # pyright: ignore
     """Set the default processors for structlog.
 
@@ -244,7 +248,7 @@ def default_structlog_processors() -> list[Processor] | None:  # pyright: ignore
             structlog.processors.add_log_level,
             structlog.processors.format_exc_info,
             structlog.processors.TimeStamper(fmt="iso"),
-            structlog.processors.JSONRenderer(serializer=encode_json),
+            structlog.processors.JSONRenderer(serializer=default_json_serializer),
         ]
     except ImportError:  # pragma: no cover
         return None

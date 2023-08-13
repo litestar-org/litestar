@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from collections import abc
+from collections import abc, deque
+from copy import deepcopy
 from dataclasses import dataclass, replace
 from inspect import Parameter, Signature
-from typing import Any, AnyStr, Collection, ForwardRef, Literal, Mapping, Sequence, TypeVar, cast
+from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Sequence, TypeVar, cast
 
-from pydantic.fields import FieldInfo
-from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin
+from msgspec import UnsetType
+from typing_extensions import Annotated, NotRequired, Required, Self, get_args, get_origin
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Example
@@ -28,6 +29,11 @@ from litestar.utils.typing import (
     make_non_optional_union,
     unwrap_annotation,
 )
+
+try:
+    from pydantic.fields import FieldInfo
+except ImportError:
+    FieldInfo = Empty  # type: ignore
 
 __all__ = ("FieldDefinition",)
 
@@ -64,7 +70,10 @@ def _parse_metadata(value: Any, is_sequence_container: bool, extra: dict[str, An
     Returns:
         A dictionary of constraints, which fulfill the kwargs of a KwargDefinition class.
     """
-    extra = cast("dict[str, Any]", extra or getattr(value, "extra", None) or {})
+    extra = {
+        **cast("dict[str, Any]", extra or getattr(value, "extra", None) or {}),
+        **(getattr(value, "json_schema_extra", None) or {}),
+    }
     if example := extra.pop("example", None):
         example_list = [Example(value=example)]
     elif examples := getattr(value, "examples", None):
@@ -116,7 +125,13 @@ def _traverse_metadata(
     """
     constraints: dict[str, Any] = {}
     for value in metadata:
-        if is_annotated_type(value) and (type_args := [v for v in get_args(value) if v is not None]):
+        if isinstance(value, (list, set, frozenset, deque)):
+            constraints.update(
+                _traverse_metadata(
+                    metadata=cast("Sequence[Any]", value), is_sequence_container=is_sequence_container, extra=extra
+                )
+            )
+        elif is_annotated_type(value) and (type_args := [v for v in get_args(value) if v is not None]):
             # annotated values can be nested inside other annotated values
             # this behaviour is buggy in python 3.8, hence we need to guard here.
             if len(type_args) > 1:
@@ -191,6 +206,9 @@ class FieldDefinition:
     name: str
     """Field name."""
 
+    def __deepcopy__(self, memo: dict[str, Any]) -> Self:
+        return type(self)(**{attr: deepcopy(getattr(self, attr)) for attr in self.__slots__})
+
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, FieldDefinition):
             return False
@@ -207,13 +225,13 @@ class FieldDefinition:
     def _extract_metadata(
         cls, annotation: Any, name: str | None, default: Any, metadata: tuple[Any, ...], extra: dict[str, Any] | None
     ) -> tuple[KwargDefinition | None, dict[str, Any]]:
-        from litestar.dto.factory.abc import AbstractDTOFactory
+        from litestar.dto.base_dto import AbstractDTO
 
         model = BodyKwarg if name == "data" else ParameterKwarg
         if isinstance(default, FieldInfo):
             return _create_metadata_from_type(metadata=[default], model=model, annotation=annotation, extra=extra)
 
-        if is_pydantic_constrained_field(annotation) or isinstance(annotation, AbstractDTOFactory):
+        if is_pydantic_constrained_field(annotation) or isinstance(annotation, AbstractDTO):
             return _create_metadata_from_type(metadata=[annotation], model=model, annotation=annotation, extra=extra)
 
         if any(isinstance(arg, KwargDefinition) for arg in get_args(annotation)):
@@ -291,7 +309,8 @@ class FieldDefinition:
         """Check if the field should be marked as a required parameter."""
         if Required in self.type_wrappers:  # type: ignore[comparison-overlap]
             return True
-        if NotRequired in self.type_wrappers:  # type: ignore[comparison-overlap]
+
+        if NotRequired in self.type_wrappers or UnsetType in self.args:  # type: ignore[comparison-overlap]
             return False
 
         if isinstance(self.kwarg_definition, ParameterKwarg) and self.kwarg_definition.required is not None:
@@ -348,6 +367,30 @@ class FieldDefinition:
     def is_non_string_collection(self) -> bool:
         """Whether the annotation is a non-string collection type or not."""
         return self.is_collection and not self.is_subclass_of((str, bytes))
+
+    @property
+    def bound_types(self) -> tuple[FieldDefinition, ...] | None:
+        """A tuple of bound types - if the annotation is a TypeVar with bound types, otherwise None."""
+        if self.is_type_var and (bound := getattr(self.annotation, "__bound__", None)):
+            if is_non_string_sequence(bound):
+                return tuple(FieldDefinition.from_annotation(t) for t in bound)
+            return (FieldDefinition.from_annotation(bound),)
+        return None
+
+    @property
+    def generic_types(self) -> tuple[FieldDefinition, ...] | None:
+        """A tuple of generic types passed into the annotation - if its generic."""
+        if not (bases := getattr(self.annotation, "__orig_bases__", None)):
+            return None
+        args: list[FieldDefinition] = []
+        for base_args in [getattr(base, "__args__", ()) for base in bases]:
+            for arg in base_args:
+                field_definition = FieldDefinition.from_annotation(arg)
+                if field_definition.generic_types:
+                    args.extend(field_definition.generic_types)
+                else:
+                    args.append(field_definition)
+        return tuple(args)
 
     def is_subclass_of(self, cl: type[Any] | tuple[type[Any], ...]) -> bool:
         """Whether the annotation is a subclass of the given type.
@@ -406,9 +449,9 @@ class FieldDefinition:
             if isinstance(kwargs.get("default"), (KwargDefinition, DependencyKwarg)):
                 kwargs["kwarg_definition"] = kwargs.pop("default")
             elif any(isinstance(v, (KwargDefinition, DependencyKwarg)) for v in metadata):
-                kwargs["kwarg_definition"] = [v for v in metadata if isinstance(v, (KwargDefinition, DependencyKwarg))][
-                    0
-                ]
+                kwargs["kwarg_definition"] = next(
+                    v for v in metadata if isinstance(v, (KwargDefinition, DependencyKwarg))
+                )
                 metadata = tuple(v for v in metadata if not isinstance(v, (KwargDefinition, DependencyKwarg)))
             elif (extra := kwargs.get("extra", {})) and "kwarg_definition" in extra:
                 kwargs["kwarg_definition"] = extra.pop("kwarg_definition")
@@ -514,3 +557,14 @@ class FieldDefinition:
             name=parameter.name,
             default=Empty if parameter.default is Signature.empty else parameter.default,
         )
+
+    def match_predicate_recursively(self, predicate: Callable[[FieldDefinition], bool]) -> bool:
+        """Recursively test the passed in predicate against the field and any of its inner fields.
+
+        Args:
+            predicate: A callable that receives a field definition instance as an arg and returns a boolean.
+
+        Returns:
+            A boolean.
+        """
+        return predicate(self) or any(t.match_predicate_recursively(predicate) for t in self.inner_types)

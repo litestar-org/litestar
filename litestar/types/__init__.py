@@ -68,6 +68,7 @@ from .composite_types import (
     ResponseCookies,
     ResponseHeaders,
     Scopes,
+    TypeDecodersSequence,
     TypeEncodersMap,
 )
 from .empty import Empty, EmptyType
@@ -81,7 +82,7 @@ from .internal_types import (
     RouteHandlerType,
 )
 from .protocols import DataclassProtocol, Logger
-from .serialization import LitestarEncodableType
+from .serialization import DataContainerType, LitestarEncodableType
 
 __all__ = (
     "ASGIApp",
@@ -98,6 +99,7 @@ __all__ = (
     "BeforeRequestHookHandler",
     "CacheKeyBuilder",
     "ControllerRouterHandler",
+    "DataContainerType",
     "DataclassProtocol",
     "Dependencies",
     "Empty",
@@ -154,6 +156,7 @@ __all__ = (
     "Serializer",
     "StreamType",
     "SyncOrAsyncUnion",
+    "TypeDecodersSequence",
     "TypeEncodersMap",
     "TypedDictClass",
     "WebSocketAcceptEvent",

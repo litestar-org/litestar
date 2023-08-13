@@ -34,12 +34,11 @@ def test_resolve_type_encoders() -> None:
     app = Litestar([router], type_encoders={app_type: app_encoder})
 
     route_handler = app.routes[0].route_handler_map[HttpMethod.GET][0]  # type: ignore
-    assert route_handler.resolve_type_encoders() == {
-        handler_type: handler_encoder,
-        controller_type: controller_encoder,
-        router_type: router_encoder,
-        app_type: app_encoder,
-    }
+    encoders = route_handler.resolve_type_encoders()
+    assert encoders.get(handler_type) == handler_encoder
+    assert encoders.get(controller_type) == controller_encoder
+    assert encoders.get(router_type) == router_encoder
+    assert encoders.get(app_type) == app_encoder
 
 
 def test_type_encoders_response_override() -> None:

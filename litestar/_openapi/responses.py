@@ -72,8 +72,8 @@ def create_success_response(  # noqa: C901
     route_handler: HTTPRouteHandler, schema_creator: SchemaCreator
 ) -> OpenAPIResponse:
     """Create the schema for a success response."""
-    return_type = route_handler.parsed_fn_signature.return_type
-    return_annotation = return_type.annotation
+    field_definition = route_handler.parsed_fn_signature.return_type
+    return_annotation = field_definition.annotation
     default_descriptions: dict[Any, str] = {
         Stream: "Stream Response",
         Redirect: "Redirect Response",
@@ -85,19 +85,23 @@ def create_success_response(  # noqa: C901
         or HTTPStatus(route_handler.status_code).description
     )
 
-    if return_annotation is not Signature.empty and not return_type.is_subclass_of(
+    if return_annotation is not Signature.empty and not field_definition.is_subclass_of(
         (NoneType, File, Redirect, Stream, ASGIResponse)
     ):
         media_type = route_handler.media_type
+
         if return_annotation is Template:
             return_annotation = str
             media_type = media_type or MediaType.HTML
-        elif return_type.is_subclass_of(LitestarResponse):
-            return_annotation = return_type.inner_types[0].annotation if return_type.inner_types else Any
+
+        elif field_definition.is_subclass_of(LitestarResponse):
+            return_annotation = field_definition.inner_types[0].annotation if field_definition.inner_types else Any
             media_type = media_type or MediaType.JSON
 
         if dto := route_handler.resolve_return_dto():
-            result = dto.create_openapi_schema("return", str(route_handler), schema_creator)
+            result = dto.create_openapi_schema(
+                field_definition=field_definition, handler_id=route_handler.handler_id, schema_creator=schema_creator
+            )
         else:
             result = schema_creator.for_field_definition(FieldDefinition.from_annotation(return_annotation))
 
@@ -110,7 +114,7 @@ def create_success_response(  # noqa: C901
             content={get_enum_string_value(media_type): OpenAPIMediaType(schema=result)}, description=description
         )
 
-    elif return_type.is_subclass_of(Redirect):
+    elif field_definition.is_subclass_of(Redirect):
         response = OpenAPIResponse(
             content=None,
             description=description,
@@ -121,14 +125,14 @@ def create_success_response(  # noqa: C901
             },
         )
 
-    elif return_type.is_subclass_of((File, Stream)):
+    elif field_definition.is_subclass_of((File, Stream)):
         response = OpenAPIResponse(
             content={
                 route_handler.media_type: OpenAPIMediaType(
                     schema=Schema(
                         type=OpenAPIType.STRING,
-                        content_encoding=route_handler.content_encoding or "application/octet-stream",
-                        content_media_type=route_handler.content_media_type,
+                        content_encoding=route_handler.content_encoding,
+                        content_media_type=route_handler.content_media_type or "application/octet-stream",
                     ),
                 )
             },

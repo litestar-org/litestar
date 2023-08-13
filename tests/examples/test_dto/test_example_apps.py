@@ -76,6 +76,21 @@ def test_exclude_fields_app() -> None:
         }
 
 
+def test_include_fields_app() -> None:
+    from docs.examples.data_transfer_objects.factory.included_fields import app
+
+    with TestClient(app) as client:
+        response = client.post(
+            "/users",
+            json={"name": "Litestar User", "password": "xyz", "created_at": "2023-04-24T00:00:00Z"},
+        )
+        assert response.status_code == 201
+        assert response.json() == {
+            "address": {"street": "123 Main St"},
+            "pets": [{"name": "Fido"}, {"name": "Spot"}],
+        }
+
+
 def test_enveloped_return_data_app() -> None:
     from docs.examples.data_transfer_objects.factory.enveloping_return_data import app
 

@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from litestar.connection import Request, WebSocket
     from litestar.datastructures import CacheControlHeader, ETag, ResponseHeader
     from litestar.di import Provide
-    from litestar.dto.interface import DTOInterface
+    from litestar.dto import AbstractDTO
     from litestar.events.emitter import BaseEventEmitterBackend
     from litestar.events.listener import EventListener
     from litestar.logging.config import BaseLoggingConfig
@@ -47,6 +47,7 @@ if TYPE_CHECKING:
         TypeEncodersMap,
     )
     from litestar.types.callable_types import LifespanHook
+    from litestar.types.composite_types import TypeDecodersSequence
     from litestar.types.empty import EmptyType
 
 
@@ -107,8 +108,8 @@ class AppConfig:
     """If ``True``, app errors rendered as HTML with a stack trace."""
     dependencies: dict[str, Provide | AnyCallable] = field(default_factory=dict)
     """A string keyed dictionary of dependency :class:`Provider <.di.Provide>` instances."""
-    dto: type[DTOInterface] | None | EmptyType = field(default=Empty)
-    """:class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and validation of request data."""
+    dto: type[AbstractDTO] | None | EmptyType = field(default=Empty)
+    """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and validation of request data."""
     etag: ETag | None = field(default=None)
     """An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
 
@@ -158,8 +159,8 @@ class AppConfig:
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>`."""
     response_cache_config: ResponseCacheConfig = field(default_factory=ResponseCacheConfig)
     """Configures caching behavior of the application."""
-    return_dto: type[DTOInterface] | None | EmptyType = field(default=Empty)
-    """:class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing outbound response
+    return_dto: type[AbstractDTO] | None | EmptyType = field(default=Empty)
+    """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing outbound response
     data.
     """
     route_handlers: list[ControllerRouterHandler] = field(default_factory=list)
@@ -188,6 +189,8 @@ class AppConfig:
     """An instance of :class:`TemplateConfig <.template.TemplateConfig>`."""
     type_encoders: TypeEncodersMap | None = field(default=None)
     """A mapping of types to callables that transform them into types supported for serialization."""
+    type_decoders: TypeDecodersSequence | None = field(default=None)
+    """A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization."""
     websocket_class: type[WebSocket] | None = field(default=None)
     """An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket connections."""
     multipart_form_part_limit: int = field(default=1000)

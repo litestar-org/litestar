@@ -53,7 +53,7 @@ because we declared it on the application level.
     Middlewares are part of Litestar's layered architecture* which means you can
     set them on every layer of the application.
 
-    You can read more about this here: :ref:`usage/the-litestar-app:layered architecture`
+    You can read more about this here: :ref:`usage/applications:layered architecture`
 
 
 Middleware Call Order
@@ -79,7 +79,7 @@ Middlewares and Exceptions
 --------------------------
 
 When an exception is raised by a route handler or a :doc:`dependency </usage/dependency-injection>`
-it will be transformed into a response by an `exception handler <../../17-exceptions#exception-handling>`_.
+it will be transformed into a response by an :ref:`exception handler <usage/exceptions:exception handling>`.
 This response will follow the normal "flow" of the application and therefore, middlewares are
 still applied to it.
 

@@ -1,19 +1,22 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from dataclasses import asdict
+from typing import TYPE_CHECKING, Any, cast
 from urllib.parse import urlencode
 
 from httpx._content import encode_json as httpx_encode_json
 from httpx._content import encode_multipart_data, encode_urlencoded_data
-from pydantic import BaseModel
+from msgspec import Struct, to_builtins
 
+from litestar import delete, patch, post, put
 from litestar.app import Litestar
 from litestar.connection import Request
 from litestar.enums import HttpMethod, ParamType, RequestEncodingType, ScopeType
 from litestar.handlers.http_handlers import get
 from litestar.serialization import decode_json, encode_json
-from litestar.types import HTTPScope, RouteHandlerType
+from litestar.types import DataContainerType, HTTPScope, RouteHandlerType
 from litestar.types.asgi_types import ASGIVersion
+from litestar.utils import is_attrs_class, is_dataclass_instance, is_pydantic_model_instance
 
 if TYPE_CHECKING:
     from httpx._types import FileTypes
@@ -21,21 +24,39 @@ if TYPE_CHECKING:
     from litestar.datastructures.cookie import Cookie
     from litestar.handlers.http_handlers import HTTPRouteHandler
 
+_decorator_http_method_map: dict[HttpMethod, type[HTTPRouteHandler]] = {
+    HttpMethod.GET: get,
+    HttpMethod.POST: post,
+    HttpMethod.DELETE: delete,
+    HttpMethod.PATCH: patch,
+    HttpMethod.PUT: put,
+}
 
-def _create_default_route_handler() -> HTTPRouteHandler:
-    @get("/", sync_to_thread=False)
+
+def _create_default_route_handler(http_method: HttpMethod, handler_kwargs: dict[str, Any] | None) -> HTTPRouteHandler:
+    handler_decorator = _decorator_http_method_map[http_method]
+
     def _default_route_handler() -> None:
         ...
 
-    return _default_route_handler
+    return handler_decorator("/", sync_to_thread=False, **(handler_kwargs or {}))(_default_route_handler)
 
 
 def _create_default_app() -> Litestar:
-    return Litestar(route_handlers=[_create_default_route_handler()])
+    return Litestar(route_handlers=[])
 
 
 class RequestFactory:
     """Factory to create :class:`Request <litestar.connection.Request>` instances."""
+
+    __slots__ = (
+        "app",
+        "server",
+        "port",
+        "root_path",
+        "scheme",
+        "handler_kwargs",
+    )
 
     def __init__(
         self,
@@ -44,6 +65,7 @@ class RequestFactory:
         port: int = 3000,
         root_path: str = "",
         scheme: str = "http",
+        handler_kwargs: dict[str, Any] | None = None,
     ) -> None:
         """Initialize ``RequestFactory``
 
@@ -53,6 +75,7 @@ class RequestFactory:
              port: The server's port.
              root_path: Root path for the server.
              scheme: Scheme for the server.
+             handler_kwargs: Kwargs to pass to the route handler created for the request
 
         Examples:
             .. code-block: python
@@ -96,6 +119,7 @@ class RequestFactory:
         self.port = port
         self.root_path = root_path
         self.scheme = scheme
+        self.handler_kwargs = handler_kwargs
 
     def _create_scope(
         self,
@@ -155,7 +179,7 @@ class RequestFactory:
             asgi=ASGIVersion(spec_version="3.0", version="3.0"),
             http_version=http_version or "1.1",
             raw_path=path.encode("ascii"),
-            route_handler=route_handler or _create_default_route_handler(),
+            route_handler=route_handler or _create_default_route_handler(http_method, self.handler_kwargs),
             extensions={},
         )
 
@@ -209,7 +233,7 @@ class RequestFactory:
         user: Any = None,
         auth: Any = None,
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
-        data: dict[str, Any] | BaseModel | None = None,
+        data: dict[str, Any] | DataContainerType | None = None,  # pyright: ignore
         files: dict[str, FileTypes] | list[tuple[str, FileTypes]] | None = None,
         query_params: dict[str, str | list[str]] | None = None,
         state: dict[str, Any] | None = None,
@@ -229,8 +253,7 @@ class RequestFactory:
             user: A value for `request.scope["user"]`
             auth: A value for `request.scope["auth"]`
             request_media_type: The 'Content-Type' header of the request.
-            data: A value for the request's body. Can be either a pydantic model instance
-                or a string keyed dictionary.
+            data: A value for the request's body. Can be any supported serializable type.
             files: A dictionary of files to be sent with the request.
             query_params: A dictionary of values from which the request's query will be generated.
             state: Arbitrary request state.
@@ -256,14 +279,25 @@ class RequestFactory:
 
         headers = headers or {}
         if data:
-            if isinstance(data, BaseModel):
-                data = data.dict()
+            if isinstance(data, Struct):
+                data = to_builtins(data)
+            elif is_dataclass_instance(data):
+                data = asdict(data)
+            elif is_attrs_class(type(data)):
+                from attr import asdict as attrs_as_dict
+
+                data = attrs_as_dict(data)  # type: ignore[arg-type]
+            elif is_pydantic_model_instance(data):
+                from litestar.contrib.pydantic import _model_dump
+
+                data = _model_dump(data)
+
             if request_media_type == RequestEncodingType.JSON:
                 encoding_headers, stream = httpx_encode_json(data)
             elif request_media_type == RequestEncodingType.MULTI_PART:
-                encoding_headers, stream = encode_multipart_data(data, files=files or [], boundary=None)  # type: ignore[assignment]
+                encoding_headers, stream = encode_multipart_data(cast("dict[str, Any]", data), files=files or [], boundary=None)  # type: ignore[assignment]
             else:
-                encoding_headers, stream = encode_urlencoded_data(decode_json(encode_json(data)))
+                encoding_headers, stream = encode_urlencoded_data(decode_json(value=encode_json(data)))
             headers.update(encoding_headers)
             body = b""
             for chunk in stream:
@@ -333,7 +367,7 @@ class RequestFactory:
         user: Any = None,
         auth: Any = None,
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
-        data: dict[str, Any] | BaseModel | None = None,
+        data: dict[str, Any] | DataContainerType | None = None,  # pyright: ignore
         query_params: dict[str, str | list[str]] | None = None,
         state: dict[str, Any] | None = None,
         path_params: dict[str, str] | None = None,
@@ -351,8 +385,7 @@ class RequestFactory:
             user: A value for `request.scope["user"]`.
             auth: A value for `request.scope["auth"]`.
             request_media_type: The 'Content-Type' header of the request.
-            data: A value for the request's body. Can be either a pydantic model instance
-                or a string keyed dictionary.
+            data: A value for the request's body. Can be any supported serializable type.
             query_params: A dictionary of values from which the request's query will be generated.
             state: Arbitrary request state.
             path_params: A string keyed dictionary of path parameter values.
@@ -388,7 +421,7 @@ class RequestFactory:
         user: Any = None,
         auth: Any = None,
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
-        data: dict[str, Any] | BaseModel | None = None,
+        data: dict[str, Any] | DataContainerType | None = None,  # pyright: ignore
         query_params: dict[str, str | list[str]] | None = None,
         state: dict[str, Any] | None = None,
         path_params: dict[str, str] | None = None,
@@ -406,8 +439,7 @@ class RequestFactory:
             user: A value for `request.scope["user"]`.
             auth: A value for `request.scope["auth"]`.
             request_media_type: The 'Content-Type' header of the request.
-            data: A value for the request's body. Can be either a pydantic model instance
-                or a string keyed dictionary.
+            data: A value for the request's body. Can be any supported serializable type.
             query_params: A dictionary of values from which the request's query will be generated.
             state: Arbitrary request state.
             path_params: A string keyed dictionary of path parameter values.
@@ -443,7 +475,7 @@ class RequestFactory:
         user: Any = None,
         auth: Any = None,
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
-        data: dict[str, Any] | BaseModel | None = None,
+        data: dict[str, Any] | DataContainerType | None = None,  # pyright: ignore
         query_params: dict[str, str | list[str]] | None = None,
         state: dict[str, Any] | None = None,
         path_params: dict[str, str] | None = None,
@@ -461,8 +493,7 @@ class RequestFactory:
             user: A value for `request.scope["user"]`.
             auth: A value for `request.scope["auth"]`.
             request_media_type: The 'Content-Type' header of the request.
-            data: A value for the request's body. Can be either a pydantic model instance
-                or a string keyed dictionary.
+            data: A value for the request's body. Can be any supported serializable type.
             query_params: A dictionary of values from which the request's query will be generated.
             state: Arbitrary request state.
             path_params: A string keyed dictionary of path parameter values.

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped
 
 from litestar import Litestar, get
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig
+from litestar.dto import DTOConfig
 
 from .my_lib import Base
 

@@ -7,7 +7,7 @@ from litestar import Controller, Litestar, Router, get
 from litestar._openapi.parameters import create_parameter_for_handler
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar._openapi.typescript_converter.schema_parsing import is_schema_value
-from litestar._signature import create_signature_model
+from litestar._signature import SignatureModel
 from litestar.di import Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
@@ -28,12 +28,13 @@ def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
     handler = route_handler.fn.value
     assert callable(handler)
 
-    handler_fields = create_signature_model(
-        fn=handler,
+    handler_fields = SignatureModel.create(
         dependency_name_set=set(),
-        preferred_validation_backend=app._preferred_validation_backend,
+        fn=handler,
+        data_dto=None,
         parsed_signature=route_handler.parsed_fn_signature,
-    ).fields
+        type_decoders=[],
+    )._fields
 
     return create_parameter_for_handler(
         route_handler, handler_fields, route.path_parameters, SchemaCreator(generate_examples=True)

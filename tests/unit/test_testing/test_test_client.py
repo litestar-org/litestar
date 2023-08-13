@@ -1,36 +1,50 @@
-from typing import TYPE_CHECKING, Any, Dict
+from queue import Empty
+from typing import TYPE_CHECKING, Callable, Dict, NoReturn, Optional, Union, cast
+
+from _pytest.fixtures import FixtureRequest
+
+from litestar import Controller, WebSocket, delete, head, patch, put, websocket
+from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from litestar.testing import AsyncTestClient, WebSocketTestSession, create_test_client
+
+if TYPE_CHECKING:
+    from litestar.middleware.session.base import BaseBackendConfig
+    from litestar.types import (
+        AnyIOBackend,
+        HTTPResponseBodyEvent,
+        HTTPResponseStartEvent,
+        Receive,
+        Scope,
+        Send,
+    )
+
+from typing import Any, Type
 
 import pytest
 
 from litestar import Litestar, Request, get, post
-from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.stores.base import Store
-from litestar.stores.redis import RedisStore
 from litestar.testing import TestClient
+from tests.helpers import maybe_async, maybe_async_cm
 
-if TYPE_CHECKING:
-    from litestar.middleware.session.base import BaseBackendConfig
-    from litestar.types import AnyIOBackend
-
-
-@pytest.fixture()
-def skip_for_trio_redis(
-    session_backend_config: "BaseBackendConfig", test_client_backend: "AnyIOBackend", store: Store
-) -> None:
-    if (
-        isinstance(session_backend_config, ServerSideSessionConfig)
-        and isinstance(store, RedisStore)
-        and test_client_backend == "trio"
-    ):
-        pytest.skip("fakeredis does not always play well with trio, so skip this for now")
+AnyTestClient = Union[TestClient, AsyncTestClient]
 
 
-@pytest.mark.usefixtures("skip_for_trio_redis")
+async def mock_asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    pass
+
+
+@pytest.fixture(params=[AsyncTestClient, TestClient])
+def test_client_cls(request: FixtureRequest) -> Type[AnyTestClient]:
+    return cast(Type[AnyTestClient], request.param)
+
+
 @pytest.mark.parametrize("with_domain", [False, True])
-def test_test_client_set_session_data(
+async def test_test_client_set_session_data(
     with_domain: bool,
     session_backend_config: "BaseBackendConfig",
     test_client_backend: "AnyIOBackend",
+    test_client_cls: Type[AnyTestClient],
 ) -> None:
     session_data = {"foo": "bar"}
 
@@ -43,15 +57,20 @@ def test_test_client_set_session_data(
 
     app = Litestar(route_handlers=[get_session_data], middleware=[session_backend_config.middleware])
 
-    with TestClient(app=app, session_config=session_backend_config, backend=test_client_backend) as client:
-        client.set_session_data(session_data)
-        assert session_data == client.get("/test").json()
+    async with maybe_async_cm(
+        test_client_cls(app=app, session_config=session_backend_config, backend=test_client_backend)  # pyright: ignore
+    ) as client:
+        await maybe_async(client.set_session_data(session_data))  # type: ignore[attr-defined]
+        assert session_data == (await maybe_async(client.get("/test"))).json()  # type: ignore[attr-defined]
 
 
-@pytest.mark.usefixtures("skip_for_trio_redis")
 @pytest.mark.parametrize("with_domain", [False, True])
-def test_test_client_get_session_data(
-    with_domain: bool, session_backend_config: "BaseBackendConfig", test_client_backend: "AnyIOBackend", store: Store
+async def test_test_client_get_session_data(
+    with_domain: bool,
+    session_backend_config: "BaseBackendConfig",
+    test_client_backend: "AnyIOBackend",
+    store: Store,
+    test_client_cls: Type[AnyTestClient],
 ) -> None:
     session_data = {"foo": "bar"}
 
@@ -66,11 +85,180 @@ def test_test_client_get_session_data(
         route_handlers=[set_session_data], middleware=[session_backend_config.middleware], stores={"session": store}
     )
 
-    with TestClient(app=app, session_config=session_backend_config, backend=test_client_backend) as client:
-        client.post("/test")
-        assert client.get_session_data() == session_data
+    async with maybe_async_cm(
+        test_client_cls(app=app, session_config=session_backend_config, backend=test_client_backend)  # pyright: ignore
+    ) as client:
+        await maybe_async(client.post("/test"))  # type: ignore[attr-defined]
+        assert await maybe_async(client.get_session_data()) == session_data  # type: ignore[attr-defined]
 
 
-def test_create_test_client_warns_problematic_domain() -> None:
+async def test_use_testclient_in_endpoint(
+    test_client_backend: "AnyIOBackend", test_client_cls: Type[AnyTestClient]
+) -> None:
+    """this test is taken from starlette."""
+
+    @get("/")
+    def mock_service_endpoint() -> dict:
+        return {"mock": "example"}
+
+    mock_service = Litestar(route_handlers=[mock_service_endpoint])
+
+    @get("/")
+    async def homepage() -> Any:
+        local_client = test_client_cls(mock_service, backend=test_client_backend)
+        local_response = await maybe_async(local_client.get("/"))
+        return local_response.json()  # type: ignore[union-attr, misc]
+
+    app = Litestar(route_handlers=[homepage])
+
+    client = test_client_cls(app)
+    response = await maybe_async(client.get("/"))
+    assert response.json() == {"mock": "example"}  # type: ignore[union-attr, misc]
+
+
+def raise_error(app: Litestar) -> NoReturn:
+    raise RuntimeError()
+
+
+async def test_error_handling_on_startup(
+    test_client_backend: "AnyIOBackend", test_client_cls: Type[AnyTestClient]
+) -> None:
+    with pytest.raises(RuntimeError):
+        async with maybe_async_cm(
+            test_client_cls(Litestar(on_startup=[raise_error]), backend=test_client_backend)  # pyright: ignore
+        ):
+            pass
+
+
+async def test_error_handling_on_shutdown(
+    test_client_backend: "AnyIOBackend", test_client_cls: Type[AnyTestClient]
+) -> None:
+    with pytest.raises(RuntimeError):
+        async with maybe_async_cm(
+            test_client_cls(Litestar(on_shutdown=[raise_error]), backend=test_client_backend)  # pyright: ignore
+        ):
+            pass
+
+
+@pytest.mark.parametrize("method", ["get", "post", "put", "patch", "delete", "head", "options"])
+async def test_client_interface(
+    method: str, test_client_backend: "AnyIOBackend", test_client_cls: Type[AnyTestClient]
+) -> None:
+    async def asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+        start_event: HTTPResponseStartEvent = {
+            "type": "http.response.start",
+            "status": HTTP_200_OK,
+            "headers": [(b"content-type", b"text/plain")],
+        }
+        await send(start_event)
+        body_event: HTTPResponseBodyEvent = {"type": "http.response.body", "body": b"", "more_body": False}
+        await send(body_event)
+
+    client = test_client_cls(asgi_app, backend=test_client_backend)
+    if method == "get":
+        response = await maybe_async(client.get("/"))
+    elif method == "post":
+        response = await maybe_async(client.post("/"))
+    elif method == "put":
+        response = await maybe_async(client.put("/"))
+    elif method == "patch":
+        response = await maybe_async(client.patch("/"))
+    elif method == "delete":
+        response = await maybe_async(client.delete("/"))
+    elif method == "head":
+        response = await maybe_async(client.head("/"))
+    else:
+        response = await maybe_async(client.options("/"))
+    assert response.status_code == HTTP_200_OK  # type: ignore[union-attr, misc]
+
+
+def test_warns_problematic_domain(test_client_cls: Type[AnyTestClient]) -> None:
     with pytest.warns(UserWarning):
-        TestClient(app=Litestar(), base_url="http://testserver")
+        test_client_cls(app=mock_asgi_app, base_url="http://testserver")
+
+
+@pytest.mark.parametrize("method", ["get", "post", "put", "patch", "delete", "head", "options"])
+async def test_client_interface_context_manager(
+    method: str, test_client_backend: "AnyIOBackend", test_client_cls: Type[AnyTestClient]
+) -> None:
+    class MockController(Controller):
+        @get("/")
+        def mock_service_endpoint_get(self) -> dict:
+            return {"mock": "example"}
+
+        @post("/")
+        def mock_service_endpoint_post(self) -> dict:
+            return {"mock": "example"}
+
+        @put("/")
+        def mock_service_endpoint_put(self) -> None:
+            ...
+
+        @patch("/")
+        def mock_service_endpoint_patch(self) -> None:
+            ...
+
+        @delete("/")
+        def mock_service_endpoint_delete(self) -> None:
+            ...
+
+        @head("/")
+        def mock_service_endpoint_head(self) -> None:
+            ...
+
+    mock_service = Litestar(route_handlers=[MockController])
+    async with maybe_async_cm(test_client_cls(mock_service, backend=test_client_backend)) as client:  # pyright: ignore
+        if method == "get":
+            response = await maybe_async(client.get("/"))  # type: ignore[attr-defined]
+            assert response.status_code == HTTP_200_OK
+        elif method == "post":
+            response = await maybe_async(client.post("/"))  # type: ignore[attr-defined]
+            assert response.status_code == HTTP_201_CREATED
+        elif method == "put":
+            response = await maybe_async(client.put("/"))  # type: ignore[attr-defined]
+            assert response.status_code == HTTP_200_OK
+        elif method == "patch":
+            response = await maybe_async(client.patch("/"))  # type: ignore[attr-defined]
+            assert response.status_code == HTTP_200_OK
+        elif method == "delete":
+            response = await maybe_async(client.delete("/"))  # type: ignore[attr-defined]
+            assert response.status_code == HTTP_204_NO_CONTENT
+        elif method == "head":
+            response = await maybe_async(client.head("/"))  # type: ignore[attr-defined]
+            assert response.status_code == HTTP_200_OK
+        else:
+            response = await maybe_async(client.options("/"))  # type: ignore[attr-defined]
+            assert response.status_code == HTTP_204_NO_CONTENT
+
+
+@pytest.mark.parametrize("block,timeout", [(False, None), (False, 0.001), (True, 0.001)])
+@pytest.mark.parametrize(
+    "receive_method",
+    [
+        WebSocketTestSession.receive,
+        WebSocketTestSession.receive_json,
+        WebSocketTestSession.receive_text,
+        WebSocketTestSession.receive_bytes,
+    ],
+)
+def test_websocket_test_session_block_timeout(
+    receive_method: Callable[..., Any], block: bool, timeout: Optional[float], anyio_backend: "AnyIOBackend"
+) -> None:
+    @websocket()
+    async def handler(socket: WebSocket) -> None:
+        await socket.accept()
+
+    with pytest.raises(Empty):
+        with create_test_client(handler, backend=anyio_backend) as client, client.websocket_connect("/") as ws:
+            receive_method(ws, timeout=timeout, block=block)
+
+
+def test_websocket_accept_timeout(anyio_backend: "AnyIOBackend") -> None:
+    @websocket()
+    async def handler(socket: WebSocket) -> None:
+        pass
+
+    with create_test_client(handler, backend=anyio_backend, timeout=0.1) as client, pytest.raises(
+        Empty
+    ), client.websocket_connect("/"):
+        pass

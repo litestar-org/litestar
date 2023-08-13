@@ -1,148 +1,121 @@
 from __future__ import annotations
 
-import inspect
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, Coroutine, Dict, cast
+from inspect import Parameter, Signature
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, Dict
+
+from msgspec.json import Encoder as JsonEncoder
 
 from litestar.di import Provide
-from litestar.dto.interface import ConnectionContext
 from litestar.serialization import decode_json
+from litestar.types.builtin_types import NoneType
 from litestar.utils import AsyncCallable
 from litestar.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
-    from contextlib import AbstractAsyncContextManager
-
-    from msgspec.json import Encoder as JsonEncoder
-
     from litestar import WebSocket
-    from litestar.dto.interface import DTOInterface
-    from litestar.types import AnyCallable, TypeEncodersMap
-    from litestar.types.asgi_types import WebSocketMode
+    from litestar.handlers.websocket_handlers.listener import WebsocketListenerRouteHandler
+    from litestar.types import AnyCallable
     from litestar.utils.signature import ParsedSignature
 
 
-class ListenerContext:
-    __slots__ = (
-        "can_send_data",
-        "handler_function",
-        "handle_receive",
-        "handle_send",
-        "json_encoder",
-        "listener_callback",
-        "listener_callback_signature",
-        "pass_socket",
-        "resolved_data_dto",
-        "resolved_return_dto",
-    )
+def create_handle_receive(listener: WebsocketListenerRouteHandler) -> Callable[[WebSocket], Coroutine[Any, None, None]]:
+    if data_dto := listener.resolve_data_dto():
 
-    can_send_data: bool
-    handler_function: AnyCallable
-    handle_receive: Callable[[WebSocket, DTOInterface | None], Any]
-    handle_send: Callable[[WebSocket, Any, DTOInterface | None], Coroutine[None, None, None]]
-    json_encoder: JsonEncoder
-    listener_callback: AnyCallable
-    listener_callback_signature: ParsedSignature
-    pass_socket: bool
-    resolved_data_dto: type[DTOInterface] | None
-    resolved_return_dto: type[DTOInterface] | None
-    resolved_type_encoders: TypeEncodersMap
+        async def handle_receive(socket: WebSocket) -> Any:
+            received_data = await socket.receive_data(mode=listener._receive_mode)
+            return data_dto(socket).decode_bytes(
+                received_data.encode("utf-8") if isinstance(received_data, str) else received_data
+            )
 
+    elif listener.parsed_data_field and listener.parsed_data_field.annotation is str:
 
-def create_handle_receive(
-    resolved_data_dto: type[DTOInterface] | None,
-    receive_mode: WebSocketMode,
-    wants_receive_type: type,
-) -> Callable[[WebSocket, DTOInterface | None], Coroutine[Any, None, None]]:
-    if resolved_data_dto:
+        async def handle_receive(socket: WebSocket) -> Any:
+            received_data = await socket.receive_data(mode=listener._receive_mode)
+            return received_data.decode("utf-8") if isinstance(received_data, bytes) else received_data
 
-        async def handle_receive(socket: WebSocket, dto: DTOInterface | None) -> Any:
-            received_data = await socket.receive_data(mode=receive_mode)
-            if isinstance(received_data, str):
-                received_data = received_data.encode("utf-8")
-            return cast("DTOInterface", dto).bytes_to_data_type(received_data)
+    elif listener.parsed_data_field and listener.parsed_data_field.annotation is bytes:
 
-    elif wants_receive_type is str:
-
-        async def handle_receive(socket: WebSocket, dto: DTOInterface | None) -> Any:
-            received_data = await socket.receive_data(mode=receive_mode)
-            if isinstance(received_data, bytes):
-                return received_data.decode("utf-8")
-            return received_data
-
-    elif wants_receive_type is bytes:
-
-        async def handle_receive(socket: WebSocket, dto: DTOInterface | None) -> Any:
-            received_data = await socket.receive_data(mode=receive_mode)
-            if isinstance(received_data, str):
-                return received_data.encode("utf-8")
-            return received_data
+        async def handle_receive(socket: WebSocket) -> Any:
+            received_data = await socket.receive_data(mode=listener._receive_mode)
+            return received_data.encode("utf-8") if isinstance(received_data, str) else received_data
 
     else:
 
-        async def handle_receive(socket: WebSocket, dto: DTOInterface | None) -> Any:
-            received_data = await socket.receive_data(mode=receive_mode)
-            return decode_json(received_data)
+        async def handle_receive(socket: WebSocket) -> Any:
+            received_data = await socket.receive_data(mode=listener._receive_mode)
+            return decode_json(value=received_data, type_decoders=socket.route_handler.resolve_type_decoders())
 
     return handle_receive
 
 
 def create_handle_send(
-    resolved_return_dto: type[DTOInterface] | None,
-    json_encoder: JsonEncoder,
-    should_encode_to_json: bool,
-    send_mode: WebSocketMode,
-) -> Callable[[WebSocket, Any, DTOInterface | None], Coroutine[None, None, None]]:
-    if resolved_return_dto:
+    listener: WebsocketListenerRouteHandler,
+) -> Callable[[WebSocket, Any], Coroutine[None, None, None]]:
+    json_encoder = JsonEncoder(enc_hook=listener.default_serializer)
 
-        async def handle_send(socket: WebSocket, data_to_send: Any, dto: DTOInterface | None) -> None:
-            data_to_send = json_encoder.encode(cast("DTOInterface", dto).data_to_encodable_type(data_to_send))
-            await socket.send_data(data_to_send, send_mode)  # pyright: ignore
+    if return_dto := listener.resolve_return_dto():
 
-    elif should_encode_to_json:
+        async def handle_send(socket: WebSocket, data: Any) -> None:
+            encoded_data = return_dto(socket).data_to_encodable_type(data)
+            data = json_encoder.encode(encoded_data)
+            await socket.send_data(data=data, mode=listener._send_mode)
 
-        async def handle_send(socket: WebSocket, data_to_send: Any, dto: DTOInterface | None) -> None:
-            data_to_send = json_encoder.encode(data_to_send)
-            await socket.send_data(data_to_send, send_mode)  # pyright: ignore
+    elif listener.parsed_return_field.is_subclass_of((str, bytes)) or (
+        listener.parsed_return_field.is_optional and listener.parsed_return_field.has_inner_subclass_of((str, bytes))
+    ):
+
+        async def handle_send(socket: WebSocket, data: Any) -> None:
+            await socket.send_data(data=data, mode=listener._send_mode)
 
     else:
 
-        async def handle_send(socket: WebSocket, data_to_send: Any, dto: DTOInterface | None) -> None:
-            await socket.send_data(data_to_send, send_mode)  # pyright: ignore
+        async def handle_send(socket: WebSocket, data: Any) -> None:
+            data = json_encoder.encode(data)
+            await socket.send_data(data=data, mode=listener._send_mode)
 
     return handle_send
 
 
-def create_handler_function(
-    listener_context: ListenerContext,
-    lifespan_manager: Callable[..., AbstractAsyncContextManager],
-) -> Callable[..., Coroutine[None, None, None]]:
-    listener_callback = AsyncCallable(listener_context.listener_callback)
+class ListenerHandler:
+    __slots__ = ("_can_send_data", "_fn", "_listener", "_pass_socket")
 
-    async def handler_fn(
-        *args: Any, socket: WebSocket, connection_lifespan_dependencies: Dict[str, Any], **kwargs: Any  # noqa: UP006
+    def __init__(
+        self,
+        listener: WebsocketListenerRouteHandler,
+        fn: AnyCallable,
+        parsed_signature: ParsedSignature,
+        namespace: dict[str, Any],
     ) -> None:
-        ctx = ConnectionContext.from_connection(socket)
-        data_dto = listener_context.resolved_data_dto(ctx) if listener_context.resolved_data_dto else None
-        return_dto = listener_context.resolved_return_dto(ctx) if listener_context.resolved_return_dto else None
-        handle_receive = listener_context.handle_receive
-        handle_send = listener_context.handle_send if listener_context.can_send_data else None
+        self._can_send_data = not parsed_signature.return_type.is_subclass_of(NoneType)
+        self._fn = AsyncCallable(fn)
+        self._listener = listener
+        self._pass_socket = "socket" in parsed_signature.parameters
 
-        if listener_context.pass_socket:
+    async def __call__(
+        self,
+        *args: Any,
+        socket: WebSocket,
+        connection_lifespan_dependencies: Dict[str, Any],  # noqa: UP006
+        **kwargs: Any,
+    ) -> None:
+        lifespan_mananger = self._listener._connection_lifespan or self._listener.default_connection_lifespan
+        handle_send = self._listener.resolve_send_handler() if self._can_send_data else None
+        handle_receive = self._listener.resolve_receive_handler()
+
+        if self._pass_socket:
             kwargs["socket"] = socket
 
-        async with lifespan_manager(**connection_lifespan_dependencies):
+        async with lifespan_mananger(**connection_lifespan_dependencies):
             while True:
-                received_data = await handle_receive(socket, data_dto)
-                data_to_send = await listener_callback(*args, data=received_data, **kwargs)
+                received_data = await handle_receive(socket)
+                data = await self._fn(*args, data=received_data, **kwargs)
                 if handle_send:
-                    await handle_send(socket, data_to_send, return_dto)
-
-    return handler_fn
+                    await handle_send(socket, data)
 
 
-def create_handler_signature(callback_signature: inspect.Signature) -> inspect.Signature:
-    """Creates a :class:`inspect.Signature` for the handler function for signature modelling.
+def create_handler_signature(callback_signature: Signature) -> Signature:
+    """Creates a :class:`Signature` for the handler function for signature modelling.
 
     This is required for two reasons:
 
@@ -152,19 +125,17 @@ def create_handler_signature(callback_signature: inspect.Signature) -> inspect.S
             optional for :class:`.handlers.websocket_listener` handlers.
 
     Args:
-        callback_signature: The :class:`inspect.Signature` of the listener callback.
+        callback_signature: The :class:`Signature` of the listener callback.
 
     Returns:
-        The :class:`inspect.Signature` for the listener callback as required for signature modelling.
+        The :class:`Signature` for the listener callback as required for signature modelling.
     """
-    new_params = [p for p in callback_signature.parameters.values() if p.name not in {"data"}]
+    new_params = [p for p in callback_signature.parameters.values() if p.name != "data"]
     if "socket" not in callback_signature.parameters:
-        new_params.append(inspect.Parameter(name="socket", kind=inspect.Parameter.KEYWORD_ONLY, annotation="WebSocket"))
+        new_params.append(Parameter(name="socket", kind=Parameter.KEYWORD_ONLY, annotation="WebSocket"))
 
     new_params.append(
-        inspect.Parameter(
-            name="connection_lifespan_dependencies", kind=inspect.Parameter.KEYWORD_ONLY, annotation="Dict[str, Any]"
-        )
+        Parameter(name="connection_lifespan_dependencies", kind=Parameter.KEYWORD_ONLY, annotation="Dict[str, Any]")
     )
 
     return callback_signature.replace(parameters=new_params)

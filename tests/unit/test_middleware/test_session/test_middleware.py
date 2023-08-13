@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Dict, Optional
 
-from litestar import HttpMethod, Request, get, post, route
+from litestar import HttpMethod, Request, Response, get, post, route
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import create_test_client
 from litestar.types import Empty
@@ -16,7 +16,7 @@ def test_session_middleware_not_installed_raises() -> None:
         if request.session:
             raise AssertionError("this line should not be hit")
 
-    with create_test_client(handler) as client:
+    with create_test_client(handler, debug=False) as client:
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
         assert response.json()["detail"] == "Internal Server Error"
@@ -146,3 +146,15 @@ def test_middleware_exclude_custom_key(session_backend_config_memory: "ServerSid
 
         response = client.get("/south")
         assert response.json() == {"has_session": False}
+
+
+def test_does_not_override_cookies(session_backend_config_memory: "ServerSideSessionConfig") -> None:
+    # https://github.com/litestar-org/litestar/issues/2033
+
+    @get("/")
+    async def index() -> Response[str]:
+        return Response(cookies={"foo": "bar"}, content="hello")
+
+    with create_test_client(index, middleware=[session_backend_config_memory.middleware]) as client:
+        res = client.get("/")
+        assert res.cookies.get("foo") == "bar"

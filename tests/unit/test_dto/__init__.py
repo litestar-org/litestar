@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import Any, Collection, Generator, get_type_hints
 
-from litestar.dto.interface import DTOInterface
-from litestar.types.internal_types import AnyConnection
-from litestar.types.protocols import DataclassProtocol
+from litestar._openapi.schema_generation import SchemaCreator
+from litestar.dto import AbstractDTO, DTOField, DTOFieldDefinition
+from litestar.openapi.spec import Reference, Schema
 from litestar.types.serialization import LitestarEncodableType
-
-if TYPE_CHECKING:
-    from typing import Any
+from litestar.typing import FieldDefinition
 
 
 @dataclass
@@ -18,29 +16,63 @@ class Model:
     b: str
 
 
-class MockDTO(DTOInterface):
-    def __init__(self, connection: AnyConnection) -> None:
-        pass
-
-    def builtins_to_data_type(self, builtins: Any) -> Model:
+class ModelDataDTO(AbstractDTO[Model]):
+    def decode_builtins(self, value: Any) -> Model:
         return Model(a=1, b="2")
 
-    def bytes_to_data_type(self, raw: bytes) -> Model:
+    def decode_bytes(self, value: bytes) -> Model:
         return Model(a=1, b="2")
 
-    def data_to_encodable_type(self, data: DataclassProtocol) -> bytes | LitestarEncodableType:
+    def data_to_encodable_type(self, data: Model | Collection[Model]) -> bytes | LitestarEncodableType:
         return Model(a=1, b="2")
 
+    @classmethod
+    def create_openapi_schema(
+        cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
+    ) -> Reference | Schema:
+        return Schema()
 
-class MockReturnDTO(DTOInterface):
-    def __init__(self, connection: AnyConnection) -> None:
-        pass
+    @classmethod
+    def generate_field_definitions(cls, model_type: type[Any]) -> Generator[DTOFieldDefinition, None, None]:
+        for k, v in get_type_hints(model_type).items():
+            yield DTOFieldDefinition.from_field_definition(
+                field_definition=FieldDefinition.from_kwarg(annotation=v, name=k),
+                model_name="Model",
+                default_factory=None,
+                dto_field=DTOField(),
+            )
 
-    def builtins_to_data_type(self, builtins: Any) -> Model:
+    @classmethod
+    def detect_nested_field(cls, field_definition: FieldDefinition) -> bool:
+        return False
+
+
+class ModelReturnDTO(AbstractDTO[Model]):
+    def decode_builtins(self, value: Any) -> Any:
         raise RuntimeError("Return DTO should not have this method called")
 
-    def bytes_to_data_type(self, raw: bytes) -> Any:
+    def decode_bytes(self, value: Any) -> Any:
         raise RuntimeError("Return DTO should not have this method called")
 
-    def data_to_encodable_type(self, data: DataclassProtocol) -> bytes | LitestarEncodableType:
+    def data_to_encodable_type(self, data: Model | Collection[Model]) -> bytes | LitestarEncodableType:
         return b'{"a": 1, "b": "2"}'
+
+    @classmethod
+    def create_openapi_schema(
+        cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
+    ) -> Reference | Schema:
+        return Schema()
+
+    @classmethod
+    def generate_field_definitions(cls, model_type: type[Any]) -> Generator[DTOFieldDefinition, None, None]:
+        for k, v in get_type_hints(model_type).items():
+            yield DTOFieldDefinition.from_field_definition(
+                field_definition=FieldDefinition.from_kwarg(annotation=v, name=k),
+                model_name="Model",
+                default_factory=None,
+                dto_field=DTOField(),
+            )
+
+    @classmethod
+    def detect_nested_field(cls, field_definition: FieldDefinition) -> bool:
+        return False

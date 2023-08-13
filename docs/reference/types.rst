@@ -175,6 +175,8 @@ Composite Types
 
 .. autoclass:: litestar.types.TypeEncodersMap
 
+.. autoclass:: litestar.types.TypeDecodersSequence
+
 .. autoclass:: litestar.types.ParametersMap
 
 

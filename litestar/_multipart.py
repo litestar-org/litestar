@@ -27,7 +27,7 @@ from __future__ import annotations
 import re
 from collections import defaultdict
 from email.utils import decode_rfc2231
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from urllib.parse import unquote
 
 from litestar.datastructures.upload_file import UploadFile
@@ -36,6 +36,9 @@ from litestar.serialization import decode_json
 
 __all__ = ("parse_body", "parse_content_header", "parse_multipart_form")
 
+
+if TYPE_CHECKING:
+    from litestar.types import TypeDecodersSequence
 
 _token = r"([\w!#$%&'*+\-.^_`|~]+)"  # noqa: S105
 _quoted = r'"([^"]*)"'
@@ -90,13 +93,19 @@ def parse_body(body: bytes, boundary: bytes, multipart_form_part_limit: int) -> 
     return form_parts
 
 
-def parse_multipart_form(body: bytes, boundary: bytes, multipart_form_part_limit: int = 1000) -> dict[str, Any]:
+def parse_multipart_form(
+    body: bytes,
+    boundary: bytes,
+    multipart_form_part_limit: int = 1000,
+    type_decoders: TypeDecodersSequence | None = None,
+) -> dict[str, Any]:
     """Parse multipart form data.
 
     Args:
         body: Body of the request.
         boundary: Boundary of the multipart message.
         multipart_form_part_limit: Limit of the number of parts allowed.
+        type_decoders: A sequence of type decoders to use.
 
     Returns:
         A dictionary of parsed results.
@@ -146,10 +155,12 @@ def parse_multipart_form(body: bytes, boundary: bytes, multipart_form_part_limit
                     content_type=content_type, filename=file_name, file_data=post_data, headers=dict(headers)
                 )
                 fields[field_name].append(form_file)
-            else:
+            elif post_data:
                 try:
-                    fields[field_name].append(decode_json(post_data))
+                    fields[field_name].append(decode_json(post_data, type_decoders=type_decoders))
                 except SerializationException:
                     fields[field_name].append(post_data.decode(content_charset))
+            else:
+                fields[field_name].append(None)
 
     return {k: v if len(v) > 1 else v[0] for k, v in fields.items()}

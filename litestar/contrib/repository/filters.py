@@ -18,10 +18,13 @@ __all__ = (
     "LimitOffset",
     "OrderBy",
     "SearchFilter",
+    "NotInCollectionFilter",
+    "OnBeforeAfter",
+    "NotInSearchFilter",
 )
 
 
-FilterTypes: TypeAlias = "BeforeAfter | CollectionFilter[Any] | LimitOffset | OrderBy | SearchFilter"
+FilterTypes: TypeAlias = "BeforeAfter | OnBeforeAfter | CollectionFilter[Any] | LimitOffset | OrderBy | SearchFilter | NotInCollectionFilter[Any] | NotInSearchFilter"
 """Aggregate type alias of the types supported for collection filtering."""
 
 
@@ -38,6 +41,18 @@ class BeforeAfter:
 
 
 @dataclass
+class OnBeforeAfter:
+    """Data required to filter a query on a ``datetime`` column."""
+
+    field_name: str
+    """Name of the model attribute to filter on."""
+    on_or_before: datetime | None
+    """Filter results where field is on or earlier than this."""
+    on_or_after: datetime | None
+    """Filter results where field on or later than this."""
+
+
+@dataclass
 class CollectionFilter(Generic[T]):
     """Data required to construct a ``WHERE ... IN (...)`` clause."""
 
@@ -45,6 +60,16 @@ class CollectionFilter(Generic[T]):
     """Name of the model attribute to filter on."""
     values: abc.Collection[T]
     """Values for ``IN`` clause."""
+
+
+@dataclass
+class NotInCollectionFilter(Generic[T]):
+    """Data required to construct a ``WHERE ... NOT IN (...)`` clause."""
+
+    field_name: str
+    """Name of the model attribute to filter on."""
+    values: abc.Collection[T]
+    """Values for ``NOT IN`` clause."""
 
 
 @dataclass
@@ -75,5 +100,17 @@ class SearchFilter:
     """Name of the model attribute to sort on."""
     value: str
     """Values for ``LIKE`` clause."""
+    ignore_case: bool | None = False
+    """Should the search be case insensitive."""
+
+
+@dataclass
+class NotInSearchFilter:
+    """Data required to construct a ``WHERE field_name NOT LIKE '%' || :value || '%'`` clause."""
+
+    field_name: str
+    """Name of the model attribute to search on."""
+    value: str
+    """Values for ``NOT LIKE`` clause."""
     ignore_case: bool | None = False
     """Should the search be case insensitive."""

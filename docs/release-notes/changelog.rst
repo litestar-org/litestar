@@ -3,6 +3,510 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.0.0rc1
+    :date: 2023/08/05
+
+    .. change:: Support for server-sent-events
+        :type: feature
+        :pr: 2035
+        :issue: 1185
+
+        Support for `Server-sent events <https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events>` has been
+        added with the :class:`ServerSentEvent <.response.ServerSentEvent>`:
+
+        .. code-block:: python
+
+            async def my_generator() -> AsyncGenerator[bytes, None]:
+                count = 0
+                while count < 10:
+                    await sleep(0.01)
+                    count += 1
+                    yield str(count)
+
+
+            @get(path="/count")
+            def sse_handler() -> ServerSentEvent:
+                return ServerSentEvent(my_generator())
+
+        .. seealso::
+            :ref:`Server Sent Events <usage/responses:Server Sent Event Responses>`
+
+    .. change:: SQLAlchemy repository: allow specifying ``id_attribute`` per method
+        :type: feature
+        :pr: 2052
+
+        The following methods now accept an ``id_attribute`` argument, allowing to
+        specify an alternative value to the models primary key:
+
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete_many`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.update`
+
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete_many`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.get`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.update`
+
+    .. change:: SQLAlchemy repository: New ``upsert_many`` method
+        :type: feature
+        :pr: 2056
+
+        A new method ``upsert_many`` has been added to the SQLAlchemy repositories,
+        providing equivalent functionality to the ``upsert`` method for multiple
+        model instances.
+
+        .. seealso::
+            :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.upsert_many`
+            :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.upsert_many`
+
+    .. change:: SQLAlchemy repository: New filters: ``OnBeforeAfter``, ``NotInCollectionFilter`` and ``NotInSearchFilter``
+        :type: feature
+        :pr: 2057
+
+        The following filters have been added to the SQLAlchemy repositories:
+
+        :class:`~litestar.contrib.repository.filters.OnBeforeAfter`
+
+            Allowing to filter :class:`datetime.datetime` columns
+
+        :class:`~litestar.contrib.repository.filters.NotInCollectionFilter`
+
+            Allowing to filter using a ``WHERE ... NOT IN (...)`` clause
+
+        :class:`~litestar.contrib.repository.filters.NotInSearchFilter`
+
+            Allowing to filter using a `WHERE field_name NOT LIKE '%' || :value || '%'`` clause
+
+    .. change:: SQLAlchemy repository: Configurable chunk sizing for ``delete_many``
+        :type: feature
+        :pr: 2061
+
+        The repository now accepts a ``chunk_size`` parameter, determining the maximum
+        amount of parameters in an ``IN`` statement before it gets chunked.
+
+        This is currently only used in the ``delete_many`` method.
+
+
+    .. change:: SQLAlchemy repository: Support InstrumentedAttribute for attribute columns
+        :type: feature
+        :pr: 2054
+
+        Support :class:`~sqlalchemy.orm.InstrumentedAttribute` for in the repository's
+        ``id_attribute``, and the following methods:
+
+
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete_many`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.update`
+
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete_many`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.get`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.update`
+
+    .. change:: OpenAPI: Support callable ``operation_id`` on route handlers
+        :type: feature
+        :pr: 2078
+
+        Route handlers may be passed a callable to ``operation_id`` to create the
+        OpenAPI operation ID.
+
+    .. change:: Run event listeners concurrently
+        :type: feature
+        :pr: 2096
+
+        :doc:`/usage/events` now run concurrently inside a task group.
+
+    .. change:: Support extending the CLI with plugins
+        :type: feature
+        :pr: 2066
+
+        A new plugin protocol :class:`~litestar.plugins.CLIPluginProtocol` has been
+        added that can be used to extend the Litestar CLI.
+
+        .. seealso::
+            :ref:`usage/cli:Using a plugin`
+
+    .. change:: DTO: Support renamed fields in ``DTOData`` and ``create_instance``
+        :type: bugfix
+        :pr: 2065
+
+        A bug was fixed that would cause field renaming to be skipped within
+        :class:`~litestar.dto.data_structures.DTOData` and
+        :meth:`~litestar.dto.data_structures.DTOData.create_instance`.
+
+    .. change:: SQLAlchemy repository: Fix ``health_check`` for oracle
+        :type: bugfix
+        :pr: 2060
+
+        The emitted statement for oracle has been changed to ``SELECT 1 FROM DUAL``.
+
+    .. change:: Fix serialization of empty strings in multipart form
+        :type: bugfix
+        :pr: 2044
+
+        A bug was fixed that would cause a validation error to be raised for empty
+        strings during multipart form decoding.
+
+    .. change:: Use debug mode by default in test clients
+        :type: misc
+        :pr: 2113
+
+        The test clients will now default to ``debug=True`` instead of ``debug=None``.
+
+    .. change:: Removal of deprecated ``partial`` module
+        :type: misc
+        :pr:  2113
+        :breaking:
+
+        The deprecated ``litestar.partial`` has been removed. It can be replaced with
+        DTOs, making use of the :class:`~litestar.dto.config.DTOConfig` option
+        ``partial=True``.
+
+    .. change:: Removal of deprecated ``dto/factory`` module
+        :type: misc
+        :pr: 2114
+        :breaking:
+
+        The deprecated module ``litestar.dto.factory`` has been removed.
+
+    .. change:: Removal of deprecated ``contrib/msgspec`` module
+        :type: misc
+        :pr: 2114
+        :breaking:
+
+        The deprecated module ``litestar.contrib.msgspec`` has been removed.
+
+
+.. changelog:: 2.0.0beta4
+    :date: 2023/07/21
+
+    .. change:: Fix extra package dependencies
+        :type: bugfix
+        :pr: 2029
+
+        A workaround for a
+        `bug in poetry <https://github.com/python-poetry/poetry/issues/4401>`_ that
+        caused development / extra dependencies to be installed alongside the package
+        has been added.
+
+.. changelog:: 2.0.0beta3
+    :date: 2023/07/20
+
+    .. change:: SQLAlchemyDTO: column/relationship type inference
+        :type: feature
+        :pr: 1879
+        :issue: 1853
+
+        If type annotations aren't available for a given column/relationship, they may
+        be inferred from the mapped object.
+
+        For columns, the :attr:`~sqlalchemy.engine.interfaces.ReflectedColumn.type`\ 's
+        :attr:`~sqlalchemy.types.TypeEngine.python_type` will be used as the type of the
+        column, and the :attr:`~sqlalchemy.engine.interfaces.ReflectedColumn.nullable`
+        property to determine if the field should have a :obj:`None` union.
+
+        For relationships, where the ``RelationshipProperty.direction`` is
+        :attr:`~sqlalchemy.orm.RelationshipDirection.ONETOMANY` or
+        :attr:`~sqlalchemy.orm.RelationshipDirection.MANYTOMANY`,
+        ``RelationshipProperty.collection_class`` and
+        ``RelationshipProperty.mapper.class_`` are used to construct an annotation for
+        the collection.
+
+        For one-to-one relationships, ``RelationshipProperty.mapper.class_`` is used to
+        get the type annotation, and will be made a union with :obj:`None` if all of the
+        foreign key columns are nullable.
+
+    .. change:: DTO: Piccolo ORM
+        :type: feature
+        :pr: 1896
+
+        Add support for piccolo ORM with the
+        :class:`~litestar.contrib.piccolo.PiccoloDTO`.
+
+    .. change:: OpenAPI: Allow setting ``OpenAPIController.path`` from ```OpenAPIConfig``
+        :type: feature
+        :pr: 1886
+
+        :attr:`~litestar.openapi.OpenAPIConfig.path` has been added, which can be used
+        to set the ``path`` for :class:`~litestar.openapi.OpenAPIController` directly,
+        without needing to create a custom instance of it.
+
+        If ``path`` is set in both :class:`~litestar.openapi.OpenAPIConfig` and
+        :class:`~litestar.openapi.OpenAPIController`, the path set on the controller
+        will take precedence.
+
+    .. change:: SQLAlchemy repository: ``auto_commit``, ``auto_expunge`` and ``auto_refresh`` options
+        :type: feature
+        :pr: 1900
+
+        .. currentmodule:: litestar.contrib.sqlalchemy.repository
+
+        Three new parameters have been added to the repository and various methods:
+
+        ``auto_commit``
+            When this :obj:`True`, the session will
+            :meth:`~sqlalchemy.orm.Session.commit` instead of
+            :meth:`~sqlalchemy.orm.Session.flush` before returning.
+
+            Available in:
+
+            - :meth:`~SQLAlchemyAsyncRepository.add`
+            - :meth:`~SQLAlchemyAsyncRepository.add_many`
+            - :meth:`~SQLAlchemyAsyncRepository.delete`
+            - :meth:`~SQLAlchemyAsyncRepository.delete_many`
+            - :meth:`~SQLAlchemyAsyncRepository.get_or_create`
+            - :meth:`~SQLAlchemyAsyncRepository.update`
+            - :meth:`~SQLAlchemyAsyncRepository.update_many`
+            - :meth:`~SQLAlchemyAsyncRepository.upsert`
+
+            (and their sync equivalents)
+
+        ``auto_refresh``
+            When :obj:`True`, the session will execute
+            :meth:`~sqlalchemy.orm.Session.refresh` objects before returning.
+
+            Available in:
+
+            - :meth:`~SQLAlchemyAsyncRepository.add`
+            - :meth:`~SQLAlchemyAsyncRepository.get_or_create`
+            - :meth:`~SQLAlchemyAsyncRepository.update`
+            - :meth:`~SQLAlchemyAsyncRepository.upsert`
+
+            (and their sync equivalents)
+
+
+        ``auto_expunge``
+            When this is :obj:`True`, the session will execute
+            :meth:`~sqlalchemy.orm.Session.expunge` all objects before returning.
+
+            Available in:
+
+            - :meth:`~SQLAlchemyAsyncRepository.add`
+            - :meth:`~SQLAlchemyAsyncRepository.add_many`
+            - :meth:`~SQLAlchemyAsyncRepository.delete`
+            - :meth:`~SQLAlchemyAsyncRepository.delete_many`
+            - :meth:`~SQLAlchemyAsyncRepository.get`
+            - :meth:`~SQLAlchemyAsyncRepository.get_one`
+            - :meth:`~SQLAlchemyAsyncRepository.get_one_or_none`
+            - :meth:`~SQLAlchemyAsyncRepository.get_or_create`
+            - :meth:`~SQLAlchemyAsyncRepository.update`
+            - :meth:`~SQLAlchemyAsyncRepository.update_many`
+            - :meth:`~SQLAlchemyAsyncRepository.list`
+            - :meth:`~SQLAlchemyAsyncRepository.upsert`
+
+            (and their sync equivalents)
+
+    .. change:: Include path name in ``ImproperlyConfiguredException`` message for missing param types
+        :type: feature
+        :pr: 1935
+
+        The message of a :exc:`ImproperlyConfiguredException` raised when a path
+        parameter is missing a type now contains the name of the path.
+
+    .. change:: DTO: New ``include`` parameter added to ``DTOConfig``
+        :type: feature
+        :pr: 1950
+
+        :attr:`~litestar.dto.config.DTOConfig.include` has been added to
+        :class:`~litestar.dto.config.DTOConfig`, providing a counterpart to
+        :attr:`~litestar.dto.config.DTOConfig.exclude`.
+
+        If ``include`` is provided, only those fields specified within it will be
+        included.
+
+    .. change:: ``AbstractDTOFactory`` moved to ``dto.factory.base``
+        :type: misc
+        :breaking:
+        :pr: 1950
+
+        :class:`~litestar.dto.base_factory.AbstractDTOFactory` has moved from
+        ``litestar.dto.factory.abc`` to ``litestar.dto.factory.base``.
+
+    .. change:: SQLAlchemy repository: Rename ``_sentinel`` column to ``sa_orm_sentinel``
+        :type: misc
+        :breaking:
+        :pr: 1933
+
+
+        The ``_sentinel`` column of
+        :class:`~litestar.contrib.sqlalchemy.base.UUIDPrimaryKey` has been renamed to
+        ``sa_orm_sentinel``, to support Spanner, which does not support tables starting
+        with ``_``.
+
+    .. change:: SQLAlchemy repository: Fix audit columns defaulting to app startup time
+        :type: bugfix
+        :pr: 1894
+
+        A bug was fixed where
+        :attr:`~litestar.contrib.sqlalchemy.base.AuditColumns.created_at` and
+        :attr:`~litestar.contrib.sqlalchemy.base.AuditColumns.updated_at` would default
+        to the :class:`~datetime.datetime` at initialization time, instead of the time
+        of the update.
+
+    .. change:: SQLAlchemyDTO: Fix handling of ``Sequence`` with defaults
+        :type: bugfix
+        :pr: 1883
+        :issue: 1851
+
+        Fixes handling of columns defined with
+        `Sequence <https://docs.sqlalchemy.org/en/20/core/defaults.html#defining-sequences>`_
+        default values.
+
+        The SQLAlchemy default value for a :class:`~sqlalchemy.schema.Column` will be
+        ignored when it is a :class:`~sqlalchemy.schema.Sequence` object. This is
+        because the SQLAlchemy sequence types represent server generated values, and
+        there is no way for us to generate a reasonable default value for that field
+        from it without making a database query, which is not possible deserialization.
+
+    .. change:: Allow JSON as redirect response
+        :type: bugfix
+        :pr: 1908
+
+        Enables using redirect responses with a JSON media type.
+
+    .. change:: DTO / OpenAPI: Fix detection of required fields for Pydantic and msgspec DTOs
+        :type: bugfix
+        :pr: 1946
+
+        A bug was fixed that would lead to fields of a Pydantic model or msgspec Structs
+        being marked as "not required" in the generated OpenAPI schema when used with
+        DTOs.
+
+    .. change:: Replace ``Header``, ``CacheControlHeader`` and ``ETag`` Pydantic models with dataclasses
+        :type: misc
+        :pr: 1917
+        :breaking:
+
+        As part of the removal of Pydantic as a hard dependency, the header models
+        :class:`~litestar.datastructures.Header`,
+        :class:`~litestar.datastructures.CacheControlHeader` and
+        :class:`~litestar.datastructures.ETag` have been replaced with dataclasses.
+
+
+        .. note::
+            Although marked breaking, this change should not affect usage unless you
+            relied on these being Pydantic models in some way.
+
+    .. change:: Pydantic as an optional dependency
+        :breaking:
+        :pr: 1963
+        :type: misc
+
+        As of this release, Pydantic is no longer a required dependency of Litestar.
+        It is still supported in the same capacity as before, but Litestar itself does
+        not depend on it anymore in its internals.
+
+    .. change:: Pydantic 2 support
+        :type: feature
+        :pr: 1956
+
+        Pydantic 2 is now supported alongside Pydantic 1.
+
+    .. change:: Deprecation of  ``partial`` module
+        :type: misc
+        :pr: 2002
+
+        The ``litestar.partial`` and ``litestar.partial.Partial`` have been
+        deprecated and will be removed in a future release. Users are advised to upgrade
+        to DTOs, making use of the :class:`~litestar.dto.config.DTOConfig` option
+        ``partial=True``.
+
+
+.. changelog:: 2.0.0beta2
+    :date: 2023/06/24
+
+    .. change:: Support ``annotated-types``
+        :type: feature
+        :pr: 1847
+
+        Extended support for the
+        `annotated-types <https://pypi.org/project/annotated-types>`_ library is now
+        available.
+
+    .. change:: Increased verbosity of validation error response keys
+        :type: feature
+        :pr: 1774
+        :breaking:
+
+        The keys in validation error responses now include the full path to the field
+        where the originated.
+
+        An optional ``source`` key has been added, signifying whether the value is from
+        the body, a cookie, a header, or a query param.
+
+        .. code-block:: json
+            :caption: before
+
+            {
+              "status_code": 400,
+              "detail": "Validation failed for POST http://localhost:8000/some-route",
+              "extra": [
+                {"key": "int_param", "message": "value is not a valid integer"},
+                {"key": "int_header", "message": "value is not a valid integer"},
+                {"key": "int_cookie", "message": "value is not a valid integer"},
+                {"key": "my_value", "message": "value is not a valid integer"}
+              ]
+            }
+
+        .. code-block:: json
+            :caption: after
+
+            {
+              "status_code": 400,
+              "detail": "Validation failed for POST http://localhost:8000/some-route",
+              "extra": [
+                {"key": "child.my_value", "message": "value is not a valid integer", "source": "body"},
+                {"key": "int_param", "message": "value is not a valid integer", "source": "query"},
+                {"key": "int_header", "message": "value is not a valid integer", "source": "header"},
+                {"key": "int_cookie", "message": "value is not a valid integer", "source": "cookie"},
+              ]
+            }
+
+    .. change:: ``TestClient`` default timeout
+        :type: feature
+        :pr: 1840
+        :breaking:
+
+        A ``timeout`` parameter was added to
+
+        - :class:`~litestar.testing.TestClient`
+        - :class:`~litestar.testing.AsyncTestClient`
+        - :class:`~litestar.testing.create_test_client`
+        - :class:`~litestar.testing.create_async_test_client`
+
+        The value is passed down to the underlying HTTPX client and serves as a default
+        timeout for all requests.
+
+    .. change:: SQLAlchemy DTO: Explicit error messages when type annotations for a column are missing
+        :type: feature
+        :pr: 1852
+
+        Replace the nondescript :exc:`KeyError` raised when a SQLAlchemy DTO is
+        constructed from a model that is missing a type annotation for an included
+        column with an :exc:`ImproperlyConfiguredException`, including an explicit error
+        message, pointing at the potential cause.
+
+    .. change:: Remove exception details from Internal Server Error responses
+        :type: bugfix
+        :pr: 1857
+        :issue: 1856
+
+        Error responses with a ``500`` status code will now always use
+        `"Internal Server Error"` as default detail.
+
+    .. change:: Pydantic v1 regex validation
+        :type: bugfix
+        :pr: 1865
+        :issue: 1860
+
+        A regression has been fixed in the pydantic signature model logic, which was
+        caused by the renaming of ``regex`` to ``pattern``, which would lead to the
+        :attr:`~litestar.params.KwargDefinition.pattern` not being validated.
+
+
 .. changelog:: 2.0.0beta1
     :date: 2023/06/16
 
@@ -138,7 +642,7 @@
         ``data.create_instance(foo__bar="baz")``.
 
         .. seealso::
-            :ref:`usage/dto/1-dto-factory:Providing values for nested data`
+            :ref:`usage/dto/1-abstract-dto:Providing values for nested data`
 
     .. change:: DTOs: Hybrid properties and association proxies in ``SQLAlchemyDTO``
         :type: feature
@@ -217,8 +721,8 @@
             from typing_extensions import Annotated
 
             from litestar import Litestar, get
-            from litestar.dto.factory import DTOConfig
-            from litestar.dto.factory.stdlib import DataclassDTO
+            from litestar.dto import DTOConfig
+            from litestar.dto.factory.dataclass_factory import DataclassDTO
 
 
             @dataclass
@@ -1101,7 +1605,7 @@
         providing support for managed synchronous and asynchronous sessions.
 
         .. seealso::
-            :doc:`/usage/contrib/sqlalchemy/index`
+            :doc:`/usage/databases/sqlalchemy/index`
 
     .. change:: Attrs signature modelling
         :type: feature
@@ -1647,8 +2151,9 @@
         :breaking:
         :pr: 1209
 
-        :ref:`usage/responses:Response Headers` and :ref:`usage/responses:Response Cookies` now have the same
-        interface, along with the ``headers`` and ``cookies`` keyword arguments to
+        :ref:`response headers <usage/responses:Setting Response Headers>` and
+        :ref:`response cookies <usage/responses:Setting Response Cookies>` now have the
+        same interface, along with the ``headers`` and ``cookies`` keyword arguments to
         ``starlite.response.Response``. They each allow to pass either a
         `:class:`Mapping[str, str] <typing.Mapping>`, e.g. a dictionary, or a :class:`Sequence <typing.Sequence>` of
         ``starlite.datastructures.response_header.ResponseHeader`` or

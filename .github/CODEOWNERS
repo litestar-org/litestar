@@ -4,7 +4,7 @@
 # For more info about code owners see https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners#codeowners-file-example
 
 # Global Assignment
-*      @litestar-org/maintainers
+*      @litestar-org/maintainers @litestar-org/members
 
 # Documentation
-docs/* @litestar-org/maintainers @JacobCoffee
+docs/* @litestar-org/maintainers @JacobCoffee @provinzkraut

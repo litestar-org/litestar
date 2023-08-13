@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from ._utils import RICH_CLICK_INSTALLED, LitestarEnv, LitestarExtensionGroup
 from .commands import core, schema, sessions
 
-if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
+if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     import click
     from click import Context, group, option, pass_context
     from click import Path as ClickPath
@@ -35,7 +35,7 @@ else:
 __all__ = ("litestar_group",)
 
 
-@group(cls=LitestarExtensionGroup)  # type: ignore
+@group(cls=LitestarExtensionGroup, context_settings={"help_option_names": ["-h", "--help"]})
 @option("--app", "app_path", help="Module path to a Litestar application")
 @option(
     "--app-dir",
@@ -48,7 +48,9 @@ __all__ = ("litestar_group",)
 def litestar_group(ctx: Context, app_path: str | None, app_dir: Path | None = None) -> None:
     """Litestar CLI."""
     sys.path.append(str(app_dir))
-    ctx.obj = lambda: LitestarEnv.from_env(app_path)
+
+    if ctx.obj is None:  # env has not been loaded yet, so we can lazy load it
+        ctx.obj = lambda: LitestarEnv.from_env(app_path)
 
 
 # add sub commands here

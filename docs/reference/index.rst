@@ -9,6 +9,7 @@ API reference
     app
     background_tasks
     channels/index
+    cli
     config
     connection
     contrib/index
@@ -26,7 +27,6 @@ API reference
     openapi/index
     pagination
     params
-    partial
     plugins
     response/index
     router
@@ -34,8 +34,8 @@ API reference
     security/index
     serialization
     static_files
-    stores/index
     status_codes
+    stores/index
     template
     testing
     types

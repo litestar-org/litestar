@@ -1,7 +1,9 @@
 <!-- markdownlint-disable -->
 <p align="center">
+  <!-- github-banner-start -->
   <img src="artwork/banner-light.svg#gh-light-mode-only" alt="Litestar Logo - Light" width="100%" height="auto" />
   <img src="artwork/banner-dark.svg#gh-dark-mode-only" alt="Litestar Logo - Dark" width="100%" height="auto" />
+  <!-- github-banner-end -->
 </p>
 <!-- markdownlint-restore -->
 
@@ -9,30 +11,26 @@
 
 <!-- prettier-ignore-start -->
 
-| Project   |     | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-|-----------|:----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| CI/CD     |     | [![Latest Release](https://github.com/litestar-org/litestar/actions/workflows/publish.yaml/badge.svg?branch=main)](https://github.com/litestar-org/litestar/actions/workflows/publish.yaml) [![ci](https://github.com/litestar-org/litestar/actions/workflows/ci.yaml/badge.svg)](https://github.com/litestar-org/litestar/actions/workflows/ci.yaml) [![Documentation Building](https://github.com/litestar-org/litestar/actions/workflows/docs.yaml/badge.svg?branch=main)](https://github.com/litestar-org/litestar/actions/workflows/docs.yaml)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Quality   |     | [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=coverage)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar)                                                                                                           |
-| Package   |     | [![PyPI - Version](https://img.shields.io/pypi/v/litestar?labelColor=202235&color=edb641&logo=python&logoColor=edb641)](https://badge.fury.io/py/litestar) ![PyPI - Support Python Versions](https://img.shields.io/pypi/pyversions/litestar?labelColor=202235&color=edb641&logo=python&logoColor=edb641) ![Starlite PyPI - Downloads](https://img.shields.io/pypi/dm/starlite?logo=python&label=starlite%20downloads&labelColor=202235&color=edb641&logoColor=edb641) ![Litestar PyPI - Downloads](https://img.shields.io/pypi/dm/litestar?logo=python&label=litestar%20downloads&labelColor=202235&color=edb641&logoColor=edb641)                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Community |     | [![Reddit](https://img.shields.io/reddit/subreddit-subscribers/litestarapi?label=r%2FLitestar&logo=reddit&labelColor=202235&color=edb641&logoColor=edb641)](https://reddit.com/r/litestarapi) [![Discord](https://img.shields.io/discord/919193495116337154?labelColor=202235&color=edb641&label=chat%20on%20discord&logo=discord&logoColor=edb641)](https://discord.gg/X3FJqy8d2j) [![Matrix](https://img.shields.io/badge/chat%20on%20Matrix-bridged-202235?labelColor=202235&color=edb641&logo=matrix&logoColor=edb641)](https://matrix.to/#/#litestar:matrix.org) [![Medium](https://img.shields.io/badge/Medium-202235?labelColor=202235&color=edb641&logo=medium&logoColor=edb641)](https://blog.litestar.dev) [![Twitter](https://img.shields.io/twitter/follow/LitestarAPI?labelColor=202235&color=edb641&logo=twitter&logoColor=edb641&style=flat)](https://twitter.com/LitestarAPI) [![Blog](https://img.shields.io/badge/Blog-litestar.dev-202235?logo=blogger&labelColor=202235&color=edb641&logoColor=edb641)](https://blog.litestar.dev)                                  |
-| Meta      |     | [![Litestar Project](https://img.shields.io/badge/Litestar%20Org-%E2%AD%90%20Litestar-202235.svg?logo=python&labelColor=202235&color=edb641&logoColor=edb641)](https://github.com/litestar-org/litestar) [![types - Mypy](https://img.shields.io/badge/types-Mypy-202235.svg?logo=python&labelColor=202235&color=edb641&logoColor=edb641)](https://github.com/python/mypy) [![License - MIT](https://img.shields.io/badge/license-MIT-202235.svg?logo=python&labelColor=202235&color=edb641&logoColor=edb641)](https://spdx.org/licenses/) [![Litestar Sponsors](https://img.shields.io/badge/Sponsor-%E2%9D%A4-%23edb641.svg?&logo=github&logoColor=edb641&labelColor=202235)](https://github.com/sponsors/litestar-org) [![linting - Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json&labelColor=202235)](https://github.com/astral-sh/ruff) [![code style - Black](https://img.shields.io/badge/code%20style-black-000000.svg?logo=python&labelColor=202235&logoColor=edb641)](https://github.com/psf/black) |
+| Project   |     | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+|-----------|:----|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| CI/CD     |     | [![Latest Release](https://github.com/litestar-org/litestar/actions/workflows/publish.yaml/badge.svg?branch=main)](https://github.com/litestar-org/litestar/actions/workflows/publish.yaml) [![ci](https://github.com/litestar-org/litestar/actions/workflows/ci.yaml/badge.svg)](https://github.com/litestar-org/litestar/actions/workflows/ci.yaml) [![Documentation Building](https://github.com/litestar-org/litestar/actions/workflows/docs.yaml/badge.svg?branch=main)](https://github.com/litestar-org/litestar/actions/workflows/docs.yaml)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Quality   |     | [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=coverage)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar)                                                                                                                                                                                                                                                                        |
+| Package   |     | [![PyPI - Version](https://img.shields.io/pypi/v/litestar?labelColor=202235&color=edb641&logo=python&logoColor=edb641)](https://badge.fury.io/py/litestar) ![PyPI - Support Python Versions](https://img.shields.io/pypi/pyversions/litestar?labelColor=202235&color=edb641&logo=python&logoColor=edb641) ![Starlite PyPI - Downloads](https://img.shields.io/pypi/dm/starlite?logo=python&label=starlite%20downloads&labelColor=202235&color=edb641&logoColor=edb641) ![Litestar PyPI - Downloads](https://img.shields.io/pypi/dm/litestar?logo=python&label=litestar%20downloads&labelColor=202235&color=edb641&logoColor=edb641)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Community |     | [![Reddit](https://img.shields.io/reddit/subreddit-subscribers/litestarapi?label=r%2FLitestar&logo=reddit&labelColor=202235&color=edb641&logoColor=edb641)](https://reddit.com/r/litestarapi) [![Discord](https://img.shields.io/discord/919193495116337154?labelColor=202235&color=edb641&label=chat%20on%20discord&logo=discord&logoColor=edb641)](https://discord.gg/X3FJqy8d2j) [![Matrix](https://img.shields.io/badge/chat%20on%20Matrix-bridged-202235?labelColor=202235&color=edb641&logo=matrix&logoColor=edb641)](https://matrix.to/#/#litestar:matrix.org) [![Medium](https://img.shields.io/badge/Medium-202235?labelColor=202235&color=edb641&logo=medium&logoColor=edb641)](https://blog.litestar.dev) [![Twitter](https://img.shields.io/twitter/follow/LitestarAPI?labelColor=202235&color=edb641&logo=twitter&logoColor=edb641&style=flat)](https://twitter.com/LitestarAPI) [![Blog](https://img.shields.io/badge/Blog-litestar.dev-202235?logo=blogger&labelColor=202235&color=edb641&logoColor=edb641)](https://blog.litestar.dev)                                                                                                                                                                                               |
+| Meta      |     | [![Litestar Project](https://img.shields.io/badge/Litestar%20Org-%E2%AD%90%20Litestar-202235.svg?logo=python&labelColor=202235&color=edb641&logoColor=edb641)](https://github.com/litestar-org/litestar) [![types - Mypy](https://img.shields.io/badge/types-Mypy-202235.svg?logo=python&labelColor=202235&color=edb641&logoColor=edb641)](https://github.com/python/mypy) [![License - MIT](https://img.shields.io/badge/license-MIT-202235.svg?logo=python&labelColor=202235&color=edb641&logoColor=edb641)](https://spdx.org/licenses/) [![Litestar Sponsors](https://img.shields.io/badge/Sponsor-%E2%9D%A4-%23edb641.svg?&logo=github&logoColor=edb641&labelColor=202235)](https://github.com/sponsors/litestar-org) [![linting - Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json&labelColor=202235)](https://github.com/astral-sh/ruff) [![code style - Black](https://img.shields.io/badge/code%20style-black-000000.svg?logo=python&labelColor=202235&logoColor=edb641)](https://github.com/psf/black) [![All Contributors](https://img.shields.io/github/all-contributors/litestar-org/litestar?labelColor=202235&color=edb641&logoColor=edb641)](#contributors-)  |
 
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-119-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
-
 </div>
 
 # Starlite → Litestar
 
-**[Starlite has been renamed to Litestar](https://litestar.dev/about/organization.html#litestar-and-starlite)**
+> [!IMPORTANT]\
+> [**_Starlite has been renamed to Litestar_**](https://litestar.dev/about/organization.html#litestar-and-starlite)
 
 <hr>
 
 Litestar is a powerful, performant, flexible and opinionated ASGI framework,
-offering first class typing support and a full [Pydantic](https://github.com/pydantic/pydantic)
-integration.
+offering first class typing support.
 
 Check out the [documentation 📚](https://docs.litestar.dev/).
 
@@ -46,7 +44,7 @@ pip install litestar
 You can check out the latest pre-release version by instead running
 
 ```shell
-pip install litestar==2.0.0beta2
+pip install litestar==2.0.0beta4
 ```
 
 ## Quick Start
@@ -68,24 +66,23 @@ app = Litestar(route_handlers=[hello_world])
 
 - [Class based controllers](#class-based-controllers)
 - [Dependency Injection](#dependency-injection)
-- [Validation and Parsing](#data-parsing-type-hints-and-pydantic) using [Pydantic](https://github.com/pydantic/pydantic)
 - [Layered Middleware](#middleware)
 - [Plugin System](#plugin-system-orm-support-and-dtos)
 - [OpenAPI 3.1 schema generation](#openapi)
 - [Life Cycle Hooks](#request-life-cycle-hooks)
 - [Route Guards based Authorization](#route-guards)
+- Support for `dataclasses`, `TypedDict`, [pydantic version 1 and version 2](https://docs.pydantic.dev/latest/),
+  [msgspec](https://github.com/jcrist/msgspec) and [attrs](https://www.attrs.org/en/stable/)
 - Layered Parameter declaration
-- SQLAlchemy Support (via plugin)
-- Piccolo ORM Support (via plugin)
-- Tortoise ORM Support (via plugin)
 - Extended testing support
 - [Automatic API documentation with](#redoc-swagger-ui-and-stoplight-elements-api-documentation):
   - [Redoc](https://github.com/Redocly/redoc)
   - [Stoplight Elements](https://github.com/stoplightio/elements)
   - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
-- Support for dataclasses and `TypedDict`
 - [Trio](https://trio.readthedocs.io/en/stable/) support (built-in, via [AnyIO](https://anyio.readthedocs.io/))
-- Ultra-fast json serialization and deserialization using [msgspec](https://github.com/jcrist/msgspec)
+- Ultra-fast validation, serialization and deserialization using [msgspec](https://github.com/jcrist/msgspec)
+- SQLAlchemy Support
+- Piccolo ORM Support
 
 ## Example Applications
 
@@ -119,13 +116,13 @@ controllers:
 
 ```python title="my_app/controllers/user.py"
 from typing import List, Optional
-
-from pydantic import UUID4
-from litestar import Controller, get, post, put, patch, delete
-from litestar.partial import Partial
 from datetime import datetime
 
-from my_app.models import User
+from litestar import Controller, get, post, put, patch, delete
+from litestar.dto import DTOData
+from pydantic import UUID4
+
+from my_app.models import User, PartialUserDTO
 
 
 class UserController(Controller):
@@ -143,8 +140,8 @@ class UserController(Controller):
     async def list_new_users(self, date: datetime) -> List[User]:
         ...
 
-    @patch(path="/{user_id:uuid}")
-    async def partial_update_user(self, user_id: UUID4, data: Partial[User]) -> User:
+    @patch(path="/{user_id:uuid}", dto=PartialUserDTO)
+    async def partial_update_user(self, user_id: UUID4, data: DTOData[PartialUserDTO]) -> User:
         ...
 
     @put(path="/{user_id:uuid}")
@@ -185,7 +182,7 @@ plugins.
 ### OpenAPI
 
 Litestar has custom logic to generate OpenAPI 3.1.0 schema, include optional generation of examples using the
-`pydantic-factories` library.
+[`polyfactory`](https://pypi.org/project/polyfactory/) library.
 
 #### ReDoc, Swagger-UI and Stoplight Elements API Documentation
 
@@ -267,6 +264,8 @@ Litestar is open to contributions big and small. You can always [join our discor
 or [join our Matrix](https://matrix.to/#/#litestar:matrix.org) space
 to discuss contributions and project maintenance. For guidelines on how to contribute, please
 see [the contribution guide](CONTRIBUTING.rst).
+
+<!-- contributors-start -->
 
 ## Contributors ✨
 
@@ -359,7 +358,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ste-pool"><img src="https://avatars.githubusercontent.com/u/17198460?v=4?s=100" width="100px;" alt="ste-pool"/><br /><sub><b>ste-pool</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=ste-pool" title="Code">💻</a> <a href="#infra-ste-pool" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
     </tr>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Alc-Alc"><img src="https://avatars.githubusercontent.com/u/45509143?v=4?s=100" width="100px;" alt="Alc-Alc"/><br /><sub><b>Alc-Alc</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=Alc-Alc" title="Documentation">📖</a> <a href="https://github.com/litestar-org/litestar/commits?author=Alc-Alc" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Alc-Alc"><img src="https://avatars.githubusercontent.com/u/45509143?v=4?s=100" width="100px;" alt="Alc-Alc"/><br /><sub><b>Alc-Alc</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=Alc-Alc" title="Documentation">📖</a> <a href="https://github.com/litestar-org/litestar/commits?author=Alc-Alc" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=Alc-Alc" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://asomethings.com"><img src="https://avatars.githubusercontent.com/u/16171942?v=4?s=100" width="100px;" alt="asomethings"/><br /><sub><b>asomethings</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=asomethings" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/garburator"><img src="https://avatars.githubusercontent.com/u/14207857?v=4?s=100" width="100px;" alt="Garry Bullock"/><br /><sub><b>Garry Bullock</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=garburator" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/NiclasHaderer"><img src="https://avatars.githubusercontent.com/u/109728711?v=4?s=100" width="100px;" alt="Niclas Haderer"/><br /><sub><b>Niclas Haderer</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=NiclasHaderer" title="Code">💻</a></td>
@@ -386,7 +385,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/wassafshahzad"><img src="https://avatars.githubusercontent.com/u/25094157?v=4?s=100" width="100px;" alt="wassaf shahzad"/><br /><sub><b>wassaf shahzad</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=wassafshahzad" title="Code">💻</a></td>
     </tr>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="http://nilsso.github.io"><img src="https://avatars.githubusercontent.com/u/567181?v=4?s=100" width="100px;" alt="Nils Olsson"/><br /><sub><b>Nils Olsson</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=nilsso" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://nilsso.github.io"><img src="https://avatars.githubusercontent.com/u/567181?v=4?s=100" width="100px;" alt="Nils Olsson"/><br /><sub><b>Nils Olsson</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=nilsso" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/issues?q=author%3Anilsso" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://rileychase.net"><img src="https://avatars.githubusercontent.com/u/1491530?v=4?s=100" width="100px;" alt="Riley Chase"/><br /><sub><b>Riley Chase</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=Nadock" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://gh.arielle.codes"><img src="https://avatars.githubusercontent.com/u/71233171?v=4?s=100" width="100px;" alt="arl"/><br /><sub><b>arl</b></sub></a><br /><a href="#maintenance-onerandomusername" title="Maintenance">🚧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Galdanwing"><img src="https://avatars.githubusercontent.com/u/29492757?v=4?s=100" width="100px;" alt="Antoine van der Horst"/><br /><sub><b>Antoine van der Horst</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=Galdanwing" title="Documentation">📖</a></td>
@@ -430,6 +429,13 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/su-shubham"><img src="https://avatars.githubusercontent.com/u/75021117?v=4?s=100" width="100px;" alt="Shubham"/><br /><sub><b>Shubham</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=su-shubham" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://www.linkedin.com/in/erik-hasse"><img src="https://avatars.githubusercontent.com/u/37126755?v=4?s=100" width="100px;" alt="Erik Hasse"/><br /><sub><b>Erik Hasse</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3Aerik-hasse" title="Bug reports">🐛</a> <a href="https://github.com/litestar-org/litestar/commits?author=erik-hasse" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://sobolevn.me"><img src="https://avatars.githubusercontent.com/u/4660275?v=4?s=100" width="100px;" alt="Nikita Sobolev"/><br /><sub><b>Nikita Sobolev</b></sub></a><br /><a href="#infra-sobolevn" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/litestar-org/litestar/commits?author=sobolevn" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/lazyc97"><img src="https://avatars.githubusercontent.com/u/8538104?v=4?s=100" width="100px;" alt="Nguyễn Hoàng Đức"/><br /><sub><b>Nguyễn Hoàng Đức</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3Alazyc97" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/RavanaBhrama"><img src="https://avatars.githubusercontent.com/u/131459969?v=4?s=100" width="100px;" alt="RavanaBhrama"/><br /><sub><b>RavanaBhrama</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=RavanaBhrama" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/mj0nez"><img src="https://avatars.githubusercontent.com/u/20128340?v=4?s=100" width="100px;" alt="Marcel Johannesmann"/><br /><sub><b>Marcel Johannesmann</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=mj0nez" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://zanfar.com/"><img src="https://avatars.githubusercontent.com/u/10294685?v=4?s=100" width="100px;" alt="Matthew"/><br /><sub><b>Matthew</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=therealzanfar" title="Documentation">📖</a></td>
+    </tr>
   </tbody>
 </table>
 
@@ -440,3 +446,5 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
 Contributions of any kind welcome!
+
+<!-- contributors-end -->

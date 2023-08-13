@@ -4,12 +4,13 @@ Contribution guide
 Setting up the environment
 --------------------------
 
-1. Install `poetry <https://python-poetry.org/>`_
-2. Run ``poetry install`` to create a `virtual environment <https://docs.python.org/3/tutorial/venv.html>`_ and install
-   the dependencies
-3. If you're working on the documentation and need to build it locally, install the extra dependencies with ``poetry install --with docs``
-4. Install `pre-commit <https://pre-commit.com/>`_
-5. Run ``pre-commit install && pre-commit install --hook-type commit-msg`` to install pre-commit hooks
+1. Install `poetry <https://python-poetry.org/>`_.
+2. Run ``poetry install --extras full`` to create a `virtual environment <https://docs.python.org/3/tutorial/venv.html>`_
+   and install the dependencies.
+3. If you're working on the documentation and need to build it locally, install the extra dependencies with
+   ``poetry install --with docs --extras full``.
+4. Install `pre-commit <https://pre-commit.com/>`_.
+5. Run ``pre-commit install && pre-commit install --hook-type commit-msg`` to install pre-commit hooks.
 
 .. tip::
   Many modern IDEs like PyCharm or VS Code will enable the poetry-managed virtualenv that is created in step 2 for you automatically.
@@ -81,6 +82,12 @@ The ``Makefile`` includes several commands for running tests:
 - ``make test-all`` to run all tests
 - ``make coverage`` to run tests with coverage and generate an html report
 
+The tests make use of `pytest-xdist <https://pytest-xdist.readthedocs.io>`_ to speed up
+test runs. These are enabled by default when running ``make test``, ``make test-all``
+or ``make coverage``. Due to the nature of pytest-xdist, attaching a debugger isn't as
+straightforward. For debugging, it's recommended to run the tests individually with
+``pytest <test name>`` or via an IDE, which will skip pytest-xdist.
+
 
 Project documentation
 ---------------------
@@ -102,7 +109,7 @@ Running the docs locally
 
 To run or build the docs locally, you need to first install the required dependencies:
 
-``poetry install --with docs``
+``poetry install --with docs --extras full``
 
 Then you can serve the documentation with ``make docs-serve``, or build them with ``make docs``
 

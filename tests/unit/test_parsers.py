@@ -30,10 +30,10 @@ def test_parse_form_data() -> None:
         ).encode(),
     )
     assert result == {
-        "value": [10, 12],
+        "value": ["10", "12"],
         "veggies": ["tomato", "potato", "aubergine"],
         "nested": {"some_key": "some_value"},
-        "calories": 122.53,
+        "calories": "122.53",
         "healthy": True,
         "polluting": False,
     }

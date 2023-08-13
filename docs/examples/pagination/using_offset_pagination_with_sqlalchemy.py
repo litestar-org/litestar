@@ -26,7 +26,7 @@ class PersonOffsetPaginator(AbstractAsyncOffsetPaginator[Person]):
         return cast("int", await self.async_session.scalar(select(func.count(Person.id))))
 
     async def get_items(self, limit: int, offset: int) -> List[Person]:
-        people: "ScalarResult" = await self.async_session.scalars(select(Person).slice(offset, limit))
+        people: ScalarResult = await self.async_session.scalars(select(Person).slice(offset, limit))
         return list(people.all())
 
 

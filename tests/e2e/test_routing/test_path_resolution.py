@@ -3,7 +3,8 @@ from typing import Any, Callable, List, Optional, Type
 
 import pytest
 
-from litestar import Controller, MediaType, delete, get, post
+from litestar import Controller, MediaType, Router, delete, get, post
+from litestar.contrib.pydantic import _model_dump
 from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_204_NO_CONTENT,
@@ -11,7 +12,7 @@ from litestar.status_codes import (
     HTTP_405_METHOD_NOT_ALLOWED,
 )
 from litestar.testing import create_test_client
-from tests import Person, PersonFactory
+from tests import PydanticPerson, PydanticPersonFactory
 
 
 @delete(sync_to_thread=False)
@@ -93,19 +94,19 @@ def test_path_parsing_with_ambiguous_paths() -> None:
 def test_root_route_handler(
     decorator: Type[get], test_path: str, decorator_path: str, delete_handler: Optional[Callable]
 ) -> None:
-    person_instance = PersonFactory.build()
+    person_instance = PydanticPersonFactory.build()
 
     class MyController(Controller):
         path = test_path
 
         @decorator(path=decorator_path)
-        def test_method(self) -> Person:
+        def test_method(self) -> PydanticPerson:
             return person_instance
 
     with create_test_client([MyController, delete_handler] if delete_handler else MyController) as client:
         response = client.get(decorator_path or test_path)
         assert response.status_code == HTTP_200_OK, response.json()
-        assert response.json() == person_instance.dict()
+        assert response.json() == _model_dump(person_instance)
         if delete_handler:
             delete_response = client.delete("/")
             assert delete_response.status_code == HTTP_204_NO_CONTENT
@@ -245,9 +246,9 @@ def test_support_for_path_type_parameters() -> None:
     def lower_handler(string_param: str) -> str:
         return string_param
 
-    @get(path="/{string_param:str}/{parth_param:path}")
-    def upper_handler(string_param: str, parth_param: Path) -> str:
-        return string_param + str(parth_param)
+    @get(path="/{string_param:str}/{path_param:path}")
+    def upper_handler(string_param: str, path_param: Path) -> str:
+        return string_param + str(path_param)
 
     with create_test_client([lower_handler, upper_handler]) as client:
         response = client.get("/abc")
@@ -272,4 +273,30 @@ def test_root_path_param_resolution() -> None:
         assert response.status_code == HTTP_404_NOT_FOUND
 
         response = client.get("/jon/bon/jovi")
+        assert response.status_code == HTTP_404_NOT_FOUND
+
+
+def test_root_path_param_resolution_2() -> None:
+    # https://github.com/litestar-org/litestar/issues/1830#issuecomment-1642291149
+    @get("/{name:str}")
+    async def name_greeting(name: str) -> str:
+        return f"Hello, {name}!"
+
+    @get("/{age:int}")
+    async def age_greeting(name: str, age: int) -> str:
+        return f"Hello, {name}! {age} is a great age to be!"
+
+    age_router = Router("/{name:str}/age", route_handlers=[age_greeting])
+    name_router = Router("/name", route_handlers=[name_greeting, age_router])
+
+    with create_test_client(name_router) as client:
+        response = client.get("/name/jon")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "Hello, jon!"
+
+        response = client.get("/name/jon/age/42")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "Hello, jon! 42 is a great age to be!"
+
+        response = client.get("/name/jon/bon")
         assert response.status_code == HTTP_404_NOT_FOUND

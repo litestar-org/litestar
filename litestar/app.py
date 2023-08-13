@@ -3,12 +3,12 @@ from __future__ import annotations
 import inspect
 import logging
 import os
-from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager
+from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager, suppress
 from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Literal, Mapping, Sequence, TypedDict, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Mapping, Sequence, TypedDict, cast
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
@@ -22,6 +22,7 @@ from litestar.datastructures.state import State
 from litestar.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
 from litestar.exceptions import (
     ImproperlyConfiguredException,
+    MissingDependencyException,
     NoRouteMatchFoundException,
 )
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
@@ -29,17 +30,20 @@ from litestar.middleware.cors import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.spec.components import Components
 from litestar.plugins import (
+    CLIPluginProtocol,
     InitPluginProtocol,
     OpenAPISchemaPluginProtocol,
+    PluginProtocol,
+    PluginRegistry,
     SerializationPluginProtocol,
 )
 from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.static_files.base import StaticFiles
 from litestar.stores.registry import StoreRegistry
-from litestar.types import Empty
+from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition
-from litestar.utils import AsyncCallable, join_paths, unique, warn_deprecation
+from litestar.utils import AsyncCallable, deprecated, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
 from litestar.utils.predicates import is_async_callable
 from litestar.utils.warnings import warn_pdb_on_exception
@@ -51,12 +55,11 @@ if TYPE_CHECKING:
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
     from litestar.datastructures import CacheControlHeader, ETag, ResponseHeader
-    from litestar.dto.interface import DTOInterface
+    from litestar.dto import AbstractDTO
     from litestar.events.listener import EventListener
     from litestar.logging.config import BaseLoggingConfig
     from litestar.openapi.spec import SecurityRequirement
     from litestar.openapi.spec.open_api import OpenAPI
-    from litestar.plugins import PluginProtocol
     from litestar.static_files.config import StaticFilesConfig
     from litestar.stores.base import Store
     from litestar.template.config import TemplateConfig
@@ -92,6 +95,7 @@ if TYPE_CHECKING:
         TypeEncodersMap,
     )
     from litestar.types.callable_types import LifespanHook
+
 
 __all__ = ("HandlerIndex", "Litestar", "DEFAULT_OPENAPI_CONFIG")
 
@@ -129,7 +133,7 @@ class Litestar(Router):
         "_lifespan_managers",
         "_debug",
         "_openapi_schema",
-        "_preferred_validation_backend",
+        "plugins",
         "after_exception",
         "allowed_hosts",
         "asgi_handler",
@@ -146,11 +150,9 @@ class Litestar(Router):
         "on_shutdown",
         "on_startup",
         "openapi_config",
-        "openapi_schema_plugins",
         "request_class",
         "response_cache_config",
         "route_map",
-        "serialization_plugins",
         "signature_namespace",
         "state",
         "static_files_config",
@@ -174,7 +176,7 @@ class Litestar(Router):
         compression_config: CompressionConfig | None = None,
         cors_config: CORSConfig | None = None,
         csrf_config: CSRFConfig | None = None,
-        dto: type[DTOInterface] | None | EmptyType = Empty,
+        dto: type[AbstractDTO] | None | EmptyType = Empty,
         debug: bool | None = None,
         dependencies: Dependencies | None = None,
         etag: ETag | None = None,
@@ -197,7 +199,7 @@ class Litestar(Router):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: OptionalSequence[ResponseHeader] | None = None,
-        return_dto: type[DTOInterface] | None | EmptyType = Empty,
+        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         security: OptionalSequence[SecurityRequirement] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
         state: State | None = None,
@@ -206,10 +208,10 @@ class Litestar(Router):
         tags: Sequence[str] | None = None,
         template_config: TemplateConfig | None = None,
         type_encoders: TypeEncodersMap | None = None,
+        type_decoders: TypeDecodersSequence | None = None,
         websocket_class: type[WebSocket] | None = None,
         lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
         pdb_on_exception: bool | None = None,
-        _preferred_validation_backend: Literal["attrs", "pydantic"] | None = None,
     ) -> None:
         """Initialize a ``Litestar`` application.
 
@@ -238,7 +240,7 @@ class Litestar(Router):
             csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
             debug: If ``True``, app errors rendered as HTML with a stack trace.
             dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
-            dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
+            dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
                 validation of request data.
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
                 Can be overridden by route handlers.
@@ -274,7 +276,7 @@ class Litestar(Router):
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>`.
             response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
             response_cache_config: Configures caching behavior of the application.
-            return_dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing
+            return_dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing
                 outbound response data.
             route_handlers: A sequence of route handlers, which can include instances of
                 :class:`Router <.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or any
@@ -293,6 +295,7 @@ class Litestar(Router):
                 application.
             template_config: An instance of :class:`TemplateConfig <.template.TemplateConfig>`
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+            type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
             websocket_class: An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket
                 connections.
         """
@@ -304,13 +307,6 @@ class Litestar(Router):
 
         if pdb_on_exception is None:
             pdb_on_exception = os.getenv("LITESTAR_PDB", "0") == "1"
-
-        if _preferred_validation_backend is not None:
-            warn_deprecation(
-                version="2.0.0beta1",
-                kind="parameter",
-                deprecated_name="_preferred_validation_backend",
-            )
 
         config = AppConfig(
             after_exception=list(after_exception or []),
@@ -341,7 +337,7 @@ class Litestar(Router):
             opt=dict(opt or {}),
             parameters=parameters or {},
             pdb_on_exception=pdb_on_exception,
-            plugins=list(plugins or []),
+            plugins=[*(plugins or []), *self._get_default_plugins()],
             request_class=request_class,
             response_cache_config=response_cache_config or ResponseCacheConfig(),
             response_class=response_class,
@@ -357,6 +353,7 @@ class Litestar(Router):
             tags=list(tags or []),
             template_config=template_config,
             type_encoders=type_encoders,
+            type_decoders=type_decoders,
             websocket_class=websocket_class,
         )
         for handler in chain(
@@ -364,6 +361,8 @@ class Litestar(Router):
             (p.on_app_init for p in config.plugins if isinstance(p, InitPluginProtocol)),
         ):
             config = handler(config)  # pyright: ignore
+
+        self.plugins = PluginRegistry(config.plugins)
 
         self._openapi_schema: OpenAPI | None = None
         self._debug: bool = True
@@ -387,11 +386,8 @@ class Litestar(Router):
         self.on_shutdown = config.on_shutdown
         self.on_startup = config.on_startup
         self.openapi_config = config.openapi_config
-        self.openapi_schema_plugins = [p for p in config.plugins if isinstance(p, OpenAPISchemaPluginProtocol)]
-        self._preferred_validation_backend: Literal["attrs", "pydantic"] = _preferred_validation_backend or "pydantic"
         self.request_class = config.request_class or Request
         self.response_cache_config = config.response_cache_config
-        self.serialization_plugins = [p for p in config.plugins if isinstance(p, SerializationPluginProtocol)]
         self.state = config.state
         self.static_files_config = config.static_files_config
         self.template_engine = config.template_config.engine_instance if config.template_config else None
@@ -426,6 +422,7 @@ class Litestar(Router):
             signature_namespace=config.signature_namespace,
             tags=config.tags,
             type_encoders=config.type_encoders,
+            type_decoders=config.type_decoders,
         )
 
         for route_handler in config.route_handlers:
@@ -446,6 +443,35 @@ class Litestar(Router):
         self.stores: StoreRegistry = (
             config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
         )
+
+    @property
+    @deprecated(version="2.0", alternative="Litestar.plugins.cli", kind="property")
+    def cli_plugins(self) -> list[CLIPluginProtocol]:
+        return list(self.plugins.cli)
+
+    @property
+    @deprecated(version="2.0", alternative="Litestar.plugins.openapi", kind="property")
+    def openapi_schema_plugins(self) -> list[OpenAPISchemaPluginProtocol]:
+        return list(self.plugins.openapi)
+
+    @property
+    @deprecated(version="2.0", alternative="Litestar.plugins.serialization", kind="property")
+    def serialization_plugins(self) -> list[SerializationPluginProtocol]:
+        return list(self.plugins.serialization)
+
+    @staticmethod
+    def _get_default_plugins() -> list[PluginProtocol]:
+        default_plugins: list[PluginProtocol] = []
+        with suppress(MissingDependencyException):
+            from litestar.contrib.pydantic import PydanticInitPlugin, PydanticSchemaPlugin
+
+            default_plugins.extend((PydanticInitPlugin(), PydanticSchemaPlugin()))
+
+        with suppress(MissingDependencyException):
+            from litestar.contrib.attrs import AttrsSchemaPlugin
+
+            default_plugins.append(AttrsSchemaPlugin())
+        return default_plugins
 
     @property
     def debug(self) -> bool:
@@ -792,7 +818,7 @@ class Litestar(Router):
                 path_item, created_operation_ids = create_path_item(
                     route=route,
                     create_examples=self.openapi_config.create_examples,
-                    plugins=self.openapi_schema_plugins,
+                    plugins=self.plugins.openapi,
                     use_handler_docstrings=self.openapi_config.use_handler_docstrings,
                     operation_id_creator=self.openapi_config.operation_id_creator,
                     schemas=schemas,

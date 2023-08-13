@@ -9,27 +9,27 @@ from sqlalchemy.ext.associationproxy import AssociationProxy, AssociationProxyEx
 from sqlalchemy.ext.hybrid import HybridExtensionType, hybrid_property
 from sqlalchemy.orm import (
     ColumnProperty,
+    CompositeProperty,
     DeclarativeBase,
     InspectionAttr,
     Mapped,
+    MappedColumn,
     NotExtension,
     QueryableAttribute,
     RelationshipDirection,
     RelationshipProperty,
 )
 
-from litestar.dto.factory.abc import AbstractDTOFactory
-from litestar.dto.factory.data_structures import DTOFieldDefinition
-from litestar.dto.factory.field import DTO_FIELD_META_KEY, DTOField, Mark
-from litestar.dto.factory.utils import get_model_type_hints
+from litestar.dto.base_dto import AbstractDTO
+from litestar.dto.data_structures import DTOFieldDefinition
+from litestar.dto.field import DTO_FIELD_META_KEY, DTOField, Mark
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils.helpers import get_fully_qualified_class_name
 from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Generator
+    from typing import Any, Generator
 
     from typing_extensions import TypeAlias
 
@@ -37,16 +37,12 @@ __all__ = ("SQLAlchemyDTO",)
 
 T = TypeVar("T", bound="DeclarativeBase | Collection[DeclarativeBase]")
 
-ElementType: TypeAlias = "Column[Any] | RelationshipProperty[Any]"
+ElementType: TypeAlias = "Column | RelationshipProperty | CompositeProperty"
 SQLA_NS = {**vars(orm), **vars(sql)}
 
 
-class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
+class SQLAlchemyDTO(AbstractDTO[T], Generic[T]):
     """Support for domain modelling with SQLAlchemy."""
-
-    __slots__ = ()
-
-    model_type: ClassVar[type[DeclarativeBase]]
 
     @singledispatchmethod
     @classmethod
@@ -78,7 +74,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
             if not isinstance(orm_descriptor.property.expression, Column):
                 raise NotImplementedError(f"Expected 'Column', got: '{orm_descriptor.property.expression}'")
             elem = orm_descriptor.property.expression
-        elif isinstance(orm_descriptor.property, RelationshipProperty):
+        elif isinstance(orm_descriptor.property, (RelationshipProperty, CompositeProperty)):
             elem = orm_descriptor.property
         else:
             raise NotImplementedError(f"Unhandled property type: '{orm_descriptor.property}'")
@@ -102,8 +98,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                 ),
                 default_factory=default_factory,
                 dto_field=elem.info.get(DTO_FIELD_META_KEY, DTOField()),
-                dto_for=None,
-                unique_model_name=model_name,
+                model_name=model_name,
             )
         ]
 
@@ -134,8 +129,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                 ),
                 default_factory=None,
                 dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.READ_ONLY)),
-                unique_model_name=model_name,
-                dto_for=None,
+                model_name=model_name,
             )
         ]
 
@@ -163,8 +157,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                 ),
                 default_factory=None,
                 dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.READ_ONLY)),
-                unique_model_name=model_name,
-                dto_for="return",
+                model_name=model_name,
             )
         ]
 
@@ -179,8 +172,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
                     ),
                     default_factory=None,
                     dto_field=orm_descriptor.info.get(DTO_FIELD_META_KEY, DTOField(mark=Mark.WRITE_ONLY)),
-                    unique_model_name=model_name,
-                    dto_for="data",
+                    model_name=model_name,
                 )
             )
 
@@ -193,17 +185,28 @@ class SQLAlchemyDTO(AbstractDTOFactory[T], Generic[T]):
 
         # includes SQLAlchemy names and other mapped class names in the forward reference resolution namespace
         namespace = {**SQLA_NS, **{m.class_.__name__: m.class_ for m in mapper.registry.mappers if m is not mapper}}
-        model_type_hints = get_model_type_hints(model_type, namespace=namespace)
-        model_name = get_fully_qualified_class_name(model_type)
+        model_type_hints = cls.get_model_type_hints(model_type, namespace=namespace)
+        model_name = model_type.__name__
 
         # the same hybrid property descriptor can be included in `all_orm_descriptors` multiple times, once
         # for each method name it is bound to. We only need to see it once, so track views of it here.
         seen_hybrid_descriptors: set[hybrid_property] = set()
+        skipped_columns: set[str] = set()
+        for composite_property in mapper.composites:
+            for attr in composite_property.attrs:
+                if isinstance(attr, (MappedColumn, Column)):
+                    skipped_columns.add(attr.name)
+                elif isinstance(attr, str):
+                    skipped_columns.add(attr)
         for key, orm_descriptor in mapper.all_orm_descriptors.items():
             if isinstance(orm_descriptor, hybrid_property):
                 if orm_descriptor in seen_hybrid_descriptors:
                     continue
+
                 seen_hybrid_descriptors.add(orm_descriptor)
+
+            if key in skipped_columns:
+                continue
 
             yield from cls.handle_orm_descriptor(
                 orm_descriptor.extension_type, key, orm_descriptor, model_type_hints, model_name
@@ -225,7 +228,7 @@ def _detect_defaults(elem: ElementType) -> tuple[Any, Any]:
             def default_factory(d: Any = sqla_default) -> Any:
                 return d.arg({})
 
-        elif sqla_default.is_sequence:
+        elif sqla_default.is_sequence or sqla_default.is_sentinel:
             # SQLAlchemy sequences represent server side defaults
             # so we cannot infer a reasonable default value for
             # them on the client side
@@ -270,6 +273,9 @@ def parse_type_from_element(elem: ElementType) -> FieldDefinition:
             return FieldDefinition.from_annotation(Optional[elem.mapper.class_])
 
         return FieldDefinition.from_annotation(elem.mapper.class_)
+
+    if isinstance(elem, CompositeProperty):
+        return FieldDefinition.from_annotation(elem.composite_class)
 
     raise ImproperlyConfiguredException(
         f"Unable to parse type from element '{elem}'. Consider adding a type hint.",

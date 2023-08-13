@@ -52,7 +52,7 @@ Imports
 +====================================================+========================================================================+
 | ``starlite.ASGIConnection``                        | :class:`.connection.ASGIConnection`                                    |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.Partial``                               | :class:`.partial.Partial`                                              |
+| ``starlite.Partial``                               | replaced with DTOs                                                     |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Enums**                                                                                                                   |
 +----------------------------------------------------+------------------------------------------------------------------------+
@@ -303,7 +303,7 @@ SQLAlchemy 2 only.
 TODO: Migration instructions
 
 .. seealso::
-    The :doc:`/usage/contrib/sqlalchemy/index` usage documentation and the
+    The :doc:`/usage/databases/sqlalchemy/index` usage documentation and the
     :doc:`/reference/contrib/sqlalchemy/index` API reference
 
 
@@ -441,18 +441,16 @@ DTOs
 DTOs are now defined using the ``dto`` and ``return_dto`` arguments to
 handlers/controllers/routers and the application.
 
-A DTO is any type that conforms to the :class:`litestar.dto.interface.DTOInterface`
-protocol.
+A DTO is any type that inherits from :class:`litestar.dto.base_dto.AbstractDTO`.
 
-Litestar provides a suite of factory types that implement the ``DTOInterface`` protocol
+Litestar provides a suite of types that implement the ``AbstractDTO`` abstract class
 and can be used to define DTOs:
 
-- :class:`litestar.dto.factory.stdlib.DataclassDTO`
+- :class:`litestar.dto.dataclass_dto.DataclassDTO`
+- :class:`litestar.dto.msgspec_dto.MsgspecDTO`
 - :class:`litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO`
 - :class:`litestar.contrib.pydantic.PydanticDTO`
-- :class:`litestar.contrib.msgspec.MsgspecDTO`
-- ``litestar.contrib.piccolo.PiccoloDTO`` (TODO)
-- ``litestar.contrib.tortoise.TortoiseDTO`` (TODO)
+- :class:`litestar.contrib.piccolo.PiccoloDTO`
 
 For example, to define a DTO from a dataclass:
 
@@ -461,8 +459,7 @@ For example, to define a DTO from a dataclass:
     from dataclasses import dataclass
 
     from litestar import get
-    from litestar.dto.factory import DTOConfig
-    from litestar.dto.factory.stdlib import DataclassDTO
+    from litestar.dto import DTOConfig, DataclassDTO
 
 
     @dataclass
@@ -606,7 +603,7 @@ Basic support for HTMX requests and responses was added with the
 ``litestar.contrib.htmx`` module.
 
 .. seealso::
-   The :doc:`/usage/contrib/htmx` usage documentation
+   The :doc:`/usage/htmx` usage documentation
 
 
 Event bus

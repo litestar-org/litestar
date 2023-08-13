@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Awaitable
+from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import NotAuthorizedException
 from litestar.middleware.authentication import (
@@ -79,7 +79,7 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
         exclude: str | list[str] | None,
         exclude_opt_key: str,
         scopes: Scopes | None,
-        retrieve_user_handler: AsyncCallable[[dict[str, Any], ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
+        retrieve_user_handler: AsyncCallable[[dict[str, Any], ASGIConnection[Any, Any, Any, Any]], Any],
     ) -> None:
         """Session based authentication middleware.
 
@@ -105,7 +105,7 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
         Returns:
             :class:`AuthenticationResult <.middleware.authentication.AuthenticationResult>`
         """
-        if not connection.session or connection.session is Empty:  # type: ignore
+        if not connection.session or connection.session is Empty:
             # the assignment of 'Empty' forces the session middleware to clear session data.
             connection.scope["session"] = Empty
             raise NotAuthorizedException("no session data found")

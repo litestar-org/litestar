@@ -24,7 +24,7 @@ request data in the form of JSON and use the type annotation we gave it to conve
 into the correct format.
 
 .. seealso::
-    :doc:`/usage/request-data`
+    :doc:`/usage/requests`
 
 
 Using the interactive documentation to test a route
@@ -106,7 +106,7 @@ as ``greeter(name="john")``, similar to how query parameters are injected.
     well. This is configured using the ``:type`` colon annotation, similar to type
     annotations. ``value:str`` will receive values as a string, while e.g. ``value:int``
     will try to convert it into an integer. A full list of supported types can be found
-    here: :ref:`usage/parameters:supported path parameter types`
+    here: :ref:`usage/routing/parameters:supported path parameter types`
 
 
 By using this pattern and combining it with those from the earlier section about
@@ -120,4 +120,4 @@ list.
 
 
 .. seealso::
-    :ref:`usage/parameters:path parameters`
+    :ref:`usage/routing/parameters:path parameters`

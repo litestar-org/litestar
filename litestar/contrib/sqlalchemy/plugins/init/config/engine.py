@@ -10,7 +10,7 @@ from litestar.types import Empty
 try:
     import sqlalchemy  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("sqlalchemy is not installed") from e
+    raise MissingDependencyException("sqlalchemy") from e
 
 if TYPE_CHECKING:
     from typing import Any, Mapping

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import importlib
 import inspect
 import sys
@@ -26,7 +27,7 @@ try:
 except ImportError:
     pass
 
-if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
+if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     from click import ClickException, Command, Context, Group, pass_context
 else:
     from rich_click import ClickException, Context, pass_context
@@ -100,13 +101,10 @@ class LitestarEnv:
         if cwd_str_path not in sys.path:
             sys.path.append(cwd_str_path)
 
-        try:
+        with contextlib.suppress(ImportError):
             import dotenv
 
             dotenv.load_dotenv()
-        except ImportError:
-            pass
-
         app_path = app_path or getenv("LITESTAR_APP")
         if app_path:
             console.print(f"Using Litestar app from env: [bright_blue]{app_path!r}")
@@ -199,11 +197,45 @@ class LitestarExtensionGroup(LitestarGroup):
     ) -> None:
         """Init ``LitestarExtensionGroup``"""
         super().__init__(name=name, commands=commands, **attrs)
+        self._prepare_done = False
 
         for entry_point in entry_points(group="litestar.commands"):
             command = entry_point.load()
             _wrap_commands([command])
             self.add_command(command, entry_point.name)
+
+    def _prepare(self, ctx: Context) -> None:
+        if self._prepare_done:
+            return
+
+        if isinstance(ctx.obj, LitestarEnv):
+            env: LitestarEnv | None = ctx.obj
+        else:
+            try:
+                env = ctx.obj = LitestarEnv.from_env(ctx.params.get("app_path"))
+            except LitestarCLIException:
+                env = None
+
+        if env:
+            for plugin in env.app.plugins.cli:
+                plugin.on_cli_init(self)
+
+        self._prepare_done = True
+
+    def make_context(
+        self,
+        info_name: str | None,
+        args: list[str],
+        parent: Context | None = None,
+        **extra: Any,
+    ) -> Context:
+        ctx = super().make_context(info_name, args, parent, **extra)
+        self._prepare(ctx)
+        return ctx
+
+    def list_commands(self, ctx: Context) -> list[str]:
+        self._prepare(ctx)
+        return super().list_commands(ctx)
 
 
 def _inject_args(func: Callable[P, T]) -> Callable[Concatenate[Context, P], T]:

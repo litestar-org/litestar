@@ -15,9 +15,11 @@ from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedExce
 
 
 @pytest.mark.parametrize("algorithm", ["HS256", "HS384", "HS512"])
-@pytest.mark.parametrize("token_issuer", [None, secrets.token_hex()])
-@pytest.mark.parametrize("token_audience", [None, secrets.token_hex()])
-@pytest.mark.parametrize("token_unique_jwt_id", [None, secrets.token_hex()])
+@pytest.mark.parametrize("token_issuer", [None, "e3d7d10edbbc28bfebd8861d39ae7587acde1e1fcefe2cbbec686d235d68f475"])
+@pytest.mark.parametrize("token_audience", [None, "627224198b4245ed91cf8353e4ccdf1650728c7ee92748f55fe1e9a9c4d961df"])
+@pytest.mark.parametrize(
+    "token_unique_jwt_id", [None, "10f5c6967783ddd6bb0c4e8262d7097caeae64705e45f83275e3c32eee5d30f2"]
+)
 def test_token(
     algorithm: str,
     token_issuer: Optional[str],
@@ -99,9 +101,9 @@ def test_decode_validation() -> None:
         token.decode(encoded_token=encoded_token, algorithm=algorithm, secret=uuid4().hex)
 
 
-@given(exp=datetimes(max_value=datetime.now() - timedelta(seconds=1)))
+@given(exp=datetimes(min_value=datetime(1970, 1, 1), max_value=datetime.now() - timedelta(seconds=1)))
 def test_exp_validation(exp: datetime) -> None:
-    if sys.platform == "win32" and exp == datetime(1970, 1, 1, 0, 0):
+    if sys.platform == "win32" and exp == datetime(1970, 1, 1):
         # this does not work on windows. see https://bugs.python.org/issue29097
         pytest.skip("Skipping because .timestamp is weird on windows sometimes")
 

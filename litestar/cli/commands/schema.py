@@ -11,7 +11,7 @@ from litestar._openapi.typescript_converter.converter import (
 )
 from litestar.cli._utils import RICH_CLICK_INSTALLED, LitestarCLIException, LitestarGroup
 
-if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
+if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     from click import Path as ClickPath
     from click import group, option
 else:
@@ -40,9 +40,6 @@ def schema_group() -> None:
 )
 def generate_openapi_schema(app: Litestar, output: Path) -> None:
     """Generate an OpenAPI Schema."""
-    if not app.openapi_schema:  # pragma: no cover
-        raise LitestarCLIException("Litestar application does not have an OpenAPI schema")
-
     if output.suffix in (".yml", ".yaml"):
         content = dump_yaml(app.openapi_schema.to_schema(), default_flow_style=False)
     else:
@@ -65,9 +62,6 @@ def generate_openapi_schema(app: Litestar, output: Path) -> None:
 @option("--namespace", help="namespace to use for the typescript specs", type=str, default="API")
 def generate_typescript_specs(app: Litestar, output: Path, namespace: str) -> None:
     """Generate TypeScript specs from the OpenAPI schema."""
-    if not app.openapi_schema:  # pragma: no cover
-        raise LitestarCLIException("Litestar application does not have an OpenAPI schema")
-
     try:
         specs = convert_openapi_to_typescript(app.openapi_schema, namespace)
         beautified_output = beautifier.beautify(specs.write())

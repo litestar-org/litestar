@@ -5,7 +5,7 @@ Litestar supports a plugin system that allows you to extend the functionality of
 
 .. seealso::
 
-    :doc:`/usage/contrib/sqlalchemy/plugins/index`
+    :doc:`/usage/databases/sqlalchemy/plugins/index`
 
 Plugins are defined by protocols, and any type that satisfies a protocol can be included in the ``plugins`` argument of
 the :class:`app <litestar.app.Litestar>`.
@@ -67,11 +67,11 @@ Implementations of these plugins must define the following methods.
 The method takes a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and returns a :class:`bool`
 indicating whether the plugin supports serialization for that type.
 
-:meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[DTOInterface]: <litestar.plugins.SerializationPluginProtocol.create_dto_for_type>`
+:meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]: <litestar.plugins.SerializationPluginProtocol.create_dto_for_type>`
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 This method accepts a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and must return a
-:class:`DTOInterface <litestar.dto.interface.DTOInterface>` implementation that can be used to serialize and deserialize
+:class:`AbstractDTO <litestar.dto.base_dto.AbstractDTO>` implementation that can be used to serialize and deserialize
 the type.
 
 During application startup, if a data or return annotation is encountered that is not a supported type, is supported by
@@ -92,7 +92,7 @@ The following example shows the actual implementation of the ``SerializationPlug
 returns a :class:`bool` indicating whether the plugin supports serialization for the given type. Specifically, we return
 ``True`` if the parsed type is either a collection of SQLAlchemy models or a single SQLAlchemy model.
 
-:meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[DTOInterface]: <litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type>`
+:meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]: <litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type>`
 takes a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and returns a
 :class:`SQLAlchemyDTO <litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO>` subclass and includes some logic that may be
 interesting to potential serialization plugin authors.

@@ -3,7 +3,7 @@
 Updating instances
 ------------------
 
-In this section we'll see how to update existing instances using :class:`DTOData <litestar.dto.factory.DTOData>`.
+In this section we'll see how to update existing instances using :class:`DTOData <litestar.dto.data_structures.DTOData>`.
 
 PUT handlers
 ============
@@ -20,7 +20,7 @@ This script defines a ``PUT`` handler with path ``/person/{person_id:int}`` that
 ``person_id`` to specify which person should be updated.
 
 In the handler, we create an instance of ``Person``, simulating a database lookup, and then pass it to the
-:meth:`DTOData.update_instance() <litestar.dto.factory.DTOData.update_instance>` method, which returns the same instance
+:meth:`DTOData.update_instance() <litestar.dto.data_structures.DTOData.update_instance>` method, which returns the same instance
 after modifying it with the submitted data.
 
 .. image:: images/put_handlers.png
@@ -43,7 +43,7 @@ In this latest update, the handler has been changed to a :class:`@patch() <lites
 handler.
 
 This script introduces the ``PatchDTO`` class that has a similar configuration to ``WriteDTO``, with the ``id`` field
-excluded, but it also sets :attr:`partial=True <litestar.dto.factory.DTOConfig.partial>`. This setting allows for
+excluded, but it also sets :attr:`partial=True <litestar.dto.config.DTOConfig.partial>`. This setting allows for
 partial updates of the resource.
 
 And here's a demonstration of use:

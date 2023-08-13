@@ -13,7 +13,7 @@ from litestar.status_codes import (
     HTTP_304_NOT_MODIFIED,
     HTTP_307_TEMPORARY_REDIRECT,
 )
-from tests import Person
+from tests import PydanticPerson
 
 
 def test_route_handler_validation_http_method() -> None:
@@ -41,6 +41,8 @@ async def test_function_validation() -> None:
         def method_with_no_annotation():  # type: ignore
             pass
 
+        Litestar(route_handlers=[method_with_no_annotation])
+
         method_with_no_annotation.on_registration(Litestar())
 
     with pytest.raises(ImproperlyConfiguredException):
@@ -48,6 +50,8 @@ async def test_function_validation() -> None:
         @delete(path="/")
         def method_with_no_content() -> Dict[str, str]:
             return {}
+
+        Litestar(route_handlers=[method_with_no_content])
 
         method_with_no_content.on_registration(Litestar())
 
@@ -57,6 +61,8 @@ async def test_function_validation() -> None:
         def method_with_not_modified() -> Dict[str, str]:
             return {}
 
+        Litestar(route_handlers=[method_with_not_modified])
+
         method_with_not_modified.on_registration(Litestar())
 
     with pytest.raises(ImproperlyConfiguredException):
@@ -65,17 +71,23 @@ async def test_function_validation() -> None:
         def method_with_status_lower_than_200() -> Dict[str, str]:
             return {}
 
+        Litestar(route_handlers=[method_with_status_lower_than_200])
+
         method_with_status_lower_than_200.on_registration(Litestar())
 
     @get(path="/", status_code=HTTP_307_TEMPORARY_REDIRECT)
     def redirect_method() -> Redirect:
         return Redirect("/test")
 
+    Litestar(route_handlers=[redirect_method])
+
     redirect_method.on_registration(Litestar())
 
     @get(path="/")
     def file_method() -> File:
         return File(path=Path("."), filename="test_validations.py")
+
+    Litestar(route_handlers=[file_method])
 
     file_method.on_registration(Litestar())
 
@@ -92,7 +104,9 @@ async def test_function_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
 
         @get("/person")
-        def test_function_2(self, data: Person) -> None:  # type: ignore
+        def test_function_2(self, data: PydanticPerson) -> None:  # type: ignore
             return None
+
+        Litestar(route_handlers=[test_function_2])
 
         test_function_2.on_registration(Litestar())

@@ -19,7 +19,10 @@ from .predicates import (
     is_pydantic_constrained_field,
     is_pydantic_model_class,
     is_pydantic_model_instance,
+    is_struct_class,
+    is_sync_or_async_generator,
     is_typed_dict,
+    is_undefined_sentinel,
     is_union,
 )
 from .scope import (
@@ -28,7 +31,7 @@ from .scope import (
     get_serializer_from_scope,
     set_litestar_scope_state,
 )
-from .sequence import compact, find_index, unique
+from .sequence import find_index, unique
 from .sync import AsyncCallable, AsyncIteratorWrapper, async_partial
 from .typing import annotation_is_iterable_of_type, get_origin_or_inner_type, make_non_optional_union
 
@@ -38,7 +41,6 @@ __all__ = (
     "Ref",
     "annotation_is_iterable_of_type",
     "async_partial",
-    "compact",
     "delete_litestar_scope_state",
     "deprecated",
     "encode_headers",
@@ -48,8 +50,8 @@ __all__ = (
     "get_name",
     "get_origin_or_inner_type",
     "get_serializer_from_scope",
-    "is_any",
     "is_annotated_type",
+    "is_any",
     "is_async_callable",
     "is_attrs_class",
     "is_class_and_subclass",
@@ -64,7 +66,10 @@ __all__ = (
     "is_pydantic_constrained_field",
     "is_pydantic_model_class",
     "is_pydantic_model_instance",
+    "is_struct_class",
+    "is_sync_or_async_generator",
     "is_typed_dict",
+    "is_undefined_sentinel",
     "is_union",
     "join_paths",
     "make_non_optional_union",

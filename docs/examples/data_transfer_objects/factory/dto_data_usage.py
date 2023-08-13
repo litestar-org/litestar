@@ -4,8 +4,7 @@ from dataclasses import dataclass
 from uuid import UUID, uuid4
 
 from litestar import Litestar, post
-from litestar.dto.factory import DTOConfig, DTOData
-from litestar.dto.factory.stdlib.dataclass import DataclassDTO
+from litestar.dto import DataclassDTO, DTOConfig, DTOData
 
 
 @dataclass

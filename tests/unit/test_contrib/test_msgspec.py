@@ -5,9 +5,8 @@ from typing import TYPE_CHECKING
 from msgspec import Meta, Struct, field
 from typing_extensions import Annotated
 
-from litestar.contrib.msgspec import MsgspecDTO
-from litestar.dto.factory import dto_field
-from litestar.dto.factory.data_structures import DTOFieldDefinition
+from litestar.dto import MsgspecDTO, dto_field
+from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
@@ -25,10 +24,7 @@ def test_field_definition_generation(
         e: int = field(default_factory=int_factory)
 
     field_defs = list(MsgspecDTO.generate_field_definitions(TestStruct))
-    assert (
-        field_defs[0].unique_model_name
-        == "tests.unit.test_contrib.test_msgspec.test_field_definition_generation.<locals>.TestStruct"
-    )
+    assert field_defs[0].model_name == "TestStruct"
     for field_def, exp in zip(field_defs, expected_field_defs):
         assert field_def == exp
 
