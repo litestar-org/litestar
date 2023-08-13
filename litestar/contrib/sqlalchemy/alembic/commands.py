@@ -39,7 +39,7 @@ class AlembicCommandConfig(_AlembicCommandConfig):
     ) -> None:
         self.template_directory = template_directory
         self.version_table_name = version_table_name
-        self.version_table_pk = bool(engine.dialect.name != "spanner+spanner")
+        self.version_table_pk = engine.dialect.name != "spanner+spanner"
         self.db_url = engine.url.render_as_string(hide_password=False)
         if config_args is None:
             config_args = {}
@@ -217,9 +217,9 @@ class AlembicCommands:
     def _get_alembic_command_config(self) -> AlembicCommandConfig:
         kwargs = {}
         if self.plugin_config.alembic_config.script_config:
-            kwargs.update({"file_": self.plugin_config.alembic_config.script_config})
+            kwargs["file_"] = self.plugin_config.alembic_config.script_config
         if self.plugin_config.alembic_config.template_path:
-            kwargs.update({"template_directory": self.plugin_config.alembic_config.template_path})
+            kwargs["template_directory"] = self.plugin_config.alembic_config.template_path
         kwargs.update(
             {
                 "engine": self.plugin_config.create_engine(),  # type: ignore[dict-item]
