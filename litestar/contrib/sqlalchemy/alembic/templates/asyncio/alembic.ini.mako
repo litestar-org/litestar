@@ -1,4 +1,4 @@
-# Litestar Alembic Asyncio Config 
+# Litestar Alembic Asyncio Config
 [alembic]
 prepend_sys_path = src:.
 # path to migration scripts

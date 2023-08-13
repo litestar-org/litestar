@@ -4,6 +4,8 @@ import asyncio
 from typing import TYPE_CHECKING
 
 from alembic import context
+from sqlalchemy import pool
+from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from litestar.contrib.sqlalchemy.base import orm_registry
 
@@ -12,7 +14,6 @@ __all__ = ["do_run_migrations", "run_migrations_offline", "run_migrations_online
 
 if TYPE_CHECKING:
     from sqlalchemy.engine import Connection
-    from sqlalchemy.ext.asyncio import AsyncEngine
 
     from litestar.contrib.sqlalchemy.alembic.commands import AlembicCommandConfig
 
@@ -76,7 +77,14 @@ async def run_migrations_online() -> None:
     In this scenario we need to create an Engine and associate a
     connection with the context.
     """
-    connectable: AsyncEngine = config.engine  # type: ignore
+    configuration = config.get_section(config.config_ini_section) or {}
+    configuration["sqlalchemy.url"] = config.db_url
+    connectable = async_engine_from_config(
+        configuration,
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+        future=True,
+    )
     if connectable is None:
         raise RuntimeError("Could not get engine from config.")
 

@@ -26,6 +26,7 @@ if TYPE_CHECKING:
 class AlembicCommandConfig(_AlembicCommandConfig):
     def __init__(
         self,
+        engine: Engine | AsyncEngine,
         file_: str | os.PathLike[str] | None = None,
         ini_section: str = "alembic",
         output_buffer: TextIO | None = None,
@@ -35,11 +36,10 @@ class AlembicCommandConfig(_AlembicCommandConfig):
         attributes: dict | None = None,
         template_directory: Path | None = None,
         version_table_name: str | None = None,
-        engine: Engine | AsyncEngine | None = None,
     ) -> None:
         self.template_directory = template_directory
         self.version_table_name = version_table_name
-        self.engine = engine
+        self.db_url = engine.url.render_as_string(hide_password=False)
         if config_args is None:
             config_args = {}
         super().__init__(file_, ini_section, output_buffer, stdout, cmd_opts, config_args, attributes)

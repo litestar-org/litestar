@@ -55,7 +55,7 @@ def downgrade_database(app: Litestar, revision: str, sql: bool, tag: str | None)
 
 
 @database_group.command(
-    name="upgrade",
+    name="migrate",
     help="Upgrade database to a specific revision.",
 )
 @option(
@@ -78,7 +78,7 @@ def upgrade_database(app: Litestar, revision: str, sql: bool, tag: str | None) -
 
 
 @database_group.command(
-    name="init",
+    name="init-project",
     help="Initialize migrations for the project.",
 )
 @option(
@@ -93,7 +93,7 @@ def init_alembic(app: Litestar, directory: str, multidb: bool, package: bool) ->
 
 
 @database_group.command(
-    name="revision",
+    name="make-migrations",
     help="Create a new migration revision.",
 )
 @option("-m", "--message", default=None, help="Revision message")
