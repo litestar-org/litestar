@@ -60,18 +60,15 @@ def _parsed_type_args(annotation: Any, concrete_type: type[Any]) -> tuple[Any, .
         A new args tuple if one can be produced, or ``None``.
     """
 
-    if args := get_args(annotation):
-        type_var_found = False
-        new_args = []
-        for arg in args:
-            if isinstance(arg, TypeVar):
-                new_args.append(concrete_type)
-                type_var_found = True
-            else:
-                new_args.append(arg)
+    if not (args := get_args(annotation)):
+        return None
+    type_var_found = False
+    new_args = []
+    for arg in args:
+        if isinstance(arg, TypeVar):
+            new_args.append(concrete_type)
+            type_var_found = True
+        else:
+            new_args.append(arg)
 
-        if not type_var_found:
-            return None
-
-        return tuple(new_args)
-    return None
+    return None if not type_var_found else tuple(new_args)
