@@ -3,6 +3,7 @@ back again, to bytes.
 """
 from __future__ import annotations
 
+import functools
 import secrets
 import textwrap
 from contextlib import contextmanager, nullcontext
@@ -533,6 +534,20 @@ def _filter_nested_field(field_name_set: AbstractSet[str], field_name: str) -> A
     return {split[1] for s in field_name_set if (split := s.split(".", 1))[0] == field_name and len(split) > 1}
 
 
+def _gen_uniq_name(ctx: Container, name: str) -> str:
+    i = 0
+    while True:
+        unique_name = f"{name}_{i}"
+        if unique_name not in ctx:
+            return unique_name
+        i += 1
+
+
+class FieldAccessManager(Protocol):
+    def __call__(self, source_instance_name: str, field_name: str, expect_optional: bool) -> ContextManager[str]:
+        ...
+
+
 def _transfer_data(
     destination_type: type[Any],
     source_data: Any | Collection[Any],
@@ -577,41 +592,19 @@ def _transfer_data(
     )
 
 
-def _gen_uniq_name(ctx: Container, name: str) -> str:
-    i = 0
-    while True:
-        unique_name = f"{name}_{i}"
-        if unique_name not in ctx:
-            return unique_name
-        i += 1
-
-
-class FieldAccessManager(Protocol):
-    def __call__(self, source_instance_name: str, field_name: str, expect_optional: bool) -> ContextManager[str]:
-        ...
-
-
 class TransferFunctionFactory:
-    def __init__(
-        self,
-        destination_type: type[Any],
-        field_definitions: tuple[TransferDTOFieldDefinition, ...],
-        is_data_field: bool,
-        override_serialization_name: bool,
-    ) -> None:
-        self.destination_type = destination_type
-        self.field_definitions = field_definitions
+    def __init__(self, is_data_field: bool, override_serialization_name: bool, nested_as_dict: bool) -> None:
         self.is_data_field = is_data_field
         self.override_serialization_name = override_serialization_name
         self.fn_locals: dict[str, Any] = {
             "Mapping": Mapping,
-            "_transfer_type_data": _transfer_type_data,
             "_transfer_nested_union_type_data": _transfer_nested_union_type_data,
             "UNSET": UNSET,
         }
         self.indentation = 1
         self.body = ""
         self.names: set[str] = set()
+        self.nested_as_dict = nested_as_dict
 
     def add_to_fn_globals(self, name: str, value: Any) -> str:
         unique_name = _gen_uniq_name(self.fn_locals, name)
@@ -629,55 +622,10 @@ class TransferFunctionFactory:
         yield
         self.indentation -= 1
 
-    def add_stmt(self, stmt: str, newline: bool = True) -> None:
-        self.body += textwrap.indent(stmt + ("\n" if newline else ""), " " * self.indentation)
-
-    def create_fn(self) -> Callable[[Any], Any]:
-        tmp_return_type_name = self.create_local_name("tmp_return_type")
-        source_instance_name = self.create_local_name("source_instance")
-        destination_type_name = self.add_to_fn_globals("destination_type", self.destination_type)
-        self._create_transfer_instance_data(
-            tmp_return_type_name=tmp_return_type_name,
-            source_instance_name=source_instance_name,
-            destination_type_name=destination_type_name,
-            field_definitions=self.field_definitions,
+    def add_stmt(self, stmt: str, newline: bool = True, indentation: int | None = None) -> None:
+        self.body += textwrap.indent(
+            stmt + ("\n" if newline else ""), " " * (indentation if indentation is not None else self.indentation)
         )
-        self.add_stmt(f"return {tmp_return_type_name}")
-        out = f"def func({source_instance_name}):\n" + self.body
-        ctx = {}
-        exec(out, self.fn_locals, ctx)
-        return ctx["func"]
-
-    def _create_transfer_instance_data(
-        self,
-        tmp_return_type_name: str,
-        source_instance_name: str,
-        destination_type_name: str,
-        field_definitions: tuple[TransferDTOFieldDefinition, ...],
-    ) -> None:
-        local_dict_name = self.create_local_name("unstructured_data")
-        self.add_stmt(f"{local_dict_name} = {{}}")
-
-        field_definitions = tuple(f for f in field_definitions if self.is_data_field or not f.is_excluded)
-
-        if field_definitions:
-            for source_type in ("mapping", "object"):
-                if source_type == "mapping":
-                    self.add_stmt(f"if isinstance({source_instance_name}, Mapping):")
-                    access_item = self._access_mapping_item
-                else:
-                    self.add_stmt("else:")
-                    access_item = self._access_attribute
-
-                with self.start_indented_block():
-                    self._create_transfer_instance_data_body(
-                        local_dict_name=local_dict_name,
-                        field_definitions=field_definitions,
-                        access_field_safe=access_item,
-                        source_instance_name=source_instance_name,
-                    )
-
-        self.add_stmt(f"{tmp_return_type_name} = {destination_type_name}(**{local_dict_name})")
 
     @contextmanager
     def _access_mapping_item(
@@ -721,7 +669,88 @@ class TransferFunctionFactory:
             with self.start_indented_block():
                 self.add_stmt("pass")
 
-    def _create_transfer_instance_data_body(
+    @classmethod
+    def create_transfer_instance_data(
+        cls,
+        field_definitions: tuple[TransferDTOFieldDefinition, ...],
+        destination_type: type[Any],
+        is_data_field: bool,
+        override_serialization_name: bool,
+    ) -> Callable[[Any], Any]:
+        factory = cls(
+            is_data_field=is_data_field,
+            override_serialization_name=override_serialization_name,
+            nested_as_dict=destination_type is dict,
+        )
+        tmp_return_type_name = factory.create_local_name("tmp_return_type")
+        source_instance_name = factory.create_local_name("source_instance")
+        destination_type_name = factory.add_to_fn_globals("destination_type", destination_type)
+        factory._create_transfer_instance_data(
+            tmp_return_type_name=tmp_return_type_name,
+            source_instance_name=source_instance_name,
+            destination_type_name=destination_type_name,
+            field_definitions=field_definitions,
+        )
+        return factory.make_function(source_value_name=source_instance_name, return_value_name=tmp_return_type_name)
+
+    @classmethod
+    def create_transfer_type_data(
+        cls,
+        transfer_type: TransferType,
+        is_data_field: bool,
+        override_serialization_name: bool,
+    ) -> Callable[[Any], Any]:
+        factory = cls(
+            is_data_field=is_data_field, override_serialization_name=override_serialization_name, nested_as_dict=False
+        )
+        tmp_return_type_name = factory.create_local_name("tmp_return_type")
+        source_value_name = factory.create_local_name("source_value")
+        factory._create_transfer_type_data_body(
+            transfer_type=transfer_type,
+            nested_as_dict=False,
+            assignment_target=tmp_return_type_name,
+            source_value_name=source_value_name,
+        )
+        return factory.make_function(source_value_name=source_value_name, return_value_name=tmp_return_type_name)
+
+    def make_function(self, source_value_name: str, return_value_name: str) -> Callable[[Any], Any]:
+        source = f"def func({source_value_name}):\n" + self.body + f" return {return_value_name}"
+        ctx = {}
+        exec(source, self.fn_locals, ctx)
+        return ctx["func"]
+
+    def _create_transfer_instance_data(
+        self,
+        tmp_return_type_name: str,
+        source_instance_name: str,
+        destination_type_name: str,
+        field_definitions: tuple[TransferDTOFieldDefinition, ...],
+    ) -> None:
+        local_dict_name = self.create_local_name("unstructured_data")
+        self.add_stmt(f"{local_dict_name} = {{}}")
+
+        field_definitions = tuple(f for f in field_definitions if self.is_data_field or not f.is_excluded)
+
+        if field_definitions:
+            for source_type in ("mapping", "object"):
+                if source_type == "mapping":
+                    self.add_stmt(f"if isinstance({source_instance_name}, Mapping):")
+                    access_item = self._access_mapping_item
+                else:
+                    self.add_stmt("else:")
+                    access_item = self._access_attribute
+
+                with self.start_indented_block():
+                    self._create_transfer_instance_data_inner(
+                        local_dict_name=local_dict_name,
+                        field_definitions=field_definitions,
+                        access_field_safe=access_item,
+                        source_instance_name=source_instance_name,
+                    )
+
+        self.add_stmt(f"{tmp_return_type_name} = {destination_type_name}(**{local_dict_name})")
+
+    def _create_transfer_instance_data_inner(
         self,
         *,
         local_dict_name: str,
@@ -730,7 +759,6 @@ class TransferFunctionFactory:
         source_instance_name: str,
     ) -> None:
         should_use_serialization_name = not self.override_serialization_name and self.is_data_field
-        nested_as_dict = self.destination_type is dict
         for field_definition in field_definitions:
             source_field_name = (
                 field_definition.serialization_name if should_use_serialization_name else field_definition.name
@@ -755,14 +783,14 @@ class TransferFunctionFactory:
                     source_value_name = source_value_expr
                     ctx = nullcontext()
                 with ctx:
-                    self._create_transfer_type_data(
+                    self._create_transfer_type_data_body(
                         transfer_type=field_definition.transfer_type,
-                        nested_as_dict=nested_as_dict,
+                        nested_as_dict=self.nested_as_dict,
                         source_value_name=source_value_name,
                         assignment_target=f"{local_dict_name}['{destination_name}']",
                     )
 
-    def _create_transfer_type_data(
+    def _create_transfer_type_data_body(
         self,
         transfer_type: TransferType,
         nested_as_dict: bool,
@@ -798,16 +826,14 @@ class TransferFunctionFactory:
         if isinstance(transfer_type, CollectionType):
             origin_name = self.add_to_fn_globals("origin", transfer_type.field_definition.instantiable_origin)
             if transfer_type.has_nested:
-                self.fn_locals["transfer_type_data"] = _transfer_type_data
+                transfer_type_data_fn = TransferFunctionFactory.create_transfer_type_data(
+                    is_data_field=self.is_data_field,
+                    override_serialization_name=self.override_serialization_name,
+                    transfer_type=transfer_type.inner_type,
+                )
+                transfer_type_data_name = self.add_to_fn_globals("transfer_type_data", transfer_type_data_fn)
                 self.add_stmt(
-                    f"{assignment_target} = {origin_name}("
-                    "_transfer_type_data("
-                    "source_value=item,"
-                    f"transfer_type={self.add_to_fn_globals('inner_type', transfer_type.inner_type)},"
-                    "nested_as_dict=False,"
-                    f"is_data_field={self.is_data_field},"
-                    f"override_serialization_name={self.override_serialization_name},"
-                    f") for item in {source_value_name})"
+                    f"{assignment_target} = {origin_name}({transfer_type_data_name}(item) for item in {source_value_name})"
                 )
                 return
 
@@ -824,61 +850,13 @@ def _transfer_instance_data(
     is_data_field: bool,
     override_serialization_name: bool,
 ) -> Any:
-    fn = TransferFunctionFactory(
-        destination_type=destination_type,
+    fn = TransferFunctionFactory.create_transfer_instance_data(
         field_definitions=field_definitions,
+        destination_type=destination_type,
         is_data_field=is_data_field,
         override_serialization_name=override_serialization_name,
-    ).create_fn()
+    )
     return fn(source_instance)
-
-
-def _transfer_type_data(
-    source_value: Any,
-    transfer_type: TransferType,
-    nested_as_dict: bool,
-    is_data_field: bool,
-    override_serialization_name: bool,
-) -> Any:
-    if isinstance(transfer_type, SimpleType) and transfer_type.nested_field_info:
-        if nested_as_dict:
-            destination_type: Any = dict
-        elif is_data_field:
-            destination_type = transfer_type.field_definition.annotation
-        else:
-            destination_type = transfer_type.nested_field_info.model
-
-        return _transfer_instance_data(
-            destination_type=destination_type,
-            source_instance=source_value,
-            field_definitions=transfer_type.nested_field_info.field_definitions,
-            is_data_field=is_data_field,
-            override_serialization_name=override_serialization_name,
-        )
-
-    if isinstance(transfer_type, UnionType) and transfer_type.has_nested:
-        return _transfer_nested_union_type_data(
-            transfer_type=transfer_type,
-            source_value=source_value,
-            is_data_field=is_data_field,
-            override_serialization_name=override_serialization_name,
-        )
-
-    if isinstance(transfer_type, CollectionType):
-        if transfer_type.has_nested:
-            return transfer_type.field_definition.instantiable_origin(
-                _transfer_type_data(
-                    source_value=item,
-                    transfer_type=transfer_type.inner_type,
-                    nested_as_dict=False,
-                    is_data_field=is_data_field,
-                    override_serialization_name=override_serialization_name,
-                )
-                for item in source_value
-            )
-
-        return transfer_type.field_definition.instantiable_origin(source_value)
-    return source_value
 
 
 def _transfer_nested_union_type_data(
