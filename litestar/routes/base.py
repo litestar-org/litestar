@@ -18,7 +18,7 @@ from litestar.utils import join_paths, normalize_path
 if TYPE_CHECKING:
     from litestar.enums import ScopeType
     from litestar.handlers.base import BaseRouteHandler
-    from litestar.types import Method, Receive, Scope, Send
+    from litestar.types import Method, PathParameterTypeName, Receive, Scope, Send
 
 
 def _parse_datetime(value: str) -> datetime:
@@ -42,7 +42,7 @@ def _parse_timedelta(value: str) -> timedelta:
 
 param_match_regex = re.compile(r"{(.*?)}")
 
-param_type_map = {
+param_type_map: dict[PathParameterTypeName, type] = {
     "str": str,
     "int": int,
     "float": float,

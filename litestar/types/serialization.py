@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 if TYPE_CHECKING:
     from collections import deque
     from collections.abc import Collection
-    from datetime import date, datetime, time
+    from datetime import date, datetime, time, timedelta
     from decimal import Decimal
     from enum import Enum, IntEnum
     from ipaddress import (
@@ -37,13 +37,15 @@ if TYPE_CHECKING:
         AttrsInstance = Any  # type: ignore
 
 __all__ = (
-    "LitestarEncodableType",
-    "EncodableBuiltinType",
-    "EncodableBuiltinCollectionType",
-    "EncodableStdLibType",
-    "EncodableStdLibIPType",
-    "EncodableMsgSpecType",
     "DataContainerType",
+    "EncodableBuiltinCollectionType",
+    "EncodableBuiltinType",
+    "EncodableMsgSpecType",
+    "EncodableStdLibIPType",
+    "EncodableStdLibType",
+    "LitestarEncodableType",
+    "PathParameterTypeName",
+    "PathParameterType",
 )
 
 EncodableBuiltinType: TypeAlias = "None | bool | int | float | str | bytes | bytearray"
@@ -59,3 +61,16 @@ LitestarEncodableType: TypeAlias = "EncodableBuiltinType | EncodableBuiltinColle
 DataContainerType: TypeAlias = (
     "Struct | BaseModel | AttrsInstance | TypedDictClass | DataclassProtocol"  # pyright: ignore
 )
+PathParameterTypeName = Literal[
+    "str",
+    "int",
+    "float",
+    "uuid",
+    "decimal",
+    "date",
+    "datetime",
+    "time",
+    "timedelta",
+    "path",
+]
+PathParameterType: TypeAlias = "str | int | float | UUID | Decimal | date | datetime | time | timedelta | Path"
