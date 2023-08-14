@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 import pytest
@@ -12,7 +13,13 @@ except ImportError:
 from docs.examples.contrib.piccolo.app import DB, Task, app
 from piccolo.testing.model_builder import ModelBuilder
 
-pytestmark = pytest.mark.xdist_group("piccolo")
+pytestmark = [
+    pytest.mark.xdist_group("piccolo"),
+    pytest.mark.skipif(
+        sys.platform != "linux",
+        reason="piccolo ORM itself is not tested against windows and macOS",
+    ),
+]
 
 
 @pytest.fixture(autouse=True)
