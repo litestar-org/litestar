@@ -83,9 +83,6 @@ class AlembicSyncConfig(GenericAlembicConfig):
     For details see: https://alembic.sqlalchemy.org/en/latest/api/config.html
     """
 
-    def run_migrations_online(self, connection: Connection) -> None:
-        self.do_run_migrations(connection=connection)
-
 
 @dataclass
 class SQLAlchemySyncConfig(GenericSQLAlchemyConfig[Engine, Session, sessionmaker]):

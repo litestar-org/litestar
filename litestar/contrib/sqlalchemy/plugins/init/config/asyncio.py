@@ -93,9 +93,6 @@ class AlembicAsyncConfig(GenericAlembicConfig):
     For details see: https://alembic.sqlalchemy.org/en/latest/api/config.html
     """
 
-    async def run_migrations_online(self, connection: AsyncConnection) -> None:
-        await connection.run_sync(self.do_run_migrations)
-
 
 @dataclass
 class SQLAlchemyAsyncConfig(GenericSQLAlchemyConfig[AsyncEngine, AsyncSession, async_sessionmaker]):
