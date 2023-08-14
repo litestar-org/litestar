@@ -264,7 +264,12 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
         Returns:
             The value of attribute on ``item`` named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>`.
         """
-        return getattr(item, id_attribute if id_attribute is not None else cls.id_attribute)
+        id_attr_name = id_attribute if id_attribute is not None else cls.id_attribute
+
+        if isinstance(item, dict):
+            return item.get(id_attr_name)
+
+        return getattr(item, id_attr_name)
 
     @classmethod
     def set_id_attribute_value(cls, item_id: Any, item: T, id_attribute: str | None = None) -> T:

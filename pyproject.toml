@@ -283,6 +283,10 @@ module = ["tests.*.test_sqlalchemy_sync", "tests.*.test_sqlalchemy_async"]
 disable_error_code = "attr-defined"
 
 [[tool.mypy.overrides]]
+module = ["tests.*.test_mongodb_async"]
+disable_error_code = "attr-defined"
+
+[[tool.mypy.overrides]]
 module = "tests.unit.test_contrib.test_sqlalchemy.test_dto"
 disable_error_code = ["arg-type", "misc", "valid-type", "var-annotated"]
 

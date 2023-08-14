@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Optional, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 from pymongo import ReturnDocument, UpdateOne
 
@@ -21,6 +21,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
     """Motor based implementation of the repository interface."""
 
     id_attribute = "_id"
+    model_type: type[DocumentType] = dict
 
     def __init__(
         self, collection: AsyncIOMotorCollection, **kwargs: Any  # pyright: ignore[reportGeneralTypeIssues]
@@ -105,7 +106,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
         with wrap_pymongo_exception():
             documents_to_delete = await self.collection.find({self.id_attribute: {"$in": item_ids}}).to_list(None)
             await self.collection.delete_many({self.id_attribute: {"$in": item_ids}})
-            return cast(list[DocumentType], documents_to_delete)
+            return cast(List[DocumentType], documents_to_delete)
 
     async def exists(self, **kwargs: Any) -> bool:
         """Return true if the object specified by ``kwargs`` exists.
@@ -185,7 +186,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
             update = {"$set": kwargs}
             with wrap_pymongo_exception():
                 return (
-                    await self.collection.find_one_and_update(doc, **update, return_document=ReturnDocument.AFTER),
+                    await self.collection.find_one_and_update(doc, update, return_document=ReturnDocument.AFTER),
                     False,
                 )
         return doc, False
@@ -272,7 +273,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
 
         with wrap_pymongo_exception():
             document = await self.collection.find_one_and_update(
-                {"_id": data["_id"]}, {"$set": data}, upsert=True, return_document=ReturnDocument.AFTER
+                {"_id": data["_id"]}, {"$set": data}, return_document=ReturnDocument.AFTER
             )
             return cast(DocumentType, document)
 
@@ -309,7 +310,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
 
         with wrap_pymongo_exception():
             cursor = self.collection.find(query)
-            return cast(list[DocumentType], await cursor.to_list(length=None))
+            return cast(List[DocumentType], await cursor.to_list(length=None))
 
     def filter_collection_by_kwargs(  # type:ignore[override]
         self,
@@ -374,7 +375,10 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
         if before:
             query[field_name] = {"$lt": before}
         if after:
-            query[field_name] = {"$gt": after}
+            if field_name in query:
+                query[field_name]["$gt"] = after
+            else:
+                query[field_name] = {"$gt": after}
         return query
 
     def _build_collection_filter_query(self, field_name: str, values: abc.Collection[Any]) -> dict:
@@ -400,4 +404,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
         Returns:
             A dictionary representing the query.
         """
-        return {field_name: {"$regex": value, "$options": "i" if ignore_case else ""}}
+        query = {field_name: {"$regex": value}}
+        if ignore_case:
+            query[field_name]["$options"] = "i"
+        return query
