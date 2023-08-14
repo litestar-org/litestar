@@ -69,8 +69,6 @@ jobs:
       - name: Test
         if: ${{ !inputs.coverage }}
         run: poetry run pytest docs/examples tests -n auto
-        env:
-          LITESTAR_DEBUG: 1
       - name: Test with coverage
         if: inputs.coverage
         run: poetry run pytest docs/examples tests --cov=litestar --cov-report=xml -n auto

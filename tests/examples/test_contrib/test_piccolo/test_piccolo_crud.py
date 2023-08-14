@@ -15,13 +15,15 @@ from piccolo.testing.model_builder import ModelBuilder
 pytestmark = pytest.mark.xdist_group("piccolo")
 
 
-@pytest.fixture(autouse=True, scope="module")
+@pytest.fixture(autouse=True)
 def create_test_data():
+    db_path = Path(DB.path)
+    db_path.unlink(missing_ok=True)
     Task.create_table(if_not_exists=True).run_sync()
     ModelBuilder.build_sync(Task)
     yield
     Task.alter().drop_table().run_sync()
-    Path(DB.path).unlink()
+    db_path.unlink()
 
 
 def test_get_tasks():
