@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
     from click import confirm, group, option, prompt
 else:
-    from rich_click import group, option
+    from rich_click import confirm, group, option, prompt
 
 
 @group(cls=LitestarGroup, name="database")
