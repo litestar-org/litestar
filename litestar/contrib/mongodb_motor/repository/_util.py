@@ -23,9 +23,9 @@ def wrap_pymongo_exception() -> Any:
     """
     try:
         yield
-    except DuplicateKeyError as exc:
-        raise ConflictError from exc
-    except PyMongoError as exc:
-        raise RepositoryError(f"An exception occurred: {exc}") from exc
-    except AttributeError as exc:
-        raise RepositoryError from exc
+    except DuplicateKeyError as e:
+        raise ConflictError from e
+    except PyMongoError as e:
+        raise RepositoryError(f"An exception occurred: {e}") from e
+    except AttributeError as e:
+        raise RepositoryError from e
