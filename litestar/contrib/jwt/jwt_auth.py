@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Any, Callable, Generic, Iterable, Literal, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Generic, Iterable, Literal, Sequence, TypeVar, cast
 
 from litestar.contrib.jwt.jwt_token import Token
 from litestar.contrib.jwt.middleware import JWTAuthenticationMiddleware, JWTCookieAuthenticationMiddleware
@@ -12,7 +12,7 @@ from litestar.middleware import DefineMiddleware
 from litestar.openapi.spec import Components, OAuthFlow, OAuthFlows, SecurityRequirement, SecurityScheme
 from litestar.security.base import AbstractSecurityConfig
 from litestar.status_codes import HTTP_201_CREATED
-from litestar.types import ControllerRouterHandler, Empty, Guard, Scopes, SyncOrAsyncUnion, TypeEncodersMap
+from litestar.types import ControllerRouterHandler, Empty, Guard, Method, Scopes, SyncOrAsyncUnion, TypeEncodersMap
 
 __all__ = ("BaseJWTAuth", "JWTAuth", "JWTCookieAuth", "OAuth2Login", "OAuth2PasswordBearerAuth")
 
@@ -110,6 +110,7 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
             auth_header=self.auth_header,
             exclude=self.exclude,
             exclude_opt_key=self.exclude_opt_key,
+            exclude_http_methods=self.exclude_http_methods,
             retrieve_user_handler=self.retrieve_user_handler,
             scopes=self.scopes,
             token_secret=self.token_secret,
@@ -239,6 +240,10 @@ class JWTAuth(Generic[UserType], BaseJWTAuth[UserType]):
     """A pattern or list of patterns to skip in the authentication middleware."""
     exclude_opt_key: str = field(default="exclude_from_auth")
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
+    exclude_http_methods: Sequence[Method] | None = field(
+        default_factory=lambda: cast("Sequence[Method]", ["OPTIONS", "HEAD"])
+    )
+    """A sequence of http methods that do not require authentication. Defaults to ['OPTIONS', 'HEAD']"""
     scopes: Scopes | None = field(default=None)
     """ASGI scopes processed by the authentication middleware, if ``None``, both ``http`` and ``websocket`` will be
     processed."""
@@ -303,6 +308,10 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
     scopes: Scopes | None = field(default=None)
     """ASGI scopes processed by the authentication middleware, if ``None``, both ``http`` and ``websocket`` will be
     processed."""
+    exclude_http_methods: Sequence[Method] | None = field(
+        default_factory=lambda: cast("Sequence[Method]", ["OPTIONS", "HEAD"])
+    )
+    """A sequence of http methods that do not require authentication. Defaults to ['OPTIONS', 'HEAD']"""
     route_handlers: Iterable[ControllerRouterHandler] | None = field(default=None)
     """An optional iterable of route handlers to register."""
     dependencies: dict[str, Provide] | None = field(default=None)
@@ -378,6 +387,7 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
             auth_header=self.auth_header,
             exclude=self.exclude,
             exclude_opt_key=self.exclude_opt_key,
+            exclude_http_methods=self.exclude_http_methods,
             retrieve_user_handler=self.retrieve_user_handler,
             scopes=self.scopes,
             token_secret=self.token_secret,
@@ -496,6 +506,10 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
     """A pattern or list of patterns to skip in the authentication middleware."""
     exclude_opt_key: str = field(default="exclude_from_auth")
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
+    exclude_http_methods: Sequence[Method] | None = field(
+        default_factory=lambda: cast("Sequence[Method]", ["OPTIONS", "HEAD"])
+    )
+    """A sequence of http methods that do not require authentication. Defaults to ['OPTIONS', 'HEAD']"""
     scopes: Scopes | None = field(default=None)
     """ASGI scopes processed by the authentication middleware, if ``None``, both ``http`` and ``websocket`` will be
     processed."""
@@ -503,10 +517,8 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
     """An optional iterable of route handlers to register."""
     dependencies: dict[str, Provide] | None = field(default=None)
     """An optional dictionary of dependency providers."""
-
     type_encoders: TypeEncodersMap | None = field(default=None)
     """A mapping of types to callables that transform them into types supported for serialization."""
-
     algorithm: str = field(default="HS256")
     """Algorithm to use for JWT hashing."""
     auth_header: str = field(default="Authorization")
@@ -558,6 +570,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
             auth_header=self.auth_header,
             exclude=self.exclude,
             exclude_opt_key=self.exclude_opt_key,
+            exclude_http_methods=self.exclude_http_methods,
             retrieve_user_handler=self.retrieve_user_handler,
             scopes=self.scopes,
             token_secret=self.token_secret,
