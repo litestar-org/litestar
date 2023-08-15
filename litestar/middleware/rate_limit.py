@@ -215,8 +215,9 @@ class RateLimitMiddleware(AbstractMiddleware):
 class RateLimitConfig:
     """Configuration for ``RateLimitMiddleware``"""
 
-    rate_limit: List[tuple[DurationUnit, int]]
-    """A list containing tuples with a time unit (second, minute, hour, day) and quantity, e.g. [("day", 1), ("minute", 5)]"""
+    rate_limit: Sequence[tuple[DurationUnit, int]]
+
+    """A Sequence containing tuples with a time unit (second, minute, hour, day) and quantity, e.g. [("day", 1), ("minute", 5)]"""
     exclude: str | list[str] | None = field(default=None)
     """A pattern or list of patterns to skip in the rate limiting middleware."""
     exclude_opt_key: str | None = field(default=None)
