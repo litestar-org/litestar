@@ -15,13 +15,13 @@ from typing import (
     ClassVar,
     Collection,
     Container,
+    ContextManager,
     Final,
     Generator,
     Mapping,
+    Protocol,
     Union,
     cast,
-    ContextManager,
-    Protocol,
 )
 
 from msgspec import UNSET, Struct, UnsetType, convert, defstruct, field
@@ -336,6 +336,7 @@ class DTOBackend:
         Args:
             destination_type: the model type received by the DTO on type narrowing.
             field_definition: the parsed type that represents the handler annotation for which the DTO is being applied.
+
         Returns:
             Data parsed into ``destination_type``.
         """
@@ -639,7 +640,7 @@ class TransferFunctionFactory:
             source_instance_name=source_instance_name,
             destination_type_name=destination_type_name,
             field_definitions=field_definitions,
-            destination_type_is_dict=destination_type is dict
+            destination_type_is_dict=destination_type is dict,
         )
         return factory._make_function(source_value_name=source_instance_name, return_value_name=tmp_return_type_name)
 
@@ -671,7 +672,7 @@ class TransferFunctionFactory:
         is_data_field: bool,
         override_serialization_name: bool,
         field_definition: FieldDefinition | None = None,
-    ):
+    ) -> Callable[[Any], Any]:
         if field_definition and field_definition.is_non_string_collection and not field_definition.is_mapping:
             factory = cls(
                 is_data_field=is_data_field,
@@ -717,9 +718,9 @@ class TransferFunctionFactory:
 
     def _make_function(self, source_value_name: str, return_value_name: str) -> Callable[[Any], Any]:
         source = f"def func({source_value_name}):\n" + self.body + f" return {return_value_name}"
-        ctx = {}
-        exec(source, self.fn_locals, ctx)
-        return ctx["func"]
+        ctx: dict[str, Any] = {}
+        exec(source, self.fn_locals, ctx)  # noqa: S102
+        return ctx["func"]  # type: ignore[no-any-return]
 
     def _create_transfer_instance_data(
         self,
@@ -727,7 +728,7 @@ class TransferFunctionFactory:
         source_instance_name: str,
         destination_type_name: str,
         field_definitions: tuple[TransferDTOFieldDefinition, ...],
-        destination_type_is_dict: bool
+        destination_type_is_dict: bool,
     ) -> None:
         local_dict_name = self.create_local_name("unstructured_data")
         self.add_stmt(f"{local_dict_name} = {{}}")
@@ -789,7 +790,7 @@ class TransferFunctionFactory:
                     # in these cases, we only ever access the source value once, so
                     # we can skip assigning it
                     source_value_name = source_value_expr
-                    ctx = nullcontext()
+                    ctx = nullcontext()  # type: ignore[assignment]
                 with ctx:
                     self._create_transfer_type_data_body(
                         transfer_type=field_definition.transfer_type,
@@ -818,7 +819,7 @@ class TransferFunctionFactory:
                 tmp_return_type_name=assignment_target,
                 source_instance_name=source_value_name,
                 destination_type_name=self.add_to_fn_globals("destination_type", destination_type),
-                destination_type_is_dict=destination_type is dict
+                destination_type_is_dict=destination_type is dict,
             )
             return
 
