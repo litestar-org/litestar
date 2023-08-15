@@ -639,6 +639,7 @@ class TransferFunctionFactory:
             source_instance_name=source_instance_name,
             destination_type_name=destination_type_name,
             field_definitions=field_definitions,
+            destination_type_is_dict=destination_type is dict
         )
         return factory._make_function(source_value_name=source_instance_name, return_value_name=tmp_return_type_name)
 
@@ -726,6 +727,7 @@ class TransferFunctionFactory:
         source_instance_name: str,
         destination_type_name: str,
         field_definitions: tuple[TransferDTOFieldDefinition, ...],
+        destination_type_is_dict: bool
     ) -> None:
         local_dict_name = self.create_local_name("unstructured_data")
         self.add_stmt(f"{local_dict_name} = {{}}")
@@ -749,7 +751,12 @@ class TransferFunctionFactory:
                         source_instance_name=source_instance_name,
                     )
 
-        self.add_stmt(f"{tmp_return_type_name} = {destination_type_name}(**{local_dict_name})")
+        # if the destination type is a dict we can reuse our temporary dictionary of
+        # unstructured data as the "return value"
+        if not destination_type_is_dict:
+            self.add_stmt(f"{tmp_return_type_name} = {destination_type_name}(**{local_dict_name})")
+        else:
+            self.add_stmt(f"{tmp_return_type_name} = {local_dict_name}")
 
     def _create_transfer_instance_data_inner(
         self,
@@ -811,6 +818,7 @@ class TransferFunctionFactory:
                 tmp_return_type_name=assignment_target,
                 source_instance_name=source_value_name,
                 destination_type_name=self.add_to_fn_globals("destination_type", destination_type),
+                destination_type_is_dict=destination_type is dict
             )
             return
 
