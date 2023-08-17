@@ -548,7 +548,6 @@ class TransferFunctionFactory:
         self.override_serialization_name = override_serialization_name
         self.fn_locals: dict[str, Any] = {
             "Mapping": Mapping,
-            "_transfer_nested_union_type_data": _transfer_nested_union_type_data,
             "UNSET": UNSET,
         }
         self.indentation = 1
@@ -824,12 +823,10 @@ class TransferFunctionFactory:
             return
 
         if isinstance(transfer_type, UnionType) and transfer_type.has_nested:
-            self.add_stmt(
-                f"{assignment_target} = _transfer_nested_union_type_data("
-                f"transfer_type={self.add_to_fn_globals('transfer_type', transfer_type)},"
-                f"source_value={source_value_name},"
-                f"is_data_field={self.is_data_field},"
-                f"override_serialization_name={self.override_serialization_name})"
+            self._create_transfer_nested_union_type_data(
+                transfer_type=transfer_type,
+                source_value_name=source_value_name,
+                assignment_target=assignment_target,
             )
             return
 
@@ -852,6 +849,39 @@ class TransferFunctionFactory:
 
         self.add_stmt(f"{assignment_target} = {source_value_name}")
 
+    def _create_transfer_nested_union_type_data(
+        self,
+        transfer_type: UnionType,
+        source_value_name: str,
+        assignment_target: str,
+    ) -> None:
+        for inner_type in transfer_type.inner_types:
+            if isinstance(inner_type, CompositeType):
+                continue
+
+            if inner_type.nested_field_info:
+                if self.is_data_field:
+                    constraint_type = inner_type.nested_field_info.model
+                    destination_type = inner_type.field_definition.annotation
+                else:
+                    constraint_type = inner_type.field_definition.annotation
+                    destination_type = inner_type.nested_field_info.model
+
+                constraint_type_name = self.add_to_fn_globals("constraint_type", constraint_type)
+                destination_type_name = self.add_to_fn_globals("destination_type", destination_type)
+
+                self.add_stmt(f"if isinstance({source_value_name}, {constraint_type_name}):")
+                with self.start_indented_block():
+                    self._create_transfer_instance_data(
+                        destination_type_name=destination_type_name,
+                        destination_type_is_dict=destination_type is dict,
+                        field_definitions=inner_type.nested_field_info.field_definitions,
+                        source_instance_name=source_value_name,
+                        tmp_return_type_name=assignment_target,
+                    )
+                    return
+        self.add_stmt(f"{assignment_target} = {source_value_name}")
+
 
 def _transfer_instance_data(
     destination_type: type[Any],
@@ -867,32 +897,6 @@ def _transfer_instance_data(
         override_serialization_name=override_serialization_name,
     )
     return fn(source_instance)
-
-
-def _transfer_nested_union_type_data(
-    transfer_type: UnionType,
-    source_value: Any,
-    is_data_field: bool,
-    override_serialization_name: bool,
-) -> Any:
-    for inner_type in transfer_type.inner_types:
-        if isinstance(inner_type, CompositeType):
-            raise RuntimeError("Composite inner types not (yet) supported for nested unions.")
-
-        if inner_type.nested_field_info and isinstance(
-            source_value,
-            inner_type.nested_field_info.model if is_data_field else inner_type.field_definition.annotation,
-        ):
-            return _transfer_instance_data(
-                destination_type=inner_type.field_definition.annotation
-                if is_data_field
-                else inner_type.nested_field_info.model,
-                source_instance=source_value,
-                field_definitions=inner_type.nested_field_info.field_definitions,
-                is_data_field=is_data_field,
-                override_serialization_name=override_serialization_name,
-            )
-    return source_value
 
 
 def _create_msgspec_field(field_definition: TransferDTOFieldDefinition) -> Any:
