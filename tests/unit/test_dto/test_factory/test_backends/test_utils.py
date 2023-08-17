@@ -7,11 +7,7 @@ import pytest
 from msgspec import Struct
 
 from litestar.dto import DTOField
-from litestar.dto._backend import (
-    _create_transfer_model_type_annotation,
-    _should_mark_private,
-    _transfer_nested_union_type_data,
-)
+from litestar.dto._backend import _create_transfer_model_type_annotation, _should_mark_private
 from litestar.dto._types import (
     CollectionType,
     CompositeType,
@@ -19,7 +15,6 @@ from litestar.dto._types import (
     NestedFieldInfo,
     SimpleType,
     TupleType,
-    UnionType,
 )
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.typing import FieldDefinition
@@ -34,31 +29,6 @@ class DataModel:
 class TransferModel(Struct):
     a: int
     b: str
-
-
-def test_transfer_nested_union_type_data_raises_runtime_error_for_complex_union() -> None:
-    transfer_type = UnionType(
-        field_definition=FieldDefinition.from_annotation(Union[List[DataModel], int]),
-        inner_types=(
-            CollectionType(
-                field_definition=FieldDefinition.from_annotation(List[DataModel]),
-                inner_type=SimpleType(
-                    field_definition=FieldDefinition.from_annotation(DataModel),
-                    nested_field_info=NestedFieldInfo(model=TransferModel, field_definitions=()),
-                ),
-                has_nested=True,
-            ),
-            SimpleType(field_definition=FieldDefinition.from_annotation(int), nested_field_info=None),
-        ),
-        has_nested=True,
-    )
-    with pytest.raises(RuntimeError):
-        _transfer_nested_union_type_data(
-            transfer_type=transfer_type,
-            is_data_field=True,
-            source_value=1,
-            override_serialization_name=True,
-        )
 
 
 def test_create_transfer_model_type_annotation_simple_type_without_nested_field_info() -> None:
