@@ -716,7 +716,10 @@ class TransferFunctionFactory:
         self.add_stmt(f"{assignment_target} = {origin_name}({transfer_func_name}(item) for item in {source_data_name})")
 
     def _make_function(self, source_value_name: str, return_value_name: str) -> Callable[[Any], Any]:
-        source = f"def func({source_value_name}):\n" + self.body + f" return {return_value_name}"
+        source = (
+            f"def func({source_value_name}):\n{self.body}"
+            + f" return {return_value_name}"
+        )
         ctx: dict[str, Any] = {}
         exec(source, self.fn_locals, ctx)  # noqa: S102
         return ctx["func"]  # type: ignore[no-any-return]
@@ -732,9 +735,9 @@ class TransferFunctionFactory:
         local_dict_name = self.create_local_name("unstructured_data")
         self.add_stmt(f"{local_dict_name} = {{}}")
 
-        field_definitions = tuple(f for f in field_definitions if self.is_data_field or not f.is_excluded)
-
-        if field_definitions:
+        if field_definitions := tuple(
+            f for f in field_definitions if self.is_data_field or not f.is_excluded
+        ):
             for source_type in ("mapping", "object"):
                 if source_type == "mapping":
                     self.add_stmt(f"if isinstance({source_instance_name}, Mapping):")
