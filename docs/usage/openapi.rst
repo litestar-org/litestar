@@ -101,7 +101,7 @@ You can also modify the generated schema for the route handler using the followi
     automatically for the schema if any validation is involved (e.g. there are parameters specified in the
     method/function). For custom exceptions, a `detail` class property should be defined, which will be integrated
     into the OpenAPI schema. If `detail` isn't specified and the exception's status code matches one
-    from `stdlib status code https://docs.python.org/3/library/http.html#http-status-codes`_, a generic message
+    from `stdlib status code <https://docs.python.org/3/library/http.html#http-status-codes>`_, a generic message
     will be applied.
 
 ``responses``
