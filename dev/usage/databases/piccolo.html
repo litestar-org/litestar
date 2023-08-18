@@ -1172,10 +1172,8 @@ for data flow control. Example of a small application:</p>
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">typing</span> <span class="k">as</span> <span class="nn">t</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">import</span> <span class="nn">uvicorn</span>
 <span class="kn">from</span> <span class="nn">piccolo.columns</span> <span class="kn">import</span> <span class="n">Boolean</span><span class="p">,</span> <span class="n">Varchar</span>
 <span class="kn">from</span> <span class="nn">piccolo.table</span> <span class="kn">import</span> <span class="n">Table</span><span class="p">,</span> <span class="n">create_db_tables</span>
 
@@ -1208,7 +1206,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">JSON</span><span class="p">,</span>
     <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Task&quot;</span><span class="p">],</span>
 <span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">tasks</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">tasks</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]:</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">Task</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
@@ -1249,24 +1247,14 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">await</span> <span class="n">task</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="c1"># Tables creating</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">():</span>
     <span class="k">await</span> <span class="n">create_db_tables</span><span class="p">(</span><span class="n">Task</span><span class="p">,</span> <span class="n">if_not_exists</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">tasks</span><span class="p">,</span>
-        <span class="n">create_task</span><span class="p">,</span>
-        <span class="n">delete_task</span><span class="p">,</span>
-        <span class="n">update_task</span><span class="p">,</span>
-    <span class="p">],</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">tasks</span><span class="p">,</span> <span class="n">create_task</span><span class="p">,</span> <span class="n">delete_task</span><span class="p">,</span> <span class="n">update_task</span><span class="p">],</span>
+    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
 <span class="p">)</span>
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
-
-    <span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1276,10 +1264,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-
-<span class="kn">import</span> <span class="nn">uvicorn</span>
-<span class="kn">from</span> <span class="nn">piccolo.columns</span> <span class="kn">import</span> <span class="n">Boolean</span><span class="p">,</span> <span class="n">Varchar</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">piccolo.columns</span> <span class="kn">import</span> <span class="n">Boolean</span><span class="p">,</span> <span class="n">Varchar</span>
 <span class="kn">from</span> <span class="nn">piccolo.table</span> <span class="kn">import</span> <span class="n">Table</span><span class="p">,</span> <span class="n">create_db_tables</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">post</span>
@@ -1352,24 +1337,14 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">await</span> <span class="n">task</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="c1"># Tables creating</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">():</span>
     <span class="k">await</span> <span class="n">create_db_tables</span><span class="p">(</span><span class="n">Task</span><span class="p">,</span> <span class="n">if_not_exists</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">tasks</span><span class="p">,</span>
-        <span class="n">create_task</span><span class="p">,</span>
-        <span class="n">delete_task</span><span class="p">,</span>
-        <span class="n">update_task</span><span class="p">,</span>
-    <span class="p">],</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">tasks</span><span class="p">,</span> <span class="n">create_task</span><span class="p">,</span> <span class="n">delete_task</span><span class="p">,</span> <span class="n">update_task</span><span class="p">],</span>
+    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
 <span class="p">)</span>
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
-
-    <span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
