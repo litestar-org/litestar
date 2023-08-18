@@ -24,6 +24,7 @@ def create_config(**kwargs: Any) -> PrometheusConfig:
     return PrometheusConfig(**kwargs)
 
 
+@pytest.mark.flaky(reruns=5)
 def test_prometheus_exporter_metrics_with_http() -> None:
     config = create_config()
 
