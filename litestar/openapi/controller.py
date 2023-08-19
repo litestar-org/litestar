@@ -12,6 +12,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import get
 from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json
+from litestar.serialization.msgspec_hooks import decode_json
 from litestar.status_codes import HTTP_404_NOT_FOUND
 
 __all__ = ("OpenAPIController",)
@@ -65,6 +66,7 @@ class OpenAPIController(Controller):
 
     # internal
     _dumped_json_schema: str = ""
+    _dumped_yaml_schema: bytes = b""
     # until swagger-ui supports v3.1.* of OpenAPI officially, we need to modify the schema for it and keep it
     # separate from the redoc version of the schema, which is unmodified.
     dto = None
@@ -143,10 +145,11 @@ class OpenAPIController(Controller):
             A Response instance with the YAML object rendered into a string.
         """
         if self.should_serve_endpoint(request):
-            content = dump_yaml(self.get_schema_from_request(request).to_schema(), default_flow_style=False).encode(
-                "utf-8"
-            )
-            return ASGIResponse(body=content, media_type=OpenAPIMediaType.OPENAPI_YAML)
+            if not self._dumped_json_schema:
+                schema_json = decode_json(self._get_schema_as_json(request))
+                schema_yaml = dump_yaml(schema_json, default_flow_style=False)
+                self._dumped_yaml_schema = schema_yaml.encode("utf-8")
+            return ASGIResponse(body=self._dumped_yaml_schema, media_type=OpenAPIMediaType.OPENAPI_YAML)
         return ASGIResponse(body=b"", status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
     @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False, sync_to_thread=False)
