@@ -39,12 +39,12 @@ async def retrieve_user_handler(
 
 @post("/login")
 async def login(data: UserLoginPayload, request: "Request[Any, Any, Any]") -> User:
-    user_id = await memory_store.get(data.email)
+    user_id_bytes = await memory_store.get(data.email)
 
-    if not user_id:
+    if not user_id_bytes:
         raise NotAuthorizedException
 
-    user_id = user_id.decode("utf-8")
+    user_id = user_id_bytes.decode("utf-8")
     request.set_session({"user_id": user_id})
     return MOCK_DB[user_id]
 
