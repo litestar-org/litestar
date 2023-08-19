@@ -14,7 +14,7 @@ __all__ = ("SessionAuth",)
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.di import Provide
-    from litestar.types import ControllerRouterHandler, Guard, Scopes, SyncOrAsyncUnion, TypeEncodersMap, Method
+    from litestar.types import ControllerRouterHandler, Guard, Method, Scopes, SyncOrAsyncUnion, TypeEncodersMap
 
 
 @dataclass

@@ -74,19 +74,20 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
     """Session Authentication Middleware."""
 
     def __init__(
-            self,
-            app: ASGIApp,
-            exclude: str | list[str] | None,
-            exclude_http_methods: Sequence[Method] | None,
-            exclude_opt_key: str,
-            retrieve_user_handler: AsyncCallable[[dict[str, Any], ASGIConnection[Any, Any, Any, Any]], Any],
-            scopes: Scopes,
+        self,
+        app: ASGIApp,
+        exclude: str | list[str] | None,
+        exclude_http_methods: Sequence[Method] | None,
+        exclude_opt_key: str,
+        retrieve_user_handler: AsyncCallable[[dict[str, Any], ASGIConnection[Any, Any, Any, Any]], Any],
+        scopes: Scopes,
     ) -> None:
         """Session based authentication middleware.
 
         Args:
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
             exclude: A pattern or list of patterns to skip in the authentication middleware.
+            exclude_http_methods: A sequence of http methods that do not require authentication.
             exclude_opt_key: An identifier to use on routes to disable authentication and authorization checks for a particular route.
             scopes: ASGI scopes processed by the authentication middleware.
             retrieve_user_handler: Callable that receives the ``session`` value from the authentication middleware and returns a ``user`` value.
