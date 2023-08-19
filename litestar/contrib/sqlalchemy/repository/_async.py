@@ -78,7 +78,8 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         if isinstance(statement, Select):
             self.statement = lambda_stmt(lambda: statement)
         elif statement is None:
-            self.statement = lambda_stmt(lambda: self.statement)
+            statement = select(self.model_type)
+            self.statement = lambda_stmt(lambda: statement)
         else:
             self.statement = statement
 
@@ -243,7 +244,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         if isinstance(statement, Select):
             return lambda_stmt(lambda: statement)
         if statement is None:
-            return lambda_stmt(lambda: self.statement)
+            return self.statement
         return statement
 
     async def get(  # type: ignore[override]
@@ -415,10 +416,8 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             Count of records returned by query, ignoring pagination.
         """
         statement = self._to_lambda_stmt(statement)
-        statement += lambda s: s.with_only_columns(
-            sql_func.count(self.get_id_attribute_value(self.model_type)),
-            maintain_column_froms=True,
-        ).order_by(None)
+        fragment = self.get_id_attribute_value(self.model_type)
+        statement += lambda s: s.with_only_columns(sql_func.count(fragment), maintain_column_froms=True).order_by(None)
         statement = self._apply_filters(*filters, apply_pagination=False, statement=statement)
         statement = self._filter_select_by_kwargs(statement, kwargs)
         results = await self._execute(statement)
@@ -598,7 +597,8 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             Count of records returned by query using an analytical window function, ignoring pagination.
         """
         statement = self._to_lambda_stmt(statement)
-        statement += lambda s: s.add_columns(over(sql_func.count(self.get_id_attribute_value(self.model_type))))
+        field = self.get_id_attribute_value(self.model_type)
+        statement += lambda s: s.add_columns(over(sql_func.count(field)))
         statement = self._apply_filters(*filters, statement=statement)
         statement = self._filter_select_by_kwargs(statement=statement, kwargs=kwargs)
         with wrap_sqlalchemy_exception():
@@ -637,9 +637,10 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         statement = self._filter_select_by_kwargs(statement, kwargs)
 
         def count_statement(statement: StatementLambdaElement) -> StatementLambdaElement:
-            statement += lambda s: s.with_only_columns(
-                sql_func.count(self.get_id_attribute_value(self.model_type)), maintain_column_froms=True
-            ).order_by(None)
+            fragment = self.get_id_attribute_value(self.model_type)
+            statement += lambda s: s.with_only_columns(sql_func.count(fragment), maintain_column_froms=True).order_by(
+                None
+            )
             return statement
 
         with wrap_sqlalchemy_exception():
@@ -765,8 +766,8 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             The list of instances, after filtering applied.
         """
         statement = self._to_lambda_stmt(statement)
-        statement += lambda s: self._apply_filters(*filters, statement=s)
-        statement += lambda s: self._filter_select_by_kwargs(statement=s, kwargs=kwargs)
+        statement = self._apply_filters(*filters, statement=statement)
+        statement = self._filter_select_by_kwargs(statement=statement, kwargs=kwargs)
 
         with wrap_sqlalchemy_exception():
             result = await self._execute(statement)
@@ -880,11 +881,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             elif isinstance(filter_, CollectionFilter):
                 statement = self._filter_in_collection(filter_.field_name, filter_.values, statement=statement)
             elif isinstance(filter_, OrderBy):
-                statement = self._order_by(
-                    statement,
-                    filter_.field_name,
-                    sort_desc=filter_.sort_order == "desc",
-                )
+                statement = self._order_by(statement, filter_.field_name, sort_desc=filter_.sort_order == "desc")
             elif isinstance(filter_, SearchFilter):
                 statement = self._filter_by_like(
                     statement, filter_.field_name, value=filter_.value, ignore_case=bool(filter_.ignore_case)
@@ -902,7 +899,8 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
     ) -> StatementLambdaElement:
         if not values:
             return statement
-        statement += lambda s: s.where(getattr(self.model_type, field_name).in_(values))
+        field = getattr(self.model_type, field_name)
+        statement += lambda s: s.where(field.in_(values))
         return statement
 
     def _filter_not_in_collection(
@@ -910,7 +908,8 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
     ) -> StatementLambdaElement:
         if not values:
             return statement
-        statement += lambda s: s.where(getattr(self.model_type, field_name).notin_(values))
+        field = getattr(self.model_type, field_name)
+        statement += lambda s: s.where(field.notin_(values))
         return statement
 
     def _filter_on_datetime_field(
@@ -941,7 +940,9 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         return statement
 
     def _filter_by_where(self, statement: StatementLambdaElement, key: str, val: Any) -> StatementLambdaElement:
-        statement += lambda s: s.where(get_instrumented_attr(self.model_type, key) == val)
+        model_type = self.model_type
+        field = get_instrumented_attr(model_type, key)
+        statement += lambda s: s.where(field == val)
         return statement
 
     def _filter_by_like(

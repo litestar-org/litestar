@@ -528,7 +528,7 @@ async def test_sqlalchemy_repo_list_with_pagination(
     await maybe_async(mock_repo.list(LimitOffset(2, 3)))
 
     mock_repo.statement.limit.assert_called_once_with(2)
-    mock_repo.statement.limit().offset.assert_called_once_with(3)  # type:ignore[call-arg]
+    mock_repo.statement.limit().offset.assert_called_once_with(3)
 
 
 async def test_sqlalchemy_repo_list_with_before_after_filter(
@@ -650,7 +650,7 @@ async def test_execute(mock_repo: SQLAlchemyAsyncRepository) -> None:
 def test_filter_in_collection_noop_if_collection_empty(mock_repo: SQLAlchemyAsyncRepository) -> None:
     """Ensures we don't filter on an empty collection."""
     mock_repo._filter_in_collection("id", [], statement=mock_repo.statement)
-    mock_repo.statement.where.assert_not_called()  # type: ignore
+    mock_repo.statement.where.assert_not_called()
 
 
 @pytest.mark.parametrize(
@@ -681,7 +681,7 @@ def test_filter_collection_by_kwargs_raises_repository_exception_for_attribute_e
 ) -> None:
     """Test that we raise a repository exception if an attribute name is
     incorrect."""
-    mock_repo.statement.filter_by = MagicMock(  # type:ignore[method-assign]
+    mock_repo.statement.filter_by = MagicMock(  # pyright: ignore[reportGeneralTypeIssues]
         side_effect=InvalidRequestError,
     )
     with pytest.raises(RepositoryError):
