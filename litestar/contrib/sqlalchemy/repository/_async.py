@@ -971,7 +971,6 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         self, statement: StatementLambdaElement, field_name: str | InstrumentedAttribute, sort_desc: bool = False
     ) -> StatementLambdaElement:
         field = get_instrumented_attr(self.model_type, field_name)
-        statement += lambda s: s.order_by(field.desc() if sort_desc else field.asc())
         if sort_desc:
             statement += lambda s: s.order_by(field.desc())
         else:
