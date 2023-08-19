@@ -13,7 +13,7 @@ Features
   a  `sentinel column <https://docs.sqlalchemy.org/en/20/core/connections.html#configuring-sentinel-columns>`_, and
   an optional version with audit columns.
 * Generic synchronous and asynchronous repositories for select, insert, update, and delete operations on SQLAlchemy models
-* Implements optimized methods for bulk inserts, updates, and deletes.
+* Implements optimized methods for bulk inserts, updates, and deletes and use `lambda_stmt <https://docs.sqlalchemy.org/en/20/core/sqlelement.html#sqlalchemy.sql.expression.lambda_stmt>`_ when possible.
 * Integrated counts, pagination, sorting, filtering with ``LIKE``, ``IN``, and dates before and/or after.
 * Tested support for multiple database backends including:
 
