@@ -243,9 +243,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
     ) -> StatementLambdaElement:
         if isinstance(statement, Select):
             return lambda_stmt(lambda: statement)
-        if statement is None:
-            return self.statement
-        return statement
+        return self.statement if statement is None else statement
 
     async def get(  # type: ignore[override]
         self,
