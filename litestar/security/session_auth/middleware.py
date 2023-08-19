@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Sequence
 
 from litestar.exceptions import NotAuthorizedException
 from litestar.middleware.authentication import (
@@ -9,10 +9,9 @@ from litestar.middleware.authentication import (
 )
 from litestar.middleware.exceptions import ExceptionHandlerMiddleware
 from litestar.middleware.session.base import SessionMiddleware
-from litestar.types import Empty, Scopes
+from litestar.types import Empty, Method, Scopes
 
 __all__ = ("MiddlewareWrapper", "SessionAuthMiddleware")
-
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
@@ -53,6 +52,7 @@ class MiddlewareWrapper:
             auth_middleware = self.config.authentication_middleware_class(
                 app=self.app,
                 exclude=self.config.exclude,
+                exclude_http_methods=self.config.exclude_http_methods,
                 exclude_opt_key=self.config.exclude_opt_key,
                 scopes=self.config.scopes,
                 retrieve_user_handler=self.config.retrieve_user_handler,  # type: ignore
@@ -74,12 +74,13 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
     """Session Authentication Middleware."""
 
     def __init__(
-        self,
-        app: ASGIApp,
-        exclude: str | list[str] | None,
-        exclude_opt_key: str,
-        scopes: Scopes | None,
-        retrieve_user_handler: AsyncCallable[[dict[str, Any], ASGIConnection[Any, Any, Any, Any]], Any],
+            self,
+            app: ASGIApp,
+            exclude: str | list[str] | None,
+            exclude_http_methods: Sequence[Method] | None,
+            exclude_opt_key: str,
+            retrieve_user_handler: AsyncCallable[[dict[str, Any], ASGIConnection[Any, Any, Any, Any]], Any],
+            scopes: Scopes,
     ) -> None:
         """Session based authentication middleware.
 
@@ -90,7 +91,13 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
             scopes: ASGI scopes processed by the authentication middleware.
             retrieve_user_handler: Callable that receives the ``session`` value from the authentication middleware and returns a ``user`` value.
         """
-        super().__init__(app=app, exclude=exclude, exclude_from_auth_key=exclude_opt_key, scopes=scopes)
+        super().__init__(
+            app=app,
+            exclude=exclude,
+            exclude_from_auth_key=exclude_opt_key,
+            exclude_http_methods=exclude_http_methods,
+            scopes=scopes,
+        )
         self.retrieve_user_handler = retrieve_user_handler
 
     async def authenticate_request(self, connection: ASGIConnection[Any, Any, Any, Any]) -> AuthenticationResult:
