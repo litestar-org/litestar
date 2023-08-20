@@ -1279,6 +1279,23 @@ data.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.openapi.OpenAPIController.should_serve_endpoint">
+<span class="sig-name descname"><span class="pre">should_serve_endpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><span class="pre">Request</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.openapi.OpenAPIController.should_serve_endpoint" title="Permalink to this definition">#</a></dt>
+<dd><p>Verify that the requested path is within the enabled endpoints in the openapi_config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> – To be tested if endpoint enabled.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A boolean.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><strong>ImproperlyConfiguredException</strong></a> – If the application <code class="docutils literal notranslate"><span class="pre">openapi_config</span></code> attribute is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.openapi.OpenAPIController.after_request">
 <span class="sig-name descname"><span class="pre">after_request</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../types.html#litestar.types.AfterRequestHookHandler" title="litestar.types.AfterRequestHookHandler"><span class="pre">AfterRequestHookHandler</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.openapi.OpenAPIController.after_request" title="Permalink to this definition">#</a></dt>
@@ -1399,23 +1416,6 @@ handlers under the controller.</p>
 <dt class="sig sig-object py" id="litestar.openapi.OpenAPIController.type_decoders">
 <span class="sig-name descname"><span class="pre">type_decoders</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../types.html#litestar.types.TypeDecodersSequence" title="litestar.types.TypeDecodersSequence"><span class="pre">TypeDecodersSequence</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.openapi.OpenAPIController.type_decoders" title="Permalink to this definition">#</a></dt>
 <dd><p>A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.openapi.OpenAPIController.should_serve_endpoint">
-<span class="sig-name descname"><span class="pre">should_serve_endpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><span class="pre">Request</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.openapi.OpenAPIController.should_serve_endpoint" title="Permalink to this definition">#</a></dt>
-<dd><p>Verify that the requested path is within the enabled endpoints in the openapi_config.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>request</strong> – To be tested if endpoint enabled.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A boolean.</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><strong>ImproperlyConfiguredException</strong></a> – If the application <code class="docutils literal notranslate"><span class="pre">openapi_config</span></code> attribute is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -1769,6 +1769,7 @@ handlers under the controller.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.dto"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.dto</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.return_dto"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.return_dto</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.get_schema_from_request"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.get_schema_from_request()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.should_serve_endpoint"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.should_serve_endpoint()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.after_request"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.after_request</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.after_response"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.after_response</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.before_request"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.before_request</span></code></a></li>
@@ -1788,7 +1789,6 @@ handlers under the controller.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.tags"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.tags</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.type_encoders"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.type_encoders</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.type_decoders"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.type_decoders</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.should_serve_endpoint"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.should_serve_endpoint()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.favicon"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.favicon</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.render_methods_map"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.render_methods_map</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.render_swagger_ui"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.render_swagger_ui()</span></code></a></li>
