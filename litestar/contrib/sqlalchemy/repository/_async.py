@@ -641,13 +641,12 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
 
         def count_statement(statement: StatementLambdaElement) -> StatementLambdaElement:
             fragment = self.get_id_attribute_value(self.model_type)
-            statement += lambda s: s.with_only_columns(sql_func.count(fragment), maintain_column_froms=True).order_by(
-                None
-            )
+            statement += lambda s: s.with_only_columns(sql_func.count(fragment), maintain_column_froms=True)
+            statement += lambda s: s.order_by(None)
             return statement
 
         with wrap_sqlalchemy_exception():
-            count_result = await self.session.execute(count_statement)  # type: ignore[call-overload]
+            count_result = await self.session.execute(count_statement(statement))
             count = count_result.scalar_one()
             result = await self._execute(statement)
             instances: list[ModelT] = []

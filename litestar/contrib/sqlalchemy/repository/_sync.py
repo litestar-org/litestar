@@ -641,11 +641,13 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         statement = self._filter_select_by_kwargs(statement, kwargs)
 
         def count_statement(statement: StatementLambdaElement) -> StatementLambdaElement:
-            fragment = sql_func.count(self.get_id_attribute_value(self.model_type))
-            return statement.with_only_columns(fragment, maintain_column_froms=True).order_by(None)
+            fragment = self.get_id_attribute_value(self.model_type)
+            statement += lambda s: s.with_only_columns(sql_func.count(fragment), maintain_column_froms=True)
+            statement += lambda s: s.order_by(None)
+            return statement
 
         with wrap_sqlalchemy_exception():
-            count_result = self.session.execute(count_statement)  # type: ignore[call-overload]
+            count_result = self.session.execute(count_statement(statement))
             count = count_result.scalar_one()
             result = self._execute(statement)
             instances: list[ModelT] = []
