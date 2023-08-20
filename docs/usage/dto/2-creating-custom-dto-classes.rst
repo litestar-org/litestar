@@ -22,5 +22,5 @@ the model fields.
 ``detect_nested_field``
 -----------------------
 
-This method receives a :class:`FieldDefinition<litestar.typing.FieldDefinition>` instance it it should return a boolean
+This method receives a :class:`FieldDefinition<litestar.typing.FieldDefinition>` instance and it should return a boolean
 indicating whether the field is a nested model field.
