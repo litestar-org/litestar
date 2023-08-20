@@ -1,7 +1,7 @@
 Basic Use
 =========
 
-Here we demonstrates how to declare DTO types to your route handlers. For demonstration purposes, we assume that we
+Here we demonstrate how to declare DTO types to your route handlers. For demonstration purposes, we assume that we
 are working with a data model ``User``, and already have two DTO types created in our application, ``UserDTO``, and
 ``UserReturnDTO``.
 
