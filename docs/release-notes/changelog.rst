@@ -95,6 +95,13 @@
         :class:`~litestar.contrib.jwt.JWTAuthenticationMiddleware` authenticate
         ``OPTIONS`` and ``HEAD`` requests by default.
 
+    .. change:: SessionAuth | Regression: ``OPTIONS`` and ``HEAD`` being authenticated by default
+        :type: bugfix
+        :pr: 2182
+
+        Fix a regression that would make
+        :class:`~litestar.security.session_auth.middleware.SessionAuthMiddleware` authenticate
+        ``OPTIONS`` and ``HEAD`` requests by default.
 
 .. changelog:: 2.0.0rc1
     :date: 2023/08/05
