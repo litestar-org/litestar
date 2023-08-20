@@ -216,7 +216,7 @@ class AlembicCommands:
         self,
         revision: str,
         sql: bool = False,
-        tag: str | None[str] = None,
+        tag: str | None = None,
         purge: bool = False,
     ) -> None:
         """'stamp' the revision table with the given revision; don't run any migrations."""
