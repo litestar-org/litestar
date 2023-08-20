@@ -172,7 +172,7 @@ async def postgres_service(docker_services: DockerServiceRegistry) -> None:
     await docker_services.start("postgres", check=postgres_responsive)
 
 
-def oracle_responsive(host: str) -> bool:
+def oracle_18_responsive(host: str) -> bool:
     try:
         conn = oracledb.connect(
             host=host,
@@ -185,35 +185,13 @@ def oracle_responsive(host: str) -> bool:
             cursor.execute("SELECT 1 FROM dual")
             resp = cursor.fetchone()
             return resp[0] == 1  # type: ignore
-    except (OperationalError, DatabaseError):
+    except (OperationalError, DatabaseError, Exception):
         return False
 
 
 @pytest.fixture()
 async def oracle_service(docker_services: DockerServiceRegistry) -> None:
-    await docker_services.start("oracle", pause=4, timeout=60, check=AsyncCallable(oracle_responsive))
-
-
-def oracle_23c_responsive(host: str) -> bool:
-    try:
-        conn = oracledb.connect(
-            host=host,
-            port=1513,
-            user="app",
-            service_name="freepdb1",
-            password="super-secret",
-        )
-        with conn.cursor() as cursor:
-            cursor.execute("SELECT 1 FROM dual")
-            resp = cursor.fetchone()
-        return resp[0] == 1  # type: ignore
-    except (OperationalError, DatabaseError):
-        return False
-
-
-@pytest.fixture()
-async def oracle_23c_service(docker_services: DockerServiceRegistry) -> None:
-    await docker_services.start("oracle23c", check=AsyncCallable(oracle_23c_responsive), timeout=60)
+    await docker_services.start("oracle18", check=AsyncCallable(oracle_18_responsive), timeout=60)
 
 
 def spanner_responsive(host: str) -> bool:

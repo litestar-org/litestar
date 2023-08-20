@@ -18,18 +18,10 @@ services:
       MYSQL_DATABASE: db
       MYSQL_ROOT_HOST: "%"
       LANG: C.UTF-8
-  oracle:
+  oracle18:
     image: gvenzl/oracle-xe:18-slim-faststart
     ports:
       - "1512:1521" # use a non-standard port here
-    environment:
-      ORACLE_PASSWORD: super-secret
-      APP_USER_PASSWORD: super-secret
-      APP_USER: app
-  oracle23c:
-    image: gvenzl/oracle-free:slim-faststart
-    ports:
-      - "1513:1521" # use a non-standard port here
     environment:
       ORACLE_PASSWORD: super-secret
       APP_USER_PASSWORD: super-secret
