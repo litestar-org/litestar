@@ -184,7 +184,6 @@ def oracle_responsive(host: str) -> bool:
         with conn.cursor() as cursor:
             cursor.execute("SELECT 1 FROM dual")
             resp = cursor.fetchone()
-            print(f"checked for db {resp[0]}")
             return resp[0] == 1  # type: ignore
     except (OperationalError, DatabaseError):
         return False
