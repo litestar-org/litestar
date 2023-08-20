@@ -138,7 +138,9 @@ class UserController(Controller):
         ...
 
     @patch(path="/{user_id:uuid}", dto=PartialUserDTO)
-    async def partial_update_user(self, user_id: UUID4, data: DTOData[PartialUserDTO]) -> User:
+    async def partial_update_user(
+        self, user_id: UUID4, data: DTOData[PartialUserDTO]
+    ) -> User:
         ...
 
     @put(path="/{user_id:uuid}")

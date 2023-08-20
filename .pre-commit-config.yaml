@@ -2,7 +2,7 @@ default_language_version:
   python: "3.11"
 repos:
   - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v2.3.0
+    rev: v2.4.0
     hooks:
       - id: conventional-pre-commit
         stages: [commit-msg]
@@ -29,7 +29,7 @@ repos:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.284"
+    rev: "v0.0.285"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -44,11 +44,11 @@ repos:
       - id: black
         args: [--config=./pyproject.toml]
   - repo: https://github.com/asottile/blacken-docs
-    rev: 1.15.0
+    rev: 1.16.0
     hooks:
       - id: blacken-docs
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "v3.0.1"
+    rev: "v3.0.2"
     hooks:
       - id: prettier
         exclude: "_templates|.git"
@@ -64,7 +64,7 @@ repos:
       - id: slotscheck
         exclude: "test_*|docs"
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.5.0"
+    rev: "v1.5.1"
     hooks:
       - id: mypy
         exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures|tests/unit/test_partial"
@@ -123,7 +123,7 @@ repos:
             time-machine,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.322
+    rev: v1.1.323
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures|tests/unit/test_partial"
@@ -182,7 +182,7 @@ repos:
             time-machine,
           ]
   - repo: https://github.com/sphinx-contrib/sphinx-lint
-    rev: "v0.6.7"
+    rev: "v0.6.8"
     hooks:
       - id: sphinx-lint
   - repo: local

@@ -931,7 +931,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             statement += lambda s: s.where(field >= on_or_after)
         return statement
 
-    def _filter_select_by_kwargs(
+    def _filter_select_by_kwargs( 
         self, statement: StatementLambdaElement, kwargs: dict[Any, Any]
     ) -> StatementLambdaElement:
         for key, val in kwargs.items():
