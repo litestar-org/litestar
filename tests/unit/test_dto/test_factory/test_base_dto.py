@@ -55,14 +55,14 @@ def test_type_narrowing_with_annotated_scalar_type_arg() -> None:
 
 def test_type_narrowing_with_only_type_var() -> None:
     t = TypeVar("t", bound=Model)
-    generic_dto = DataclassDTO[t]
+    generic_dto = DataclassDTO[t]  # pyright: ignore
     assert generic_dto is DataclassDTO
 
 
 def test_type_narrowing_with_annotated_type_var() -> None:
     config = DTOConfig()
     t = TypeVar("t", bound=Model)
-    generic_dto = DataclassDTO[Annotated[t, config]]
+    generic_dto = DataclassDTO[Annotated[t, config]]  # pyright: ignore
     assert generic_dto is not DataclassDTO
     assert issubclass(generic_dto, DataclassDTO)
     assert generic_dto.config is config
@@ -77,7 +77,7 @@ def test_extra_annotated_metadata_ignored() -> None:
 
 def test_overwrite_config() -> None:
     first = DTOConfig(exclude={"a"})
-    generic_dto = DataclassDTO[Annotated[T, first]]
+    generic_dto = DataclassDTO[Annotated[T, first]]  # pyright: ignore
     second = DTOConfig(exclude={"b"})
     dto = generic_dto[Annotated[Model, second]]  # pyright: ignore
     assert dto.config is second
@@ -86,7 +86,7 @@ def test_overwrite_config() -> None:
 def test_existing_config_not_overwritten() -> None:
     assert getattr(DataclassDTO, "_config", None) is None
     first = DTOConfig(exclude={"a"})
-    generic_dto = DataclassDTO[Annotated[T, first]]
+    generic_dto = DataclassDTO[Annotated[T, first]]  # pyright: ignore
     dto = generic_dto[Model]  # pyright: ignore
     assert dto.config is first
 
