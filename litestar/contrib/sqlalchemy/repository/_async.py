@@ -272,8 +272,12 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         with wrap_sqlalchemy_exception():
             id_attribute = id_attribute if id_attribute is not None else self.id_attribute
             statement = self._to_lambda_stmt(statement)
-            statement = self._filter_select_by_kwargs(statement=statement, kwargs={id_attribute: item_id})
-            statement = self._filter_select_by_kwargs(statement=statement, kwargs=[(id_attribute, item_id)])
+            statement = self._filter_select_by_kwargs(
+                statement=statement,
+                kwargs={
+                    id_attribute: item_id,  # pyright: ignore[reportGeneralTypeIssues]
+                },
+            )
             instance = (await self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
             self._expunge(instance, auto_expunge=auto_expunge)
@@ -931,7 +935,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             statement += lambda s: s.where(field >= on_or_after)
         return statement
 
-    def _filter_select_by_kwargs( 
+    def _filter_select_by_kwargs(
         self, statement: StatementLambdaElement, kwargs: dict[Any, Any]
     ) -> StatementLambdaElement:
         for key, val in kwargs.items():
@@ -941,11 +945,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
     def _filter_by_where(self, statement: StatementLambdaElement, key: str, val: Any) -> StatementLambdaElement:
         model_type = self.model_type
         field = get_instrumented_attr(model_type, key)
-        statement += lambda s: s.where(field == val) 
-        self, statement: SelectT, kwargs: dict[Any, Any] | Iterable[tuple[Any, Any]]
-    ) -> SelectT:
-        for key, val in kwargs.items() if isinstance(kwargs, dict) else kwargs:
-            statement = statement.where(get_instrumented_attr(self.model_type, key) == val)  # pyright: ignore
+        statement += lambda s: s.where(field == val)
         return statement
 
     def _filter_by_like(

@@ -152,7 +152,7 @@ class CommonTableAttributes:
 
 def create_registry() -> registry:
     """Create a new SQLAlchemy registry."""
-    meta = MetaData(naming_convention=convention)  # type: ignore[arg-type]
+    meta = MetaData(naming_convention=convention)
     return registry(
         metadata=meta,
         type_annotation_map={

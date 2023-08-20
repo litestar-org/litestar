@@ -273,7 +273,12 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         with wrap_sqlalchemy_exception():
             id_attribute = id_attribute if id_attribute is not None else self.id_attribute
             statement = self._to_lambda_stmt(statement)
-            statement = self._filter_select_by_kwargs(statement=statement, kwargs={id_attribute: item_id})
+            statement = self._filter_select_by_kwargs(
+                statement=statement,
+                kwargs={
+                    id_attribute: item_id,  # pyright: ignore[reportGeneralTypeIssues]
+                },
+            )
             instance = (self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
             self._expunge(instance, auto_expunge=auto_expunge)
@@ -636,11 +641,8 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         statement = self._filter_select_by_kwargs(statement, kwargs)
 
         def count_statement(statement: StatementLambdaElement) -> StatementLambdaElement:
-            fragment = self.get_id_attribute_value(self.model_type)
-            statement += lambda s: s.with_only_columns(sql_func.count(fragment), maintain_column_froms=True).order_by(
-                None
-            )
-            return statement
+            fragment = sql_func.count(self.get_id_attribute_value(self.model_type))
+            return statement.with_only_columns(fragment, maintain_column_froms=True).order_by(None)
 
         with wrap_sqlalchemy_exception():
             count_result = self.session.execute(count_statement)  # type: ignore[call-overload]
@@ -931,7 +933,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             statement += lambda s: s.where(field >= on_or_after)
         return statement
 
-    def _filter_select_by_kwargs( 
+    def _filter_select_by_kwargs(
         self, statement: StatementLambdaElement, kwargs: dict[Any, Any]
     ) -> StatementLambdaElement:
         for key, val in kwargs.items():

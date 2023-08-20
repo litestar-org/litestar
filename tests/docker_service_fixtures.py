@@ -143,7 +143,7 @@ async def mysql_responsive(host: str) -> bool:
         async with conn.cursor() as cursor:
             await cursor.execute("select 1 as is_available")
             resp = await cursor.fetchone()
-        return resp[0] == 1
+        return resp[0] == 1  # type: ignore
     except asyncmy.errors.OperationalError:
         return False
 
@@ -162,7 +162,7 @@ async def postgres_responsive(host: str) -> bool:
         return False
 
     try:
-        return (await conn.fetchrow("SELECT 1"))[0] == 1
+        return (await conn.fetchrow("SELECT 1"))[0] == 1  # type: ignore
     finally:
         await conn.close()
 
@@ -184,14 +184,37 @@ def oracle_responsive(host: str) -> bool:
         with conn.cursor() as cursor:
             cursor.execute("SELECT 1 FROM dual")
             resp = cursor.fetchone()
-        return resp[0] == 1
+            print(f"checked for db {resp[0]}")
+            return resp[0] == 1  # type: ignore
     except (OperationalError, DatabaseError):
         return False
 
 
 @pytest.fixture()
 async def oracle_service(docker_services: DockerServiceRegistry) -> None:
-    await docker_services.start("oracle", check=AsyncCallable(oracle_responsive), timeout=60)
+    await docker_services.start("oracle", pause=4, timeout=60, check=AsyncCallable(oracle_responsive))
+
+
+def oracle_23c_responsive(host: str) -> bool:
+    try:
+        conn = oracledb.connect(
+            host=host,
+            port=1513,
+            user="app",
+            service_name="freepdb1",
+            password="super-secret",
+        )
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT 1 FROM dual")
+            resp = cursor.fetchone()
+        return resp[0] == 1  # type: ignore
+    except (OperationalError, DatabaseError):
+        return False
+
+
+@pytest.fixture()
+async def oracle_23c_service(docker_services: DockerServiceRegistry) -> None:
+    await docker_services.start("oracle23c", check=AsyncCallable(oracle_23c_responsive), timeout=60)
 
 
 def spanner_responsive(host: str) -> bool:
@@ -211,7 +234,7 @@ def spanner_responsive(host: str) -> bool:
             pass
         with database.snapshot() as snapshot:
             resp = next(iter(snapshot.execute_sql("SELECT 1")))
-        return resp[0] == 1
+        return resp[0] == 1  # type: ignore
     except Exception:
         return False
 
