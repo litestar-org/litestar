@@ -5,6 +5,7 @@ import pytest
 from litestar import Controller, Litestar, Router, get
 from litestar._openapi.parameters import create_parameter_for_handler
 from litestar._openapi.schema_generation import SchemaCreator
+from litestar._openapi.schema_generation.examples import ExampleFactory
 from litestar._openapi.typescript_converter.schema_parsing import is_schema_value
 from litestar._signature import SignatureModel
 from litestar.di import Provide
@@ -41,6 +42,8 @@ def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
 
 
 def test_create_parameters(person_controller: Type[Controller]) -> None:
+    ExampleFactory.seed_random(10)
+
     parameters = _create_parameters(app=Litestar(route_handlers=[person_controller]), path="/{service_id}/person")
     assert len(parameters) == 9
     page, name, page_size, service_id, from_date, to_date, gender, secret_header, cookie_value = tuple(parameters)
