@@ -174,7 +174,7 @@ def test_field_definition_is_type_var_predicate() -> None:
     """Test FieldDefinition.is_type_var."""
     assert FieldDefinition.from_annotation(int).is_type_var is False
     assert FieldDefinition.from_annotation(T).is_type_var is True
-    assert FieldDefinition.from_annotation(Union[int, T]).is_type_var is False
+    assert FieldDefinition.from_annotation(Union[int, T]).is_type_var is False  # pyright: ignore
 
 
 def test_field_definition_is_union_predicate() -> None:

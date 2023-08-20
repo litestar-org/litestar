@@ -247,7 +247,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         with wrap_sqlalchemy_exception():
             id_attribute = id_attribute if id_attribute is not None else self.id_attribute
             statement = statement if statement is not None else self.statement
-            statement = self._filter_select_by_kwargs(statement=statement, kwargs={id_attribute: item_id})
+            statement = self._filter_select_by_kwargs(statement=statement, kwargs=[(id_attribute, item_id)])
             instance = (self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
             self._expunge(instance, auto_expunge=auto_expunge)
@@ -891,9 +891,11 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             statement = statement.where(field >= on_or_after)
         return statement
 
-    def _filter_select_by_kwargs(self, statement: SelectT, kwargs: dict[Any, Any]) -> SelectT:
-        for key, val in kwargs.items():
-            statement = statement.where(get_instrumented_attr(self.model_type, key) == val)
+    def _filter_select_by_kwargs(
+        self, statement: SelectT, kwargs: dict[Any, Any] | Iterable[tuple[Any, Any]]
+    ) -> SelectT:
+        for key, val in kwargs.items() if isinstance(kwargs, dict) else kwargs:
+            statement = statement.where(get_instrumented_attr(self.model_type, key) == val)  # pyright: ignore
         return statement
 
     def _filter_by_like(
