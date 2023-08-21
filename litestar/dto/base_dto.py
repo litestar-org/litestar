@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Collection, Generic, TypeVar
 from typing_extensions import NotRequired, TypedDict, get_type_hints
 
 from litestar.dto._backend import DTOBackend
+from litestar.dto._codegen_backend import DTOCodegenBackend
 from litestar.dto.config import DTOConfig
 from litestar.dto.data_structures import DTOData
 from litestar.dto.types import RenameStrategy
@@ -139,6 +140,12 @@ class AbstractDTO(Generic[T]):
         )
 
     @classmethod
+    def _get_backend_cls(cls) -> type[DTOBackend | DTOCodegenBackend]:
+        if cls.config.experimental_codegen_backend:
+            return DTOCodegenBackend
+        return DTOBackend
+
+    @classmethod
     def create_for_field_definition(cls, field_definition: FieldDefinition, handler_id: str) -> None:
         """Creates a DTO subclass for a field definition.
 
@@ -170,7 +177,8 @@ class AbstractDTO(Generic[T]):
                         f"DTO narrowed with '{cls.model_type}', handler type is '{field_definition.annotation}'"
                     )
 
-            backend_context[key] = DTOBackend(  # type: ignore[literal-required]
+            backend_cls = cls._get_backend_cls()
+            backend_context[key] = backend_cls(  # type: ignore[literal-required]
                 dto_factory=cls,
                 field_definition=field_definition,
                 model_type=model_type_field_definition.annotation,

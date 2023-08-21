@@ -74,9 +74,14 @@ def fx_field_definitions(data_model_type: type[Model]) -> list[DTOFieldDefinitio
 
 
 @pytest.fixture(name="backend")
-def fx_backend(data_model_type: type[Model], field_definitions: list[DTOFieldDefinition]) -> DTOBackend:
+def fx_backend(
+    data_model_type: type[Model],
+    field_definitions: list[DTOFieldDefinition],
+    backend_cls: type[DTOBackend],
+    use_experimental_backend: bool,
+) -> DTOBackend:
     class _Factory(DataclassDTO):
-        config = DTOConfig()
+        config = DTOConfig(experimental_codegen_backend=use_experimental_backend)
 
         @classmethod
         def generate_field_definitions(
@@ -84,7 +89,7 @@ def fx_backend(data_model_type: type[Model], field_definitions: list[DTOFieldDef
         ) -> Generator[DTOFieldDefinition, None, None]:
             yield from field_definitions
 
-    class _Backend(DTOBackend):
+    class _Backend(backend_cls):
         def create_transfer_model_type(
             self, model_name: str, field_definitions: tuple[TransferDTOFieldDefinition, ...]
         ) -> type[Any]:
