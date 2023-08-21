@@ -6,10 +6,10 @@ from unittest.mock import MagicMock
 from litestar import Controller, Router, post
 from litestar.testing import create_test_client
 
-from . import Model, ModelDataDTO, ModelReturnDTO
+from . import Model
 
 
-def test_dto_defined_on_handler() -> None:
+def test_dto_defined_on_handler(ModelDataDTO) -> None:
     @post(dto=ModelDataDTO, signature_namespace={"Model": Model})
     def handler(data: Model) -> Model:
         assert data == Model(a=1, b="2")
@@ -21,7 +21,7 @@ def test_dto_defined_on_handler() -> None:
         assert response.json() == {"a": 1, "b": "2"}
 
 
-def test_dto_defined_on_controller() -> None:
+def test_dto_defined_on_controller(ModelDataDTO) -> None:
     class MyController(Controller):
         dto = ModelDataDTO
 
@@ -36,7 +36,7 @@ def test_dto_defined_on_controller() -> None:
         assert response.json() == {"a": 1, "b": "2"}
 
 
-def test_dto_defined_on_router() -> None:
+def test_dto_defined_on_router(ModelDataDTO) -> None:
     @post()
     def handler(data: Model) -> Model:
         assert data == Model(a=1, b="2")
@@ -50,7 +50,7 @@ def test_dto_defined_on_router() -> None:
         assert response.json() == {"a": 1, "b": "2"}
 
 
-def test_dto_defined_on_app() -> None:
+def test_dto_defined_on_app(ModelDataDTO) -> None:
     @post()
     def handler(data: Model) -> Model:
         assert data == Model(a=1, b="2")
@@ -62,7 +62,7 @@ def test_dto_defined_on_app() -> None:
         assert response.json() == {"a": 1, "b": "2"}
 
 
-def test_set_dto_none_disables_inherited_dto() -> None:
+def test_set_dto_none_disables_inherited_dto(ModelDataDTO) -> None:
     @post(dto=None, signature_namespace={"dict": Dict})
     def handler(data: dict[str, str]) -> dict[str, str]:
         assert data == {"hello": "world"}
@@ -77,7 +77,7 @@ def test_set_dto_none_disables_inherited_dto() -> None:
         mock_dto.assert_not_called()
 
 
-def test_dto_and_return_dto() -> None:
+def test_dto_and_return_dto(ModelDataDTO, ModelReturnDTO) -> None:
     @post()
     def handler(data: Model) -> Model:
         assert data == Model(a=1, b="2")
