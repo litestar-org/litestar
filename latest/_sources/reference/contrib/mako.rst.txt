@@ -1,5 +1,5 @@
 mako
 ====
 
-.. automodule:: starlite.contrib.mako
+.. automodule:: litestar.contrib.mako
     :members:

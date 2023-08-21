@@ -1,9 +1,5 @@
-starlite.app
-============
+app
+===
 
-.. autoclass:: starlite.app.Starlite
+.. automodule:: litestar.app
     :members:
-
-.. automodule:: starlite.app
-    :members: HandlerIndex, DEFAULT_OPENAPI_CONFIG, DEFAULT_CACHE_CONFIG
-    :no-special-members:

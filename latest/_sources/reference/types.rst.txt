@@ -1,7 +1,7 @@
-starlite.types
-==============
+types
+=====
 
-.. py:currentmodule:: starlite.types
+.. py:currentmodule:: litestar.types
 
 
 
@@ -9,135 +9,133 @@ Callable types
 --------------
 
 
-.. autodata:: starlite.types.AfterExceptionHookHandler
+.. autodata:: litestar.types.AfterExceptionHookHandler
 
-.. autodata:: starlite.types.AfterRequestHookHandler
+.. autodata:: litestar.types.AfterRequestHookHandler
 
-.. autodata:: starlite.types.AfterResponseHookHandler
+.. autodata:: litestar.types.AfterResponseHookHandler
 
-.. autodata:: starlite.types.AnyCallable
+.. autodata:: litestar.types.AnyCallable
 
-.. autodata:: starlite.types.AsyncAnyCallable
+.. autodata:: litestar.types.AsyncAnyCallable
 
-.. autodata:: starlite.types.BeforeMessageSendHookHandler
+.. autodata:: litestar.types.BeforeMessageSendHookHandler
 
-.. autodata:: starlite.types.BeforeRequestHookHandler
+.. autodata:: litestar.types.BeforeRequestHookHandler
 
-.. autodata:: starlite.types.CacheKeyBuilder
+.. autodata:: litestar.types.CacheKeyBuilder
 
-.. autodata:: starlite.types.ExceptionHandler
+.. autodata:: litestar.types.ExceptionHandler
 
-.. autodata:: starlite.types.Guard
+.. autodata:: litestar.types.Guard
 
-.. autodata:: starlite.types.LifeSpanHandler
+.. autodata:: litestar.types.LifespanHook
 
-.. autodata:: starlite.types.LifeSpanHookHandler
+.. autodata:: litestar.types.OnAppInitHandler
 
-.. autodata:: starlite.types.OnAppInitHandler
-
-.. autodata:: starlite.types.Serializer
+.. autodata:: litestar.types.Serializer
 
 
 ASGI Types
 ----------
 
-.. autodata:: starlite.types.Method
+.. autodata:: litestar.types.Method
 
 ASGI Application
 ~~~~~~~~~~~~~~~~~
 
-.. autodata:: starlite.types.ASGIApp
+.. autodata:: litestar.types.ASGIApp
 
 ASGI Application Parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autodata:: starlite.types.Scope
+.. autodata:: litestar.types.Scope
 
-.. autodata:: starlite.types.Receive
+.. autodata:: litestar.types.Receive
 
-.. autodata:: starlite.types.Send
+.. autodata:: litestar.types.Send
 
 ASGI Scopes
 ~~~~~~~~~~~~
 
-.. autodata:: starlite.types.ASGIVersion
+.. autodata:: litestar.types.ASGIVersion
 
-.. autodata:: starlite.types.BaseScope
+.. autodata:: litestar.types.BaseScope
 
-.. autodata:: starlite.types.WebSocketScope
+.. autodata:: litestar.types.HTTPScope
 
-.. autodata:: starlite.types.HTTPScope
+.. autodata:: litestar.types.LifeSpanScope
 
-.. autodata:: starlite.types.LifeSpanScope
+.. autodata:: litestar.types.WebSocketScope
 
 
 ASGI Events
 ~~~~~~~~~~~~
 
-.. autoclass:: starlite.types.HTTPRequestEvent
+.. autoclass:: litestar.types.HTTPRequestEvent
 
-.. autoclass:: starlite.types.HTTPResponseStartEvent
+.. autoclass:: litestar.types.HTTPResponseStartEvent
 
-.. autoclass:: starlite.types.HTTPResponseBodyEvent
+.. autoclass:: litestar.types.HTTPResponseBodyEvent
 
-.. autoclass:: starlite.types.HTTPServerPushEvent
+.. autoclass:: litestar.types.HTTPServerPushEvent
 
-.. autoclass:: starlite.types.HTTPDisconnectEvent
+.. autoclass:: litestar.types.HTTPDisconnectEvent
 
-.. autoclass:: starlite.types.WebSocketConnectEvent
+.. autoclass:: litestar.types.WebSocketConnectEvent
 
-.. autoclass:: starlite.types.WebSocketAcceptEvent
+.. autoclass:: litestar.types.WebSocketAcceptEvent
 
-.. autoclass:: starlite.types.WebSocketReceiveEvent
+.. autoclass:: litestar.types.WebSocketReceiveEvent
 
-.. autoclass:: starlite.types.WebSocketSendEvent
+.. autoclass:: litestar.types.WebSocketSendEvent
 
-.. autoclass:: starlite.types.WebSocketResponseStartEvent
+.. autoclass:: litestar.types.WebSocketResponseStartEvent
 
-.. autoclass:: starlite.types.WebSocketResponseBodyEvent
+.. autoclass:: litestar.types.WebSocketResponseBodyEvent
 
-.. autoclass:: starlite.types.WebSocketDisconnectEvent
+.. autoclass:: litestar.types.WebSocketDisconnectEvent
 
-.. autoclass:: starlite.types.WebSocketCloseEvent
+.. autoclass:: litestar.types.WebSocketCloseEvent
 
-.. autoclass:: starlite.types.LifeSpanStartupEvent
+.. autoclass:: litestar.types.LifeSpanStartupEvent
 
-.. autoclass:: starlite.types.LifeSpanShutdownEvent
+.. autoclass:: litestar.types.LifeSpanShutdownEvent
 
-.. autoclass:: starlite.types.LifeSpanStartupCompleteEvent
+.. autoclass:: litestar.types.LifeSpanStartupCompleteEvent
 
-.. autoclass:: starlite.types.LifeSpanStartupFailedEvent
+.. autoclass:: litestar.types.LifeSpanStartupFailedEvent
 
-.. autoclass:: starlite.types.LifeSpanShutdownCompleteEvent
+.. autoclass:: litestar.types.LifeSpanShutdownCompleteEvent
 
-.. autoclass:: starlite.types.LifeSpanShutdownFailedEvent
+.. autoclass:: litestar.types.LifeSpanShutdownFailedEvent
 
 
 Event Groupings
 ~~~~~~~~~~~~~~~
 
-.. autodata:: starlite.types.HTTPReceiveMessage
+.. autodata:: litestar.types.HTTPReceiveMessage
 
-.. autodata:: starlite.types.WebSocketReceiveMessage
+.. autodata:: litestar.types.WebSocketReceiveMessage
 
-.. autodata:: starlite.types.LifeSpanReceiveMessage
+.. autodata:: litestar.types.LifeSpanReceiveMessage
 
-.. autodata:: starlite.types.HTTPSendMessage
+.. autodata:: litestar.types.HTTPSendMessage
 
-.. autodata:: starlite.types.WebSocketSendMessage
+.. autodata:: litestar.types.WebSocketSendMessage
 
-.. autodata:: starlite.types.LifeSpanSendMessage
+.. autodata:: litestar.types.LifeSpanSendMessage
 
-.. autodata:: starlite.types.LifeSpanReceive
+.. autodata:: litestar.types.LifeSpanReceive
 
-.. autodata:: starlite.types.LifeSpanSend
+.. autodata:: litestar.types.LifeSpanSend
 
 Send / Receive Parameter Types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autodata:: starlite.types.Message
+.. autodata:: litestar.types.Message
 
-.. autodata:: starlite.types.ReceiveMessage
+.. autodata:: litestar.types.ReceiveMessage
 
 
 Helper Types
@@ -145,46 +143,49 @@ Helper Types
 
 Helper types are useful generic types that can be used.
 
-.. autodata:: starlite.types.SyncOrAsyncUnion
+.. autoclass:: litestar.types.SyncOrAsyncUnion
 
-.. autodata:: starlite.types.SingleOrList
+.. autoclass:: litestar.types.AnyIOBackend
+
+.. autoclass:: litestar.types.OptionalSequence
 
 
 Protocols
 ---------
 
-.. autoclass:: starlite.types.Logger
+.. autoclass:: litestar.types.Logger
 
 
 Composite Types
 ---------------
 
-.. autodata:: starlite.types.Dependencies
+.. autoclass:: litestar.types.Dependencies
 
-.. autodata:: starlite.types.ExceptionHandlersMap
+.. autoclass:: litestar.types.ExceptionHandlersMap
 
-.. autodata:: starlite.types.Middleware
+.. autodata:: litestar.types.Middleware
 
-.. autodata:: starlite.types.ResponseCookies
+.. autoclass:: litestar.types.ResponseCookies
 
-.. autodata:: starlite.types.ResponseHeadersMap
+.. autoclass:: litestar.types.ResponseHeaders
 
-.. autodata:: starlite.types.PathType
+.. autoclass:: litestar.types.PathType
 
+.. autodata:: litestar.types.Scopes
 
-Partial types
--------------
+.. autoclass:: litestar.types.TypeEncodersMap
 
-.. autoclass:: starlite.types.Partial
-    :members:
+.. autoclass:: litestar.types.TypeDecodersSequence
+
+.. autoclass:: litestar.types.ParametersMap
 
 
 File types
 ----------
 
-.. autoclass:: starlite.types.FileInfo
+.. autoclass:: litestar.types.FileInfo
     :members:
 
 
-.. autoclass:: starlite.types.FileSystemProtocol
+.. autoclass:: litestar.types.FileSystemProtocol
     :members:

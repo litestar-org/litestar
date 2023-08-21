@@ -4,22 +4,29 @@ Usage
 .. toctree::
     :titlesonly:
 
-    the-starlite-app
-    routing
-    route-handlers
-    parameters
-    request-data
+    applications
+    routing/index
+    requests
     responses
     dependency-injection
+    websockets
+    dto/index
     middleware/index
+    plugins
     security/index
-    testing
-    plugins/index
-    dto
+    channels
+    databases/index
+    exceptions
+    stores
     openapi
     lifecycle-hooks
     caching
     templating
-    exceptions
-    contrib/index
+    events
+    logging
+    static-files
+    metrics/index
+    htmx
     cli
+    testing
+    debugging

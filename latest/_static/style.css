@@ -18,3 +18,18 @@
     background-color: black;
   }
 }
+
+.breaking-change {
+  font-variant: all-small-caps;
+  margin-left: 0.4rem;
+  color: #f55353;
+}
+
+p {
+  font-size: 1.1em;
+}
+
+html[data-theme="dark"] .mermaid svg {
+  background-color: white;
+  padding: 1em;
+}

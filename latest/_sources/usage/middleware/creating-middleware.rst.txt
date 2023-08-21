@@ -2,15 +2,15 @@
 Creating Middleware
 ===================
 
-As mentioned in :doc:`using middleware </usage/middleware/using-middleware>`, a middleware in Starlite
+As mentioned in :doc:`using middleware </usage/middleware/using-middleware>`, a middleware in Litestar
 is **any callable** that takes a kwarg called ``app``, which is the next ASGI handler, i.e. an
-:class:`ASGIApp <starlite.types.ASGIApp>`, and returns an ``ASGIApp``.
+:class:`ASGIApp <litestar.types.ASGIApp>`, and returns an ``ASGIApp``.
 
 The example previously given was using a factory function, i.e.:
 
 .. code-block:: python
 
-   from starlite.types import ASGIApp, Scope, Receive, Send
+   from litestar.types import ASGIApp, Scope, Receive, Send
 
 
    def middleware_factory(app: ASGIApp) -> ASGIApp:
@@ -29,14 +29,14 @@ base class with some built in functionality.
 Using MiddlewareProtocol
 ------------------------
 
-The :class:`MiddlewareProtocol <starlite.middleware.base.MiddlewareProtocol>` class is a
+The :class:`MiddlewareProtocol <litestar.middleware.base.MiddlewareProtocol>` class is a
 `PEP 544 Protocol <https://peps.python.org/pep-0544/>`_ that specifies the minimal implementation of a middleware as
 follows:
 
 .. code-block:: python
 
    from typing import Protocol, Any
-   from starlite.types import ASGIApp, Scope, Receive, Send
+   from litestar.types import ASGIApp, Scope, Receive, Send
 
 
    class MiddlewareProtocol(Protocol):
@@ -46,13 +46,13 @@ follows:
        async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
            ...
 
-The ``__init__`` method receives and sets "app". *It's important to understand* that app is not an instance of Starlite in
+The ``__init__`` method receives and sets "app". *It's important to understand* that app is not an instance of Litestar in
 this case, but rather the next middleware in the stack, which is also an ASGI app.
 
 The ``__call__`` method makes this class into a ``callable``, i.e. once instantiated this class acts like a function, that
 has the signature of an ASGI app: The three parameters, ``scope, receive, send`` are specified
 by `the ASGI specification <https://asgi.readthedocs.io/en/latest/index.html>`_, and their values originate with the ASGI
-server (e.g. *uvicorn*\ ) used to run Starlite.
+server (e.g. *uvicorn*\ ) used to run Litestar.
 
 To use this protocol as a basis, simply subclass it - as you would any other class, and implement the two methods it
 specifies:
@@ -61,9 +61,9 @@ specifies:
 
    import logging
 
-   from starlite.types import ASGIApp, Receive, Scope, Send
-   from starlite import Request
-   from starlite.middleware.base import MiddlewareProtocol
+   from litestar.types import ASGIApp, Receive, Scope, Send
+   from litestar import Request
+   from litestar.middleware.base import MiddlewareProtocol
 
    logger = logging.getLogger(__name__)
 
@@ -90,17 +90,17 @@ specifies:
 Responding using the MiddlewareProtocol
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Once a middleware finishes doing whatever its doing, it should pass ``scope``, ``receive`` and ``send`` to an ASGI app
+Once a middleware finishes doing whatever its doing, it should pass ``scope``, ``receive``, and ``send`` to an ASGI app
 and await it. This is what's happening in the above example with: ``await self.app(scope, receive, send)``. Let's
 explore another example - redirecting the request to a different url from a middleware:
 
 .. code-block:: python
 
-   from starlite.types import ASGIApp, Receive, Scope, Send
+   from litestar.types import ASGIApp, Receive, Scope, Send
 
-   from starlite.response import RedirectResponse
-   from starlite import Request
-   from starlite.middleware.base import MiddlewareProtocol
+   from litestar.response import Redirect
+   from litestar import Request
+   from litestar.middleware.base import MiddlewareProtocol
 
 
    class RedirectMiddleware(MiddlewareProtocol):
@@ -110,13 +110,13 @@ explore another example - redirecting the request to a different url from a midd
 
        async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
            if Request(scope).session is None:
-               response = RedirectResponse(url="/login")
+               response = Redirect(url="/login")
                await response(scope, receive, send)
            else:
                await self.app(scope, receive, send)
 
 As you can see in the above, given some condition (request.session being None) we create a
-:class:`RedirectResponse <starlite.response.RedirectResponse>` and then await it. Otherwise, we await ``self.app``
+:class:`Redirect <litestar.response.Redirect>` and then await it. Otherwise, we await ``self.app``
 
 
 Modifying ASGI Requests and Responses using the MiddlewareProtocol
@@ -140,10 +140,10 @@ this by doing the following:
 
    import time
 
-   from starlite.datastructures import MutableScopeHeaders
-   from starlite.types import Message, Receive, Scope, Send
-   from starlite.middleware.base import MiddlewareProtocol
-   from starlite.types import ASGIApp
+   from litestar.datastructures import MutableScopeHeaders
+   from litestar.types import Message, Receive, Scope, Send
+   from litestar.middleware.base import MiddlewareProtocol
+   from litestar.types import ASGIApp
 
 
    class ProcessTimeHeader(MiddlewareProtocol):
@@ -169,7 +169,7 @@ this by doing the following:
 Inheriting AbstractMiddleware
 -----------------------------
 
-Starlite offers an :class:`AbstractMiddleware <.middleware.base.AbstractMiddleware>` class that can be extended to
+Litestar offers an :class:`AbstractMiddleware <.middleware.base.AbstractMiddleware>` class that can be extended to
 create middleware:
 
 .. code-block:: python
@@ -177,12 +177,13 @@ create middleware:
    from typing import TYPE_CHECKING
    from time import time
 
-   from starlite import AbstractMiddleware, ScopeType
-   from starlite.datastructures import MutableScopeHeaders
+   from litestar.enums import ScopeType
+   from litestar.middleware import AbstractMiddleware
+   from litestar.datastructures import MutableScopeHeaders
 
 
    if TYPE_CHECKING:
-       from starlite.types import Message, Receive, Scope, Send
+       from litestar.types import Message, Receive, Scope, Send
 
 
    class MyMiddleware(AbstractMiddleware):
@@ -202,7 +203,7 @@ create middleware:
 
            await self.app(scope, receive, send_wrapper)
 
-The three class variables defined in the above example ``scopes``, ``exclude`` and ``exclude_opt_key`` can be used to
+The three class variables defined in the above example ``scopes``, ``exclude``, and ``exclude_opt_key`` can be used to
 fine-tune for which routes and request types the middleware is called:
 
 
@@ -220,15 +221,16 @@ Thus, in the following example, the middleware will only run against the route h
 Using DefineMiddleware to pass arguments
 ----------------------------------------
 
-Starlite offers a simple way to pass positional arguments (``*args``) and key-word arguments (``**kwargs``) to middleware
-using the :class:`DefineMiddleware <starlite.middleware.base.DefineMiddleware>` class. Let's extend
+Litestar offers a simple way to pass positional arguments (``*args``) and key-word arguments (``**kwargs``) to middleware
+using the :class:`DefineMiddleware <litestar.middleware.base.DefineMiddleware>` class. Let's extend
 the factory function used in the examples above to take some args and kwargs and then use ``DefineMiddleware`` to pass
 these values to our middleware:
 
 .. code-block:: python
 
-   from starlite.types import ASGIApp, Scope, Receive, Send
-   from starlite import Starlite, DefineMiddleware
+   from litestar.types import ASGIApp, Scope, Receive, Send
+   from litestar import Litestar
+   from litestar.middleware import DefineMiddleware
 
 
    def middleware_factory(my_arg: int, *, app: ASGIApp, my_kwarg: str) -> ASGIApp:
@@ -240,7 +242,7 @@ these values to our middleware:
        return my_middleware
 
 
-   app = Starlite(
+   app = Litestar(
        route_handlers=[...],
        middleware=[DefineMiddleware(middleware_factory, 1, my_kwarg="abc")],
    )

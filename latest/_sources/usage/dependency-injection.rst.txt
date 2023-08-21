@@ -1,27 +1,28 @@
 Dependency Injection
 ====================
 
-Starlite has a simple but powerful dependency injection system that allows for declaring dependencies on all layers of
+Litestar has a simple but powerful dependency injection system that allows for declaring dependencies on all layers of
 the application:
 
 .. code-block:: python
 
-   from starlite import Controller, Router, Starlite, Provide, get
+   from litestar import Controller, Router, Litestar, get
+   from litestar.di import Provide
 
 
-   def bool_fn() -> bool:
+   async def bool_fn() -> bool:
        ...
 
 
-   def dict_fn() -> dict:
+   async def dict_fn() -> dict:
        ...
 
 
-   def list_fn() -> list:
+   async def list_fn() -> list:
        ...
 
 
-   def int_fn() -> int:
+   async def int_fn() -> int:
        ...
 
 
@@ -51,16 +52,21 @@ the application:
    )
 
    # on the app
-   app = Starlite(
+   app = Litestar(
        route_handlers=[my_router], dependencies={"app_dependency": Provide(bool_fn)}
    )
 
 The above example illustrates how dependencies are declared on the different layers of the application.
 
-Dependencies are callables - sync or async functions, methods or class instances that implement the :meth:`__call__` method -
-that are wrapped inside an instance of the :class:`Provide <.datastructures.Provide>` class.
+Dependencies can be either callables - sync or async functions, methods, or class instances that implement the
+:meth:`object.__call__` method, or classes. These are in turn wrapped inside an instance of the
+:class:`Provide <.di.Provide>` class.
 
-Pre-requisites and Scope
+
+.. include:: /admonitions/sync-to-thread-info.rst
+
+
+Pre-requisites and scope
 ------------------------
 
 The pre-requisites for dependency injection are these:
@@ -77,6 +83,8 @@ above example, the ``local_dependency`` can only be accessed within the specific
 The ``controller_dependency`` is available only for route handlers on that specific controller; And the router
 dependencies are available only to the route handlers registered on that particular router. Only the ``app_dependencies``
 are available to all route handlers.
+
+.. _yield_dependencies:
 
 Dependencies with yield (cleanup step)
 --------------------------------------
@@ -105,7 +113,7 @@ returned:
 
 .. code-block:: python
 
-   from starlite import TestClient
+   from litestar.testing import TestClient
    from dependencies import app, CONNECTION
 
    with TestClient(app=app) as client:
@@ -127,7 +135,7 @@ and committing otherwise.
 
 .. code-block:: python
 
-   from starlite import TestClient
+   from litestar.testing import TestClient
    from dependencies import STATE, app
 
    with TestClient(app=app) as client:
@@ -163,20 +171,20 @@ and committing otherwise.
    re-raise
 
 
-Dependency Kwargs
------------------
+Dependency keyword arguments
+----------------------------
 
 As stated above dependencies can receive kwargs but no args. The reason for this is that dependencies are parsed using
 the same mechanism that parses route handler functions, and they too - like route handler functions, can have data
 injected into them.
 
 In fact, you can inject the same data that you
-can :ref:`inject into route handlers <usage/route-handlers:handler function kwargs>`.
+can :ref:`inject into route handlers <usage/routing/handlers:"reserved" keyword arguments>`.
 
 .. code-block:: python
 
-   from starlite import Controller, Provide, patch
-   from starlite.types.partial import Partial
+   from litestar import Controller, patch
+   from litestar.di import Provide
    from pydantic import BaseModel, UUID4
 
 
@@ -194,7 +202,7 @@ can :ref:`inject into route handlers <usage/route-handlers:handler function kwar
        dependencies = {"user": Provide(retrieve_db_user)}
 
        @patch(path="/{user_id:uuid}")
-       async def update_user(self, data: Partial[User], user: User) -> User:
+       async def get_user(self, user: User) -> User:
            ...
 
 In the above example we have a ``User`` model that we are persisting into a db. The model is fetched using the helper
@@ -205,15 +213,16 @@ in turn makes it available as a kwarg in the ``update_user`` method.
 
 
 
-Overriding Dependencies
------------------------
+Dependency overrides
+--------------------
 
 Because dependencies are declared at each level of the app using a string keyed dictionary, overriding dependencies is
 very simple:
 
 .. code-block:: python
 
-   from starlite import Controller, Provide, get
+   from litestar import Controller, get
+   from litestar.di import Provide
 
 
    def bool_fn() -> bool:
@@ -241,16 +250,17 @@ The lower scoped route handler function declares a dependency with the same key 
 controller. The lower scoped dependency therefore overrides the higher scoped one.
 
 
-The Provide Class
------------------
+The ``Provide`` class
+----------------------
 
-The :class:`Provide <.datastructures.provide.Provide>` class is a wrapper used for dependency injection.
-To inject a callable you must wrap it in ``Provide``:
+The :class:`Provide <.di.Provide>` class is a wrapper used for dependency injection. To inject a callable you must wrap
+it in ``Provide``:
 
 .. code-block:: python
 
-   from starlite import Provide, get
    from random import randint
+   from litestar import get
+   from litestar.di import Provide
 
 
    def my_dependency() -> int:
@@ -271,21 +281,22 @@ To inject a callable you must wrap it in ``Provide``:
 
 .. attention::
 
-    If :attr:`Provide.use_cache <.datastructures.Provide.use_cache>` is true, the return value of the function will be
-    memoized the first time it is called and then will be used. There is no sophisticated comparison of kwargs,
-    LRU implementation etc. so you should be careful when you choose to use this option. Note that dependencies will
-    only be called once per request, even with ``Provide.use_cache`` set to false.
+    If :class:`Provide.use_cache <.di.Provide>` is ``True``, the return value of the function will be memoized the first
+    time it is called and then will be used. There is no sophisticated comparison of kwargs, LRU implementation, etc., so
+    you should be careful when you choose to use this option. Note that dependencies will only be called once per
+    request, even with ``Provide.use_cache`` set to ``False``.
 
 
 
-Using dependencies in dependencies
------------------------------------
+Dependencies within dependencies
+--------------------------------
 
 You can inject dependencies into other dependencies - exactly like you would into regular functions.
 
 .. code-block:: python
 
-   from starlite import Starlite, Provide, get
+   from litestar import Litestar, get
+   from litestar.di import Provide
    from random import randint
 
 
@@ -302,7 +313,7 @@ You can inject dependencies into other dependencies - exactly like you would int
        return "its true!" if injected_bool else "nope, its false..."
 
 
-   app = Starlite(
+   app = Litestar(
        route_handlers=[true_or_false_handler],
        dependencies={
            "injected_integer": Provide(first_dependency),
@@ -312,16 +323,16 @@ You can inject dependencies into other dependencies - exactly like you would int
 
 .. note::
 
-   The same rules for `overriding dependencies`_ apply here as well.
+   The rules for `dependency overrides`_ apply here as well.
 
 
-The Dependency Function
------------------------
+The ``Dependency`` function
+----------------------------
 
 Dependency validation
 ~~~~~~~~~~~~~~~~~~~~~
 
-By default, injected dependency values are validated by Starlite, for example, this application will raise an
+By default, injected dependency values are validated by Litestar, for example, this application will raise an
 internal server error:
 
 .. literalinclude:: /examples/dependency_injection/dependency_validation_error.py
@@ -329,7 +340,7 @@ internal server error:
     :language: python
 
 
-Dependency validation can be toggled using the :class:`Dependency <starlite.params.Dependency>` function.
+Dependency validation can be toggled using the :class:`Dependency <litestar.params.Dependency>` function.
 
 .. literalinclude:: /examples/dependency_injection/dependency_skip_validation.py
     :caption: Dependency validation error
@@ -341,17 +352,17 @@ This may be useful for reasons of efficiency, or if pydantic cannot validate a c
 Dependency function as a marker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The :class:`Dependency <starlite.params.Dependency>` function can also be used as a marker that gives us a bit more detail
+The :class:`Dependency <litestar.params.Dependency>` function can also be used as a marker that gives us a bit more detail
 about your application.
 
 Exclude dependencies with default values from OpenAPI docs
 ***********************************************************
 
 Depending on your application design, it is possible to have a dependency declared in a handler or
-:class:`Provide <.datastructures.provide.Provide>` function that has a default value. If the dependency isn't provided for
-the route, the default should be used by the function.
+:class:`Provide <.di.Provide>` function that has a default value. If the dependency isn't provided for the route, the
+default should be used by the function.
 
-.. literalinclude:: /examples/dependency_injection/dependency_default_value_no_dependency_fn.py
+.. literalinclude:: /examples/dependency_injection/dependency_with_default.py
     :caption: Dependency with default value
     :language: python
 
@@ -360,9 +371,9 @@ This doesn't fail, but due to the way the application determines parameter types
 parameter.
 
 
-By declaring the parameter to be a dependency, Starlite knows to exclude it from the docs:
+By declaring the parameter to be a dependency, Litestar knows to exclude it from the docs:
 
-.. literalinclude:: /examples/dependency_injection/dependency_default_value_with_dependency_fn.py
+.. literalinclude:: /examples/dependency_injection/dependency_with_dependency_fn_and_default.py
     :caption: Dependency with default value
     :language: python
 
