@@ -37,6 +37,9 @@ implementations:
 Both include a ``UUID`` based primary key
 and ``UUIDAuditBase`` includes an ``updated`` and ``created`` timestamp column.
 
+The ``UUID`` will be a native ``UUID``/``GUID`` type on databases that support it such as Postgres.  For other engines without
+a native UUID data type, the UUID is stored as a 16-byte ``BYTES`` or ``RAW`` field.
+
 * :class:`BigIntBase <litestar.contrib.sqlalchemy.base.BigIntBase>`
 * :class:`BigIntAuditBase <litestar.contrib.sqlalchemy.base.BigIntAuditBase>`
 
@@ -47,7 +50,8 @@ Models using these bases also include the following enhancements:
 
 * Auto-generated snake-case table name from class name
 * Pydantic BaseModel and Dict classes map to an optimized JSON type that is
-  :class:`JSONB <sqlalchemy.dialects.postgresql.JSONB>` for the Postgres and
+  :class:`JSONB <sqlalchemy.dialects.postgresql.JSONB>` for Postgres,
+  `VARCHAR` or `BYTES` with JSON check constraint for Oracle, and
   :class:`JSON <sqlalchemy.types.JSON>` for other dialects.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
