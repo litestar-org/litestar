@@ -18,7 +18,7 @@ services:
       MYSQL_DATABASE: db
       MYSQL_ROOT_HOST: "%"
       LANG: C.UTF-8
-  oracle18:
+  oracle:
     image: gvenzl/oracle-xe:18-slim-faststart
     ports:
       - "1512:1521" # use a non-standard port here
