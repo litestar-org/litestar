@@ -40,7 +40,7 @@ Litestar supports a simple implementation of the event emitter / listener patter
         request.app.emit("user_created", email=data.email)
 
     app = Litestar(
-        route_handlers=[create_user_handler],listeners=[send_welcome_email_handler]
+        route_handlers=[create_user_handler], listeners=[send_welcome_email_handler]
     )
 
 
