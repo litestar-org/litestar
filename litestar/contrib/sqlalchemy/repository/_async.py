@@ -238,7 +238,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         existing = await self.count(**kwargs)
         return existing > 0
 
-    def _to_lambda_stmt(
+    def _get_base_stmt(
         self, statement: Select[tuple[ModelT]] | StatementLambdaElement | None = None
     ) -> StatementLambdaElement:
         if isinstance(statement, Select):
