@@ -1160,6 +1160,95 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.0.0">
+<h2>2.0.0<a class="headerlink" href="#2.0.0" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2023/08/19<section id="2.0.0-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.0.0-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Regression | Missing <code class="docutils literal notranslate"><span class="pre">media_type</span></code> information to error responses<a class="headerlink reference internal" href="#2.0.0-regression | missing" id="2.0.0-regression | missing">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixed a regression that caused error responses to be sent using a mismatched
+media type, e.g. an error response from a <code class="docutils literal notranslate"><span class="pre">text/html</span></code> endpoint would be sent
+as JSON.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2024">litestar-org/litestar#2024</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2131">litestar-org/litestar#2131</a></span></p>
+</div>
+</dd>
+<dt>Regression | <code class="docutils literal notranslate"><span class="pre">Litestar.debug</span></code> does not propagate to exception handling middleware<a class="headerlink reference internal" href="#2.0.0-regression |" id="2.0.0-regression |">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixed a regression where setting <code class="docutils literal notranslate"><span class="pre">Litestar.debug</span></code> would not propagate to the
+exception handler middleware, resulting in exception responses always being sent
+using the initial debug value.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2147">litestar-org/litestar#2147</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2153">litestar-org/litestar#2153</a></span></p>
+</div>
+</dd>
+<dt>Static files not being served if a route handler with the same base path was registered<a class="headerlink reference internal" href="#2.0.0-static files not being served if a route handler with the same base path was registered" id="2.0.0-static files not being served if a route handler with the same base path was registered">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixed a bug that would result in a <code class="docutils literal notranslate"><span class="pre">404</span> <span class="pre">-</span> <span class="pre">Not</span> <span class="pre">Found</span></code> when requesting a static
+file where the <a class="reference internal" href="../reference/static_files.html#litestar.static_files.StaticFilesConfig.path" title="litestar.static_files.StaticFilesConfig.path"><code class="xref py py-attr docutils literal notranslate"><span class="pre">path</span></code></a> was also
+used by a route handler.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2154">litestar-org/litestar#2154</a></span></p>
+</div>
+</dd>
+<dt>HTMX: Missing default values for <code class="docutils literal notranslate"><span class="pre">receive</span></code> and <code class="docutils literal notranslate"><span class="pre">send</span></code> parameters of <code class="docutils literal notranslate"><span class="pre">HTMXRequest</span></code><a class="headerlink reference internal" href="#2.0.0-htmx: missing default values for" id="2.0.0-htmx: missing default values for">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add missing default values for the <code class="docutils literal notranslate"><span class="pre">receive</span></code> and <code class="docutils literal notranslate"><span class="pre">send</span></code> parameters of
+<a class="reference internal" href="../reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXRequest" title="litestar.contrib.htmx.request.HTMXRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMXRequest</span></code></a>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2145">litestar-org/litestar#2145</a></span></p>
+</div>
+</dd>
+<dt>DTO: Excluded attributes accessed during transfer<a class="headerlink reference internal" href="#2.0.0-dto: excluded attributes accessed during transfer" id="2.0.0-dto: excluded attributes accessed during transfer">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix the behaviour of DTOs such that they will no longer access fields that have
+been included. This behaviour would previously cause issues when these
+attributes were either costly or impossible to access (e.g. lazy loaded
+relationships of a SQLAlchemy model).</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2125">litestar-org/litestar#2125</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2127">litestar-org/litestar#2127</a></span></p>
+</div>
+</dd>
+<dt>DTO | Regression: <code class="docutils literal notranslate"><span class="pre">DTOData.create_instance</span></code> ignores renaming<a class="headerlink reference internal" href="#2.0.0-dto | regression:" id="2.0.0-dto | regression:">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a regression where calling
+<a class="reference internal" href="../reference/dto/data_structures.html#litestar.dto.data_structures.DTOData.create_instance" title="litestar.dto.data_structures.DTOData.create_instance"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_instance()</span></code></a> would ignore the
+renaming settings of fields.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2144">litestar-org/litestar#2144</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI | Regression: Response schema for files and streams set <code class="docutils literal notranslate"><span class="pre">application/octet-stream</span></code> as <code class="docutils literal notranslate"><span class="pre">contentEncoding</span></code> instead of <code class="docutils literal notranslate"><span class="pre">contentMediaType</span></code><a class="headerlink reference internal" href="#2.0.0-openapi | regression: response schema for files and streams set" id="2.0.0-openapi | regression: response schema for files and streams set">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a regression that would set <code class="docutils literal notranslate"><span class="pre">application/octet-stream</span></code> as the <code class="docutils literal notranslate"><span class="pre">contentEncoding</span></code>
+instead of <code class="docutils literal notranslate"><span class="pre">contentMediaType</span></code> in the response schema of
+<a class="reference internal" href="../reference/response/index.html#litestar.response.File" title="litestar.response.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a> <a class="reference internal" href="../reference/response/index.html#litestar.response.Stream" title="litestar.response.Stream"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2130">litestar-org/litestar#2130</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI | Regression: Response schema diverges from <code class="docutils literal notranslate"><span class="pre">prefer_alias</span></code> setting for Pydantic models<a class="headerlink reference internal" href="#2.0.0-openapi | regression: response schema diverges from" id="2.0.0-openapi | regression: response schema diverges from">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a regression that made the response schema use <code class="docutils literal notranslate"><span class="pre">prefer_alias=True</span></code>,
+diverging from how Pydantic models are exported by default.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2150">litestar-org/litestar#2150</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI | Regression: Examples not being generated deterministically<a class="headerlink reference internal" href="#2.0.0-openapi | regression: examples not being generated deterministically" id="2.0.0-openapi | regression: examples not being generated deterministically">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a regression that made generated examples non-deterministic, caused by a
+misconfiguration of the random seeding.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2161">litestar-org/litestar#2161</a></span></p>
+</div>
+</dd>
+<dt>SQLAlchemy repository: Handling of dialects not supporting JSON<a class="headerlink reference internal" href="#2.0.0-sqlalchemy repository: handling of dialects not supporting json" id="2.0.0-sqlalchemy repository: handling of dialects not supporting json">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where SQLAlchemy would raise a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.11)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> when using a dialect
+that does not support JSON with the SQLAlchemy repositories.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2137">litestar-org/litestar#2137</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2139">litestar-org/litestar#2139</a></span></p>
+</div>
+</dd>
+<dt>JWT | Regression: <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> and <code class="docutils literal notranslate"><span class="pre">HEAD</span></code> being authenticated by default<a class="headerlink reference internal" href="#2.0.0-jwt | regression:" id="2.0.0-jwt | regression:">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a regression that would make
+<a class="reference internal" href="../reference/contrib/jwt.html#litestar.contrib.jwt.JWTAuthenticationMiddleware" title="litestar.contrib.jwt.JWTAuthenticationMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTAuthenticationMiddleware</span></code></a> authenticate
+<code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> and <code class="docutils literal notranslate"><span class="pre">HEAD</span></code> requests by default.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2160">litestar-org/litestar#2160</a></span></p>
+</div>
+</dd>
+<dt>SessionAuth | Regression: <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> and <code class="docutils literal notranslate"><span class="pre">HEAD</span></code> being authenticated by default<a class="headerlink reference internal" href="#2.0.0-sessionauth | regression:" id="2.0.0-sessionauth | regression:">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a regression that would make
+<a class="reference internal" href="../reference/security/session_auth.html#litestar.security.session_auth.middleware.SessionAuthMiddleware" title="litestar.security.session_auth.middleware.SessionAuthMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">SessionAuthMiddleware</span></code></a> authenticate
+<code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> and <code class="docutils literal notranslate"><span class="pre">HEAD</span></code> requests by default.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2182">litestar-org/litestar#2182</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.0.0rc1">
 <h2>2.0.0rc1<a class="headerlink" href="#2.0.0rc1" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2023/08/05<section id="2.0.0rc1-feature">
@@ -3300,6 +3389,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0">2.0.0</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0rc1">2.0.0rc1</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0rc1-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0rc1-bugfix">Bugfixes</a></li>
