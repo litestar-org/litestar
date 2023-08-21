@@ -589,7 +589,7 @@ In Litestar, a redirect response looks like this:
 
 To return a redirect response you should do the following:
 
-- set an appropriate status code for the route handler (301, 302, 303, 307, 308)
+- set an appropriate status code for the route handler (301, 302, 303, 307, 308). The default status code is 302
 - annotate the return value of the route handler as returning :class:`Redirect <.response.Redirect>`
 - return an instance of the :class:`Redirect <.response.Redirect>` class with the desired redirect path
 

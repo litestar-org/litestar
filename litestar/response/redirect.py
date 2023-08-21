@@ -6,7 +6,7 @@ from litestar.constants import REDIRECT_ALLOWED_MEDIA_TYPES, REDIRECT_STATUS_COD
 from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import ASGIResponse, Response
-from litestar.status_codes import HTTP_307_TEMPORARY_REDIRECT
+from litestar.status_codes import HTTP_302_FOUND, HTTP_307_TEMPORARY_REDIRECT
 from litestar.utils import url_quote
 from litestar.utils.helpers import filter_cookies, get_enum_string_value
 
@@ -95,6 +95,8 @@ class Redirect(Response[Any]):
                 supported.
         """
         self.url = path
+        if status_code is None:
+            status_code = HTTP_302_FOUND
         super().__init__(
             background=background,
             content=b"",
