@@ -9,6 +9,7 @@ Litestar supports a simple implementation of the event emitter / listener patter
 
     from litestar import Request, post
     from litestar.events import listener
+    from litestar import Litestar
 
     from db import user_repository
     from utils.email import send_welcome_mail
@@ -39,6 +40,9 @@ Litestar supports a simple implementation of the event emitter / listener patter
         request.app.emit("user_created", email=data.email)
 
 
+    app = Litestar(
+        route_handlers=[create_user_handler], listeners=[send_welcome_email_handler]
+    )
 
 
 The above example illustrates the power of this pattern - it allows us to perform async operations without blocking,
