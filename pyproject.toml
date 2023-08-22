@@ -439,6 +439,7 @@ ruff_fix = true
 [tool.unasyncd.files]
 "litestar/contrib/sqlalchemy/repository/_async.py" = "litestar/contrib/sqlalchemy/repository/_sync.py"
 "litestar/contrib/repository/abc/_async.py" = "litestar/contrib/repository/abc/_sync.py"
+"litestar/contrib/mongodb_motor/repository/_async.py" = "litestar/contrib/mongodb_motor/repository/_sync.py"
 
 [tool.unasyncd.per_file_add_replacements."litestar/contrib/repository/abc/_async.py"]
 "AbstractAsyncRepository" = "AbstractSyncRepository"
