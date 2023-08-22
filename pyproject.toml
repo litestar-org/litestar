@@ -279,11 +279,7 @@ implicit_reexport = false
 show_error_codes = true
 
 [[tool.mypy.overrides]]
-module = ["tests.*.test_sqlalchemy_sync", "tests.*.test_sqlalchemy_async"]
-disable_error_code = "attr-defined"
-
-[[tool.mypy.overrides]]
-module = ["tests.*.test_mongodb_async"]
+module = ["tests.*.test_sqlalchemy_sync", "tests.*.test_sqlalchemy_async", "tests.*.test_mongodb_async"]
 disable_error_code = "attr-defined"
 
 [[tool.mypy.overrides]]
