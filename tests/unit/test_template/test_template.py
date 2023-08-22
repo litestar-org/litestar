@@ -50,7 +50,7 @@ def test_engine_passed_to_callback(tmp_path: "Path") -> None:
 
 @pytest.mark.parametrize("engine", (JinjaTemplateEngine, MakoTemplateEngine))
 def test_engine_instance(engine: Type["TemplateEngineProtocol"], tmp_path: "Path") -> None:
-    engine_instance = engine(tmp_path)
+    engine_instance = engine(directory=tmp_path, engine_instance=None)
     if isinstance(engine_instance, JinjaTemplateEngine):
         assert engine_instance.engine.autoescape is True
 
@@ -65,6 +65,12 @@ def test_engine_instance(engine: Type["TemplateEngineProtocol"], tmp_path: "Path
 def test_directory_validation(engine: Type["TemplateEngineProtocol"], tmp_path: "Path") -> None:
     with pytest.raises(ImproperlyConfiguredException):
         TemplateConfig(engine=engine)
+
+
+@pytest.mark.parametrize("engine", (JinjaTemplateEngine, MakoTemplateEngine))
+def test_instance_and_directory_validation(engine: Type["TemplateEngineProtocol"], tmp_path: "Path") -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+        TemplateConfig(engine=engine, instance=engine(directory=tmp_path, engine_instance=None))
 
 
 @pytest.mark.parametrize("media_type", [MediaType.HTML, MediaType.TEXT, "text/arbitrary"])
