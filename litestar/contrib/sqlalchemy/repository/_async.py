@@ -82,8 +82,6 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             self.statement = lambda_stmt(lambda: statement)
         else:
             self.statement = statement
-
-        self.statement = self._to_lambda_stmt(statement)
         if not self.session.bind:
             # this shouldn't actually ever happen, but we include it anyway to properly
             # narrow down the types
@@ -271,7 +269,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         """
         with wrap_sqlalchemy_exception():
             id_attribute = id_attribute if id_attribute is not None else self.id_attribute
-            statement = self._to_lambda_stmt(statement)
+            statement = self._get_base_stmt(statement)
             statement = self._filter_select_by_kwargs(
                 statement=statement,
                 kwargs={
@@ -305,7 +303,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             NotFoundError: If no instance found identified by `item_id`.
         """
         with wrap_sqlalchemy_exception():
-            statement = self._to_lambda_stmt(statement)
+            statement = self._get_base_stmt(statement)
             statement = self._filter_select_by_kwargs(statement=statement, kwargs=kwargs)
             instance = (await self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
@@ -331,7 +329,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             The retrieved instance or None
         """
         with wrap_sqlalchemy_exception():
-            statement = self._to_lambda_stmt(statement)
+            statement = self._get_base_stmt(statement)
             statement = self._filter_select_by_kwargs(statement=statement, kwargs=kwargs)
             instance = cast("Result[tuple[ModelT]]", (await self._execute(statement))).scalar_one_or_none()
             if instance:
@@ -418,7 +416,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         Returns:
             Count of records returned by query, ignoring pagination.
         """
-        statement = self._to_lambda_stmt(statement)
+        statement = self._get_base_stmt(statement)
         fragment = self.get_id_attribute_value(self.model_type)
         statement += lambda s: s.with_only_columns(sql_func.count(fragment), maintain_column_froms=True).order_by(None)
         statement = self._apply_filters(*filters, apply_pagination=False, statement=statement)
@@ -599,7 +597,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         Returns:
             Count of records returned by query using an analytical window function, ignoring pagination.
         """
-        statement = self._to_lambda_stmt(statement)
+        statement = self._get_base_stmt(statement)
         field = self.get_id_attribute_value(self.model_type)
         statement += lambda s: s.add_columns(over(sql_func.count(field)))
         statement = self._apply_filters(*filters, statement=statement)
@@ -635,7 +633,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         Returns:
             Count of records returned by query using 2 queries, ignoring pagination.
         """
-        statement = self._to_lambda_stmt(statement)
+        statement = self._get_base_stmt(statement)
         statement = self._apply_filters(*filters, statement=statement)
         statement = self._filter_select_by_kwargs(statement, kwargs)
 
@@ -767,7 +765,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         Returns:
             The list of instances, after filtering applied.
         """
-        statement = self._to_lambda_stmt(statement)
+        statement = self._get_base_stmt(statement)
         statement = self._apply_filters(*filters, statement=statement)
         statement = self._filter_select_by_kwargs(statement=statement, kwargs=kwargs)
 
