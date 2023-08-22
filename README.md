@@ -425,6 +425,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Mattwmaster58"><img src="https://avatars.githubusercontent.com/u/26337069?v=4?s=100" width="100px;" alt="Mattwmaster58"/><br /><sub><b>Mattwmaster58</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3AMattwmaster58" title="Bug reports">🐛</a> <a href="https://github.com/litestar-org/litestar/commits?author=Mattwmaster58" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=Mattwmaster58" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://es.linkedin.com/in/manusp"><img src="https://avatars.githubusercontent.com/u/5411704?v=4?s=100" width="100px;" alt="Manuel Sanchez Pinar"/><br /><sub><b>Manuel Sanchez Pinar</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=aorith" title="Documentation">📖</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/juan-riveros"><img src="https://avatars.githubusercontent.com/u/1297567?v=4?s=100" width="100px;" alt="Juan Riveros"/><br /><sub><b>Juan Riveros</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=juan-riveros" title="Documentation">📖</a></td>
+    </tr>
   </tbody>
 </table>
 
