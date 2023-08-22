@@ -210,12 +210,36 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                 if self._dialect.delete_executemany_returning:
                     instances.extend(
                         self.session.scalars(
-                            delete(self.model_type).where(id_attribute.in_(chunk)).returning(self.model_type)
+                            self._get_delete_many_statement(
+                                statement_type="delete",
+                                model_type=self.model_type,
+                                id_attribute=id_attribute,
+                                id_chunk=chunk,
+                                supports_returning=self._dialect.delete_executemany_returning,
+                            )
                         )
                     )
                 else:
-                    instances.extend(self.session.scalars(select(self.model_type).where(id_attribute.in_(chunk))))
-                    self.session.execute(delete(self.model_type).where(id_attribute.in_(chunk)))
+                    instances.extend(
+                        self.session.scalars(
+                            self._get_delete_many_statement(
+                                statement_type="select",
+                                model_type=self.model_type,
+                                id_attribute=id_attribute,
+                                id_chunk=chunk,
+                                supports_returning=self._dialect.delete_executemany_returning,
+                            )
+                        )
+                    )
+                    self.session.execute(
+                        self._get_delete_many_statement(
+                            statement_type="delete",
+                            model_type=self.model_type,
+                            id_attribute=id_attribute,
+                            id_chunk=chunk,
+                            supports_returning=self._dialect.delete_executemany_returning,
+                        )
+                    )
             self._flush_or_commit(auto_commit=auto_commit)
             for instance in instances:
                 self._expunge(instance, auto_expunge=auto_expunge)
@@ -243,6 +267,29 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         if isinstance(statement, Select):
             return lambda_stmt(lambda: statement)
         return self.statement if statement is None else statement
+
+    def _get_count_stmt(self, statement: StatementLambdaElement) -> StatementLambdaElement:
+        fragment = self.get_id_attribute_value(self.model_type)
+        statement += lambda s: s.with_only_columns(sql_func.count(fragment), maintain_column_froms=True)
+        statement += lambda s: s.order_by(None)
+        return statement
+
+    @staticmethod
+    def _get_delete_many_statement(
+        statement_type: Literal["delete", "select"],
+        model_type: type[ModelT],
+        id_attribute: InstrumentedAttribute,
+        id_chunk: list[Any],
+        supports_returning: bool,
+    ) -> StatementLambdaElement:
+        if statement_type == "delete":
+            statement = lambda_stmt(lambda: delete(model_type))
+        elif statement_type == "select":
+            statement = lambda_stmt(lambda: select(model_type))
+        statement += lambda s: s.where(id_attribute.in_(id_chunk))
+        if supports_returning and statement_type != "select":
+            statement += lambda s: s.returning(model_type)
+        return statement
 
     def get(  # type: ignore[override]
         self,
@@ -638,14 +685,8 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         statement = self._apply_filters(*filters, statement=statement)
         statement = self._filter_select_by_kwargs(statement, kwargs)
 
-        def count_statement(statement: StatementLambdaElement) -> StatementLambdaElement:
-            fragment = self.get_id_attribute_value(self.model_type)
-            statement += lambda s: s.with_only_columns(sql_func.count(fragment), maintain_column_froms=True)
-            statement += lambda s: s.order_by(None)
-            return statement
-
         with wrap_sqlalchemy_exception():
-            count_result = self.session.execute(count_statement(statement))
+            count_result = self.session.execute(self._get_count_stmt(statement))
             count = count_result.scalar_one()
             result = self._execute(statement)
             instances: list[ModelT] = []
