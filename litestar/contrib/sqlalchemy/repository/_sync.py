@@ -550,10 +550,12 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         """
         data_to_update: list[dict[str, Any]] = [v.to_dict() if isinstance(v, self.model_type) else v for v in data]  # type: ignore
         with wrap_sqlalchemy_exception():
+            statement = lambda_stmt(lambda: update(self.model_type))
             if self._dialect.update_executemany_returning and self._dialect.name != "oracle":
+                statement += lambda s: s.returning(self.model_type)
                 instances = list(
                     self.session.scalars(
-                        update(self.model_type).returning(self.model_type),
+                        statement,
                         cast("_CoreSingleExecuteParams", data_to_update),  # this is not correct but the only way
                         # currently to deal with an SQLAlchemy typing issue. See
                         # https://github.com/sqlalchemy/sqlalchemy/discussions/9925
@@ -563,7 +565,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                 for instance in instances:
                     self._expunge(instance, auto_expunge=auto_expunge)
                 return instances
-            self.session.execute(update(self.model_type), data_to_update)
+            self.session.execute(statement, data_to_update)
             self._flush_or_commit(auto_commit=auto_commit)
             return data
 
