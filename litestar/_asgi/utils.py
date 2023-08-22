@@ -11,11 +11,10 @@ if TYPE_CHECKING:
     from litestar.types import ASGIApp, ExceptionHandlersMap, RouteHandlerType
 
 
-def wrap_in_exception_handler(debug: bool, app: ASGIApp, exception_handlers: ExceptionHandlersMap) -> ASGIApp:
+def wrap_in_exception_handler(app: ASGIApp, exception_handlers: ExceptionHandlersMap) -> ASGIApp:
     """Wrap the given ASGIApp in an instance of ExceptionHandlerMiddleware.
 
     Args:
-        debug: Dictates whether exceptions are raised in debug mode.
         app: The ASGI app that is being wrapped.
         exception_handlers: A mapping of exceptions to handler functions.
 
@@ -24,7 +23,7 @@ def wrap_in_exception_handler(debug: bool, app: ASGIApp, exception_handlers: Exc
     """
     from litestar.middleware.exceptions import ExceptionHandlerMiddleware
 
-    return ExceptionHandlerMiddleware(app=app, exception_handlers=exception_handlers, debug=debug)
+    return ExceptionHandlerMiddleware(app=app, exception_handlers=exception_handlers, debug=None)
 
 
 def get_route_handlers(route: BaseRoute) -> list[RouteHandlerType]:

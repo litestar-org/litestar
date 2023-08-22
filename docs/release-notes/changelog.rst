@@ -3,6 +3,106 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.0.0
+    :date: 2023/08/19
+
+    .. change:: Regression | Missing ``media_type`` information to error responses
+        :type: bugfix
+        :pr: 2131
+        :issue: 2024
+
+        Fixed a regression that caused error responses to be sent using a mismatched
+        media type, e.g. an error response from a ``text/html`` endpoint would be sent
+        as JSON.
+
+    .. change:: Regression | ``Litestar.debug`` does not propagate to exception handling middleware
+        :type: bugfix
+        :pr: 2153
+        :issue: 2147
+
+        Fixed a regression where setting ``Litestar.debug`` would not propagate to the
+        exception handler middleware, resulting in exception responses always being sent
+        using the initial debug value.
+
+    .. change:: Static files not being served if a route handler with the same base path was registered
+        :type: bugfix
+        :pr: 2154
+
+        Fixed a bug that would result in a ``404 - Not Found`` when requesting a static
+        file where the :attr:`~litestar.static_files.StaticFilesConfig.path` was also
+        used by a route handler.
+
+    .. change:: HTMX: Missing default values for ``receive`` and ``send`` parameters of ``HTMXRequest``
+        :type: bugfix
+        :pr: 2145
+
+        Add missing default values for the ``receive`` and ``send`` parameters of
+        :class:`~litestar.contrib.htmx.request.HTMXRequest`.
+
+    .. change:: DTO: Excluded attributes accessed during transfer
+        :type: bugfix
+        :pr: 2127
+        :issue: 2125
+
+        Fix the behaviour of DTOs such that they will no longer access fields that have
+        been included. This behaviour would previously cause issues when these
+        attributes were either costly or impossible to access (e.g. lazy loaded
+        relationships of a SQLAlchemy model).
+
+    .. change:: DTO | Regression: ``DTOData.create_instance`` ignores renaming
+        :type: bugfix
+        :pr: 2144
+
+        Fix a regression where calling
+        :meth:`~litestar.dto.data_structures.DTOData.create_instance` would ignore the
+        renaming settings of fields.
+
+    .. change:: OpenAPI | Regression: Response schema for files and streams set ``application/octet-stream`` as ``contentEncoding`` instead of ``contentMediaType``
+        :type: bugfix
+        :pr: 2130
+
+        Fix a regression that would set ``application/octet-stream`` as the ``contentEncoding``
+        instead of ``contentMediaType`` in the response schema of
+        :class:`~litestar.response.File` :class:`~litestar.response.Stream`.
+
+    .. change:: OpenAPI | Regression: Response schema diverges from ``prefer_alias`` setting for Pydantic models
+        :type: bugfix
+        :pr: 2150
+
+        Fix a regression that made the response schema use ``prefer_alias=True``,
+        diverging from how Pydantic models are exported by default.
+
+    .. change:: OpenAPI | Regression: Examples not being generated deterministically
+        :type: bugfix
+        :pr: 2161
+
+        Fix a regression that made generated examples non-deterministic, caused by a
+        misconfiguration of the random seeding.
+
+    .. change:: SQLAlchemy repository: Handling of dialects not supporting JSON
+        :type: bugfix
+        :pr: 2139
+        :issue: 2137
+
+        Fix a bug where SQLAlchemy would raise a :exc:`TypeError` when using a dialect
+        that does not support JSON with the SQLAlchemy repositories.
+
+    .. change:: JWT | Regression: ``OPTIONS`` and ``HEAD`` being authenticated by default
+        :type: bugfix
+        :pr: 2160
+
+        Fix a regression that would make
+        :class:`~litestar.contrib.jwt.JWTAuthenticationMiddleware` authenticate
+        ``OPTIONS`` and ``HEAD`` requests by default.
+
+    .. change:: SessionAuth | Regression: ``OPTIONS`` and ``HEAD`` being authenticated by default
+        :type: bugfix
+        :pr: 2182
+
+        Fix a regression that would make
+        :class:`~litestar.security.session_auth.middleware.SessionAuthMiddleware` authenticate
+        ``OPTIONS`` and ``HEAD`` requests by default.
+
 .. changelog:: 2.0.0rc1
     :date: 2023/08/05
 
@@ -30,6 +130,7 @@
 
         .. seealso::
             :ref:`Server Sent Events <usage/responses:Server Sent Event Responses>`
+
 
     .. change:: SQLAlchemy repository: allow specifying ``id_attribute`` per method
         :type: feature

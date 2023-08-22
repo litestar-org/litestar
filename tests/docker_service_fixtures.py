@@ -143,7 +143,7 @@ async def mysql_responsive(host: str) -> bool:
         async with conn.cursor() as cursor:
             await cursor.execute("select 1 as is_available")
             resp = await cursor.fetchone()
-        return resp[0] == 1
+        return resp[0] == 1  # type: ignore
     except asyncmy.errors.OperationalError:
         return False
 
@@ -162,7 +162,7 @@ async def postgres_responsive(host: str) -> bool:
         return False
 
     try:
-        return (await conn.fetchrow("SELECT 1"))[0] == 1
+        return (await conn.fetchrow("SELECT 1"))[0] == 1  # type: ignore
     finally:
         await conn.close()
 
@@ -184,8 +184,8 @@ def oracle_responsive(host: str) -> bool:
         with conn.cursor() as cursor:
             cursor.execute("SELECT 1 FROM dual")
             resp = cursor.fetchone()
-        return resp[0] == 1
-    except (OperationalError, DatabaseError):
+        return resp[0] == 1  # type: ignore
+    except (OperationalError, DatabaseError, Exception):
         return False
 
 
@@ -211,7 +211,7 @@ def spanner_responsive(host: str) -> bool:
             pass
         with database.snapshot() as snapshot:
             resp = next(iter(snapshot.execute_sql("SELECT 1")))
-        return resp[0] == 1
+        return resp[0] == 1  # type: ignore
     except Exception:
         return False
 

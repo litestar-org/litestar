@@ -156,7 +156,7 @@ class BaseRoute(ABC):
             raise ImproperlyConfiguredException("Path parameter names should be of length greater than zero")
         if param_type not in param_type_map:
             raise ImproperlyConfiguredException(
-                f"Path parameters should be declared with an allowed type, i.e. one of {','.join(param_type_map.keys())}"
+                f"Path parameters should be declared with an allowed type, i.e. one of {', '.join(param_type_map.keys())} in path: '{path}'"
             )
 
     @classmethod

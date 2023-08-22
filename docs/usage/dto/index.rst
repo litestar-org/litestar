@@ -1,7 +1,7 @@
 Data Transfer Object (DTO)
 ==========================
 
-In Litestar, a Data Transfer Object (DTO) is class that is used to control the flow of data from the client into a
+In Litestar, a Data Transfer Object (DTO) is a class that is used to control the flow of data from the client into a
 useful form for the developer to use in their handler, and then back again.
 
 The following diagram demonstrates how the DTO is used within the context of an individual request in Litestar:
