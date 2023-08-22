@@ -39,6 +39,7 @@ Litestar supports a simple implementation of the event emitter / listener patter
         # using a different async block than the one where we are returning a response.
         request.app.emit("user_created", email=data.email)
 
+
     app = Litestar(
         route_handlers=[create_user_handler], listeners=[send_welcome_email_handler]
     )
