@@ -14,7 +14,6 @@ from sqlalchemy import (
     over,
     select,
     text,
-    update,
 )
 from sqlalchemy import func as sql_func
 from sqlalchemy.orm import InstrumentedAttribute, Session
@@ -268,19 +267,13 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             return lambda_stmt(lambda: statement)
         return self.statement if statement is None else statement
 
-    def _get_count_stmt(self, statement: StatementLambdaElement) -> StatementLambdaElement:
-        fragment = self.get_id_attribute_value(self.model_type)
-        statement += lambda s: s.with_only_columns(sql_func.count(fragment), maintain_column_froms=True)
-        statement += lambda s: s.order_by(None)
-        return statement
-
     @staticmethod
     def _get_delete_many_statement(
-        statement_type: Literal["delete", "select"],
         model_type: type[ModelT],
         id_attribute: InstrumentedAttribute,
         id_chunk: list[Any],
         supports_returning: bool,
+        statement_type: Literal["delete", "select"] = "delete",
     ) -> StatementLambdaElement:
         if statement_type == "delete":
             statement = lambda_stmt(lambda: delete(model_type))
@@ -550,9 +543,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         """
         data_to_update: list[dict[str, Any]] = [v.to_dict() if isinstance(v, self.model_type) else v for v in data]  # type: ignore
         with wrap_sqlalchemy_exception():
-            statement = lambda_stmt(lambda: update(self.model_type))
-            if self._dialect.update_executemany_returning and self._dialect.name != "oracle":
-                statement += lambda s: s.returning(self.model_type)
+            supports_returning = self._dialect.update_executemany_returning and self._dialect.name != "oracle"
+            statement = self._get_update_many_statement(self.model_type, supports_returning)
+            if supports_returning:
                 instances = list(
                     self.session.scalars(
                         statement,
@@ -568,6 +561,13 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             self.session.execute(statement, data_to_update)
             self._flush_or_commit(auto_commit=auto_commit)
             return data
+
+    @staticmethod
+    def _get_update_many_statement(model_type: type[ModelT], supports_returning: bool) -> StatementLambdaElement:
+        statement = lambda_stmt(lambda: select(model_type))
+        if supports_returning:
+            statement += lambda s: s.returning(model_type)
+        return statement
 
     def list_and_count(
         self,
@@ -696,6 +696,12 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                 self._expunge(instance, auto_expunge=auto_expunge)
                 instances.append(instance)
             return instances, count
+
+    def _get_count_stmt(self, statement: StatementLambdaElement) -> StatementLambdaElement:
+        fragment = self.get_id_attribute_value(self.model_type)
+        statement += lambda s: s.with_only_columns(sql_func.count(fragment), maintain_column_froms=True)
+        statement += lambda s: s.order_by(None)
+        return statement
 
     def upsert(
         self,
