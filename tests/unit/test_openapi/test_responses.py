@@ -249,6 +249,23 @@ def test_create_success_response_with_stream() -> None:
 
 
 def test_create_success_response_redirect() -> None:
+    @get(path="/test", name="test")
+    def redirect_handler() -> Redirect:
+        return Redirect(path="/target")
+
+    handler = get_registered_route_handler(redirect_handler, "test")
+
+    response = create_success_response(handler, SchemaCreator(generate_examples=True))
+    assert response.description == "Redirect Response"
+    assert response.headers
+    location = response.headers["location"]
+    assert isinstance(location, OpenAPIHeader)
+    assert isinstance(location.schema, Schema)
+    assert location.schema.type == OpenAPIType.STRING
+    assert location.description
+
+
+def test_create_success_response_redirect_override() -> None:
     @get(path="/test", status_code=HTTP_307_TEMPORARY_REDIRECT, name="test")
     def redirect_handler() -> Redirect:
         return Redirect(path="/target")
