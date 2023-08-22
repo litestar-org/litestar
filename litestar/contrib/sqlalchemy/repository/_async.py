@@ -575,6 +575,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         auto_expunge: bool | None = None,
         auto_refresh: bool | None = None,
         statement: Select[tuple[ModelT]] | StatementLambdaElement | None = None,
+        force_basic_query_mode: bool | None = None,
         **kwargs: Any,
     ) -> tuple[list[ModelT], int]:
         """List records with total count.
@@ -589,12 +590,13 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                 :class:`SQLAlchemyAsyncRepository.auto_commit <SQLAlchemyAsyncRepository>`
             statement: To facilitate customization of the underlying select query.
                 Defaults to :class:`SQLAlchemyAsyncRepository.statement <SQLAlchemyAsyncRepository>`
+            force_basic_query_mode: Force list and count to use two queries instead of an analytical window function.
             **kwargs: Instance attribute value filters.
 
         Returns:
             Count of records returned by query, ignoring pagination.
         """
-        if self._dialect.name in {"spanner", "spanner+spanner"}:
+        if self._dialect.name in {"spanner", "spanner+spanner"} or force_basic_query_mode:
             return await self._list_and_count_basic(*filters, auto_expunge=auto_expunge, statement=statement, **kwargs)
         return await self._list_and_count_window(*filters, auto_expunge=auto_expunge, statement=statement, **kwargs)
 

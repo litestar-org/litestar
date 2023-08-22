@@ -487,6 +487,23 @@ async def test_sqlalchemy_repo_list_and_count(mock_repo: SQLAlchemyAsyncReposito
     mock_repo.session.commit.assert_not_called()
 
 
+async def test_sqlalchemy_repo_list_and_count_basic(
+    mock_repo: SQLAlchemyAsyncRepository, mocker: MockerFixture
+) -> None:
+    """Test expected method calls for list operation."""
+    mock_instances = [MagicMock(), MagicMock()]
+    mock_count = len(mock_instances)
+    mocker.patch.object(mock_repo, "_list_and_count_basic", return_value=(mock_instances, mock_count))
+    mocker.patch.object(mock_repo, "_list_and_count_window", return_value=(mock_instances, mock_count))
+
+    instances, instance_count = await maybe_async(mock_repo.list_and_count(force_basic_query_mode=True))
+
+    assert instances == mock_instances
+    assert instance_count == mock_count
+    mock_repo.session.expunge.assert_not_called()
+    mock_repo.session.commit.assert_not_called()
+
+
 async def test_sqlalchemy_repo_exists(
     mock_repo: SQLAlchemyAsyncRepository,
     monkeypatch: MonkeyPatch,
