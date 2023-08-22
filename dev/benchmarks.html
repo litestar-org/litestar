@@ -1164,12 +1164,21 @@ document.write(`
 <section id="methodology">
 <h2>Methodology<a class="headerlink" href="#methodology" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p>Benchmarking is done using the <a class="reference external" href="https://github.com/codesenberg/bombardier">bombardier</a> benchmarking tool.</p></li>
+<li><p>Benchmarking is done using the
+<a class="reference external" href="https://github.com/codesenberg/bombardier">bombardier</a> benchmarking tool.</p></li>
 <li><p>Benchmarks are run on a dedicated machine, with a base Debian 11 installation.</p></li>
-<li><p>Each framework is contained within its own docker container, running on a dedicated CPU core (using the <code class="docutils literal notranslate"><span class="pre">cset</span> <span class="pre">shield</span></code> command and the <code class="docutils literal notranslate"><span class="pre">--cpuset-cpus</span></code> option for docker)</p></li>
-<li><p>Tests for the frameworks are written to make them as comparable as possible while completing the same tasks (you can see them <a class="reference external" href="https://github.com/litestar-org/api-performance-tests/tree/main/frameworks">here</a>)</p></li>
-<li><p>Each application is run using <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a> with <strong>one worker</strong> and <a class="reference external" href="https://uvloop.readthedocs.io/">uvloop</a></p></li>
+<li><p>Each framework is contained within its own docker container, running on a dedicated
+CPU core (using the <code class="docutils literal notranslate"><span class="pre">cset</span> <span class="pre">shield</span></code> command and the <code class="docutils literal notranslate"><span class="pre">--cpuset-cpus</span></code> option for
+docker)</p></li>
+<li><p>Tests for the frameworks are written to make them as comparable as possible while
+completing the same tasks (you can see them
+<a class="reference external" href="https://github.com/litestar-org/api-performance-tests/tree/main/frameworks">here</a>)</p></li>
+<li><p>Each application is run using <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a> with
+<strong>one worker</strong> and <a class="reference external" href="https://uvloop.readthedocs.io/">uvloop</a></p></li>
 <li><p>Test data has been randomly generated and is being imported from a shared module</p></li>
+<li><p>All frameworks are used with their “stock” configuration, i.e. without applying any
+additional optimizations. All tests have been written according to the respective
+official documentation, applying the practices shown there</p></li>
 </ul>
 </section>
 <section id="results">
@@ -1178,8 +1187,9 @@ document.write(`
 <p class="admonition-title">Note</p>
 <p>If a result is missing for a specific framework that means either</p>
 <ul class="simple">
-<li><p>It does not support this functionality (this will be mentioned in the test description)</p></li>
-<li><p>More than 0.1% of responses were dropped / erroneous</p></li>
+<li><p>The framework does not support this functionality (this will be mentioned in the
+test description)</p></li>
+<li><p>More than 0.1% of responses were dropped</p></li>
 </ul>
 </div>
 <section id="json">
@@ -1190,14 +1200,33 @@ document.write(`
 <p><span class="caption-text">RPS JSON</span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Because all frameworks are being used in their “stock” configuration, Litestar will
+run the data through <a class="reference external" href="https://jcristharif.com/msgspec/">msgspec</a> and FastAPI
+through <a class="reference external" href="https://docs.pydantic.dev/latest/">Pydantic</a></p>
+</div>
+</section>
+<section id="serialization">
+<h3>Serialization<a class="headerlink" href="#serialization" title="Permalink to this heading">#</a></h3>
+<p>Serializing Pydantic models and dataclasses into JSON</p>
+<figure class="align-default" id="id2">
+<img alt="RPS serializing Pydantic models and dataclasses into JSON" src="_images/rps_serialization.svg" /><figcaption>
+<p><span class="caption-text">RPS serializing Pydantic models and dataclasses into JSON</span><a class="headerlink" href="#id2" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
 </section>
 <section id="files">
 <h3>Files<a class="headerlink" href="#files" title="Permalink to this heading">#</a></h3>
-<figure class="align-default" id="id2">
+<figure class="align-default" id="id3">
 <img alt="RPS files" src="_images/rps_files.svg" /><figcaption>
-<p><span class="caption-text">RPS files</span><a class="headerlink" href="#id2" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">RPS files</span><a class="headerlink" href="#id3" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Synchronous file responses are not / only partially supported for Sanic and Quart</p>
+</div>
 </section>
 <section id="path-and-query-parameter-handling">
 <h3>Path and query parameter handling<a class="headerlink" href="#path-and-query-parameter-handling" title="Permalink to this heading">#</a></h3>
@@ -1208,34 +1237,28 @@ document.write(`
 <li><p>Query params: Single query parameter, coerced into an integer</p></li>
 <li><p>Mixed params: A path and a query parameters, coerced into integers</p></li>
 </ul>
-<figure class="align-default" id="id3">
+<figure class="align-default" id="id4">
 <img alt="RPS path and query parameters" src="_images/rps_params.svg" /><figcaption>
-<p><span class="caption-text">RPS path and query parameters</span><a class="headerlink" href="#id3" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">RPS path and query parameters</span><a class="headerlink" href="#id4" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
 <section id="dependency-injection">
 <h3>Dependency injection<a class="headerlink" href="#dependency-injection" title="Permalink to this heading">#</a></h3>
-<p><em>(not supported by</em> <code class="docutils literal notranslate"><span class="pre">Starlette</span></code> <em>)</em></p>
 <ul class="simple">
 <li><p>Resolving 3 nested synchronous dependencies</p></li>
 <li><p>Resolving 3 nested asynchronous dependencies (only supported by <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> and <code class="docutils literal notranslate"><span class="pre">FastAPI</span></code>)</p></li>
 <li><p>Resolving 3 nested synchronous, and 3 nested asynchronous dependencies (only supported by <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> and <code class="docutils literal notranslate"><span class="pre">FastAPI</span></code>)</p></li>
 </ul>
-<figure class="align-default" id="id4">
-<img alt="RPS Dependency injection" src="_images/rps_dependency-injection.svg" /><figcaption>
-<p><span class="caption-text">RPS Dependency injection</span><a class="headerlink" href="#id4" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
-</section>
-<section id="modifying-responses">
-<h3>Modifying responses<a class="headerlink" href="#modifying-responses" title="Permalink to this heading">#</a></h3>
-<p><em>All responses return “No Content”</em></p>
 <figure class="align-default" id="id5">
-<img alt="RPS dynamic responses" src="_images/rps_dynamic-response.svg" /><figcaption>
-<p><span class="caption-text">RPS dynamic responses</span><a class="headerlink" href="#id5" title="Permalink to this image">#</a></p>
+<img alt="RPS Dependency injection" src="_images/rps_dependency-injection.svg" /><figcaption>
+<p><span class="caption-text">RPS Dependency injection</span><a class="headerlink" href="#id5" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Dependency injection is not supported by Starlette.</p>
+</div>
 </section>
 <section id="plaintext">
 <h3>Plaintext<a class="headerlink" href="#plaintext" title="Permalink to this heading">#</a></h3>
@@ -1249,12 +1272,12 @@ document.write(`
 <section id="interpreting-the-results">
 <h2>Interpreting the results<a class="headerlink" href="#interpreting-the-results" title="Permalink to this heading">#</a></h2>
 <p>An interpretation of these results should be approached with caution, as is the case for nearly all benchmarks.
-A high score in a test does not necessarily translate to high performance of <strong>your</strong> application in <strong>your</strong> use case.
+A high score in a test does not necessarily translate to high performance of <strong>your</strong> application and <strong>your</strong> use case.
 For almost any test you can probably write an app that performs better or worse at a comparable task <strong>in your scenario</strong>.</p>
 <p>While trying to design the tests in a way that simulate somewhat realistic scenarios, they can never give an exact
-representation of how a real world application, where, aside from the workload, many other factors come into play.
-These tests were mainly written to be used internally for litestar development, to help us locate the source of some
-performance regression we were experiencing.</p>
+representation of how a real world application behaves and performs, where, aside from the workload, many other factors
+come into play. These tests were mainly written to be used internally for Litestar development, to help us locate and
+track performance regressions and improvements.</p>
 </section>
 </section>
 
@@ -1299,10 +1322,10 @@ performance regression we were experiencing.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methodology">Methodology</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results">Results</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#json">JSON</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#serialization">Serialization</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#files">Files</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#path-and-query-parameter-handling">Path and query parameter handling</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dependency-injection">Dependency injection</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modifying-responses">Modifying responses</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plaintext">Plaintext</a></li>
 </ul>
 </li>
