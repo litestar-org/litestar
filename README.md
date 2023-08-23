@@ -22,29 +22,23 @@
 <!-- prettier-ignore-end -->
 </div>
 
-# Starlite → Litestar
-
-> [!IMPORTANT]\
-> [**_Starlite has been renamed to Litestar_**](https://litestar.dev/about/organization.html#litestar-and-starlite)
-
 <hr>
 
-Litestar is a powerful, performant, flexible and opinionated ASGI framework,
-offering first class typing support.
+Litestar is a powerful, flexible yet opinionated ASGI framework, focused building on
+building APIs, and offers high-performance data validation and parsing,
+dependency injection, first-class ORM integration, authorization primitives, and much
+more that's needed to get applications up and running.
 
-Check out the [documentation 📚](https://docs.litestar.dev/).
+Check out the [documentation 📚](https://docs.litestar.dev/) for a detailed overview of
+its features!
+
+Additionally, the [Litestar fullstack repository](https://github.com/litestar-org/litestar-fullstack)
+can give you a good impression how a fully fledged Litestar application may look.
 
 ## Installation
 
 ```shell
 pip install litestar
-```
-
-**Litestar 2.0 is coming out soon**, bringing many new features and improvements.
-You can check out the latest pre-release version by instead running
-
-```shell
-pip install litestar==2.0.0beta4
 ```
 
 ## Quick Start
@@ -73,15 +67,14 @@ app = Litestar(route_handlers=[hello_world])
 - [Route Guards based Authorization](#route-guards)
 - Support for `dataclasses`, `TypedDict`, [pydantic version 1 and version 2](https://docs.pydantic.dev/latest/),
   [msgspec](https://github.com/jcrist/msgspec) and [attrs](https://www.attrs.org/en/stable/)
-- Layered Parameter declaration
-- Extended testing support
+- Layered parameter declaration
 - [Automatic API documentation with](#redoc-swagger-ui-and-stoplight-elements-api-documentation):
   - [Redoc](https://github.com/Redocly/redoc)
   - [Stoplight Elements](https://github.com/stoplightio/elements)
   - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
 - [Trio](https://trio.readthedocs.io/en/stable/) support (built-in, via [AnyIO](https://anyio.readthedocs.io/))
 - Ultra-fast validation, serialization and deserialization using [msgspec](https://github.com/jcrist/msgspec)
-- SQLAlchemy Support
+- SQLAlchemy integration
 - Piccolo ORM Support
 
 ## Example Applications
@@ -91,21 +84,6 @@ app = Litestar(route_handlers=[hello_world])
   Litestar projects, this application is open to contributions, big and small.
 - [litestar-hello-world](https://github.com/litestar-org/litestar-hello-world): A bare-minimum application setup. Great
   for testing and POC work.
-
-## Performance
-
-Litestar is fast. It is on par with, or significantly faster than comparable ASGI frameworks.
-
-You can see and run the benchmarks [here](https://github.com/litestar-org/api-performance-tests),
-or read more about it [here](https://docs.litestar.dev/latest/benchmarks) in our documentation.
-
-### JSON Benchmarks
-
-![JSON benchmarks](docs/images/benchmarks/rps_json.svg)
-
-### Plaintext Benchmarks
-
-![Plaintext benchmarks](docs/images/benchmarks/rps_plaintext.svg)
 
 ## Features
 
@@ -259,6 +237,13 @@ app = Litestar([index])
 ### Request Life Cycle Hooks
 
 Litestar supports request life cycle hooks, similarly to Flask - i.e. `before_request` and `after_request`
+
+## Performance
+
+Litestar is fast. It is on par with, or significantly faster than comparable ASGI frameworks.
+
+You can see and run the benchmarks [here](https://github.com/litestar-org/api-performance-tests),
+or read more about it [here](https://docs.litestar.dev/latest/benchmarks) in our documentation.
 
 ## Contributing
 
@@ -439,6 +424,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="http://zanfar.com/"><img src="https://avatars.githubusercontent.com/u/10294685?v=4?s=100" width="100px;" alt="Matthew"/><br /><sub><b>Matthew</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=therealzanfar" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Mattwmaster58"><img src="https://avatars.githubusercontent.com/u/26337069?v=4?s=100" width="100px;" alt="Mattwmaster58"/><br /><sub><b>Mattwmaster58</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3AMattwmaster58" title="Bug reports">🐛</a> <a href="https://github.com/litestar-org/litestar/commits?author=Mattwmaster58" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=Mattwmaster58" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://es.linkedin.com/in/manusp"><img src="https://avatars.githubusercontent.com/u/5411704?v=4?s=100" width="100px;" alt="Manuel Sanchez Pinar"/><br /><sub><b>Manuel Sanchez Pinar</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=aorith" title="Documentation">📖</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/juan-riveros"><img src="https://avatars.githubusercontent.com/u/1297567?v=4?s=100" width="100px;" alt="Juan Riveros"/><br /><sub><b>Juan Riveros</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=juan-riveros" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
