@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
-from typing import Any
+from typing import Any, Dict, List, cast
 
 from pymongo.errors import DuplicateKeyError, PyMongoError
 
@@ -29,3 +29,11 @@ def wrap_pymongo_exception() -> Any:
         raise RepositoryError(f"An exception occurred: {e}") from e
     except AttributeError as e:
         raise RepositoryError from e
+
+
+async def _convert_cursor_to_list_async(cursor: Any) -> list[dict[str, Any]]:
+    return cast(List[Dict[str, Any]], await cursor.to_list(None))
+
+
+def _convert_cursor_to_list_sync(cursor: Any) -> list[dict[str, Any]]:
+    return list(cursor)

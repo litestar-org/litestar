@@ -279,7 +279,7 @@ implicit_reexport = false
 show_error_codes = true
 
 [[tool.mypy.overrides]]
-module = ["tests.*.test_sqlalchemy_sync", "tests.*.test_sqlalchemy_async", "tests.*.test_mongodb_async"]
+module = ["tests.*.test_sqlalchemy_sync", "tests.*.test_sqlalchemy_async", "tests.*.test_mongodb_async", "tests.*.test_mongodb_sync"]
 disable_error_code = "attr-defined"
 
 [[tool.mypy.overrides]]
@@ -445,3 +445,9 @@ ruff_fix = true
 SQLAlchemyAsyncRepository = "SQLAlchemySyncRepository"
 "sqlalchemy.ext.asyncio.AsyncSession" = "sqlalchemy.orm.Session"
 "litestar.contrib.repository.AbstractAsyncRepository" = "litestar.contrib.repository.AbstractSyncRepository"
+
+[tool.unasyncd.per_file_add_replacements."litestar/contrib/mongodb_motor/repository/_async.py"]
+MongoDbMotorAsyncRepository = "MongoDbSyncRepository"
+"motor.motor_asyncio.AsyncIOMotorCollection" = "pymongo.collection.Collection"
+"litestar.contrib.repository.AbstractAsyncRepository" = "litestar.contrib.repository.AbstractSyncRepository"
+"litestar.contrib.mongodb_motor.repository._util._convert_cursor_to_list_async" = "litestar.contrib.mongodb_motor.repository._util._convert_cursor_to_list_sync"

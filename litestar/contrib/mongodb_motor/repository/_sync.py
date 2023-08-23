@@ -2,11 +2,14 @@
 # litestar/contrib/mongodb_motor/repository/_async.py
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
+from typing import TYPE_CHECKING, Any, Dict, Optional, cast
 
 from pymongo import ReturnDocument, UpdateOne
 
-from litestar.contrib.mongodb_motor.repository._util import wrap_pymongo_exception
+from litestar.contrib.mongodb_motor.repository._util import (
+    _convert_cursor_to_list_sync,
+    wrap_pymongo_exception,
+)
 from litestar.contrib.repository import (
     AbstractSyncRepository,
     FilterTypes,
@@ -21,11 +24,10 @@ if TYPE_CHECKING:
 
     from pymongo.collection import Collection
 
-
 DocumentType = Dict[str, Any]
 
 
-class MongoDbMotorAsyncRepository(AbstractSyncRepository[DocumentType]):
+class MongoDbSyncRepository(AbstractSyncRepository[DocumentType]):
     """Motor based implementation of the repository interface."""
 
     id_attribute = "_id"
@@ -110,9 +112,10 @@ class MongoDbMotorAsyncRepository(AbstractSyncRepository[DocumentType]):
 
         """
         with wrap_pymongo_exception():
-            documents_to_delete = list(self.collection.find({self.id_attribute: {"$in": item_ids}}))
+            cursor = self.collection.find({self.id_attribute: {"$in": item_ids}})
+            documents_to_delete = self._convert_cursor_to_list(cursor)
             self.collection.delete_many({self.id_attribute: {"$in": item_ids}})
-            return cast(List[DocumentType], documents_to_delete)
+            return documents_to_delete
 
     def exists(self, **kwargs: Any) -> bool:
         """Return true if the object specified by ``kwargs`` exists.
@@ -298,8 +301,11 @@ class MongoDbMotorAsyncRepository(AbstractSyncRepository[DocumentType]):
 
         with wrap_pymongo_exception():
             cursor = self.collection.find(query)
-            docs = list(cursor)
+            docs = self._convert_cursor_to_list(cursor)
             return docs, len(docs)
+
+    def _convert_cursor_to_list(self, cursor: Any) -> list[DocumentType]:
+        return _convert_cursor_to_list_sync(cursor)
 
     def list(self, *filters: FilterTypes, **kwargs: Any) -> list[DocumentType]:
         """Get a list of instances, optionally filtered.
@@ -316,7 +322,7 @@ class MongoDbMotorAsyncRepository(AbstractSyncRepository[DocumentType]):
 
         with wrap_pymongo_exception():
             cursor = self.collection.find(query)
-            return cast(List[DocumentType], list(cursor))
+            return self._convert_cursor_to_list(cursor)
 
     def filter_collection_by_kwargs(  # type:ignore[override]
         self,
