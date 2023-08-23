@@ -12,6 +12,7 @@ from sqlalchemy import (
     over,
     select,
     text,
+    update,
 )
 from sqlalchemy import func as sql_func
 from sqlalchemy.orm import InstrumentedAttribute
@@ -563,7 +564,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
 
     @staticmethod
     def _get_update_many_statement(model_type: type[ModelT], supports_returning: bool) -> StatementLambdaElement:
-        statement = lambda_stmt(lambda: select(model_type))
+        statement = lambda_stmt(lambda: update(model_type))
         if supports_returning:
             statement += lambda s: s.returning(model_type)
         return statement
