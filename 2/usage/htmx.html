@@ -1172,6 +1172,13 @@ document.write(`
 HTMX client.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.contrib.htmx.request</span> <span class="kn">import</span> <span class="n">HTMXRequest</span>
 <span class="kn">from</span> <span class="nn">litestar.contrib.htmx.response</span> <span class="kn">import</span> <span class="n">HTMXTemplate</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">Template</span>
+
+<span class="kn">from</span> <span class="nn">litestar.contrib.jinja</span> <span class="kn">import</span> <span class="n">JinjaTemplateEngine</span>
+<span class="kn">from</span> <span class="nn">litestar.template.config</span> <span class="kn">import</span> <span class="n">TemplateConfig</span>
+
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/form&quot;</span><span class="p">)</span>
@@ -1182,7 +1189,18 @@ HTMX client.</p>
     <span class="c1"># OR</span>
     <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">htmx</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">htmx</span><span class="o">.</span><span class="n">current_url</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">HTMXTemplate</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;partial.html&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">push_url</span><span class="o">=</span><span class="s2">&quot;/form&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">HTMXTemplate</span><span class="p">(</span><span class="n">template_name</span><span class="o">=</span><span class="s2">&quot;partial.html&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">push_url</span><span class="o">=</span><span class="s2">&quot;/form&quot;</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_form</span><span class="p">],</span>
+    <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">request_class</span><span class="o">=</span><span class="n">HTMXRequest</span><span class="p">,</span>
+    <span class="n">template_config</span><span class="o">=</span><span class="n">TemplateConfig</span><span class="p">(</span>
+        <span class="n">directory</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;litestar_htmx/templates&quot;</span><span class="p">),</span>
+        <span class="n">engine</span><span class="o">=</span><span class="n">JinjaTemplateEngine</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <p>See <a class="reference internal" href="../reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails" title="litestar.contrib.htmx.request.HTMXDetails"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMXDetails</span></code></a> for a full list of
@@ -1195,6 +1213,7 @@ available properties.</p>
 <p>The most common  use-case for <cite>htmx</cite> to render an html page or html snippet. Litestar makes this easy by providing
 an <a class="reference internal" href="../reference/contrib/htmx.html#litestar.contrib.htmx.response.HTMXTemplate" title="litestar.contrib.htmx.response.HTMXTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMXTemplate</span></code></a> response:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.contrib.htmx.response</span> <span class="kn">import</span> <span class="n">HTMXTemplate</span>
+<span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">Template</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/form&quot;</span><span class="p">)</span>
@@ -1203,7 +1222,7 @@ an <a class="reference internal" href="../reference/contrib/htmx.html#litestar.c
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Template</span><span class="p">:</span>  <span class="c1"># Return type is Template and not HTMXTemplate.</span>
     <span class="o">...</span>
     <span class="k">return</span> <span class="n">HTMXTemplate</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;partial.html&quot;</span><span class="p">,</span>
+        <span class="n">template_name</span><span class="o">=</span><span class="s2">&quot;partial.html&quot;</span><span class="p">,</span>
         <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
         <span class="c1"># Optional parameters</span>
         <span class="n">push_url</span><span class="o">=</span><span class="s2">&quot;/form&quot;</span><span class="p">,</span>  <span class="c1"># update browser history</span>

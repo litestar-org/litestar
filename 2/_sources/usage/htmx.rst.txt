@@ -13,6 +13,13 @@ HTMX client.
 
     from litestar.contrib.htmx.request import HTMXRequest
     from litestar.contrib.htmx.response import HTMXTemplate
+    from litestar import get, Litestar
+    from litestar.response import Template
+
+    from litestar.contrib.jinja import JinjaTemplateEngine
+    from litestar.template.config import TemplateConfig
+
+    from pathlib import Path
 
 
     @get(path="/form")
@@ -23,8 +30,18 @@ HTMX client.
         # OR
         if request.htmx:
             print(request.htmx.current_url)
-        return HTMXTemplate(name="partial.html", context=context, push_url="/form")
+        return HTMXTemplate(template_name="partial.html", context=context, push_url="/form")
 
+
+    app = Litestar(
+        route_handlers=[get_form],
+        debug=True,
+        request_class=HTMXRequest,
+        template_config=TemplateConfig(
+            directory=Path("litestar_htmx/templates"),
+            engine=JinjaTemplateEngine,
+        ),
+    )
 
 See :class:`HTMXDetails <litestar.contrib.htmx.request.HTMXDetails>` for a full list of
 available properties.
@@ -43,6 +60,7 @@ an :class:`HTMXTemplate <litestar.contrib.htmx.response.HTMXTemplate>` response:
 .. code-block:: python
 
     from litestar.contrib.htmx.response import HTMXTemplate
+    from litestar.response import Template
 
 
     @get(path="/form")
@@ -51,7 +69,7 @@ an :class:`HTMXTemplate <litestar.contrib.htmx.response.HTMXTemplate>` response:
     ) -> Template:  # Return type is Template and not HTMXTemplate.
         ...
         return HTMXTemplate(
-            name="partial.html",
+            template_name="partial.html",
             context=context,
             # Optional parameters
             push_url="/form",  # update browser history

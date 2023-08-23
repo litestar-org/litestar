@@ -1238,7 +1238,10 @@ to <code class="docutils literal notranslate"><span class="pre">False</span></co
 <dt><code class="docutils literal notranslate"><span class="pre">raises</span></code></dt><dd><p>A list of exception classes extending from <code class="docutils literal notranslate"><span class="pre">litestar.HttpException</span></code>. This list should describe all
 exceptions raised within the route handler’s function/method. The Litestar <code class="docutils literal notranslate"><span class="pre">ValidationException</span></code> will be added
 automatically for the schema if any validation is involved (e.g. there are parameters specified in the
-method/function).</p>
+method/function). For custom exceptions, a <cite>detail</cite> class property should be defined, which will be integrated
+into the OpenAPI schema. If <cite>detail</cite> isn’t specified and the exception’s status code matches one
+from <a class="reference external" href="https://docs.python.org/3/library/http.html#http-status-codes">stdlib status code</a>, a generic message
+will be applied.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">responses</span></code></dt><dd><p>A dictionary of additional status codes and a description of their expected content.
 The expected content should be based on a Pydantic model describing its structure. It can also include

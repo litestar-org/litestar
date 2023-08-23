@@ -1170,6 +1170,7 @@ document.write(`
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.events</span> <span class="kn">import</span> <span class="n">listener</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
 
 <span class="kn">from</span> <span class="nn">db</span> <span class="kn">import</span> <span class="n">user_repository</span>
 <span class="kn">from</span> <span class="nn">utils.email</span> <span class="kn">import</span> <span class="n">send_welcome_mail</span>
@@ -1198,6 +1199,11 @@ document.write(`
     <span class="c1"># To do this in a none-blocking fashion, we will emit an event to a listener, which will send the email,</span>
     <span class="c1"># using a different async block than the one where we are returning a response.</span>
     <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;user_created&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user_handler</span><span class="p">],</span> <span class="n">listeners</span><span class="o">=</span><span class="p">[</span><span class="n">send_welcome_email_handler</span><span class="p">]</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <p>The above example illustrates the power of this pattern - it allows us to perform async operations without blocking,
