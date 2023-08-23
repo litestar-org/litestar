@@ -1184,7 +1184,7 @@ UUID or Big Integer based primary-key,
 a  <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/connections.html#configuring-sentinel-columns">sentinel column</a>, and
 an optional version with audit columns.</p></li>
 <li><p>Generic synchronous and asynchronous repositories for select, insert, update, and delete operations on SQLAlchemy models</p></li>
-<li><p>Implements optimized methods for bulk inserts, updates, and deletes.</p></li>
+<li><p>Implements optimized methods for bulk inserts, updates, and deletes and uses <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/sqlelement.html#sqlalchemy.sql.expression.lambda_stmt">lambda_stmt</a> when possible.</p></li>
 <li><p>Integrated counts, pagination, sorting, filtering with <code class="docutils literal notranslate"><span class="pre">LIKE</span></code>, <code class="docutils literal notranslate"><span class="pre">IN</span></code>, and dates before and/or after.</p></li>
 <li><p>Tested support for multiple database backends including:</p>
 <ul>
@@ -1209,6 +1209,8 @@ implementations:</p>
 </ul>
 <p>Both include a <code class="docutils literal notranslate"><span class="pre">UUID</span></code> based primary key
 and <code class="docutils literal notranslate"><span class="pre">UUIDAuditBase</span></code> includes an <code class="docutils literal notranslate"><span class="pre">updated</span></code> and <code class="docutils literal notranslate"><span class="pre">created</span></code> timestamp column.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">UUID</span></code> will be a native <code class="docutils literal notranslate"><span class="pre">UUID</span></code>/<code class="docutils literal notranslate"><span class="pre">GUID</span></code> type on databases that support it such as Postgres.  For other engines without
+a native UUID data type, the UUID is stored as a 16-byte <code class="docutils literal notranslate"><span class="pre">BYTES</span></code> or <code class="docutils literal notranslate"><span class="pre">RAW</span></code> field.</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../../reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntBase" title="litestar.contrib.sqlalchemy.base.BigIntBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntBase</span></code></a></p></li>
 <li><p><a class="reference internal" href="../../../reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntAuditBase" title="litestar.contrib.sqlalchemy.base.BigIntAuditBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntAuditBase</span></code></a></p></li>
@@ -1219,7 +1221,8 @@ and <code class="docutils literal notranslate"><span class="pre">BigIntAuditBase
 <ul class="simple">
 <li><p>Auto-generated snake-case table name from class name</p></li>
 <li><p>Pydantic BaseModel and Dict classes map to an optimized JSON type that is
-<a class="reference external" href="https://docs.sqlalchemy.org/en/20/dialects/postgresql.html#sqlalchemy.dialects.postgresql.JSONB" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONB</span></code></a> for the Postgres and
+<a class="reference external" href="https://docs.sqlalchemy.org/en/20/dialects/postgresql.html#sqlalchemy.dialects.postgresql.JSONB" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONB</span></code></a> for Postgres,
+<cite>VARCHAR</cite> or <cite>BYTES</cite> with JSON check constraint for Oracle, and
 <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/type_basics.html#sqlalchemy.types.JSON" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSON</span></code></a> for other dialects.</p></li>
 </ul>
 <div class="literal-block-wrapper docutils container" id="id1">
