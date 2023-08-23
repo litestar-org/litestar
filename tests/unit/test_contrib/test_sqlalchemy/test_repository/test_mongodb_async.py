@@ -43,7 +43,8 @@ class AsyncMockWithAsyncMethods(AsyncMock):
 def mock_repo() -> MongoDbMotorAsyncRepository:
     """Motor/PyMongo repository with a mock collection."""
 
-    return MongoDbMotorAsyncRepository(collection=AsyncMockWithAsyncMethods(spec=AsyncIOMotorCollection))
+    collection = AsyncMockWithAsyncMethods(spec=AsyncIOMotorCollection)
+    return MongoDbMotorAsyncRepository(collection=collection)
 
 
 def test_wrap_pymongo_duplicate_key_error() -> None:
@@ -344,6 +345,20 @@ async def test_motor_repo_upsert(mock_repo: MongoDbMotorAsyncRepository, monkeyp
     assert document is expected_document
     mock_repo.collection.find_one_and_update.assert_called_once_with(
         {"_id": expected_id}, {"$set": expected_document}, return_document=True
+    )
+
+
+async def test_motor_repo_upsert_many(mock_repo: MongoDbMotorAsyncRepository, monkeypatch: MonkeyPatch) -> None:
+    """Test expected method calls for upsert many operation."""
+    expected_id = 1
+    expected_document = {"_id": expected_id}
+    monkeypatch.setattr(mock_repo.collection, "bulk_write", AsyncMock(return_value=expected_document))
+
+    documents = await mock_repo.upsert_many([expected_document])
+
+    assert documents == [expected_document]
+    mock_repo.collection.bulk_write.assert_called_once_with(
+        [UpdateOne({"_id": expected_id}, {"$set": expected_document}, upsert=True)]
     )
 
 

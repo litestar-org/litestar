@@ -279,6 +279,31 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
             )
             return cast(DocumentType, document)
 
+    async def upsert_many(self, data: list[DocumentType]) -> list[DocumentType]:
+        """Update or create many instances.
+
+        Updates instances with the attribute values present on `data`, or creates a new instance if
+        one doesn't exist.
+
+        Args:
+            data: Instances to update existing, or be created. Identifier used to determine if an
+                existing instance exists is the value of an attribute on `data` named as value of
+                `self.id_attribute`.
+
+        Returns:
+            The updated or created instances.
+        """
+        bulk_operations = []
+
+        for instance_data in data:
+            _id = self.get_id_attribute_value(instance_data)
+            bulk_operations.append(UpdateOne({"_id": _id}, {"$set": instance_data}, upsert=True))
+
+        with wrap_pymongo_exception():
+            await self.collection.bulk_write(bulk_operations)
+
+            return data
+
     async def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[list[DocumentType], int]:
         """List records with total count.
 

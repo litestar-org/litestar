@@ -323,6 +323,20 @@ def test_motor_repo_upsert(mock_repo: MongoDbSyncRepository, monkeypatch: Monkey
     )
 
 
+async def test_motor_repo_upsert_many(mock_repo: MongoDbSyncRepository, monkeypatch: MonkeyPatch) -> None:
+    """Test expected method calls for upsert many operation."""
+    expected_id = 1
+    expected_document = {"_id": expected_id}
+    monkeypatch.setattr(mock_repo.collection, "bulk_write", Mock(return_value=expected_document))
+
+    documents = mock_repo.upsert_many([expected_document])
+
+    assert documents == [expected_document]
+    mock_repo.collection.bulk_write.assert_called_once_with(
+        [UpdateOne({"_id": expected_id}, {"$set": expected_document}, upsert=True)]
+    )
+
+
 def test_motor_repo_list_and_count(mock_repo: MongoDbSyncRepository, monkeypatch: MonkeyPatch) -> None:
     """Test expected method calls for upsert list and count operation."""
     expected_id = 1
