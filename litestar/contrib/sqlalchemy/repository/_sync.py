@@ -982,7 +982,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         self, statement: StatementLambdaElement, kwargs: dict[Any, Any] | Iterable[tuple[Any, Any]]
     ) -> StatementLambdaElement:
         for key, val in kwargs.items() if isinstance(kwargs, dict) else kwargs:
-            statement = self._filter_by_where(statement, key, val)
+            statement = self._filter_by_where(statement, key, val)  # pyright: ignore[reportGeneralTypeIssues]
         return statement
 
     def _filter_by_where(self, statement: StatementLambdaElement, key: str, val: Any) -> StatementLambdaElement:

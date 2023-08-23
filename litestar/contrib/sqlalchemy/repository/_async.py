@@ -980,10 +980,8 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
     def _filter_select_by_kwargs(
         self, statement: StatementLambdaElement, kwargs: dict[Any, Any] | Iterable[tuple[Any, Any]]
     ) -> StatementLambdaElement:
-        for key, val in (
-            kwargs.items() if isinstance(kwargs, dict) else kwargs  # pyright: ignore[reportGeneralTypeIssues
-        ):
-            statement = self._filter_by_where(statement, key, val)
+        for key, val in kwargs.items() if isinstance(kwargs, dict) else kwargs:
+            statement = self._filter_by_where(statement, key, val)  # pyright: ignore[reportGeneralTypeIssues]
         return statement
 
     def _filter_by_where(self, statement: StatementLambdaElement, key: str, val: Any) -> StatementLambdaElement:
