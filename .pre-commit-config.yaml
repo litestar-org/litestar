@@ -51,7 +51,7 @@ repos:
     rev: "v3.0.2"
     hooks:
       - id: prettier
-        exclude: "_templates|.git"
+        exclude: "_templates|.git|.all-contributorsrc"
   - repo: https://github.com/python-formate/flake8-dunder-all
     rev: v0.3.0
     hooks:

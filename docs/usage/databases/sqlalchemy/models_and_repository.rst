@@ -13,7 +13,7 @@ Features
   a  `sentinel column <https://docs.sqlalchemy.org/en/20/core/connections.html#configuring-sentinel-columns>`_, and
   an optional version with audit columns.
 * Generic synchronous and asynchronous repositories for select, insert, update, and delete operations on SQLAlchemy models
-* Implements optimized methods for bulk inserts, updates, and deletes.
+* Implements optimized methods for bulk inserts, updates, and deletes and uses `lambda_stmt <https://docs.sqlalchemy.org/en/20/core/sqlelement.html#sqlalchemy.sql.expression.lambda_stmt>`_ when possible.
 * Integrated counts, pagination, sorting, filtering with ``LIKE``, ``IN``, and dates before and/or after.
 * Tested support for multiple database backends including:
 
@@ -37,6 +37,9 @@ implementations:
 Both include a ``UUID`` based primary key
 and ``UUIDAuditBase`` includes an ``updated`` and ``created`` timestamp column.
 
+The ``UUID`` will be a native ``UUID``/``GUID`` type on databases that support it such as Postgres.  For other engines without
+a native UUID data type, the UUID is stored as a 16-byte ``BYTES`` or ``RAW`` field.
+
 * :class:`BigIntBase <litestar.contrib.sqlalchemy.base.BigIntBase>`
 * :class:`BigIntAuditBase <litestar.contrib.sqlalchemy.base.BigIntAuditBase>`
 
@@ -47,7 +50,8 @@ Models using these bases also include the following enhancements:
 
 * Auto-generated snake-case table name from class name
 * Pydantic BaseModel and Dict classes map to an optimized JSON type that is
-  :class:`JSONB <sqlalchemy.dialects.postgresql.JSONB>` for the Postgres and
+  :class:`JSONB <sqlalchemy.dialects.postgresql.JSONB>` for Postgres,
+  `VARCHAR` or `BYTES` with JSON check constraint for Oracle, and
   :class:`JSON <sqlalchemy.types.JSON>` for other dialects.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
