@@ -8,6 +8,7 @@ from litestar import Litestar, get, post
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.spec import Components, Example, OpenAPIHeader, OpenAPIType, Schema
+from litestar.testing import TestClient
 
 if TYPE_CHECKING:
     from litestar.handlers.http_handlers import HTTPRouteHandler
@@ -62,18 +63,24 @@ def test_by_alias() -> None:
 
     assert app.openapi_schema
     schemas = app.openapi_schema.to_schema()["components"]["schemas"]
+    request_key = "second"
     assert schemas["RequestWithAlias"] == {
-        "properties": {"second": {"type": "string"}},
+        "properties": {request_key: {"type": "string"}},
         "type": "object",
-        "required": ["second"],
+        "required": [request_key],
         "title": "RequestWithAlias",
     }
+    response_key = "first"
     assert schemas["ResponseWithAlias"] == {
-        "properties": {"second": {"type": "string"}},
+        "properties": {response_key: {"type": "string"}},
         "type": "object",
-        "required": ["second"],
+        "required": [response_key],
         "title": "ResponseWithAlias",
     }
+
+    with TestClient(app) as client:
+        response = client.post("/", json={request_key: "foo"})
+        assert response.json() == {response_key: "foo"}
 
 
 def test_allows_customization_of_operation_id_creator() -> None:

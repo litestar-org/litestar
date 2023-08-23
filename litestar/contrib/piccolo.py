@@ -2,16 +2,15 @@ from __future__ import annotations
 
 from dataclasses import replace
 from decimal import Decimal
-from typing import Any, Generator, Generic, Optional, TypeVar
+from typing import Any, Generator, Generic, List, Optional, TypeVar
 
 from msgspec import Meta
 from typing_extensions import Annotated
 
-from litestar.dto import AbstractDTOFactory, DTOField, Mark
+from litestar.dto import AbstractDTO, DTOField, Mark
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.exceptions import MissingDependencyException
 from litestar.types import Empty
-from litestar.utils.helpers import get_fully_qualified_class_name
 
 try:
     import piccolo  # noqa: F401
@@ -36,7 +35,7 @@ def _parse_piccolo_type(column: Column, extra: dict[str, Any]) -> FieldDefinitio
         column_type = str
         meta = Meta(max_length=column.length, extra=extra)
     elif isinstance(column, column_types.Array):
-        column_type = list[column.base_column.value_type]  # type: ignore
+        column_type = List[column.base_column.value_type]  # type: ignore
         meta = Meta(extra=extra)
     elif isinstance(column, (column_types.JSON, column_types.JSONB)):
         column_type = str
@@ -66,19 +65,16 @@ def _create_column_extra(column: Column) -> dict[str, Any]:
     return extra
 
 
-class PiccoloDTO(AbstractDTOFactory[T], Generic[T]):
+class PiccoloDTO(AbstractDTO[T], Generic[T]):
     @classmethod
     def generate_field_definitions(cls, model_type: type[Table]) -> Generator[DTOFieldDefinition, None, None]:
-        unique_model_name = get_fully_qualified_class_name(model_type)
-
         for column in model_type._meta.columns:
             yield replace(
                 DTOFieldDefinition.from_field_definition(
                     field_definition=_parse_piccolo_type(column, _create_column_extra(column)),
                     dto_field=DTOField(mark=Mark.READ_ONLY if column._meta.primary_key else None),
-                    unique_model_name=unique_model_name,
+                    model_name=model_type.__name__,
                     default_factory=Empty,
-                    dto_for=None,
                 ),
                 default=Empty if column._meta.required else None,
                 name=column._meta.name,

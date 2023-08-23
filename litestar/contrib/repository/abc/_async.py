@@ -17,7 +17,7 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
 
     model_type: type[T]
     """Type of object represented by the repository."""
-    id_attribute = "id"
+    id_attribute: Any = "id"
     """Name of the primary identifying attribute on :attr:`model_type`."""
 
     def __init__(self, **kwargs: Any) -> None:
@@ -190,6 +190,25 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
 
         Returns:
             The updated or created instance.
+
+        Raises:
+            NotFoundError: If no instance found with same identifier as ``data``.
+        """
+
+    @abstractmethod
+    async def upsert_many(self, data: list[T]) -> list[T]:
+        """Update or create multiple instances.
+
+        Update instances with the attribute values present on ``data``, or create a new instance if
+        one doesn't exist.
+
+        Args:
+            data: Instances to update or created. Identifier used to determine if an
+                existing instance exists is the value of an attribute on ``data`` named as value of
+                :attr:`id_attribute <AbstractAsyncRepository.id_attribute>`.
+
+        Returns:
+            The updated or created instances.
 
         Raises:
             NotFoundError: If no instance found with same identifier as ``data``.

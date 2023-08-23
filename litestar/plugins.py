@@ -1,20 +1,24 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Protocol, TypeVar, Union, runtime_checkable
+from typing import TYPE_CHECKING, Any, Iterator, Protocol, TypeVar, Union, cast, runtime_checkable
 
 if TYPE_CHECKING:
+    from click import Group
+
     from litestar._openapi.schema_generation import SchemaCreator
     from litestar.config.app import AppConfig
-    from litestar.dto.interface import DTOInterface
-    from litestar.dto.types import ForType
+    from litestar.dto import AbstractDTO
     from litestar.openapi.spec import Schema
     from litestar.typing import FieldDefinition
 
-
-__all__ = ("SerializationPluginProtocol", "InitPluginProtocol", "OpenAPISchemaPluginProtocol", "PluginProtocol")
-
-
-T = TypeVar("T")
+__all__ = (
+    "SerializationPluginProtocol",
+    "InitPluginProtocol",
+    "OpenAPISchemaPluginProtocol",
+    "PluginProtocol",
+    "CLIPluginProtocol",
+    "PluginRegistry",
+)
 
 
 @runtime_checkable
@@ -57,6 +61,37 @@ class InitPluginProtocol(Protocol):
 
 
 @runtime_checkable
+class CLIPluginProtocol(Protocol):
+    """Plugin protocol to extend the CLI."""
+
+    def on_cli_init(self, cli: Group) -> None:
+        """Called when the CLI is initialized.
+
+        This can be used to extend or override existing commands.
+
+        Args:
+            cli: The root :class:`click.Group` of the Litestar CLI
+
+        Examples:
+            .. code-block:: python
+
+                from litestar import Litestar
+                from litestar.plugins import CLIPluginProtocol
+                from click import Group
+
+
+                class CLIPlugin(CLIPluginProtocol):
+                    def on_cli_init(self, cli: Group) -> None:
+                        @cli.command()
+                        def is_debug_mode(app: Litestar):
+                            print(app.debug)
+
+
+                app = Litestar(plugins=[CLIPlugin()])
+        """
+
+
+@runtime_checkable
 class SerializationPluginProtocol(Protocol):
     """Protocol used to define a serialization plugin for DTOs."""
 
@@ -73,7 +108,7 @@ class SerializationPluginProtocol(Protocol):
         """
         raise NotImplementedError()
 
-    def create_dto_for_type(self, field_definition: FieldDefinition) -> type[DTOInterface]:
+    def create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]:
         """Given a parsed type, create a DTO class.
 
         Args:
@@ -103,13 +138,12 @@ class OpenAPISchemaPluginProtocol(Protocol):
         """
         raise NotImplementedError()
 
-    def to_openapi_schema(self, annotation: Any, schema_creator: SchemaCreator, dto_for: ForType | None) -> Schema:
+    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
         """Given a type annotation, transform it into an OpenAPI schema class.
 
         Args:
-            annotation: A type annotation.
+            field_definition: An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
             schema_creator: An instance of the openapi SchemaCreator.
-            dto_for: The type of the DTO if any.
 
         Returns:
             An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
@@ -117,4 +151,47 @@ class OpenAPISchemaPluginProtocol(Protocol):
         raise NotImplementedError()
 
 
-PluginProtocol = Union[SerializationPluginProtocol, InitPluginProtocol, OpenAPISchemaPluginProtocol]
+PluginProtocol = Union[
+    SerializationPluginProtocol,
+    InitPluginProtocol,
+    OpenAPISchemaPluginProtocol,
+    CLIPluginProtocol,
+]
+
+PluginT = TypeVar("PluginT", bound=PluginProtocol)
+
+
+class PluginRegistry:
+    __slots__ = {
+        "init": "Plugins that implement the InitPluginProtocol",
+        "openapi": "Plugins that implement the OpenAPISchemaPluginProtocol",
+        "serialization": "Plugins that implement the SerializationPluginProtocol",
+        "cli": "Plugins that implement the CLIPluginProtocol",
+        "_plugins_by_type": None,
+        "_plugins": None,
+        "_get_plugins_of_type": None,
+    }
+
+    def __init__(self, plugins: list[PluginProtocol]) -> None:
+        self._plugins_by_type = {type(p): p for p in plugins}
+        self._plugins = frozenset(plugins)
+        self.init = tuple(p for p in plugins if isinstance(p, InitPluginProtocol))
+        self.openapi = tuple(p for p in plugins if isinstance(p, OpenAPISchemaPluginProtocol))
+        self.serialization = tuple(p for p in plugins if isinstance(p, SerializationPluginProtocol))
+        self.cli = tuple(p for p in plugins if isinstance(p, CLIPluginProtocol))
+
+    def get(self, type_: type[PluginT]) -> PluginT:
+        """Return the registered plugin of ``type_``.
+
+        This should be used with subclasses of the plugin protocols.
+        """
+        try:
+            return cast(PluginT, self._plugins_by_type[type_])  # type: ignore[index]
+        except KeyError as e:
+            raise KeyError(f"No plugin of type {type_.__name__!r} registered") from e
+
+    def __iter__(self) -> Iterator[PluginProtocol]:
+        return iter(self._plugins)
+
+    def __contains__(self, item: PluginProtocol) -> bool:
+        return item in self._plugins

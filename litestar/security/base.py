@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from copy import copy
-from typing import TYPE_CHECKING, Any, Callable, Generic, Iterable, TypeVar
+from dataclasses import field
+from typing import TYPE_CHECKING, Any, Callable, Generic, Iterable, Sequence, TypeVar, cast
 
 from litestar import Response
 from litestar.utils.sync import AsyncCallable
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
     from litestar.types import (
         ControllerRouterHandler,
         Guard,
+        Method,
         ResponseCookies,
         Scopes,
         SyncOrAsyncUnion,
@@ -47,6 +49,10 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
     """A pattern or list of patterns to skip in the authentication middleware."""
     exclude_opt_key: str = "exclude_from_auth"
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
+    exclude_http_methods: Sequence[Method] | None = field(
+        default_factory=lambda: cast("Sequence[Method]", ["OPTIONS", "HEAD"])
+    )
+    """A sequence of http methods that do not require authentication. Defaults to ['OPTIONS', 'HEAD']"""
     scopes: Scopes | None = None
     """ASGI scopes processed by the authentication middleware, if ``None``, both ``http`` and ``websocket`` will be
     processed."""

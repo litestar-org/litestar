@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from inspect import cleandoc
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable
 
 from litestar._openapi.parameters import create_parameter_for_handler
 from litestar._openapi.request_body import create_request_body
@@ -12,7 +12,6 @@ from litestar.openapi.spec.path_item import PathItem
 from litestar.utils.helpers import unwrap_partial
 
 __all__ = ("create_path_item", "extract_layered_values", "get_description_for_handler")
-
 
 if TYPE_CHECKING:
     from litestar.handlers.http_handlers import HTTPRouteHandler
@@ -66,7 +65,7 @@ def extract_layered_values(
 def create_path_item(
     create_examples: bool,
     operation_id_creator: OperationIDCreator,
-    plugins: list[OpenAPISchemaPluginProtocol],
+    plugins: Iterable[OpenAPISchemaPluginProtocol],
     route: HTTPRoute,
     schemas: dict[str, Schema],
     use_handler_docstrings: bool,
@@ -88,7 +87,7 @@ def create_path_item(
     operation_ids: list[str] = []
 
     request_schema_creator = SchemaCreator(create_examples, plugins, schemas, prefer_alias=True)
-    response_schema_creator = SchemaCreator(create_examples, plugins, schemas, prefer_alias=True)
+    response_schema_creator = SchemaCreator(create_examples, plugins, schemas, prefer_alias=False)
     for http_method, handler_tuple in route.route_handler_map.items():
         route_handler, _ = handler_tuple
 
@@ -108,11 +107,18 @@ def create_path_item(
             request_body = None
             if "data" in handler_fields:
                 request_body = create_request_body(
-                    route_handler=route_handler, field=handler_fields["data"], schema_creator=request_schema_creator
+                    route_handler=route_handler,
+                    field_definition=handler_fields["data"],
+                    schema_creator=request_schema_creator,
                 )
-            operation_id = route_handler.operation_id or operation_id_creator(
-                route_handler, http_method, route.path_components
-            )
+
+            if isinstance(route_handler.operation_id, str):
+                operation_id = route_handler.operation_id
+            elif callable(route_handler.operation_id):
+                operation_id = route_handler.operation_id(route_handler, http_method, route.path_components)
+            else:
+                operation_id = operation_id_creator(route_handler, http_method, route.path_components)
+
             tags, security = extract_layered_values(route_handler)
             operation = route_handler.operation_class(
                 operation_id=operation_id,

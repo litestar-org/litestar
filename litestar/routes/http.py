@@ -44,7 +44,9 @@ class HTTPRoute(BaseRoute):
         methods = list(chain.from_iterable([route_handler.http_methods for route_handler in route_handlers]))
         if "OPTIONS" not in methods:
             methods.append("OPTIONS")
-            route_handlers.append(self.create_options_handler(path))
+            options_handler = self.create_options_handler(path)
+            options_handler.owner = route_handlers[0].owner
+            route_handlers.append(options_handler)
 
         self.route_handlers = route_handlers
         self.route_handler_map: dict[Method, tuple[HTTPRouteHandler, KwargsModel]] = {}

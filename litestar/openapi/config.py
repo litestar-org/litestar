@@ -41,7 +41,7 @@ class OpenAPIConfig:
     """API version, e.g. '1.0.0'."""
 
     create_examples: bool = field(default=False)
-    """Generate examples using the pydantic-factories library."""
+    """Generate examples using the polyfactory library."""
     openapi_controller: type[OpenAPIController] = field(default_factory=lambda: OpenAPIController)
     """Controller for generating OpenAPI routes.
 

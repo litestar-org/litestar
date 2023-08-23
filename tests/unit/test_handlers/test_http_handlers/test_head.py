@@ -44,6 +44,8 @@ def test_head_decorator_does_not_raise_for_file_response() -> None:
     def handler() -> "File":
         return File("test_to_response.py")
 
+    Litestar(route_handlers=[handler])
+
     handler.on_registration(Litestar())
 
 
@@ -51,5 +53,7 @@ def test_head_decorator_does_not_raise_for_asgi_file_response() -> None:
     @head("/")
     def handler() -> ASGIFileResponse:
         return ASGIFileResponse(file_path=Path("test_head.py"))
+
+    Litestar(route_handlers=[handler])
 
     handler.on_registration(Litestar())

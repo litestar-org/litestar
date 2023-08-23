@@ -47,13 +47,14 @@ async def wait_until_responsive(
 
 
 class DockerServiceRegistry:
-    def __init__(self) -> None:
+    def __init__(self, worker_id: str) -> None:
         self._running_services: set[str] = set()
         self.docker_ip = self._get_docker_ip()
         self._base_command = [
-            "docker-compose",
+            "docker",
+            "compose",
             "--file=tests/docker-compose.yml",
-            "--project-name=litestar_pytest",
+            f"--project-name=litestar_pytest-{worker_id}",
         ]
 
     def _get_docker_ip(self) -> str:
@@ -67,10 +68,8 @@ class DockerServiceRegistry:
         raise ValueError(f'Invalid value for DOCKER_HOST: "{docker_host}".')
 
     def run_command(self, *args: str) -> None:
-        if sys.platform == "darwin":
-            subprocess.call([*self._base_command, *args], shell=True)
-        else:
-            subprocess.run([*self._base_command, *args], check=True, capture_output=True)
+        command = [*self._base_command, *args]
+        subprocess.run(command, check=True, capture_output=True)
 
     async def start(
         self,
@@ -101,11 +100,11 @@ class DockerServiceRegistry:
 
 
 @pytest.fixture(scope="session")
-def docker_services() -> Generator[DockerServiceRegistry, None, None]:
-    if sys.platform not in ("linux", "darwin") or os.environ.get("SKIP_DOCKER_TESTS"):
+def docker_services(worker_id: str) -> Generator[DockerServiceRegistry, None, None]:
+    if os.getenv("GITHUB_ACTIONS") == "true" and sys.platform != "linux":
         pytest.skip("Docker not available on this platform")
 
-    registry = DockerServiceRegistry()
+    registry = DockerServiceRegistry(worker_id)
     try:
         yield registry
     finally:
@@ -144,7 +143,7 @@ async def mysql_responsive(host: str) -> bool:
         async with conn.cursor() as cursor:
             await cursor.execute("select 1 as is_available")
             resp = await cursor.fetchone()
-        return resp[0] == 1
+        return resp[0] == 1  # type: ignore
     except asyncmy.errors.OperationalError:
         return False
 
@@ -163,7 +162,7 @@ async def postgres_responsive(host: str) -> bool:
         return False
 
     try:
-        return (await conn.fetchrow("SELECT 1"))[0] == 1
+        return (await conn.fetchrow("SELECT 1"))[0] == 1  # type: ignore
     finally:
         await conn.close()
 
@@ -185,8 +184,8 @@ def oracle_responsive(host: str) -> bool:
         with conn.cursor() as cursor:
             cursor.execute("SELECT 1 FROM dual")
             resp = cursor.fetchone()
-        return resp[0] == 1
-    except (OperationalError, DatabaseError):
+        return resp[0] == 1  # type: ignore
+    except (OperationalError, DatabaseError, Exception):
         return False
 
 
@@ -212,7 +211,7 @@ def spanner_responsive(host: str) -> bool:
             pass
         with database.snapshot() as snapshot:
             resp = next(iter(snapshot.execute_sql("SELECT 1")))
-        return resp[0] == 1
+        return resp[0] == 1  # type: ignore
     except Exception:
         return False
 

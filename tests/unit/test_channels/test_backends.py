@@ -16,8 +16,8 @@ from litestar.utils.compat import async_next
 
 @pytest.fixture(
     params=[
-        pytest.param("redis_pub_sub_backend", id="redis:pubsub"),
-        pytest.param("redis_stream_backend", id="redis:stream"),
+        pytest.param("redis_pub_sub_backend", id="redis:pubsub", marks=pytest.mark.xdist_group("redis")),
+        pytest.param("redis_stream_backend", id="redis:stream", marks=pytest.mark.xdist_group("redis")),
         pytest.param("memory_backend", id="memory"),
     ]
 )
@@ -101,6 +101,7 @@ async def test_discards_history_entries(channels_backend: ChannelsBackend) -> No
     assert len(await channels_backend.get_history("bar")) == 10
 
 
+@pytest.mark.xdist_group("redis")
 async def test_redis_streams_backend_flushall(redis_stream_backend: RedisChannelsStreamBackend) -> None:
     await redis_stream_backend.publish(b"something", ["foo", "bar", "baz"])
 
@@ -110,6 +111,7 @@ async def test_redis_streams_backend_flushall(redis_stream_backend: RedisChannel
 
 
 @pytest.mark.flaky(reruns=5)  # this should not really happen but just in case, we retry
+@pytest.mark.xdist_group("redis")
 async def test_redis_stream_backend_expires(redis_client: Redis) -> None:
     backend = RedisChannelsStreamBackend(redis=redis_client, stream_ttl=timedelta(milliseconds=10), history=2)
 

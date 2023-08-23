@@ -19,17 +19,18 @@ from litestar.middleware.session.client_side import (
 )
 from litestar.serialization import encode_json
 from litestar.testing import create_test_client
+from tests.helpers import randbytes
 
 
 @pytest.mark.parametrize(
     "secret, should_raise",
     [
-        [os.urandom(16), False],
-        [os.urandom(24), False],
-        [os.urandom(32), False],
-        [os.urandom(17), True],
-        [os.urandom(4), True],
-        [os.urandom(100), True],
+        [randbytes(16), False],
+        [randbytes(24), False],
+        [randbytes(32), False],
+        [randbytes(17), True],
+        [randbytes(4), True],
+        [randbytes(100), True],
         [b"", True],
     ],
 )

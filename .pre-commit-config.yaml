@@ -2,7 +2,7 @@ default_language_version:
   python: "3.11"
 repos:
   - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v2.3.0
+    rev: v2.4.0
     hooks:
       - id: conventional-pre-commit
         stages: [commit-msg]
@@ -17,19 +17,19 @@ repos:
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: trailing-whitespace
-  #  - repo: https://github.com/python-poetry/poetry
-  #    rev: "1.5.0"
-  #    hooks:
-  #      - id: poetry-check
-  #      - id: poetry-lock
-  #        args: ["--no-update"]
+  - repo: https://github.com/python-poetry/poetry
+    rev: "1.5.0"
+    hooks:
+      - id: poetry-check
+      - id: poetry-lock
+        args: ["--no-update"]
   - repo: https://github.com/provinzkraut/unasyncd
     rev: "v0.6.0"
     hooks:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.280"
+    rev: "v0.0.285"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -44,14 +44,14 @@ repos:
       - id: black
         args: [--config=./pyproject.toml]
   - repo: https://github.com/asottile/blacken-docs
-    rev: 1.15.0
+    rev: 1.16.0
     hooks:
       - id: blacken-docs
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "v3.0.0"
+    rev: "v3.0.2"
     hooks:
       - id: prettier
-        exclude: "_templates|.git"
+        exclude: "_templates|.git|.all-contributorsrc"
   - repo: https://github.com/python-formate/flake8-dunder-all
     rev: v0.3.0
     hooks:
@@ -59,12 +59,12 @@ repos:
         exclude: "test*|examples*|tools"
         args: ["--use-tuple"]
   - repo: https://github.com/ariebovenberg/slotscheck
-    rev: v0.16.5
+    rev: v0.17.0
     hooks:
       - id: slotscheck
         exclude: "test_*|docs"
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.4.1"
+    rev: "v1.5.1"
     hooks:
       - id: mypy
         exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures|tests/unit/test_partial"
@@ -106,6 +106,7 @@ repos:
             pytest_docker,
             python-dotenv,
             python-jose,
+            pytest-timeout,
             pyyaml,
             redis,
             rich,
@@ -122,7 +123,7 @@ repos:
             time-machine,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.318
+    rev: v1.1.323
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures|tests/unit/test_partial"
@@ -164,6 +165,7 @@ repos:
             pytest_docker,
             python-dotenv,
             python-jose,
+            pytest-timeout,
             pyyaml,
             redis,
             rich,
@@ -180,7 +182,7 @@ repos:
             time-machine,
           ]
   - repo: https://github.com/sphinx-contrib/sphinx-lint
-    rev: "v0.6.7"
+    rev: "v0.6.8"
     hooks:
       - id: sphinx-lint
   - repo: local

@@ -37,17 +37,13 @@ if TYPE_CHECKING:
 
 
 def my_generator() -> Generator[str, None, None]:
-    count = 0
-    while count < 10:
-        count += 1
+    for count in range(1, 11):
         yield str(count)
     return
 
 
 async def my_async_generator() -> AsyncGenerator[str, None]:
-    count = 0
-    while count < 10:
-        count += 1
+    for count in range(1, 11):
         yield str(count)
     return
 
@@ -83,10 +79,12 @@ async def test_to_response_async_await(anyio_backend: str) -> None:
         return data
 
     person_instance = PydanticPersonFactory.build()
-    handler.signature_model = SignatureModel.create(
-        fn=handler.fn.value,
+    handler._signature_model = SignatureModel.create(
         dependency_name_set=set(),
+        fn=handler.fn.value,
+        data_dto=None,
         parsed_signature=ParsedSignature.from_fn(handler.fn.value, {}),
+        type_decoders=[],
     )
 
     response = await handler.to_response(

@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from collections import abc, deque
+from copy import deepcopy
 from dataclasses import dataclass, replace
 from inspect import Parameter, Signature
-from typing import Any, AnyStr, Collection, ForwardRef, Literal, Mapping, Sequence, TypeVar, cast
+from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Sequence, TypeVar, cast
 
 from msgspec import UnsetType
-from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin
+from typing_extensions import Annotated, NotRequired, Required, Self, get_args, get_origin
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Example
@@ -205,6 +206,9 @@ class FieldDefinition:
     name: str
     """Field name."""
 
+    def __deepcopy__(self, memo: dict[str, Any]) -> Self:
+        return type(self)(**{attr: deepcopy(getattr(self, attr)) for attr in self.__slots__})
+
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, FieldDefinition):
             return False
@@ -221,13 +225,13 @@ class FieldDefinition:
     def _extract_metadata(
         cls, annotation: Any, name: str | None, default: Any, metadata: tuple[Any, ...], extra: dict[str, Any] | None
     ) -> tuple[KwargDefinition | None, dict[str, Any]]:
-        from litestar.dto.base_factory import AbstractDTOFactory
+        from litestar.dto.base_dto import AbstractDTO
 
         model = BodyKwarg if name == "data" else ParameterKwarg
         if isinstance(default, FieldInfo):
             return _create_metadata_from_type(metadata=[default], model=model, annotation=annotation, extra=extra)
 
-        if is_pydantic_constrained_field(annotation) or isinstance(annotation, AbstractDTOFactory):
+        if is_pydantic_constrained_field(annotation) or isinstance(annotation, AbstractDTO):
             return _create_metadata_from_type(metadata=[annotation], model=model, annotation=annotation, extra=extra)
 
         if any(isinstance(arg, KwargDefinition) for arg in get_args(annotation)):
@@ -363,6 +367,30 @@ class FieldDefinition:
     def is_non_string_collection(self) -> bool:
         """Whether the annotation is a non-string collection type or not."""
         return self.is_collection and not self.is_subclass_of((str, bytes))
+
+    @property
+    def bound_types(self) -> tuple[FieldDefinition, ...] | None:
+        """A tuple of bound types - if the annotation is a TypeVar with bound types, otherwise None."""
+        if self.is_type_var and (bound := getattr(self.annotation, "__bound__", None)):
+            if is_non_string_sequence(bound):
+                return tuple(FieldDefinition.from_annotation(t) for t in bound)
+            return (FieldDefinition.from_annotation(bound),)
+        return None
+
+    @property
+    def generic_types(self) -> tuple[FieldDefinition, ...] | None:
+        """A tuple of generic types passed into the annotation - if its generic."""
+        if not (bases := getattr(self.annotation, "__orig_bases__", None)):
+            return None
+        args: list[FieldDefinition] = []
+        for base_args in [getattr(base, "__args__", ()) for base in bases]:
+            for arg in base_args:
+                field_definition = FieldDefinition.from_annotation(arg)
+                if field_definition.generic_types:
+                    args.extend(field_definition.generic_types)
+                else:
+                    args.append(field_definition)
+        return tuple(args)
 
     def is_subclass_of(self, cl: type[Any] | tuple[type[Any], ...]) -> bool:
         """Whether the annotation is a subclass of the given type.
@@ -529,3 +557,14 @@ class FieldDefinition:
             name=parameter.name,
             default=Empty if parameter.default is Signature.empty else parameter.default,
         )
+
+    def match_predicate_recursively(self, predicate: Callable[[FieldDefinition], bool]) -> bool:
+        """Recursively test the passed in predicate against the field and any of its inner fields.
+
+        Args:
+            predicate: A callable that receives a field definition instance as an arg and returns a boolean.
+
+        Returns:
+            A boolean.
+        """
+        return predicate(self) or any(t.match_predicate_recursively(predicate) for t in self.inner_types)

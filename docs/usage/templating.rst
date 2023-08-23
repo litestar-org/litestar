@@ -1,5 +1,5 @@
-Templates
-=========
+Templating
+==========
 
 Litestar has built-in support for both the `Jinja2 <https://jinja.palletsprojects.com/en/3.0.x/>`_
 and `Mako <https://www.makotemplates.org/>`_ template engines, as well as abstractions to
@@ -131,7 +131,7 @@ Accessing the request instance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The current :class:`Request <litestar.connection.request.Request>` is available within the
-template context under ``request``, which also provides access to the :doc:`app instance </usage/the-litestar-app>`.
+template context under ``request``, which also provides access to the :doc:`app instance </usage/applications>`.
 
 Accessing ``app.state.key`` for example would look like this:
 <strong>check_context_key: </strong>{{ check_context_key() }}
@@ -250,7 +250,7 @@ Built-in callables
 ``url_for``
     To access urls for route handlers you can use the ``url_for`` function. Its signature and behaviour
     matches :meth:`route_reverse <litestar.app.Litestar.route_reverse>` behaviour. More details about route handler indexing
-    can be found :ref:`here <usage/route-handlers:route handler indexing>`.
+    can be found :ref:`here <usage/routing/handlers:route handler indexing>`.
 
 ``csrf_token``
     This function returns the request's unique :ref:`CSRF token <usage/middleware/builtin-middleware:csrf>` You can use this

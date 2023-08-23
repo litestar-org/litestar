@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "litestar"
-version = "2.0.0beta4"
+version = "2.0.0"
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 authors = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
@@ -23,14 +23,9 @@ documentation = "https://docs.litestar.dev/"
 keywords = [
     "api",
     "rest",
-    "http",
     "asgi",
-    "pydantic",
     "litestar",
     "starlite",
-    "framework",
-    "websocket",
-    "litestar",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -126,11 +121,13 @@ pytest-cov = "*"
 pytest-lazy-fixture = "*"
 pytest-mock = "*"
 pytest-rerunfailures = "*"
+pytest-timeout = "^2.1.0"
 python-dotenv = "*"
 sqlalchemy-spanner = "*"
 starlette = "*"
-trio = "*"
 time-machine = "^2.11.0"
+trio = "*"
+pytest-xdist = "^3.3.1"
 
 [tool.poetry.group.docs]
 optional = true
@@ -224,7 +221,9 @@ ignore-words-list = "selectin"
 skip = 'poetry.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
-omit = ["*/tests/*", "litestar/contrib/sqlalchemy_1/*"]
+omit = ["*/tests/*"]
+parallel = true
+concurrency = ["multiprocessing", "thread"]
 
 [tool.coverage.report]
 exclude_lines = [
@@ -239,10 +238,10 @@ exclude_lines = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "--ignore=examples -m='not sqlalchemy_integration'"
+addopts = "-m='not sqlalchemy_integration' --dist=loadgroup"
 asyncio_mode = "auto"
 filterwarnings = [
-    "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:164",
+    "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:",
     "ignore::DeprecationWarning:pkg_resources.*",
     "ignore::DeprecationWarning:google.rpc",
     "ignore::DeprecationWarning:google.gcloud",
@@ -250,6 +249,12 @@ filterwarnings = [
     "ignore::DeprecationWarning:google",
     "ignore::DeprecationWarning:sphinxcontrib",
     "ignore::DeprecationWarning:litestar.*",
+    "ignore:The `__fields__` attribute is deprecated:DeprecationWarning:pydantic*",
+    "ignore:Support for class-based `config` is deprecated:DeprecationWarning:pydantic*",
+    "ignore:The `dict` method is deprecated:DeprecationWarning:",
+    "ignore:The `parse_obj` method is deprecated:DeprecationWarning:",
+    "ignore:The `json` method is deprecated:DeprecationWarning:",
+    "ignore:Extra keyword arguments on `Field` is deprecated:DeprecationWarning:pydantic*",
 ]
 markers = [
     "sqlalchemy_integration: SQLAlchemy integration tests",
@@ -279,7 +284,7 @@ implicit_reexport = false
 show_error_codes = true
 
 [[tool.mypy.overrides]]
-module = ["tests.*.test_sqlalchemy_sync", "tests.*.test_sqlalchemy_async", "tests.*.test_mongodb_async", "tests.*.test_mongodb_sync"]
+module = ["tests.*.test_sqlalchemy", "tests.*.test_sqlalchemy", "tests.*.test_mongodb_async", "tests.*.test_mongodb_sync"]
 disable_error_code = "attr-defined"
 
 [[tool.mypy.overrides]]

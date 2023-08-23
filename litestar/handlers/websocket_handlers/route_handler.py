@@ -17,8 +17,6 @@ class WebsocketRouteHandler(BaseRouteHandler):
     Use this decorator to decorate websocket handler functions.
     """
 
-    __slots__ = ()
-
     def __init__(
         self,
         path: str | None | list[str] | None = None,
@@ -68,11 +66,14 @@ class WebsocketRouteHandler(BaseRouteHandler):
 
         if not self.parsed_fn_signature.return_type.is_subclass_of(NoneType):
             raise ImproperlyConfiguredException("Websocket handler functions should return 'None'")
+
         if "socket" not in self.parsed_fn_signature.parameters:
             raise ImproperlyConfiguredException("Websocket handlers must set a 'socket' kwarg")
+
         for param in ("request", "body", "data"):
             if param in self.parsed_fn_signature.parameters:
                 raise ImproperlyConfiguredException(f"The {param} kwarg is not supported with websocket handlers")
+
         if not is_async_callable(self.fn.value):
             raise ImproperlyConfiguredException("Functions decorated with 'websocket' must be async functions")
 

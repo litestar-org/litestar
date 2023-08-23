@@ -6,9 +6,9 @@ from uuid import UUID
 
 from msgspec import ValidationError
 
+from litestar._signature.types import ExtendedMsgSpecValidationError
 from litestar.exceptions import MissingDependencyException
 from litestar.plugins import InitPluginProtocol
-from litestar.serialization._msgspec_utils import ExtendedMsgSpecValidationError
 from litestar.utils import is_class_and_subclass, is_pydantic_model_class
 
 if TYPE_CHECKING:

@@ -8,6 +8,7 @@ from httpx._content import encode_json as httpx_encode_json
 from httpx._content import encode_multipart_data, encode_urlencoded_data
 from msgspec import Struct, to_builtins
 
+from litestar import delete, patch, post, put
 from litestar.app import Litestar
 from litestar.connection import Request
 from litestar.enums import HttpMethod, ParamType, RequestEncodingType, ScopeType
@@ -23,21 +24,39 @@ if TYPE_CHECKING:
     from litestar.datastructures.cookie import Cookie
     from litestar.handlers.http_handlers import HTTPRouteHandler
 
+_decorator_http_method_map: dict[HttpMethod, type[HTTPRouteHandler]] = {
+    HttpMethod.GET: get,
+    HttpMethod.POST: post,
+    HttpMethod.DELETE: delete,
+    HttpMethod.PATCH: patch,
+    HttpMethod.PUT: put,
+}
 
-def _create_default_route_handler() -> HTTPRouteHandler:
-    @get("/", sync_to_thread=False)
+
+def _create_default_route_handler(http_method: HttpMethod, handler_kwargs: dict[str, Any] | None) -> HTTPRouteHandler:
+    handler_decorator = _decorator_http_method_map[http_method]
+
     def _default_route_handler() -> None:
         ...
 
-    return _default_route_handler
+    return handler_decorator("/", sync_to_thread=False, **(handler_kwargs or {}))(_default_route_handler)
 
 
 def _create_default_app() -> Litestar:
-    return Litestar(route_handlers=[_create_default_route_handler()])
+    return Litestar(route_handlers=[])
 
 
 class RequestFactory:
     """Factory to create :class:`Request <litestar.connection.Request>` instances."""
+
+    __slots__ = (
+        "app",
+        "server",
+        "port",
+        "root_path",
+        "scheme",
+        "handler_kwargs",
+    )
 
     def __init__(
         self,
@@ -46,6 +65,7 @@ class RequestFactory:
         port: int = 3000,
         root_path: str = "",
         scheme: str = "http",
+        handler_kwargs: dict[str, Any] | None = None,
     ) -> None:
         """Initialize ``RequestFactory``
 
@@ -55,6 +75,7 @@ class RequestFactory:
              port: The server's port.
              root_path: Root path for the server.
              scheme: Scheme for the server.
+             handler_kwargs: Kwargs to pass to the route handler created for the request
 
         Examples:
             .. code-block: python
@@ -98,6 +119,7 @@ class RequestFactory:
         self.port = port
         self.root_path = root_path
         self.scheme = scheme
+        self.handler_kwargs = handler_kwargs
 
     def _create_scope(
         self,
@@ -157,7 +179,7 @@ class RequestFactory:
             asgi=ASGIVersion(spec_version="3.0", version="3.0"),
             http_version=http_version or "1.1",
             raw_path=path.encode("ascii"),
-            route_handler=route_handler or _create_default_route_handler(),
+            route_handler=route_handler or _create_default_route_handler(http_method, self.handler_kwargs),
             extensions={},
         )
 

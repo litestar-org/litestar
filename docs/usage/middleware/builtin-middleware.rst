@@ -193,7 +193,7 @@ Logging Middleware
 ------------------
 
 Litestar ships with a robust logging middleware that allows logging HTTP request and responses while building on
-the :ref:`app level logging configuration <usage/the-litestar-app:logging>`:
+the :doc:`logging configuration </usage/logging>`:
 
 .. literalinclude:: /examples/middleware/logging_middleware.py
     :language: python
@@ -201,7 +201,7 @@ the :ref:`app level logging configuration <usage/the-litestar-app:logging>`:
 
 The logging middleware uses the logger configuration defined on the application level, which allows for using both stdlib
 logging or `structlog <https://www.structlog.org/en/stable/index.html>`_ , depending on the configuration used
-(see :ref:`app level logging configuration <usage/the-litestar-app:logging>` for more details).
+(see :doc:`logging configuration </usage/logging>` for more details).
 
 Obfuscating Logging Output
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

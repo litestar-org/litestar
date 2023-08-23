@@ -302,8 +302,8 @@ Class ASGI Application
            # do something here
            ...
 
-Returning other library responses
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Returning responses from third party libraries
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Because you can return any ASGI Application from a route handler, you can also use any ASGI application from other
 libraries. For example, you can return the response classes from Starlette or FastAPI directly from route handlers:
@@ -328,8 +328,8 @@ libraries. For example, you can return the response classes from Starlette or Fa
    Nonetheless, the above example will work perfectly fine.
 
 
-Response Headers
-----------------
+Setting Response Headers
+-------------------------
 
 Litestar allows you to define response headers by using the ``response_headers`` kwarg. This kwarg is
 available on all layers of the app - individual route handlers, controllers, routers, and the app
@@ -369,15 +369,15 @@ The respective descriptions will be used for the OpenAPI documentation.
 
 
 
-Dynamic Headers
-+++++++++++++++
+Setting Headers Dynamically
++++++++++++++++++++++++++++
 
 The above detailed scheme works great for statically configured headers, but how would you go about handling dynamically
 setting headers? Litestar allows you to set headers dynamically in several ways and below we will detail the two
 primary patterns.
 
-Setting Response Headers Using Annotated Responses
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Using Annotated Responses
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 We can simply return a response instance directly from the route handler and set the headers dictionary manually
 as you see fit, e.g.:
@@ -391,8 +391,8 @@ to the OpenAPI documentation, but we set the value dynamically in as part of
 the :ref:`annotated response <usage/responses:annotating responses>` we return. To this end we do not set a ``value``
 for it and we designate it as ``documentation_only=True``.
 
-Setting Response Headers Using the After Request Hook
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Using the After Request Hook
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 An alternative pattern would be to use an :ref:`after request handler <after_request>`. We can define
 the handler on different layers of the application as explained in the pertinent docs. We should take care to document
@@ -413,10 +413,10 @@ different value range:
     :language: python
 
 
-Specific Headers Implementation
-+++++++++++++++++++++++++++++++
+Predefined Headers
+++++++++++++++++++
 
-Litestar has a dedicated implementation for a few headers that are commonly used. These headers can be set separately
+Litestar has a dedicated implementation for a few commonly used headers. These headers can be set separately
 with dedicated keyword arguments or as class attributes on all layers of the app (individual route handlers, controllers,
 routers, and the app itself). Each layer overrides the layer above it - thus, the headers defined for a specific route
 handler will override those defined on its router, which will in turn override those defined on the app level.
@@ -465,8 +465,8 @@ Here are some usage examples:
    :language: python
 
 
-Response Cookies
-----------------
+Setting Response Cookies
+-------------------------
 
 Litestar allows you to define response cookies by using the ``response_cookies`` kwarg. This kwarg is
 available on all layers of the app - individual route handlers, controllers, routers, and the app
@@ -521,15 +521,15 @@ Of the two declarations of ``my-cookie`` only the route handler one will be used
 
 
 
-Dynamic Cookies
-+++++++++++++++
+Setting Cookies dynamically
+++++++++++++++++++++++++++++
 
 While the above scheme works great for static cookie values, it doesn't allow for dynamic cookies. Because cookies are
-fundamentally a type of response header, we can utilize the same patterns we use for
-setting :ref:`dynamic headers <usage/responses:dynamic headers>` also here.
+fundamentally a type of response header, we can utilize the same patterns we use to
+setting :ref:`set headers headers <usage/responses:setting headers dynamically>`.
 
-Setting Response Cookies Using Annotated Responses
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Using Annotated Responses
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 We can simply return a response instance directly from the route handler and set the cookies list manually
 as you see fit, e.g.:
@@ -543,8 +543,8 @@ to the OpenAPI documentation, but we set the value dynamically in as part of
 the :ref:`annotated response <usage/responses:annotating responses>` we return. To this end we do not set a ``value``
 for it and we designate it as ``documentation_only=True``.
 
-Setting Response Cookies Using the After Request Hook
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Using the After Request Hook
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 An alternative pattern would be to use an :ref:`after request handler <after_request>`. We can define
 the handler on different layers of the application as explained in the pertinent docs. We should take care to document
@@ -718,7 +718,7 @@ instances.
    set a response class on every layer of the application. If you have set a response
    class on multiple layers, the layer closest to the route handler will take precedence.
 
-   You can read more about this here: :ref:`usage/the-litestar-app:layered architecture`
+   You can read more about this here: :ref:`usage/applications:layered architecture`
 
 Background Tasks
 ----------------
@@ -827,14 +827,13 @@ Offset Pagination With SQLAlchemy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 When retrieving paginated data from the database using SQLAlchemy, the Paginator instance requires an SQLAlchemy session
-instance to make queries. This can be achieved with :ref:`dependency injection <usage/dependency-injection:dependency
-kwargs>`
+instance to make queries. This can be achieved with :doc:`/usage/dependency-injection`
 
 .. literalinclude:: /examples/pagination/using_offset_pagination_with_sqlalchemy.py
     :caption: Offset Pagination With SQLAlchemy
     :language: python
 
-See :ref:`SQLAlchemy plugin <usage/contrib/sqlalchemy/plugins/index:Plugins>` for sqlalchemy integration.
+See :ref:`SQLAlchemy plugin <usage/databases/sqlalchemy/plugins/index:Plugins>` for sqlalchemy integration.
 
 Cursor Pagination
 +++++++++++++++++

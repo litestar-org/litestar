@@ -3,6 +3,284 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.0.0
+    :date: 2023/08/19
+
+    .. change:: Regression | Missing ``media_type`` information to error responses
+        :type: bugfix
+        :pr: 2131
+        :issue: 2024
+
+        Fixed a regression that caused error responses to be sent using a mismatched
+        media type, e.g. an error response from a ``text/html`` endpoint would be sent
+        as JSON.
+
+    .. change:: Regression | ``Litestar.debug`` does not propagate to exception handling middleware
+        :type: bugfix
+        :pr: 2153
+        :issue: 2147
+
+        Fixed a regression where setting ``Litestar.debug`` would not propagate to the
+        exception handler middleware, resulting in exception responses always being sent
+        using the initial debug value.
+
+    .. change:: Static files not being served if a route handler with the same base path was registered
+        :type: bugfix
+        :pr: 2154
+
+        Fixed a bug that would result in a ``404 - Not Found`` when requesting a static
+        file where the :attr:`~litestar.static_files.StaticFilesConfig.path` was also
+        used by a route handler.
+
+    .. change:: HTMX: Missing default values for ``receive`` and ``send`` parameters of ``HTMXRequest``
+        :type: bugfix
+        :pr: 2145
+
+        Add missing default values for the ``receive`` and ``send`` parameters of
+        :class:`~litestar.contrib.htmx.request.HTMXRequest`.
+
+    .. change:: DTO: Excluded attributes accessed during transfer
+        :type: bugfix
+        :pr: 2127
+        :issue: 2125
+
+        Fix the behaviour of DTOs such that they will no longer access fields that have
+        been included. This behaviour would previously cause issues when these
+        attributes were either costly or impossible to access (e.g. lazy loaded
+        relationships of a SQLAlchemy model).
+
+    .. change:: DTO | Regression: ``DTOData.create_instance`` ignores renaming
+        :type: bugfix
+        :pr: 2144
+
+        Fix a regression where calling
+        :meth:`~litestar.dto.data_structures.DTOData.create_instance` would ignore the
+        renaming settings of fields.
+
+    .. change:: OpenAPI | Regression: Response schema for files and streams set ``application/octet-stream`` as ``contentEncoding`` instead of ``contentMediaType``
+        :type: bugfix
+        :pr: 2130
+
+        Fix a regression that would set ``application/octet-stream`` as the ``contentEncoding``
+        instead of ``contentMediaType`` in the response schema of
+        :class:`~litestar.response.File` :class:`~litestar.response.Stream`.
+
+    .. change:: OpenAPI | Regression: Response schema diverges from ``prefer_alias`` setting for Pydantic models
+        :type: bugfix
+        :pr: 2150
+
+        Fix a regression that made the response schema use ``prefer_alias=True``,
+        diverging from how Pydantic models are exported by default.
+
+    .. change:: OpenAPI | Regression: Examples not being generated deterministically
+        :type: bugfix
+        :pr: 2161
+
+        Fix a regression that made generated examples non-deterministic, caused by a
+        misconfiguration of the random seeding.
+
+    .. change:: SQLAlchemy repository: Handling of dialects not supporting JSON
+        :type: bugfix
+        :pr: 2139
+        :issue: 2137
+
+        Fix a bug where SQLAlchemy would raise a :exc:`TypeError` when using a dialect
+        that does not support JSON with the SQLAlchemy repositories.
+
+    .. change:: JWT | Regression: ``OPTIONS`` and ``HEAD`` being authenticated by default
+        :type: bugfix
+        :pr: 2160
+
+        Fix a regression that would make
+        :class:`~litestar.contrib.jwt.JWTAuthenticationMiddleware` authenticate
+        ``OPTIONS`` and ``HEAD`` requests by default.
+
+    .. change:: SessionAuth | Regression: ``OPTIONS`` and ``HEAD`` being authenticated by default
+        :type: bugfix
+        :pr: 2182
+
+        Fix a regression that would make
+        :class:`~litestar.security.session_auth.middleware.SessionAuthMiddleware` authenticate
+        ``OPTIONS`` and ``HEAD`` requests by default.
+
+.. changelog:: 2.0.0rc1
+    :date: 2023/08/05
+
+    .. change:: Support for server-sent-events
+        :type: feature
+        :pr: 2035
+        :issue: 1185
+
+        Support for `Server-sent events <https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events>` has been
+        added with the :class:`ServerSentEvent <.response.ServerSentEvent>`:
+
+        .. code-block:: python
+
+            async def my_generator() -> AsyncGenerator[bytes, None]:
+                count = 0
+                while count < 10:
+                    await sleep(0.01)
+                    count += 1
+                    yield str(count)
+
+
+            @get(path="/count")
+            def sse_handler() -> ServerSentEvent:
+                return ServerSentEvent(my_generator())
+
+        .. seealso::
+            :ref:`Server Sent Events <usage/responses:Server Sent Event Responses>`
+
+
+    .. change:: SQLAlchemy repository: allow specifying ``id_attribute`` per method
+        :type: feature
+        :pr: 2052
+
+        The following methods now accept an ``id_attribute`` argument, allowing to
+        specify an alternative value to the models primary key:
+
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete_many`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.update`
+
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete_many`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.get`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.update`
+
+    .. change:: SQLAlchemy repository: New ``upsert_many`` method
+        :type: feature
+        :pr: 2056
+
+        A new method ``upsert_many`` has been added to the SQLAlchemy repositories,
+        providing equivalent functionality to the ``upsert`` method for multiple
+        model instances.
+
+        .. seealso::
+            :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.upsert_many`
+            :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.upsert_many`
+
+    .. change:: SQLAlchemy repository: New filters: ``OnBeforeAfter``, ``NotInCollectionFilter`` and ``NotInSearchFilter``
+        :type: feature
+        :pr: 2057
+
+        The following filters have been added to the SQLAlchemy repositories:
+
+        :class:`~litestar.contrib.repository.filters.OnBeforeAfter`
+
+            Allowing to filter :class:`datetime.datetime` columns
+
+        :class:`~litestar.contrib.repository.filters.NotInCollectionFilter`
+
+            Allowing to filter using a ``WHERE ... NOT IN (...)`` clause
+
+        :class:`~litestar.contrib.repository.filters.NotInSearchFilter`
+
+            Allowing to filter using a `WHERE field_name NOT LIKE '%' || :value || '%'`` clause
+
+    .. change:: SQLAlchemy repository: Configurable chunk sizing for ``delete_many``
+        :type: feature
+        :pr: 2061
+
+        The repository now accepts a ``chunk_size`` parameter, determining the maximum
+        amount of parameters in an ``IN`` statement before it gets chunked.
+
+        This is currently only used in the ``delete_many`` method.
+
+
+    .. change:: SQLAlchemy repository: Support InstrumentedAttribute for attribute columns
+        :type: feature
+        :pr: 2054
+
+        Support :class:`~sqlalchemy.orm.InstrumentedAttribute` for in the repository's
+        ``id_attribute``, and the following methods:
+
+
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete_many`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.update`
+
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete_many`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.get`
+        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.update`
+
+    .. change:: OpenAPI: Support callable ``operation_id`` on route handlers
+        :type: feature
+        :pr: 2078
+
+        Route handlers may be passed a callable to ``operation_id`` to create the
+        OpenAPI operation ID.
+
+    .. change:: Run event listeners concurrently
+        :type: feature
+        :pr: 2096
+
+        :doc:`/usage/events` now run concurrently inside a task group.
+
+    .. change:: Support extending the CLI with plugins
+        :type: feature
+        :pr: 2066
+
+        A new plugin protocol :class:`~litestar.plugins.CLIPluginProtocol` has been
+        added that can be used to extend the Litestar CLI.
+
+        .. seealso::
+            :ref:`usage/cli:Using a plugin`
+
+    .. change:: DTO: Support renamed fields in ``DTOData`` and ``create_instance``
+        :type: bugfix
+        :pr: 2065
+
+        A bug was fixed that would cause field renaming to be skipped within
+        :class:`~litestar.dto.data_structures.DTOData` and
+        :meth:`~litestar.dto.data_structures.DTOData.create_instance`.
+
+    .. change:: SQLAlchemy repository: Fix ``health_check`` for oracle
+        :type: bugfix
+        :pr: 2060
+
+        The emitted statement for oracle has been changed to ``SELECT 1 FROM DUAL``.
+
+    .. change:: Fix serialization of empty strings in multipart form
+        :type: bugfix
+        :pr: 2044
+
+        A bug was fixed that would cause a validation error to be raised for empty
+        strings during multipart form decoding.
+
+    .. change:: Use debug mode by default in test clients
+        :type: misc
+        :pr: 2113
+
+        The test clients will now default to ``debug=True`` instead of ``debug=None``.
+
+    .. change:: Removal of deprecated ``partial`` module
+        :type: misc
+        :pr:  2113
+        :breaking:
+
+        The deprecated ``litestar.partial`` has been removed. It can be replaced with
+        DTOs, making use of the :class:`~litestar.dto.config.DTOConfig` option
+        ``partial=True``.
+
+    .. change:: Removal of deprecated ``dto/factory`` module
+        :type: misc
+        :pr: 2114
+        :breaking:
+
+        The deprecated module ``litestar.dto.factory`` has been removed.
+
+    .. change:: Removal of deprecated ``contrib/msgspec`` module
+        :type: misc
+        :pr: 2114
+        :breaking:
+
+        The deprecated module ``litestar.contrib.msgspec`` has been removed.
+
+
 .. changelog:: 2.0.0beta4
     :date: 2023/07/21
 
@@ -232,7 +510,7 @@
         :type: misc
         :pr: 2002
 
-        The :mod:`litestar.partial` and :class:`~litestar.partial.Partial` have been
+        The ``litestar.partial`` and ``litestar.partial.Partial`` have been
         deprecated and will be removed in a future release. Users are advised to upgrade
         to DTOs, making use of the :class:`~litestar.dto.config.DTOConfig` option
         ``partial=True``.
@@ -465,7 +743,7 @@
         ``data.create_instance(foo__bar="baz")``.
 
         .. seealso::
-            :ref:`usage/dto/1-dto-factory:Providing values for nested data`
+            :ref:`usage/dto/1-abstract-dto:Providing values for nested data`
 
     .. change:: DTOs: Hybrid properties and association proxies in ``SQLAlchemyDTO``
         :type: feature
@@ -1428,7 +1706,7 @@
         providing support for managed synchronous and asynchronous sessions.
 
         .. seealso::
-            :doc:`/usage/contrib/sqlalchemy/index`
+            :doc:`/usage/databases/sqlalchemy/index`
 
     .. change:: Attrs signature modelling
         :type: feature
@@ -1974,8 +2252,9 @@
         :breaking:
         :pr: 1209
 
-        :ref:`usage/responses:Response Headers` and :ref:`usage/responses:Response Cookies` now have the same
-        interface, along with the ``headers`` and ``cookies`` keyword arguments to
+        :ref:`response headers <usage/responses:Setting Response Headers>` and
+        :ref:`response cookies <usage/responses:Setting Response Cookies>` now have the
+        same interface, along with the ``headers`` and ``cookies`` keyword arguments to
         ``starlite.response.Response``. They each allow to pass either a
         `:class:`Mapping[str, str] <typing.Mapping>`, e.g. a dictionary, or a :class:`Sequence <typing.Sequence>` of
         ``starlite.datastructures.response_header.ResponseHeader`` or

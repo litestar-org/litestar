@@ -1,8 +1,9 @@
+import string
 from typing import Any, List
 
 import pytest
 
-from litestar._openapi.typescript_converter.schema_parsing import parse_schema
+from litestar._openapi.typescript_converter.schema_parsing import normalize_typescript_namespace, parse_schema
 from litestar._openapi.typescript_converter.types import TypeScriptIntersection
 from litestar.openapi.spec import Schema
 from litestar.openapi.spec.enums import OpenAPIType
@@ -89,3 +90,9 @@ def test_parse_schema_handle_object() -> None:
 def test_parse_schema_handle_enum(schema_type: Any, enum: List[Any], expected: str) -> None:
     result = parse_schema(Schema(type=schema_type, enum=enum))
     assert result.write() == expected
+
+
+@pytest.mark.parametrize("namespace", [string.punctuation])
+def test_normalize_typescript_namespace_invalid_namespace_raises(namespace: str) -> None:
+    with pytest.raises(ValueError):
+        normalize_typescript_namespace(namespace, False)

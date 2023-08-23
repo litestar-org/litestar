@@ -5,7 +5,7 @@ import multiprocessing
 import os
 import subprocess
 import sys
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 import uvicorn
 from rich.tree import Tree
@@ -14,7 +14,7 @@ from litestar.cli._utils import RICH_CLICK_INSTALLED, LitestarEnv, console, show
 from litestar.routes import HTTPRoute, WebSocketRoute
 from litestar.utils.helpers import unwrap_partial
 
-if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
+if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     import click
     from click import Context, command, option
 else:
@@ -110,7 +110,15 @@ def run_command(
     if pdb:
         os.environ["LITESTAR_PDB"] = "1"
 
-    env = cast(LitestarEnv, ctx.obj())
+    if callable(ctx.obj):
+        ctx.obj = ctx.obj()
+    else:
+        if debug:
+            ctx.obj.app.debug = True
+        if pdb:
+            ctx.obj.app.pdb_on_exception = True
+
+    env: LitestarEnv = ctx.obj
     app = env.app
 
     reload_dirs = env.reload_dirs or reload_dir

@@ -1,7 +1,5 @@
-import asyncio
-import typing as t
+from typing import List
 
-import uvicorn
 from piccolo.columns import Boolean, Varchar
 from piccolo.table import Table, create_db_tables
 
@@ -34,7 +32,7 @@ class PatchDTO(PiccoloDTO[Task]):
     media_type=MediaType.JSON,
     tags=["Task"],
 )
-async def tasks() -> t.List[Task]:
+async def tasks() -> List[Task]:
     return await Task.select().order_by(Task.id, ascending=False)
 
 
@@ -75,21 +73,11 @@ async def delete_task(task_id: int) -> None:
     await task.remove()
 
 
-async def main():
-    # Tables creating
+async def on_startup():
     await create_db_tables(Task, if_not_exists=True)
 
 
 app = Litestar(
-    route_handlers=[
-        tasks,
-        create_task,
-        delete_task,
-        update_task,
-    ],
+    route_handlers=[tasks, create_task, delete_task, update_task],
+    on_startup=[on_startup],
 )
-
-if __name__ == "__main__":
-    asyncio.run(main())
-
-    uvicorn.run(app, host="127.0.0.1", port=8000)

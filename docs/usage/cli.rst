@@ -252,11 +252,17 @@ This will result in:
 Extending the CLI
 -----------------
 
-Litestar's CLI is built with `click <https://click.palletsprojects.com/>`_ and can be easily extended.
-To add subcommands under the `litestar` command, you need to add an
-`entry point <https://packaging.python.org/en/latest/specifications/entry-points/>`_ that points to a
-:class:`click.Command` or :class:`click.Group` under the
-`litestar.commands` group.
+Litestar's CLI is built with `click <https://click.palletsprojects.com/>`_ and can be
+extended by making use of
+`entry points <https://packaging.python.org/en/latest/specifications/entry-points/>`_,
+or by creating a plugin that conforms to the
+:class:`~litestar.plugins.CLIPluginProtocol`.
+
+Using entry points
+^^^^^^^^^^^^^^^^^^
+
+Entry points for the CLI can be added under the ``litestar.commands`` group. These
+entries should point to a :class:`click.Command` or :class:`click.Group`:
 
 .. tab-set::
 
@@ -281,12 +287,38 @@ To add subcommands under the `litestar` command, you need to add an
            [tool.poetry.plugins."litestar.commands"]
            my_command = "my_litestar_plugin.cli:main"
 
+Using a plugin
+^^^^^^^^^^^^^^
+
+A plugin extending the CLI can be created using the
+:class:`~litestar.plugins.CLIPluginProtocol`. Its
+:meth:`~litestar.plugins.CLIPluginProtocol.on_cli_init` will be called during the
+initialization of the CLI, and receive the root :class:`click.Group` as its first
+argument, which can then be used to add or override commands:
+
+.. code-block:: python
+
+    from litestar import Litestar
+    from litestar.plugins import CLIPluginProtocol
+    from click import Group
+
+
+    class CLIPlugin(CLIPluginProtocol):
+        def on_cli_init(self, cli: Group) -> None:
+            @cli.command()
+            def is_debug_mode(app: Litestar):
+                print(app.debug)
+
+
+    app = Litestar(plugins=[CLIPlugin()])
+
+
 Accessing the app instance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-When extending the Litestar CLI, you will most likely need access to the loaded `Litestar` instance.
-You can achieve this by adding the special `app` parameter to your CLI functions. This will cause the
-`Litestar` instance to be injected into the function whenever it is called from a click-context.
+When extending the Litestar CLI, you will most likely need access to the loaded ``Litestar`` instance.
+You can achieve this by adding the special ``app`` parameter to your CLI functions. This will cause the
+``Litestar`` instance to be injected into the function whenever it is called from a click-context.
 
 .. code-block:: python
 

@@ -82,6 +82,12 @@ The ``Makefile`` includes several commands for running tests:
 - ``make test-all`` to run all tests
 - ``make coverage`` to run tests with coverage and generate an html report
 
+The tests make use of `pytest-xdist <https://pytest-xdist.readthedocs.io>`_ to speed up
+test runs. These are enabled by default when running ``make test``, ``make test-all``
+or ``make coverage``. Due to the nature of pytest-xdist, attaching a debugger isn't as
+straightforward. For debugging, it's recommended to run the tests individually with
+``pytest <test name>`` or via an IDE, which will skip pytest-xdist.
+
 
 Project documentation
 ---------------------

@@ -11,8 +11,8 @@ When developing applications, oftentimes a simply storage mechanism is needed, f
 :ref:`server-side sessions <usage/middleware/builtin-middleware:Server-side sessions>`. In cases like these a
 traditional database is often not needed, and a simple key/value store suffices.
 
-Litestar provides several low level key value stores, offering an asynchronous interface to store data in a thread-
-and process-safe manner. These stores are centrally managed via a
+Litestar provides several low level key value stores, offering an asynchronous interface to store data in a
+thread- and process-safe manner. These stores are centrally managed via a
 :class:`registry <litestar.stores.registry.StoreRegistry>`, allowing easy access throughout the whole application and
 third party integration (for example plugins).
 

@@ -1,8 +1,8 @@
 .. py:currentmodule:: litestar
 
 
-What's new in 2.0?
-==================
+What's changed in 2.0?
+======================
 
 This document is an overview of the changes between version **1.51** and **2.0**.
 For a detailed list of all changes, including changes between versions leading up to the
@@ -12,8 +12,8 @@ Starlite → Litestar
 -------------------
 
 We're thrilled to introduce some exciting changes in our latest release, version 2!
-The most noteworthy transformation you will notice is the rebranding of our project, previously known as Starlite,
-now stepping into the limelight as Litestar.
+The most noteworthy transformation you will notice is the rebranding of our project,
+previously known as Starlite, now stepping into the limelight as Litestar.
 
 The name "Starlite" was chosen as an homage to `Starlette <https://www.starlette.io/>`_,
 the ASGI framework and toolkit Starlite was initially based on. Over the course of its
@@ -36,9 +36,6 @@ friction. Following that decision, the first release under the new name was
 `v2.0.0alpha3 <https://github.com/litestar-org/litestar/releases/tag/v2.0.0alpha3>`_,
 following the last alpha release of Starlite 2.0,
 `v2.0.0alpha2 <https://github.com/litestar-org/litestar/releases/tag/v2.0.0alpha2>`_.
-
-.. # TODO: This reads odd - is alpha3 the first release under the new name, and alpha2 the last one without it? or
-    was it just a placeholder for last alpha release alpha7?
 
 .. note::
     The **1.51** release line is unaffected by this change
@@ -303,7 +300,7 @@ SQLAlchemy 2 only.
 TODO: Migration instructions
 
 .. seealso::
-    The :doc:`/usage/contrib/sqlalchemy/index` usage documentation and the
+    The :doc:`/usage/databases/sqlalchemy/index` usage documentation and the
     :doc:`/reference/contrib/sqlalchemy/index` API reference
 
 
@@ -360,8 +357,8 @@ should be changed to include an additional ``scope`` parameter.
 
 
 .. seealso::
-    :ref:`change:2.0.0alpha2-remove support for 2 argument form of` ``before_send`` and the
-    :ref:`before_send` API reference
+    :ref:`change:2.0.0alpha2-remove support for 2 argument form of` ``before_send`` and
+    the :ref:`before_send` API reference
 
 
 ``initial_state`` application parameter
@@ -441,18 +438,16 @@ DTOs
 DTOs are now defined using the ``dto`` and ``return_dto`` arguments to
 handlers/controllers/routers and the application.
 
-A DTO is any type that conforms to the :class:`litestar.dto.interface.DTOInterface`
-protocol.
+A DTO is any type that inherits from :class:`litestar.dto.base_dto.AbstractDTO`.
 
-Litestar provides a suite of factory types that implement the ``DTOInterface`` protocol
+Litestar provides a suite of types that implement the ``AbstractDTO`` abstract class
 and can be used to define DTOs:
 
-- :class:`litestar.dto.dataclass_dto_factory.DataclassDTO`
-- :class:`litestar.dto.msgspec_dto_factory.MsgspecDTO`
+- :class:`litestar.dto.dataclass_dto.DataclassDTO`
+- :class:`litestar.dto.msgspec_dto.MsgspecDTO`
 - :class:`litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO`
 - :class:`litestar.contrib.pydantic.PydanticDTO`
-- ``litestar.contrib.piccolo.PiccoloDTO`` (TODO)
-- ``litestar.contrib.tortoise.TortoiseDTO`` (TODO)
+- :class:`litestar.contrib.piccolo.PiccoloDTO`
 
 For example, to define a DTO from a dataclass:
 
@@ -605,7 +600,7 @@ Basic support for HTMX requests and responses was added with the
 ``litestar.contrib.htmx`` module.
 
 .. seealso::
-   The :doc:`/usage/contrib/htmx` usage documentation
+   The :doc:`/usage/htmx` usage documentation
 
 
 Event bus
@@ -619,12 +614,6 @@ features a simple in-memory, process-local backend.
 .. seealso::
     The :doc:`/usage/events` usage documentation and the
     :doc:`/reference/events` API reference
-
-
-SQLAlchemy Repository
----------------------
-
-TBD
 
 
 Enhanced WebSocket support

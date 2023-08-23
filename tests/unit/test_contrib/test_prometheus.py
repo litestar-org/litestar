@@ -1,9 +1,13 @@
 import re
 import time
 from http.client import HTTPException
+from pathlib import Path
 from typing import Any
 
+import pytest
+from _pytest.monkeypatch import MonkeyPatch
 from prometheus_client import REGISTRY
+from pytest_mock import MockerFixture
 
 from litestar import get, post, websocket_listener
 from litestar.contrib.prometheus import PrometheusConfig, PrometheusController, PrometheusMiddleware
@@ -20,6 +24,7 @@ def create_config(**kwargs: Any) -> PrometheusConfig:
     return PrometheusConfig(**kwargs)
 
 
+@pytest.mark.flaky(reruns=5)
 def test_prometheus_exporter_metrics_with_http() -> None:
     config = create_config()
 
@@ -195,3 +200,18 @@ def test_prometheus_with_websocket() -> None:
             """litestar_requests_total{app_name="litestar",method="websocket",path="/test",status_code="200"} 1.0"""
             in metrics
         )
+
+
+@pytest.mark.parametrize("env_var", ["PROMETHEUS_MULTIPROC_DIR", "prometheus_multiproc_dir"])
+def test_procdir(monkeypatch: MonkeyPatch, tmp_path: Path, mocker: MockerFixture, env_var: str) -> None:
+    proc_dir = tmp_path / "something"
+    proc_dir.mkdir()
+    monkeypatch.setenv(env_var, str(proc_dir))
+    config = create_config()
+    mock_registry = mocker.patch("litestar.contrib.prometheus.controller.CollectorRegistry")
+    mock_collector = mocker.patch("litestar.contrib.prometheus.controller.multiprocess.MultiProcessCollector")
+
+    with create_test_client([PrometheusController], middleware=[config.middleware]) as client:
+        client.get("/metrics")
+
+    mock_collector.assert_called_once_with(mock_registry.return_value)

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Callable, Optional
 
 import pytest
 from _pytest.capture import CaptureFixture
@@ -7,17 +7,14 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from structlog.testing import capture_logs
 
 from litestar import Litestar, Request, Response, get
-from litestar.exceptions import (
-    HTTPException,
-    InternalServerException,
-    ValidationException,
-)
+from litestar.exceptions import HTTPException, InternalServerException, ValidationException
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
 from litestar.middleware.exceptions import ExceptionHandlerMiddleware
 from litestar.middleware.exceptions.middleware import get_exception_handler
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
 from litestar.types import ExceptionHandlersMap
+from litestar.types.asgi_types import HTTPScope
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
@@ -30,13 +27,26 @@ async def dummy_app(scope: Any, receive: Any, send: Any) -> None:
     return None
 
 
-middleware = ExceptionHandlerMiddleware(dummy_app, False, {})
+@pytest.fixture()
+def app() -> Litestar:
+    return Litestar()
 
 
-def test_default_handle_http_exception_handling_extra_object() -> None:
+@pytest.fixture()
+def middleware() -> ExceptionHandlerMiddleware:
+    return ExceptionHandlerMiddleware(dummy_app, None, {})
+
+
+@pytest.fixture()
+def scope(create_scope: Callable[..., HTTPScope], app: Litestar) -> HTTPScope:
+    return create_scope(app=app)
+
+
+def test_default_handle_http_exception_handling_extra_object(
+    scope: HTTPScope, middleware: ExceptionHandlerMiddleware
+) -> None:
     response = middleware.default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}),  # type: ignore
-        HTTPException(detail="litestar_exception", extra={"key": "value"}),
+        Request(scope=scope), HTTPException(detail="litestar_exception", extra={"key": "value"})
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert response.content == {
@@ -46,28 +56,31 @@ def test_default_handle_http_exception_handling_extra_object() -> None:
     }
 
 
-def test_default_handle_http_exception_handling_extra_none() -> None:
+def test_default_handle_http_exception_handling_extra_none(
+    scope: HTTPScope, middleware: ExceptionHandlerMiddleware
+) -> None:
     response = middleware.default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}),  # type: ignore
-        HTTPException(detail="litestar_exception"),
+        Request(scope=scope), HTTPException(detail="litestar_exception")
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert response.content == {"detail": "Internal Server Error", "status_code": 500}
 
 
-def test_default_handle_litestar_http_exception_handling() -> None:
+def test_default_handle_litestar_http_exception_handling(
+    scope: HTTPScope, middleware: ExceptionHandlerMiddleware
+) -> None:
     response = middleware.default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}),  # type: ignore
-        HTTPException(detail="litestar_exception"),
+        Request(scope=scope), HTTPException(detail="litestar_exception")
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert response.content == {"detail": "Internal Server Error", "status_code": 500}
 
 
-def test_default_handle_litestar_http_exception_extra_list() -> None:
+def test_default_handle_litestar_http_exception_extra_list(
+    scope: HTTPScope, middleware: ExceptionHandlerMiddleware
+) -> None:
     response = middleware.default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}),  # type: ignore
-        HTTPException(detail="litestar_exception", extra=["extra-1", "extra-2"]),
+        Request(scope=scope), HTTPException(detail="litestar_exception", extra=["extra-1", "extra-2"])
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert response.content == {
@@ -77,22 +90,21 @@ def test_default_handle_litestar_http_exception_extra_list() -> None:
     }
 
 
-def test_default_handle_starlette_http_exception_handling() -> None:
+def test_default_handle_starlette_http_exception_handling(
+    scope: HTTPScope, middleware: ExceptionHandlerMiddleware
+) -> None:
     response = middleware.default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}),  # type: ignore
+        Request(scope=scope),
         StarletteHTTPException(detail="litestar_exception", status_code=HTTP_500_INTERNAL_SERVER_ERROR),
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert response.content == {
-        "detail": "Internal Server Error",
-        "status_code": 500,
-    }
+    assert response.content == {"detail": "Internal Server Error", "status_code": 500}
 
 
-def test_default_handle_python_http_exception_handling() -> None:
-    response = middleware.default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}), AttributeError("oops")  # type: ignore
-    )
+def test_default_handle_python_http_exception_handling(
+    scope: HTTPScope, middleware: ExceptionHandlerMiddleware
+) -> None:
+    response = middleware.default_http_exception_handler(Request(scope=scope), AttributeError("oops"))
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert response.content == {
         "detail": "Internal Server Error",
@@ -292,6 +304,7 @@ def test_get_exception_handler(mapping: ExceptionHandlersMap, exc: Exception, ex
     assert get_exception_handler(mapping, exc) == expected
 
 
+@pytest.mark.filterwarnings("ignore::litestar.utils.warnings.LitestarWarning:")
 def test_pdb_on_exception(mocker: MockerFixture) -> None:
     @get("/test")
     def handler() -> None:
@@ -306,3 +319,24 @@ def test_pdb_on_exception(mocker: MockerFixture) -> None:
 
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     mock_post_mortem.assert_called_once()
+
+
+def test_get_debug_from_scope(get_logger: "GetLogger", caplog: "LogCaptureFixture") -> None:
+    @get("/test")
+    def handler() -> None:
+        raise ValueError("Test debug exception")
+
+    app = Litestar([handler], debug=False)
+    app.debug = True
+
+    with caplog.at_level("ERROR", "litestar"), TestClient(app=app) as client:
+        client.app.logger = get_logger("litestar")
+        response = client.get("/test")
+
+        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+        assert "Test debug exception" in response.text
+        assert len(caplog.records) == 1
+        assert caplog.records[0].levelname == "ERROR"
+        assert caplog.records[0].message.startswith(
+            "exception raised on http connection to route /test\n\nTraceback (most recent call last):\n"
+        )

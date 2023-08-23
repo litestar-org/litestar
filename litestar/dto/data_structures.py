@@ -10,7 +10,6 @@ if TYPE_CHECKING:
 
     from litestar.dto import DTOField
     from litestar.dto._backend import DTOBackend
-    from litestar.dto.types import ForType
 
 T = TypeVar("T")
 
@@ -33,7 +32,9 @@ class DTOData(Generic[T]):
         data = dict(self._data_as_builtins)
         for k, v in kwargs.items():
             _set_nested_dict_value(data, k.split("__"), v)
-        return self._backend.transfer_data_from_builtins(data)  # type:ignore[no-any-return]
+        return self._backend.transfer_data_from_builtins(  # type:ignore[no-any-return]
+            data, override_serialization_name=True
+        )
 
     def update_instance(self, instance: T, **kwargs: Any) -> T:
         """Update an instance with the DTO validated data.
@@ -68,50 +69,31 @@ class DTOFieldDefinition(FieldDefinition):
     __slots__ = (
         "default_factory",
         "dto_field",
-        "dto_for",
-        "unique_model_name",
+        "model_name",
     )
 
-    unique_model_name: str
-    """Unique identifier of model that owns the field."""
+    model_name: str
+    """The name of the model for which the field is generated."""
     default_factory: Callable[[], Any] | None
     """Default factory of the field."""
     dto_field: DTOField
     """DTO field configuration."""
-    dto_for: ForType | None
-    """Direction of transfer for field.
-
-    Specify if the field definition should only be added to models for only the request (``"data"``) or response
-    (``"return"``). If there should be no such distinction, set to ``None``.
-
-    This is to support special cases where the type to set an attribute may be different to the type received when
-    retrieving its value. For example, a :class:`sqlalchemy.ext.hybrid.hybrid_property` may be set with a ``str`` but
-    retrieved as some other type.
-
-    The difference between this, and marking a field as read-only or private, is that it cannot be overridden by the end
-    user.
-    """
-
-    def unique_name(self) -> str:
-        return f"{self.unique_model_name}.{self.name}"
 
     @classmethod
     def from_field_definition(
         cls,
         field_definition: FieldDefinition,
-        unique_model_name: str,
+        model_name: str,
         default_factory: Callable[[], Any] | None,
         dto_field: DTOField,
-        dto_for: ForType | None,
     ) -> DTOFieldDefinition:
         """Create a :class:`FieldDefinition` from a :class:`FieldDefinition`.
 
         Args:
             field_definition: A :class:`FieldDefinition` to create a :class:`FieldDefinition` from.
-            unique_model_name: The unique name of the model.
+            model_name: The name of the model.
             default_factory: Default factory function, if any.
             dto_field: DTOField instance.
-            dto_for: DTO type.
 
         Returns:
             A :class:`FieldDefinition` instance.
@@ -120,18 +102,17 @@ class DTOFieldDefinition(FieldDefinition):
             annotation=field_definition.annotation,
             args=field_definition.args,
             default=field_definition.default,
+            default_factory=default_factory,
+            dto_field=dto_field,
             extra=field_definition.extra,
             inner_types=field_definition.inner_types,
             instantiable_origin=field_definition.instantiable_origin,
             kwarg_definition=field_definition.kwarg_definition,
             metadata=field_definition.metadata,
+            model_name=model_name,
             name=field_definition.name,
             origin=field_definition.origin,
             raw=field_definition.raw,
             safe_generic_origin=field_definition.safe_generic_origin,
             type_wrappers=field_definition.type_wrappers,
-            unique_model_name=unique_model_name,
-            default_factory=default_factory,
-            dto_field=dto_field,
-            dto_for=dto_for,
         )

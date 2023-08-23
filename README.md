@@ -22,28 +22,23 @@
 <!-- prettier-ignore-end -->
 </div>
 
-# Starlite → Litestar
-
-**[Starlite has been renamed to Litestar](https://litestar.dev/about/organization.html#litestar-and-starlite)**
-
 <hr>
 
-Litestar is a powerful, performant, flexible and opinionated ASGI framework,
-offering first class typing support.
+Litestar is a powerful, flexible yet opinionated ASGI framework, focused building on
+building APIs, and offers high-performance data validation and parsing,
+dependency injection, first-class ORM integration, authorization primitives, and much
+more that's needed to get applications up and running.
 
-Check out the [documentation 📚](https://docs.litestar.dev/).
+Check out the [documentation 📚](https://docs.litestar.dev/) for a detailed overview of
+its features!
+
+Additionally, the [Litestar fullstack repository](https://github.com/litestar-org/litestar-fullstack)
+can give you a good impression how a fully fledged Litestar application may look.
 
 ## Installation
 
 ```shell
 pip install litestar
-```
-
-**Litestar 2.0 is coming out soon**, bringing many new features and improvements.
-You can check out the latest pre-release version by instead running
-
-```shell
-pip install litestar==2.0.0beta3
 ```
 
 ## Quick Start
@@ -72,15 +67,14 @@ app = Litestar(route_handlers=[hello_world])
 - [Route Guards based Authorization](#route-guards)
 - Support for `dataclasses`, `TypedDict`, [pydantic version 1 and version 2](https://docs.pydantic.dev/latest/),
   [msgspec](https://github.com/jcrist/msgspec) and [attrs](https://www.attrs.org/en/stable/)
-- Layered Parameter declaration
-- Extended testing support
+- Layered parameter declaration
 - [Automatic API documentation with](#redoc-swagger-ui-and-stoplight-elements-api-documentation):
   - [Redoc](https://github.com/Redocly/redoc)
   - [Stoplight Elements](https://github.com/stoplightio/elements)
   - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
 - [Trio](https://trio.readthedocs.io/en/stable/) support (built-in, via [AnyIO](https://anyio.readthedocs.io/))
 - Ultra-fast validation, serialization and deserialization using [msgspec](https://github.com/jcrist/msgspec)
-- SQLAlchemy Support
+- SQLAlchemy integration
 - Piccolo ORM Support
 
 ## Example Applications
@@ -90,21 +84,6 @@ app = Litestar(route_handlers=[hello_world])
   Litestar projects, this application is open to contributions, big and small.
 - [litestar-hello-world](https://github.com/litestar-org/litestar-hello-world): A bare-minimum application setup. Great
   for testing and POC work.
-
-## Performance
-
-Litestar is fast. It is on par with, or significantly faster than comparable ASGI frameworks.
-
-You can see and run the benchmarks [here](https://github.com/litestar-org/api-performance-tests),
-or read more about it [here](https://docs.litestar.dev/latest/benchmarks) in our documentation.
-
-### JSON Benchmarks
-
-![JSON benchmarks](docs/images/benchmarks/rps_json.svg)
-
-### Plaintext Benchmarks
-
-![Plaintext benchmarks](docs/images/benchmarks/rps_plaintext.svg)
 
 ## Features
 
@@ -140,7 +119,9 @@ class UserController(Controller):
         ...
 
     @patch(path="/{user_id:uuid}", dto=PartialUserDTO)
-    async def partial_update_user(self, user_id: UUID4, data: DTOData[PartialUserDTO]) -> User:
+    async def partial_update_user(
+        self, user_id: UUID4, data: DTOData[PartialUserDTO]
+    ) -> User:
         ...
 
     @put(path="/{user_id:uuid}")
@@ -256,6 +237,13 @@ app = Litestar([index])
 ### Request Life Cycle Hooks
 
 Litestar supports request life cycle hooks, similarly to Flask - i.e. `before_request` and `after_request`
+
+## Performance
+
+Litestar is fast. It is on par with, or significantly faster than comparable ASGI frameworks.
+
+You can see and run the benchmarks [here](https://github.com/litestar-org/api-performance-tests),
+or read more about it [here](https://docs.litestar.dev/latest/benchmarks) in our documentation.
 
 ## Contributing
 
@@ -384,7 +372,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/wassafshahzad"><img src="https://avatars.githubusercontent.com/u/25094157?v=4?s=100" width="100px;" alt="wassaf shahzad"/><br /><sub><b>wassaf shahzad</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=wassafshahzad" title="Code">💻</a></td>
     </tr>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="http://nilsso.github.io"><img src="https://avatars.githubusercontent.com/u/567181?v=4?s=100" width="100px;" alt="Nils Olsson"/><br /><sub><b>Nils Olsson</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=nilsso" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://nilsso.github.io"><img src="https://avatars.githubusercontent.com/u/567181?v=4?s=100" width="100px;" alt="Nils Olsson"/><br /><sub><b>Nils Olsson</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=nilsso" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/issues?q=author%3Anilsso" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://rileychase.net"><img src="https://avatars.githubusercontent.com/u/1491530?v=4?s=100" width="100px;" alt="Riley Chase"/><br /><sub><b>Riley Chase</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=Nadock" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://gh.arielle.codes"><img src="https://avatars.githubusercontent.com/u/71233171?v=4?s=100" width="100px;" alt="arl"/><br /><sub><b>arl</b></sub></a><br /><a href="#maintenance-onerandomusername" title="Maintenance">🚧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Galdanwing"><img src="https://avatars.githubusercontent.com/u/29492757?v=4?s=100" width="100px;" alt="Antoine van der Horst"/><br /><sub><b>Antoine van der Horst</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=Galdanwing" title="Documentation">📖</a></td>
@@ -433,6 +421,12 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/lazyc97"><img src="https://avatars.githubusercontent.com/u/8538104?v=4?s=100" width="100px;" alt="Nguyễn Hoàng Đức"/><br /><sub><b>Nguyễn Hoàng Đức</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3Alazyc97" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/RavanaBhrama"><img src="https://avatars.githubusercontent.com/u/131459969?v=4?s=100" width="100px;" alt="RavanaBhrama"/><br /><sub><b>RavanaBhrama</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=RavanaBhrama" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mj0nez"><img src="https://avatars.githubusercontent.com/u/20128340?v=4?s=100" width="100px;" alt="Marcel Johannesmann"/><br /><sub><b>Marcel Johannesmann</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=mj0nez" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://zanfar.com/"><img src="https://avatars.githubusercontent.com/u/10294685?v=4?s=100" width="100px;" alt="Matthew"/><br /><sub><b>Matthew</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=therealzanfar" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Mattwmaster58"><img src="https://avatars.githubusercontent.com/u/26337069?v=4?s=100" width="100px;" alt="Mattwmaster58"/><br /><sub><b>Mattwmaster58</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3AMattwmaster58" title="Bug reports">🐛</a> <a href="https://github.com/litestar-org/litestar/commits?author=Mattwmaster58" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=Mattwmaster58" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://es.linkedin.com/in/manusp"><img src="https://avatars.githubusercontent.com/u/5411704?v=4?s=100" width="100px;" alt="Manuel Sanchez Pinar"/><br /><sub><b>Manuel Sanchez Pinar</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=aorith" title="Documentation">📖</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/juan-riveros"><img src="https://avatars.githubusercontent.com/u/1297567?v=4?s=100" width="100px;" alt="Juan Riveros"/><br /><sub><b>Juan Riveros</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=juan-riveros" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>

@@ -13,7 +13,9 @@ from litestar.enums import MediaType, ScopeType
 from litestar.exceptions import WebSocketException
 from litestar.middleware.cors import CORSMiddleware
 from litestar.middleware.exceptions._debug_response import create_debug_response
+from litestar.serialization import encode_json
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
+from litestar.utils.deprecation import warn_deprecation
 
 __all__ = ("ExceptionHandlerMiddleware", "ExceptionResponseContent", "create_exception_response")
 
@@ -76,6 +78,8 @@ class ExceptionResponseContent:
     """Exception status code."""
     detail: str
     """Exception details or message."""
+    media_type: MediaType | str
+    """Media type of the response."""
     headers: dict[str, str] | None = field(default=None)
     """Headers to attach to the response."""
     extra: dict[str, Any] | list[Any] | None = field(default=None)
@@ -89,15 +93,20 @@ class ExceptionResponseContent:
         """
         from litestar.response import Response
 
+        content: Any = {k: v for k, v in asdict(self).items() if k not in ("headers", "media_type") and v is not None}
+
+        if self.media_type != MediaType.JSON:
+            content = encode_json(content)
+
         return Response(
-            content={k: v for k, v in asdict(self).items() if k != "headers" and v is not None},
+            content=content,
             headers=self.headers,
             status_code=self.status_code,
-            media_type=MediaType.JSON,
+            media_type=self.media_type,
         )
 
 
-def create_exception_response(exc: Exception) -> Response:
+def create_exception_response(request: Request[Any, Any, Any], exc: Exception) -> Response:
     """Construct a response from an exception.
 
     Notes:
@@ -106,6 +115,7 @@ def create_exception_response(exc: Exception) -> Response:
           response status is ``HTTP_500_INTERNAL_SERVER_ERROR``.
 
     Args:
+        request: The request that triggered the exception.
         exc: An exception.
 
     Returns:
@@ -117,11 +127,17 @@ def create_exception_response(exc: Exception) -> Response:
     else:
         detail = getattr(exc, "detail", repr(exc))
 
+    try:
+        media_type = request.route_handler.media_type
+    except (KeyError, AttributeError):
+        media_type = MediaType.JSON
+
     content = ExceptionResponseContent(
         status_code=status_code,
         detail=detail,
         headers=getattr(exc, "headers", None),
         extra=getattr(exc, "extra", None),
+        media_type=media_type,
     )
     return content.to_response()
 
@@ -132,17 +148,33 @@ class ExceptionHandlerMiddleware:
     This used in multiple layers of Litestar.
     """
 
-    def __init__(self, app: ASGIApp, debug: bool, exception_handlers: ExceptionHandlersMap) -> None:
+    def __init__(self, app: ASGIApp, debug: bool | None, exception_handlers: ExceptionHandlersMap) -> None:
         """Initialize ``ExceptionHandlerMiddleware``.
 
         Args:
             app: The ``next`` ASGI app to call.
-            debug: Whether ``debug`` mode is enabled
+            debug: Whether ``debug`` mode is enabled. Deprecated. Debug mode will be inferred from the request scope
             exception_handlers: A dictionary mapping status codes and/or exception types to handler functions.
+
+        .. deprecated:: 2.0.0
+            The ``debug`` parameter is deprecated. It will be inferred from the request scope
         """
         self.app = app
         self.exception_handlers = exception_handlers
         self.debug = debug
+        if debug is not None:
+            warn_deprecation(
+                "2.0.0",
+                deprecated_name="debug",
+                kind="parameter",
+                info="Debug mode will be inferred from the request scope",
+            )
+
+        self._get_debug = self._get_debug_scope if debug is None else lambda *a: debug
+
+    @staticmethod
+    def _get_debug_scope(scope: Scope) -> bool:
+        return scope["app"].debug
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI-callable.
@@ -234,9 +266,9 @@ class ExceptionHandlerMiddleware:
             An HTTP response.
         """
         status_code = getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
-        if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self.debug:
+        if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self._get_debug_scope(request.scope):
             return create_debug_response(request=request, exc=exc)
-        return create_exception_response(exc)
+        return create_exception_response(request=request, exc=exc)
 
     def handle_exception_logging(self, logger: Logger, logging_config: BaseLoggingConfig, scope: Scope) -> None:
         """Handle logging - if the litestar app has a logging config in place.
@@ -250,6 +282,7 @@ class ExceptionHandlerMiddleware:
             None
         """
         if (
-            logging_config.log_exceptions == "always" or (logging_config.log_exceptions == "debug" and self.debug)
+            logging_config.log_exceptions == "always"
+            or (logging_config.log_exceptions == "debug" and self._get_debug_scope(scope))
         ) and logging_config.exception_logging_handler:
             logging_config.exception_logging_handler(logger, scope, format_exception(*exc_info()))

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable
+from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable, Sequence, cast
 
 from litestar.middleware.base import DefineMiddleware
 from litestar.middleware.session.base import BaseBackendConfig, BaseSessionBackendT
@@ -14,7 +14,7 @@ __all__ = ("SessionAuth",)
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.di import Provide
-    from litestar.types import ControllerRouterHandler, Guard, Scopes, SyncOrAsyncUnion, TypeEncodersMap
+    from litestar.types import ControllerRouterHandler, Guard, Method, Scopes, SyncOrAsyncUnion, TypeEncodersMap
 
 
 @dataclass
@@ -46,6 +46,10 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
     """A pattern or list of patterns to skip in the authentication middleware."""
     exclude_opt_key: str = field(default="exclude_from_auth")
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
+    exclude_http_methods: Sequence[Method] | None = field(
+        default_factory=lambda: cast("Sequence[Method]", ["OPTIONS", "HEAD"])
+    )
+    """A sequence of http methods that do not require authentication. Defaults to ['OPTIONS', 'HEAD']"""
     scopes: Scopes | None = field(default=None)
     """ASGI scopes processed by the authentication middleware, if ``None``, both ``http`` and ``websocket`` will be
     processed."""

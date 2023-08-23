@@ -109,8 +109,11 @@ class StaticFiles:
             return
 
         if self.is_html_mode:
-            filename = "404.html"
-            resolved_path, fs_info = await self.get_fs_info(directories=self.directories, file_path=filename)
+            # for some reason coverage doesn't catch these two lines
+            filename = "404.html"  # pragma: no cover
+            resolved_path, fs_info = await self.get_fs_info(  # pragma: no cover
+                directories=self.directories, file_path=filename
+            )
 
             if fs_info and fs_info["type"] == "file":
                 await ASGIFileResponse(

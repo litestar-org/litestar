@@ -8,7 +8,7 @@ from litestar.dto.data_structures import DTOFieldDefinition
 if TYPE_CHECKING:
     from typing import Any
 
-    from typing_extensions import Self, TypeAlias
+    from typing_extensions import Self
 
     from litestar.typing import FieldDefinition
 
@@ -20,7 +20,7 @@ class NestedFieldInfo:
     __slots__ = ("model", "field_definitions")
 
     model: type[Any]
-    field_definitions: FieldDefinitionsType
+    field_definitions: tuple[TransferDTOFieldDefinition, ...]
 
 
 @dataclass(frozen=True)
@@ -40,6 +40,10 @@ class SimpleType(TransferType):
 
     nested_field_info: NestedFieldInfo | None
     """If the type is a 'nested' type, this is the model generated for transfer to/from it."""
+
+    @property
+    def has_nested(self) -> bool:
+        return self.nested_field_info is not None
 
 
 @dataclass(frozen=True)
@@ -94,8 +98,7 @@ class TransferDTOFieldDefinition(DTOFieldDefinition):
     __slots__ = (
         "default_factory",
         "dto_field",
-        "dto_for",
-        "unique_model_name",
+        "model_name",
         "is_excluded",
         "is_partial",
         "serialization_name",
@@ -127,7 +130,6 @@ class TransferDTOFieldDefinition(DTOFieldDefinition):
             default=field_definition.default,
             default_factory=field_definition.default_factory,
             dto_field=field_definition.dto_field,
-            dto_for=field_definition.dto_for,
             extra=field_definition.extra,
             inner_types=field_definition.inner_types,
             instantiable_origin=field_definition.instantiable_origin,
@@ -142,9 +144,5 @@ class TransferDTOFieldDefinition(DTOFieldDefinition):
             serialization_name=serialization_name,
             transfer_type=transfer_type,
             type_wrappers=field_definition.type_wrappers,
-            unique_model_name=field_definition.unique_model_name,
+            model_name=field_definition.model_name,
         )
-
-
-FieldDefinitionsType: TypeAlias = "tuple[TransferDTOFieldDefinition, ...]"
-"""Generic representation of names and types."""
