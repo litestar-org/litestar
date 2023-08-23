@@ -312,12 +312,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         with wrap_sqlalchemy_exception():
             id_attribute = id_attribute if id_attribute is not None else self.id_attribute
             statement = self._get_base_stmt(statement)
-            statement = self._filter_select_by_kwargs(
-                statement=statement,
-                kwargs={
-                    id_attribute: item_id,  # pyright: ignore[reportGeneralTypeIssues]
-                },
-            )
+            statement = self._filter_select_by_kwargs(statement, [(id_attribute, item_id)])
             instance = (self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
             self._expunge(instance, auto_expunge=auto_expunge)
@@ -346,7 +341,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         """
         with wrap_sqlalchemy_exception():
             statement = self._get_base_stmt(statement)
-            statement = self._filter_select_by_kwargs(statement=statement, kwargs=kwargs)
+            statement = self._filter_select_by_kwargs(statement, kwargs)
             instance = (self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
             self._expunge(instance, auto_expunge=auto_expunge)
@@ -372,7 +367,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         """
         with wrap_sqlalchemy_exception():
             statement = self._get_base_stmt(statement)
-            statement = self._filter_select_by_kwargs(statement=statement, kwargs=kwargs)
+            statement = self._filter_select_by_kwargs(statement, kwargs)
             instance = cast("Result[tuple[ModelT]]", (self._execute(statement))).scalar_one_or_none()
             if instance:
                 self._expunge(instance, auto_expunge=auto_expunge)
@@ -652,7 +647,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         field = self.get_id_attribute_value(self.model_type)
         statement += lambda s: s.add_columns(over(sql_func.count(field)))
         statement = self._apply_filters(*filters, statement=statement)
-        statement = self._filter_select_by_kwargs(statement=statement, kwargs=kwargs)
+        statement = self._filter_select_by_kwargs(statement, kwargs)
         with wrap_sqlalchemy_exception():
             result = self._execute(statement)
             count: int = 0
@@ -818,7 +813,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         """
         statement = self._get_base_stmt(statement)
         statement = self._apply_filters(*filters, statement=statement)
-        statement = self._filter_select_by_kwargs(statement=statement, kwargs=kwargs)
+        statement = self._filter_select_by_kwargs(statement, kwargs)
 
         with wrap_sqlalchemy_exception():
             result = self._execute(statement)
@@ -984,9 +979,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         return statement
 
     def _filter_select_by_kwargs(
-        self, statement: StatementLambdaElement, kwargs: dict[Any, Any]
+        self, statement: StatementLambdaElement, kwargs: dict[Any, Any] | Iterable[tuple[Any, Any]]
     ) -> StatementLambdaElement:
-        for key, val in kwargs.items():
+        for key, val in kwargs.items() if isinstance(kwargs, dict) else kwargs:
             statement = self._filter_by_where(statement, key, val)
         return statement
 
