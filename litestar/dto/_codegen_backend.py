@@ -368,8 +368,8 @@ class TransferFunctionFactory:
 
     def _make_function(self, source_value_name: str, return_value_name: str) -> Callable[[Any], Any]:
         source = f"def func({source_value_name}):\n{self.body} return {return_value_name}"
-        ctx: dict[str, Any] = {}
-        exec(source, self.fn_locals, ctx)  # noqa: S102
+        ctx: dict[str, Any] = {**self.fn_locals}
+        exec(source, ctx)  # noqa: S102
         return ctx["func"]  # type: ignore[no-any-return]
 
     def _create_transfer_instance_data(
