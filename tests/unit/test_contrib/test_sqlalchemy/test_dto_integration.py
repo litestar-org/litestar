@@ -103,17 +103,15 @@ def book_json_data() -> Callable[[RenameStrategy, BookAuthorTestData], Tuple[Dic
     return _generate
 
 
-@pytest.mark.parametrize(
-    "rename_strategy",
-    ("camel",),
-)
+@pytest.mark.parametrize("rename_strategy", ("camel",))
 def test_fields_alias_generator_sqlalchemy(
     rename_strategy: RenameStrategy,
     book_json_data: Callable[[RenameStrategy, BookAuthorTestData], Tuple[Dict[str, Any], Book]],
+    use_experimental_dto_backend: bool,
 ) -> None:
     test_data = BookAuthorTestData()
     json_data, instance = book_json_data(rename_strategy, test_data)
-    config = DTOConfig(rename_strategy=rename_strategy)
+    config = DTOConfig(rename_strategy=rename_strategy, experimental_codegen_backend=use_experimental_dto_backend)
     dto = SQLAlchemyDTO[Annotated[Book, config]]
 
     @post(dto=dto, signature_namespace={"Book": Book})
@@ -134,12 +132,15 @@ def test_fields_alias_generator_sqlalchemy(
         assert response_callback.json() == json_data
 
 
-def test_dto_with_association_proxy(create_module: Callable[[str], ModuleType]) -> None:
+def test_dto_with_association_proxy(
+    create_module: Callable[[str], ModuleType], use_experimental_dto_backend: bool
+) -> None:
     module = create_module(
-        """
+        f"""
 from __future__ import annotations
 
 from typing import Final, List
+from typing_extensions import Annotated
 
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
@@ -155,7 +156,7 @@ from sqlalchemy.ext.associationproxy import AssociationProxy
 
 from litestar import get
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto import dto_field
+from litestar.dto import dto_field, DTOConfig
 
 class Base(DeclarativeBase):
     pass
@@ -179,7 +180,7 @@ user_keyword_table: Final[Table] = Table(
     Column("keyword_id", Integer, ForeignKey("keyword.id"), primary_key=True),
 )
 
-dto = SQLAlchemyDTO[User]
+dto = SQLAlchemyDTO[Annotated[User, DTOConfig(experimental_codegen_backend={use_experimental_dto_backend})]]
 
 @get("/", return_dto=dto)
 def get_handler() -> User:
@@ -192,10 +193,14 @@ def get_handler() -> User:
         assert response.json() == {"id": 1, "keywords": ["bar", "baz"]}
 
 
-def test_dto_with_hybrid_property(create_module: Callable[[str], ModuleType]) -> None:
+def test_dto_with_hybrid_property(
+    create_module: Callable[[str], ModuleType], use_experimental_dto_backend: bool
+) -> None:
     module = create_module(
-        """
+        f"""
 from __future__ import annotations
+
+from typing_extensions import Annotated
 
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import DeclarativeBase
@@ -204,6 +209,7 @@ from sqlalchemy.orm import mapped_column
 
 from litestar import get
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.dto import DTOConfig
 
 class Base(DeclarativeBase):
     pass
@@ -219,7 +225,7 @@ class Interval(Base):
     def length(self) -> int:
         return self.end - self.start
 
-dto = SQLAlchemyDTO[Interval]
+dto = SQLAlchemyDTO[Annotated[Interval, DTOConfig(experimental_codegen_backend={use_experimental_dto_backend})]]
 
 @get("/", return_dto=dto)
 def get_handler() -> Interval:
@@ -232,10 +238,14 @@ def get_handler() -> Interval:
         assert response.json() == {"id": 1, "start": 1, "end": 3, "length": 2}
 
 
-def test_dto_with_hybrid_property_expression(create_module: Callable[[str], ModuleType]) -> None:
+def test_dto_with_hybrid_property_expression(
+    create_module: Callable[[str], ModuleType], use_experimental_dto_backend: bool
+) -> None:
     module = create_module(
-        """
+        f"""
 from __future__ import annotations
+
+from typing_extensions import Annotated
 
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import DeclarativeBase
@@ -245,6 +255,7 @@ from sqlalchemy.sql import SQLColumnExpression
 
 from litestar import get
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.dto import DTOConfig
 
 class Base(DeclarativeBase):
     pass
@@ -264,7 +275,7 @@ class Interval(Base):
     def _length_expression(cls) -> SQLColumnExpression[int]:
         return cls.end - cls.start
 
-dto = SQLAlchemyDTO[Interval]
+dto = SQLAlchemyDTO[Annotated[Interval, DTOConfig(experimental_codegen_backend={use_experimental_dto_backend})]]
 
 @get("/", return_dto=dto)
 def get_handler() -> Interval:
@@ -277,10 +288,13 @@ def get_handler() -> Interval:
         assert response.json() == {"id": 1, "start": 1, "end": 3, "length": 2}
 
 
-def test_dto_with_hybrid_property_setter(create_module: Callable[[str], ModuleType]) -> None:
+def test_dto_with_hybrid_property_setter(
+    create_module: Callable[[str], ModuleType], use_experimental_dto_backend: bool
+) -> None:
     module = create_module(
-        """
+        f"""
 from __future__ import annotations
+from typing_extensions import Annotated
 
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import DeclarativeBase
@@ -290,7 +304,7 @@ from sqlalchemy.sql import SQLColumnExpression
 
 from litestar import post
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto import dto_field
+from litestar.dto import dto_field, DTOConfig
 
 class Base(DeclarativeBase):
     pass
@@ -309,7 +323,7 @@ class Circle(Base):
     def _radius_setter(self, value: float) -> None:
         self.diameter = value * 2
 
-dto = SQLAlchemyDTO[Circle]
+dto = SQLAlchemyDTO[Annotated[Circle, DTOConfig(experimental_codegen_backend={use_experimental_dto_backend})]]
 
 DIAMETER: float = 0
 
@@ -328,7 +342,7 @@ def get_handler(data: Circle) -> Circle:
         assert module.DIAMETER == 10
 
 
-async def test_dto_with_composite_map() -> None:
+async def test_dto_with_composite_map(use_experimental_dto_backend: bool) -> None:
     @dataclass
     class Point:
         x: int
@@ -338,7 +352,7 @@ async def test_dto_with_composite_map() -> None:
         start: Mapped[Point] = composite(mapped_column("x1"), mapped_column("y1"))
         end: Mapped[Point] = composite(mapped_column("x2"), mapped_column("y2"))
 
-    dto = SQLAlchemyDTO[Vertex1]
+    dto = SQLAlchemyDTO[Annotated[Vertex1, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]]
 
     @post(dto=dto, signature_namespace={"Vertex": Vertex1})
     def post_handler(data: Vertex1) -> Vertex1:
@@ -360,7 +374,7 @@ async def test_dto_with_composite_map() -> None:
         }
 
 
-async def test_dto_with_composite_map_using_explicit_columns() -> None:
+async def test_dto_with_composite_map_using_explicit_columns(use_experimental_dto_backend: bool) -> None:
     @dataclass
     class Point:
         x: int
@@ -375,7 +389,7 @@ async def test_dto_with_composite_map_using_explicit_columns() -> None:
         start: Mapped[Point] = composite("x1", "y1")
         end: Mapped[Point] = composite("x2", "y2")
 
-    dto = SQLAlchemyDTO[Vertex2]
+    dto = SQLAlchemyDTO[Annotated[Vertex2, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]]
 
     @post(dto=dto, signature_namespace={"Vertex": Vertex2})
     def post_handler(data: Vertex2) -> Vertex2:
@@ -397,7 +411,7 @@ async def test_dto_with_composite_map_using_explicit_columns() -> None:
         }
 
 
-async def test_dto_with_composite_map_using_hybrid_imperative_mapping() -> None:
+async def test_dto_with_composite_map_using_hybrid_imperative_mapping(use_experimental_dto_backend: bool) -> None:
     @dataclass
     class Point:
         x: int
@@ -421,7 +435,7 @@ async def test_dto_with_composite_map_using_hybrid_imperative_mapping() -> None:
         start = composite(Point, table.c.x1, table.c.y1)
         end = composite(Point, table.c.x2, table.c.y2)
 
-    dto = SQLAlchemyDTO[Vertex3]
+    dto = SQLAlchemyDTO[Annotated[Vertex3, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]]
 
     @post(dto=dto, signature_namespace={"Vertex": Vertex3})
     def post_handler(data: Vertex3) -> Vertex3:
@@ -443,11 +457,14 @@ async def test_dto_with_composite_map_using_hybrid_imperative_mapping() -> None:
         }
 
 
-async def test_field_with_sequence_default(create_module: Callable[[str], ModuleType]) -> None:
+async def test_field_with_sequence_default(
+    create_module: Callable[[str], ModuleType], use_experimental_dto_backend: bool
+) -> None:
     module = create_module(
-        """
+        f"""
 from sqlalchemy import create_engine, Column, Integer, Sequence
 from sqlalchemy.orm import DeclarativeBase, Mapped, sessionmaker
+from typing_extensions import Annotated
 
 from litestar import Litestar, post
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
@@ -465,9 +482,9 @@ class Model(Base):
     val: Mapped[str]
 
 class ModelCreateDTO(SQLAlchemyDTO[Model]):
-    config = DTOConfig(exclude={"id"})
+    config = DTOConfig(exclude={{"id"}})
 
-ModelReturnDTO = SQLAlchemyDTO[Model]
+ModelReturnDTO = SQLAlchemyDTO[Annotated[Model, DTOConfig(experimental_codegen_backend={use_experimental_dto_backend})]]
 
 @post("/", dto=ModelCreateDTO, return_dto=ModelReturnDTO, sync_to_thread=False)
 def post_handler(data: Model) -> Model:
