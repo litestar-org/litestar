@@ -573,6 +573,20 @@ async def test_repo_list_and_count_method(raw_authors: RawRecordData, author_rep
     assert len(collection) == exp_count
 
 
+async def test_repo_list_and_count_basic_method(raw_authors: RawRecordData, author_repo: AuthorRepository) -> None:
+    """Test SQLAlchemy basic list with count in asyncpg.
+
+    Args:
+        raw_authors: list of authors pre-seeded into the mock repository
+        author_repo: The author mock repository
+    """
+    exp_count = len(raw_authors)
+    collection, count = await maybe_async(author_repo.list_and_count(force_basic_query_mode=True))
+    assert exp_count == count
+    assert isinstance(collection, list)
+    assert len(collection) == exp_count
+
+
 async def test_repo_list_and_count_method_empty(book_repo: BookRepository) -> None:
     collection, count = await maybe_async(book_repo.list_and_count())
     assert 0 == count
