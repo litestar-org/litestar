@@ -78,10 +78,10 @@ def fx_backend(
     data_model_type: type[Model],
     field_definitions: list[DTOFieldDefinition],
     backend_cls: type[DTOBackend],
-    use_experimental_backend: bool,
+    use_experimental_dto_backend: bool,
 ) -> DTOBackend:
     class _Factory(DataclassDTO):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_backend)
+        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
         @classmethod
         def generate_field_definitions(

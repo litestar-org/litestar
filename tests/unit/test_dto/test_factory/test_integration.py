@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from typing import Any
 
 
-def test_url_encoded_form_data(use_experimental_backend: bool) -> None:
+def test_url_encoded_form_data(use_experimental_dto_backend: bool) -> None:
     @dataclass
     class User:
         name: str
@@ -36,7 +36,7 @@ def test_url_encoded_form_data(use_experimental_backend: bool) -> None:
         read_only: str = field(default="read-only", metadata=dto_field("read-only"))
 
     class UserDTO(DataclassDTO[User]):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_backend)
+        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=UserDTO, signature_namespace={"User": User})
     def handler(data: User = Body(media_type=RequestEncodingType.URL_ENCODED)) -> User:
@@ -51,7 +51,7 @@ def test_url_encoded_form_data(use_experimental_backend: bool) -> None:
         assert response.json() == {"name": "John", "age": 42, "read_only": "read-only"}
 
 
-async def test_multipart_encoded_form_data(use_experimental_backend: bool) -> None:
+async def test_multipart_encoded_form_data(use_experimental_dto_backend: bool) -> None:
     @dataclass
     class Payload:
         file: UploadFile
@@ -61,7 +61,7 @@ async def test_multipart_encoded_form_data(use_experimental_backend: bool) -> No
         )
 
     class PayloadDTO(DataclassDTO[Payload]):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_backend)
+        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=PayloadDTO, return_dto=None, signature_namespace={"Payload": Payload}, media_type=MediaType.TEXT)
     async def handler(data: Payload = Body(media_type=RequestEncodingType.MULTI_PART)) -> bytes:
@@ -75,12 +75,12 @@ async def test_multipart_encoded_form_data(use_experimental_backend: bool) -> No
         assert response.content == b"forbidden"
 
 
-def test_renamed_field(use_experimental_backend: bool) -> None:
+def test_renamed_field(use_experimental_dto_backend: bool) -> None:
     @dataclass
     class Foo:
         bar: str
 
-    config = DTOConfig(rename_fields={"bar": "baz"}, experimental_codegen_backend=use_experimental_backend)
+    config = DTOConfig(rename_fields={"bar": "baz"}, experimental_codegen_backend=use_experimental_dto_backend)
     dto = DataclassDTO[Annotated[Foo, config]]
 
     @post(dto=dto, signature_namespace={"Foo": Foo})
@@ -122,10 +122,10 @@ def test_fields_alias_generator(
     instance: Fzop,
     tested_fields: list[str],
     data: dict[str, str],
-    use_experimental_backend: bool,
+    use_experimental_dto_backend: bool,
 ) -> None:
     DataclassDTO._dto_backends = {}
-    config = DTOConfig(rename_strategy=rename_strategy, experimental_codegen_backend=use_experimental_backend)
+    config = DTOConfig(rename_strategy=rename_strategy, experimental_codegen_backend=use_experimental_dto_backend)
     dto = DataclassDTO[Annotated[Fzop, config]]
 
     @post(dto=dto, signature_namespace={"Foo": Fzop})
@@ -140,12 +140,12 @@ def test_fields_alias_generator(
             assert response.json()[f] == data[f]
 
 
-def test_dto_data_injection(use_experimental_backend: bool) -> None:
+def test_dto_data_injection(use_experimental_dto_backend: bool) -> None:
     @dataclass
     class Foo:
         bar: str
 
-    config = DTOConfig(experimental_codegen_backend=use_experimental_backend)
+    config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=DataclassDTO[Annotated[Foo, config]], return_dto=None, signature_namespace={"Foo": Foo})
     def handler(data: DTOData[Foo]) -> Foo:
@@ -170,10 +170,12 @@ class NestingBar:
     foo: NestedFoo
 
 
-def test_dto_data_injection_with_nested_model(use_experimental_backend: bool) -> None:
+def test_dto_data_injection_with_nested_model(use_experimental_dto_backend: bool) -> None:
     @post(
         dto=DataclassDTO[
-            Annotated[NestingBar, DTOConfig(exclude={"foo.baz"}, experimental_codegen_backend=use_experimental_backend)]
+            Annotated[
+                NestingBar, DTOConfig(exclude={"foo.baz"}, experimental_codegen_backend=use_experimental_dto_backend)
+            ]
         ],
         return_dto=None,
     )
@@ -189,10 +191,12 @@ def test_dto_data_injection_with_nested_model(use_experimental_backend: bool) ->
         assert resp.json() == {"foo": {"bar": "hello"}}
 
 
-def test_dto_data_create_instance_nested_kwargs(use_experimental_backend: bool) -> None:
+def test_dto_data_create_instance_nested_kwargs(use_experimental_dto_backend: bool) -> None:
     @post(
         dto=DataclassDTO[
-            Annotated[NestingBar, DTOConfig(exclude={"foo.baz"}, experimental_codegen_backend=use_experimental_backend)]
+            Annotated[
+                NestingBar, DTOConfig(exclude={"foo.baz"}, experimental_codegen_backend=use_experimental_dto_backend)
+            ]
         ],
         return_dto=None,
     )
@@ -217,8 +221,8 @@ class User:
     read_only: str = field(default="read-only", metadata=dto_field("read-only"))
 
 
-def test_dto_data_with_url_encoded_form_data(use_experimental_backend: bool) -> None:
-    config = DTOConfig(experimental_codegen_backend=use_experimental_backend)
+def test_dto_data_with_url_encoded_form_data(use_experimental_dto_backend: bool) -> None:
+    config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=DataclassDTO[Annotated[User, config]], signature_namespace={"User": User})
     def handler(data: DTOData[User] = Body(media_type=RequestEncodingType.URL_ENCODED)) -> User:
@@ -253,19 +257,22 @@ class RenamedBar(GenericRenamedBar[InnerBar]):
     pass
 
 
-def test_dto_data_create_instance_renamed_fields(use_experimental_backend: bool) -> None:
+def test_dto_data_create_instance_renamed_fields(use_experimental_dto_backend: bool) -> None:
     @post(
         dto=DataclassDTO[
             Annotated[
                 RenamedBar,
                 DTOConfig(
-                    exclude={"foo_foo"}, rename_strategy="camel", experimental_codegen_backend=use_experimental_backend
+                    exclude={"foo_foo"},
+                    rename_strategy="camel",
+                    experimental_codegen_backend=use_experimental_dto_backend,
                 ),
             ]
         ],
         return_dto=DataclassDTO[
             Annotated[
-                RenamedBar, DTOConfig(rename_strategy="camel", experimental_codegen_backend=use_experimental_backend)
+                RenamedBar,
+                DTOConfig(rename_strategy="camel", experimental_codegen_backend=use_experimental_dto_backend),
             ]
         ],
     )
@@ -284,8 +291,8 @@ def test_dto_data_create_instance_renamed_fields(use_experimental_backend: bool)
         assert response.json() == {"bar": "hello", "fooFoo": "world", "spamBar": {"bestGreeting": "hello world"}}
 
 
-def test_dto_data_with_patch_request(use_experimental_backend: bool) -> None:
-    class PatchDTO(DataclassDTO[Annotated[User, DTOConfig(experimental_codegen_backend=use_experimental_backend)]]):
+def test_dto_data_with_patch_request(use_experimental_dto_backend: bool) -> None:
+    class PatchDTO(DataclassDTO[Annotated[User, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]]):
         config = DTOConfig(partial=True)
 
     @patch(dto=PatchDTO, return_dto=None, signature_namespace={"User": User})
@@ -303,10 +310,12 @@ class UniqueModelName:
     foo: str
 
 
-def test_dto_openapi_with_unique_handler_names(use_experimental_backend: bool) -> None:
+def test_dto_openapi_with_unique_handler_names(use_experimental_dto_backend: bool) -> None:
     @post(
         dto=DataclassDTO[
-            Annotated[UniqueModelName, DTOConfig(exclude={"id"}, experimental_codegen_backend=use_experimental_backend)]
+            Annotated[
+                UniqueModelName, DTOConfig(exclude={"id"}, experimental_codegen_backend=use_experimental_dto_backend)
+            ]
         ],
         return_dto=DataclassDTO[UniqueModelName],
         signature_namespace={"UniqueModelName": UniqueModelName},
@@ -328,9 +337,9 @@ class SharedModelName:
     foo: str
 
 
-def test_dto_openapi_without_unique_handler_names(use_experimental_backend: bool) -> None:
+def test_dto_openapi_without_unique_handler_names(use_experimental_dto_backend: bool) -> None:
     write_dto = DataclassDTO[
-        Annotated[SharedModelName, DTOConfig(exclude={"id"}, experimental_codegen_backend=use_experimental_backend)]
+        Annotated[SharedModelName, DTOConfig(exclude={"id"}, experimental_codegen_backend=use_experimental_dto_backend)]
     ]
     read_dto = DataclassDTO[SharedModelName]
 
@@ -361,14 +370,16 @@ def test_dto_openapi_without_unique_handler_names(use_experimental_backend: bool
         )
 
 
-def test_url_encoded_form_data_patch_request(use_experimental_backend: bool) -> None:
+def test_url_encoded_form_data_patch_request(use_experimental_dto_backend: bool) -> None:
     @dataclass
     class User:
         name: str
         age: int
         read_only: str = field(default="read-only", metadata=dto_field("read-only"))
 
-    dto = DataclassDTO[Annotated[User, DTOConfig(partial=True, experimental_codegen_backend=use_experimental_backend)]]
+    dto = DataclassDTO[
+        Annotated[User, DTOConfig(partial=True, experimental_codegen_backend=use_experimental_dto_backend)]
+    ]
 
     @post(dto=dto, return_dto=None, signature_namespace={"User": User, "dict": Dict})
     def handler(data: DTOData[User] = Body(media_type=RequestEncodingType.URL_ENCODED)) -> Dict[str, Any]:
@@ -383,14 +394,14 @@ def test_url_encoded_form_data_patch_request(use_experimental_backend: bool) -> 
         assert response.json() == {"name": "John"}
 
 
-def test_dto_with_generic_sequence_annotations(use_experimental_backend: bool) -> None:
+def test_dto_with_generic_sequence_annotations(use_experimental_dto_backend: bool) -> None:
     @dataclass
     class User:
         name: str
         age: int
 
     @post(
-        dto=DataclassDTO[Annotated[User, DTOConfig(experimental_codegen_backend=use_experimental_backend)]],
+        dto=DataclassDTO[Annotated[User, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]],
         signature_namespace={"User": User},
     )
     def handler(data: Sequence[User]) -> Sequence[User]:
@@ -401,7 +412,7 @@ def test_dto_with_generic_sequence_annotations(use_experimental_backend: bool) -
         assert response.json() == [{"name": "John", "age": 42}]
 
 
-def test_dto_private_fields(use_experimental_backend: bool) -> None:
+def test_dto_private_fields(use_experimental_dto_backend: bool) -> None:
     @dataclass
     class Foo:
         bar: str
@@ -410,7 +421,7 @@ def test_dto_private_fields(use_experimental_backend: bool) -> None:
     mock = MagicMock()
 
     @post(
-        dto=DataclassDTO[Annotated[Foo, DTOConfig(experimental_codegen_backend=use_experimental_backend)]],
+        dto=DataclassDTO[Annotated[Foo, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]],
         signature_namespace={"Foo": Foo},
     )
     def handler(data: DTOData[Foo]) -> Foo:
@@ -425,7 +436,7 @@ def test_dto_private_fields(use_experimental_backend: bool) -> None:
     assert mock.received_data == {"bar": "hello"}
 
 
-def test_dto_private_fields_disabled(use_experimental_backend: bool) -> None:
+def test_dto_private_fields_disabled(use_experimental_dto_backend: bool) -> None:
     @dataclass
     class Foo:
         bar: str
@@ -434,7 +445,8 @@ def test_dto_private_fields_disabled(use_experimental_backend: bool) -> None:
     @post(
         dto=DataclassDTO[
             Annotated[
-                Foo, DTOConfig(underscore_fields_private=False, experimental_codegen_backend=use_experimental_backend)
+                Foo,
+                DTOConfig(underscore_fields_private=False, experimental_codegen_backend=use_experimental_dto_backend),
             ]
         ],
         signature_namespace={"Foo": Foo},
@@ -448,7 +460,7 @@ def test_dto_private_fields_disabled(use_experimental_backend: bool) -> None:
         assert response.json() == {"bar": "hello", "_baz": 42}
 
 
-def test_dto_concrete_builtin_collection_types(use_experimental_backend: bool) -> None:
+def test_dto_concrete_builtin_collection_types(use_experimental_dto_backend: bool) -> None:
     @dataclass
     class Foo:
         bar: dict
@@ -457,7 +469,8 @@ def test_dto_concrete_builtin_collection_types(use_experimental_backend: bool) -
     @post(
         dto=DataclassDTO[
             Annotated[
-                Foo, DTOConfig(underscore_fields_private=False, experimental_codegen_backend=use_experimental_backend)
+                Foo,
+                DTOConfig(underscore_fields_private=False, experimental_codegen_backend=use_experimental_dto_backend),
             ]
         ],
         signature_namespace={"Foo": Foo},
@@ -477,10 +490,12 @@ class PaginatedUser:
     age: int
 
 
-def test_dto_classic_pagination(use_experimental_backend: bool) -> None:
+def test_dto_classic_pagination(use_experimental_dto_backend: bool) -> None:
     @get(
         dto=DataclassDTO[
-            Annotated[PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_backend)]
+            Annotated[
+                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+            ]
         ]
     )
     def handler() -> ClassicPagination[PaginatedUser]:
@@ -501,12 +516,14 @@ def test_dto_classic_pagination(use_experimental_backend: bool) -> None:
         }
 
 
-def test_dto_cursor_pagination(use_experimental_backend: bool) -> None:
+def test_dto_cursor_pagination(use_experimental_dto_backend: bool) -> None:
     uuid = UUID("00000000-0000-0000-0000-000000000000")
 
     @get(
         dto=DataclassDTO[
-            Annotated[PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_backend)]
+            Annotated[
+                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+            ]
         ]
     )
     def handler() -> CursorPagination[UUID, PaginatedUser]:
@@ -525,10 +542,12 @@ def test_dto_cursor_pagination(use_experimental_backend: bool) -> None:
         }
 
 
-def test_dto_offset_pagination(use_experimental_backend: bool) -> None:
+def test_dto_offset_pagination(use_experimental_dto_backend: bool) -> None:
     @get(
         dto=DataclassDTO[
-            Annotated[PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_backend)]
+            Annotated[
+                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+            ]
         ]
     )
     def handler() -> OffsetPagination[PaginatedUser]:
@@ -560,7 +579,7 @@ class Wrapped(Generic[T, V]):
     other: V
 
 
-def test_dto_generic_dataclass_wrapped_list_response(use_experimental_backend: bool) -> None:
+def test_dto_generic_dataclass_wrapped_list_response(use_experimental_dto_backend: bool) -> None:
     @get(dto=DataclassDTO[Annotated[PaginatedUser, DTOConfig(exclude={"age"})]])
     def handler() -> Wrapped[List[PaginatedUser], int]:
         return Wrapped(
@@ -575,10 +594,12 @@ def test_dto_generic_dataclass_wrapped_list_response(use_experimental_backend: b
         assert response.json() == {"data": [{"name": "John"}, {"name": "Jane"}], "other": 2}
 
 
-def test_dto_generic_dataclass_wrapped_scalar_response(use_experimental_backend: bool) -> None:
+def test_dto_generic_dataclass_wrapped_scalar_response(use_experimental_dto_backend: bool) -> None:
     @get(
         dto=DataclassDTO[
-            Annotated[PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_backend)]
+            Annotated[
+                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+            ]
         ]
     )
     def handler() -> Wrapped[PaginatedUser, int]:
@@ -599,11 +620,13 @@ class WrappedWithDict(Generic[K, V, T]):
 
 
 def test_dto_generic_dataclass_wrapped_scalar_response_with_additional_mapping_data(
-    use_experimental_backend: bool,
+    use_experimental_dto_backend: bool,
 ) -> None:
     @get(
         dto=DataclassDTO[
-            Annotated[PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_backend)]
+            Annotated[
+                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+            ]
         ]
     )
     def handler() -> WrappedWithDict[str, int, PaginatedUser]:
@@ -617,10 +640,12 @@ def test_dto_generic_dataclass_wrapped_scalar_response_with_additional_mapping_d
         assert response.json() == {"data": {"name": "John"}, "other": {"a": 1, "b": 2}}
 
 
-def test_dto_response_wrapped_scalar_return_type(use_experimental_backend: bool) -> None:
+def test_dto_response_wrapped_scalar_return_type(use_experimental_dto_backend: bool) -> None:
     @get(
         dto=DataclassDTO[
-            Annotated[PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_backend)]
+            Annotated[
+                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+            ]
         ]
     )
     def handler() -> Response[PaginatedUser]:
@@ -631,10 +656,12 @@ def test_dto_response_wrapped_scalar_return_type(use_experimental_backend: bool)
         assert response.json() == {"name": "John"}
 
 
-def test_dto_response_wrapped_collection_return_type(use_experimental_backend: bool) -> None:
+def test_dto_response_wrapped_collection_return_type(use_experimental_dto_backend: bool) -> None:
     @get(
         dto=DataclassDTO[
-            Annotated[PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_backend)]
+            Annotated[
+                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+            ]
         ]
     )
     def handler() -> Response[List[PaginatedUser]]:
@@ -645,13 +672,13 @@ def test_dto_response_wrapped_collection_return_type(use_experimental_backend: b
         assert response.json() == [{"name": "John"}, {"name": "Jane"}]
 
 
-def test_schema_required_fields_with_msgspec_dto(use_experimental_backend: bool) -> None:
+def test_schema_required_fields_with_msgspec_dto(use_experimental_dto_backend: bool) -> None:
     class MsgspecUser(Struct):
         age: int
         name: str
 
     class UserDTO(MsgspecDTO[MsgspecUser]):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_backend)
+        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=UserDTO, return_dto=None, signature_namespace={"MsgspecUser": MsgspecUser})
     def handler(data: MsgspecUser, request: Request) -> dict:
@@ -670,13 +697,13 @@ def test_schema_required_fields_with_msgspec_dto(use_experimental_backend: bool)
         assert len(required) == 2
 
 
-def test_schema_required_fields_with_pydantic_dto(use_experimental_backend: bool) -> None:
+def test_schema_required_fields_with_pydantic_dto(use_experimental_dto_backend: bool) -> None:
     class PydanticUser(BaseModel):
         age: int
         name: str
 
     class UserDTO(PydanticDTO[PydanticUser]):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_backend)
+        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=UserDTO, return_dto=None, signature_namespace={"PydanticUser": PydanticUser})
     def handler(data: PydanticUser, request: Request) -> dict:
@@ -695,14 +722,14 @@ def test_schema_required_fields_with_pydantic_dto(use_experimental_backend: bool
         assert len(required) == 2
 
 
-def test_schema_required_fields_with_dataclass_dto(use_experimental_backend: bool) -> None:
+def test_schema_required_fields_with_dataclass_dto(use_experimental_dto_backend: bool) -> None:
     @dataclass
     class DataclassUser:
         age: int
         name: str
 
     class UserDTO(DataclassDTO[DataclassUser]):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_backend)
+        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=UserDTO, return_dto=None, signature_namespace={"DataclassUser": DataclassUser})
     def handler(data: DataclassUser, request: Request) -> dict:
@@ -721,13 +748,13 @@ def test_schema_required_fields_with_dataclass_dto(use_experimental_backend: boo
         assert len(required) == 2
 
 
-def test_schema_required_fields_with_msgspec_dto_and_default_fields(use_experimental_backend: bool) -> None:
+def test_schema_required_fields_with_msgspec_dto_and_default_fields(use_experimental_dto_backend: bool) -> None:
     class MsgspecUser(Struct):
         age: int
         name: str = "A"
 
     class UserDTO(MsgspecDTO[MsgspecUser]):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_backend)
+        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=UserDTO, return_dto=None, signature_namespace={"MsgspecUser": MsgspecUser})
     def handler(data: MsgspecUser, request: Request) -> dict:
@@ -763,8 +790,8 @@ class Superuser(BoundUser[ClassicNameStyle]):
     pass
 
 
-def test_dto_with_msgspec_with_bound_generic_and_inherited_models(use_experimental_backend: bool) -> None:
-    @post(dto=MsgspecDTO[Annotated[Superuser, DTOConfig(experimental_codegen_backend=use_experimental_backend)]])
+def test_dto_with_msgspec_with_bound_generic_and_inherited_models(use_experimental_dto_backend: bool) -> None:
+    @post(dto=MsgspecDTO[Annotated[Superuser, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]])
     def handler(data: Superuser) -> Superuser:
         return data
 
