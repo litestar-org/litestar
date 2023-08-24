@@ -89,7 +89,7 @@ def fx_backend(
         ) -> Generator[DTOFieldDefinition, None, None]:
             yield from field_definitions
 
-    class _Backend(backend_cls):
+    class _Backend(backend_cls):  # type: ignore[valid-type,misc]
         def create_transfer_model_type(
             self, model_name: str, field_definitions: tuple[TransferDTOFieldDefinition, ...]
         ) -> type[Any]:
