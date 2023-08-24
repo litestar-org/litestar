@@ -59,9 +59,9 @@ STRUCTURED = DC(a=1, b="b", c=[], nested=NestedDC(a=1, b="two"), nested_list=[Ne
 
 
 @pytest.fixture(name="dto_factory")
-def fx_backend_factory(use_experimental_backend: bool) -> type[DataclassDTO]:
+def fx_backend_factory(use_experimental_dto_backend: bool) -> type[DataclassDTO]:
     class Factory(DataclassDTO):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_backend)
+        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
         model_type = DC
 
     return Factory
