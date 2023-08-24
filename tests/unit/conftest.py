@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Generator, cast
 
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -18,4 +18,4 @@ def reset_cached_dto_backends() -> Generator[None, None, None]:
 
 @pytest.fixture(params=[pytest.param(True, id="experimental_backend"), pytest.param(False, id="default_backend")])
 def use_experimental_dto_backend(request: FixtureRequest) -> bool:
-    return request.param
+    return cast(bool, request.param)
