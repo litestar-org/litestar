@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-from .asyncio import AsyncSessionConfig, SQLAlchemyAsyncConfig
+from .asyncio import AlembicAsyncConfig, AsyncSessionConfig, SQLAlchemyAsyncConfig
 from .common import GenericSessionConfig, GenericSQLAlchemyConfig
 from .engine import EngineConfig
-from .sync import SQLAlchemySyncConfig, SyncSessionConfig
+from .sync import AlembicSyncConfig, SQLAlchemySyncConfig, SyncSessionConfig
 
 __all__ = (
     "AsyncSessionConfig",
+    "AlembicAsyncConfig",
+    "AlembicSyncConfig",
     "EngineConfig",
     "GenericSQLAlchemyConfig",
     "GenericSessionConfig",
