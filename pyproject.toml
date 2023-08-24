@@ -121,13 +121,13 @@ pytest-cov = "*"
 pytest-lazy-fixture = "*"
 pytest-mock = "*"
 pytest-rerunfailures = "*"
-pytest-timeout = "^2.1.0"
+pytest-timeout = "*"
+pytest-xdist = "*"
 python-dotenv = "*"
 sqlalchemy-spanner = "*"
 starlette = "*"
-time-machine = "^2.11.0"
+time-machine = "*"
 trio = "*"
-pytest-xdist = "^3.3.1"
 
 [tool.poetry.group.docs]
 optional = true
