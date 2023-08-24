@@ -4,7 +4,6 @@ from __future__ import annotations
 from typing import Any, Collection, Generator, TypeVar, get_type_hints
 
 import pytest
-from _pytest.fixtures import FixtureRequest
 
 from litestar import Request, get
 from litestar._openapi.schema_generation import SchemaCreator
@@ -20,15 +19,10 @@ from . import Model
 T = TypeVar("T", bound=Model)
 
 
-@pytest.fixture(params=[pytest.param(True, id="experimental_backend"), pytest.param(False, id="default_backend")])
-def use_experimental_backend(request: FixtureRequest) -> bool:
-    return request.param
-
-
 @pytest.fixture
-def ModelDataDTO(use_experimental_backend: bool) -> type[AbstractDTO]:
+def ModelDataDTO(use_experimental_dto_backend: bool) -> type[AbstractDTO]:
     class DTOCls(AbstractDTO[Model]):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_backend)
+        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
         def decode_builtins(self, value: Any) -> Model:
             return Model(a=1, b="2")
@@ -63,9 +57,9 @@ def ModelDataDTO(use_experimental_backend: bool) -> type[AbstractDTO]:
 
 
 @pytest.fixture()
-def ModelReturnDTO(use_experimental_backend: bool) -> type[AbstractDTO]:
+def ModelReturnDTO(use_experimental_dto_backend: bool) -> type[AbstractDTO]:
     class ReturnDO(AbstractDTO[Model]):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_backend)
+        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
         def decode_builtins(self, value: Any) -> Any:
             raise RuntimeError("Return DTO should not have this method called")
