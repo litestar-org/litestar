@@ -2035,7 +2035,7 @@ as you see fit, e.g.:</p>
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">retrieve_resource</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>In the above we use the <code class="docutils literal notranslate"><span class="pre">response_cookies</span></code> kwarg to pass the <code class="docutils literal notranslate"><span class="pre">key</span></code> and <code class="docutils literal notranslate"><span class="pre">description</span></code> parameters for the <code class="docutils literal notranslate"><span class="pre">Random-Header</span></code>
+<p>In the above we use the <code class="docutils literal notranslate"><span class="pre">response_cookies</span></code> kwarg to pass the <code class="docutils literal notranslate"><span class="pre">key</span></code> and <code class="docutils literal notranslate"><span class="pre">description</span></code> parameters for the <code class="docutils literal notranslate"><span class="pre">Random-Cookie</span></code>
 to the OpenAPI documentation, but we set the value dynamically in as part of
 the <a class="reference internal" href="#annotating-responses"><span class="std std-ref">annotated response</span></a> we return. To this end we do not set a <code class="docutils literal notranslate"><span class="pre">value</span></code>
 for it and we designate it as <code class="docutils literal notranslate"><span class="pre">documentation_only=True</span></code>.</p>

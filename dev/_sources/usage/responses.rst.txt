@@ -538,7 +538,7 @@ as you see fit, e.g.:
     :language: python
 
 
-In the above we use the ``response_cookies`` kwarg to pass the ``key`` and ``description`` parameters for the ``Random-Header``
+In the above we use the ``response_cookies`` kwarg to pass the ``key`` and ``description`` parameters for the ``Random-Cookie``
 to the OpenAPI documentation, but we set the value dynamically in as part of
 the :ref:`annotated response <usage/responses:annotating responses>` we return. To this end we do not set a ``value``
 for it and we designate it as ``documentation_only=True``.
