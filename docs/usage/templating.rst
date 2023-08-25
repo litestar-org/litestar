@@ -46,7 +46,7 @@ To register one of the built-in template engines you simply need to pass it to t
     The ``directory`` parameter passed to :class:`TemplateConfig <litestar.template.TemplateConfig>`
     can be either a directory or list of directories to use for loading templates.
 
-Registering a custom template engine
+Registering a Custom Template Engine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The above example will create for you a jinja2 Environment instance, but you can also pass in your own instance should you need more control over it.
