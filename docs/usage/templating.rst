@@ -66,7 +66,10 @@ The above example will create a jinja Environment instance, but you can also pas
         )
     )
 
+.. note::
 
+    The ``instance`` parameter passed to :class:`TemplateConfig <litestar.template.TemplateConfig>`
+    can not be used in conjunction with the ``directory`` parameter, if you choose to use instance you're fully responsible on the engine creation.
 
 Defining a custom template engine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
