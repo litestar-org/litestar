@@ -59,6 +59,47 @@ class BookAuthorTestData:
     book_review: str = "Excellent!"
 
 
+@dataclass
+class Point:
+    x: int
+    y: int
+
+
+class Vertex1(Base):
+    start: Mapped[Point] = composite(mapped_column("x1"), mapped_column("y1"))
+    end: Mapped[Point] = composite(mapped_column("x2"), mapped_column("y2"))
+
+
+class Vertex2(Base):
+    x1: Mapped[int]
+    y1: Mapped[int]
+    x2: Mapped[int]
+    y2: Mapped[int]
+
+    start: Mapped[Point] = composite("x1", "y1")
+    end: Mapped[Point] = composite("x2", "y2")
+
+
+vertex_table = Table(
+    "vertices_3",
+    Base.metadata,
+    Column("id", String, primary_key=True),
+    Column("x1", Integer),
+    Column("y1", Integer),
+    Column("x2", Integer),
+    Column("y2", Integer),
+)
+
+
+class Vertex3(Base):
+    __table__ = vertex_table
+
+    id: Mapped[str]
+
+    start = composite(Point, vertex_table.c.x1, vertex_table.c.y1)
+    end = composite(Point, vertex_table.c.x2, vertex_table.c.y2)
+
+
 @pytest.fixture
 def book_json_data() -> Callable[[RenameStrategy, BookAuthorTestData], Tuple[Dict[str, Any], Book]]:
     def _generate(rename_strategy: RenameStrategy, test_data: BookAuthorTestData) -> Tuple[Dict[str, Any], Book]:
@@ -343,15 +384,6 @@ def get_handler(data: Circle) -> Circle:
 
 
 async def test_dto_with_composite_map(use_experimental_dto_backend: bool) -> None:
-    @dataclass
-    class Point:
-        x: int
-        y: int
-
-    class Vertex1(Base):
-        start: Mapped[Point] = composite(mapped_column("x1"), mapped_column("y1"))
-        end: Mapped[Point] = composite(mapped_column("x2"), mapped_column("y2"))
-
     dto = SQLAlchemyDTO[Annotated[Vertex1, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]]
 
     @post(dto=dto, signature_namespace={"Vertex": Vertex1})
@@ -375,20 +407,6 @@ async def test_dto_with_composite_map(use_experimental_dto_backend: bool) -> Non
 
 
 async def test_dto_with_composite_map_using_explicit_columns(use_experimental_dto_backend: bool) -> None:
-    @dataclass
-    class Point:
-        x: int
-        y: int
-
-    class Vertex2(Base):
-        x1: Mapped[int]
-        y1: Mapped[int]
-        x2: Mapped[int]
-        y2: Mapped[int]
-
-        start: Mapped[Point] = composite("x1", "y1")
-        end: Mapped[Point] = composite("x2", "y2")
-
     dto = SQLAlchemyDTO[Annotated[Vertex2, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]]
 
     @post(dto=dto, signature_namespace={"Vertex": Vertex2})
@@ -412,29 +430,6 @@ async def test_dto_with_composite_map_using_explicit_columns(use_experimental_dt
 
 
 async def test_dto_with_composite_map_using_hybrid_imperative_mapping(use_experimental_dto_backend: bool) -> None:
-    @dataclass
-    class Point:
-        x: int
-        y: int
-
-    table = Table(
-        "vertices2",
-        Base.metadata,
-        Column("id", String, primary_key=True),
-        Column("x1", Integer),
-        Column("y1", Integer),
-        Column("x2", Integer),
-        Column("y2", Integer),
-    )
-
-    class Vertex3(Base):
-        __table__ = table
-
-        id: Mapped[str]
-
-        start = composite(Point, table.c.x1, table.c.y1)
-        end = composite(Point, table.c.x2, table.c.y2)
-
     dto = SQLAlchemyDTO[Annotated[Vertex3, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]]
 
     @post(dto=dto, signature_namespace={"Vertex": Vertex3})
