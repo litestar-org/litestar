@@ -23,6 +23,7 @@ from .types import GUID, BigIntIdentity, DateTimeUTC, JsonB
 
 if TYPE_CHECKING:
     from sqlalchemy.sql import FromClause
+    from sqlalchemy.sql.schema import _NamingSchemaParameter as NamingSchemaParameter
 
 __all__ = (
     "AuditColumns",
@@ -42,7 +43,7 @@ __all__ = (
 UUIDBaseT = TypeVar("UUIDBaseT", bound="UUIDBase")
 BigIntBaseT = TypeVar("BigIntBaseT", bound="BigIntBase")
 
-convention = {
+convention: NamingSchemaParameter = {
     "ix": "ix_%(column_0_label)s",
     "uq": "uq_%(table_name)s_%(column_0_name)s",
     "ck": "ck_%(table_name)s_%(constraint_name)s",
@@ -151,7 +152,7 @@ class CommonTableAttributes:
 
 def create_registry() -> registry:
     """Create a new SQLAlchemy registry."""
-    meta = MetaData(naming_convention=convention)  # type: ignore[arg-type]
+    meta = MetaData(naming_convention=convention)
     return registry(
         metadata=meta,
         type_annotation_map={

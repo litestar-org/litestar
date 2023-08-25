@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import os
 from datetime import datetime, timezone
 from typing import Any, Dict, Generator, Iterator, List, Literal, Type, Union, cast
@@ -115,7 +114,7 @@ def fx_raw_rules_uuid() -> RawRecordData:
         {
             "id": "f34545b9-663c-4fce-915d-dd1ae9cea42a",
             "name": "Initial loading rule.",
-            "config": json.dumps({"url": "https://litestar.dev", "setting_123": 1}),
+            "config": {"url": "https://litestar.dev", "setting_123": 1},
             "created_at": "2023-01-01T00:00:00",
             "updated_at": "2023-02-01T00:00:00",
         },
@@ -183,7 +182,7 @@ def fx_raw_rules_bigint() -> RawRecordData:
         {
             "id": 2025,
             "name": "Initial loading rule.",
-            "config": json.dumps({"url": "https://litestar.dev", "setting_123": 1}),
+            "config": {"url": "https://litestar.dev", "setting_123": 1},
             "created_at": "2023-01-01T00:00:00",
             "updated_at": "2023-02-01T00:00:00",
         },
@@ -569,6 +568,20 @@ async def test_repo_list_and_count_method(raw_authors: RawRecordData, author_rep
     """
     exp_count = len(raw_authors)
     collection, count = await maybe_async(author_repo.list_and_count())
+    assert exp_count == count
+    assert isinstance(collection, list)
+    assert len(collection) == exp_count
+
+
+async def test_repo_list_and_count_basic_method(raw_authors: RawRecordData, author_repo: AuthorRepository) -> None:
+    """Test SQLAlchemy basic list with count in asyncpg.
+
+    Args:
+        raw_authors: list of authors pre-seeded into the mock repository
+        author_repo: The author mock repository
+    """
+    exp_count = len(raw_authors)
+    collection, count = await maybe_async(author_repo.list_and_count(force_basic_query_mode=True))
     assert exp_count == count
     assert isinstance(collection, list)
     assert len(collection) == exp_count

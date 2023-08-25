@@ -19,29 +19,23 @@
 <!-- prettier-ignore-end -->
 </div>
 
-# Starlite → Litestar
-
-> [!IMPORTANT]\
-> [**_Starlite has been renamed to Litestar_**](https://litestar.dev/about/organization.html#litestar-and-starlite)
-
 <hr>
 
-Litestar is a powerful, performant, flexible and opinionated ASGI framework,
-offering first class typing support.
+Litestar is a powerful, flexible yet opinionated ASGI framework, focused building on
+building APIs, and offers high-performance data validation and parsing,
+dependency injection, first-class ORM integration, authorization primitives, and much
+more that's needed to get applications up and running.
 
-Check out the [documentation 📚](https://docs.litestar.dev/).
+Check out the [documentation 📚](https://docs.litestar.dev/) for a detailed overview of
+its features!
+
+Additionally, the [Litestar fullstack repository](https://github.com/litestar-org/litestar-fullstack)
+can give you a good impression how a fully fledged Litestar application may look.
 
 ## Installation
 
 ```shell
 pip install litestar
-```
-
-**Litestar 2.0 is coming out soon**, bringing many new features and improvements.
-You can check out the latest pre-release version by instead running
-
-```shell
-pip install litestar==2.0.0beta4
 ```
 
 ## Quick Start
@@ -70,15 +64,14 @@ app = Litestar(route_handlers=[hello_world])
 - [Route Guards based Authorization](#route-guards)
 - Support for `dataclasses`, `TypedDict`, [pydantic version 1 and version 2](https://docs.pydantic.dev/latest/),
   [msgspec](https://github.com/jcrist/msgspec) and [attrs](https://www.attrs.org/en/stable/)
-- Layered Parameter declaration
-- Extended testing support
+- Layered parameter declaration
 - [Automatic API documentation with](#redoc-swagger-ui-and-stoplight-elements-api-documentation):
   - [Redoc](https://github.com/Redocly/redoc)
   - [Stoplight Elements](https://github.com/stoplightio/elements)
   - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
 - [Trio](https://trio.readthedocs.io/en/stable/) support (built-in, via [AnyIO](https://anyio.readthedocs.io/))
 - Ultra-fast validation, serialization and deserialization using [msgspec](https://github.com/jcrist/msgspec)
-- SQLAlchemy Support
+- SQLAlchemy integration
 - Piccolo ORM Support
 
 ## Example Applications
@@ -88,21 +81,6 @@ app = Litestar(route_handlers=[hello_world])
   Litestar projects, this application is open to contributions, big and small.
 - [litestar-hello-world](https://github.com/litestar-org/litestar-hello-world): A bare-minimum application setup. Great
   for testing and POC work.
-
-## Performance
-
-Litestar is fast. It is on par with, or significantly faster than comparable ASGI frameworks.
-
-You can see and run the benchmarks [here](https://github.com/litestar-org/api-performance-tests),
-or read more about it [here](https://docs.litestar.dev/latest/benchmarks) in our documentation.
-
-### JSON Benchmarks
-
-![JSON benchmarks](docs/images/benchmarks/rps_json.svg)
-
-### Plaintext Benchmarks
-
-![Plaintext benchmarks](docs/images/benchmarks/rps_plaintext.svg)
 
 ## Features
 
@@ -256,6 +234,13 @@ app = Litestar([index])
 ### Request Life Cycle Hooks
 
 Litestar supports request life cycle hooks, similarly to Flask - i.e. `before_request` and `after_request`
+
+## Performance
+
+Litestar is fast. It is on par with, or significantly faster than comparable ASGI frameworks.
+
+You can see and run the benchmarks [here](https://github.com/litestar-org/api-performance-tests),
+or read more about it [here](https://docs.litestar.dev/latest/benchmarks) in our documentation.
 
 ## Contributing
 
