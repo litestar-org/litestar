@@ -71,6 +71,7 @@ autodoc_typehints_format = "short"
 nitpicky = True
 nitpick_ignore = [
     # external library / undocumented external
+    (PY_CLASS, "jinja2.environment.Environment"),
     (PY_CLASS, "BaseModel"),
     (PY_CLASS, "ExternalType"),
     (PY_CLASS, "TypeEngine"),
