@@ -24,21 +24,28 @@ class TemplateConfig(Generic[T]):
     'template_config' key.
     """
 
-    engine: type[T] | T
+    engine: type[T] | T | None = field(default=None)
     """A template engine adhering to the :class:`TemplateEngineProtocol <litestar.template.base.TemplateEngineProtocol>`."""
     directory: PathType | list[PathType] | None = field(default=None)
     """A directory or list of directories from which to serve templates."""
     engine_callback: Callable[[T], None] | None = field(default=None)
     """A callback function that allows modifying the instantiated templating protocol."""
+    instance: T | None = field(default=None)
+    """An instance of the templating protocol."""
 
     def __post_init__(self) -> None:
         """Ensure that directory is set if engine is a class."""
         if isclass(self.engine) and not self.directory:
             raise ImproperlyConfiguredException("directory is a required kwarg when passing a template engine class")
+        """Ensure that directory is not set if instance is."""
+        if self.instance is not None and self.directory is not None:
+            raise ImproperlyConfiguredException("directory cannot be set if instance is")
 
     def to_engine(self) -> T:
         """Instantiate the template engine."""
-        template_engine = cast("T", self.engine(self.directory) if isclass(self.engine) else self.engine)
+        template_engine = cast(
+            "T", self.engine(directory=self.directory, engine_instance=None) if isclass(self.engine) else self.engine
+        )
         if callable(self.engine_callback):
             self.engine_callback(template_engine)
         return template_engine
@@ -46,4 +53,4 @@ class TemplateConfig(Generic[T]):
     @cached_property
     def engine_instance(self) -> T:
         """Return the template engine instance."""
-        return self.to_engine()
+        return self.to_engine() if self.instance is None else self.instance

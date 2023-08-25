@@ -101,11 +101,12 @@ T_co = TypeVar("T_co", bound=TemplateProtocol, covariant=True)
 class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
     """Protocol for template engines."""
 
-    def __init__(self, directory: DirectoryPath | list[DirectoryPath]) -> None:
+    def __init__(self, directory: DirectoryPath | list[DirectoryPath] | None, engine_instance: Any | None) -> None:
         """Initialize the template engine with a directory.
 
         Args:
-            directory: Direct path or list of directory paths from which to serve templates.
+            directory: Direct path or list of directory paths from which to serve templates, if provided the implementation has to create the engine instance.
+            engine_instance: A template engine object, if provided the implementation has to use it.
         """
         ...
 
