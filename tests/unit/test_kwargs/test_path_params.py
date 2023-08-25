@@ -177,9 +177,7 @@ def test_differently_named_path_params_on_same_level() -> None:
 def test_optional_path_parameter() -> None:
     @get(path=["/", "/{message:str}"], media_type=MediaType.TEXT, sync_to_thread=False)
     def handler(message: Optional[str]) -> str:
-        if message:
-            return message
-        return "no message"
+        return message if message else "no message"
 
     with create_test_client(route_handlers=[handler]) as client:
         response = client.get("/")
