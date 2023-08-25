@@ -6,6 +6,7 @@ import re
 import subprocess
 import sys
 import timeit
+from pathlib import Path
 from typing import Any, Awaitable, Callable, Generator
 
 import asyncmy
@@ -53,7 +54,7 @@ class DockerServiceRegistry:
         self._base_command = [
             "docker",
             "compose",
-            "--file=tests/docker-compose.yml",
+            f"--file={Path(__file__).parent / 'docker-compose.yml'}",
             f"--project-name=litestar_pytest-{worker_id}",
         ]
 
