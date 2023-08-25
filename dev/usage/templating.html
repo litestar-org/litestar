@@ -1231,6 +1231,28 @@ Mako</label><div class="sd-tab-content docutils">
 can be either a directory or list of directories to use for loading templates.</p>
 </div>
 </section>
+<section id="registering-a-custom-template-engine">
+<h3>Registering a Custom Template Engine<a class="headerlink" href="#registering-a-custom-template-engine" title="Permalink to this heading">#</a></h3>
+<p>The above example will create a jinja Environment instance, but you can also pass in your own instance.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.contrib.jinja</span> <span class="kn">import</span> <span class="n">JinjaTemplateEngine</span>
+<span class="kn">from</span> <span class="nn">litestar.template</span> <span class="kn">import</span> <span class="n">TemplateConfig</span>
+<span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">DictLoader</span>
+
+<span class="n">my_custom_env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">DictLoader</span><span class="p">({</span><span class="s2">&quot;index.html&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello {{name}}!&quot;</span><span class="p">}))</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+    <span class="n">template_config</span><span class="o">=</span><span class="n">TemplateConfig</span><span class="p">(</span>
+        <span class="n">instance</span><span class="o">=</span><span class="n">JinjaTemplateEngine</span><span class="o">.</span><span class="n">from_environment</span><span class="p">(</span><span class="n">my_custom_env</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">instance</span></code> parameter passed to <a class="reference internal" href="../reference/template.html#litestar.template.TemplateConfig" title="litestar.template.TemplateConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateConfig</span></code></a>
+can not be used in conjunction with the <code class="docutils literal notranslate"><span class="pre">directory</span></code> parameter, if you choose to use instance you’re fully responsible on the engine creation.</p>
+</div>
+</section>
 <section id="defining-a-custom-template-engine">
 <h3>Defining a custom template engine<a class="headerlink" href="#defining-a-custom-template-engine" title="Permalink to this heading">#</a></h3>
 <p>If you wish to use another templating engine, you can easily do so by implementing
@@ -1792,6 +1814,7 @@ you’ll see</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#template-engines">Template engines</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#registering-a-template-engine">Registering a template engine</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#registering-a-custom-template-engine">Registering a Custom Template Engine</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-a-custom-template-engine">Defining a custom template engine</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#accessing-the-template-engine-instance">Accessing the template engine instance</a></li>
 </ul>

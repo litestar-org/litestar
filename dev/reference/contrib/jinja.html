@@ -1175,11 +1175,14 @@ document.write(`
 <p>The engine instance.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.contrib.jinja.JinjaTemplateEngine.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DirectoryPath</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DirectoryPath</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.jinja.JinjaTemplateEngine.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Jinja2 based TemplateEngine.</p>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DirectoryPath</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DirectoryPath</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine_instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Environment</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.jinja.JinjaTemplateEngine.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Jinja based TemplateEngine.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>directory</strong> – Direct path or list of directory paths from which to serve templates.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory</strong> – Direct path or list of directory paths from which to serve templates.</p></li>
+<li><p><strong>engine_instance</strong> – A jinja Environment instance.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -1214,6 +1217,20 @@ document.write(`
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.contrib.jinja.JinjaTemplateEngine.from_environment">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_environment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jinja_environment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Environment</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.contrib.jinja.JinjaTemplateEngine" title="litestar.contrib.jinja.JinjaTemplateEngine"><span class="pre">JinjaTemplateEngine</span></a></span></span><a class="headerlink" href="#litestar.contrib.jinja.JinjaTemplateEngine.from_environment" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a JinjaTemplateEngine from an existing jinja Environment instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>jinja_environment</strong> (<em>jinja2.environment.Environment</em>) – A jinja Environment instance.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>JinjaTemplateEngine instance</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1273,6 +1290,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.jinja.JinjaTemplateEngine.__init__"><code class="docutils literal notranslate"><span class="pre">JinjaTemplateEngine.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.jinja.JinjaTemplateEngine.get_template"><code class="docutils literal notranslate"><span class="pre">JinjaTemplateEngine.get_template()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.jinja.JinjaTemplateEngine.register_template_callable"><code class="docutils literal notranslate"><span class="pre">JinjaTemplateEngine.register_template_callable()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.jinja.JinjaTemplateEngine.from_environment"><code class="docutils literal notranslate"><span class="pre">JinjaTemplateEngine.from_environment()</span></code></a></li>
 </ul>
 </li>
 </ul>
