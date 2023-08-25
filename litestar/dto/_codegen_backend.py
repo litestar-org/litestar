@@ -3,6 +3,7 @@ back again, to bytes.
 """
 from __future__ import annotations
 
+import re
 import textwrap
 from contextlib import contextmanager, nullcontext
 from typing import (
@@ -205,6 +206,7 @@ class TransferFunctionFactory:
         self.body = ""
         self.names: set[str] = set()
         self.nested_as_dict = nested_as_dict
+        self._re_index_access = re.compile(r"\[['\"](\w+?)['\"]]")
 
     def add_to_fn_globals(self, name: str, value: Any) -> str:
         unique_name = _gen_uniq_name(self.fn_locals, name)
@@ -384,6 +386,22 @@ class TransferFunctionFactory:
         self.add_stmt(f"{local_dict_name} = {{}}")
 
         if field_definitions := tuple(f for f in field_definitions if self.is_data_field or not f.is_excluded):
+            if len(field_definitions) > 1 and ("." in source_instance_name or "[" in source_instance_name):
+                # If there's more than one field we have to access, we check if it is
+                # nested. If it is nested, we assign it to a local variable to avoid
+                # repeated lookups. This is only a small performance improvement for
+                # regular attributes, but can be quite significant for properties or
+                # other types of descriptors, where I/O may be involved, such as the
+                # case for lazy loaded relationships in SQLAlchemy
+                if "." in source_instance_name:
+                    level_1, level_2 = source_instance_name.split(".", 1)
+                else:
+                    level_1, level_2, *_ = self._re_index_access.split(source_instance_name, maxsplit=1)
+
+                new_source_instance_name = self.create_local_name(f"{level_1}_{level_2}")
+                self.add_stmt(f"{new_source_instance_name} = {source_instance_name}")
+                source_instance_name = new_source_instance_name
+
             for source_type in ("mapping", "object"):
                 if source_type == "mapping":
                     self.add_stmt(f"if isinstance({source_instance_name}, Mapping):")
