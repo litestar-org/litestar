@@ -34,11 +34,11 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
         directory: DirectoryPath | list[DirectoryPath] | None = None,
         engine_instance: Environment | None = None,
     ) -> None:
-        """Jinja2 based TemplateEngine.
+        """Jinja based TemplateEngine.
 
         Args:
             directory: Direct path or list of directory paths from which to serve templates.
-            engine_instance: A jinja2 Environment instance.
+            engine_instance: A jinja Environment instance.
         """
 
         super().__init__(directory, engine_instance)
@@ -83,13 +83,13 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
         self.engine.globals[key] = pass_context(template_callable)
 
     @classmethod
-    def from_environment(cls, jinja2_environment: Environment) -> JinjaTemplateEngine:
-        """Create a JinjaTemplateEngine from an existing jinja2 Environment instance.
+    def from_environment(cls, jinja_environment: Environment) -> JinjaTemplateEngine:
+        """Create a JinjaTemplateEngine from an existing jinja Environment instance.
 
         Args:
-            jinja2_environment (jinja2.environment.Environment): A jinja2 Environment instance.
+            jinja_environment (jinja2.environment.Environment): A jinja Environment instance.
 
         Returns:
             JinjaTemplateEngine instance
         """
-        return cls(directory=None, engine_instance=jinja2_environment)
+        return cls(directory=None, engine_instance=jinja_environment)
