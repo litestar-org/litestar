@@ -344,7 +344,7 @@ def test_registry_register_exist_override(memory_store: MemoryStore) -> None:
 
 
 async def test_file_store_handle_rename_fail(file_store: FileStore, mocker: MockerFixture) -> None:
-    mocker.patch("litestar.stores.file.shutil.move", side_effect=OSError)
+    mocker.patch("litestar.stores.file.os.replace", side_effect=OSError)
     mock_unlink = mocker.patch("litestar.stores.file.os.unlink")
 
     await file_store.set("foo", "bar")
