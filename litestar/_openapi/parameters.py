@@ -54,8 +54,9 @@ class ParameterCollection:
             # path parameter. e.g. get(path=["/", "/{param:str}"]). When parsing the parameter for path, the route handler
             # would still have a kwarg called param:
             # def handler(param: str | None) -> ...
-            if parameter.param_in != ParamType.QUERY or not any(
-                "{" + parameter.name + ":" in path for path in self.route_handler.paths
+            if parameter.param_in != ParamType.QUERY or all(
+                "{" + parameter.name + ":" not in path
+                for path in self.route_handler.paths
             ):
                 self._parameters[parameter.name] = parameter
             return
