@@ -18,7 +18,7 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/python-poetry/poetry
-    rev: "1.5.0"
+    rev: "1.6.0"
     hooks:
       - id: poetry-check
       - id: poetry-lock
@@ -67,7 +67,7 @@ repos:
     rev: "v1.5.1"
     hooks:
       - id: mypy
-        exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures|tests/unit/test_partial"
+        exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures|tests/unit/test_contrib/test_pydantic/test_beanie_integration"
         additional_dependencies:
           [
             polyfactory,
@@ -124,10 +124,10 @@ repos:
             time-machine,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.323
+    rev: v1.1.324
     hooks:
       - id: pyright
-        exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures|tests/unit/test_partial"
+        exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures"
         additional_dependencies:
           [
             polyfactory,
