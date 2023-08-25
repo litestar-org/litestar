@@ -49,7 +49,7 @@ To register one of the built-in template engines you simply need to pass it to t
 Registering a Custom Template Engine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The above example will create for you a jinja2 Environment instance, but you can also pass in your own instance should you need more control over it.
+The above example will create a jinja Environment instance, but you can also pass in your own instance.
 
 .. code-block:: python
 
