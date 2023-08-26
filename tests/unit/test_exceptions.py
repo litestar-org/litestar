@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Type
 
 import pytest
 from hypothesis import given
@@ -19,52 +19,79 @@ from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER
 from litestar.testing import RequestFactory, create_test_client
 
 
-@given(detail=st.one_of(st.none(), st.text()))
-def test_litestar_exception_repr(detail: Optional[str]) -> None:
-    result = LitestarException(detail=detail)  # type: ignore
-    assert result.detail == detail
-    if detail:
-        assert result.__repr__() == f"{result.__class__.__name__} - {result.detail}"
-    else:
-        assert result.__repr__() == result.__class__.__name__
+class CustomLitestarException(LitestarException):
+    detail = "Custom Exception"
 
 
-def test_litestar_exception_str() -> None:
-    result = LitestarException("an unknown exception occurred")
-    assert str(result) == "an unknown exception occurred"
-
-    result = LitestarException(detail="an unknown exception occurred")
-    assert str(result) == "an unknown exception occurred"
-
-    result = LitestarException(200, detail="an unknown exception occurred")
-    assert str(result) == "200 an unknown exception occurred"
+class CustomHTTPException(HTTPException):
+    detail = "Custom HTTP Exception"
 
 
-def test_http_exception_str() -> None:
-    exc = HTTPException("message")
-    assert str(exc) == "500: message"
+@given(detail=st.text())
+def test_litestar_exception_detail(detail: str) -> None:
+    for result in LitestarException(detail=detail), LitestarException(detail):
+        assert result.detail == detail
 
 
-@given(status_code=st.integers(min_value=400, max_value=404), detail=st.one_of(st.none(), st.text()))
-def test_http_exception(status_code: int, detail: Optional[str]) -> None:
-    assert HTTPException().status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    result = HTTPException(status_code=status_code, detail=detail or "")
-    assert isinstance(result, LitestarException)
-    assert result.__repr__() == f"{result.status_code} - {result.__class__.__name__} - {result.detail}"
-    assert str(result) == f"{result.status_code}: {result.detail}".strip()
+@given(detail=st.text())
+def test_custom_litestar_exception_detail(detail: str) -> None:
+    for result in CustomLitestarException(detail=detail), CustomLitestarException(detail):
+        assert result.detail == (detail or "Custom Exception")
 
 
-@given(detail=st.one_of(st.none(), st.text()))
-def test_improperly_configured_exception(detail: Optional[str]) -> None:
-    result = ImproperlyConfiguredException(detail=detail or "")
-    assert result.__repr__() == f"{HTTP_500_INTERNAL_SERVER_ERROR} - {result.__class__.__name__} - {result.detail}"
+@given(detail=st.text())
+@pytest.mark.parametrize("ex_type", [LitestarException, CustomLitestarException])
+def test_litestar_exception_repr(ex_type: Type[LitestarException], detail: str) -> None:
+    for result in ex_type(detail), ex_type(detail=detail):
+        if result.detail:
+            assert repr(result) == f"{result.__class__.__name__} - {result.detail}"
+        else:
+            assert repr(result) == result.__class__.__name__
+
+
+@given(detail=st.text())
+@pytest.mark.parametrize("ex_type", [LitestarException, CustomLitestarException])
+def test_litestar_exception_str(ex_type: Type[LitestarException], detail: str) -> None:
+    for result in ex_type(detail), ex_type(detail=detail):
+        assert str(result) == result.detail.strip()
+
+    result = ex_type(200, detail=detail)
+    assert str(result) == f"200 {detail}".strip()
+
+
+@given(detail=st.text())
+def test_http_exception_detail(detail: str) -> None:
+    for result in HTTPException(detail=detail), HTTPException(detail):
+        assert result.detail == (detail or "Internal Server Error")
+
+
+@given(detail=st.text())
+def test_custom_http_exception_detail(detail: str) -> None:
+    for result in CustomHTTPException(detail=detail), CustomHTTPException(detail):
+        assert result.detail == (detail or "Custom HTTP Exception")
+
+
+@given(status_code=st.integers(min_value=400, max_value=404), detail=st.text())
+@pytest.mark.parametrize("ex_type", [HTTPException, CustomHTTPException])
+def test_http_exception(ex_type: Type[HTTPException], status_code: int, detail: str) -> None:
+    assert ex_type().status_code == HTTP_500_INTERNAL_SERVER_ERROR
+    for result in ex_type(detail, status_code=status_code), ex_type(detail=detail, status_code=status_code):
+        assert isinstance(result, LitestarException)
+        assert repr(result) == f"{result.status_code} - {result.__class__.__name__} - {result.detail}"
+        assert str(result) == f"{result.status_code}: {result.detail}".strip()
+
+
+@given(detail=st.text())
+def test_improperly_configured_exception(detail: str) -> None:
+    result = ImproperlyConfiguredException(detail=detail)
+    assert repr(result) == f"{HTTP_500_INTERNAL_SERVER_ERROR} - {result.__class__.__name__} - {result.detail}"
     assert isinstance(result, HTTPException)
     assert isinstance(result, ValueError)
 
 
 def test_validation_exception() -> None:
     result = ValidationException()
-    assert result.__repr__() == f"{HTTP_400_BAD_REQUEST} - {result.__class__.__name__} - {result.detail}"
+    assert repr(result) == f"{HTTP_400_BAD_REQUEST} - {result.__class__.__name__} - {result.detail}"
     assert isinstance(result, HTTPException)
     assert isinstance(result, ValueError)
 
