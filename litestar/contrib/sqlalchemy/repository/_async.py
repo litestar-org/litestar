@@ -247,17 +247,18 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
     def _get_insertmanyvalues_max_parameters(self, chunk_size: int | None = None) -> int:
         return chunk_size if chunk_size is not None else DEFAULT_INSERTMANYVALUES_MAX_PARAMETERS
 
-    async def exists(self, **kwargs: Any) -> bool:
+    async def exists(self, *filters: FilterTypes, **kwargs: Any) -> bool:
         """Return true if the object specified by ``kwargs`` exists.
 
         Args:
+            *filters: Types for specific filtering operations.
             **kwargs: Identifier of the instance to be retrieved.
 
         Returns:
             True if the instance was found.  False if not found..
 
         """
-        existing = await self.count(**kwargs)
+        existing = await self.count(*filters, **kwargs)
         return existing > 0
 
     def _get_base_stmt(
