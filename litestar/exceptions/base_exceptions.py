@@ -17,14 +17,14 @@ class LitestarException(Exception):
             *args: args are converted to :class:`str` before passing to :class:`Exception`
             detail: detail of the exception.
         """
-        args = tuple(str(arg) for arg in args if arg)
+        str_args = [str(arg) for arg in args if arg]
         if not detail:
-            if args:
-                detail, *args = args
+            if str_args:
+                detail, *str_args = str_args
             elif hasattr(self, "detail"):
                 detail = self.detail
         self.detail = detail
-        super().__init__(*args)
+        super().__init__(*str_args)
 
     def __repr__(self) -> str:
         if self.detail:
