@@ -55,8 +55,7 @@ class ParameterCollection:
             # would still have a kwarg called param:
             # def handler(param: str | None) -> ...
             if parameter.param_in != ParamType.QUERY or all(
-                "{" + parameter.name + ":" not in path
-                for path in self.route_handler.paths
+                "{" + parameter.name + ":" not in path for path in self.route_handler.paths
             ):
                 self._parameters[parameter.name] = parameter
             return

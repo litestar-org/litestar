@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Optional
+
 import msgspec
 import pytest
 import yaml
@@ -209,7 +211,7 @@ def test_pydantic_schema_generation(create_examples: bool) -> None:
 
 def test_schema_for_optional_path_parameter() -> None:
     @get(path=["/", "/{test_message:str}"], media_type=MediaType.TEXT, sync_to_thread=False)
-    def handler(test_message: str | None) -> str:
+    def handler(test_message: Optional[str]) -> str:  # noqa: UP007
         return test_message if test_message else "no message"
 
     with create_test_client(

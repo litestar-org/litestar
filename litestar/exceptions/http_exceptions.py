@@ -66,20 +66,19 @@ class HTTPException(LitestarException):
             headers: Headers to set on the response.
             extra: An extra mapping to attach to the exception.
         """
-        super().__init__()
+        super().__init__(*args, detail=detail)
         self.status_code = status_code or self.status_code
-
-        if not detail:
-            detail = args[0] if args else HTTPStatus(self.status_code).phrase
-            args = args[1:]
-
         self.extra = extra
-        self.detail = detail
         self.headers = headers
-        self.args = (f"{self.status_code}: {self.detail}", *args)
+        if not self.detail:
+            self.detail = HTTPStatus(self.status_code).phrase
+        self.args = (f"{self.status_code}: {self.detail}", *self.args)
 
     def __repr__(self) -> str:
         return f"{self.status_code} - {self.__class__.__name__} - {self.detail}"
+
+    def __str__(self) -> str:
+        return " ".join(self.args).strip()
 
 
 class ImproperlyConfiguredException(HTTPException, ValueError):
