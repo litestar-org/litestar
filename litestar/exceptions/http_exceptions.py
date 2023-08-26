@@ -66,12 +66,13 @@ class HTTPException(LitestarException):
             headers: Headers to set on the response.
             extra: An extra mapping to attach to the exception.
         """
-        super().__init__()
         self.status_code = status_code or self.status_code
 
         if not detail:
-            detail = args[0] if args else HTTPStatus(self.status_code).phrase
-            args = args[1:]
+            if args:
+                detail, *args = args
+            if not detail:
+                detail = getattr(self, "detail", HTTPStatus(self.status_code).phrase)
 
         self.extra = extra
         self.detail = detail

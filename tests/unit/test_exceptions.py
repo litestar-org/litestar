@@ -57,6 +57,18 @@ def test_litestar_exception_str(ex_type: type[LitestarException], detail: str) -
     assert str(result) == f"200 {detail}".strip()
 
 
+@given(detail=st.text())
+def test_http_exception_detail(detail: str) -> None:
+    for result in HTTPException(detail=detail), HTTPException(detail):
+        assert result.detail == (detail or "Internal Server Error")
+
+
+@given(detail=st.text())
+def test_custom_http_exception_detail(detail: str) -> None:
+    for result in CustomHTTPException(detail=detail), CustomHTTPException(detail):
+        assert result.detail == (detail or "Custom HTTP Exception")
+
+
 @given(status_code=st.integers(min_value=400, max_value=404), detail=st.text())
 @pytest.mark.parametrize("ex_type", [HTTPException, CustomHTTPException])
 def test_http_exception(ex_type: type[HTTPException], status_code: int, detail: str) -> None:
