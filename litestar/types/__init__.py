@@ -82,7 +82,7 @@ from .internal_types import (
     RouteHandlerType,
 )
 from .protocols import DataclassProtocol, Logger
-from .serialization import DataContainerType, LitestarEncodableType, PathParameterType, PathParameterTypeName
+from .serialization import DataContainerType, LitestarEncodableType, PathParameterType
 
 __all__ = (
     "ASGIApp",
@@ -141,7 +141,6 @@ __all__ = (
     "OptionalSequence",
     "ParametersMap",
     "PathParameterType",
-    "PathParameterTypeName",
     "PathType",
     "Receive",
     "ReceiveMessage",

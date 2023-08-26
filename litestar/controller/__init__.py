@@ -1,4 +1,4 @@
 from .base import Controller
-from .generic_controller import GenericController
+from .generic_mixins import AbstractGenericControllerMixin
 
-__all__ = ("Controller", "GenericController")
+__all__ = ("Controller", "AbstractGenericControllerMixin")

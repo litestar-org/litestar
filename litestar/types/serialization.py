@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from collections import deque
@@ -44,7 +44,6 @@ __all__ = (
     "EncodableStdLibIPType",
     "EncodableStdLibType",
     "LitestarEncodableType",
-    "PathParameterTypeName",
     "PathParameterType",
 )
 
@@ -61,16 +60,4 @@ LitestarEncodableType: TypeAlias = "EncodableBuiltinType | EncodableBuiltinColle
 DataContainerType: TypeAlias = (
     "Struct | BaseModel | AttrsInstance | TypedDictClass | DataclassProtocol"  # pyright: ignore
 )
-PathParameterTypeName = Literal[
-    "str",
-    "int",
-    "float",
-    "uuid",
-    "decimal",
-    "date",
-    "datetime",
-    "time",
-    "timedelta",
-    "path",
-]
 PathParameterType: TypeAlias = "str | int | float | UUID | Decimal | date | datetime | time | timedelta | Path"
