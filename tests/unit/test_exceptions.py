@@ -26,6 +26,18 @@ class CustomHTTPException(HTTPException):
 
 
 @given(detail=st.text())
+def test_litestar_exception_detail(detail: str) -> None:
+    for result in LitestarException(detail=detail), LitestarException(detail):
+        assert result.detail == detail
+
+
+@given(detail=st.text())
+def test_custom_litestar_exception_detail(detail: str) -> None:
+    for result in CustomLitestarException(detail=detail), CustomLitestarException(detail):
+        assert result.detail == (detail or "Custom Exception")
+
+
+@given(detail=st.text())
 @pytest.mark.parametrize("ex_type", [LitestarException, CustomLitestarException])
 def test_litestar_exception_repr(ex_type: type[LitestarException], detail: str) -> None:
     for result in ex_type(detail), ex_type(detail=detail):
@@ -39,7 +51,7 @@ def test_litestar_exception_repr(ex_type: type[LitestarException], detail: str) 
 @pytest.mark.parametrize("ex_type", [LitestarException, CustomLitestarException])
 def test_litestar_exception_str(ex_type: type[LitestarException], detail: str) -> None:
     for result in ex_type(detail), ex_type(detail=detail):
-        assert str(result) == detail.strip()
+        assert str(result) == result.detail.strip()
 
     result = ex_type(200, detail=detail)
     assert str(result) == f"200 {detail}".strip()
