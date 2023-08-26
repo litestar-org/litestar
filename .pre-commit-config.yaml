@@ -149,6 +149,7 @@ repos:
             jsbeautifier,
             mako,
             mongomock_motor,
+            minijinja,
             msgspec,
             multidict,
             opentelemetry-instrumentation-asgi,
