@@ -333,8 +333,6 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
             ]
         )
 
-        await self._backend.on_shutdown()
-
         if self._sub_task:
             self._sub_task.cancel()
             with suppress(CancelledError):
@@ -344,6 +342,8 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
             self._pub_task.cancel()
             with suppress(CancelledError):
                 await self._pub_task
+
+        await self._backend.on_shutdown()
 
     async def __aenter__(self) -> ChannelsPlugin:
         await self._on_startup()
