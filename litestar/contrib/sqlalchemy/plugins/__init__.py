@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from .init import (
+    AlembicAsyncConfig,
+    AlembicSyncConfig,
     AsyncSessionConfig,
     EngineConfig,
     GenericSessionConfig,
@@ -32,4 +34,6 @@ __all__ = (
     "SQLAlchemySerializationPlugin",
     "SQLAlchemySyncConfig",
     "SyncSessionConfig",
+    "AlembicAsyncConfig",
+    "AlembicSyncConfig",
 )
