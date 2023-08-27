@@ -40,11 +40,7 @@ __all__ = ("DTOCodegenBackend",)
 
 
 class DTOCodegenBackend(DTOBackend):
-    __slots__ = (
-        "_transfer_to_dict",
-        "_transfer_to_model_type",
-        "_transfer_fns",
-    )
+    __slots__ = ("_transfer_to_dict", "_transfer_to_model_type", "_transfer_fns")
 
     def __init__(
         self,
@@ -61,7 +57,7 @@ class DTOCodegenBackend(DTOBackend):
             dto_factory: The DTO factory class calling this backend.
             field_definition: Parsed type.
             handler_id: The name of the handler that this backend is for.
-            is_data_field: Whether or not the field is a subclass of DTOData.
+            is_data_field: Whether the field is a subclass of DTOData.
             model_type: Model type.
             wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure,
               this is the name of the attribute that the data is stored in.
@@ -219,10 +215,19 @@ class TransferFunctionFactory:
         return unique_name
 
     @contextmanager
-    def start_indented_block(self) -> Generator[None, None, None]:
+    def start_indented_block(self, expr: str | None = None) -> Generator[None, None, None]:
+        if expr is not None:
+            self.add_stmt(expr)
         self.indentation += 1
         yield
         self.indentation -= 1
+
+    @contextmanager
+    def try_except_pass(self, exception: str) -> Generator[None, None, None]:
+        with self.start_indented_block("try:"):
+            yield
+        with self.start_indented_block(expr=f"except {exception}:"):
+            self.add_stmt("pass")
 
     def add_stmt(self, stmt: str, newline: bool = True, indentation: int | None = None) -> None:
         self.body += textwrap.indent(
@@ -237,18 +242,13 @@ class TransferFunctionFactory:
 
         # if we expect an optional item, it's faster to check if it exists beforehand
         if expect_optional:
-            self.add_stmt(f"if '{field_name}' in {source_instance_name}:")
-            with self.start_indented_block():
+            with self.start_indented_block(f"if '{field_name}' in {source_instance_name}:"):
                 yield value_expr
         # the happy path of a try/except will be faster than that, so we use that if
         # we expect a value
         else:
-            self.add_stmt("try:")
-            with self.start_indented_block():
+            with self.try_except_pass("KeyError"):
                 yield value_expr
-            self.add_stmt("except KeyError:")
-            with self.start_indented_block():
-                self.add_stmt("pass")
 
     @contextmanager
     def _access_attribute(
@@ -258,18 +258,13 @@ class TransferFunctionFactory:
 
         # if we expect an optional attribute it's faster to check with hasattr
         if expect_optional:
-            self.add_stmt(f"if hasattr({source_instance_name}, '{field_name}'):")
-            with self.start_indented_block():
+            with self.start_indented_block(f"if hasattr({source_instance_name}, '{field_name}'):"):
                 yield value_expr
         # the happy path of a try/except will be faster than that, so we use that if
         # we expect a value
         else:
-            self.add_stmt("try:")
-            with self.start_indented_block():
+            with self.try_except_pass("AttributeError"):
                 yield value_expr
-            self.add_stmt("except AttributeError:")
-            with self.start_indented_block():
-                self.add_stmt("pass")
 
     @classmethod
     def create_transfer_instance_data(
@@ -404,13 +399,13 @@ class TransferFunctionFactory:
 
             for source_type in ("mapping", "object"):
                 if source_type == "mapping":
-                    self.add_stmt(f"if isinstance({source_instance_name}, Mapping):")
+                    block_expr = f"if isinstance({source_instance_name}, Mapping):"
                     access_item = self._access_mapping_item
                 else:
-                    self.add_stmt("else:")
+                    block_expr = "else:"
                     access_item = self._access_attribute
 
-                with self.start_indented_block():
+                with self.start_indented_block(expr=block_expr):
                     self._create_transfer_instance_data_inner(
                         local_dict_name=local_dict_name,
                         field_definitions=field_definitions,
@@ -450,8 +445,7 @@ class TransferFunctionFactory:
                     # getting it twice from the source instance
                     source_value_name = self.create_local_name("source_value")
                     self.add_stmt(f"{source_value_name} = {source_value_expr}")
-                    self.add_stmt(f"if {source_value_name} is not UNSET:")
-                    ctx = self.start_indented_block()
+                    ctx = self.start_indented_block(f"if {source_value_name} is not UNSET:")
                 else:
                     # in these cases, we only ever access the source value once, so
                     # we can skip assigning it
@@ -537,8 +531,7 @@ class TransferFunctionFactory:
                 constraint_type_name = self.add_to_fn_globals("constraint_type", constraint_type)
                 destination_type_name = self.add_to_fn_globals("destination_type", destination_type)
 
-                self.add_stmt(f"if isinstance({source_value_name}, {constraint_type_name}):")
-                with self.start_indented_block():
+                with self.start_indented_block(f"if isinstance({source_value_name}, {constraint_type_name}):"):
                     self._create_transfer_instance_data(
                         destination_type_name=destination_type_name,
                         destination_type_is_dict=destination_type is dict,
