@@ -27,7 +27,7 @@ else:
     click.rich_click.STYLE_ERRORS_SUGGESTION = "magenta italic"
     click.rich_click.ERRORS_SUGGESTION = ""
     click.rich_click.ERRORS_EPILOGUE = ""
-    click.rich_click.MAX_WIDTH = 100
+    click.rich_click.MAX_WIDTH = 80
     click.rich_click.SHOW_METAVARS_COLUMN = True
     click.rich_click.APPEND_METAVARS_HELP = True
 

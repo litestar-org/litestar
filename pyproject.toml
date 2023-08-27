@@ -83,7 +83,7 @@ importlib-resources = { version = ">=5.12.0", python = "<3.9" }
 jinja2 = { version = ">=3.1.2", optional = true }
 jsbeautifier = { version = "*", optional = true }
 mako = { version = ">=1.2.4", optional = true }
-msgspec = ">=0.17.0"
+msgspec = ">=0.18.2"
 multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 piccolo = { version = "*", optional = true }
@@ -443,13 +443,13 @@ ruff_fix = true
 
 [tool.unasyncd.files]
 "litestar/contrib/sqlalchemy/repository/_async.py" = "litestar/contrib/sqlalchemy/repository/_sync.py"
-"litestar/contrib/repository/abc/_async.py" = "litestar/contrib/repository/abc/_sync.py"
+"litestar/repository/abc/_async.py" = "litestar/repository/abc/_sync.py"
 
-[tool.unasyncd.per_file_add_replacements."litestar/contrib/repository/abc/_async.py"]
+[tool.unasyncd.per_file_add_replacements."litestar/repository/abc/_async.py"]
 "AbstractAsyncRepository" = "AbstractSyncRepository"
 "AsyncRepoT" = "SyncRepoT"
 
 [tool.unasyncd.per_file_add_replacements."litestar/contrib/sqlalchemy/repository/_async.py"]
 SQLAlchemyAsyncRepository = "SQLAlchemySyncRepository"
 "sqlalchemy.ext.asyncio.AsyncSession" = "sqlalchemy.orm.Session"
-"litestar.contrib.repository.AbstractAsyncRepository" = "litestar.contrib.repository.AbstractSyncRepository"
+"litestar.repository.AbstractAsyncRepository" = "litestar.repository.AbstractSyncRepository"
