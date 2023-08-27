@@ -8,21 +8,23 @@ from datetime import datetime, timezone, tzinfo
 from typing import TYPE_CHECKING, Generic, Protocol, TypeVar
 from uuid import uuid4
 
-from litestar.contrib.repository import AbstractAsyncRepository, AbstractSyncRepository, FilterTypes
-from litestar.contrib.repository.exceptions import ConflictError, RepositoryError
+from litestar.repository import AbstractAsyncRepository, AbstractSyncRepository, FilterTypes
+from litestar.repository.exceptions import ConflictError, RepositoryError
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Hashable, Iterable, MutableMapping
     from typing import Any
 
-
-ModelT = TypeVar("ModelT", bound="HasID")
-AsyncMockRepoT = TypeVar("AsyncMockRepoT", bound="GenericAsyncMockRepository")
-SyncMockRepoT = TypeVar("SyncMockRepoT", bound="GenericSyncMockRepository")
+__all__ = ("GenericAsyncMockRepository", "GenericSyncMockRepository")
 
 
 class HasID(Protocol):
     id: Any
+
+
+ModelT = TypeVar("ModelT", bound="HasID")
+AsyncMockRepoT = TypeVar("AsyncMockRepoT", bound="GenericAsyncMockRepository")
+SyncMockRepoT = TypeVar("SyncMockRepoT", bound="GenericSyncMockRepository")
 
 
 class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]):

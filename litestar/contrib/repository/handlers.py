@@ -1,36 +1,20 @@
-from typing import TYPE_CHECKING
-
-from litestar.contrib.repository.filters import (
-    BeforeAfter,
-    CollectionFilter,
-    FilterTypes,
-    LimitOffset,
-    NotInCollectionFilter,
-    NotInSearchFilter,
-    OnBeforeAfter,
-    OrderBy,
-    SearchFilter,
-)
-
-if TYPE_CHECKING:
-    from litestar.config.app import AppConfig
+from litestar.utils import warn_deprecation
 
 
-signature_namespace_values = {
-    "BeforeAfter": BeforeAfter,
-    "OnBeforeAfter": OnBeforeAfter,
-    "CollectionFilter": CollectionFilter,
-    "LimitOffset": LimitOffset,
-    "OrderBy": OrderBy,
-    "SearchFilter": SearchFilter,
-    "NotInCollectionFilter": NotInCollectionFilter,
-    "NotInSearchFilter": NotInSearchFilter,
-    "FilterTypes": FilterTypes,
-}
+def __getattr__(attr_name: str) -> object:
+    from litestar.repository import handlers
 
+    if attr_name in handlers.__all__:
+        warn_deprecation(
+            deprecated_name=f"litestar.repository.contrib.handlers.{attr_name}",
+            version="2.1",
+            kind="import",
+            removal_in="3.0",
+            info=f"importing {attr_name} from 'litestar.contrib.repository.handlers' is deprecated, please"
+            f"import it from 'litestar.repository.handlers.{attr_name}' instead",
+        )
 
-def on_app_init(app_config: "AppConfig") -> "AppConfig":
-    """Add custom filters for the application during signature modelling."""
+        value = globals()[attr_name] = getattr(handlers, attr_name)
+        return value
 
-    app_config.signature_namespace.update(signature_namespace_values)
-    return app_config
+    raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")
