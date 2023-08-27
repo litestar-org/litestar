@@ -101,6 +101,7 @@ sqlalchemy = { version = ">=2.0.12", optional = true }
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
 uvicorn = { extras = ["standard"], version = ">=0.22.0", optional = true }
+socketify = { version = ">=0.0.27", optional = true }
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
@@ -165,7 +166,7 @@ types-redis = "*"
 annotated-types = ["annotated-types"]
 attrs = ["attrs"]
 brotli = ["brotli"]
-cli = ["click", "rich", "rich-click", "jsbeautifier", "uvicorn"]
+cli = ["click", "rich", "rich-click", "jsbeautifier"]
 cryptography = ["cryptography"]
 jinja = ["jinja2"]
 jwt = ["python-jose", "cryptography"]
@@ -179,7 +180,7 @@ redis = ["redis"]
 sqlalchemy = ["sqlalchemy", "alembic"]
 standard = ["click", "jinja2", "jsbeautifier", "rich", "uvicorn", "rich-click"]
 structlog = ["structlog"]
-
+socketify = ["socketify"]
 full = [
     "alembic",
     "annotated-types",
