@@ -167,15 +167,15 @@
 
         The following filters have been added to the SQLAlchemy repositories:
 
-        :class:`~litestar.contrib.repository.filters.OnBeforeAfter`
+        ``litestar.contrib.repository.filters.OnBeforeAfter``
 
             Allowing to filter :class:`datetime.datetime` columns
 
-        :class:`~litestar.contrib.repository.filters.NotInCollectionFilter`
+        ``litestar.contrib.repository.filters.NotInCollectionFilter``
 
             Allowing to filter using a ``WHERE ... NOT IN (...)`` clause
 
-        :class:`~litestar.contrib.repository.filters.NotInSearchFilter`
+        ``litestar.contrib.repository.filters.NotInSearchFilter``
 
             Allowing to filter using a `WHERE field_name NOT LIKE '%' || :value || '%'`` clause
 
@@ -1464,8 +1464,8 @@
         :type: feature
         :pr: 1345
 
-        Add new filters :class:`OrderBy <litestar.contrib.repository.filters.OrderBy>` and
-        :class:`SearchFilter <litestar.contrib.repository.filters.SearchFilter>`, providing ``ORDER BY ...`` and
+        Add new filters ``litestar.contrib.repository.filters.OrderBy`` and
+        ``litestar.contrib.repository.filters.SearchFilter``, providing ``ORDER BY ...`` and
         ``LIKE ...`` / ``ILIKE ...`` clauses respectively
 
     .. change:: SQLAlchemy repository: Rename ``SQLAlchemyRepository`` > ``SQLAlchemyAsyncRepository``

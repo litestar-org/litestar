@@ -11,5 +11,4 @@ contrib
     opentelemetry
     piccolo
     pydantic
-    repository/index
     sqlalchemy/index
