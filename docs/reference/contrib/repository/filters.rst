@@ -1,5 +1,6 @@
+:orphan:
+
 filters
 =======
 
-.. automodule:: litestar.contrib.repository.filters
-    :members:
+This page has moved to :doc:`/reference/repository/filters`

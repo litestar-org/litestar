@@ -14,8 +14,10 @@ from sqlalchemy import Engine, Table, insert
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy.orm import Session, sessionmaker
 
-from litestar.contrib.repository.exceptions import RepositoryError
-from litestar.contrib.repository.filters import (
+from litestar.contrib.sqlalchemy import base
+from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
+from litestar.repository.exceptions import RepositoryError
+from litestar.repository.filters import (
     BeforeAfter,
     CollectionFilter,
     NotInCollectionFilter,
@@ -24,8 +26,6 @@ from litestar.contrib.repository.filters import (
     OrderBy,
     SearchFilter,
 )
-from litestar.contrib.sqlalchemy import base
-from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
 from tests.helpers import maybe_async
 from tests.unit.test_contrib.test_sqlalchemy import models_bigint, models_uuid
 
