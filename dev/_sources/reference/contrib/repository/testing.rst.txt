@@ -1,5 +1,6 @@
+:orphan:
+
 testing
 =======
 
-.. automodule:: litestar.contrib.repository.testing
-    :members: generic_mock_repository
+This page has moved to :doc:`/reference/repository/testing`

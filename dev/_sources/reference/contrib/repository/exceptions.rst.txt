@@ -1,5 +1,6 @@
+:orphan:
+
 exceptions
 ==========
 
-.. automodule:: litestar.contrib.repository.exceptions
-    :members:
+This page has moved to :doc:`/reference/repository/exceptions`
