@@ -9,13 +9,13 @@ from _pytest.fixtures import FixtureRequest
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from litestar.contrib.repository.exceptions import ConflictError, RepositoryError
-from litestar.contrib.repository.filters import LimitOffset
-from litestar.contrib.repository.testing.generic_mock_repository import (
+from litestar.contrib.sqlalchemy import base
+from litestar.repository.exceptions import ConflictError, RepositoryError
+from litestar.repository.filters import LimitOffset
+from litestar.repository.testing import (
     GenericAsyncMockRepository,
     GenericSyncMockRepository,
 )
-from litestar.contrib.sqlalchemy import base
 from tests.helpers import maybe_async
 from tests.unit.test_contrib.test_sqlalchemy.models_uuid import UUIDAuthor, UUIDBook
 

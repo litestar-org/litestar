@@ -19,8 +19,8 @@ from sqlalchemy import (
 from sqlalchemy import func as sql_func
 from sqlalchemy.orm import InstrumentedAttribute, Session
 
-from litestar.contrib.repository import AbstractSyncRepository, RepositoryError
-from litestar.contrib.repository.filters import (
+from litestar.repository import AbstractSyncRepository, RepositoryError
+from litestar.repository.filters import (
     BeforeAfter,
     CollectionFilter,
     FilterTypes,
@@ -763,7 +763,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         Args:
             data: Instance to update existing, or be created. Identifier used to determine if an
                 existing instance exists is the value of an attribute on ``data`` named as value of
-                :attr:`~litestar.contrib.repository.AbstractAsyncRepository.id_attribute`.
+                :attr:`~litestar.repository.AbstractAsyncRepository.id_attribute`.
             attribute_names: an iterable of attribute names to pass into the ``update`` method.
             with_for_update: indicating FOR UPDATE should be used, or may be a dictionary containing flags to indicate a more specific set of FOR UPDATE flags for the SELECT
             auto_expunge: Remove object from session before returning. Defaults to

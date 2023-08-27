@@ -1,5 +1,5 @@
 abc
 ===
 
-.. automodule:: litestar.contrib.repository.abc
+.. automodule:: litestar.repository.abc
     :members:

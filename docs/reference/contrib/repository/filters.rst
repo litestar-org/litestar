@@ -1,5 +1,5 @@
 filters
 =======
 
-.. automodule:: litestar.contrib.repository.filters
+.. automodule:: litestar.repository.filters
     :members:

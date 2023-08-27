@@ -103,7 +103,7 @@ nitpick_ignore = [
     (PY_CLASS, "PathParameterDefinition"),
     (PY_CLASS, "RouteHandlerType"),
     (PY_CLASS, "T"),
-    (PY_CLASS, "litestar.contrib.repository.abc.CollectionT"),
+    (PY_CLASS, "litestar.repository.abc.CollectionT"),
     (PY_CLASS, "litestar.contrib.sqlalchemy.repository.SelectT"),
     (PY_OBJ, "litestar.security.base.AuthType"),
     # intentionally undocumented
@@ -140,8 +140,8 @@ nitpick_ignore_regex = [
     (PY_RE, r".*UserType"),
     (PY_RE, r"litestar\.middleware\.session\.base\.BaseSessionBackendT"),
     (r"py:obj", r"typing\..*"),
-    (r"py:attr", "litestar.contrib.repository.AbstractAsyncRepository.id_attribute"),
-    (r"py:attr", "litestar.contrib.repository.AbstractSyncRepository.id_attribute"),
+    (r"py:attr", "litestar.repository.AbstractAsyncRepository.id_attribute"),
+    (r"py:attr", "litestar.repository.AbstractSyncRepository.id_attribute"),
     (PY_RE, r"httpx.*"),
     # type vars
     (PY_RE, r"litestar\.pagination\.C"),

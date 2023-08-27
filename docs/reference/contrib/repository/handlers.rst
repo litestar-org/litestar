@@ -1,5 +1,5 @@
 handlers
 =========
 
-.. automodule:: litestar.contrib.repository.handlers
+.. automodule:: litestar.repository.handlers
     :members:

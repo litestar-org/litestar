@@ -1,5 +1,5 @@
 exceptions
 ==========
 
-.. automodule:: litestar.contrib.repository.exceptions
+.. automodule:: litestar.repository.exceptions
     :members:
