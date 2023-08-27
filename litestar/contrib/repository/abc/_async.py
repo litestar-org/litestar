@@ -84,10 +84,11 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def exists(self, **kwargs: Any) -> bool:
+    async def exists(self, *filters: FilterTypes, **kwargs: Any) -> bool:
         """Return true if the object specified by ``kwargs`` exists.
 
         Args:
+            *filters: Types for specific filtering operations.
             **kwargs: Identifier of the instance to be retrieved.
 
         Returns:

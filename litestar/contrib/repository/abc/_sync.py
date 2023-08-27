@@ -86,10 +86,11 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def exists(self, **kwargs: Any) -> bool:
+    def exists(self, *filters: FilterTypes, **kwargs: Any) -> bool:
         """Return true if the object specified by ``kwargs`` exists.
 
         Args:
+            *filters: Types for specific filtering operations.
             **kwargs: Identifier of the instance to be retrieved.
 
         Returns:
