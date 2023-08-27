@@ -71,7 +71,6 @@ autodoc_typehints_format = "short"
 nitpicky = True
 nitpick_ignore = [
     # external library / undocumented external
-    (PY_CLASS, "jinja2.environment.Environment"),
     (PY_CLASS, "BaseModel"),
     (PY_CLASS, "ExternalType"),
     (PY_CLASS, "TypeEngine"),
@@ -83,6 +82,7 @@ nitpick_ignore = [
     (PY_CLASS, "_schema.Table"),
     (PY_CLASS, "_types.TypeDecorator"),
     (PY_CLASS, "abc.Collection"),
+    (PY_CLASS, "jinja2.environment.Environment"),
     (PY_CLASS, "pydantic.BaseModel"),
     (PY_CLASS, "pydantic.generics.GenericModel"),
     (PY_CLASS, "pydantic.main.BaseModel"),
@@ -103,7 +103,7 @@ nitpick_ignore = [
     (PY_CLASS, "PathParameterDefinition"),
     (PY_CLASS, "RouteHandlerType"),
     (PY_CLASS, "T"),
-    (PY_CLASS, "litestar.contrib.repository.abc.CollectionT"),
+    (PY_CLASS, "litestar.contrib.abc.CollectionT"),
     (PY_CLASS, "litestar.contrib.sqlalchemy.repository.SelectT"),
     (PY_OBJ, "litestar.security.base.AuthType"),
     # intentionally undocumented
@@ -111,9 +111,9 @@ nitpick_ignore = [
     (PY_CLASS, "ExceptionT"),
     (PY_CLASS, "NoneType"),
     (PY_CLASS, "litestar._openapi.schema_generation.schema.SchemaCreator"),
+    (PY_CLASS, "litestar._signature.model.SignatureModel"),
     (PY_CLASS, "litestar.utils.signature.ParsedSignature"),
     (PY_CLASS, "litestar.utils.sync.AsyncCallable"),
-    (PY_CLASS, "litestar._signature.model.SignatureModel"),
     # types in changelog that no longer exist
     (PY_ATTR, "litestar.dto.factory.DTOConfig.underscore_fields_private"),
     (PY_CLASS, "anyio.abc.BlockingPortal"),
@@ -129,28 +129,33 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.typing.ParsedType"),
     (PY_METH, "litestar.dto.factory.DTOData.create_instance"),
     (PY_METH, "litestar.dto.interface.DTOInterface.data_to_encodable_type"),
+    (PY_OBJ, "litestar.contrib.repository.filters.NotInCollectionFilter"),
+    (PY_OBJ, "litestar.contrib.repository.filters.NotInSearchFilter"),
+    (PY_OBJ, "litestar.contrib.repository.filters.OnBeforeAfter"),
+    (PY_OBJ, "litestar.contrib.repository.filters.OrderBy"),
+    (PY_OBJ, "litestar.contrib.repository.filters.SearchFilter"),
 ]
 
 nitpick_ignore_regex = [
-    (PY_RE, r"litestar\.types.*"),
-    (PY_RE, r"litestar.*\.T"),
+    (PY_ATTR, "litestar.contrib.AbstractAsyncRepository.id_attribute"),
+    (PY_ATTR, "litestar.contrib.AbstractSyncRepository.id_attribute"),
+    (PY_OBJ, r"typing\..*"),
     (PY_RE, r".*R_co"),
-    (PY_RE, r"ModelT"),
-    (PY_RE, r"litestar.contrib.sqlalchemy.repository.ModelT"),
     (PY_RE, r".*UserType"),
-    (PY_RE, r"litestar\.middleware\.session\.base\.BaseSessionBackendT"),
-    (r"py:obj", r"typing\..*"),
-    (r"py:attr", "litestar.contrib.repository.AbstractAsyncRepository.id_attribute"),
-    (r"py:attr", "litestar.contrib.repository.AbstractSyncRepository.id_attribute"),
+    (PY_RE, r"ModelT"),
     (PY_RE, r"httpx.*"),
+    (PY_RE, r"litestar.*\.T"),
+    (PY_RE, r"litestar.contrib.sqlalchemy.repository.ModelT"),
+    (PY_RE, r"litestar\.middleware\.session\.base\.BaseSessionBackendT"),
+    (PY_RE, r"litestar\.types.*"),
     # type vars
-    (PY_RE, r"litestar\.pagination\.C"),
     (PY_RE, r"litestar.middleware.session.base.ConfigT"),
-    (PY_RE, r"multidict\..*"),
-    (PY_RE, r"litestar\.connection\.base\.UserT"),
     (PY_RE, r"litestar\.connection\.base\.AuthT"),
-    (PY_RE, r"litestar\.connection\.base\.StateT"),
     (PY_RE, r"litestar\.connection\.base\.HandlerT"),
+    (PY_RE, r"litestar\.connection\.base\.StateT"),
+    (PY_RE, r"litestar\.connection\.base\.UserT"),
+    (PY_RE, r"litestar\.pagination\.C"),
+    (PY_RE, r"multidict\..*"),
 ]
 
 # Warnings about missing references to those targets in the specified location will be ignored.
