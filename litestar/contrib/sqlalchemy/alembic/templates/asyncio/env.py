@@ -1,21 +1,24 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from alembic import context
-from sqlalchemy import pool
+from alembic.autogenerate import rewriter
+from alembic.operations import ops
+from sqlalchemy import Column, pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from litestar.contrib.sqlalchemy.base import orm_registry
 
-__all__ = ["do_run_migrations", "run_migrations_offline", "run_migrations_online"]
-
-
 if TYPE_CHECKING:
+    from alembic.runtime.environment import EnvironmentContext
     from sqlalchemy.engine import Connection
 
     from litestar.contrib.sqlalchemy.alembic.commands import AlembicCommandConfig
+
+__all__ = ["do_run_migrations", "run_migrations_offline", "run_migrations_online"]
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -29,6 +32,24 @@ target_metadata = orm_registry.metadata
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # ... etc.
+
+writer = rewriter.Rewriter()
+
+
+@writer.rewrites(ops.CreateTableOp)
+def order_columns(context: EnvironmentContext, revision: str, op: Any) -> ops.CreateTableOp:
+    """Orders ID first and the audit columns at the end."""
+    special_names = {"id": -100, "created_at": 1001, "updated_at": 1002}
+    cols_by_key = [
+        (
+            special_names.get(col.key, index) if isinstance(col, Column) else 2000,
+            col.copy(),
+        )
+        for index, col in enumerate(op.columns)
+    ]
+
+    columns = [col for idx, col in sorted(cols_by_key, key=lambda entry: entry[0])]
+    return ops.CreateTableOp(op.table_name, columns, schema=op.schema, **op.kw)
 
 
 def run_migrations_offline() -> None:
@@ -52,6 +73,7 @@ def run_migrations_offline() -> None:
         version_table_pk=config.version_table_pk,
         user_module_prefix=config.user_module_prefix,
         render_as_batch=config.render_as_batch,
+        process_revision_directives=writer,  # type: ignore[arg-type]
     )
 
     with context.begin_transaction():
@@ -68,6 +90,7 @@ def do_run_migrations(connection: Connection) -> None:
         version_table_pk=config.version_table_pk,
         user_module_prefix=config.user_module_prefix,
         render_as_batch=config.render_as_batch,
+        process_revision_directives=writer,  # type: ignore[arg-type]
     )
 
     with context.begin_transaction():
