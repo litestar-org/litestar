@@ -17,13 +17,14 @@ if TYPE_CHECKING:
 
 __all__ = ("GenericAsyncMockRepository",)
 
-ModelT = TypeVar("ModelT", bound="HasID")
-AsyncMockRepoT = TypeVar("AsyncMockRepoT", bound="GenericAsyncMockRepository")
-SyncMockRepoT = TypeVar("SyncMockRepoT", bound="GenericSyncMockRepository")
-
 
 class HasID(Protocol):
     id: Any
+
+
+ModelT = TypeVar("ModelT", bound="HasID")
+AsyncMockRepoT = TypeVar("AsyncMockRepoT", bound="GenericAsyncMockRepository")
+SyncMockRepoT = TypeVar("SyncMockRepoT", bound="GenericSyncMockRepository")
 
 
 class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]):
