@@ -61,6 +61,8 @@ engine and session lifecycle, and register our ``transaction`` dependency.
     :linenos:
     :lines: 75-79
 
+Once the plugin has been configured.  The ``litestar`` CLI command will automatically register a ``database`` sub-command.  This commands extend the ``Alembic`` interface and all you to manage your database migrations.
+
 .. seealso::
 
     :doc:`SQLAlchemy Plugins Usage Guide </usage/databases/sqlalchemy/plugins/index>`

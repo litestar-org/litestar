@@ -38,4 +38,5 @@ Contents
     1-provide-session-with-di
     2-serialization-plugin
     3-init-plugin
-    4-final-touches-and-recap
+    4-alembic-integration
+    5-final-touches-and-recap

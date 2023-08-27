@@ -30,4 +30,4 @@ dependency provider, instead of creating our own session.
 Next steps
 ==========
 
-Next up, we'll make one final change to our application, and then we'll be recap!
+Next up, we'll enable database migrations with our application using SQLAlchemy's Alembic integration!
