@@ -6,9 +6,9 @@ from rich import get_console
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Mapped, Session, sessionmaker
 
-from litestar.contrib.repository.filters import LimitOffset
 from litestar.contrib.sqlalchemy.base import UUIDBase
 from litestar.contrib.sqlalchemy.repository import SQLAlchemySyncRepository
+from litestar.repository.filters import LimitOffset
 
 here = Path(__file__).parent
 console = get_console()

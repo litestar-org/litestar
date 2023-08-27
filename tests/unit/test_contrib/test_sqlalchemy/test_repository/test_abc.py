@@ -6,10 +6,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from litestar.contrib.repository.exceptions import NotFoundError
-from litestar.contrib.repository.testing.generic_mock_repository import (
-    GenericAsyncMockRepository,
-)
+from litestar.repository.exceptions import NotFoundError
+from litestar.repository.testing.generic_mock_repository import GenericAsyncMockRepository
 
 if TYPE_CHECKING:
     from pytest import MonkeyPatch

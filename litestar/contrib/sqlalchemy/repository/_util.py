@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-from litestar.contrib.repository import ConflictError, RepositoryError
+from litestar.repository import ConflictError, RepositoryError
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import InstrumentedAttribute

@@ -440,13 +440,13 @@ ruff_fix = true
 
 [tool.unasyncd.files]
 "litestar/contrib/sqlalchemy/repository/_async.py" = "litestar/contrib/sqlalchemy/repository/_sync.py"
-"litestar/contrib/repository/abc/_async.py" = "litestar/contrib/repository/abc/_sync.py"
+"litestar/repository/abc/_async.py" = "litestar/repository/abc/_sync.py"
 
-[tool.unasyncd.per_file_add_replacements."litestar/contrib/repository/abc/_async.py"]
+[tool.unasyncd.per_file_add_replacements."litestar/repository/abc/_async.py"]
 "AbstractAsyncRepository" = "AbstractSyncRepository"
 "AsyncRepoT" = "SyncRepoT"
 
 [tool.unasyncd.per_file_add_replacements."litestar/contrib/sqlalchemy/repository/_async.py"]
 SQLAlchemyAsyncRepository = "SQLAlchemySyncRepository"
 "sqlalchemy.ext.asyncio.AsyncSession" = "sqlalchemy.orm.Session"
-"litestar.contrib.repository.AbstractAsyncRepository" = "litestar.contrib.repository.AbstractSyncRepository"
+"litestar.repository.AbstractAsyncRepository" = "litestar.repository.AbstractSyncRepository"
