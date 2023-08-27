@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Hashable, Iterable, MutableMapping
     from typing import Any
 
-__all__ = ("GenericAsyncMockRepository",)
+__all__ = ("GenericAsyncMockRepository", "GenericSyncMockRepository")
 
 
 class HasID(Protocol):

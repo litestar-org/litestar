@@ -141,6 +141,7 @@ nitpick_ignore_regex = [
     (PY_ATTR, "litestar.repository.testing.AsyncGenericMockRepository.id_attribute"),
     (PY_ATTR, "litestar.repository.AbstractAsyncRepository.id_attribute"),
     (PY_ATTR, "litestar.repository.AbstractSyncRepository.id_attribute"),
+    # (PY_ATTR, "litestar.repository.AsyncGenericMockRepository.id_attribute"),
     (PY_OBJ, r"typing\..*"),
     (PY_RE, r".*R_co"),
     (PY_RE, r".*UserType"),
@@ -172,7 +173,7 @@ ignore_missing_refs = {
     "litestar.response.file.async_file_iterator": {"FileSystemAdapter"},
     re.compile("litestar.response.redirect.*"): {"RedirectStatusType"},
     re.compile(r"litestar\.plugins.*"): re.compile(".*ModelT"),
-    re.compile(r"litestar\.contrib\.*"): re.compile(".*T"),
+    re.compile(r"litestar\.(contrib|repository)\.*"): re.compile(".*T"),
     re.compile(r"litestar\.contrib\.sqlalchemy\.*"): re.compile(
         ".*(ConnectionT|EngineT|SessionT|SessionMakerT|SlotsBase)"
     ),

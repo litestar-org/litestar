@@ -2,9 +2,9 @@ from litestar.utils import warn_deprecation
 
 
 def __getattr__(attr_name: str) -> object:
-    from litestar.repository import testing
+    from litestar.repository.testing import generic_mock_repository
 
-    if attr_name in testing.__all__:
+    if attr_name in generic_mock_repository.__all__:
         warn_deprecation(
             deprecated_name=f"litestar.repository.contrib.testing.{attr_name}",
             version="2.1",
@@ -14,7 +14,7 @@ def __getattr__(attr_name: str) -> object:
             f"import it from 'litestar.repository.testing.{attr_name}' instead",
         )
 
-        value = globals()[attr_name] = getattr(testing, attr_name)
+        value = globals()[attr_name] = getattr(generic_mock_repository, attr_name)
         return value
 
     raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")
