@@ -86,6 +86,8 @@ def run_migrations_online() -> None:
         poolclass=pool.NullPool,
         future=True,
     )
+    if connectable is None:
+        raise RuntimeError("Could not get engine from config.")
 
     with connectable.connect() as connection:
         do_run_migrations(connection=connection)

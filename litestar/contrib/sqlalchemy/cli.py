@@ -6,6 +6,7 @@ from rich.prompt import Confirm, Prompt
 
 from litestar.cli._utils import RICH_CLICK_INSTALLED, LitestarGroup, console
 from litestar.contrib.sqlalchemy.alembic.commands import AlembicCommands
+from litestar.contrib.sqlalchemy.plugins import SQLAlchemyPlugin
 
 if TYPE_CHECKING:
     from alembic.migration import MigrationContext
@@ -15,9 +16,9 @@ if TYPE_CHECKING:
 
 
 if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
-    from click import group, option
+    from click import argument, group, option
 else:
-    from rich_click import group, option
+    from rich_click import argument, group, option
 
 
 @group(cls=LitestarGroup, name="database")
@@ -42,12 +43,6 @@ def show_database_revision(app: Litestar, verbose: bool) -> None:
     name="downgrade",
     help="Downgrade database to a specific revision.",
 )
-@option(
-    "--revision",
-    type=str,
-    help="Revision to downgrade to",
-    default="-1",
-)
 @option("--sql", type=bool, help="Generate SQL output for offline migrations.", default=False, is_flag=True)
 @option(
     "--tag",
@@ -64,10 +59,19 @@ def show_database_revision(app: Litestar, verbose: bool) -> None:
     show_default=True,
     is_flag=True,
 )
+@argument(
+    "revision",
+    type=str,
+    default="-1",
+)
 def downgrade_database(app: Litestar, revision: str, sql: bool, tag: str | None, no_prompt: bool) -> None:
     """Downgrade the database to the latest revision."""
     console.rule("[yellow]Starting database downgrade process[/]", align="left")
-    input_confirmed = True if no_prompt else Confirm.ask("Are you sure you you want to downgrade the database?")
+    input_confirmed = (
+        True
+        if no_prompt
+        else Confirm.ask(f"Are you sure you you want to downgrade the database to the `{revision}` revision?")
+    )
     if input_confirmed:
         alembic_commands = AlembicCommands(app=app)
         alembic_commands.downgrade(revision=revision, sql=sql, tag=tag)
@@ -76,12 +80,6 @@ def downgrade_database(app: Litestar, revision: str, sql: bool, tag: str | None,
 @database_group.command(
     name="upgrade",
     help="Upgrade database to a specific revision.",
-)
-@option(
-    "--revision",
-    type=str,
-    help="Revision to upgrade to",
-    default="head",
 )
 @option("--sql", type=bool, help="Generate SQL output for offline migrations.", default=False, is_flag=True)
 @option(
@@ -99,10 +97,19 @@ def downgrade_database(app: Litestar, revision: str, sql: bool, tag: str | None,
     show_default=True,
     is_flag=True,
 )
+@argument(
+    "revision",
+    type=str,
+    default="head",
+)
 def upgrade_database(app: Litestar, revision: str, sql: bool, tag: str | None, no_prompt: bool) -> None:
     """Upgrade the database to the latest revision."""
     console.rule("[yellow]Starting database upgrade process[/]", align="left")
-    input_confirmed = True if no_prompt else Confirm.ask("[bold]Are you sure you you want to apply migrations?[/]")
+    input_confirmed = (
+        True
+        if no_prompt
+        else Confirm.ask("[bold]Are you sure you you want migrate the database to the `{revision}` revision?[/]")
+    )
     if input_confirmed:
         alembic_commands = AlembicCommands(app=app)
         alembic_commands.upgrade(revision=revision, sql=sql, tag=tag)
@@ -112,16 +119,32 @@ def upgrade_database(app: Litestar, revision: str, sql: bool, tag: str | None, n
     name="init",
     help="Initialize migrations for the project.",
 )
-@option(
-    "-d", "--directory", default="migrations", help="Location to save migration scripts.  The default is 'migrations/'"
-)
+@argument("directory", default=None)
 @option("--multidb", is_flag=True, default=False, help="Support multiple databases")
 @option("--package", is_flag=True, default=True, help="Create `__init__.py` for created folder")
-def init_alembic(app: Litestar, directory: str, multidb: bool, package: bool) -> None:
+@option(
+    "--no-prompt",
+    help="Do not prompt for confirmation before initializing.",
+    type=bool,
+    default=False,
+    required=False,
+    show_default=True,
+    is_flag=True,
+)
+def init_alembic(app: Litestar, directory: str | None, multidb: bool, package: bool, no_prompt: bool) -> None:
     """Upgrade the database to the latest revision."""
     console.rule("[yellow]Initializing database migrations.", align="left")
-    alembic_commands = AlembicCommands(app=app)
-    alembic_commands.init(directory=directory, multidb=multidb, package=package)
+    plugin = app.plugins.get(SQLAlchemyPlugin)
+    if directory is None:
+        directory = plugin._alembic_config.script_location
+    input_confirmed = (
+        True
+        if no_prompt
+        else Confirm.ask("[bold]Are you sure you you want initialize the project in `{directory}`?[/]")
+    )
+    if input_confirmed:
+        alembic_commands = AlembicCommands(app=app)
+        alembic_commands.init(directory=directory, multidb=multidb, package=package)
 
 
 @database_group.command(
