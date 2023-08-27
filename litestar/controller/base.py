@@ -133,9 +133,7 @@ class Controller:
     response_headers: ResponseHeaders | None
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>` instances."""
     return_dto: type[AbstractDTO] | None | EmptyType
-    """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing outbound response
-    data.
-    """
+    """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing outbound response data."""
     tags: OptionalSequence[str]
     """A sequence of string tags that will be appended to the schema of all route handlers under the controller."""
     security: OptionalSequence[SecurityRequirement]

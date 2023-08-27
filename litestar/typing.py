@@ -382,6 +382,7 @@ class FieldDefinition:
         """A tuple of generic types passed into the annotation - if its generic."""
         if not (bases := getattr(self.annotation, "__orig_bases__", None)):
             return None
+
         args: list[FieldDefinition] = []
         for base_args in [getattr(base, "__args__", ()) for base in bases]:
             for arg in base_args:
