@@ -87,7 +87,10 @@ def run_migrations_online() -> None:
         future=True,
     )
     if connectable is None:
-        raise RuntimeError("Could not get engine from config.")
+        raise RuntimeError(
+            "Could not get engine from config.  Are you trying to run migrations from outside of the Litestar application?\n\n",
+            "To do this, you'll need to reconfigure the `alembic.ini` according to the official Alembic documentation.",
+        )
 
     with connectable.connect() as connection:
         do_run_migrations(connection=connection)
