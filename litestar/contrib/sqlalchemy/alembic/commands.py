@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Mapping, TextIO
 
 from alembic import command as migration_command
@@ -14,6 +13,7 @@ from litestar.contrib.sqlalchemy.plugins.init.plugin import SQLAlchemyInitPlugin
 if TYPE_CHECKING:
     import os
     from argparse import Namespace
+    from pathlib import Path
 
     from alembic.runtime.environment import ProcessRevisionDirectiveFn
     from alembic.script.base import Script
@@ -187,7 +187,6 @@ class AlembicCommands:
     def init(
         self,
         directory: str,
-        template_path: str | None = None,
         package: bool = False,
         multidb: bool = False,
     ) -> None:
@@ -198,8 +197,6 @@ class AlembicCommands:
         if multidb:
             template = f"{template}-multidb"
             raise NotImplementedError("Multi database Alembic configurations are not currently supported.")
-        if template_path is None:
-            template_path = f"{Path(__file__).parent}/templates"
         return migration_command.init(
             config=self.config,
             directory=directory,
