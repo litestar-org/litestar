@@ -221,7 +221,7 @@ ignore-words-list = "selectin"
 skip = 'poetry.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
-omit = ["*/tests/*", "litestar/contrib/sqlalchemy/alembic/templates"]
+omit = ["*/tests/*", "litestar/contrib/sqlalchemy/alembic/templates/*"]
 parallel = true
 concurrency = ["multiprocessing", "thread"]
 
