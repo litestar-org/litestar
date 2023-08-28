@@ -72,6 +72,12 @@ def test_sync_alembic_revision(sync_alembic_commands: commands.AlembicCommands, 
     sync_alembic_commands.revision(message="test", autogenerate=True)
 
 
+def test_sync_alembic_upgrade(sync_alembic_commands: commands.AlembicCommands, tmp_project_dir: Path) -> None:
+    sync_alembic_commands.init(directory=f"{tmp_project_dir}/migrations/")
+    sync_alembic_commands.revision(message="test", autogenerate=True)
+    sync_alembic_commands.upgrade(revision="head")
+
+
 def test_async_alembic_init(async_alembic_commands: commands.AlembicCommands, tmp_project_dir: Path) -> None:
     async_alembic_commands.init(directory=f"{tmp_project_dir}/migrations/")
     expected_dirs = [f"{tmp_project_dir}/migrations/", f"{tmp_project_dir}/migrations/versions"]
@@ -97,3 +103,9 @@ def test_async_alembic_init_already(async_alembic_commands: commands.AlembicComm
 def test_async_alembic_revision(async_alembic_commands: commands.AlembicCommands, tmp_project_dir: Path) -> None:
     async_alembic_commands.init(directory=f"{tmp_project_dir}/migrations/")
     async_alembic_commands.revision(message="test", autogenerate=True)
+
+
+def test_async_alembic_upgrade(async_alembic_commands: commands.AlembicCommands, tmp_project_dir: Path) -> None:
+    async_alembic_commands.init(directory=f"{tmp_project_dir}/migrations/")
+    async_alembic_commands.revision(message="test", autogenerate=True)
+    async_alembic_commands.upgrade(revision="head")
