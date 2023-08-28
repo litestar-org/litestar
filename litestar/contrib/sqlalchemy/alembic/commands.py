@@ -80,7 +80,7 @@ def _get_database_migration_plugin(app: Litestar) -> SQLAlchemyPlugin | SQLAlche
     If neither plugin is found, it raises an ImproperlyConfiguredException.
     """
     for type_ in SQLAlchemyPlugin, SQLAlchemyInitPlugin:
-        with suppress(KeyError):
+        if type_ in app.plugins:
             return app.plugins.get(type_)
     raise ImproperlyConfiguredException(
         "Failed to initialize database migrations. The required plugin (SQLAlchemyPlugin or SQLAlchemyInitPlugin) is missing."
