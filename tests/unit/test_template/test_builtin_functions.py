@@ -199,7 +199,7 @@ def test_minijinja_url_for(tmp_path: Path) -> None:
     with create_test_client(
         route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
     ) as client:
-        Path(tmp_path / "simple.html").write_text("{{ url_for('simple')|safe }}")
+        Path(tmp_path / "simple.html").write_text("{{ url_for('simple') }}")
 
         response = client.get("/simple.html")
         assert response.status_code == 200
@@ -209,7 +209,7 @@ def test_minijinja_url_for(tmp_path: Path) -> None:
         route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
     ) as client:
         Path(tmp_path / "complex_args_kwargs.html").write_text(
-            "{{ url_for('complex', int_param=100, time_param='18:00')|safe }}"
+            "{{ url_for('complex', int_param=100, time_param='18:00') }}"
         )
 
         response = client.get("/complex_args_kwargs.html")
@@ -220,7 +220,7 @@ def test_minijinja_url_for(tmp_path: Path) -> None:
         route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
     ) as client:
         # missing route params should cause 500 err
-        Path(tmp_path / "complex.html").write_text("{{ url_for('complex')|safe }}")
+        Path(tmp_path / "complex.html").write_text("{{ url_for('complex') }}")
         response = client.get("/complex.html")
         assert response.status_code == 500
 
@@ -257,7 +257,7 @@ def test_minijinja_url_for_static_asset(tmp_path: Path) -> None:
         template_config=template_config,
         static_files_config=[StaticFilesConfig(path="/static/css", directories=[tmp_path], name="css")],
     ) as client:
-        Path(tmp_path / "working.html").write_text("{{ url_for_static_asset('css', 'main/main.css') | safe }}")
+        Path(tmp_path / "working.html").write_text("{{ url_for_static_asset('css', 'main/main.css') }}")
 
         response = client.get("/working.html")
         assert response.status_code == 200
