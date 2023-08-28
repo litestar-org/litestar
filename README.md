@@ -427,6 +427,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/juan-riveros"><img src="https://avatars.githubusercontent.com/u/1297567?v=4?s=100" width="100px;" alt="Juan Riveros"/><br /><sub><b>Juan Riveros</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=juan-riveros" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/davidbrochart"><img src="https://avatars.githubusercontent.com/u/4711805?v=4?s=100" width="100px;" alt="David Brochart"/><br /><sub><b>David Brochart</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=davidbrochart" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
