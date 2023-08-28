@@ -15,12 +15,7 @@ class MergeClause(ClauseElement):
         case_predicate = f" AND {self.predicate!s}" if self.predicate is not None else ""
         if self.command == "INSERT":
             sets, sets_tos = zip(*self._on_sets.items())
-            return "WHEN NOT MATCHED{} THEN {} ({}) VALUES ({})".format(
-                case_predicate,
-                self.command,
-                ", ".join(sets),
-                ", ".join(map(str, sets_tos)),
-            )
+            return f'WHEN NOT MATCHED{case_predicate} THEN {self.command} ({", ".join(sets)}) VALUES ({", ".join(map(str, sets_tos))})'
 
         # WHEN MATCHED clause
         sets = (
@@ -28,11 +23,7 @@ class MergeClause(ClauseElement):
             if self._on_sets
             else ""
         )
-        return "WHEN MATCHED{} THEN {}{}".format(
-            case_predicate,
-            self.command,
-            f" SET {sets!s}" if self._on_sets else "",
-        )
+        return f'WHEN MATCHED{case_predicate} THEN {self.command}{f" SET {sets!s}" if self._on_sets else ""}'
 
     def values(self, **kwargs: Any) -> Self:
         self._on_sets = kwargs
