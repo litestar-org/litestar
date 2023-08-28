@@ -64,7 +64,7 @@ class FileStore(NamespacedStore):
                 finally:
                     os.close(tmp_file_fd)
 
-                shutil.move(tmp_file_name, target_file)
+                os.replace(tmp_file_name, target_file)  # noqa: PTH105
                 renamed = True
             finally:
                 if not renamed:

@@ -46,6 +46,30 @@ To register one of the built-in template engines you simply need to pass it to t
     The ``directory`` parameter passed to :class:`TemplateConfig <litestar.template.TemplateConfig>`
     can be either a directory or list of directories to use for loading templates.
 
+Registering a Custom Template Engine
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The above example will create a jinja Environment instance, but you can also pass in your own instance.
+
+.. code-block:: python
+
+
+    from litestar import Litestar
+    from litestar.contrib.jinja import JinjaTemplateEngine
+    from litestar.template import TemplateConfig
+    from jinja2 import Environment, DictLoader
+
+    my_custom_env = Environment(loader=DictLoader({"index.html": "Hello {{name}}!"}))
+    app = Litestar(
+        template_config=TemplateConfig(
+            instance=JinjaTemplateEngine.from_environment(my_custom_env)
+        )
+    )
+
+.. note::
+
+    The ``instance`` parameter passed to :class:`TemplateConfig <litestar.template.TemplateConfig>`
+    can not be used in conjunction with the ``directory`` parameter, if you choose to use instance you're fully responsible on the engine creation.
 
 Defining a custom template engine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -15,19 +15,19 @@ from sqlalchemy.exc import IntegrityError, InvalidRequestError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute, Mapped, Session, mapped_column
 
-from litestar.contrib.repository.exceptions import ConflictError, RepositoryError
-from litestar.contrib.repository.filters import (
-    BeforeAfter,
-    CollectionFilter,
-    LimitOffset,
-    NotInCollectionFilter,
-    OnBeforeAfter,
-)
 from litestar.contrib.sqlalchemy import base
 from litestar.contrib.sqlalchemy.repository import (
     SQLAlchemyAsyncRepository,
     SQLAlchemySyncRepository,
     wrap_sqlalchemy_exception,
+)
+from litestar.repository.exceptions import ConflictError, RepositoryError
+from litestar.repository.filters import (
+    BeforeAfter,
+    CollectionFilter,
+    LimitOffset,
+    NotInCollectionFilter,
+    OnBeforeAfter,
 )
 from tests.helpers import maybe_async
 
@@ -514,6 +514,22 @@ async def test_sqlalchemy_repo_exists(
     mock_repo_count.return_value = 1
 
     exists = await maybe_async(mock_repo.exists(id="my-id"))
+
+    assert exists
+    mock_repo.session.commit.assert_not_called()
+
+
+async def test_sqlalchemy_repo_exists_with_filter(
+    mock_repo: SQLAlchemyAsyncRepository,
+    monkeypatch: MonkeyPatch,
+    mock_repo_execute: AnyMock,
+    mock_repo_count: AnyMock,
+) -> None:
+    """Test expected method calls for exists operation. with filter argument"""
+    limit_filter = LimitOffset(limit=1, offset=0)
+    mock_repo_count.return_value = 1
+
+    exists = await maybe_async(mock_repo.exists(limit_filter, id="my-id"))
 
     assert exists
     mock_repo.session.commit.assert_not_called()

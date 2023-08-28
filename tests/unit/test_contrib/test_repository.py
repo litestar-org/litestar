@@ -1,6 +1,6 @@
 from litestar.app import Litestar
-from litestar.contrib.repository import handlers
-from litestar.contrib.repository.filters import (
+from litestar.repository import handlers
+from litestar.repository.filters import (
     BeforeAfter,
     CollectionFilter,
     FilterTypes,

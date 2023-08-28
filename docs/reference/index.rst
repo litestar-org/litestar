@@ -36,6 +36,7 @@ API reference
     static_files
     status_codes
     stores/index
+    repository/index
     template
     testing
     types
