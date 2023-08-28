@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING, cast
 from rich.prompt import Confirm, Prompt
 
 from litestar.cli._utils import RICH_CLICK_INSTALLED, LitestarGroup, console
-from litestar.contrib.sqlalchemy.alembic.commands import AlembicCommands
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemyPlugin
+from litestar.contrib.sqlalchemy.alembic.commands import AlembicCommands, _get_database_migration_plugin
 
 if TYPE_CHECKING:
     from alembic.migration import MigrationContext
@@ -134,7 +133,7 @@ def upgrade_database(app: Litestar, revision: str, sql: bool, tag: str | None, n
 def init_alembic(app: Litestar, directory: str | None, multidb: bool, package: bool, no_prompt: bool) -> None:
     """Upgrade the database to the latest revision."""
     console.rule("[yellow]Initializing database migrations.", align="left")
-    plugin = app.plugins.get(SQLAlchemyPlugin)
+    plugin = _get_database_migration_plugin(app)
     if directory is None:
         directory = plugin._alembic_config.script_location
     input_confirmed = (

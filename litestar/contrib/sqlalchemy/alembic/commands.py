@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 import sys
+from contextlib import suppress
 from typing import TYPE_CHECKING, Any, Mapping, TextIO
 
 from alembic import command as migration_command
 from alembic.config import Config as _AlembicCommandConfig
 from alembic.ddl.impl import DefaultImpl
 
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemyPlugin
+from litestar.contrib.sqlalchemy.plugins import SQLAlchemyInitPlugin, SQLAlchemyPlugin
 from litestar.contrib.sqlalchemy.plugins.init.config.asyncio import SQLAlchemyAsyncConfig
+from litestar.exceptions import ImproperlyConfiguredException
 
 if TYPE_CHECKING:
     import os
@@ -71,10 +73,24 @@ class AlembicSpannerImpl(DefaultImpl):
     __dialect__ = "spanner+spanner"
 
 
+def _get_database_migration_plugin(app: Litestar) -> SQLAlchemyPlugin | SQLAlchemyInitPlugin:
+    """Retrieve a database migration plugin from the Litestar application's plugins.
+
+    This function attempts to find and return either the SQLAlchemyPlugin or SQLAlchemyInitPlugin.
+    If neither plugin is found, it raises an ImproperlyConfiguredException.
+    """
+    for type_ in SQLAlchemyPlugin, SQLAlchemyInitPlugin:
+        with suppress(KeyError):
+            return app.plugins.get(type_)
+    raise ImproperlyConfiguredException(
+        "Failed to initialize database migrations. The required plugin (SQLAlchemyPlugin or SQLAlchemyInitPlugin) is missing."
+    )
+
+
 class AlembicCommands:
     def __init__(self, app: Litestar) -> None:
         self._app = app
-        self.plugin_config = app.plugins.get(SQLAlchemyPlugin)._config
+        self.plugin_config = _get_database_migration_plugin(self._app)._config
         self.config = self._get_alembic_command_config()
 
     def upgrade(
