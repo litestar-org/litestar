@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import functools
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, cast
 
 from litestar.exceptions import ImproperlyConfiguredException, MissingDependencyException, TemplateNotFoundException
 from litestar.template.base import (
+    TemplateContext,
     TemplateEngineProtocol,
     TemplateProtocol,
     csrf_token,
@@ -24,6 +26,7 @@ from minijinja import Environment, pass_state
 from minijinja import TemplateError as MiniJinjaTemplateNotFound
 
 if TYPE_CHECKING:
+    from minijinja._lowlevel import State
     from pydantic import DirectoryPath
 
 
@@ -94,9 +97,18 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate"]):
             self.engine = Environment(loader=_loader)
         elif engine_instance:
             self.engine = engine_instance
-        self.register_template_callable(key="url_for_static_asset", template_callable=url_for_static_asset)  # type: ignore
-        self.register_template_callable(key="csrf_token", template_callable=csrf_token)  # type: ignore
-        self.register_template_callable(key="url_for", template_callable=url_for)  # type: ignore
+
+        def _url_for_mini(func: Callable[[TemplateContext], str]) -> Callable:
+            return functools.partial(_inner, func)
+
+        @pass_state  # type: ignore
+        def _inner(func: Callable, state: State, name: str, *args: Any, **kwargs: Any) -> str:
+            template_context = {"request": state.lookup("request"), "csrf": state.lookup("csrf")}
+            return cast(str, func(template_context, name, *args, **kwargs))
+
+        self.register_template_callable(key="url_for", template_callable=_url_for_mini(url_for))  # type: ignore
+        self.register_template_callable(key="url_for_static_asset", template_callable=_url_for_mini(url_for_static_asset))  # type: ignore
+        self.register_template_callable(key="csrf_token", template_callable=_url_for_mini(csrf_token))
 
     def get_template(self, template_name: str) -> MiniJinjaTemplate:
         """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
