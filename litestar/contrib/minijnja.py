@@ -94,7 +94,7 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate"]):
                         return template_path.read_text()
                 raise TemplateNotFoundException(template_name=name)
 
-            self.engine = Environment(loader=_loader)
+            self.engine = Environment(loader=_loader, auto_escape_callback=lambda x: x.endswith((".html", ".foo")))
         elif engine_instance:
             self.engine = engine_instance
 
