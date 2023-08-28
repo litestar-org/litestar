@@ -39,7 +39,7 @@ writer = rewriter.Rewriter()
 @writer.rewrites(ops.CreateTableOp)
 def order_columns(context: EnvironmentContext, revision: tuple[str, ...], op: ops.CreateTableOp) -> ops.CreateTableOp:
     """Orders ID first and the audit columns at the end."""
-    special_names = {"id": -100, "created_at": 1001, "updated_at": 1002}
+    special_names = {"id": -100, "sa_orm_sentinel": 1001, "created_at": 1002, "updated_at": 1002}
     cols_by_key = [
         (
             special_names.get(col.key, index) if isinstance(col, Column) else 2000,
