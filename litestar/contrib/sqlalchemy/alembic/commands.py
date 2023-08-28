@@ -7,8 +7,8 @@ from alembic import command as migration_command
 from alembic.config import Config as _AlembicCommandConfig
 from alembic.ddl.impl import DefaultImpl
 
+from litestar.contrib.sqlalchemy.plugins import SQLAlchemyPlugin
 from litestar.contrib.sqlalchemy.plugins.init.config.asyncio import SQLAlchemyAsyncConfig
-from litestar.contrib.sqlalchemy.plugins.init.plugin import SQLAlchemyInitPlugin
 
 if TYPE_CHECKING:
     import os
@@ -74,7 +74,7 @@ class AlembicSpannerImpl(DefaultImpl):
 class AlembicCommands:
     def __init__(self, app: Litestar) -> None:
         self._app = app
-        self.plugin_config = app.plugins.get(SQLAlchemyInitPlugin)._config
+        self.plugin_config = app.plugins.get(SQLAlchemyPlugin)._config
         self.config = self._get_alembic_command_config()
 
     def upgrade(

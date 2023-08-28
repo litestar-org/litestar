@@ -219,7 +219,6 @@ def create_revision(
         branch_label=branch_label,
         version_path=version_path,
         rev_id=rev_id,
-        # FIXME: type hint
         process_revision_directives=process_revision_directives,  # type: ignore[arg-type]
     )
 

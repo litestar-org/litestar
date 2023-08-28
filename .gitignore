@@ -29,3 +29,5 @@ target/
 /docs/_build/
 coverage.*
 setup.py
+migrations/
+alembic.ini
