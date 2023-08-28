@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 
 try:
-    from structlog.types import BindableLogger, Processor, WrappedLogger  # noqa: F811
+    from structlog.types import BindableLogger, Processor, WrappedLogger
 except ImportError:
     BindableLogger = Any  # type: ignore
     Processor = Any  # type: ignore
