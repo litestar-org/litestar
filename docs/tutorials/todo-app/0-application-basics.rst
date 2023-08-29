@@ -83,7 +83,7 @@ Litestar that you only want to use this function when a ``GET`` request is being
         hello_world = get("/")(hello_world)
 
     For an in-depth explanation of decorators, you can read this excellent Real Python
-    article: https://realpython.com/primer-on-python-decorators/
+    article: `Primer on Python Decorators <https://realpython.com/primer-on-python-decorators/>`_
 
 
 .. seealso::

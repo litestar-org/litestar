@@ -38,7 +38,7 @@ Cleaning up the example with dataclasses
 To make your life a little easier, you can transform this example by using :py:mod:`dataclasses` instead of plain dictionaries:
 
 .. tip:: For an in-depth explanation of dataclasses, you can read this excellent Real Python
-    article: `dataclasses <https://realpython.com/python-data-classes/>`_
+    article: `Data Classes in Python 3.7+ <https://realpython.com/python-data-classes/>`_
 
 .. literalinclude:: /examples/todo_app/get_list/dataclass.py
     :caption: app.py
