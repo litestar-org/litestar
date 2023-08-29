@@ -12,3 +12,4 @@ contrib
     piccolo
     pydantic
     sqlalchemy/index
+    asyncpg
