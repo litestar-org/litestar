@@ -780,6 +780,15 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             NotFoundError: If no instance found with same identifier as ``data``.
         """
         instances = []
+        _operation = "BASIC"
+        is_postgres_15 = self._dialect.name == "postgresql" and (
+            self._dialect.server_version_info is not None and self._dialect.server_version_info[0] >= 15
+        )
+        if self._dialect.name == "oracle" or (self._dialect.name == "postgresql" and is_postgres_15):
+            _operation = "MERGE"
+        elif self._dialect.name in {"sqlite", "duckdb", "mysql", "postgresql"}:
+            _operation = "INSERT_ON_EXCEPTION"
+
         with wrap_sqlalchemy_exception():
             for datum in data:
                 instance = self._attach_to_session(datum, strategy="merge")
