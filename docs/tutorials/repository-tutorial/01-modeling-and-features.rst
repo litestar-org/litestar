@@ -16,7 +16,7 @@ We'll start by creating the ``Author`` table, utilizing the
 :class:`UUIDBase <litestar.contrib.sqlalchemy.base.UUIDBase>` class. To keep things
 simple, our first model will encompass only three fields: ``id``, ``name``, and ``dob``.
 
-The books entity is not considered a "strong" entity and therefore always requires an
+The book entity is not considered a "strong" entity and therefore always requires an
 author to be created.  We need to configure our SQLAlchemy classes so that it is aware
 of this relationship. We will extend the ``Author`` model by incorporating a ``Book``
 relationship. This allows each ``Author`` record to possess multiple ``Book`` records.
@@ -40,7 +40,7 @@ change endows the `book` table with automatic timestamp columns
 
 .. note::
 
-    If your application requires integer-based primary keys, an equivalent base model
+    If your application requires integer-based primary keys, equivalent base model
     and base audit model implementations can be found at
     :class:`BigIntBase <litestar.contrib.sqlalchemy.base.BigIntAuditBase>` and
     :class:`BigIntAuditBase <litestar.contrib.sqlalchemy.base.UUIDAuditBase>`

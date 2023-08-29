@@ -16,7 +16,7 @@ parameters.
     :linenos:
 
 Because we'll be using the SQLAlchemy plugin in Litestar, the session is automatically
-configured as a dependency
+configured as a dependency.
 
 By default, the repository doesn't add any additional query options to your base
 statement, but provides the flexibility to override it, allowing you to pass your own
@@ -42,7 +42,7 @@ interacting with the ``Author`` model:
     :linenos:
 
 In our list detail endpoint, we use the pagination filter for limiting the amount of
-data returned, allowing to retrieve large datasets in smaller, more manageable chunks.
+data returned, allowing us to retrieve large datasets in smaller, more manageable chunks.
 
 In the above examples, we've used the asynchronous repository implementation. However,
 Litestar also supports synchronous database drivers with an identical implementation.

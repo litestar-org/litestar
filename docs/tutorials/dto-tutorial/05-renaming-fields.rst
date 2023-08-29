@@ -17,7 +17,7 @@ In this example, we rename the ``address`` field to ``location``:
    :linenos:
    :emphasize-lines: 28
 
-Notice how the ``address`` field is renamed to ``location``
+Notice how the ``address`` field is renamed to ``location``.
 
 .. image:: images/explicit_field_renaming.png
     :align: center

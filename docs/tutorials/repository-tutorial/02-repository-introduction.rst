@@ -1,7 +1,7 @@
 Interacting with repositories
 -----------------------------
 Now that we've covered the modeling basics, we are able to create our first repository
-class.  The repository classes includes all of the standard CRUD operations as well as a
+class.  The repository classes include all of the standard CRUD operations as well as a
 few advanced features such as pagination, filtering and bulk operations.
 
 Before we jump in to the code, let's take a look at the available functions available in
@@ -81,7 +81,7 @@ of our Author repository.
 
 The ``repository_factory`` method will do the following for us:
     - Automatically create a new DB session from the SQLAlchemy configuration.
-    - Rollback session when any exception occurs
+    - Rollback session when any exception occurs.
     - Automatically commit after function call completes.
 
 
@@ -98,7 +98,7 @@ Creating, Updating and Removing Data
 To illustrate a few ways you can manipulate data in your database, we'll go through the
 various CRUD operations:
 
-Creating Data: Here's a simple insert operation to populate our new Author table
+Creating Data: Here's a simple insert operation to populate our new Author table:
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
@@ -106,7 +106,7 @@ Creating Data: Here's a simple insert operation to populate our new Author table
         :emphasize-lines: 52-61
         :linenos:
 
-Updating Data: The ``update`` method will ensure any updates made to the model object are executed on the database
+Updating Data: The ``update`` method will ensure any updates made to the model object are executed on the database:
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
@@ -114,7 +114,7 @@ Updating Data: The ``update`` method will ensure any updates made to the model o
         :emphasize-lines: 64-68
         :linenos:
 
-Removing Data: The ``remove`` method accepts the primary key of the row you want to delete
+Removing Data: The ``remove`` method accepts the primary key of the row you want to delete:
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
