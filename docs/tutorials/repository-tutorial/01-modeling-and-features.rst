@@ -8,7 +8,7 @@ to make working with models easier.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 9, 8,19,20
+    :emphasize-lines: 9,18,19,20
     :linenos:
 
 We'll begin by modelling the entities and relationships between authors and books.
@@ -26,7 +26,7 @@ key constraints when using the ``author_id`` field in each ``Book`` record.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 9, 21,26,27,28,29
+    :emphasize-lines: 9,21,27,28,29,30
     :linenos:
 
 By using the audit model, we can automatically record the time a record was created and

@@ -69,7 +69,7 @@ to include all of the integrated repository features.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 25-28
+    :emphasize-lines: 14,27-30
     :linenos:
 
 Repository Context Manager
@@ -103,7 +103,7 @@ Creating Data: Here's a simple insert operation to populate our new Author table
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
         :caption: app.py
-        :emphasize-lines: 50-54
+        :emphasize-lines: 52-61
         :linenos:
 
 Updating Data: The ``update`` method will ensure any updates made to the model object are executed on the database
@@ -111,7 +111,7 @@ Updating Data: The ``update`` method will ensure any updates made to the model o
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
         :caption: app.py
-        :emphasize-lines: 57-61
+        :emphasize-lines: 64-68
         :linenos:
 
 Removing Data: The ``remove`` method accepts the primary key of the row you want to delete
@@ -119,7 +119,7 @@ Removing Data: The ``remove`` method accepts the primary key of the row you want
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
         :caption: app.py
-        :emphasize-lines: 64-68
+        :emphasize-lines: 71-75
         :linenos:
 
 Now that we've seen how to do single-row operations, let's look at the bulk methods we
@@ -165,7 +165,7 @@ performance when working with larger data sets.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 68-69
+    :emphasize-lines: 66-71
     :linenos:
 
 
@@ -180,7 +180,7 @@ repository.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 74-75
+    :emphasize-lines: 73-75
     :linenos:
 
 

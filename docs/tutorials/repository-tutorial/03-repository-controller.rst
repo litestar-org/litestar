@@ -12,7 +12,7 @@ parameters.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 76,77,78
+    :emphasize-lines: 78-80
     :linenos:
 
 Because we'll be using the SQLAlchemy plugin in Litestar, the session is automatically
@@ -25,7 +25,7 @@ statement:
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 82,83,84
+    :emphasize-lines: 83-90
     :linenos:
 
 In this instance, we enhance the repository function by adding a ``selectinload``
@@ -38,7 +38,7 @@ interacting with the ``Author`` model:
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 110-183
+    :emphasize-lines: 116-194
     :linenos:
 
 In our list detail endpoint, we use the pagination filter for limiting the amount of

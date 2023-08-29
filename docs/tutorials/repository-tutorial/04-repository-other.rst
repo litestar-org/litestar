@@ -9,7 +9,7 @@ Slug Fields
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 14,70,71,72,73
+    :emphasize-lines: 12,33-40,101-106
     :linenos:
 
 In this example, we are using a ``BlogPost`` model to hold blog post titles and
@@ -30,7 +30,7 @@ to have the slugified value of "follow-the-yellow-brick-road".
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 53-74
+    :emphasize-lines: 43-98
     :linenos:
 
 Since the ``BlogPost.title`` field is not marked as unique, this means that we'll have

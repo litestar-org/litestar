@@ -16,7 +16,7 @@ To demonstrate, lets add a self-referencing ``children`` relationship to our ``P
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/nested_collection_exclude.py
    :language: python
    :linenos:
-   :emphasize-lines: 23,27,35,36,42
+   :emphasize-lines: 22,26,34,35,41
 
 Now, a ``Person`` can have one or many ``children``, and each ``child`` can have one or many ``children``, and so on.
 
