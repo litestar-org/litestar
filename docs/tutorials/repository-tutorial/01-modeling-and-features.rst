@@ -8,7 +8,7 @@ to make working with models easier.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 9, 8,19,20
+    :emphasize-lines: 9,18,19,20
     :linenos:
 
 We'll begin by modelling the entities and relationships between authors and books.
@@ -16,7 +16,7 @@ We'll start by creating the ``Author`` table, utilizing the
 :class:`UUIDBase <litestar.contrib.sqlalchemy.base.UUIDBase>` class. To keep things
 simple, our first model will encompass only three fields: ``id``, ``name``, and ``dob``.
 
-The books entity is not considered a "strong" entity and therefore always requires an
+The book entity is not considered a "strong" entity and therefore always requires an
 author to be created.  We need to configure our SQLAlchemy classes so that it is aware
 of this relationship. We will extend the ``Author`` model by incorporating a ``Book``
 relationship. This allows each ``Author`` record to possess multiple ``Book`` records.
@@ -26,7 +26,7 @@ key constraints when using the ``author_id`` field in each ``Book`` record.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 9, 21,26,27,28,29
+    :emphasize-lines: 9,21,27,28,29,30
     :linenos:
 
 By using the audit model, we can automatically record the time a record was created and
@@ -40,7 +40,7 @@ change endows the `book` table with automatic timestamp columns
 
 .. note::
 
-    If your application requires integer-based primary keys, an equivalent base model
+    If your application requires integer-based primary keys, equivalent base model
     and base audit model implementations can be found at
     :class:`BigIntBase <litestar.contrib.sqlalchemy.base.BigIntAuditBase>` and
     :class:`BigIntAuditBase <litestar.contrib.sqlalchemy.base.UUIDAuditBase>`

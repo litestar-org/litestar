@@ -15,9 +15,9 @@ In this example, we rename the ``address`` field to ``location``:
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/explicit_field_renaming.py
    :language: python
    :linenos:
-   :emphasize-lines: 29
+   :emphasize-lines: 28
 
-Notice how the ``address`` field is renamed to ``location``
+Notice how the ``address`` field is renamed to ``location``.
 
 .. image:: images/explicit_field_renaming.png
     :align: center
@@ -47,7 +47,7 @@ Let's modify our example to use the ``upper`` strategy:
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/field_renaming_strategy.py
    :language: python
    :linenos:
-   :emphasize-lines: 29
+   :emphasize-lines: 28
 
 And the result:
 

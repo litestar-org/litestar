@@ -71,7 +71,7 @@ Installation
     All Extras:
         :code:`pip install litestar[full]`
 
-    .. note:: the full extras is not recommended because it will add a lot of unnecessary extras.
+    .. note:: The full extras is not recommended because it will add a lot of unnecessary extras.
 
 
 Minimal Example

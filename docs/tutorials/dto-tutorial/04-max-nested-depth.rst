@@ -24,7 +24,7 @@ Let's now modify our script to include the children of children in the response:
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/max_nested_depth.py
    :language: python
    :linenos:
-   :emphasize-lines: 29
+   :emphasize-lines: 28
 
 We now see those empty collections in our output:
 
