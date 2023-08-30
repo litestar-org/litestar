@@ -14,7 +14,7 @@ code a bit. Let's move the handlers into a controller and define the DTOs there.
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/controller.py
    :language: python
    :linenos:
-   :emphasize-lines: 31,32,45
+   :emphasize-lines: 30,31,44
 
 The previous script had separate handler functions for each route, whereas the new script organizes these into a
 ``PersonController`` class, allowing us to move common configuration to the controller layer.

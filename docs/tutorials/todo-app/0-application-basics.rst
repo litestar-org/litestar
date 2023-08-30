@@ -50,14 +50,14 @@ example, the only route handler we have is for ``hello_world``, and it is using 
 ``/`` path.
 
 .. tip::
-    For example, if your application has a route for handling requests to the "/home"
+    For example, if your application has a route for handling requests to the ``/home``
     URL path, you would create a route handler function that would be called when a
     request to that path is received.
 
 The first argument to the route handler is the *path*, which in this example has been
 set to ``/``. This means that the function ``hello_world`` will be called when a request
 is being made to the ``/`` path of your application. The name of the handler decorator
-- ``get`` - refers to the HTTP method which you want to respond to. Using ``get`` tells
+- ``get`` - refers to the HTTP method to which you want to respond. Using ``get`` tells
 Litestar that you only want to use this function when a ``GET`` request is being made.
 
 
@@ -83,7 +83,7 @@ Litestar that you only want to use this function when a ``GET`` request is being
         hello_world = get("/")(hello_world)
 
     For an in-depth explanation of decorators, you can read this excellent Real Python
-    article: https://realpython.com/primer-on-python-decorators/
+    article: `Primer on Python Decorators <https://realpython.com/primer-on-python-decorators/>`_
 
 
 .. seealso::
@@ -111,10 +111,10 @@ you would like to send the return value as-is.
     While type annotations by default don't have any influence on runtime behaviour,
     Litestar uses them for many things, for example to validate incoming request data.
 
-    If you are using a static type checker such as
+    If you are using a static type checker - such as
     `mypy <https://mypy.readthedocs.io/en/stable/>`_ or
-    `pyright <https://microsoft.github.io/pyright/#/>`_ this has the added benefit of
-    making your applications easy to check and more type safe.
+    `pyright <https://microsoft.github.io/pyright/#/>`_ - this has the added benefit of
+    making your applications easy to check and more type-safe.
 
 
 
