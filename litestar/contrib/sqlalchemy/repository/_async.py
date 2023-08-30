@@ -16,6 +16,7 @@ from sqlalchemy import (
 )
 from sqlalchemy import func as sql_func
 from sqlalchemy.orm import InstrumentedAttribute
+from sqlalchemy.sql._typing import ColumnExpressionArgument
 
 from litestar.repository import AbstractAsyncRepository, RepositoryError
 from litestar.repository.filters import (
@@ -41,6 +42,8 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 DEFAULT_INSERTMANYVALUES_MAX_PARAMETERS: Final = 950
+
+WhereClauseT = _ColumnExpressionArgument[bool]
 
 
 class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]):
@@ -438,7 +441,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
 
     async def count(
         self,
-        *filters: FilterTypes,
+        *filters: FilterTypes | ColumnExpressionArgument[bool],
         statement: Select[tuple[ModelT]] | StatementLambdaElement | None = None,
         **kwargs: Any,
     ) -> int:
@@ -567,7 +570,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
 
     async def list_and_count(
         self,
-        *filters: FilterTypes,
+        *filters: FilterTypes | ColumnExpressionArgument[bool],
         auto_commit: bool | None = None,
         auto_expunge: bool | None = None,
         auto_refresh: bool | None = None,
@@ -890,7 +893,10 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         return statement
 
     def _apply_filters(
-        self, *filters: FilterTypes, apply_pagination: bool = True, statement: StatementLambdaElement
+        self,
+        *filters: FilterTypes | ColumnExpressionArgument[bool],
+        apply_pagination: bool = True,
+        statement: StatementLambdaElement,
     ) -> StatementLambdaElement:
         """Apply filters to a select statement.
 
@@ -906,6 +912,8 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             The select with filters applied.
         """
         for filter_ in filters:
+            if type(filter_) is ColumnExpressionArgument[bool]:
+                statement = self._filter_by_expression(expression=filter_, statement=statement)
             if isinstance(filter_, LimitOffset):
                 if apply_pagination:
                     statement = self._apply_limit_offset_pagination(filter_.limit, filter_.offset, statement=statement)
@@ -985,6 +993,12 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
     ) -> StatementLambdaElement:
         for key, val in kwargs.items() if isinstance(kwargs, dict) else kwargs:
             statement = self._filter_by_where(statement, key, val)  # pyright: ignore[reportGeneralTypeIssues]
+        return statement
+
+    def _filter_by_expression(
+        self, statement: StatementLambdaElement, expression: ColumnExpressionArgument[bool]
+    ) -> StatementLambdaElement:
+        statement += lambda s: s.where(expression)
         return statement
 
     def _filter_by_where(self, statement: StatementLambdaElement, key: str, val: Any) -> StatementLambdaElement:
