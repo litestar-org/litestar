@@ -2,7 +2,7 @@ SQLAlchemy Repository Tutorial
 ==============================
 
 
-In this tutorial, we will walk through the process of modelling a simple database
+In this tutorial, we will walk through the process of modelling simple database
 relationships, and demonstrate how Litestar's repository modules can make working with
 databases a breeze. Lets get started!
 
