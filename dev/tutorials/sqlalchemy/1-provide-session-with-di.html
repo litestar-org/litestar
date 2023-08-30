@@ -1220,8 +1220,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 42</span><span class="n">sessionmaker</span> <span class="o">=</span> <span class="n">async_sessionmaker</span><span class="p">(</span><span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="linenos"> 43</span>
 <span class="linenos"> 44</span>
-<span class="hll"><span class="linenos"> 45</span><span class="k">async</span> <span class="k">def</span> <span class="nf">provide_transaction</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span class="hll"><span class="linenos"> 46</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+<span class="linenos"> 45</span><span class="k">async</span> <span class="k">def</span> <span class="nf">provide_transaction</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="hll"><span class="linenos"> 46</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 47</span>        <span class="k">try</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 48</span>            <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
 </span><span class="hll"><span class="linenos"> 49</span>                <span class="k">yield</span> <span class="n">session</span>
@@ -1231,8 +1231,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span class="hll"><span class="linenos"> 53</span>                <span class="n">detail</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span>
 </span><span class="hll"><span class="linenos"> 54</span>            <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
 </span><span class="hll"><span class="linenos"> 55</span>
-</span><span class="hll"><span class="linenos"> 56</span>
-</span><span class="linenos"> 57</span><span class="k">def</span> <span class="nf">serialize_todo</span><span class="p">(</span><span class="n">todo</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoType</span><span class="p">:</span>
+</span><span class="linenos"> 56</span>
+<span class="linenos"> 57</span><span class="k">def</span> <span class="nf">serialize_todo</span><span class="p">(</span><span class="n">todo</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoType</span><span class="p">:</span>
 <span class="linenos"> 58</span>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">todo</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="s2">&quot;done&quot;</span><span class="p">:</span> <span class="n">todo</span><span class="o">.</span><span class="n">done</span><span class="p">}</span>
 <span class="linenos"> 59</span>
 <span class="linenos"> 60</span>
@@ -1329,8 +1329,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 42</span>
 <span class="linenos"> 43</span><span class="n">sessionmaker</span> <span class="o">=</span> <span class="n">async_sessionmaker</span><span class="p">(</span><span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="linenos"> 44</span>
-<span class="hll"><span class="linenos"> 45</span>
-</span><span class="hll"><span class="linenos"> 46</span><span class="k">async</span> <span class="k">def</span> <span class="nf">provide_transaction</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="linenos"> 45</span>
+<span class="hll"><span class="linenos"> 46</span><span class="k">async</span> <span class="k">def</span> <span class="nf">provide_transaction</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 </span><span class="hll"><span class="linenos"> 47</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 48</span>        <span class="k">try</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 49</span>            <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
@@ -1340,8 +1340,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </span><span class="hll"><span class="linenos"> 53</span>                <span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_409_CONFLICT</span><span class="p">,</span>
 </span><span class="hll"><span class="linenos"> 54</span>                <span class="n">detail</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span>
 </span><span class="hll"><span class="linenos"> 55</span>            <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
-</span><span class="hll"><span class="linenos"> 56</span>
-</span><span class="linenos"> 57</span>
+</span><span class="linenos"> 56</span>
+<span class="linenos"> 57</span>
 <span class="linenos"> 58</span><span class="k">def</span> <span class="nf">serialize_todo</span><span class="p">(</span><span class="n">todo</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoType</span><span class="p">:</span>
 <span class="linenos"> 59</span>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">todo</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="s2">&quot;done&quot;</span><span class="p">:</span> <span class="n">todo</span><span class="o">.</span><span class="n">done</span><span class="p">}</span>
 <span class="linenos"> 60</span>
@@ -1439,8 +1439,8 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 42</span>
 <span class="linenos"> 43</span><span class="n">sessionmaker</span> <span class="o">=</span> <span class="n">async_sessionmaker</span><span class="p">(</span><span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="linenos"> 44</span>
-<span class="hll"><span class="linenos"> 45</span>
-</span><span class="hll"><span class="linenos"> 46</span><span class="k">async</span> <span class="k">def</span> <span class="nf">provide_transaction</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="linenos"> 45</span>
+<span class="hll"><span class="linenos"> 46</span><span class="k">async</span> <span class="k">def</span> <span class="nf">provide_transaction</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 </span><span class="hll"><span class="linenos"> 47</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 48</span>        <span class="k">try</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 49</span>            <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
@@ -1450,8 +1450,8 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </span><span class="hll"><span class="linenos"> 53</span>                <span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_409_CONFLICT</span><span class="p">,</span>
 </span><span class="hll"><span class="linenos"> 54</span>                <span class="n">detail</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span>
 </span><span class="hll"><span class="linenos"> 55</span>            <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
-</span><span class="hll"><span class="linenos"> 56</span>
-</span><span class="linenos"> 57</span>
+</span><span class="linenos"> 56</span>
+<span class="linenos"> 57</span>
 <span class="linenos"> 58</span><span class="k">def</span> <span class="nf">serialize_todo</span><span class="p">(</span><span class="n">todo</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoType</span><span class="p">:</span>
 <span class="linenos"> 59</span>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">todo</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="s2">&quot;done&quot;</span><span class="p">:</span> <span class="n">todo</span><span class="o">.</span><span class="n">done</span><span class="p">}</span>
 <span class="linenos"> 60</span>
@@ -1536,7 +1536,7 @@ This is automatically provided by Litestar’s dependency injection system at ru
 </div>
 <p>One final improvement in this script is exception handling. In the previous version, a
 <a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.ClientException" title="litestar.exceptions.ClientException"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.exceptions.ClientException</span></code></a> is raised inside the <code class="docutils literal notranslate"><span class="pre">add_item()</span></code> handler if there’s an integrity error
-raised during the insertion of the new to-do item. In our latest revision, we’ve been able to centralize this handling
+raised during the insertion of the new TODO item. In our latest revision, we’ve been able to centralize this handling
 to occur inside the <code class="docutils literal notranslate"><span class="pre">provide_transaction()</span></code> function.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">async</span> <span class="k">def</span> <span class="nf">provide_transaction</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="linenos"> 2</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>

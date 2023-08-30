@@ -1369,9 +1369,10 @@ as <code class="docutils literal notranslate"><span class="pre">greeter(name=&qu
 <p class="admonition-title">Tip</p>
 <p>Just like query parameters, path parameters can convert and validate their values as
 well. This is configured using the <code class="docutils literal notranslate"><span class="pre">:type</span></code> colon annotation, similar to type
-annotations. <code class="docutils literal notranslate"><span class="pre">value:str</span></code> will receive values as a string, while e.g. <code class="docutils literal notranslate"><span class="pre">value:int</span></code>
-will try to convert it into an integer. A full list of supported types can be found
-here: <a class="reference internal" href="../../usage/routing/parameters.html#supported-path-parameter-types"><span class="std std-ref">Supported Path Parameter Types</span></a></p>
+annotations. For example, <code class="docutils literal notranslate"><span class="pre">value:str</span></code> will receive values as a string, while
+<code class="docutils literal notranslate"><span class="pre">value:int</span></code> will try to convert it into an integer.</p>
+<p>A full list of supported types can be found here:
+<a class="reference internal" href="../../usage/routing/parameters.html#supported-path-parameter-types"><span class="std std-ref">Supported Path Parameter Types</span></a></p>
 </div>
 <p>By using this pattern and combining it with those from the earlier section about
 receiving data you can now set up a route handler that takes in the title of a

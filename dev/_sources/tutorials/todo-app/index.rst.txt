@@ -9,7 +9,7 @@ Developing a basic TODO application
     is the right place to start.
 
 .. note::
-    Basic knowledge of Python and web development concepts are required
+    Basic knowledge of Python and web development concepts are required.
 
 
 The goal of this tutorial is to develop a TODO application with the following

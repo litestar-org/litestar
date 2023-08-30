@@ -1204,9 +1204,9 @@ nested <code class="docutils literal notranslate"><span class="pre">Person</span
 <span class="linenos">25</span><span class="k">class</span> <span class="nc">ReadDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
 <span class="linenos">26</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span>
 <span class="linenos">27</span>        <span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="s2">&quot;address.street&quot;</span><span class="p">,</span> <span class="s2">&quot;children.0.email&quot;</span><span class="p">,</span> <span class="s2">&quot;children.0.address&quot;</span><span class="p">},</span>
-<span class="linenos">28</span>        <span class="n">max_nested_depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-<span class="hll"><span class="linenos">29</span>    <span class="p">)</span>
-</span><span class="linenos">30</span>
+<span class="hll"><span class="linenos">28</span>        <span class="n">max_nested_depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span class="linenos">29</span>    <span class="p">)</span>
+<span class="linenos">30</span>
 <span class="linenos">31</span>
 <span class="linenos">32</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/person/{name:str}&quot;</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">ReadDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="linenos">33</span><span class="k">def</span> <span class="nf">get_person</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>

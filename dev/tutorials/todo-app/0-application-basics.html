@@ -1215,14 +1215,14 @@ example, the only route handler we have is for <code class="docutils literal not
 <code class="docutils literal notranslate"><span class="pre">/</span></code> path.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>For example, if your application has a route for handling requests to the “/home”
+<p>For example, if your application has a route for handling requests to the <code class="docutils literal notranslate"><span class="pre">/home</span></code>
 URL path, you would create a route handler function that would be called when a
 request to that path is received.</p>
 </div>
 <p>The first argument to the route handler is the <em>path</em>, which in this example has been
 set to <code class="docutils literal notranslate"><span class="pre">/</span></code>. This means that the function <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> will be called when a request
 is being made to the <code class="docutils literal notranslate"><span class="pre">/</span></code> path of your application. The name of the handler decorator
-- <code class="docutils literal notranslate"><span class="pre">get</span></code> - refers to the HTTP method which you want to respond to. Using <code class="docutils literal notranslate"><span class="pre">get</span></code> tells
+- <code class="docutils literal notranslate"><span class="pre">get</span></code> - refers to the HTTP method to which you want to respond. Using <code class="docutils literal notranslate"><span class="pre">get</span></code> tells
 Litestar that you only want to use this function when a <code class="docutils literal notranslate"><span class="pre">GET</span></code> request is being made.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 <span class="linenos">2</span>
@@ -1249,7 +1249,7 @@ Without the decorator, the example would look like this:</p>
 </pre></div>
 </div>
 <p>For an in-depth explanation of decorators, you can read this excellent Real Python
-article: <a class="reference external" href="https://realpython.com/primer-on-python-decorators/">https://realpython.com/primer-on-python-decorators/</a></p>
+article: <a class="reference external" href="https://realpython.com/primer-on-python-decorators/">Primer on Python Decorators</a></p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -1278,10 +1278,10 @@ you would like to send the return value as-is.</p>
 <p class="admonition-title">Note</p>
 <p>While type annotations by default don’t have any influence on runtime behaviour,
 Litestar uses them for many things, for example to validate incoming request data.</p>
-<p>If you are using a static type checker such as
+<p>If you are using a static type checker - such as
 <a class="reference external" href="https://mypy.readthedocs.io/en/stable/">mypy</a> or
-<a class="reference external" href="https://microsoft.github.io/pyright/#/">pyright</a> this has the added benefit of
-making your applications easy to check and more type safe.</p>
+<a class="reference external" href="https://microsoft.github.io/pyright/#/">pyright</a> - this has the added benefit of
+making your applications easy to check and more type-safe.</p>
 </div>
 </section>
 <section id="applications">

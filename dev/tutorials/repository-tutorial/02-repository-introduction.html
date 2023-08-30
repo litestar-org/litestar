@@ -1169,7 +1169,7 @@ document.write(`
   <section id="interacting-with-repositories">
 <h1>Interacting with repositories<a class="headerlink" href="#interacting-with-repositories" title="Permalink to this heading">#</a></h1>
 <p>Now that we’ve covered the modeling basics, we are able to create our first repository
-class.  The repository classes includes all of the standard CRUD operations as well as a
+class.  The repository classes include all of the standard CRUD operations as well as a
 few advanced features such as pagination, filtering and bulk operations.</p>
 <p>Before we jump in to the code, let’s take a look at the available functions available in
 the the synchronous and asynchronous repositories.</p>
@@ -1183,11 +1183,11 @@ the the synchronous and asynchronous repositories.</p>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">get</span></code></p></td>
 <td><p>Selecting Data</p></td>
-<td><p>Select a single record by primary key. Raising an exception when no record is found.</p></td>
+<td><p>Select a single record by primary key. Raises an exception when no record is found.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">get_one</span></code></p></td>
 <td><p>Selecting Data</p></td>
-<td><p>Select a single record specified by the <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> parameters. An exception is raised when no record is found.</p></td>
+<td><p>Select a single record specified by the <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> parameters. Raises an exception when no record is found.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">get_one_or_none</span></code></p></td>
 <td><p>Selecting Data</p></td>
@@ -1199,11 +1199,11 @@ the the synchronous and asynchronous repositories.</p>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">list_and_count</span></code></p></td>
 <td><p>Selecting Data</p></td>
-<td><p>Select a list of records specified by the <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> parameters. Optionally it can be filtered by the included <code class="docutils literal notranslate"><span class="pre">FilterTypes</span></code> args. Results are returned as a 2 value tuple that includes the rows selected and the total count of records</p></td>
+<td><p>Select a list of records specified by the <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> parameters. Optionally it can be filtered by the included <code class="docutils literal notranslate"><span class="pre">FilterTypes</span></code> args. Results are returned as a 2 value tuple that includes the rows selected and the total count of records.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">get_or_create</span></code></p></td>
 <td><p>Creating Data</p></td>
-<td><p>Get a record specified by the the <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> parameters.  If no record is found, one is created with the given values.  There’s an optional attribute to filter on a subset of the supplied parameters and to merge updates.</p></td>
+<td><p>Select a single record specified by the the <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> parameters.  If no record is found, one is created with the given values.  There’s an optional attribute to filter on a subset of the supplied parameters and to merge updates.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">create</span></code></p></td>
 <td><p>Creating Data</p></td>
@@ -1227,7 +1227,7 @@ the the synchronous and asynchronous repositories.</p>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upsert_many</span></code></p></td>
 <td><p>Updating Data</p></td>
-<td><p>Updates or inserts multiple record based whether or not the primary key value on the model object is populated.</p></td>
+<td><p>Updates or inserts multiple records based whether or not the primary key value on the model object is populated.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">remove</span></code></p></td>
 <td><p>Removing Data</p></td>
@@ -1280,8 +1280,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 11</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span>
 <span class="linenos"> 12</span>
 <span class="linenos"> 13</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">UUIDBase</span>
-<span class="linenos"> 14</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.repository</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncRepository</span>
-<span class="linenos"> 15</span>
+<span class="hll"><span class="linenos"> 14</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.repository</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncRepository</span>
+</span><span class="linenos"> 15</span>
 <span class="linenos"> 16</span><span class="n">console</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span>
 <span class="linenos"> 17</span>
 <span class="linenos"> 18</span>
@@ -1291,13 +1291,13 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 22</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 <span class="linenos"> 23</span>    <span class="n">dob</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
 <span class="linenos"> 24</span>    <span class="n">dod</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
-<span class="hll"><span class="linenos"> 25</span>
-</span><span class="hll"><span class="linenos"> 26</span>
-</span><span class="hll"><span class="linenos"> 27</span><span class="k">class</span> <span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
+<span class="linenos"> 25</span>
+<span class="linenos"> 26</span>
+<span class="hll"><span class="linenos"> 27</span><span class="k">class</span> <span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
 </span><span class="hll"><span class="linenos"> 28</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author repository.&quot;&quot;&quot;</span>
-</span><span class="linenos"> 29</span>
-<span class="linenos"> 30</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">Author</span>
-<span class="linenos"> 31</span>
+</span><span class="hll"><span class="linenos"> 29</span>
+</span><span class="hll"><span class="linenos"> 30</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">Author</span>
+</span><span class="linenos"> 31</span>
 <span class="linenos"> 32</span>
 <span class="linenos"> 33</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span>
 <span class="linenos"> 34</span>    <span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span><span class="p">,</span>
@@ -1402,8 +1402,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 11</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span>
 <span class="linenos"> 12</span>
 <span class="linenos"> 13</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">UUIDBase</span>
-<span class="linenos"> 14</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.repository</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncRepository</span>
-<span class="linenos"> 15</span>
+<span class="hll"><span class="linenos"> 14</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.repository</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncRepository</span>
+</span><span class="linenos"> 15</span>
 <span class="linenos"> 16</span><span class="n">console</span> <span class="o">=</span> <span class="n">get_console</span><span class="p">()</span>
 <span class="linenos"> 17</span>
 <span class="linenos"> 18</span>
@@ -1413,13 +1413,13 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 22</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 <span class="linenos"> 23</span>    <span class="n">dob</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
 <span class="linenos"> 24</span>    <span class="n">dod</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
-<span class="hll"><span class="linenos"> 25</span>
-</span><span class="hll"><span class="linenos"> 26</span>
-</span><span class="hll"><span class="linenos"> 27</span><span class="k">class</span> <span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
+<span class="linenos"> 25</span>
+<span class="linenos"> 26</span>
+<span class="hll"><span class="linenos"> 27</span><span class="k">class</span> <span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
 </span><span class="hll"><span class="linenos"> 28</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author repository.&quot;&quot;&quot;</span>
-</span><span class="linenos"> 29</span>
-<span class="linenos"> 30</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">Author</span>
-<span class="linenos"> 31</span>
+</span><span class="hll"><span class="linenos"> 29</span>
+</span><span class="hll"><span class="linenos"> 30</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">Author</span>
+</span><span class="linenos"> 31</span>
 <span class="linenos"> 32</span>
 <span class="linenos"> 33</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span>
 <span class="linenos"> 34</span>    <span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span><span class="p">,</span>
@@ -1516,7 +1516,7 @@ of our Author repository.</p>
 <dl class="simple">
 <dt>The <code class="docutils literal notranslate"><span class="pre">repository_factory</span></code> method will do the following for us:</dt><dd><ul class="simple">
 <li><p>Automatically create a new DB session from the SQLAlchemy configuration.</p></li>
-<li><p>Rollback session when any exception occurs</p></li>
+<li><p>Rollback session when any exception occurs.</p></li>
 <li><p>Automatically commit after function call completes.</p></li>
 </ul>
 </dd>
@@ -1772,7 +1772,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <h2>Creating, Updating and Removing Data<a class="headerlink" href="#creating-updating-and-removing-data" title="Permalink to this heading">#</a></h2>
 <p>To illustrate a few ways you can manipulate data in your database, we’ll go through the
 various CRUD operations:</p>
-<p>Creating Data: Here’s a simple insert operation to populate our new Author table</p>
+<p>Creating Data: Here’s a simple insert operation to populate our new Author table:</p>
 <blockquote>
 <div><div class="sd-tab-set docutils">
 <input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
@@ -1829,19 +1829,19 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 47</span>            <span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
 <span class="linenos"> 48</span>        <span class="k">else</span><span class="p">:</span>
 <span class="linenos"> 49</span>            <span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-<span class="hll"><span class="linenos"> 50</span>
-</span><span class="hll"><span class="linenos"> 51</span>
-</span><span class="hll"><span class="linenos"> 52</span><span class="k">async</span> <span class="k">def</span> <span class="nf">create_author</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+<span class="linenos"> 50</span>
+<span class="linenos"> 51</span>
+<span class="hll"><span class="linenos"> 52</span><span class="k">async</span> <span class="k">def</span> <span class="nf">create_author</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 53</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 54</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-</span><span class="linenos"> 55</span>            <span class="n">Author</span><span class="p">(</span>
-<span class="linenos"> 56</span>                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;F. Scott Fitzgerald&quot;</span><span class="p">,</span>
-<span class="linenos"> 57</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1896-09-24&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
-<span class="linenos"> 58</span>            <span class="p">)</span>
-<span class="linenos"> 59</span>        <span class="p">)</span>
-<span class="linenos"> 60</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-<span class="linenos"> 61</span>        <span class="k">return</span> <span class="n">obj</span>
-<span class="linenos"> 62</span>
+</span><span class="hll"><span class="linenos"> 55</span>            <span class="n">Author</span><span class="p">(</span>
+</span><span class="hll"><span class="linenos"> 56</span>                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;F. Scott Fitzgerald&quot;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 57</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1896-09-24&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+</span><span class="hll"><span class="linenos"> 58</span>            <span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 59</span>        <span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 60</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 61</span>        <span class="k">return</span> <span class="n">obj</span>
+</span><span class="linenos"> 62</span>
 <span class="linenos"> 63</span>
 <span class="linenos"> 64</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="linenos"> 65</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
@@ -1951,19 +1951,19 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 47</span>            <span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
 <span class="linenos"> 48</span>        <span class="k">else</span><span class="p">:</span>
 <span class="linenos"> 49</span>            <span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-<span class="hll"><span class="linenos"> 50</span>
-</span><span class="hll"><span class="linenos"> 51</span>
-</span><span class="hll"><span class="linenos"> 52</span><span class="k">async</span> <span class="k">def</span> <span class="nf">create_author</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+<span class="linenos"> 50</span>
+<span class="linenos"> 51</span>
+<span class="hll"><span class="linenos"> 52</span><span class="k">async</span> <span class="k">def</span> <span class="nf">create_author</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 53</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 54</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-</span><span class="linenos"> 55</span>            <span class="n">Author</span><span class="p">(</span>
-<span class="linenos"> 56</span>                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;F. Scott Fitzgerald&quot;</span><span class="p">,</span>
-<span class="linenos"> 57</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1896-09-24&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
-<span class="linenos"> 58</span>            <span class="p">)</span>
-<span class="linenos"> 59</span>        <span class="p">)</span>
-<span class="linenos"> 60</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-<span class="linenos"> 61</span>        <span class="k">return</span> <span class="n">obj</span>
-<span class="linenos"> 62</span>
+</span><span class="hll"><span class="linenos"> 55</span>            <span class="n">Author</span><span class="p">(</span>
+</span><span class="hll"><span class="linenos"> 56</span>                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;F. Scott Fitzgerald&quot;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 57</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1896-09-24&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+</span><span class="hll"><span class="linenos"> 58</span>            <span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 59</span>        <span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 60</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 61</span>        <span class="k">return</span> <span class="n">obj</span>
+</span><span class="linenos"> 62</span>
 <span class="linenos"> 63</span>
 <span class="linenos"> 64</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="linenos"> 65</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
@@ -2021,7 +2021,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div></blockquote>
-<p>Updating Data: The <code class="docutils literal notranslate"><span class="pre">update</span></code> method will ensure any updates made to the model object are executed on the database</p>
+<p>Updating Data: The <code class="docutils literal notranslate"><span class="pre">update</span></code> method will ensure any updates made to the model object are executed on the database:</p>
 <blockquote>
 <div><div class="sd-tab-set docutils">
 <input id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
@@ -2085,19 +2085,19 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 54</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
 <span class="linenos"> 55</span>            <span class="n">Author</span><span class="p">(</span>
 <span class="linenos"> 56</span>                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;F. Scott Fitzgerald&quot;</span><span class="p">,</span>
-<span class="hll"><span class="linenos"> 57</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1896-09-24&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
-</span><span class="hll"><span class="linenos"> 58</span>            <span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 59</span>        <span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 60</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 61</span>        <span class="k">return</span> <span class="n">obj</span>
-</span><span class="linenos"> 62</span>
+<span class="linenos"> 57</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1896-09-24&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+<span class="linenos"> 58</span>            <span class="p">)</span>
+<span class="linenos"> 59</span>        <span class="p">)</span>
+<span class="linenos"> 60</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos"> 61</span>        <span class="k">return</span> <span class="n">obj</span>
+<span class="linenos"> 62</span>
 <span class="linenos"> 63</span>
-<span class="linenos"> 64</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-<span class="linenos"> 65</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
-<span class="linenos"> 66</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-<span class="linenos"> 67</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-<span class="linenos"> 68</span>        <span class="k">return</span> <span class="n">obj</span>
-<span class="linenos"> 69</span>
+<span class="hll"><span class="linenos"> 64</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 65</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 66</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 67</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 68</span>        <span class="k">return</span> <span class="n">obj</span>
+</span><span class="linenos"> 69</span>
 <span class="linenos"> 70</span>
 <span class="linenos"> 71</span><span class="k">async</span> <span class="k">def</span> <span class="nf">remove_author</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="linenos"> 72</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
@@ -2207,19 +2207,19 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 54</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
 <span class="linenos"> 55</span>            <span class="n">Author</span><span class="p">(</span>
 <span class="linenos"> 56</span>                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;F. Scott Fitzgerald&quot;</span><span class="p">,</span>
-<span class="hll"><span class="linenos"> 57</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1896-09-24&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
-</span><span class="hll"><span class="linenos"> 58</span>            <span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 59</span>        <span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 60</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 61</span>        <span class="k">return</span> <span class="n">obj</span>
-</span><span class="linenos"> 62</span>
+<span class="linenos"> 57</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1896-09-24&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+<span class="linenos"> 58</span>            <span class="p">)</span>
+<span class="linenos"> 59</span>        <span class="p">)</span>
+<span class="linenos"> 60</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos"> 61</span>        <span class="k">return</span> <span class="n">obj</span>
+<span class="linenos"> 62</span>
 <span class="linenos"> 63</span>
-<span class="linenos"> 64</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-<span class="linenos"> 65</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
-<span class="linenos"> 66</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-<span class="linenos"> 67</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-<span class="linenos"> 68</span>        <span class="k">return</span> <span class="n">obj</span>
-<span class="linenos"> 69</span>
+<span class="hll"><span class="linenos"> 64</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 65</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 66</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 67</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 68</span>        <span class="k">return</span> <span class="n">obj</span>
+</span><span class="linenos"> 69</span>
 <span class="linenos"> 70</span>
 <span class="linenos"> 71</span><span class="k">async</span> <span class="k">def</span> <span class="nf">remove_author</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="linenos"> 72</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
@@ -2270,7 +2270,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div></blockquote>
-<p>Removing Data: The <code class="docutils literal notranslate"><span class="pre">remove</span></code> method accepts the primary key of the row you want to delete</p>
+<p>Removing Data: The <code class="docutils literal notranslate"><span class="pre">remove</span></code> method accepts the primary key of the row you want to delete:</p>
 <blockquote>
 <div><div class="sd-tab-set docutils">
 <input id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
@@ -2341,19 +2341,19 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 61</span>        <span class="k">return</span> <span class="n">obj</span>
 <span class="linenos"> 62</span>
 <span class="linenos"> 63</span>
-<span class="hll"><span class="linenos"> 64</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 65</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 66</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 67</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 68</span>        <span class="k">return</span> <span class="n">obj</span>
-</span><span class="linenos"> 69</span>
+<span class="linenos"> 64</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+<span class="linenos"> 65</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
+<span class="linenos"> 66</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+<span class="linenos"> 67</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos"> 68</span>        <span class="k">return</span> <span class="n">obj</span>
+<span class="linenos"> 69</span>
 <span class="linenos"> 70</span>
-<span class="linenos"> 71</span><span class="k">async</span> <span class="k">def</span> <span class="nf">remove_author</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-<span class="linenos"> 72</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
-<span class="linenos"> 73</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-<span class="linenos"> 74</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-<span class="linenos"> 75</span>        <span class="k">return</span> <span class="n">obj</span>
-<span class="linenos"> 76</span>
+<span class="hll"><span class="linenos"> 71</span><span class="k">async</span> <span class="k">def</span> <span class="nf">remove_author</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 72</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 73</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 74</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 75</span>        <span class="k">return</span> <span class="n">obj</span>
+</span><span class="linenos"> 76</span>
 <span class="linenos"> 77</span>
 <span class="linenos"> 78</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_author_if_exists</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos"> 79</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
@@ -2463,19 +2463,19 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 61</span>        <span class="k">return</span> <span class="n">obj</span>
 <span class="linenos"> 62</span>
 <span class="linenos"> 63</span>
-<span class="hll"><span class="linenos"> 64</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 65</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 66</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 67</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 68</span>        <span class="k">return</span> <span class="n">obj</span>
-</span><span class="linenos"> 69</span>
+<span class="linenos"> 64</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+<span class="linenos"> 65</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
+<span class="linenos"> 66</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+<span class="linenos"> 67</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos"> 68</span>        <span class="k">return</span> <span class="n">obj</span>
+<span class="linenos"> 69</span>
 <span class="linenos"> 70</span>
-<span class="linenos"> 71</span><span class="k">async</span> <span class="k">def</span> <span class="nf">remove_author</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-<span class="linenos"> 72</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
-<span class="linenos"> 73</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-<span class="linenos"> 74</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-<span class="linenos"> 75</span>        <span class="k">return</span> <span class="n">obj</span>
-<span class="linenos"> 76</span>
+<span class="hll"><span class="linenos"> 71</span><span class="k">async</span> <span class="k">def</span> <span class="nf">remove_author</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 72</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 73</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 74</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 75</span>        <span class="k">return</span> <span class="n">obj</span>
+</span><span class="linenos"> 76</span>
 <span class="linenos"> 77</span>
 <span class="linenos"> 78</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_author_if_exists</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos"> 79</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
@@ -2602,7 +2602,7 @@ conditions. This pattern can be extended and adjusted to meet your needs.</p>
 <span class="linenos">63</span>        <span class="n">USState</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
 <span class="linenos">64</span>
 <span class="linenos">65</span>    <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
-<span class="linenos">66</span>        <span class="c1"># 1) load the JSON data into the US States table</span>
+<span class="linenos">66</span>        <span class="c1"># 1) Load the JSON data into the US States table.</span>
 <span class="linenos">67</span>        <span class="n">repo</span> <span class="o">=</span> <span class="n">USStateRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
 <span class="linenos">68</span>        <span class="n">fixture</span> <span class="o">=</span> <span class="n">open_fixture</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 <span class="linenos">69</span>        <span class="n">objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">add_many</span><span class="p">([</span><span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="p">(</span><span class="o">**</span><span class="n">raw_obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">raw_obj</span> <span class="ow">in</span> <span class="n">fixture</span><span class="p">])</span>
@@ -2613,11 +2613,11 @@ conditions. This pattern can be extended and adjusted to meet your needs.</p>
 <span class="linenos">74</span>        <span class="n">created_objs</span><span class="p">,</span> <span class="n">total_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">LimitOffset</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
 <span class="linenos">75</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">created_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 <span class="linenos">76</span>
-<span class="linenos">77</span>        <span class="c1"># 2) Let&#39;s remove the batch of records selected.</span>
+<span class="linenos">77</span>        <span class="c1"># 3) Let&#39;s remove the batch of records selected.</span>
 <span class="linenos">78</span>        <span class="n">deleted_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete_many</span><span class="p">([</span><span class="n">new_obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">new_obj</span> <span class="ow">in</span> <span class="n">created_objs</span><span class="p">])</span>
 <span class="linenos">79</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">deleted_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 <span class="linenos">80</span>
-<span class="linenos">81</span>        <span class="c1"># 3) Le&#39;ts count the remaining rows</span>
+<span class="linenos">81</span>        <span class="c1"># 4) Let&#39;s count the remaining rows</span>
 <span class="linenos">82</span>        <span class="n">remaining_count</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
 <span class="linenos">83</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">remaining_count</span><span class="si">}</span><span class="s2"> remaining records after delete.&quot;</span><span class="p">)</span>
 <span class="linenos">84</span>
@@ -2924,22 +2924,22 @@ performance when working with larger data sets.</p>
 <span class="linenos">63</span>        <span class="n">USState</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
 <span class="linenos">64</span>
 <span class="linenos">65</span>    <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
-<span class="linenos">66</span>        <span class="c1"># 1) load the JSON data into the US States table</span>
-<span class="linenos">67</span>        <span class="n">repo</span> <span class="o">=</span> <span class="n">USStateRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
-<span class="hll"><span class="linenos">68</span>        <span class="n">fixture</span> <span class="o">=</span> <span class="n">open_fixture</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+<span class="hll"><span class="linenos">66</span>        <span class="c1"># 1) Load the JSON data into the US States table.</span>
+</span><span class="hll"><span class="linenos">67</span>        <span class="n">repo</span> <span class="o">=</span> <span class="n">USStateRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos">68</span>        <span class="n">fixture</span> <span class="o">=</span> <span class="n">open_fixture</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 </span><span class="hll"><span class="linenos">69</span>        <span class="n">objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">add_many</span><span class="p">([</span><span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="p">(</span><span class="o">**</span><span class="n">raw_obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">raw_obj</span> <span class="ow">in</span> <span class="n">fixture</span><span class="p">])</span>
-</span><span class="linenos">70</span>        <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-<span class="linenos">71</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> new objects.&quot;</span><span class="p">)</span>
-<span class="linenos">72</span>
+</span><span class="hll"><span class="linenos">70</span>        <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span class="hll"><span class="linenos">71</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> new objects.&quot;</span><span class="p">)</span>
+</span><span class="linenos">72</span>
 <span class="linenos">73</span>        <span class="c1"># 2) Select paginated data and total row count.</span>
 <span class="linenos">74</span>        <span class="n">created_objs</span><span class="p">,</span> <span class="n">total_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">LimitOffset</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
 <span class="linenos">75</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">created_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 <span class="linenos">76</span>
-<span class="linenos">77</span>        <span class="c1"># 2) Let&#39;s remove the batch of records selected.</span>
+<span class="linenos">77</span>        <span class="c1"># 3) Let&#39;s remove the batch of records selected.</span>
 <span class="linenos">78</span>        <span class="n">deleted_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete_many</span><span class="p">([</span><span class="n">new_obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">new_obj</span> <span class="ow">in</span> <span class="n">created_objs</span><span class="p">])</span>
 <span class="linenos">79</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">deleted_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 <span class="linenos">80</span>
-<span class="linenos">81</span>        <span class="c1"># 3) Le&#39;ts count the remaining rows</span>
+<span class="linenos">81</span>        <span class="c1"># 4) Let&#39;s count the remaining rows</span>
 <span class="linenos">82</span>        <span class="n">remaining_count</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
 <span class="linenos">83</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">remaining_count</span><span class="si">}</span><span class="s2"> remaining records after delete.&quot;</span><span class="p">)</span>
 <span class="linenos">84</span>
@@ -3023,22 +3023,22 @@ repository.</p>
 <span class="linenos">63</span>        <span class="n">USState</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
 <span class="linenos">64</span>
 <span class="linenos">65</span>    <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
-<span class="linenos">66</span>        <span class="c1"># 1) load the JSON data into the US States table</span>
+<span class="linenos">66</span>        <span class="c1"># 1) Load the JSON data into the US States table.</span>
 <span class="linenos">67</span>        <span class="n">repo</span> <span class="o">=</span> <span class="n">USStateRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
 <span class="linenos">68</span>        <span class="n">fixture</span> <span class="o">=</span> <span class="n">open_fixture</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 <span class="linenos">69</span>        <span class="n">objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">add_many</span><span class="p">([</span><span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="p">(</span><span class="o">**</span><span class="n">raw_obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">raw_obj</span> <span class="ow">in</span> <span class="n">fixture</span><span class="p">])</span>
 <span class="linenos">70</span>        <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 <span class="linenos">71</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> new objects.&quot;</span><span class="p">)</span>
 <span class="linenos">72</span>
-<span class="linenos">73</span>        <span class="c1"># 2) Select paginated data and total row count.</span>
-<span class="hll"><span class="linenos">74</span>        <span class="n">created_objs</span><span class="p">,</span> <span class="n">total_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">LimitOffset</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="hll"><span class="linenos">73</span>        <span class="c1"># 2) Select paginated data and total row count.</span>
+</span><span class="hll"><span class="linenos">74</span>        <span class="n">created_objs</span><span class="p">,</span> <span class="n">total_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">LimitOffset</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
 </span><span class="hll"><span class="linenos">75</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">created_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </span><span class="linenos">76</span>
-<span class="linenos">77</span>        <span class="c1"># 2) Let&#39;s remove the batch of records selected.</span>
+<span class="linenos">77</span>        <span class="c1"># 3) Let&#39;s remove the batch of records selected.</span>
 <span class="linenos">78</span>        <span class="n">deleted_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete_many</span><span class="p">([</span><span class="n">new_obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">new_obj</span> <span class="ow">in</span> <span class="n">created_objs</span><span class="p">])</span>
 <span class="linenos">79</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">deleted_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 <span class="linenos">80</span>
-<span class="linenos">81</span>        <span class="c1"># 3) Le&#39;ts count the remaining rows</span>
+<span class="linenos">81</span>        <span class="c1"># 4) Let&#39;s count the remaining rows</span>
 <span class="linenos">82</span>        <span class="n">remaining_count</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
 <span class="linenos">83</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">remaining_count</span><span class="si">}</span><span class="s2"> remaining records after delete.&quot;</span><span class="p">)</span>
 <span class="linenos">84</span>
@@ -3121,7 +3121,7 @@ executing row-by-row.</p>
 <span class="linenos">63</span>        <span class="n">USState</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
 <span class="linenos">64</span>
 <span class="linenos">65</span>    <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
-<span class="linenos">66</span>        <span class="c1"># 1) load the JSON data into the US States table</span>
+<span class="linenos">66</span>        <span class="c1"># 1) Load the JSON data into the US States table.</span>
 <span class="linenos">67</span>        <span class="n">repo</span> <span class="o">=</span> <span class="n">USStateRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
 <span class="linenos">68</span>        <span class="n">fixture</span> <span class="o">=</span> <span class="n">open_fixture</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 <span class="linenos">69</span>        <span class="n">objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">add_many</span><span class="p">([</span><span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="p">(</span><span class="o">**</span><span class="n">raw_obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">raw_obj</span> <span class="ow">in</span> <span class="n">fixture</span><span class="p">])</span>
@@ -3132,11 +3132,11 @@ executing row-by-row.</p>
 <span class="linenos">74</span>        <span class="n">created_objs</span><span class="p">,</span> <span class="n">total_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">LimitOffset</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
 <span class="linenos">75</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">created_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 <span class="linenos">76</span>
-<span class="hll"><span class="linenos">77</span>        <span class="c1"># 2) Let&#39;s remove the batch of records selected.</span>
+<span class="hll"><span class="linenos">77</span>        <span class="c1"># 3) Let&#39;s remove the batch of records selected.</span>
 </span><span class="hll"><span class="linenos">78</span>        <span class="n">deleted_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete_many</span><span class="p">([</span><span class="n">new_obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">new_obj</span> <span class="ow">in</span> <span class="n">created_objs</span><span class="p">])</span>
 </span><span class="hll"><span class="linenos">79</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">deleted_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </span><span class="linenos">80</span>
-<span class="linenos">81</span>        <span class="c1"># 3) Le&#39;ts count the remaining rows</span>
+<span class="linenos">81</span>        <span class="c1"># 4) Let&#39;s count the remaining rows</span>
 <span class="linenos">82</span>        <span class="n">remaining_count</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
 <span class="linenos">83</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">remaining_count</span><span class="si">}</span><span class="s2"> remaining records after delete.&quot;</span><span class="p">)</span>
 <span class="linenos">84</span>
@@ -3217,7 +3217,7 @@ executing row-by-row.</p>
 <span class="linenos">63</span>        <span class="n">USState</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
 <span class="linenos">64</span>
 <span class="linenos">65</span>    <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
-<span class="linenos">66</span>        <span class="c1"># 1) load the JSON data into the US States table</span>
+<span class="linenos">66</span>        <span class="c1"># 1) Load the JSON data into the US States table.</span>
 <span class="linenos">67</span>        <span class="n">repo</span> <span class="o">=</span> <span class="n">USStateRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
 <span class="linenos">68</span>        <span class="n">fixture</span> <span class="o">=</span> <span class="n">open_fixture</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 <span class="linenos">69</span>        <span class="n">objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">add_many</span><span class="p">([</span><span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="p">(</span><span class="o">**</span><span class="n">raw_obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">raw_obj</span> <span class="ow">in</span> <span class="n">fixture</span><span class="p">])</span>
@@ -3228,11 +3228,11 @@ executing row-by-row.</p>
 <span class="linenos">74</span>        <span class="n">created_objs</span><span class="p">,</span> <span class="n">total_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">LimitOffset</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
 <span class="linenos">75</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">created_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 <span class="linenos">76</span>
-<span class="linenos">77</span>        <span class="c1"># 2) Let&#39;s remove the batch of records selected.</span>
+<span class="linenos">77</span>        <span class="c1"># 3) Let&#39;s remove the batch of records selected.</span>
 <span class="linenos">78</span>        <span class="n">deleted_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete_many</span><span class="p">([</span><span class="n">new_obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">new_obj</span> <span class="ow">in</span> <span class="n">created_objs</span><span class="p">])</span>
 <span class="linenos">79</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">deleted_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 <span class="linenos">80</span>
-<span class="hll"><span class="linenos">81</span>        <span class="c1"># 3) Le&#39;ts count the remaining rows</span>
+<span class="hll"><span class="linenos">81</span>        <span class="c1"># 4) Let&#39;s count the remaining rows</span>
 </span><span class="hll"><span class="linenos">82</span>        <span class="n">remaining_count</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
 </span><span class="hll"><span class="linenos">83</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">remaining_count</span><span class="si">}</span><span class="s2"> remaining records after delete.&quot;</span><span class="p">)</span>
 </span><span class="linenos">84</span>

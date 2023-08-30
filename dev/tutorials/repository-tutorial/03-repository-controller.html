@@ -1248,12 +1248,12 @@ parameters.</p>
 <span class="linenos"> 73</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author repository.&quot;&quot;&quot;</span>
 <span class="linenos"> 74</span>
 <span class="linenos"> 75</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">AuthorModel</span>
-<span class="hll"><span class="linenos"> 76</span>
-</span><span class="hll"><span class="linenos"> 77</span>
-</span><span class="hll"><span class="linenos"> 78</span><span class="k">async</span> <span class="k">def</span> <span class="nf">provide_authors_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
-</span><span class="linenos"> 79</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides the default Authors repository.&quot;&quot;&quot;</span>
-<span class="linenos"> 80</span>    <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
-<span class="linenos"> 81</span>
+<span class="linenos"> 76</span>
+<span class="linenos"> 77</span>
+<span class="hll"><span class="linenos"> 78</span><span class="k">async</span> <span class="k">def</span> <span class="nf">provide_authors_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 79</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides the default Authors repository.&quot;&quot;&quot;</span>
+</span><span class="hll"><span class="linenos"> 80</span>    <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
+</span><span class="linenos"> 81</span>
 <span class="linenos"> 82</span>
 <span class="linenos"> 83</span><span class="c1"># we can optionally override the default `select` used for the repository to pass in</span>
 <span class="linenos"> 84</span><span class="c1"># specific SQL options such as join details</span>
@@ -1391,7 +1391,7 @@ parameters.</p>
 </div>
 </div>
 <p>Because we’ll be using the SQLAlchemy plugin in Litestar, the session is automatically
-configured as a dependency</p>
+configured as a dependency.</p>
 <p>By default, the repository doesn’t add any additional query options to your base
 statement, but provides the flexibility to override it, allowing you to pass your own
 statement:</p>
@@ -1478,16 +1478,16 @@ statement:</p>
 <span class="linenos"> 79</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides the default Authors repository.&quot;&quot;&quot;</span>
 <span class="linenos"> 80</span>    <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
 <span class="linenos"> 81</span>
-<span class="hll"><span class="linenos"> 82</span>
-</span><span class="hll"><span class="linenos"> 83</span><span class="c1"># we can optionally override the default `select` used for the repository to pass in</span>
+<span class="linenos"> 82</span>
+<span class="hll"><span class="linenos"> 83</span><span class="c1"># we can optionally override the default `select` used for the repository to pass in</span>
 </span><span class="hll"><span class="linenos"> 84</span><span class="c1"># specific SQL options such as join details</span>
-</span><span class="linenos"> 85</span><span class="k">async</span> <span class="k">def</span> <span class="nf">provide_author_details_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
-<span class="linenos"> 86</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides a simple example demonstrating how to override the join options for the repository.&quot;&quot;&quot;</span>
-<span class="linenos"> 87</span>    <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span>
-<span class="linenos"> 88</span>        <span class="n">statement</span><span class="o">=</span><span class="n">select</span><span class="p">(</span><span class="n">AuthorModel</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">selectinload</span><span class="p">(</span><span class="n">AuthorModel</span><span class="o">.</span><span class="n">books</span><span class="p">)),</span>
-<span class="linenos"> 89</span>        <span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">,</span>
-<span class="linenos"> 90</span>    <span class="p">)</span>
-<span class="linenos"> 91</span>
+</span><span class="hll"><span class="linenos"> 85</span><span class="k">async</span> <span class="k">def</span> <span class="nf">provide_author_details_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 86</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides a simple example demonstrating how to override the join options for the repository.&quot;&quot;&quot;</span>
+</span><span class="hll"><span class="linenos"> 87</span>    <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span>
+</span><span class="hll"><span class="linenos"> 88</span>        <span class="n">statement</span><span class="o">=</span><span class="n">select</span><span class="p">(</span><span class="n">AuthorModel</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">selectinload</span><span class="p">(</span><span class="n">AuthorModel</span><span class="o">.</span><span class="n">books</span><span class="p">)),</span>
+</span><span class="hll"><span class="linenos"> 89</span>        <span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 90</span>    <span class="p">)</span>
+</span><span class="linenos"> 91</span>
 <span class="linenos"> 92</span>
 <span class="linenos"> 93</span><span class="k">def</span> <span class="nf">provide_limit_offset_pagination</span><span class="p">(</span>
 <span class="linenos"> 94</span>    <span class="n">current_page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s2">&quot;currentPage&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
@@ -1730,13 +1730,13 @@ interacting with the <code class="docutils literal notranslate"><span class="pre
 <span class="linenos">107</span><span class="sd">    ----------</span>
 <span class="linenos">108</span><span class="sd">    current_page : int</span>
 <span class="linenos">109</span><span class="sd">        LIMIT to apply to select.</span>
-<span class="hll"><span class="linenos">110</span><span class="sd">    page_size : int</span>
-</span><span class="hll"><span class="linenos">111</span><span class="sd">        OFFSET to apply to select.</span>
-</span><span class="hll"><span class="linenos">112</span><span class="sd">    &quot;&quot;&quot;</span>
-</span><span class="hll"><span class="linenos">113</span>    <span class="k">return</span> <span class="n">LimitOffset</span><span class="p">(</span><span class="n">page_size</span><span class="p">,</span> <span class="n">page_size</span> <span class="o">*</span> <span class="p">(</span><span class="n">current_page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
-</span><span class="hll"><span class="linenos">114</span>
-</span><span class="hll"><span class="linenos">115</span>
-</span><span class="hll"><span class="linenos">116</span><span class="k">class</span> <span class="nc">AuthorController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+<span class="linenos">110</span><span class="sd">    page_size : int</span>
+<span class="linenos">111</span><span class="sd">        OFFSET to apply to select.</span>
+<span class="linenos">112</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos">113</span>    <span class="k">return</span> <span class="n">LimitOffset</span><span class="p">(</span><span class="n">page_size</span><span class="p">,</span> <span class="n">page_size</span> <span class="o">*</span> <span class="p">(</span><span class="n">current_page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+<span class="linenos">114</span>
+<span class="linenos">115</span>
+<span class="hll"><span class="linenos">116</span><span class="k">class</span> <span class="nc">AuthorController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
 </span><span class="hll"><span class="linenos">117</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author CRUD&quot;&quot;&quot;</span>
 </span><span class="hll"><span class="linenos">118</span>
 </span><span class="hll"><span class="linenos">119</span>    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_authors_repo</span><span class="p">)}</span>
@@ -1804,18 +1804,18 @@ interacting with the <code class="docutils literal notranslate"><span class="pre
 </span><span class="hll"><span class="linenos">181</span>        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 </span><span class="hll"><span class="linenos">182</span>
 </span><span class="hll"><span class="linenos">183</span>    <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">)</span>
-</span><span class="linenos">184</span>    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_author</span><span class="p">(</span>
-<span class="linenos">185</span>        <span class="bp">self</span><span class="p">,</span>
-<span class="linenos">186</span>        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
-<span class="linenos">187</span>        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-<span class="linenos">188</span>            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
-<span class="linenos">189</span>            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to delete.&quot;</span><span class="p">,</span>
-<span class="linenos">190</span>        <span class="p">),</span>
-<span class="linenos">191</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">192</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a author from the system.&quot;&quot;&quot;</span>
-<span class="linenos">193</span>        <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
-<span class="linenos">194</span>        <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-<span class="linenos">195</span>
+</span><span class="hll"><span class="linenos">184</span>    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_author</span><span class="p">(</span>
+</span><span class="hll"><span class="linenos">185</span>        <span class="bp">self</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos">186</span>        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos">187</span>        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+</span><span class="hll"><span class="linenos">188</span>            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos">189</span>            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to delete.&quot;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos">190</span>        <span class="p">),</span>
+</span><span class="hll"><span class="linenos">191</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos">192</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a author from the system.&quot;&quot;&quot;</span>
+</span><span class="hll"><span class="linenos">193</span>        <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos">194</span>        <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span class="linenos">195</span>
 <span class="linenos">196</span>
 <span class="linenos">197</span><span class="n">sqlalchemy_config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
 <span class="linenos">198</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span>
@@ -1839,7 +1839,7 @@ interacting with the <code class="docutils literal notranslate"><span class="pre
 </div>
 </div>
 <p>In our list detail endpoint, we use the pagination filter for limiting the amount of
-data returned, allowing to retrieve large datasets in smaller, more manageable chunks.</p>
+data returned, allowing us to retrieve large datasets in smaller, more manageable chunks.</p>
 <p>In the above examples, we’ve used the asynchronous repository implementation. However,
 Litestar also supports synchronous database drivers with an identical implementation.
 Here’s a corresponding synchronous version of the previous example:</p>

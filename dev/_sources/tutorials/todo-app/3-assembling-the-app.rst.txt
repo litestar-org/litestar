@@ -26,9 +26,9 @@ Recap
 
 
 A route handler set up with ``get("/")`` responds to ``GET`` requests and returns a list
-of all items on our TODO-list. The optional query parameter ``done`` allows to filter
+of all items on our TODO-list. The optional query parameter ``done`` allows filtering
 the items by status. The type annotation of ``bool`` converts the query parameter into
-a :class:`bool` and wrapping it in :class:`Optional <typing.Optional>` makes it optional.
+a :class:`bool`, and wrapping it in :class:`Optional <typing.Optional>` makes it optional.
 
 
 .. literalinclude:: /examples/todo_app/full_app.py

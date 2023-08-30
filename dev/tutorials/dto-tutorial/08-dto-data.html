@@ -1193,11 +1193,11 @@ exist in the client submitted data we will get an error upon instantiation of th
 <span class="linenos">23</span>
 <span class="linenos">24</span>
 <span class="linenos">25</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/person&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">WriteDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">ReadDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="linenos">26</span><span class="k">def</span> <span class="nf">create_person</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">Person</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
-<span class="hll"><span class="linenos">27</span>    <span class="c1"># Logic for persisting the person goes here</span>
-</span><span class="linenos">28</span>    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">create_instance</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="hll"><span class="linenos">29</span>
-</span><span class="linenos">30</span>
+<span class="hll"><span class="linenos">26</span><span class="k">def</span> <span class="nf">create_person</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">Person</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
+</span><span class="linenos">27</span>    <span class="c1"># Logic for persisting the person goes here</span>
+<span class="hll"><span class="linenos">28</span>    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">create_instance</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class="linenos">29</span>
+<span class="linenos">30</span>
 <span class="linenos">31</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_person</span><span class="p">])</span>
 </pre></div>
 </div>

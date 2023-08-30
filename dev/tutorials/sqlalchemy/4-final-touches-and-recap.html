@@ -1437,7 +1437,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <h2>Recap<a class="headerlink" href="#recap" title="Permalink to this heading">#</a></h2>
 <p>In this tutorial, we have learned how to use the SQLAlchemy plugin to create a simple application that uses a database
 to store and retrieve data.</p>
-<p>In the final application <code class="docutils literal notranslate"><span class="pre">TodoItem</span></code> is defined, representing a to-do item. It extends from the
+<p>In the final application <code class="docutils literal notranslate"><span class="pre">TodoItem</span></code> is defined, representing a TODO item. It extends from the
 <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/mapping_api.html#sqlalchemy.orm.DeclarativeBase" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeclarativeBase</span></code></a> class provided by <a class="reference external" href="http://www.sqlalchemy.org/">SQLAlchemy</a>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">class</span> <span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span>
 <span class="linenos">2</span>    <span class="o">...</span>
@@ -1464,7 +1464,7 @@ handlers via the <code class="docutils literal notranslate"><span class="pre">tr
 <span class="linenos">9</span>        <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
 </pre></div>
 </div>
-<p>We also define a couple of utility functions, that help us to retrieve our to-do items from the database:</p>
+<p>We also define a couple of utility functions, that help us to retrieve our TODO items from the database:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_todo_by_title</span><span class="p">(</span><span class="n">todo_name</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoItem</span><span class="p">:</span>
 <span class="linenos"> 2</span>    <span class="n">query</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">TodoItem</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">TodoItem</span><span class="o">.</span><span class="n">title</span> <span class="o">==</span> <span class="n">todo_name</span><span class="p">)</span>
 <span class="linenos"> 3</span>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
@@ -1483,7 +1483,7 @@ handlers via the <code class="docutils literal notranslate"><span class="pre">tr
 <span class="linenos">16</span>    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>We define our route handlers, which are the interface through which to-do items can be created, retrieved and updated:</p>
+<p>We define our route handlers, which are the interface through which TODO items can be created, retrieved and updated:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="linenos"> 2</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_list</span><span class="p">(</span><span class="n">transaction</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span> <span class="n">done</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
 <span class="linenos"> 3</span>    <span class="k">return</span> <span class="k">await</span> <span class="n">get_todo_list</span><span class="p">(</span><span class="n">done</span><span class="p">,</span> <span class="n">transaction</span><span class="p">)</span>

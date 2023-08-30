@@ -1271,7 +1271,7 @@ from it to be serialized as JSON:</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>For an in-depth explanation of dataclasses, you can read this excellent Real Python
-article: <a class="reference external" href="https://realpython.com/python-data-classes/">dataclasses</a></p>
+article: <a class="reference external" href="https://realpython.com/python-data-classes/">Data Classes in Python 3.7+</a></p>
 </div>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
@@ -1350,7 +1350,7 @@ knows how to turn these dataclasses into JSON and will do so for you automatical
 <p>In addition to dataclasses, Litestar supports many more types such as
 <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NamedTuple" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></a>,
 <a class="reference external" href="https://docs.pydantic.dev/usage/models/">Pydantic models</a>, or
-<a class="reference external" href="https://www.attrs.org/en/stable/">attrs classes</a></p>
+<a class="reference external" href="https://www.attrs.org/en/stable/">attrs classes</a>.</p>
 </div>
 </section>
 </section>
@@ -1451,8 +1451,8 @@ marked as <em>done</em></span><a class="headerlink" href="#id9" title="Permalink
 </figcaption>
 </figure>
 <p>At first glance this seems to work just fine, but you might be able to spot a problem:
-If you input anything else than <code class="docutils literal notranslate"><span class="pre">?done=1</span></code>, it would still return not-done items.
-<code class="docutils literal notranslate"><span class="pre">?done=john</span></code> for example works just like <code class="docutils literal notranslate"><span class="pre">?done=0</span></code></p>
+If you input anything other than <code class="docutils literal notranslate"><span class="pre">?done=1</span></code>, it would still return items not yet marked
+as done. For example, <code class="docutils literal notranslate"><span class="pre">?done=john</span></code> gives the same result as <code class="docutils literal notranslate"><span class="pre">?done=0</span></code>.</p>
 <p>An easy solution for this would be to simply check if the query parameter is either
 <code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">0</span></code>, and return a response with an HTTP status code that indicates an
 error if it’s something else:</p>
@@ -1551,7 +1551,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<p>And if the query parameter has any other value, an <a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.HTTPException" title="litestar.exceptions.HTTPException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPException</span></code></a> will be raised.
+<p>Finally, if the query parameter has any other value, an <a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.HTTPException" title="litestar.exceptions.HTTPException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPException</span></code></a> will be raised.
 Raising an <code class="docutils literal notranslate"><span class="pre">HTTPException</span></code> tells Litestar that something went wrong, and instead of
 returning a normal response, it will send a response with the HTTP status code given
 (<code class="docutils literal notranslate"><span class="pre">400</span></code> in this case) and the error message supplied.</p>
@@ -1567,10 +1567,11 @@ returning a normal response, it will send a response with the HTTP status code g
 <p><span class="caption-text">Try to access <a class="reference external" href="http://127.0.0.1?done=john">http://127.0.0.1?done=john</a> now and you will get this error message</span><a class="headerlink" href="#id16" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<p>Now we’ve got that out of the way but your code has grown to be quite complex for such a
-simple task, and you’re probably thinking
-<a class="reference external" href="https://www.youtube.com/watch?t=566&amp;v=p33CVV29OG8">“there must be a better way!”</a>. And there is! Instead
-of doing these things manually, you can also just let Litestar handle them for you!</p>
+<p>Now we’ve got that out of the way, but your code has grown to be quite complex for such
+a simple task. You’re probably thinking
+<a class="reference external" href="https://www.youtube.com/watch?t=566&amp;v=p33CVV29OG8">“there must be a better way!”</a>,
+and there is! Instead of doing these things manually, you can also just let Litestar
+handle them for you!</p>
 <section id="converting-and-validating-query-parameters">
 <h3>Converting and validating query parameters<a class="headerlink" href="#converting-and-validating-query-parameters" title="Permalink to this heading">#</a></h3>
 <p>As mentioned earlier, type annotations can be used for more than static type checking
@@ -1862,7 +1863,7 @@ documentation.</p>
 OpenAPI schema with <a class="reference external" href="https://redocly.com/">ReDoc</a> and
 <a class="reference external" href="https://stoplight.io/open-source/elements/">Stoplight Elements</a>. You can browse
 to <a class="reference external" href="http://127.0.0.1:8000/schema/redoc">http://127.0.0.1:8000/schema/redoc</a> and <a class="reference external" href="http://127.0.0.1:8000/schema/elements">http://127.0.0.1:8000/schema/elements</a> to
-view each, respectively</p>
+view each, respectively.</p>
 </div>
 </section>
 </section>
