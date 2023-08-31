@@ -734,7 +734,6 @@ async def test_repo_exists_method_with_filters(
     # FIXME: this passes if this is the only test that is run
     exists = await maybe_async(
         author_repo.exists(
-            author_repo.model_type.id == raw_authors[0]["id"],
             author_repo.model_type.name == raw_authors[0]["name"],
             id=first_author_id,
         )
