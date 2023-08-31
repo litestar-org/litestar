@@ -10,7 +10,6 @@ from sqlalchemy import ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
 from litestar import Litestar, get
-from litestar.contrib.repository.filters import LimitOffset
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
 from litestar.contrib.sqlalchemy.plugins.init import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
 from litestar.contrib.sqlalchemy.repository import SQLAlchemySyncRepository
@@ -19,6 +18,7 @@ from litestar.di import Provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
 from litestar.pagination import OffsetPagination
 from litestar.params import Parameter
+from litestar.repository.filters import LimitOffset
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session

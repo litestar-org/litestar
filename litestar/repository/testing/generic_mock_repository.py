@@ -8,21 +8,23 @@ from datetime import datetime, timezone, tzinfo
 from typing import TYPE_CHECKING, Generic, Protocol, TypeVar
 from uuid import uuid4
 
-from litestar.contrib.repository import AbstractAsyncRepository, AbstractSyncRepository, FilterTypes
-from litestar.contrib.repository.exceptions import ConflictError, RepositoryError
+from litestar.repository import AbstractAsyncRepository, AbstractSyncRepository, FilterTypes
+from litestar.repository.exceptions import ConflictError, RepositoryError
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Hashable, Iterable, MutableMapping
     from typing import Any
 
-
-ModelT = TypeVar("ModelT", bound="HasID")
-AsyncMockRepoT = TypeVar("AsyncMockRepoT", bound="GenericAsyncMockRepository")
-SyncMockRepoT = TypeVar("SyncMockRepoT", bound="GenericSyncMockRepository")
+__all__ = ("GenericAsyncMockRepository", "GenericSyncMockRepository")
 
 
 class HasID(Protocol):
     id: Any
+
+
+ModelT = TypeVar("ModelT", bound="HasID")
+AsyncMockRepoT = TypeVar("AsyncMockRepoT", bound="GenericAsyncMockRepository")
+SyncMockRepoT = TypeVar("SyncMockRepoT", bound="GenericSyncMockRepository")
 
 
 class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]):
@@ -155,17 +157,18 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
                 instances.append(obj)
         return instances
 
-    async def exists(self, **kwargs: Any) -> bool:
+    async def exists(self, *filters: FilterTypes, **kwargs: Any) -> bool:
         """Return true if the object specified by ``kwargs`` exists.
 
         Args:
+            *filters: Types for specific filtering operations.
             **kwargs: Identifier of the instance to be retrieved.
 
         Returns:
             True if the instance was found.  False if not found..
 
         """
-        existing = await self.get_one_or_none(**kwargs)
+        existing = await self.count(*filters, **kwargs)
         return bool(existing)
 
     async def get(self, item_id: Any, **kwargs: Any) -> ModelT:
@@ -533,17 +536,18 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
                 instances.append(obj)
         return instances
 
-    def exists(self, **kwargs: Any) -> bool:
+    def exists(self, *filters: FilterTypes, **kwargs: Any) -> bool:
         """Return true if the object specified by ``kwargs`` exists.
 
         Args:
+            *filters: Types for specific filtering operations.
             **kwargs: Identifier of the instance to be retrieved.
 
         Returns:
             True if the instance was found.  False if not found..
 
         """
-        existing = self.get_one_or_none(**kwargs)
+        existing = self.count(*filters, **kwargs)
         return bool(existing)
 
     def get(self, item_id: Any, **kwargs: Any) -> ModelT:
