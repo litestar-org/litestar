@@ -372,7 +372,7 @@ class Response(Generic[T]):
 
     def to_asgi_response(
         self,
-        app: Litestar,
+        app: Litestar | None,
         request: Request,
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
@@ -402,7 +402,13 @@ class Response(Generic[T]):
             An ASGIResponse instance.
         """
 
-        warn_deprecation("2.1", "app", "parameter", removal_in="3.0.0")
+        if app is not None:
+            warn_deprecation(
+                version="2.1",
+                deprecated_name="app",
+                kind="parameter",
+                removal_in="3.0.0",
+            )
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
         cookies = self.cookies if cookies is None else filter_cookies(self.cookies, cookies)

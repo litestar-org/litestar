@@ -82,7 +82,7 @@ def create_data_handler(
         if after_request:
             response = await after_request(response)  # type: ignore[arg-type,misc]
 
-        return response.to_asgi_response(app=app, request=request, encoded_headers=raw_headers)
+        return response.to_asgi_response(app=None, request=request, encoded_headers=raw_headers)
 
     return handler
 
@@ -153,7 +153,7 @@ def create_response_handler(
     ) -> ASGIApp:
         response = await after_request(data) if after_request else data  # type:ignore[arg-type,misc]
         return response.to_asgi_response(  # type: ignore
-            app=app,
+            app=None,
             background=background,
             cookies=cookie_list,
             headers=normalized_headers,
