@@ -8,6 +8,7 @@ from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import default_serializer, encode_json, encode_msgpack, get_serializer
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
+from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.helpers import encode_headers, filter_cookies, get_enum_string_value
 
 if TYPE_CHECKING:
@@ -400,6 +401,8 @@ class Response(Generic[T]):
         Returns:
             An ASGIResponse instance.
         """
+
+        warn_deprecation("2.1", "app and request", "parameter", removal_in="3.0.0")
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
         cookies = self.cookies if cookies is None else filter_cookies(self.cookies, cookies)
