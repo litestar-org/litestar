@@ -6,7 +6,7 @@ the user's email in the response.
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/simple_dto_exclude.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 6,7,17,18,21
+    :emphasize-lines: 6,16,17,20
     :linenos:
 
 Here we introduce a new DTO class (``ReadDTO``) and configure it to exclude the ``Person.email`` field. The route

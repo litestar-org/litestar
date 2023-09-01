@@ -6,7 +6,6 @@ from datetime import date, datetime, timezone
 from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar, runtime_checkable
 from uuid import UUID, uuid4
 
-from pydantic import AnyHttpUrl, AnyUrl, EmailStr
 from sqlalchemy import Date, MetaData, Sequence, String
 from sqlalchemy.event import listens_for
 from sqlalchemy.orm import (
@@ -24,6 +23,7 @@ from .types import GUID, BigIntIdentity, DateTimeUTC, JsonB
 if TYPE_CHECKING:
     from sqlalchemy.sql import FromClause
     from sqlalchemy.sql.schema import _NamingSchemaParameter as NamingSchemaParameter
+    from sqlalchemy.types import TypeEngine
 
 __all__ = (
     "AuditColumns",
@@ -153,18 +153,20 @@ class CommonTableAttributes:
 def create_registry() -> registry:
     """Create a new SQLAlchemy registry."""
     meta = MetaData(naming_convention=convention)
-    return registry(
-        metadata=meta,
-        type_annotation_map={
-            UUID: GUID,
-            EmailStr: String,
-            AnyUrl: String,
-            AnyHttpUrl: String,
-            dict: JsonB,
-            datetime: DateTimeUTC,
-            date: Date,
-        },
-    )
+    type_annotation_map: dict[type, type[TypeEngine[Any]] | TypeEngine[Any]] = {
+        UUID: GUID,
+        datetime: DateTimeUTC,
+        date: Date,
+        dict: JsonB,
+    }
+    try:
+        from pydantic import AnyHttpUrl, AnyUrl, EmailStr
+
+        type_annotation_map.update({EmailStr: String, AnyUrl: String, AnyHttpUrl: String})
+    except ImportError:
+        pass
+
+    return registry(metadata=meta, type_annotation_map=type_annotation_map)
 
 
 orm_registry = create_registry()

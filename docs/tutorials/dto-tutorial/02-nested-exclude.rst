@@ -9,7 +9,7 @@ To demonstrate, let's adjust our script to add an ``Address`` model, that is rel
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/nested_exclude.py
    :language: python
    :linenos:
-   :emphasize-lines: 10,11,12,13,14,22,26,33,34
+   :emphasize-lines: 9-13,21,25,32,33
 
 The ``Address`` model has three attributes, ``street``, ``city``, and ``country``, and we've added an ``address``
 attribute to the ``Person`` model.

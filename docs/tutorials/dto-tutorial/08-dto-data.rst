@@ -10,7 +10,7 @@ The solution to this is the :class:`DTOData <litestar.dto.data_structures.DTODat
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/dto_data.py
    :language: python
    :linenos:
-   :emphasize-lines: 6,27,29
+   :emphasize-lines: 6,26,28
 
 The :class:`DTOData <litestar.dto.data_structures.DTOData>` type is a container for data that can be used to create instances,
 and access the underlying parsed and validated data. In our latest adjustments, we import that from

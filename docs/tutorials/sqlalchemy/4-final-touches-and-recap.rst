@@ -21,7 +21,7 @@ Recap
 In this tutorial, we have learned how to use the SQLAlchemy plugin to create a simple application that uses a database
 to store and retrieve data.
 
-In the final application ``TodoItem`` is defined, representing a to-do item. It extends from the
+In the final application ``TodoItem`` is defined, representing a TODO item. It extends from the
 :class:`DeclarativeBase <sqlalchemy.orm.DeclarativeBase>` class provided by `SQLAlchemy <http://www.sqlalchemy.org/>`_:
 
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_plugin.py
@@ -38,14 +38,14 @@ handlers via the ``transaction`` argument:
     :linenos:
     :lines: 25-33
 
-We also define a couple of utility functions, that help us to retrieve our to-do items from the database:
+We also define a couple of utility functions, that help us to retrieve our TODO items from the database:
 
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_plugin.py
     :language: python
     :linenos:
     :lines: 35-52
 
-We define our route handlers, which are the interface through which to-do items can be created, retrieved and updated:
+We define our route handlers, which are the interface through which TODO items can be created, retrieved and updated:
 
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_plugin.py
     :language: python
