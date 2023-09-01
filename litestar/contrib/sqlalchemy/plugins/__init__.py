@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+
 from litestar.contrib.sqlalchemy.plugins import _slots_base
 from litestar.plugins import InitPluginProtocol
 
