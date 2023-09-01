@@ -8,6 +8,7 @@ from anyio import CancelScope, create_task_group
 from litestar.enums import MediaType
 from litestar.response.base import ASGIResponse, Response
 from litestar.types.helper_types import StreamType
+from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.helpers import filter_cookies, get_enum_string_value
 from litestar.utils.sync import AsyncIteratorWrapper
 
@@ -168,6 +169,7 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
         Returns:
             An ASGIStreamingResponse instance.
         """
+        warn_deprecation("2.1", "app", "parameter", removal_in="3.0.0")
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
         cookies = self.cookies if cookies is None else filter_cookies(self.cookies, cookies)

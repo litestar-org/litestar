@@ -402,7 +402,7 @@ class Response(Generic[T]):
             An ASGIResponse instance.
         """
 
-        warn_deprecation("2.1", "app and request", "parameter", removal_in="3.0.0")
+        warn_deprecation("2.1", "app", "parameter", removal_in="3.0.0")
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
         cookies = self.cookies if cookies is None else filter_cookies(self.cookies, cookies)
