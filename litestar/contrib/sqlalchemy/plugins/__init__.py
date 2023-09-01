@@ -39,7 +39,7 @@ class SQLAlchemyPlugin(InitPluginProtocol, _slots_base.SlotsBase):
             app_config: The :class:`AppConfig <.config.app.AppConfig>` instance.
         """
         app_config.plugins.extend([SQLAlchemyInitPlugin(config=self._config), SQLAlchemySerializationPlugin()])
-        return app_config
+        super().on_app_init(app_config=app_config)
 
 
 __all__ = (
