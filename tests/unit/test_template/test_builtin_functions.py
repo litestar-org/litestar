@@ -203,7 +203,7 @@ def test_minijinja_url_for(tmp_path: Path) -> None:
 
         response = client.get("/simple.html")
         assert response.status_code == 200
-        assert response.text == "/simple"
+        assert response.text == "&#x2f;simple"
 
     with create_test_client(
         route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
@@ -214,7 +214,7 @@ def test_minijinja_url_for(tmp_path: Path) -> None:
 
         response = client.get("/complex_args_kwargs.html")
         assert response.status_code == 200
-        assert response.text == "/complex/100/18:00"
+        assert response.text == "&#x2f;complex&#x2f;100&#x2f;18:00"
 
     with create_test_client(
         route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
@@ -261,7 +261,7 @@ def test_minijinja_url_for_static_asset(tmp_path: Path) -> None:
 
         response = client.get("/working.html")
         assert response.status_code == 200
-        assert response.text == "/static/css/main/main.css"
+        assert response.text == "&#x2f;static&#x2f;css&#x2f;main&#x2f;main.css"
 
     with create_test_client(
         route_handlers=[tpl_renderer],

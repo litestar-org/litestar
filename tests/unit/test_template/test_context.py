@@ -17,7 +17,7 @@ from litestar.testing import create_test_client
     (
         (JinjaTemplateEngine, 'path: {{ request.scope["path"] }}', "path: /"),
         (MakoTemplateEngine, 'path: ${request.scope["path"]}', "path: /"),
-        (MiniJinjaTemplateEngine, 'path: {{ request.scope["path"] }}', "path: /"),
+        (MiniJinjaTemplateEngine, 'path: {{ request.scope["path"] }}', "path: &#x2f;"),
     ),
 )
 def test_request_is_set_in_context(engine: Any, template: str, expected: str, tmp_path: Path) -> None:
