@@ -109,7 +109,7 @@ class Redirect(Response[Any]):
 
     def to_asgi_response(
         self,
-        app: Litestar,
+        app: Litestar | None,
         request: Request,
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
@@ -125,7 +125,13 @@ class Redirect(Response[Any]):
         cookies = self.cookies if cookies is None else filter_cookies(self.cookies, cookies)
         media_type = get_enum_string_value(self.media_type or media_type or MediaType.TEXT)
 
-        warn_deprecation("2.1", "app", "parameter", removal_in="3.0.0")
+        if app is not None:
+            warn_deprecation(
+                version="2.1",
+                deprecated_name="app",
+                kind="parameter",
+                removal_in="3.0.0",
+            )
 
         return ASGIRedirectResponse(
             path=self.url,
