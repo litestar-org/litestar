@@ -475,7 +475,9 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/40770348?v=4",
       "profile": "https://github.com/nielsvanhooy",
       "contributions": [
-        "code"
+        "code",
+        "bug",
+        "test"
       ]
     },
     {
@@ -1215,6 +1217,15 @@
       "name": "Juan Riveros",
       "avatar_url": "https://avatars.githubusercontent.com/u/1297567?v=4",
       "profile": "https://github.com/juan-riveros",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "davidbrochart",
+      "name": "David Brochart",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4711805?v=4",
+      "profile": "https://github.com/davidbrochart",
       "contributions": [
         "doc"
       ]

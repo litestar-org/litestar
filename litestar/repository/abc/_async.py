@@ -3,10 +3,10 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
-from litestar.contrib.repository.exceptions import NotFoundError
+from litestar.repository.exceptions import NotFoundError
 
 if TYPE_CHECKING:
-    from litestar.contrib.repository.filters import FilterTypes
+    from litestar.repository.filters import FilterTypes
 
 T = TypeVar("T")
 CollectionT = TypeVar("CollectionT")
@@ -84,10 +84,11 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def exists(self, **kwargs: Any) -> bool:
+    async def exists(self, *filters: FilterTypes, **kwargs: Any) -> bool:
         """Return true if the object specified by ``kwargs`` exists.
 
         Args:
+            *filters: Types for specific filtering operations.
             **kwargs: Identifier of the instance to be retrieved.
 
         Returns:

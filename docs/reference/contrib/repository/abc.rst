@@ -1,5 +1,6 @@
+:orphan:
+
 abc
 ===
 
-.. automodule:: litestar.contrib.repository.abc
-    :members:
+This page has moved to :doc:`/reference/repository/abc`
