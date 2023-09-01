@@ -8,6 +8,7 @@ from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import ASGIResponse, Response
 from litestar.status_codes import HTTP_200_OK
+from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.helpers import filter_cookies
 
 if TYPE_CHECKING:
@@ -99,6 +100,8 @@ class Template(Response[bytes]):
         status_code: int | None = None,
         type_encoders: TypeEncodersMap | None = None,
     ) -> ASGIResponse:
+        warn_deprecation("2.1", "app", "parameter", removal_in="3.0.0")
+
         if not app.template_engine:
             raise ImproperlyConfiguredException("Template engine is not configured")
 
