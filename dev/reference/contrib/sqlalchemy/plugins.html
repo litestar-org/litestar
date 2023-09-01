@@ -1748,7 +1748,7 @@ uncommitted data.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.plugins.</span></span><span class="sig-name descname"><span class="pre">SQLAlchemyPlugin</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin" title="litestar.contrib.sqlalchemy.plugins.init.plugin.SQLAlchemyInitPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyInitPlugin</span></code></a>, <a class="reference internal" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin" title="litestar.contrib.sqlalchemy.plugins.serialization.SQLAlchemySerializationPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySerializationPlugin</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../../plugins.html#litestar.plugins.InitPluginProtocol" title="litestar.plugins.InitPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitPluginProtocol</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SlotsBase</span></code></p>
 <p>A plugin that provides SQLAlchemy integration.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.__init__">
@@ -1757,6 +1757,17 @@ uncommitted data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>config</strong> – configure DB connection and hook handlers and dependencies.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.on_app_init">
+<span class="sig-name descname"><span class="pre">on_app_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><span class="pre">AppConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><span class="pre">AppConfig</span></a></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.on_app_init" title="Permalink to this definition">#</a></dt>
+<dd><p>Configure application for use with SQLAlchemy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app_config</strong> – The <a class="reference internal" href="../../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2014,6 +2025,7 @@ uncommitted data.</p>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin"><code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.__init__"><code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.on_app_init"><code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin.on_app_init()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin"><code class="docutils literal notranslate"><span class="pre">SQLAlchemySerializationPlugin</span></code></a><ul class="visible nav section-nav flex-column">
