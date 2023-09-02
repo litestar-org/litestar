@@ -106,6 +106,7 @@ class Template(Response[bytes]):
                 deprecated_name="app",
                 kind="parameter",
                 removal_in="3.0.0",
+                info="app will be pulled from parameter 'request' instead",
             )
 
         if not request.app.template_engine:

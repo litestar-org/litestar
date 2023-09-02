@@ -131,6 +131,7 @@ class Redirect(Response[Any]):
                 deprecated_name="app",
                 kind="parameter",
                 removal_in="3.0.0",
+                info="app will be pulled from parameter 'request' instead",
             )
 
         return ASGIRedirectResponse(
