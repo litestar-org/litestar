@@ -299,13 +299,21 @@ async def test_to_response_template_response(anyio_backend: str, tmp_path: Path)
             background=background_task,
         )
 
+    app = Litestar(
+        route_handlers=[],
+        template_config=TemplateConfig(
+            engine=JinjaTemplateEngine,
+            directory=tmp_path,
+        ),
+    )
+
     with create_test_client(
         handler, template_config=TemplateConfig(engine=JinjaTemplateEngine, directory=tmp_path)
     ) as client:
         route: HTTPRoute = client.app.routes[0]
         route_handler = route.route_handlers[0]
         response = await route_handler.to_response(
-            data=route_handler.fn.value(), app=client.app, request=RequestFactory().get()
+            data=route_handler.fn.value(), app=client.app, request=RequestFactory(app=app).get()
         )
         assert isinstance(response, ASGIResponse)
         assert (b"local-header", b"123") in response.encoded_headers
