@@ -91,15 +91,15 @@ class ASGIResponse:
                     "that does not allow content (304, 204, < 200)"
                 )
             body = b""
-
-        encoded_headers.append(
-            (
-                b"content-type",
-                (f"{media_type}; charset={encoding}" if media_type.startswith("text/") else media_type).encode(
-                    "latin-1"
+        else:
+            encoded_headers.append(
+                (
+                    b"content-type",
+                    (f"{media_type}; charset={encoding}" if media_type.startswith("text/") else media_type).encode(
+                        "latin-1"
+                    ),
                 ),
-            ),
-        )
+            )
 
         if content_length is None:
             content_length = len(body)

@@ -38,7 +38,7 @@ Cleaning up the example with dataclasses
 To make your life a little easier, you can transform this example by using :py:mod:`dataclasses` instead of plain dictionaries:
 
 .. tip:: For an in-depth explanation of dataclasses, you can read this excellent Real Python
-    article: `dataclasses <https://realpython.com/python-data-classes/>`_
+    article: `Data Classes in Python 3.7+ <https://realpython.com/python-data-classes/>`_
 
 .. literalinclude:: /examples/todo_app/get_list/dataclass.py
     :caption: app.py
@@ -54,7 +54,7 @@ knows how to turn these dataclasses into JSON and will do so for you automatical
     In addition to dataclasses, Litestar supports many more types such as
     :class:`TypedDict <typing.TypedDict>`, :class:`NamedTuple <typing.NamedTuple>`,
     `Pydantic models <https://docs.pydantic.dev/usage/models/>`_, or
-    `attrs classes <https://www.attrs.org/en/stable/>`_
+    `attrs classes <https://www.attrs.org/en/stable/>`_.
 
 
 Filtering the list using query parameters
@@ -89,8 +89,8 @@ of the same name.
 
 
 At first glance this seems to work just fine, but you might be able to spot a problem:
-If you input anything else than ``?done=1``, it would still return not-done items.
-``?done=john`` for example works just like ``?done=0``
+If you input anything other than ``?done=1``, it would still return items not yet marked
+as done. For example, ``?done=john`` gives the same result as ``?done=0``.
 
 An easy solution for this would be to simply check if the query parameter is either
 ``1`` or ``0``, and return a response with an HTTP status code that indicates an
@@ -122,7 +122,7 @@ If the query parameter equals ``0``, return all items that have ``done=False``:
     :linenos:
     :lineno-start: 25
 
-And if the query parameter has any other value, an :exc:`HTTPException` will be raised.
+Finally, if the query parameter has any other value, an :exc:`HTTPException` will be raised.
 Raising an ``HTTPException`` tells Litestar that something went wrong, and instead of
 returning a normal response, it will send a response with the HTTP status code given
 (``400`` in this case) and the error message supplied.
@@ -141,10 +141,11 @@ returning a normal response, it will send a response with the HTTP status code g
     Try to access http://127.0.0.1?done=john now and you will get this error message
 
 
-Now we've got that out of the way but your code has grown to be quite complex for such a
-simple task, and you're probably thinking
-`"there must be a better way!" <https://www.youtube.com/watch?t=566&v=p33CVV29OG8>`_. And there is! Instead
-of doing these things manually, you can also just let Litestar handle them for you!
+Now we've got that out of the way, but your code has grown to be quite complex for such
+a simple task. You're probably thinking
+`"there must be a better way!" <https://www.youtube.com/watch?t=566&v=p33CVV29OG8>`_,
+and there is! Instead of doing these things manually, you can also just let Litestar
+handle them for you!
 
 
 Converting and validating query parameters
@@ -278,4 +279,4 @@ allows you to send requests to it.
     OpenAPI schema with `ReDoc <https://redocly.com/>`_ and
     `Stoplight Elements <https://stoplight.io/open-source/elements/>`_. You can browse
     to http://127.0.0.1:8000/schema/redoc and http://127.0.0.1:8000/schema/elements to
-    view each, respectively
+    view each, respectively.
