@@ -288,7 +288,7 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         id_attr_name = id_attribute if id_attribute is not None else cls.id_attribute
 
         if isinstance(item, dict):
-            return item.get(id_attr_name)
+            return item[id_attr_name]
 
         return getattr(item, id_attr_name)
 
