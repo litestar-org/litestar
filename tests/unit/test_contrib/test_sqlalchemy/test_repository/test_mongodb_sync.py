@@ -339,6 +339,14 @@ async def test_mongo_db_repo_upsert_many(mock_repo: MongoDbSyncRepository, monke
     )
 
 
+async def test_mongo_db_repo_upsert_many_not_found(mock_repo: MongoDbSyncRepository, monkeypatch: MonkeyPatch) -> None:
+    """Test expected upsert many when document is not found."""
+    monkeypatch.setattr(mock_repo.collection, "bulk_write", Mock(matched_count=0))
+
+    with pytest.raises(NotFoundError):
+        mock_repo.upsert_many([{"_id": 1}])
+
+
 def test_mongo_db_repo_list_and_count(mock_repo: MongoDbSyncRepository, monkeypatch: MonkeyPatch) -> None:
     """Test expected method calls for upsert list and count operation."""
     expected_id = 1

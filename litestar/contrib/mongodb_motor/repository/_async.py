@@ -303,6 +303,9 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
 
         Returns:
             The updated or created instances.
+
+        Raises:
+            NotFoundError: If no instance found with same identifier as `data`.
         """
         bulk_operations = []
 
@@ -311,7 +314,11 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
             bulk_operations.append(UpdateOne({"_id": _id}, {"$set": instance_data}, upsert=True))
 
         with wrap_pymongo_exception():
-            await self.collection.bulk_write(bulk_operations)
+            result = await self.collection.bulk_write(bulk_operations)
+            if result.matched_count != len(data):
+                raise NotFoundError(
+                    f"Some instances were not found and updated. Total data: {len(data)}, Matched: {result.matched_count}"
+                )
 
             return data
 
