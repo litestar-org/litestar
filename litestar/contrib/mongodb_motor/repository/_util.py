@@ -27,8 +27,6 @@ def wrap_pymongo_exception() -> Any:
         raise ConflictError from e
     except PyMongoError as e:
         raise RepositoryError(f"An exception occurred: {e}") from e
-    except AttributeError as e:
-        raise RepositoryError from e
 
 
 async def _convert_cursor_to_list_async(cursor: Any) -> list[dict[str, Any]]:
