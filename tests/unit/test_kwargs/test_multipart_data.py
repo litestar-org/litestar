@@ -577,9 +577,5 @@ def test_multipart_and_url_encoded_behave_the_same(form_object, form_type) -> No
         else:
             response = client.post(
             f"/form",
-            data={
-                "name": 1,
-                "amount": 1,
-            },
         )
         assert response.status_code == HTTP_201_CREATED
