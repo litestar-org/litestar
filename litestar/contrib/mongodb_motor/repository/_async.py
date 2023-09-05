@@ -189,7 +189,9 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
             with wrap_pymongo_exception():
                 document = cast(
                     DocumentType,
-                    await self.collection.find_one_and_update(doc, update, return_document=ReturnDocument.AFTER),
+                    await self.collection.find_one_and_update(
+                        doc, update, return_document=ReturnDocument.AFTER, upsert=True
+                    ),
                 )
                 return (
                     document,
@@ -284,7 +286,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
             return cast(
                 DocumentType,
                 await self.collection.find_one_and_update(
-                    {"_id": data["_id"]}, {"$set": data}, return_document=ReturnDocument.AFTER
+                    {"_id": data["_id"]}, {"$set": data}, return_document=ReturnDocument.AFTER, upsert=True
                 ),
             )
 

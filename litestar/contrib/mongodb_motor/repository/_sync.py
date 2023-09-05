@@ -197,7 +197,7 @@ class MongoDbSyncRepository(AbstractSyncRepository[DocumentType]):
             with wrap_pymongo_exception():
                 document = cast(
                     DocumentType,
-                    self.collection.find_one_and_update(doc, update, return_document=ReturnDocument.AFTER),
+                    self.collection.find_one_and_update(doc, update, return_document=ReturnDocument.AFTER, upsert=True),
                 )
                 return (
                     document,
@@ -292,7 +292,7 @@ class MongoDbSyncRepository(AbstractSyncRepository[DocumentType]):
             return cast(
                 DocumentType,
                 self.collection.find_one_and_update(
-                    {"_id": data["_id"]}, {"$set": data}, return_document=ReturnDocument.AFTER
+                    {"_id": data["_id"]}, {"$set": data}, return_document=ReturnDocument.AFTER, upsert=True
                 ),
             )
 
