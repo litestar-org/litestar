@@ -3,6 +3,9 @@ import sys
 from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 
+from tests.unit.test_cli import CREATE_APP_FILE_CONTENT
+from tests.unit.test_cli.conftest import CreateAppFileFixture
+
 try:
     from rich_click import group
 except ImportError:
@@ -33,6 +36,25 @@ def test_format_is_enabled() -> None:
 def test_info_command(mocker: "MockerFixture", runner: "CliRunner", app_file: "Path") -> None:
     mock = mocker.patch("litestar.cli.commands.core.show_app_info")
     result = runner.invoke(cli_command, ["info"])
+
+    assert result.exception is None
+    mock.assert_called_once()
+
+
+def test_info_command_with_app_dir(
+    mocker: "MockerFixture", runner: "CliRunner", create_app_file: CreateAppFileFixture
+) -> None:
+    app_file = "main.py"
+    app_file_without_extension = app_file.split(".")[0]
+    create_app_file(
+        file=app_file,
+        directory="src",
+        content=CREATE_APP_FILE_CONTENT,
+        subdir="info_with_app_dir",
+        init_content=f"from .{app_file_without_extension} import create_app",
+    )
+    mock = mocker.patch("litestar.cli.commands.core.show_app_info")
+    result = runner.invoke(cli_command, ["--app", "info_with_app_dir:create_app", "--app-dir", "src", "info"])
 
     assert result.exception is None
     mock.assert_called_once()
