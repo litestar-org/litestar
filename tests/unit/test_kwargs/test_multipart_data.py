@@ -562,59 +562,24 @@ def test_multipart_and_url_encoded_behave_the_same(form_object, form_type) -> No
         assert isinstance(data.name, str)
         return data.amount
 
-    # @post(path="/form/urlencoded/attrs")
-    # async def form_attrs(
-    #         request: Request, data: Annotated[AddProductFormAttrs, Body(media_type=RequestEncodingType.URL_ENCODED)]
-    # ) -> int:
-    #     print(type(data.name))
-    #     return data.amount
-    #
-    # @post(path="/form/urlencoded/pydantic")
-    # async def form_pydantic(
-    #         request: Request, data: Annotated[AddProductFormPydantic, Body(media_type=RequestEncodingType.URL_ENCODED)]
-    # ) -> int:
-    #     print(type(data.name))
-    #     return data.amount
-    #
-    # @post(path="/form/urlencoded/msgspec")
-    # async def form_msgspec(
-    #         request: Request, data: Annotated[AddProductFormMsgspec, Body(media_type=RequestEncodingType.URL_ENCODED)]
-    # ) -> int:
-    #     print(type(data.name))
-    #     return data.amount
-    #
-    # @post(path="/form/multipart/attrs")
-    # async def form_multipart_attrs(
-    #         request: Request, data: Annotated[AddProductFormAttrs, Body(media_type=RequestEncodingType.MULTI_PART)]
-    # ) -> int:
-    #     print(type(data.name))
-    #     return data.amount
-    #
-    # @post(path="/form/multipart/pydantic")
-    # async def form_multipart_pydantic(
-    #         request: Request, data: Annotated[AddProductFormPydantic, Body(media_type=RequestEncodingType.MULTI_PART)]
-    # ) -> int:
-    #     print(type(data.name))
-    #     return data.amount
-    #
-    # @post(path="/form/multipart/msgspec")
-    # async def form_multipart_msgspec(
-    #         request: Request, data: Annotated[AddProductFormMsgspec, Body(media_type=RequestEncodingType.MULTI_PART)]
-    # ) -> int:
-    #     print(type(data.name))
-    #     return data.amount
-
     with create_test_client(route_handlers=[
         form_,
     ]
     ) as client:
-        for form_object in ["attrs", "pydantic", "msgspec"]:
-            for form_type in ["urlencoded", "multipart"]:
-                response = client.post(
+        if form_type == RequestEncodingType.URL_ENCODED:
+            response = client.post(
+                f"/form",
+                data={
+                    "name": "1",
+                    "amount": 1,
+                },
+            )
+        else:
+            response = client.post(
             f"/form",
             data={
-                "name": "1",
+                "name": 1,
                 "amount": 1,
             },
         )
-                assert response.status_code == HTTP_201_CREATED
+        assert response.status_code == HTTP_201_CREATED
