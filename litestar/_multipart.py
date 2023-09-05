@@ -157,7 +157,7 @@ def parse_multipart_form(
                 fields[field_name].append(form_file)
             elif post_data:
                 try:
-                    fields[field_name].append(decode_json(post_data, type_decoders=type_decoders))
+                    fields[field_name].append(post_data.decode())
                 except SerializationException:
                     fields[field_name].append(post_data.decode(content_charset))
             else:
