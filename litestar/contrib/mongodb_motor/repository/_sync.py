@@ -82,6 +82,7 @@ class MongoDbSyncRepository(AbstractSyncRepository[DocumentType]):
 
         query = self._build_query_from_filters(*filters)
         query.update(kwargs)
+        # We type ignore here any because if we use cast then the sync version gets a redundant cast error
         return self.collection.count_documents(query)
 
     def delete(self, item_id: Any) -> DocumentType:
@@ -98,7 +99,7 @@ class MongoDbSyncRepository(AbstractSyncRepository[DocumentType]):
         """
         with wrap_pymongo_exception():
             document = self.collection.find_one_and_delete({self.id_attribute: item_id})
-            self.check_not_found(document)
+            self.check_not_found(cast(DocumentType, document))
             return cast(DocumentType, document)
 
     def delete_many(self, item_ids: list[Any]) -> list[DocumentType]:
@@ -145,7 +146,7 @@ class MongoDbSyncRepository(AbstractSyncRepository[DocumentType]):
         """
         with wrap_pymongo_exception():
             document = self.collection.find_one({self.id_attribute: item_id, **kwargs})
-            self.check_not_found(document)
+            self.check_not_found(cast(DocumentType, document))
             return cast(DocumentType, document)
 
     def get_one(self, **kwargs: Any) -> DocumentType:
@@ -162,7 +163,7 @@ class MongoDbSyncRepository(AbstractSyncRepository[DocumentType]):
         """
         with wrap_pymongo_exception():
             document = self.collection.find_one(kwargs)
-            self.check_not_found(document)
+            self.check_not_found(cast(DocumentType, document))
             return cast(DocumentType, document)
 
     def get_or_create(
@@ -194,8 +195,9 @@ class MongoDbSyncRepository(AbstractSyncRepository[DocumentType]):
         if upsert:
             update = {"$set": kwargs}
             with wrap_pymongo_exception():
+                document = self.collection.find_one_and_update(doc, update, return_document=ReturnDocument.AFTER)
                 return (
-                    self.collection.find_one_and_update(doc, update, return_document=ReturnDocument.AFTER),
+                    cast(DocumentType, document),
                     False,
                 )
         return doc, False
@@ -231,7 +233,7 @@ class MongoDbSyncRepository(AbstractSyncRepository[DocumentType]):
                 {"$set": data},
                 return_document=ReturnDocument.AFTER,
             )
-            self.check_not_found(result)
+            self.check_not_found(cast(DocumentType, result))
             return cast(DocumentType, result)
 
     def update_many(self, data: list[DocumentType]) -> list[DocumentType]:

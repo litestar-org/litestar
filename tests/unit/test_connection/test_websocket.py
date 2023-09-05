@@ -9,6 +9,7 @@ from unittest.mock import MagicMock
 
 import anyio
 import pytest
+from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 
 from litestar.connection import WebSocket
 from litestar.datastructures.headers import Headers
@@ -285,6 +286,8 @@ def test_iter_msgpack() -> None:
 
 
 def test_websocket_concurrency_pattern() -> None:
+    stream_send: MemoryObjectSendStream[Any]
+    stream_receive: MemoryObjectReceiveStream[Any]
     stream_send, stream_receive = anyio.create_memory_object_stream()
 
     async def reader(socket: WebSocket[Any, Any, Any]) -> None:

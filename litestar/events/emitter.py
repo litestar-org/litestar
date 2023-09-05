@@ -93,6 +93,8 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
 
     async def __aenter__(self) -> SimpleEventEmitter:
         self._exit_stack = AsyncExitStack()
+        send_stream: MemoryObjectSendStream[Any]
+        receive_stream: MemoryObjectReceiveStream[Any]
         send_stream, receive_stream = anyio.create_memory_object_stream(math.inf)
         self._send_stream = send_stream
         task_group = anyio.create_task_group()

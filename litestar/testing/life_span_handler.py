@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from math import inf
-from typing import TYPE_CHECKING, Generic, Optional, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Generic, Optional, TypeVar, cast
 
 from anyio import create_memory_object_stream
 from anyio.streams.stapled import StapledObjectStream
@@ -9,6 +9,8 @@ from anyio.streams.stapled import StapledObjectStream
 from litestar.testing.client.base import BaseTestClient
 
 if TYPE_CHECKING:
+    from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
+
     from litestar.types import (
         LifeSpanReceiveMessage,  # noqa: F401
         LifeSpanSendMessage,
@@ -24,8 +26,12 @@ class LifeSpanHandler(Generic[T]):
 
     def __init__(self, client: T) -> None:
         self.client = client
-        self.stream_send = StapledObjectStream[Optional["LifeSpanSendMessage"]](*create_memory_object_stream(inf))
-        self.stream_receive = StapledObjectStream["LifeSpanReceiveMessage"](*create_memory_object_stream(inf))
+        send_stream: MemoryObjectSendStream[Any]
+        receive_stream: MemoryObjectReceiveStream[Any]
+        send_stream, receive_stream = create_memory_object_stream(inf)
+        self.stream_send = StapledObjectStream[Optional["LifeSpanSendMessage"]](send_stream, receive_stream)
+        send_stream, receive_stream = create_memory_object_stream(inf)
+        self.stream_receive = StapledObjectStream["LifeSpanReceiveMessage"](send_stream, receive_stream)
 
         with self.client.portal() as portal:
             self.task = portal.start_task_soon(self.lifespan)

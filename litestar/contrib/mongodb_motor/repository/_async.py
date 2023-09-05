@@ -75,7 +75,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
         query = self._build_query_from_filters(*filters)
         query.update(kwargs)
         # We type ignore here any because if we use cast then the sync version gets a redundant cast error
-        return await self.collection.count_documents(query)  # type: ignore[no-any-return]
+        return await self.collection.count_documents(query)
 
     async def delete(self, item_id: Any) -> DocumentType:
         """Delete instance identified by ``item_id``.
@@ -91,7 +91,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
         """
         with wrap_pymongo_exception():
             document = await self.collection.find_one_and_delete({self.id_attribute: item_id})
-            self.check_not_found(document)
+            self.check_not_found(cast(DocumentType, document))
             return cast(DocumentType, document)
 
     async def delete_many(self, item_ids: list[Any]) -> list[DocumentType]:
@@ -138,7 +138,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
         """
         with wrap_pymongo_exception():
             document = await self.collection.find_one({self.id_attribute: item_id, **kwargs})
-            self.check_not_found(document)
+            self.check_not_found(cast(DocumentType, document))
             return cast(DocumentType, document)
 
     async def get_one(self, **kwargs: Any) -> DocumentType:
@@ -155,7 +155,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
         """
         with wrap_pymongo_exception():
             document = await self.collection.find_one(kwargs)
-            self.check_not_found(document)
+            self.check_not_found(cast(DocumentType, document))
             return cast(DocumentType, document)
 
     async def get_or_create(
@@ -187,8 +187,9 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
         if upsert:
             update = {"$set": kwargs}
             with wrap_pymongo_exception():
+                document = await self.collection.find_one_and_update(doc, update, return_document=ReturnDocument.AFTER)
                 return (
-                    await self.collection.find_one_and_update(doc, update, return_document=ReturnDocument.AFTER),
+                    cast(DocumentType, document),
                     False,
                 )
         return doc, False
@@ -224,7 +225,7 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
                 {"$set": data},
                 return_document=ReturnDocument.AFTER,
             )
-            self.check_not_found(result)
+            self.check_not_found(cast(DocumentType, result))
             return cast(DocumentType, result)
 
     async def update_many(self, data: list[DocumentType]) -> list[DocumentType]:
