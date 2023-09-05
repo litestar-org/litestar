@@ -8,7 +8,7 @@ from typing import Any, DefaultDict, Dict, List, Optional
 import msgspec
 import pytest
 from attr import define, field
-from attr.validators import instance_of, ge, lt
+from attr.validators import ge, instance_of, lt
 from pydantic import BaseConfig, BaseModel, ConfigDict, Field
 from typing_extensions import Annotated
 
@@ -556,26 +556,38 @@ class AddProductFormMsgspec(msgspec.Struct):
 @pytest.mark.parametrize("form_object", [AddProductFormMsgspec, AddProductFormPydantic, AddProductFormAttrs])
 @pytest.mark.parametrize("form_type", [RequestEncodingType.URL_ENCODED, RequestEncodingType.MULTI_PART])
 def test_multipart_and_url_encoded_behave_the_same(form_object, form_type) -> None:
-
     @post(path="/form")
     async def form_(request: Request, data: Annotated[form_object, Body(media_type=form_type)]) -> int:
         assert isinstance(data.name, str)
         return data.amount
 
-    with create_test_client(route_handlers=[
-        form_,
-    ]
+    with create_test_client(
+        route_handlers=[
+            form_,
+        ]
     ) as client:
         if form_type == RequestEncodingType.URL_ENCODED:
             response = client.post(
-                f"/form",
+                "/form",
                 data={
-                    "name": "1",
+                    "name": 1,
                     "amount": 1,
                 },
             )
         else:
             response = client.post(
-            f"/form",
-        )
+                "/form",
+                content=(
+                    b"--1f35df74046888ceaa62d8a534a076dd\r\n"
+                    b'Content-Disposition: form-data; name="name"\r\n'
+                    b"Content-Type: application/octet-stream\r\n\r\n"
+                    b"1\r\n"
+                    b"--1f35df74046888ceaa62d8a534a076dd\r\n"
+                    b'Content-Disposition: form-data; name="amount"\r\n'
+                    b"Content-Type: application/octet-stream\r\n\r\n"
+                    b"1\r\n"
+                    b"--1f35df74046888ceaa62d8a534a076dd--\r\n"
+                ),
+                headers={"Content-Type": "multipart/form-data; boundary=1f35df74046888ceaa62d8a534a076dd"},
+            )
         assert response.status_code == HTTP_201_CREATED
