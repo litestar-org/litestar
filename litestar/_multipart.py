@@ -32,6 +32,7 @@ from urllib.parse import unquote
 
 from litestar.datastructures.upload_file import UploadFile
 from litestar.exceptions import SerializationException, ValidationException
+from litestar.serialization import decode_json
 
 __all__ = ("parse_body", "parse_content_header", "parse_multipart_form")
 
@@ -156,7 +157,7 @@ def parse_multipart_form(
                 fields[field_name].append(form_file)
             elif post_data:
                 try:
-                    fields[field_name].append(post_data.decode())
+                    fields[field_name].append(decode_json(post_data, type_decoders=type_decoders))
                 except SerializationException:
                     fields[field_name].append(post_data.decode(content_charset))
             else:
