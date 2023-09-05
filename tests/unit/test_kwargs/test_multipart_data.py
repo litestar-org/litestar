@@ -555,11 +555,11 @@ class AddProductFormMsgspec(msgspec.Struct):
 
 @pytest.mark.parametrize("form_object", [AddProductFormMsgspec, AddProductFormPydantic, AddProductFormAttrs])
 @pytest.mark.parametrize("form_type", [RequestEncodingType.URL_ENCODED, RequestEncodingType.MULTI_PART])
-def test_multipart_and_url_encoded_behave_the_same(form_object, form_type) -> None:
+def test_multipart_and_url_encoded_behave_the_same(form_object, form_type) -> None:  # type: ignore[no-untyped-def]
     @post(path="/form")
     async def form_(request: Request, data: Annotated[form_object, Body(media_type=form_type)]) -> int:
         assert isinstance(data.name, str)
-        return data.amount
+        return data.amount  # type: ignore[no-any-return]
 
     with create_test_client(
         route_handlers=[

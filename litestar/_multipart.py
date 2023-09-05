@@ -32,7 +32,6 @@ from urllib.parse import unquote
 
 from litestar.datastructures.upload_file import UploadFile
 from litestar.exceptions import SerializationException, ValidationException
-from litestar.serialization import decode_json
 
 __all__ = ("parse_body", "parse_content_header", "parse_multipart_form")
 
