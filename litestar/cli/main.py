@@ -50,7 +50,7 @@ def litestar_group(ctx: Context, app_path: str | None, app_dir: Path | None = No
     sys.path.append(str(app_dir))
 
     if ctx.obj is None:  # env has not been loaded yet, so we can lazy load it
-        ctx.obj = lambda: LitestarEnv.from_env(app_path)
+        ctx.obj = lambda: LitestarEnv.from_env(app_path, app_dir=app_dir)
 
 
 # add sub commands here
