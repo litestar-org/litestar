@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2

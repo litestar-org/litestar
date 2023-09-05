@@ -9,7 +9,7 @@ jobs:
       security-events: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: "main"
       - name: Initialize CodeQL With Dependencies
