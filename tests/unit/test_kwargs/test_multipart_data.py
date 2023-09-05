@@ -5,8 +5,11 @@ from os.path import dirname, join, realpath
 from pathlib import Path
 from typing import Any, DefaultDict, Dict, List, Optional
 
+import msgspec
 import pytest
-from pydantic import BaseConfig, BaseModel
+from attr import define, field
+from attr.validators import instance_of, ge, lt
+from pydantic import BaseConfig, BaseModel, ConfigDict, Field
 from typing_extensions import Annotated
 
 from litestar import Request, post
@@ -528,3 +531,90 @@ def test_multipart_handling_of_none_json_lists_with_multiple_elements() -> None:
             headers={"Content-Type": "multipart/form-data; boundary=1f35df74046888ceaa62d8a534a076dd"},
         )
         assert response.status_code == HTTP_201_CREATED
+
+
+MAX_INT_POSTGRES = 10
+
+
+@define
+class AddProductFormAttrs:
+    name: str
+    amount: int = field(validator=[instance_of(int), ge(1), lt(MAX_INT_POSTGRES)])
+
+
+class AddProductFormPydantic(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    name: str
+    amount: int = Field(ge=1, lt=MAX_INT_POSTGRES)
+
+
+class AddProductFormMsgspec(msgspec.Struct):
+    name: str
+    amount: Annotated[int, msgspec.Meta(lt=MAX_INT_POSTGRES, ge=1)]
+
+
+@pytest.mark.parametrize("form_object", [AddProductFormMsgspec, AddProductFormPydantic, AddProductFormAttrs])
+@pytest.mark.parametrize("form_type", [RequestEncodingType.URL_ENCODED, RequestEncodingType.MULTI_PART])
+def test_multipart_and_url_encoded_behave_the_same(form_object, form_type) -> None:
+
+    @post(path="/form")
+    async def form_(request: Request, data: Annotated[form_object, Body(media_type=form_type)]) -> int:
+        assert isinstance(data.name, str)
+        return data.amount
+
+    # @post(path="/form/urlencoded/attrs")
+    # async def form_attrs(
+    #         request: Request, data: Annotated[AddProductFormAttrs, Body(media_type=RequestEncodingType.URL_ENCODED)]
+    # ) -> int:
+    #     print(type(data.name))
+    #     return data.amount
+    #
+    # @post(path="/form/urlencoded/pydantic")
+    # async def form_pydantic(
+    #         request: Request, data: Annotated[AddProductFormPydantic, Body(media_type=RequestEncodingType.URL_ENCODED)]
+    # ) -> int:
+    #     print(type(data.name))
+    #     return data.amount
+    #
+    # @post(path="/form/urlencoded/msgspec")
+    # async def form_msgspec(
+    #         request: Request, data: Annotated[AddProductFormMsgspec, Body(media_type=RequestEncodingType.URL_ENCODED)]
+    # ) -> int:
+    #     print(type(data.name))
+    #     return data.amount
+    #
+    # @post(path="/form/multipart/attrs")
+    # async def form_multipart_attrs(
+    #         request: Request, data: Annotated[AddProductFormAttrs, Body(media_type=RequestEncodingType.MULTI_PART)]
+    # ) -> int:
+    #     print(type(data.name))
+    #     return data.amount
+    #
+    # @post(path="/form/multipart/pydantic")
+    # async def form_multipart_pydantic(
+    #         request: Request, data: Annotated[AddProductFormPydantic, Body(media_type=RequestEncodingType.MULTI_PART)]
+    # ) -> int:
+    #     print(type(data.name))
+    #     return data.amount
+    #
+    # @post(path="/form/multipart/msgspec")
+    # async def form_multipart_msgspec(
+    #         request: Request, data: Annotated[AddProductFormMsgspec, Body(media_type=RequestEncodingType.MULTI_PART)]
+    # ) -> int:
+    #     print(type(data.name))
+    #     return data.amount
+
+    with create_test_client(route_handlers=[
+        form_,
+    ]
+    ) as client:
+        for form_object in ["attrs", "pydantic", "msgspec"]:
+            for form_type in ["urlencoded", "multipart"]:
+                response = client.post(
+            f"/form",
+            data={
+                "name": "1",
+                "amount": 1,
+            },
+        )
+                assert response.status_code == HTTP_201_CREATED
