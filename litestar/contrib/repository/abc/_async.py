@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
-from typing import TYPE_CHECKING, Any, Generic, Iterable, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from litestar.contrib.repository.exceptions import NotFoundError
 
@@ -228,7 +228,7 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[Iterable[T]]:
+    async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[T]:
         """Get a list of instances, optionally filtered.
 
         Args:

@@ -800,7 +800,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         auto_expunge: bool | None = None,
         statement: Select[tuple[ModelT]] | StatementLambdaElement | None = None,
         **kwargs: Any,
-    ) -> list[Row[Any]]:
+    ) -> list[Any]:
         """Get a list of instances, optionally filtered.
 
         Args:
