@@ -98,9 +98,9 @@ class MongoDbSyncRepository(AbstractSyncRepository[DocumentType]):
             NotFoundError: If no instance found identified by ``item_id``.
         """
         with wrap_pymongo_exception():
-            document = self.collection.find_one_and_delete({self.id_attribute: item_id})
-            self.check_not_found(cast(DocumentType, document))
-            return cast(DocumentType, document)
+            document = cast(DocumentType, self.collection.find_one_and_delete({self.id_attribute: item_id}))
+            self.check_not_found(document)
+            return document
 
     def delete_many(self, item_ids: list[Any]) -> list[DocumentType]:
         """Delete instance identified by ``item_id``.
@@ -145,9 +145,9 @@ class MongoDbSyncRepository(AbstractSyncRepository[DocumentType]):
             NotFoundError: If no instance found identified by ``item_id``.
         """
         with wrap_pymongo_exception():
-            document = self.collection.find_one({self.id_attribute: item_id, **kwargs})
-            self.check_not_found(cast(DocumentType, document))
-            return cast(DocumentType, document)
+            document = cast(DocumentType, self.collection.find_one({self.id_attribute: item_id, **kwargs}))
+            self.check_not_found(document)
+            return document
 
     def get_one(self, **kwargs: Any) -> DocumentType:
         """Get instance identified by ``kwargs``.
@@ -162,9 +162,9 @@ class MongoDbSyncRepository(AbstractSyncRepository[DocumentType]):
             NotFoundError: If no instance found identified by `item_id`.
         """
         with wrap_pymongo_exception():
-            document = self.collection.find_one(kwargs)
-            self.check_not_found(cast(DocumentType, document))
-            return cast(DocumentType, document)
+            document = cast(DocumentType, self.collection.find_one(kwargs))
+            self.check_not_found(document)
+            return document
 
     def get_or_create(
         self, match_fields: list[str] | str | None = None, upsert: bool = True, **kwargs: Any
@@ -195,9 +195,12 @@ class MongoDbSyncRepository(AbstractSyncRepository[DocumentType]):
         if upsert:
             update = {"$set": kwargs}
             with wrap_pymongo_exception():
-                document = self.collection.find_one_and_update(doc, update, return_document=ReturnDocument.AFTER)
+                document = cast(
+                    DocumentType,
+                    self.collection.find_one_and_update(doc, update, return_document=ReturnDocument.AFTER),
+                )
                 return (
-                    cast(DocumentType, document),
+                    document,
                     False,
                 )
         return doc, False
@@ -228,13 +231,16 @@ class MongoDbSyncRepository(AbstractSyncRepository[DocumentType]):
             NotFoundError: If no instance found with same identifier as ``data``.
         """
         with wrap_pymongo_exception():
-            result = self.collection.find_one_and_update(
-                {self.id_attribute: self.get_id_attribute_value(data)},
-                {"$set": data},
-                return_document=ReturnDocument.AFTER,
+            result = cast(
+                DocumentType,
+                self.collection.find_one_and_update(
+                    {self.id_attribute: self.get_id_attribute_value(data)},
+                    {"$set": data},
+                    return_document=ReturnDocument.AFTER,
+                ),
             )
-            self.check_not_found(cast(DocumentType, result))
-            return cast(DocumentType, result)
+            self.check_not_found(result)
+            return result
 
     def update_many(self, data: list[DocumentType]) -> list[DocumentType]:
         """Update one or more instances with the attribute values present on ``data``.
@@ -283,10 +289,12 @@ class MongoDbSyncRepository(AbstractSyncRepository[DocumentType]):
         _id = self.get_id_attribute_value(data)
 
         with wrap_pymongo_exception():
-            document = self.collection.find_one_and_update(
-                {"_id": data["_id"]}, {"$set": data}, return_document=ReturnDocument.AFTER
+            return cast(
+                DocumentType,
+                self.collection.find_one_and_update(
+                    {"_id": data["_id"]}, {"$set": data}, return_document=ReturnDocument.AFTER
+                ),
             )
-            return cast(DocumentType, document)
 
     def upsert_many(self, data: list[DocumentType]) -> list[DocumentType]:
         """Update or create many instances.
