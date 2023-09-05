@@ -959,7 +959,7 @@ async def test_lazy_load(
     tags_to_add = await maybe_async(tag_repo.list(CollectionFilter("name", update_data.pop("tag_names", []))))  # type: ignore
     assert len(tags_to_add) > 0
     assert tags_to_add[0].id is not None
-    update_data["tags"] = tags_to_add  # type: ignore[assignment]
+    update_data["tags"] = tags_to_add
     updated_obj = await maybe_async(item_repo.update(item_model(**update_data), auto_refresh=False))
     await maybe_async(item_repo.session.commit())
     assert len(updated_obj.tags) > 0
