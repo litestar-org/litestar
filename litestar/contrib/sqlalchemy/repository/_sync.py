@@ -39,6 +39,7 @@ if TYPE_CHECKING:
     from collections import abc
     from datetime import datetime
 
+    from sqlalchemy.engine import Row
     from sqlalchemy.engine.interfaces import _CoreSingleExecuteParams
 
 DEFAULT_INSERTMANYVALUES_MAX_PARAMETERS: Final = 950
@@ -598,7 +599,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             return self._list_and_count_basic(*filters, auto_expunge=auto_expunge, statement=statement, **kwargs)
         return self._list_and_count_window(*filters, auto_expunge=auto_expunge, statement=statement, **kwargs)
 
-    def _expunge(self, instance: ModelT, auto_expunge: bool | None) -> None:
+    def _expunge(self, instance: ModelT | Row[Any], auto_expunge: bool | None) -> None:
         if auto_expunge is None:
             auto_expunge = self.auto_expunge
 
@@ -800,7 +801,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         auto_expunge: bool | None = None,
         statement: Select[tuple[ModelT]] | StatementLambdaElement | None = None,
         **kwargs: Any,
-    ) -> list[ModelT]:
+    ) -> list[Row[Any]]:
         """Get a list of instances, optionally filtered.
 
         Args:
@@ -820,7 +821,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
 
         with wrap_sqlalchemy_exception():
             result = self._execute(statement)
-            instances = list(result.scalars())
+            instances = list(result)
             for instance in instances:
                 self._expunge(instance, auto_expunge=auto_expunge)
             return instances
