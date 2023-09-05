@@ -117,7 +117,7 @@ def test_env_from_env_autodiscover_from_files_ignore_paths(
 
 
 @pytest.mark.parametrize("use_file_in_app_path", [True, False])
-def test_env_usin_app_dir(
+def test_env_using_app_dir(
     app_file_content: str, app_file_app_name: str, create_app_file: CreateAppFileFixture, use_file_in_app_path: bool
 ) -> None:
     app_file = "main.py"
