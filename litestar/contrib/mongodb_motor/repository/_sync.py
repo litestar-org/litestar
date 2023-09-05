@@ -115,7 +115,8 @@ class MongoDbSyncRepository(AbstractSyncRepository[DocumentType]):
         with wrap_pymongo_exception():
             cursor = self.collection.find({self.id_attribute: {"$in": item_ids}})
             documents_to_delete = self._convert_cursor_to_list(cursor)
-            self.collection.delete_many({self.id_attribute: {"$in": item_ids}})
+            if documents_to_delete:
+                self.collection.delete_many({self.id_attribute: {"$in": item_ids}})
             return documents_to_delete
 
     def exists(self, **kwargs: Any) -> bool:

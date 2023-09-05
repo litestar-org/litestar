@@ -144,6 +144,19 @@ async def test_motor_repo_delete_many(mock_repo: MongoDbMotorAsyncRepository, mo
     mock_repo.collection.delete_many.assert_called_once_with({"_id": {"$in": expected_ids}})
 
 
+async def test_motor_repo_delete_many_with_no_documents_to_delete(
+    mock_repo: MongoDbMotorAsyncRepository, monkeypatch: MonkeyPatch
+) -> None:
+    """Test expected method calls for delete many operation when there are no documents to delete."""
+    monkeypatch.setattr(mock_repo.collection, "find", Mock(return_value=MockCursor(return_value=[])))
+
+    deleted_documents = await mock_repo.delete_many([])
+
+    assert deleted_documents == []
+    mock_repo.collection.find.assert_called_once_with({"_id": {"$in": []}})
+    mock_repo.collection.delete_many.assert_not_called()
+
+
 async def test_motor_repo_exists(mock_repo: MongoDbMotorAsyncRepository, monkeypatch: MonkeyPatch) -> None:
     """Test expected method calls for exists operation."""
     monkeypatch.setattr(mock_repo, "count", AsyncMock(return_value=1))

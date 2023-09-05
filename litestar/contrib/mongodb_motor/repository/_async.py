@@ -107,7 +107,8 @@ class MongoDbMotorAsyncRepository(AbstractAsyncRepository[DocumentType]):
         with wrap_pymongo_exception():
             cursor = self.collection.find({self.id_attribute: {"$in": item_ids}})
             documents_to_delete = await self._convert_cursor_to_list(cursor)
-            await self.collection.delete_many({self.id_attribute: {"$in": item_ids}})
+            if documents_to_delete:
+                await self.collection.delete_many({self.id_attribute: {"$in": item_ids}})
             return documents_to_delete
 
     async def exists(self, **kwargs: Any) -> bool:
