@@ -91,12 +91,12 @@ class LitestarEnv:
     is_app_factory: bool = False
 
     @classmethod
-    def from_env(cls, app_path: str | None) -> LitestarEnv:
+    def from_env(cls, app_path: str | None, app_dir: Path | None = None) -> LitestarEnv:
         """Load environment variables.
 
         If ``python-dotenv`` is installed, use it to populate environment first
         """
-        cwd = Path().cwd()
+        cwd = Path().cwd() if app_dir is None else app_dir
         cwd_str_path = str(cwd)
         if cwd_str_path not in sys.path:
             sys.path.append(cwd_str_path)
@@ -212,7 +212,7 @@ class LitestarExtensionGroup(LitestarGroup):
             env: LitestarEnv | None = ctx.obj
         else:
             try:
-                env = ctx.obj = LitestarEnv.from_env(ctx.params.get("app_path"))
+                env = ctx.obj = LitestarEnv.from_env(ctx.params.get("app_path"), ctx.params.get("app_dir"))
             except LitestarCLIException:
                 env = None
 
