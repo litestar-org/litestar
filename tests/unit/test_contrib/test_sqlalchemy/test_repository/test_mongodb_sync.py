@@ -232,7 +232,7 @@ def test_mongo_db_repo_get_or_create_when_does_exist_and_upsert(
     assert not created
     mock_repo.get_one_or_none.assert_called_once_with(_id=expected_id)
     mock_repo.collection.find_one_and_update.assert_called_once_with(
-        {"_id": expected_id}, {"$set": {"_id": expected_id}}, return_document=True
+        {"_id": expected_id}, {"$set": {"_id": expected_id}}, return_document=True, upsert=True
     )
 
 
@@ -334,7 +334,7 @@ def test_mongo_db_repo_upsert(mock_repo: MongoDbSyncRepository, monkeypatch: Mon
     document = mock_repo.upsert(expected_document)
     assert document is expected_document
     mock_repo.collection.find_one_and_update.assert_called_once_with(
-        {"_id": expected_id}, {"$set": expected_document}, return_document=True
+        {"_id": expected_id}, {"$set": expected_document}, return_document=True, upsert=True
     )
 
 
@@ -342,7 +342,7 @@ async def test_mongo_db_repo_upsert_many(mock_repo: MongoDbSyncRepository, monke
     """Test expected method calls for upsert many operation."""
     expected_id = 1
     expected_document = {"_id": expected_id}
-    monkeypatch.setattr(mock_repo.collection, "bulk_write", Mock(return_value=expected_document))
+    monkeypatch.setattr(mock_repo.collection, "bulk_write", Mock(return_value=Mock(matched_count=1)))
 
     documents = mock_repo.upsert_many([expected_document])
 
@@ -354,7 +354,7 @@ async def test_mongo_db_repo_upsert_many(mock_repo: MongoDbSyncRepository, monke
 
 async def test_mongo_db_repo_upsert_many_not_found(mock_repo: MongoDbSyncRepository, monkeypatch: MonkeyPatch) -> None:
     """Test expected upsert many when document is not found."""
-    monkeypatch.setattr(mock_repo.collection, "bulk_write", Mock(matched_count=0))
+    monkeypatch.setattr(mock_repo.collection, "bulk_write", Mock(return_value=Mock(matched_count=0)))
 
     with pytest.raises(NotFoundError):
         mock_repo.upsert_many([{"_id": 1}])

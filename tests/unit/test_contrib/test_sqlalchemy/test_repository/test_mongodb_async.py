@@ -365,7 +365,7 @@ async def test_motor_repo_upsert_many(mock_repo: MongoDbMotorAsyncRepository, mo
     """Test expected method calls for upsert many operation."""
     expected_id = 1
     expected_document = {"_id": expected_id}
-    monkeypatch.setattr(mock_repo.collection, "bulk_write", AsyncMock(return_value=expected_document))
+    monkeypatch.setattr(mock_repo.collection, "bulk_write", AsyncMock(return_value=Mock(matched_count=1)))
 
     documents = await mock_repo.upsert_many([expected_document])
 
@@ -379,7 +379,7 @@ async def test_motor_repo_upsert_many_not_found(
     mock_repo: MongoDbMotorAsyncRepository, monkeypatch: MonkeyPatch
 ) -> None:
     """Test expected upsert many when document is not found."""
-    monkeypatch.setattr(mock_repo.collection, "bulk_write", AsyncMock(matched_count=0))
+    monkeypatch.setattr(mock_repo.collection, "bulk_write", AsyncMock(return_value=Mock(matched_count=0)))
 
     with pytest.raises(NotFoundError):
         await mock_repo.upsert_many([{"_id": 1}])
