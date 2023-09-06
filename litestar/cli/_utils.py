@@ -96,13 +96,10 @@ class LitestarEnv:
 
         If ``python-dotenv`` is installed, use it to populate environment first
         """
-        cwd = Path().cwd()
+        cwd = Path().cwd() if app_dir is None else app_dir
         cwd_str_path = str(cwd)
         if cwd_str_path not in sys.path:
             sys.path.append(cwd_str_path)
-
-        if app_dir is not None:
-            sys.path.append(str(app_dir))
 
         with contextlib.suppress(ImportError):
             import dotenv
