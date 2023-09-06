@@ -10,9 +10,10 @@ from uuid import UUID
 import pytest
 from _pytest.fixtures import FixtureRequest
 from pytest_lazyfixture import lazy_fixture
-from sqlalchemy import Engine, Table, insert
+from sqlalchemy import Engine, Table, insert, select
+from sqlalchemy.engine import Row
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session, load_only, sessionmaker
 
 from litestar.contrib.sqlalchemy import base
 from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
@@ -28,6 +29,7 @@ from litestar.repository.filters import (
 )
 from tests.helpers import maybe_async
 from tests.unit.test_contrib.test_sqlalchemy import models_bigint, models_uuid
+from tests.unit.test_contrib.test_sqlalchemy.models_uuid import UUIDAuthor
 
 from .helpers import update_raw_records
 
@@ -622,6 +624,26 @@ async def test_repo_list_method(
     collection = await maybe_async(author_repo.list())
     assert isinstance(collection, list)
     assert len(collection) == exp_count
+
+
+async def test_repo_list_with_individual_attrs(author_repo: AuthorRepository) -> None:
+    statement = select(UUIDAuthor.name, UUIDAuthor.dob)
+    assert len(statement.column_descriptions) > 1
+    _collection = await maybe_async(author_repo.list())
+    collection = await maybe_async(author_repo.list(statement=statement))
+    assert isinstance(collection, list)
+    if collection:
+        assert isinstance(collection[0], Row)
+        assert len(collection[0]) == 2
+
+
+async def test_repo_list_with_individual_attrs_model(author_repo: AuthorRepository, author_model: AuthorModel) -> None:
+    statement = select(UUIDAuthor).options(load_only(UUIDAuthor.name, UUIDAuthor.dob))
+    assert len(statement.column_descriptions) == 1
+    collection = await maybe_async(author_repo.list(statement=statement))
+    if collection:
+        assert isinstance(collection, list)
+        assert isinstance(collection[0], author_model)
 
 
 async def test_repo_add_method(

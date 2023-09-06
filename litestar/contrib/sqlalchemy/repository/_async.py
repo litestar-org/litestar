@@ -820,7 +820,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
 
         with wrap_sqlalchemy_exception():
             result = await self._execute(statement)
-            instances = list(result)
+            instances = list(result) if len(statement.column_descriptions) > 1 else list(result.scalars())
             for instance in instances:
                 self._expunge(instance, auto_expunge=auto_expunge)
             return instances
