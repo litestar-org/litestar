@@ -1238,6 +1238,17 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "sykloid",
+      "name": "P.C. Shyamshankar",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22753?v=4",
+      "profile": "https://sykloid.org/",
+      "contributions": [
+        "bug",
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,

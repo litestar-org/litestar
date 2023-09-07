@@ -82,6 +82,8 @@ app = Litestar(route_handlers=[hello_world])
 - [starlite-pg-redis-docker](https://github.com/litestar-org/starlite-pg-redis-docker): In addition to Litestar, this
   demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
   Litestar projects, this application is open to contributions, big and small.
+- [litestar-fullstack](https://github.com/litestar-org/litestar-fullstack): A reference application that contains most of the boilerplate required for a web application.
+It features a Litestar app configured with best practices, SQLAlchemy 2.0 and SAQ, a frontend integrated with Vitejs and Jinja2 templates, Docker, and more.
 - [litestar-hello-world](https://github.com/litestar-org/litestar-hello-world): A bare-minimum application setup. Great
   for testing and POC work.
 
@@ -429,6 +431,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/juan-riveros"><img src="https://avatars.githubusercontent.com/u/1297567?v=4?s=100" width="100px;" alt="Juan Riveros"/><br /><sub><b>Juan Riveros</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=juan-riveros" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/davidbrochart"><img src="https://avatars.githubusercontent.com/u/4711805?v=4?s=100" width="100px;" alt="David Brochart"/><br /><sub><b>David Brochart</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=davidbrochart" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/sean-donoghue"><img src="https://avatars.githubusercontent.com/u/64597271?v=4?s=100" width="100px;" alt="Sean Donoghue"/><br /><sub><b>Sean Donoghue</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=sean-donoghue" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://sykloid.org/"><img src="https://avatars.githubusercontent.com/u/22753?v=4?s=100" width="100px;" alt="P.C. Shyamshankar"/><br /><sub><b>P.C. Shyamshankar</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3Asykloid" title="Bug reports">🐛</a> <a href="https://github.com/litestar-org/litestar/commits?author=sykloid" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=sykloid" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>
