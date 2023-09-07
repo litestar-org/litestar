@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, Literal, Mapping, TypeVar, overload
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, Mapping, TypeVar, overload
 
 from litestar.datastructures.cookie import Cookie
 from litestar.datastructures.headers import ETag
@@ -46,6 +46,9 @@ class ASGIResponse:
         "status_code",
     )
 
+    _should_set_content_length: ClassVar[bool] = True
+    """A flag to indicate whether the content-length header should be set by default or not."""
+
     def __init__(
         self,
         *,
@@ -84,6 +87,9 @@ class ASGIResponse:
             status_code not in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} and status_code >= HTTP_200_OK
         )
 
+        if content_length is None:
+            content_length = len(body)
+
         if not status_allows_body or is_head_response:
             if body and body != b"null":
                 raise ImproperlyConfiguredException(
@@ -101,11 +107,8 @@ class ASGIResponse:
                 ),
             )
 
-        if content_length is None:
-            content_length = len(body)
-
-        if "content-length" not in headers and content_length:
-            encoded_headers.append((b"content-length", str(content_length).encode("latin-1")))
+            if self._should_set_content_length and "content-length" not in headers:
+                encoded_headers.append((b"content-length", str(content_length).encode("latin-1")))
 
         self.background = background
         self.body = body
