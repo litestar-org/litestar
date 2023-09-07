@@ -6,7 +6,7 @@ import sys
 from contextlib import AbstractContextManager
 from typing import AsyncContextManager, Awaitable, ContextManager, TypeVar, cast, overload
 
-from anyio._core._compat import _ContextManagerWrapper
+from anyio._core._compat import _ContextManagerWrapper  # pyright: ignore
 
 T = TypeVar("T")
 

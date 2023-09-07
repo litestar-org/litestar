@@ -285,7 +285,7 @@ def test_iter_msgpack() -> None:
 
 
 def test_websocket_concurrency_pattern() -> None:
-    stream_send, stream_receive = anyio.create_memory_object_stream()
+    stream_send, stream_receive = anyio.create_memory_object_stream()  # type: ignore[var-annotated]
 
     async def reader(socket: WebSocket[Any, Any, Any]) -> None:
         async with stream_send:
