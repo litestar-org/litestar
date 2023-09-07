@@ -336,7 +336,7 @@ class File(Response):
                 deprecated_name="app",
                 kind="parameter",
                 removal_in="3.0.0",
-                info="app will be pulled from parameter 'request' instead",
+                alternative="request.app",
             )
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
