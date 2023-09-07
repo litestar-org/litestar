@@ -21,8 +21,6 @@ repos:
     rev: "1.6.1"
     hooks:
       - id: poetry-check
-      - id: poetry-lock
-        args: ["--no-update"]
   - repo: https://github.com/provinzkraut/unasyncd
     rev: "v0.6.0"
     hooks:

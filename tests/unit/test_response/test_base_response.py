@@ -105,10 +105,7 @@ def test_empty_response(media_type: MediaType, expected: bytes, should_have_cont
     with create_test_client(handler) as client:
         response = client.get("/")
         assert response.content == expected
-        if should_have_content_length:
-            assert "content-length" in response.headers
-        else:
-            assert "content-length" not in response.headers
+        assert response.headers["content-length"] == str(len(expected))
 
 
 @pytest.mark.parametrize("status_code", (HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED))
