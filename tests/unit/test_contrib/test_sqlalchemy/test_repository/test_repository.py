@@ -559,6 +559,23 @@ async def test_repo_count_method(author_repo: AuthorRepository) -> None:
     assert await maybe_async(author_repo.count()) == 2
 
 
+async def test_repo_count_method_with_filters(raw_authors: RawRecordData, author_repo: AuthorRepository) -> None:
+    """Test SQLAlchemy count with filters.
+
+    Args:
+        author_repo: The author mock repository
+    """
+    assert (
+        await maybe_async(
+            author_repo.count(
+                author_repo.model_type.id == raw_authors[0]["id"],
+                author_repo.model_type.name == raw_authors[0]["name"],
+            )
+        )
+        == 1
+    )
+
+
 async def test_repo_list_and_count_method(raw_authors: RawRecordData, author_repo: AuthorRepository) -> None:
     """Test SQLAlchemy list with count in asyncpg.
 
@@ -571,6 +588,27 @@ async def test_repo_list_and_count_method(raw_authors: RawRecordData, author_rep
     assert exp_count == count
     assert isinstance(collection, list)
     assert len(collection) == exp_count
+
+
+async def test_repo_list_and_count_method_with_filters(
+    raw_authors: RawRecordData, author_repo: AuthorRepository
+) -> None:
+    """Test SQLAlchemy list with count and filters in asyncpg.
+
+    Args:
+        raw_authors: list of authors pre-seeded into the mock repository
+        author_repo: The author mock repository
+    """
+    exp_name = raw_authors[0]["name"]
+    exp_id = raw_authors[0]["id"]
+    collection, count = await maybe_async(
+        author_repo.list_and_count(author_repo.model_type.id == exp_id, author_repo.model_type.name == exp_name)
+    )
+    assert count == 1
+    assert isinstance(collection, list)
+    assert len(collection) == 1
+    assert collection[0].id == exp_id
+    assert collection[0].name == exp_name
 
 
 async def test_repo_list_and_count_basic_method(raw_authors: RawRecordData, author_repo: AuthorRepository) -> None:
@@ -624,6 +662,21 @@ async def test_repo_list_method(
     assert len(collection) == exp_count
 
 
+async def test_repo_list_method_with_filters(
+    raw_authors: RawRecordData,
+    author_repo: AuthorRepository,
+) -> None:
+    exp_name = raw_authors[0]["name"]
+    exp_id = raw_authors[0]["id"]
+    collection = await maybe_async(
+        author_repo.list(author_repo.model_type.id == exp_id, author_repo.model_type.name == exp_name)
+    )
+    assert isinstance(collection, list)
+    assert len(collection) == 1
+    assert collection[0].id == exp_id
+    assert collection[0].name == exp_name
+
+
 async def test_repo_add_method(
     raw_authors: RawRecordData, author_repo: AuthorRepository, author_model: AuthorModel
 ) -> None:
@@ -672,6 +725,18 @@ async def test_repo_update_many_method(author_repo: AuthorRepository) -> None:
 
 async def test_repo_exists_method(author_repo: AuthorRepository, first_author_id: Any) -> None:
     exists = await maybe_async(author_repo.exists(id=first_author_id))
+    assert exists
+
+
+async def test_repo_exists_method_with_filters(
+    raw_authors: RawRecordData, author_repo: AuthorRepository, first_author_id: Any
+) -> None:
+    exists = await maybe_async(
+        author_repo.exists(
+            author_repo.model_type.name == raw_authors[0]["name"],
+            id=first_author_id,
+        )
+    )
     assert exists
 
 
