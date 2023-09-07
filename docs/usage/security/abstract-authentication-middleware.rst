@@ -178,7 +178,7 @@ Finally, we need to pass our middleware to the Litestar constructor:
     # the following excludes all routes mounted at or under `/schema*`
     auth_mw = DefineMiddleware(JWTAuthenticationMiddleware, exclude="schema")
 
-    app = Litestar(request_handlers=[...], middleware=[auth_mw])
+    app = Litestar(route_handlers=[...], middleware=[auth_mw])
 
 That's it. The ``JWTAuthenticationMiddleware`` will now run for every request, and we would be able to access these in a
 http route handler in the following way:

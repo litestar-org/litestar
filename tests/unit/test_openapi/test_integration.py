@@ -1,20 +1,30 @@
-from typing import Type
+from __future__ import annotations
+
+from typing import Optional
 
 import msgspec
+import pytest
 import yaml
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated
 
-from litestar import Controller, post
+from litestar import Controller, get, post
 from litestar.app import DEFAULT_OPENAPI_CONFIG
-from litestar.enums import OpenAPIMediaType
+from litestar.enums import MediaType, OpenAPIMediaType, ParamType
 from litestar.openapi import OpenAPIConfig, OpenAPIController
+from litestar.serialization.msgspec_hooks import decode_json, encode_json, get_serializer
 from litestar.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from litestar.testing import create_test_client
 
+CREATE_EXAMPLES_VALUES = (True, False)
 
-def test_openapi_yaml(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    with create_test_client([person_controller, pet_controller], openapi_config=DEFAULT_OPENAPI_CONFIG) as client:
+
+@pytest.mark.parametrize("create_examples", CREATE_EXAMPLES_VALUES)
+def test_openapi_yaml(
+    person_controller: type[Controller], pet_controller: type[Controller], create_examples: bool
+) -> None:
+    openapi_config = OpenAPIConfig("Example API", "1.0.0", create_examples=create_examples)
+    with create_test_client([person_controller, pet_controller], openapi_config=openapi_config) as client:
         assert client.app.openapi_schema
         openapi_schema = client.app.openapi_schema
         assert openapi_schema.paths
@@ -22,11 +32,17 @@ def test_openapi_yaml(person_controller: Type[Controller], pet_controller: Type[
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"] == OpenAPIMediaType.OPENAPI_YAML.value
         assert client.app.openapi_schema
-        assert yaml.unsafe_load(response.content) == client.app.openapi_schema.to_schema()
+        serializer = get_serializer(client.app.type_encoders)
+        schema_json = decode_json(encode_json(openapi_schema.to_schema(), serializer))
+        assert response.content.decode("utf-8") == yaml.dump(schema_json)
 
 
-def test_openapi_json(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    with create_test_client([person_controller, pet_controller], openapi_config=DEFAULT_OPENAPI_CONFIG) as client:
+@pytest.mark.parametrize("create_examples", CREATE_EXAMPLES_VALUES)
+def test_openapi_json(
+    person_controller: type[Controller], pet_controller: type[Controller], create_examples: bool
+) -> None:
+    openapi_config = OpenAPIConfig("Example API", "1.0.0", create_examples=create_examples)
+    with create_test_client([person_controller, pet_controller], openapi_config=openapi_config) as client:
         assert client.app.openapi_schema
         openapi_schema = client.app.openapi_schema
         assert openapi_schema.paths
@@ -34,10 +50,11 @@ def test_openapi_json(person_controller: Type[Controller], pet_controller: Type[
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"] == OpenAPIMediaType.OPENAPI_JSON.value
         assert client.app.openapi_schema
-        assert response.json() == client.app.openapi_schema.to_schema()
+        serializer = get_serializer(client.app.type_encoders)
+        assert response.content == encode_json(openapi_schema.to_schema(), serializer)
 
 
-def test_openapi_yaml_not_allowed(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
+def test_openapi_yaml_not_allowed(person_controller: type[Controller], pet_controller: type[Controller]) -> None:
     openapi_config = DEFAULT_OPENAPI_CONFIG
     openapi_config.enabled_endpoints.discard("openapi.yaml")
 
@@ -49,7 +66,7 @@ def test_openapi_yaml_not_allowed(person_controller: Type[Controller], pet_contr
         assert response.status_code == HTTP_404_NOT_FOUND
 
 
-def test_openapi_json_not_allowed(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
+def test_openapi_json_not_allowed(person_controller: type[Controller], pet_controller: type[Controller]) -> None:
     openapi_config = DEFAULT_OPENAPI_CONFIG
     openapi_config.enabled_endpoints.discard("openapi.json")
 
@@ -118,7 +135,8 @@ def test_openapi_custom_path_overrides_custom_controller_path() -> None:
         assert response.status_code == HTTP_200_OK
 
 
-def test_msgspec_schema_generation() -> None:
+@pytest.mark.parametrize("create_examples", CREATE_EXAMPLES_VALUES)
+def test_msgspec_schema_generation(create_examples: bool) -> None:
     class Lookup(msgspec.Struct):
         id: Annotated[
             str,
@@ -139,7 +157,9 @@ def test_msgspec_schema_generation() -> None:
         openapi_config=OpenAPIConfig(
             title="Example API",
             version="1.0.0",
+            create_examples=create_examples,
         ),
+        signature_namespace={"Lookup": Lookup},
     ) as client:
         response = client.get("/schema/openapi.json")
         assert response.status_code == HTTP_200_OK
@@ -152,7 +172,8 @@ def test_msgspec_schema_generation() -> None:
         }
 
 
-def test_pydantic_schema_generation() -> None:
+@pytest.mark.parametrize("create_examples", CREATE_EXAMPLES_VALUES)
+def test_pydantic_schema_generation(create_examples: bool) -> None:
     class Lookup(BaseModel):
         id: Annotated[
             str,
@@ -173,7 +194,9 @@ def test_pydantic_schema_generation() -> None:
         openapi_config=OpenAPIConfig(
             title="Example API",
             version="1.0.0",
+            create_examples=create_examples,
         ),
+        signature_namespace={"Lookup": Lookup},
     ) as client:
         response = client.get("/schema/openapi.json")
         assert response.status_code == HTTP_200_OK
@@ -184,3 +207,25 @@ def test_pydantic_schema_generation() -> None:
             "minLength": 12,
             "type": "string",
         }
+
+
+def test_schema_for_optional_path_parameter() -> None:
+    @get(path=["/", "/{test_message:str}"], media_type=MediaType.TEXT, sync_to_thread=False)
+    def handler(test_message: Optional[str]) -> str:  # noqa: UP007
+        return test_message if test_message else "no message"
+
+    with create_test_client(
+        route_handlers=[handler],
+        openapi_config=OpenAPIConfig(
+            title="Example API",
+            version="1.0.0",
+            create_examples=True,
+        ),
+    ) as client:
+        response = client.get("/schema/openapi.json")
+        assert response.status_code == HTTP_200_OK
+        assert "parameters" not in response.json()["paths"]["/"]["get"]  # type[ignore]
+        parameter = response.json()["paths"]["/{test_message}"]["get"]["parameters"][0]  # type[ignore]
+        assert parameter
+        assert parameter["in"] == ParamType.PATH
+        assert parameter["name"] == "test_message"

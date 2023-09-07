@@ -1,7 +1,7 @@
 Interacting with repositories
 -----------------------------
 Now that we've covered the modeling basics, we are able to create our first repository
-class.  The repository classes includes all of the standard CRUD operations as well as a
+class.  The repository classes include all of the standard CRUD operations as well as a
 few advanced features such as pagination, filtering and bulk operations.
 
 Before we jump in to the code, let's take a look at the available functions available in
@@ -10,17 +10,17 @@ the the synchronous and asynchronous repositories.
 +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |      Function       |    Category    |                                                                                                                 Description                                                                                                                 |
 +=====================+================+=============================================================================================================================================================================================================================================+
-| ``get``             | Selecting Data | Select a single record by primary key. Raising an exception when no record is found.                                                                                                                                                        |
+| ``get``             | Selecting Data | Select a single record by primary key. Raises an exception when no record is found.                                                                                                                                                         |
 +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| ``get_one``         | Selecting Data | Select a single record specified by the ``kwargs`` parameters. An exception is raised when no record is found.                                                                                                                              |
+| ``get_one``         | Selecting Data | Select a single record specified by the ``kwargs`` parameters. Raises an exception when no record is found.                                                                                                                                 |
 +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | ``get_one_or_none`` | Selecting Data | Select a single record specified by the ``kwargs`` parameters. Returns ``None`` when no record is found.                                                                                                                                    |
 +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | ``list``            | Selecting Data | Select a list of records specified by the ``kwargs`` parameters. Optionally it can be filtered by the included ``FilterTypes`` args.                                                                                                        |
 +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| ``list_and_count``  | Selecting Data | Select a list of records specified by the ``kwargs`` parameters. Optionally it can be filtered by the included ``FilterTypes`` args. Results are returned as a 2 value tuple that includes the rows selected and the total count of records |
+| ``list_and_count``  | Selecting Data | Select a list of records specified by the ``kwargs`` parameters. Optionally it can be filtered by the included ``FilterTypes`` args. Results are returned as a 2 value tuple that includes the rows selected and the total count of records.|
 +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| ``get_or_create``   | Creating Data  | Get a record specified by the the ``kwargs`` parameters.  If no record is found, one is created with the given values.  There's an optional attribute to filter on a subset of the supplied parameters and to merge updates.                |
+| ``get_or_create``   | Creating Data  | Select a single record specified by the the ``kwargs`` parameters.  If no record is found, one is created with the given values.  There's an optional attribute to filter on a subset of the supplied parameters and to merge updates.      |
 +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | ``create``          | Creating Data  | Create a new record in the database.                                                                                                                                                                                                        |
 +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -32,7 +32,7 @@ the the synchronous and asynchronous repositories.
 +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | ``upsert``          | Updating Data  | A single operation that updates or inserts a record based whether or not the primary key value on the model object is populated.                                                                                                            |
 +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| ``upsert_many``     | Updating Data  | Updates or inserts multiple record based whether or not the primary key value on the model object is populated.                                                                                                                             |
+| ``upsert_many``     | Updating Data  | Updates or inserts multiple records based whether or not the primary key value on the model object is populated.                                                                                                                            |
 +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | ``remove``          | Removing Data  | Remove a single record from the database.                                                                                                                                                                                                   |
 +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -69,7 +69,7 @@ to include all of the integrated repository features.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 25-28
+    :emphasize-lines: 14,27-30
     :linenos:
 
 Repository Context Manager
@@ -81,7 +81,7 @@ of our Author repository.
 
 The ``repository_factory`` method will do the following for us:
     - Automatically create a new DB session from the SQLAlchemy configuration.
-    - Rollback session when any exception occurs
+    - Rollback session when any exception occurs.
     - Automatically commit after function call completes.
 
 
@@ -98,28 +98,28 @@ Creating, Updating and Removing Data
 To illustrate a few ways you can manipulate data in your database, we'll go through the
 various CRUD operations:
 
-Creating Data: Here's a simple insert operation to populate our new Author table
+Creating Data: Here's a simple insert operation to populate our new Author table:
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
         :caption: app.py
-        :emphasize-lines: 50-54
+        :emphasize-lines: 52-61
         :linenos:
 
-Updating Data: The ``update`` method will ensure any updates made to the model object are executed on the database
-
-    .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
-        :language: python
-        :caption: app.py
-        :emphasize-lines: 57-61
-        :linenos:
-
-Removing Data: The ``remove`` method accepts the primary key of the row you want to delete
+Updating Data: The ``update`` method will ensure any updates made to the model object are executed on the database:
 
     .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
         :language: python
         :caption: app.py
         :emphasize-lines: 64-68
+        :linenos:
+
+Removing Data: The ``remove`` method accepts the primary key of the row you want to delete:
+
+    .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
+        :language: python
+        :caption: app.py
+        :emphasize-lines: 71-75
         :linenos:
 
 Now that we've seen how to do single-row operations, let's look at the bulk methods we
@@ -165,7 +165,7 @@ performance when working with larger data sets.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 68-69
+    :emphasize-lines: 66-71
     :linenos:
 
 
@@ -180,7 +180,7 @@ repository.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 74-75
+    :emphasize-lines: 73-75
     :linenos:
 
 

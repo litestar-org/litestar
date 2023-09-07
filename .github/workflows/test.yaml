@@ -31,7 +31,7 @@ jobs:
         shell: bash
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up python ${{ inputs.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -60,10 +60,10 @@ jobs:
         run: poetry install --no-interaction --extras full
       - if: ${{ inputs.pydantic-version == '1' }}
         name: Install pydantic v1
-        run: poetry remove pydantic-extra-types && poetry add "pydantic>=1.10.10,<2" piccolo beanie
+        run: poetry remove pydantic-extra-types && poetry add "pydantic>=1.10.11,<2" piccolo beanie
       - if: ${{ inputs.pydantic-version == '2' }}
         name: Install pydantic v2
-        run: poetry add "pydantic>=2" pydantic-extra-types
+        run: poetry add "pydantic>=2.3.0" "pydantic-extra-types>=2.0.0"
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
       - name: Test

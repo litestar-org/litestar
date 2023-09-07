@@ -10,7 +10,7 @@ handlers.
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
     :language: python
     :linenos:
-    :emphasize-lines: 45-56,81-82,86-88,93-94,102
+    :emphasize-lines: 46-55,81-82,86-88,93-94,102
 
 In the previous example, the database session is created within each HTTP route handler function. In this script we use
 dependency injection to decouple creation of the session from the route handlers.
@@ -43,7 +43,7 @@ This is automatically provided by Litestar's dependency injection system at runt
 
 One final improvement in this script is exception handling. In the previous version, a
 :class:`litestar.exceptions.ClientException` is raised inside the ``add_item()`` handler if there's an integrity error
-raised during the insertion of the new to-do item. In our latest revision, we've been able to centralize this handling
+raised during the insertion of the new TODO item. In our latest revision, we've been able to centralize this handling
 to occur inside the ``provide_transaction()`` function.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py

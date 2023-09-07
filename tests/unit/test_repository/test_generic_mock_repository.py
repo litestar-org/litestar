@@ -9,12 +9,13 @@ from _pytest.fixtures import FixtureRequest
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from litestar.contrib.repository.exceptions import ConflictError, RepositoryError
-from litestar.contrib.repository.testing.generic_mock_repository import (
+from litestar.contrib.sqlalchemy import base
+from litestar.repository.exceptions import ConflictError, RepositoryError
+from litestar.repository.filters import LimitOffset
+from litestar.repository.testing.generic_mock_repository import (
     GenericAsyncMockRepository,
     GenericSyncMockRepository,
 )
-from litestar.contrib.sqlalchemy import base
 from tests.helpers import maybe_async
 from tests.unit.test_contrib.test_sqlalchemy.models_uuid import UUIDAuthor, UUIDBook
 
@@ -327,6 +328,21 @@ async def test_exists(
     mock_repo = repository_type[Model]()  # type: ignore[index]
     _ = await maybe_async(mock_repo.add_many(instances))
     exists = await maybe_async(mock_repo.exists(random_column="value 1"))
+    assert exists
+
+
+async def test_exists_with_filter(
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+) -> None:
+    """Test that the repository exists returns booleans. with filter argument"""
+    limit_filter = LimitOffset(limit=1, offset=0)
+
+    Model = create_audit_model_type({"random_column": Mapped[str]})
+
+    instances = [Model(random_column="value 1"), Model(random_column="value 2")]
+    mock_repo = repository_type[Model]()  # type: ignore[index]
+    _ = await maybe_async(mock_repo.add_many(instances))
+    exists = await maybe_async(mock_repo.exists(limit_filter, random_column="value 1"))
     assert exists
 
 

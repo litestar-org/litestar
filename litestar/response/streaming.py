@@ -30,6 +30,8 @@ class ASGIStreamingResponse(ASGIResponse):
 
     __slots__ = ("iterator",)
 
+    _should_set_content_length = False
+
     def __init__(self, *, iterator: StreamType, **kwargs: Any) -> None:
         """A low-level ASGI streaming response.
 

@@ -538,7 +538,7 @@ as you see fit, e.g.:
     :language: python
 
 
-In the above we use the ``response_cookies`` kwarg to pass the ``key`` and ``description`` parameters for the ``Random-Header``
+In the above we use the ``response_cookies`` kwarg to pass the ``key`` and ``description`` parameters for the ``Random-Cookie``
 to the OpenAPI documentation, but we set the value dynamically in as part of
 the :ref:`annotated response <usage/responses:annotating responses>` we return. To this end we do not set a ``value``
 for it and we designate it as ``documentation_only=True``.
@@ -575,12 +575,12 @@ In Litestar, a redirect response looks like this:
 
 .. code-block:: python
 
-   from litestar.status_codes import HTTP_307_TEMPORARY_REDIRECT
+   from litestar.status_codes import HTTP_302_FOUND
    from litestar import get
    from litestar.response import Redirect
 
 
-   @get(path="/some-path", status_code=HTTP_307_TEMPORARY_REDIRECT)
+   @get(path="/some-path", status_code=HTTP_302_FOUND)
    def redirect() -> Redirect:
        # do some stuff here
        # ...
@@ -589,7 +589,7 @@ In Litestar, a redirect response looks like this:
 
 To return a redirect response you should do the following:
 
-- set an appropriate status code for the route handler (301, 302, 303, 307, 308)
+- optionally: set an appropriate status code for the route handler (301, 302, 303, 307, 308). If not set the default of 302 will be used.
 - annotate the return value of the route handler as returning :class:`Redirect <.response.Redirect>`
 - return an instance of the :class:`Redirect <.response.Redirect>` class with the desired redirect path
 
