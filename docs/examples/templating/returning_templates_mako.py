@@ -17,5 +17,4 @@ app = Litestar(
         directory=Path(__file__).parent / "templates",
         engine=MakoTemplateEngine,
     ),
-    debug=True
 )
