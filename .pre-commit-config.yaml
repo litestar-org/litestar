@@ -18,18 +18,16 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/python-poetry/poetry
-    rev: "1.6.1"
+    rev: "1.6.0"
     hooks:
       - id: poetry-check
-      - id: poetry-lock
-        args: ["--no-update"]
   - repo: https://github.com/provinzkraut/unasyncd
     rev: "v0.6.0"
     hooks:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.286"
+    rev: "v0.0.287"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -48,7 +46,7 @@ repos:
     hooks:
       - id: blacken-docs
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "v3.0.2"
+    rev: "v3.0.3"
     hooks:
       - id: prettier
         exclude: "_templates|.git|.all-contributorsrc"
@@ -70,9 +68,9 @@ repos:
         exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures|tests/unit/test_contrib/test_pydantic/test_beanie_integration"
         additional_dependencies:
           [
-            polyfactory,
             aiosqlite,
             annotated_types,
+            anyio,
             async_timeout,
             asyncmy,
             asyncpg,
@@ -82,6 +80,7 @@ repos:
             beautifulsoup4,
             brotli,
             click,
+            exceptiongroup,
             fast-query-parsers>=1.0.2,
             fsspec,
             httpx,
@@ -97,41 +96,42 @@ repos:
             oracledb,
             piccolo,
             picologging,
+            polyfactory,
+            prometheus_client,
             psycopg,
-            pydantic>=2,
             pydantic-extra-types,
+            pydantic>=2,
             pytest,
             pytest-lazy-fixture,
             pytest-mock,
+            pytest-timeout,
             pytest_docker,
             python-dotenv,
             python-jose,
-            pytest-timeout,
             pyyaml,
             redis,
             rich,
             rich-click,
             sqlalchemy>=2.0.12,
             starlette,
-            types-beautifulsoup4,
             structlog,
+            time-machine,
+            types-beautifulsoup4,
+            types-python-jose,
             types-pyyaml,
             types-redis,
-            types-python-jose,
             uvicorn,
-            prometheus_client,
-            time-machine,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.324
+    rev: v1.1.326
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures"
         additional_dependencies:
           [
-            polyfactory,
             aiosqlite,
             annotated_types,
+            anyio,
             async_timeout,
             asyncmy,
             asyncpg,
@@ -141,6 +141,7 @@ repos:
             beautifulsoup4,
             brotli,
             click,
+            exceptiongroup,
             fast-query-parsers>=1.0.2,
             fsspec,
             httpx,
@@ -149,6 +150,7 @@ repos:
             jsbeautifier,
             mako,
             mongomock_motor,
+            minijinja,
             msgspec,
             multidict,
             opentelemetry-instrumentation-asgi,
@@ -156,16 +158,18 @@ repos:
             oracledb,
             piccolo,
             picologging,
+            polyfactory,
+            prometheus_client,
             psycopg,
-            pydantic>=2,
             pydantic-extra-types,
+            pydantic>=2,
             pytest,
             pytest-lazy-fixture,
             pytest-mock,
+            pytest-timeout,
             pytest_docker,
             python-dotenv,
             python-jose,
-            pytest-timeout,
             pyyaml,
             redis,
             rich,
@@ -173,13 +177,12 @@ repos:
             sqlalchemy>=2.0.12,
             starlette,
             structlog,
+            time-machine,
             types-beautifulsoup4,
+            types-python-jose,
             types-pyyaml,
             types-redis,
-            types-python-jose,
             uvicorn,
-            prometheus_client,
-            time-machine,
           ]
   - repo: https://github.com/sphinx-contrib/sphinx-lint
     rev: "v0.6.8"

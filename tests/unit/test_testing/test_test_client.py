@@ -27,6 +27,13 @@ from litestar.stores.base import Store
 from litestar.testing import TestClient
 from tests.helpers import maybe_async, maybe_async_cm
 
+try:
+    _ExceptionGroup = ExceptionGroup
+except NameError:
+    from exceptiongroup import ExceptionGroup
+
+    _ExceptionGroup = ExceptionGroup  # type: ignore
+
 AnyTestClient = Union[TestClient, AsyncTestClient]
 
 
@@ -123,7 +130,7 @@ def raise_error(app: Litestar) -> NoReturn:
 async def test_error_handling_on_startup(
     test_client_backend: "AnyIOBackend", test_client_cls: Type[AnyTestClient]
 ) -> None:
-    with pytest.raises(RuntimeError):
+    with pytest.raises(_ExceptionGroup):
         async with maybe_async_cm(
             test_client_cls(Litestar(on_startup=[raise_error]), backend=test_client_backend)  # pyright: ignore
         ):

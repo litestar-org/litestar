@@ -268,9 +268,7 @@ class AbstractDTO(Generic[T]):
         Returns:
             The type and config object extracted from the annotation.
         """
-        if configs := [item for item in field_definition.metadata if isinstance(item, DTOConfig)]:
-            return configs[0]
-        return None
+        return next((item for item in field_definition.metadata if isinstance(item, DTOConfig)), None)
 
     @classmethod
     def resolve_model_type(cls, field_definition: FieldDefinition) -> FieldDefinition:

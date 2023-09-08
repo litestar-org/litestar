@@ -291,7 +291,7 @@ Templates
 Flask comes with the `Jinja <https://jinja.palletsprojects.com/en/3.1.x/>`_ templating
 engine built-in. You can use Jinja with Litestar as well, but you’ll need to install it
 explicitly. You can do by installing Litestar with ``pip install litestar[jinja]``.
-In addition to Jinja, Litestar supports `Mako <https://www.makotemplates.org/>`_ templates as well.
+In addition to Jinja, Litestar supports `Mako <https://www.makotemplates.org/>`_ and `Minijinja <https://github.com/mitsuhiko/minijinja/tree/main/minijinja-py>`_ templates as well.
 
 .. tab-set::
     .. tab-item:: Flask

@@ -17,6 +17,13 @@ if TYPE_CHECKING:
 
     from litestar.types import Receive, Scope, Send
 
+try:
+    _ExceptionGroup = ExceptionGroup
+except NameError:
+    from exceptiongroup import ExceptionGroup
+
+    _ExceptionGroup = ExceptionGroup  # type: ignore
+
 
 def test_add_mount_route_disallow_path_parameter() -> None:
     async def handler(scope: Scope, receive: Receive, send: Send) -> None:
@@ -45,7 +52,8 @@ def test_life_span_startup() -> None:
 
 def test_life_span_startup_error_handling() -> None:
     life_span_callable = _LifeSpanCallable(should_raise=True)
-    with pytest.raises(RuntimeError), create_test_client([], on_startup=[life_span_callable]):
+
+    with pytest.raises(_ExceptionGroup), create_test_client([], on_startup=[life_span_callable]):
         pass
 
 
@@ -164,7 +172,7 @@ async def test_lifespan_startup_failure(mock_format_exc: MagicMock) -> None:
 
     router = ASGIRouter(app=Litestar(on_startup=[on_startup]))
 
-    with pytest.raises(ValueError):
+    with pytest.raises(_ExceptionGroup):
         await router.lifespan(receive, send)
 
     assert send.call_count == 1

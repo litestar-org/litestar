@@ -127,7 +127,7 @@ def test_run_command(
         else:
             args.extend([f"--reload-dir={s}" for s in reload_dir])
 
-    path = create_app_file(custom_app_file or "app.py", subdir=app_dir)
+    path = create_app_file(custom_app_file or "app.py", directory=app_dir)
 
     result = runner.invoke(cli_command, args)
 
