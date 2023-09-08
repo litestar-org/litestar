@@ -1,20 +1,21 @@
 Templating
 ==========
 
-Litestar has built-in support for both the `Jinja2 <https://jinja.palletsprojects.com/en/3.0.x/>`_
-and `Mako <https://www.makotemplates.org/>`_ template engines, as well as abstractions to
+Litestar has built-in support for `Jinja2 <https://jinja.palletsprojects.com/en/3.0.x/>`_
+, `Mako <https://www.makotemplates.org/>`_ and `Minijinja <https://github.com/mitsuhiko/minijinja/tree/main/minijinja-py>`_ template engines, as well as abstractions to
 make use of any template engine you wish.
 
 Template engines
 ----------------
 
-To stay lightweight, a Litestar installation does not include the *Jinja* or *Mako*
+To stay lightweight, a Litestar installation does not include the *Jinja*, *Mako* or *Minijinja*
 libraries themselves. Before you can start using them, you have to install it via the
 respective extra:
 
 
 * ``pip install litestar[jinja]`` for Jinja2
 * ``pip install litestar[mako]`` for Mako
+* ``pip install litestar[minijinja]`` for Minijinja
 
 .. tip::
 
@@ -39,6 +40,12 @@ To register one of the built-in template engines you simply need to pass it to t
         :sync: mako
 
         .. literalinclude:: /examples/templating/template_engine_mako.py
+            :language: python
+
+    .. tab-item:: Minijiinja
+        :sync: minijinja
+
+        .. literalinclude:: /examples/templating/template_engine_minijinja.py
             :language: python
 
 .. note::
@@ -116,6 +123,12 @@ If you need to access the template engine instance, you can do so via the
         :sync: mako
 
         .. literalinclude:: /examples/templating/engine_instance_mako.py
+            :language: python
+
+    .. tab-item:: minijinja
+        :sync: minijinja
+
+        .. literalinclude:: /examples/templating/engine_instance_minijinja.py
             :language: python
 
 Template responses
@@ -319,6 +332,16 @@ the call method. For example:
             :language: html
             :caption: templates/index.html.mako
 
+    .. tab-item:: Minijinja
+        :sync: minijinja
+
+        .. literalinclude:: /examples/templating/template_functions_minijinja.py
+            :caption: template_functions.py
+            :language: python
+
+        .. literalinclude:: /examples/templating/templates/index.html.minijinja
+            :language: html
+            :caption: templates/index.html.minijinja
 
 Run the example with ``uvicorn template_functions:app`` , visit  http://127.0.0.1:8000, and
 you'll see

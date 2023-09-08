@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, Callable, cast
 
 from litestar.exceptions import ImproperlyConfiguredException, MissingDependencyException, TemplateNotFoundException
 from litestar.template.base import (
-    TemplateContext,
     TemplateEngineProtocol,
     TemplateProtocol,
     csrf_token,
@@ -28,6 +27,12 @@ from minijinja import TemplateError as MiniJinjaTemplateNotFound
 if TYPE_CHECKING:
     from minijinja._lowlevel import State
     from pydantic import DirectoryPath
+
+
+@pass_state  # type: ignore
+def minijinja_from_state(func: Callable, state: State, *args: Any, **kwargs: Any) -> str:
+    template_context = {"request": state.lookup("request"), "csrf_input": state.lookup("csrf_input")}
+    return cast(str, func(template_context, *args, **kwargs))
 
 
 class MiniJinjaTemplate(TemplateProtocol):
@@ -98,17 +103,15 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate"]):
         elif engine_instance:
             self.engine = engine_instance
 
-        def _url_for_mini(func: Callable[[TemplateContext], str]) -> Callable:
-            return functools.partial(_inner, func)
-
-        @pass_state  # type: ignore
-        def _inner(func: Callable, state: State, *args: Any, **kwargs: Any) -> str:
-            template_context = {"request": state.lookup("request"), "csrf_input": state.lookup("csrf_input")}
-            return cast(str, func(template_context, *args, **kwargs))
-
-        self.register_template_callable(key="url_for", template_callable=_url_for_mini(url_for))  # type: ignore
-        self.register_template_callable(key="url_for_static_asset", template_callable=_url_for_mini(url_for_static_asset))  # type: ignore
-        self.register_template_callable(key="csrf_token", template_callable=_url_for_mini(csrf_token))
+        self.register_template_callable(
+            key="url_for", template_callable=functools.partial(minijinja_from_state, url_for)
+        )
+        self.register_template_callable(
+            key="url_for_static_asset", template_callable=functools.partial(minijinja_from_state, url_for_static_asset)
+        )
+        self.register_template_callable(
+            key="csrf_token", template_callable=functools.partial(minijinja_from_state, csrf_token)
+        )
 
     def get_template(self, template_name: str) -> MiniJinjaTemplate:
         """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.

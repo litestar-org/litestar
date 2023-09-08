@@ -65,6 +65,9 @@ Installation
     :doc:`Mako Templating </usage/templating>`
         :code:`pip install litestar[mako]`
 
+    :doc:`Minijinja Templating </usage/templating>`
+        :code:`pip install litestar[minijinja]`
+
     Standard Installation (includes CLI and Jinja templating):
         :code:`pip install litestar[standard]`
 
@@ -259,7 +262,7 @@ Feature comparison with similar frameworks
 +-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
 | ORM integration             | SQLAlchemy, Tortoise, Piccolo      | :octicon:`dash`     | :octicon:`dash`  | :octicon:`dash`     | (Through extension) |
 +-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
-| Templating                  | Jinja, Mako                        | Jinja               | Jinja            | Jinja               | Jinja               |
+| Templating                  | Jinja, Mako, Minijinja             | Jinja               | Jinja            | Jinja               | Jinja               |
 +-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
 | MessagePack                 | :octicon:`check`                   | :octicon:`dash`     | :octicon:`dash`  | :octicon:`dash`     | :octicon:`dash`     |
 +-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
