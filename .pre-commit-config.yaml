@@ -80,6 +80,7 @@ repos:
             beautifulsoup4,
             brotli,
             click,
+            exceptiongroup,
             fast-query-parsers>=1.0.2,
             fsspec,
             httpx,
@@ -122,7 +123,7 @@ repos:
             uvicorn,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.325
+    rev: v1.1.326
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures"
@@ -140,6 +141,7 @@ repos:
             beautifulsoup4,
             brotli,
             click,
+            exceptiongroup,
             fast-query-parsers>=1.0.2,
             fsspec,
             httpx,
