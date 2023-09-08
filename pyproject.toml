@@ -71,7 +71,7 @@ packages = [{ include = "litestar" }]
 python = ">=3.8,<4.0"
 alembic = { version = "*", optional = true }
 annotated-types = { version = "*", optional = true }
-anyio = ">=3"
+anyio = ">=3,<4.0"
 attrs = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
 click = { version = "*", optional = true }
