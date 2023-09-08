@@ -42,7 +42,7 @@ To register one of the built-in template engines you simply need to pass it to t
         .. literalinclude:: /examples/templating/template_engine_mako.py
             :language: python
 
-    .. tab-item:: Minijiinja
+    .. tab-item:: MiniJinja
         :sync: minijinja
 
         .. literalinclude:: /examples/templating/template_engine_minijinja.py
@@ -119,13 +119,13 @@ If you need to access the template engine instance, you can do so via the
         .. literalinclude:: /examples/templating/engine_instance_jinja.py
             :language: python
 
-    .. tab-item:: mako
+    .. tab-item:: Mako
         :sync: mako
 
         .. literalinclude:: /examples/templating/engine_instance_mako.py
             :language: python
 
-    .. tab-item:: minijinja
+    .. tab-item:: MiniJinja
         :sync: minijinja
 
         .. literalinclude:: /examples/templating/engine_instance_minijinja.py
@@ -145,12 +145,17 @@ your route handlers:
         .. literalinclude:: /examples/templating/returning_templates_jinja.py
             :language: python
 
-    .. tab-item:: mako
+    .. tab-item:: Mako
         :sync: mako
 
         .. literalinclude:: /examples/templating/returning_templates_mako.py
             :language: python
 
+    .. tab-item:: MiniJinja
+        :sync: minijinja
+
+        .. literalinclude:: /examples/templating/returning_templates_minijinja.py
+            :language: python
 
 * ``name`` is the name of the template file within on of the specified directories. If
   no file with that name is found, a :class:`TemplateNotFoundException <.exceptions.TemplateNotFoundException>`
@@ -189,7 +194,7 @@ Accessing ``app.state.key`` for example would look like this:
            </html>
 
 
-    .. tab-item:: mako
+    .. tab-item:: Mako
         :sync: mako
 
         .. code-block:: html
@@ -203,6 +208,19 @@ Accessing ``app.state.key`` for example would look like this:
                </body>
            </html>
 
+
+    .. tab-item:: MiniJinja
+        :sync: minijinja
+
+        .. code-block:: html
+
+           <html>
+               <body>
+                   <div>
+                       <span>My state value: {{request.app.state.some_key}}</span>
+                   </div>
+               </body>
+           </html>
 
 
 Adding CSRF inputs
@@ -234,7 +252,7 @@ With that in place, you can now insert the CSRF input field inside an HTML form:
                </body>
            </html>
 
-    .. tab-item:: mako
+    .. tab-item:: Mako
         :sync: mako
 
         .. code-block:: html
@@ -253,6 +271,24 @@ With that in place, you can now insert the CSRF input field inside an HTML form:
                </body>
            </html>
 
+    .. tab-item:: MiniJinja
+        :sync: minijinja
+
+        .. code-block:: html
+
+           <html>
+               <body>
+                   <div>
+                       <form action="https://myserverurl.com/some-endpoint" method="post">
+                           {{ csrf_input }}
+                           <label for="fname">First name:</label><br>
+                           <input type="text" id="fname" name="fname">
+                           <label for="lname">Last name:</label><br>
+                           <input type="text" id="lname" name="lname">
+                       </form>
+                   </div>
+               </body>
+           </html>
 
 
 The input holds a CSRF token as its value and is hidden so users cannot see or interact with it. The token is sent
