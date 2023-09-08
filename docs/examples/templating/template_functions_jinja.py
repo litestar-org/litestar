@@ -19,7 +19,7 @@ def register_template_callables(engine: JinjaTemplateEngine) -> None:
 
 
 template_config = TemplateConfig(
-    directory=Path("templates"),
+    directory=Path(__file__).parent / "templates",
     engine=JinjaTemplateEngine,
     engine_callback=register_template_callables,
 )

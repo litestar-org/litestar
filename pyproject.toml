@@ -83,6 +83,7 @@ importlib-resources = { version = ">=5.12.0", python = "<3.9" }
 jinja2 = { version = ">=3.1.2", optional = true }
 jsbeautifier = { version = "*", optional = true }
 mako = { version = ">=1.2.4", optional = true }
+minijinja = {version =">=1.0.0", optional = true}
 msgspec = ">=0.18.2"
 multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
@@ -173,6 +174,7 @@ cryptography = ["cryptography"]
 jinja = ["jinja2"]
 jwt = ["python-jose", "cryptography"]
 mako = ["mako"]
+minijinja = ["minijinja"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 piccolo = ["piccolo"]
 picologging = ["picologging"]
@@ -194,6 +196,7 @@ full = [
     "jinja2",
     "jsbeautifier",
     "mako",
+    "minijinja",
     "opentelemetry-instrumentation-asgi",
     "piccolo",
     "picologging",

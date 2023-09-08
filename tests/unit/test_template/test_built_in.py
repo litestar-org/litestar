@@ -9,6 +9,7 @@ from mako.lookup import TemplateLookup
 from litestar import get
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
+from litestar.contrib.minijnja import MiniJinjaTemplateEngine
 from litestar.response.template import Template
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
@@ -19,11 +20,11 @@ if TYPE_CHECKING:
 
 @dataclass
 class EngineTest:
-    engine_class: Optional[Type[Union[JinjaTemplateEngine, MakoTemplateEngine]]]
+    engine_class: Optional[Type[Union[JinjaTemplateEngine, MakoTemplateEngine, MiniJinjaTemplateEngine]]]
     index_template: str
     nested_template: str
     instantiated: bool
-    instance: Optional[Union[JinjaTemplateEngine, MakoTemplateEngine]]
+    instance: Optional[Union[JinjaTemplateEngine, MakoTemplateEngine, MiniJinjaTemplateEngine]]
 
 
 mako_template_lookup = TemplateLookup()
@@ -45,6 +46,13 @@ mako_template_lookup.put_string("no_context.html", "<html>This works!</html>")
             engine_class=MakoTemplateEngine,
             index_template="<html>Injected? ${test}</html>",
             nested_template="<html>Does nested dirs work? ${test}</html>",
+            instantiated=False,
+            instance=None,
+        ),
+        EngineTest(
+            engine_class=MiniJinjaTemplateEngine,
+            index_template="<html>Injected? {{test}}</html>",
+            nested_template="<html>Does nested dirs work? {{test}}</html>",
             instantiated=False,
             instance=None,
         ),
