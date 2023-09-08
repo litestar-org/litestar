@@ -7,7 +7,6 @@ authors = [
 ]
 maintainers = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
-    "Jacob Coffee <jacob@z7x.org>",
 ]
 license = "MIT"
 readme = "docs/PYPI_README.md"
