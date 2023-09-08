@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 from inspect import isawaitable
-from typing import TYPE_CHECKING, Any, Generic, Sequence, TypeVar, cast
+from operator import attrgetter
+from typing import TYPE_CHECKING, Any, Generic, Sequence, TypeVar, cast, get_args
 from uuid import UUID
 
+from typing_extensions import get_origin, get_type_hints
+
+from litestar.connection.request import Request
 from litestar.controller.base import Controller
 from litestar.enums import HttpMethod
 from litestar.exceptions import ImproperlyConfiguredException
@@ -13,18 +17,30 @@ from litestar.types import Empty
 from litestar.utils import is_class_and_subclass
 
 if TYPE_CHECKING:
-    from litestar.connection.request import Request
     from litestar.dto import AbstractDTO
     from litestar.repository import AbstractAsyncRepository, AbstractSyncRepository
-    from litestar.router import Router
     from litestar.types import EmptyType
 
 ModelT = TypeVar("ModelT")
 IdAttrT = TypeVar("IdAttrT", str, int, UUID)
 
+GENERIC_METHOD_NAMES = (
+    "create_instance",
+    "update_instance",
+    "delete_instance",
+    "get_instance",
+    "create_many",
+    "update_many",
+    "delete_many",
+    "get_many",
+)
+
 
 class ItemIdsRequestBody(Generic[IdAttrT]):
+    """A request body for bulk operations."""
+
     item_ids: list[IdAttrT]
+    """A list of item IDs."""
 
 
 class GenericController(Controller, Generic[ModelT, IdAttrT]):
@@ -88,37 +104,44 @@ class GenericController(Controller, Generic[ModelT, IdAttrT]):
     get_many_http_method: HttpMethod = HttpMethod.GET
     """The HTTP method for get many operations."""
 
-    def __init__(self, owner: Router) -> None:
-        """Initialize a controller.
+    def get_route_handlers(self) -> list[BaseRouteHandler]:
+        route_handlers = super().get_route_handlers()
 
-        Should only be called by routers as part of controller registration.
-
-        Args:
-            owner: An instance of :class:`Router <.router.Router>`
-        """
-        super().__init__(owner=owner)
-
-        for method_name in (
-            "create_instance",
-            "update_instance",
-            "delete_instance",
-            "get_instance",
-            "create_many",
-            "update_many",
-            "delete_many",
-            "get_many",
-        ):
+        for method_name in GENERIC_METHOD_NAMES:
             method = getattr(self, method_name)
             if not isinstance(method, BaseRouteHandler):
                 handler_path = getattr(self, f"{method_name}_handler_path")
                 operation_id = getattr(self, f"{method_name}_operation_id")
                 http_method = getattr(self, f"{method_name}_http_method")
+
+                # we are replacing the generic parameters with the concrete types in the method `__annotations__`
+                # this is required to ensure we model the signautre correctly, and generate the schemas as required.
+                for k, v in get_type_hints(method, localns={"Request": Request}).items():
+                    if v is ModelT:  # type: ignore[misc]
+                        method.__annotations__[k] = self.model_type
+                    elif v is IdAttrT:  # type: ignore[misc]
+                        method.__annotations__[k] = self.id_attribute_type
+                    elif (args := get_args(v)) and any(arg is ModelT for arg in args):  # type: ignore[misc]
+                        origin = get_origin(v)
+                        method.__annotations__[k] = origin[*tuple(self.model_type for _ in args)]  # type: ignore[has-type]
+                    elif (args := get_args(v)) and any(arg is IdAttrT for arg in args):  # type: ignore[misc]
+                        origin = get_origin(v)
+                        method.__annotations__[k] = origin[*tuple(self.id_attribute_type for _ in args)]  # type: ignore[has-type]
+
                 route_handler = HTTPRouteHandler(
                     handler_path.replace("path_param_type", self.path_param_type),
                     http_method=http_method,
                     operation_id=operation_id.replace("{model_name}", self.model_type.__name__),
-                )
-                setattr(self, method_name, route_handler)
+                    signature_namespace={
+                        self.model_type.__name__: self.model_type,
+                        self.id_attribute_type.__name__: self.id_attribute_type,
+                    },
+                )(method)
+                route_handler.owner = self
+                route_handlers.append(route_handler)
+
+        route_handlers.sort(key=attrgetter("handler_id"))
+        return route_handlers
 
     @classmethod
     def get_generic_annotations(cls) -> tuple[type, type] | None:
@@ -204,9 +227,9 @@ class GenericController(Controller, Generic[ModelT, IdAttrT]):
         if isawaitable(result):
             await result
 
-    async def get_many(self, data: ItemIdsRequestBody[IdAttrT], request: Request[Any, Any, Any]) -> list[ModelT]:
+    async def get_many(self, item_ids: list[IdAttrT], request: Request[Any, Any, Any]) -> list[ModelT]:
         result = self.create_repository(request=request).list(
-            CollectionFilter(field_name=self.id_attribute, values=[data.item_ids])
+            CollectionFilter(field_name=self.id_attribute, values=[item_ids])
         )
         if isawaitable(result):
             result = await result
