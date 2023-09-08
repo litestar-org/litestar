@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import asdict, replace
 from functools import singledispatchmethod
-from typing import TYPE_CHECKING, Collection, Generic, Optional, TypeVar
+from typing import TYPE_CHECKING, ClassVar, Collection, Generic, Optional, TypeVar
 
 from sqlalchemy import Column, inspect, orm, sql
 from sqlalchemy.ext.associationproxy import AssociationProxy, AssociationProxyExtensionType
@@ -21,6 +21,7 @@ from sqlalchemy.orm import (
 )
 
 from litestar.dto.base_dto import AbstractDTO
+from litestar.dto.config import DTOConfig, SQLAlchemyDTOConfig
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField, Mark
 from litestar.exceptions import ImproperlyConfiguredException
@@ -43,6 +44,20 @@ SQLA_NS = {**vars(orm), **vars(sql)}
 
 class SQLAlchemyDTO(AbstractDTO[T], Generic[T]):
     """Support for domain modelling with SQLAlchemy."""
+
+    config: ClassVar[SQLAlchemyDTOConfig]
+
+    @staticmethod
+    def _ensure_sqla_dto_config(config: DTOConfig | SQLAlchemyDTOConfig) -> SQLAlchemyDTOConfig:
+        if not isinstance(config, SQLAlchemyDTOConfig):
+            return SQLAlchemyDTOConfig(**asdict(config))
+
+        return config
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+        if hasattr(cls, "config"):
+            cls.config = cls._ensure_sqla_dto_config(cls.config)
 
     @singledispatchmethod
     @classmethod
@@ -187,25 +202,54 @@ class SQLAlchemyDTO(AbstractDTO[T], Generic[T]):
         namespace = {**SQLA_NS, **{m.class_.__name__: m.class_ for m in mapper.registry.mappers if m is not mapper}}
         model_type_hints = cls.get_model_type_hints(model_type, namespace=namespace)
         model_name = model_type.__name__
+        include_implicit_fields = cls.config.include_implicit_fields
 
         # the same hybrid property descriptor can be included in `all_orm_descriptors` multiple times, once
         # for each method name it is bound to. We only need to see it once, so track views of it here.
         seen_hybrid_descriptors: set[hybrid_property] = set()
-        skipped_columns: set[str] = set()
+        skipped_descriptors: set[str] = set()
         for composite_property in mapper.composites:
             for attr in composite_property.attrs:
                 if isinstance(attr, (MappedColumn, Column)):
-                    skipped_columns.add(attr.name)
+                    skipped_descriptors.add(attr.name)
                 elif isinstance(attr, str):
-                    skipped_columns.add(attr)
+                    skipped_descriptors.add(attr)
         for key, orm_descriptor in mapper.all_orm_descriptors.items():
-            if isinstance(orm_descriptor, hybrid_property):
+            if is_hybrid_property := isinstance(orm_descriptor, hybrid_property):
                 if orm_descriptor in seen_hybrid_descriptors:
                     continue
 
                 seen_hybrid_descriptors.add(orm_descriptor)
 
-            if key in skipped_columns:
+            if key in skipped_descriptors:
+                continue
+
+            should_skip_descriptor = False
+            dto_field: DTOField | None = None
+            if hasattr(orm_descriptor, "property"):
+                dto_field = orm_descriptor.property.info.get(DTO_FIELD_META_KEY)  # pyright: ignore
+
+            # Case 1
+            is_field_marked_not_private = dto_field and dto_field.mark is not Mark.PRIVATE
+
+            # Case 2
+            should_exclude_anything_implicit = not include_implicit_fields and key not in model_type_hints
+
+            # Case 3
+            should_exclude_non_hybrid_only = (
+                not is_hybrid_property and include_implicit_fields == "hybrid-only" and key not in model_type_hints
+            )
+
+            # Descriptor is marked with with either Mark.READ_ONLY or Mark.WRITE_ONLY (see Case 1):
+            # - always include it regardless of anything else.
+            # Descriptor is not marked:
+            # - It's implicit BUT config excludes anything implicit (see Case 2): exclude
+            # - It's implicit AND not hybrid BUT config includes hybdrid-only implicit descriptors (Case 3): exclude
+            should_skip_descriptor = not is_field_marked_not_private and (
+                should_exclude_anything_implicit or should_exclude_non_hybrid_only
+            )
+
+            if should_skip_descriptor:
                 continue
 
             yield from cls.handle_orm_descriptor(

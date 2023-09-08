@@ -18,6 +18,7 @@ from sqlalchemy import (
 )
 from sqlalchemy import func as sql_func
 from sqlalchemy.orm import InstrumentedAttribute, Session
+from sqlalchemy.sql import ColumnElement, ColumnExpressionArgument
 
 from litestar.repository import AbstractSyncRepository, RepositoryError
 from litestar.repository.filters import (
@@ -42,6 +43,8 @@ if TYPE_CHECKING:
     from sqlalchemy.engine.interfaces import _CoreSingleExecuteParams
 
 DEFAULT_INSERTMANYVALUES_MAX_PARAMETERS: Final = 950
+
+WhereClauseT = ColumnExpressionArgument[bool]
 
 
 class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
@@ -248,7 +251,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
     def _get_insertmanyvalues_max_parameters(self, chunk_size: int | None = None) -> int:
         return chunk_size if chunk_size is not None else DEFAULT_INSERTMANYVALUES_MAX_PARAMETERS
 
-    def exists(self, *filters: FilterTypes, **kwargs: Any) -> bool:
+    def exists(self, *filters: FilterTypes | ColumnElement[bool], **kwargs: Any) -> bool:
         """Return true if the object specified by ``kwargs`` exists.
 
         Args:
@@ -439,7 +442,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
 
     def count(
         self,
-        *filters: FilterTypes,
+        *filters: FilterTypes | ColumnElement[bool],
         statement: Select[tuple[ModelT]] | StatementLambdaElement | None = None,
         **kwargs: Any,
     ) -> int:
@@ -456,9 +459,10 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         """
         statement = self._get_base_stmt(statement)
         fragment = self.get_id_attribute_value(self.model_type)
-        statement += lambda s: s.with_only_columns(sql_func.count(fragment), maintain_column_froms=True).order_by(None)
-        statement = self._apply_filters(*filters, apply_pagination=False, statement=statement)
+        statement += lambda s: s.with_only_columns(sql_func.count(fragment), maintain_column_froms=True)
+        statement += lambda s: s.order_by(None)
         statement = self._filter_select_by_kwargs(statement, kwargs)
+        statement = self._apply_filters(*filters, apply_pagination=False, statement=statement)
         results = self._execute(statement)
         return results.scalar_one()  # type: ignore
 
@@ -568,7 +572,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
 
     def list_and_count(
         self,
-        *filters: FilterTypes,
+        *filters: FilterTypes | ColumnElement[bool],
         auto_commit: bool | None = None,
         auto_expunge: bool | None = None,
         auto_refresh: bool | None = None,
@@ -628,7 +632,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
 
     def _list_and_count_window(
         self,
-        *filters: FilterTypes,
+        *filters: FilterTypes | ColumnElement[bool],
         auto_expunge: bool | None = None,
         statement: Select[tuple[ModelT]] | StatementLambdaElement | None = None,
         **kwargs: Any,
@@ -664,7 +668,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
 
     def _list_and_count_basic(
         self,
-        *filters: FilterTypes,
+        *filters: FilterTypes | ColumnElement[bool],
         auto_expunge: bool | None = None,
         statement: Select[tuple[ModelT]] | StatementLambdaElement | None = None,
         **kwargs: Any,
@@ -796,7 +800,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
 
     def list(
         self,
-        *filters: FilterTypes,
+        *filters: FilterTypes | ColumnElement[bool],
         auto_expunge: bool | None = None,
         statement: Select[tuple[ModelT]] | StatementLambdaElement | None = None,
         **kwargs: Any,
@@ -891,7 +895,10 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         return statement
 
     def _apply_filters(
-        self, *filters: FilterTypes, apply_pagination: bool = True, statement: StatementLambdaElement
+        self,
+        *filters: FilterTypes | ColumnElement[bool],
+        apply_pagination: bool = True,
+        statement: StatementLambdaElement,
     ) -> StatementLambdaElement:
         """Apply filters to a select statement.
 
@@ -907,7 +914,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             The select with filters applied.
         """
         for filter_ in filters:
-            if isinstance(filter_, LimitOffset):
+            if isinstance(filter_, ColumnElement):
+                statement = self._filter_by_expression(expression=filter_, statement=statement)
+            elif isinstance(filter_, LimitOffset):
                 if apply_pagination:
                     statement = self._apply_limit_offset_pagination(filter_.limit, filter_.offset, statement=statement)
             elif isinstance(filter_, BeforeAfter):
@@ -988,10 +997,18 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             statement = self._filter_by_where(statement, key, val)  # pyright: ignore[reportGeneralTypeIssues]
         return statement
 
-    def _filter_by_where(self, statement: StatementLambdaElement, key: str, val: Any) -> StatementLambdaElement:
+    def _filter_by_expression(
+        self, statement: StatementLambdaElement, expression: ColumnElement[bool]
+    ) -> StatementLambdaElement:
+        statement += lambda s: s.filter(expression)
+        return statement
+
+    def _filter_by_where(
+        self, statement: StatementLambdaElement, field_name: str | InstrumentedAttribute, value: Any
+    ) -> StatementLambdaElement:
         model_type = self.model_type
-        field = get_instrumented_attr(model_type, key)
-        statement += lambda s: s.where(field == val)
+        field = get_instrumented_attr(model_type, field_name)
+        statement += lambda s: s.where(field == value)
         return statement
 
     def _filter_by_like(
@@ -1006,9 +1023,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         return statement
 
     def _filter_by_not_like(
-        self, statement: StatementLambdaElement, field_name: str, value: str, ignore_case: bool
+        self, statement: StatementLambdaElement, field_name: str | InstrumentedAttribute, value: str, ignore_case: bool
     ) -> StatementLambdaElement:
-        field = getattr(self.model_type, field_name)
+        field = get_instrumented_attr(self.model_type, field_name)
         search_text = f"%{value}%"
         if ignore_case:
             statement += lambda s: s.where(field.not_ilike(search_text))
