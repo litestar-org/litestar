@@ -1196,9 +1196,9 @@ time</em>.</p>
 <p>Since “blocking” is about the flow of execution, one might think of <code class="docutils literal notranslate"><span class="pre">await</span></code> as
 blocking as well; the execution will not proceed past it until the awaitable has
 been resolved, which fits the definition of the term. However, since at the same
-time <em>other parts of the program</em> (more precisely, other parts currently waiting at
-an <code class="docutils literal notranslate"><span class="pre">await</span></code>) are allowed to proceed, this is not considered blocking and usually
-referred to as “waiting”.</p>
+time <em>other parts of the program</em> (more precisely, other coroutines which had
+given up control at an <code class="docutils literal notranslate"><span class="pre">await</span></code> that has since completed) are allowed to
+proceed, this is not considered blocking and usually referred to as “waiting”.</p>
 </div>
 </section>
 <section id="i-o-bound-vs-cpu-bound">

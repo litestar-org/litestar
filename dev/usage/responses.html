@@ -2155,12 +2155,12 @@ different value range:</p>
 <p>Redirect responses are <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections">special HTTP responses</a> with a
 status code in the 30x range.</p>
 <p>In Litestar, a redirect response looks like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_307_TEMPORARY_REDIRECT</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_302_FOUND</span>
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">Redirect</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_307_TEMPORARY_REDIRECT</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_302_FOUND</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">redirect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
     <span class="c1"># do some stuff here</span>
     <span class="c1"># ...</span>
@@ -2170,7 +2170,7 @@ status code in the 30x range.</p>
 </div>
 <p>To return a redirect response you should do the following:</p>
 <ul class="simple">
-<li><p>set an appropriate status code for the route handler (301, 302, 303, 307, 308)</p></li>
+<li><p>optionally: set an appropriate status code for the route handler (301, 302, 303, 307, 308). If not set the default of 302 will be used.</p></li>
 <li><p>annotate the return value of the route handler as returning <a class="reference internal" href="../reference/response/index.html#litestar.response.Redirect" title="litestar.response.Redirect"><code class="xref py py-class docutils literal notranslate"><span class="pre">Redirect</span></code></a></p></li>
 <li><p>return an instance of the <a class="reference internal" href="../reference/response/index.html#litestar.response.Redirect" title="litestar.response.Redirect"><code class="xref py py-class docutils literal notranslate"><span class="pre">Redirect</span></code></a> class with the desired redirect path</p></li>
 </ul>

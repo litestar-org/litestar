@@ -39,9 +39,9 @@ time*.
     Since "blocking" is about the flow of execution, one might think of ``await`` as
     blocking as well; the execution will not proceed past it until the awaitable has
     been resolved, which fits the definition of the term. However, since at the same
-    time *other parts of the program* (more precisely, other parts currently waiting at
-    an ``await``) are allowed to proceed, this is not considered blocking and usually
-    referred to as "waiting".
+    time *other parts of the program* (more precisely, other coroutines which had
+    given up control at an ``await`` that has since completed) are allowed to
+    proceed, this is not considered blocking and usually referred to as "waiting".
 
 
 I/O bound vs. CPU bound
