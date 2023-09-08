@@ -289,8 +289,7 @@ Example Applications
 * `litestar-pg-redis-docker <https://github.com/litestar-org/starlite-pg-redis-docker>`_ : In addition to Litestar, this
   demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
   Litestar projects, this application is open to contributions, big and small.
-* `litestar-fullstack <https://github.com/litestar-org/litestar-fullstack>`_ : A reference application that contains most of the boilerplate required for a web application.
-It features a Litestar app configured with best practices, SQLAlchemy 2.0 and SAQ, a frontend integrated with Vitejs and Jinja2 templates. Docker, and more
+* `litestar-fullstack <https://github.com/litestar-org/litestar-fullstack>`_ : A reference application that contains most of the boilerplate required for a web application. It features a Litestar app configured with best practices, SQLAlchemy 2.0 and SAQ, a frontend integrated with Vitejs and Jinja2 templates. Docker, and more
 * `litestar-hello-world <https://github.com/litestar-org/litestar-hello-world>`_: A bare-minimum application setup. Great
   for testing and POC work.
 

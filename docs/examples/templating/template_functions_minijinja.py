@@ -28,7 +28,7 @@ template_config = TemplateConfig(
 
 @get("/")
 def index() -> Template:
-    return Template(template_name="index.html.jinja2")
+    return Template(template_name="index.html.minijinja")
 
 
 app = Litestar(route_handlers=[index], template_config=template_config)
