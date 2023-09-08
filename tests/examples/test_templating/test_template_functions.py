@@ -14,7 +14,7 @@ def test_template_functions_jinja():
 def test_template_functions_mako():
     with TestClient(mako_app) as client:
         response = client.get("/")
-        assert response.text == "<strong>check_context_key: </strong>nope"
+        assert response.text == "<strong>check_context_key: </strong>nope\n"
 
 
 def test_template_functions_minijinja():

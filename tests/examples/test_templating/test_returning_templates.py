@@ -14,7 +14,7 @@ def test_returning_templates_jinja():
 def test_returning_templates_mako():
     with TestClient(mako_app) as client:
         response = client.get("/", params={"name": "Mako"})
-        assert response.text == "Hello <strong>Mako</strong>"
+        assert response.text == "Hello <strong>Mako</strong>\n"
 
 
 def test_returning_templates_minijinja():
