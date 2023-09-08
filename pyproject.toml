@@ -12,7 +12,6 @@ authors = [
 maintainers = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
     "Cody Fincher <cody.fincher@gmail.com>",
-    "Janek Nouvertné <provinzkraut@posteo.de>",
     "Jacob Coffee <jacob@z7x.org>",
 ]
 license = "MIT"
