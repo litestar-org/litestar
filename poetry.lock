@@ -4273,4 +4273,4 @@ structlog = ["structlog"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "dde394e227d76d52eb9927eda00f1f7364369fa80775be063a0b9745d7ef1462"
+content-hash = "5c8a4fe63eb9fdc4d0011d86db3b292c47d98e6fe086adea22b818228428b579"
