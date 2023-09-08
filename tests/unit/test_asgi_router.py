@@ -45,7 +45,7 @@ def test_life_span_startup() -> None:
 
 def test_life_span_startup_error_handling() -> None:
     life_span_callable = _LifeSpanCallable(should_raise=True)
-    with pytest.raises(RuntimeError), create_test_client([], on_startup=[life_span_callable]):
+    with pytest.raises(ExceptionGroup), create_test_client([], on_startup=[life_span_callable]):
         pass
 
 
@@ -164,7 +164,7 @@ async def test_lifespan_startup_failure(mock_format_exc: MagicMock) -> None:
 
     router = ASGIRouter(app=Litestar(on_startup=[on_startup]))
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ExceptionGroup):
         await router.lifespan(receive, send)
 
     assert send.call_count == 1

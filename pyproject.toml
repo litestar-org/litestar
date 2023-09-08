@@ -71,7 +71,7 @@ packages = [{ include = "litestar" }]
 python = ">=3.8,<4.0"
 alembic = { version = "*", optional = true }
 annotated-types = { version = "*", optional = true }
-anyio = ">=3,<4.0"
+anyio = ">=3"
 attrs = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
 click = { version = "*", optional = true }
@@ -106,6 +106,7 @@ uvicorn = { extras = ["standard"], version = ">=0.22.0", optional = true }
 aiosqlite = "*"
 asyncmy = "*"
 asyncpg = "*"
+beanie = ">=1.21.0"
 beautifulsoup4 = "*"
 duckdb-engine = "*"
 fsspec = "*"

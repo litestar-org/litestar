@@ -123,7 +123,7 @@ def raise_error(app: Litestar) -> NoReturn:
 async def test_error_handling_on_startup(
     test_client_backend: "AnyIOBackend", test_client_cls: Type[AnyTestClient]
 ) -> None:
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ExceptionGroup):
         async with maybe_async_cm(
             test_client_cls(Litestar(on_startup=[raise_error]), backend=test_client_backend)  # pyright: ignore
         ):

@@ -102,7 +102,7 @@ class DockerServiceRegistry:
 
 @pytest.fixture(scope="session")
 def docker_services(worker_id: str) -> Generator[DockerServiceRegistry, None, None]:
-    if os.getenv("GITHUB_ACTIONS") == "true" or sys.platform != "linux":
+    if os.getenv("GITHUB_ACTIONS") == "true" and sys.platform == "win32":
         pytest.skip("Docker not available on this platform")
 
     registry = DockerServiceRegistry(worker_id)
