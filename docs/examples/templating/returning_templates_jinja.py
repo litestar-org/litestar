@@ -14,7 +14,7 @@ def index(name: str) -> Template:
 app = Litestar(
     route_handlers=[index],
     template_config=TemplateConfig(
-        directory=Path("templates"),
+        directory=Path(__file__).parent / "templates",
         engine=JinjaTemplateEngine,
     ),
 )
