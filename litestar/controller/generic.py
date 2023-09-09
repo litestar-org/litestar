@@ -1,8 +1,9 @@
+# ruff: noqa: UP007, UP006
 from __future__ import annotations
 
 from inspect import isawaitable
 from operator import attrgetter
-from typing import TYPE_CHECKING, Any, Generic, Sequence, TypeVar, cast, get_args
+from typing import TYPE_CHECKING, Any, Generic, List, Sequence, TypeVar, cast, get_args
 from uuid import UUID
 
 from typing_extensions import get_origin, get_type_hints
@@ -15,6 +16,7 @@ from litestar.handlers import BaseRouteHandler, HTTPRouteHandler
 from litestar.repository.filters import CollectionFilter
 from litestar.types import Empty
 from litestar.utils import is_class_and_subclass
+from litestar.utils.typing import get_safe_generic_origin
 
 if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
@@ -34,13 +36,6 @@ GENERIC_METHOD_NAMES = (
     "delete_many",
     "get_many",
 )
-
-
-class ItemIdsRequestBody(Generic[IdAttrT]):
-    """A request body for bulk operations."""
-
-    item_ids: list[IdAttrT]
-    """A list of item IDs."""
 
 
 class GenericController(Controller, Generic[ModelT, IdAttrT]):
@@ -104,6 +99,16 @@ class GenericController(Controller, Generic[ModelT, IdAttrT]):
     get_many_http_method: HttpMethod = HttpMethod.GET
     """The HTTP method for get many operations."""
 
+    def _normalize_annotation(self, annotation: Any) -> Any:
+        if (origin := get_origin(annotation)) and (args := get_args(annotation)):
+            safe_origin = get_safe_generic_origin(origin, origin)
+            return safe_origin[tuple(self._normalize_annotation(arg) for arg in args)]
+        if annotation is ModelT:  # type: ignore[misc]
+            return self.model_type
+        if annotation is IdAttrT:  # type: ignore[misc]
+            return self.id_attribute_type
+        return annotation
+
     def get_route_handlers(self) -> list[BaseRouteHandler]:
         route_handlers = super().get_route_handlers()
 
@@ -117,16 +122,7 @@ class GenericController(Controller, Generic[ModelT, IdAttrT]):
                 # we are replacing the generic parameters with the concrete types in the method `__annotations__`
                 # this is required to ensure we model the signautre correctly, and generate the schemas as required.
                 for k, v in get_type_hints(method, localns={"Request": Request}).items():
-                    if v is ModelT:  # type: ignore[misc]
-                        method.__annotations__[k] = self.model_type
-                    elif v is IdAttrT:  # type: ignore[misc]
-                        method.__annotations__[k] = self.id_attribute_type
-                    elif (args := get_args(v)) and any(arg is ModelT for arg in args):  # type: ignore[misc]
-                        origin = get_origin(v)
-                        method.__annotations__[k] = origin[*tuple(self.model_type for _ in args)]  # type: ignore[has-type]
-                    elif (args := get_args(v)) and any(arg is IdAttrT for arg in args):  # type: ignore[misc]
-                        origin = get_origin(v)
-                        method.__annotations__[k] = origin[*tuple(self.id_attribute_type for _ in args)]  # type: ignore[has-type]
+                    method.__annotations__[k] = self._normalize_annotation(v)
 
                 route_handler = HTTPRouteHandler(
                     handler_path.replace("path_param_type", self.path_param_type),
@@ -210,26 +206,26 @@ class GenericController(Controller, Generic[ModelT, IdAttrT]):
             result = await result
         return cast("ModelT", result)
 
-    async def create_many(self, data: list[ModelT], request: Request[Any, Any, Any]) -> list[ModelT]:
+    async def create_many(self, data: List[ModelT], request: Request[Any, Any, Any]) -> List[ModelT]:
         result = self.create_repository(request=request).add_many(data)
         if isawaitable(result):
             result = await result
         return cast("list[ModelT]", result)
 
-    async def update_many(self, data: list[ModelT], request: Request[Any, Any, Any]) -> list[ModelT]:
+    async def update_many(self, data: List[ModelT], request: Request[Any, Any, Any]) -> List[ModelT]:
         result = self.create_repository(request=request).update_many(data=data)
         if isawaitable(result):
             result = await result
         return cast("list[ModelT]", result)
 
-    async def delete_many(self, data: ItemIdsRequestBody[IdAttrT], request: Request[Any, Any, Any]) -> None:
-        result = self.create_repository(request=request).delete_many(item_ids=data.item_ids)
+    async def delete_many(self, item_ids: List[IdAttrT], request: Request[Any, Any, Any]) -> None:
+        result = self.create_repository(request=request).delete_many(item_ids=item_ids)
         if isawaitable(result):
             await result
 
-    async def get_many(self, item_ids: list[IdAttrT], request: Request[Any, Any, Any]) -> list[ModelT]:
+    async def get_many(self, item_ids: List[IdAttrT], request: Request[Any, Any, Any]) -> List[ModelT]:
         result = self.create_repository(request=request).list(
-            CollectionFilter(field_name=self.id_attribute, values=[item_ids])
+            CollectionFilter(field_name=self.id_attribute, values=item_ids)
         )
         if isawaitable(result):
             result = await result
