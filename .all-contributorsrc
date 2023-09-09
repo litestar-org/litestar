@@ -1249,6 +1249,15 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "wevonosky",
+      "name": "William Evonosky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19598171?v=4",
+      "profile": "https://github.com/wevonosky",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
