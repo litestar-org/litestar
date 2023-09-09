@@ -9,8 +9,9 @@ import pytest
 from litestar import HttpMethod, Litestar, MediaType, get
 from litestar.contrib.pydantic import PydanticDTO
 from litestar.controller.generic import GENERIC_METHOD_NAMES, GenericController
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import HTTPRouteHandler
-from litestar.repository import AbstractSyncRepository, FilterTypes
+from litestar.repository import AbstractAsyncRepository, FilterTypes
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from litestar.testing import create_test_client
 from litestar.types import Method
@@ -23,70 +24,70 @@ def _get_generic_handlers(
     return {k: v for k, v in app.route_handler_method_map.items() if k.startswith(controller_type.path)}  # type: ignore
 
 
-class PersonRepository(AbstractSyncRepository[PydanticPerson]):
+class PersonRepository(AbstractAsyncRepository[PydanticPerson]):
     def __init__(self, **kwargs: Any) -> None:
         """Repository constructors accept arbitrary kwargs."""
         self.request = kwargs.pop("request", None)
         super().__init__()
 
-    def add_many(self, data: list[PydanticPerson]) -> list[PydanticPerson]:
+    async def add_many(self, data: list[PydanticPerson]) -> list[PydanticPerson]:
         return [
             PydanticPersonFactory.build(**(datum.model_dump() if hasattr(datum, "model_dump") else datum.dict()))
             for datum in data
         ]
 
-    def add(self, data: PydanticPerson) -> PydanticPerson:
+    async def add(self, data: PydanticPerson) -> PydanticPerson:
         return PydanticPersonFactory.build(**(data.model_dump() if hasattr(data, "model_dump") else data.dict()))
 
-    def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
+    async def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
         return 0
 
-    def exists(self, *filters: FilterTypes, **kwargs: Any) -> bool:
+    async def exists(self, *filters: FilterTypes, **kwargs: Any) -> bool:
         return False
 
-    def delete(self, item_id: Any) -> PydanticPerson:
+    async def delete(self, item_id: Any) -> PydanticPerson:
         return PydanticPersonFactory.build(id=item_id)
 
-    def delete_many(self, item_ids: list[Any]) -> list[PydanticPerson]:
+    async def delete_many(self, item_ids: list[Any]) -> list[PydanticPerson]:
         return [PydanticPersonFactory.build(id=item_id) for item_id in item_ids]
 
-    def get(self, item_id: Any, **kwargs: Any) -> PydanticPerson:
+    async def get(self, item_id: Any, **kwargs: Any) -> PydanticPerson:
         return PydanticPersonFactory.build(id=item_id, **kwargs)
 
-    def get_one(self, **kwargs: Any) -> PydanticPerson:
+    async def get_one(self, **kwargs: Any) -> PydanticPerson:
         return PydanticPersonFactory.build(**kwargs)
 
-    def get_or_create(self, **kwargs: Any) -> tuple[PydanticPerson, bool]:
+    async def get_or_create(self, **kwargs: Any) -> tuple[PydanticPerson, bool]:
         return PydanticPersonFactory.build(**kwargs), True
 
-    def get_one_or_none(self, **kwargs: Any) -> PydanticPerson | None:
+    async def get_one_or_none(self, **kwargs: Any) -> PydanticPerson | None:
         return PydanticPersonFactory.build(**kwargs)
 
-    def update(self, data: PydanticPerson) -> PydanticPerson:
+    async def update(self, data: PydanticPerson) -> PydanticPerson:
         return PydanticPersonFactory.build(**(data.model_dump() if hasattr(data, "model_dump") else data.dict()))
 
-    def update_many(self, data: list[PydanticPerson]) -> list[PydanticPerson]:
+    async def update_many(self, data: list[PydanticPerson]) -> list[PydanticPerson]:
         return [
             PydanticPersonFactory.build(**(datum.model_dump() if hasattr(datum, "model_dump") else datum.dict()))
             for datum in data
         ]
 
-    def upsert(self, data: PydanticPerson) -> PydanticPerson:
+    async def upsert(self, data: PydanticPerson) -> PydanticPerson:
         return PydanticPersonFactory.build(**(data.model_dump() if hasattr(data, "model_dump") else data.dict()))
 
-    def upsert_many(self, data: list[PydanticPerson]) -> list[PydanticPerson]:
+    async def upsert_many(self, data: list[PydanticPerson]) -> list[PydanticPerson]:
         return [
             PydanticPersonFactory.build(**(datum.model_dump() if hasattr(datum, "model_dump") else datum.dict()))
             for datum in data
         ]
 
-    def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[list[PydanticPerson], int]:
+    async def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[list[PydanticPerson], int]:
         return PydanticPersonFactory.batch(size=5, **kwargs), 5
 
-    def list(self, *filters: FilterTypes, **kwargs: Any) -> list[PydanticPerson]:
+    async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[PydanticPerson]:
         return PydanticPersonFactory.batch(size=5, **kwargs)
 
-    def filter_collection_by_kwargs(self, collection: Any, /, **kwargs: Any) -> Any:
+    async def filter_collection_by_kwargs(self, collection: Any, /, **kwargs: Any) -> Any:  # type: ignore
         pass
 
 
@@ -103,6 +104,14 @@ def test_generic_controller_get_generic_annotation() -> None:
     assert len(generic_annotations) == 2
     assert generic_annotations[0] == PydanticPerson
     assert generic_annotations[1] == str
+
+
+def test_generic_controller_raises_when_not_annotated() -> None:
+    class _Controller(GenericController):
+        pass
+
+    with pytest.raises(ImproperlyConfiguredException):
+        _Controller.get_generic_annotations()
 
 
 def test_replaces_generic_parameters() -> None:

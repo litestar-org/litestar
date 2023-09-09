@@ -105,7 +105,7 @@ class GenericController(Controller, Generic[ModelT, IdAttrT]):
             return safe_origin[tuple(self._normalize_annotation(arg) for arg in args)]
         if annotation is ModelT:  # type: ignore[misc]
             return self.model_type
-        return self.id_attribute_type if annotation is IdAttrT else annotation
+        return self.id_attribute_type if annotation is IdAttrT else annotation  # type: ignore[misc]
 
     def get_route_handlers(self) -> list[BaseRouteHandler]:
         route_handlers = super().get_route_handlers()
@@ -138,34 +138,30 @@ class GenericController(Controller, Generic[ModelT, IdAttrT]):
         return route_handlers
 
     @classmethod
-    def get_generic_annotations(cls) -> tuple[type, type] | None:
-        if (generic_bases := getattr(cls, "__orig_bases__", None)) and (
-            args := next(
-                getattr(base, "__args__", ())
-                for base in generic_bases
-                if is_class_and_subclass(getattr(base, "__origin__", None), GenericController)
-            )
-        ):
-            return cast("tuple[type, type]", args)
-        return None
+    def get_generic_annotations(cls) -> tuple[type, type]:
+        try:
+            if (generic_bases := getattr(cls, "__orig_bases__", None)) and (
+                args := next(
+                    getattr(base, "__args__", ())
+                    for base in generic_bases
+                    if is_class_and_subclass(getattr(base, "__origin__", None), GenericController)
+                )
+            ):
+                return cast("tuple[type, type]", args)
+        except StopIteration:
+            pass
+
+        raise ImproperlyConfiguredException(
+            "generic controllers must be defined with two generic parameters - a model type and id attribute type"
+        )
 
     @property
     def id_attribute_type(self) -> type[IdAttrT]:
-        if (generic_annotations := self.get_generic_annotations()) and len(generic_annotations) == 2:
-            return cast("type[IdAttrT]", generic_annotations[1])
-
-        raise ImproperlyConfiguredException(
-            "generic controllers must be defined with two generic parameters - a model type and id attribute type"
-        )
+        return cast("type[IdAttrT]", self.get_generic_annotations()[1])
 
     @property
     def model_type(self) -> type[ModelT]:
-        if (generic_annotations := self.get_generic_annotations()) and len(generic_annotations) == 2:
-            return cast("type[ModelT]", generic_annotations[0])
-
-        raise ImproperlyConfiguredException(
-            "generic controllers must be defined with two generic parameters - a model type and id attribute type"
-        )
+        return cast("type[ModelT]", self.get_generic_annotations()[0])
 
     @property
     def path_param_type(self) -> str:
