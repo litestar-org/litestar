@@ -113,6 +113,14 @@ def test_generic_controller_raises_when_not_annotated() -> None:
         _Controller.get_generic_annotations()
 
 
+def test_generic_controller_raises_when_not_annotated() -> None:
+    class _Controller(GenericController):
+        pass
+
+    with pytest.raises(ImproperlyConfiguredException):
+        _Controller.get_generic_annotations()
+
+
 def test_replaces_generic_parameters() -> None:
     app = Litestar(route_handlers=[TestGenericController])
 
