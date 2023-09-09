@@ -105,9 +105,7 @@ class GenericController(Controller, Generic[ModelT, IdAttrT]):
             return safe_origin[tuple(self._normalize_annotation(arg) for arg in args)]
         if annotation is ModelT:  # type: ignore[misc]
             return self.model_type
-        if annotation is IdAttrT:  # type: ignore[misc]
-            return self.id_attribute_type
-        return annotation
+        return self.id_attribute_type if annotation is IdAttrT else annotation
 
     def get_route_handlers(self) -> list[BaseRouteHandler]:
         route_handlers = super().get_route_handlers()
