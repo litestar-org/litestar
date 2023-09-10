@@ -17,7 +17,6 @@ from litestar.testing import create_test_client
 from litestar.types import Method
 from tests import VanillaDataClassPerson, VanillaDataClassPersonFactory
 
-
 def _get_generic_handlers(
     app: Litestar, controller_type: type[GenericController]
 ) -> dict[str, dict[Method, HTTPRouteHandler]]:

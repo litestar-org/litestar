@@ -255,7 +255,7 @@ class BaseRouteHandler:
         return {name for layer in layered_dependencies for name in layer}  # pyright: ignore
 
     @property
-    def ownership_layers(self) -> list[Self | Controller | Router]:
+    def ownership_layers(self) -> list[Self | Controller | Router | Litestar]:
         """Return the handler layers from the app down to the route handler.
 
         ``app -> ... -> route handler``

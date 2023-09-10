@@ -677,7 +677,7 @@ def _transfer_nested_union_type_data(
 ) -> Any:
     for inner_type in transfer_type.inner_types:
         if isinstance(inner_type, CompositeType):
-            raise RuntimeError("Composite inner types not (yet) supported for nested unions.")
+            raise RuntimeError("Composite inner types not supported for nested unions.")
 
         if inner_type.nested_field_info and isinstance(
             source_value,
