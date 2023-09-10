@@ -91,7 +91,7 @@ class PersonRepository(AbstractAsyncRepository[PydanticPerson]):
         pass
 
 
-class TestGenericController(GenericController[PydanticPerson, str]):
+class TestGenericController(GenericController[PydanticPerson]):
     path = "/generic-controller"
     repository_type = PersonRepository
     create_dto = PydanticDTO[PydanticPerson]
@@ -101,9 +101,8 @@ class TestGenericController(GenericController[PydanticPerson, str]):
 def test_generic_controller_get_generic_annotation() -> None:
     generic_annotations = TestGenericController.get_generic_annotations()
     assert generic_annotations
-    assert len(generic_annotations) == 2
+    assert len(generic_annotations) == 1
     assert generic_annotations[0] == PydanticPerson
-    assert generic_annotations[1] == str
 
 
 def test_generic_controller_raises_when_not_annotated() -> None:

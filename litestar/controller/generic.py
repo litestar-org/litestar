@@ -4,7 +4,6 @@ from __future__ import annotations
 from inspect import isawaitable
 from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Generic, List, Sequence, TypeVar, cast, get_args
-from uuid import UUID
 
 from typing_extensions import get_origin, get_type_hints
 
@@ -21,10 +20,10 @@ from litestar.utils.typing import get_safe_generic_origin
 if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.repository import AbstractAsyncRepository, AbstractSyncRepository
+    from litestar.router import Router
     from litestar.types import EmptyType
 
 ModelT = TypeVar("ModelT")
-IdAttrT = TypeVar("IdAttrT", str, int, UUID)
 
 GENERIC_METHOD_NAMES = (
     "create_instance",
@@ -38,12 +37,9 @@ GENERIC_METHOD_NAMES = (
 )
 
 
-class GenericController(Controller, Generic[ModelT, IdAttrT]):
+class GenericController(Controller, Generic[ModelT]):
     repository_type: type[AbstractAsyncRepository[ModelT]] | type[AbstractSyncRepository[ModelT]]
     """Repository for the controller's model."""
-    id_attribute: str = "id"
-    """The name of the models's ID attribute."""
-
     create_dto: type[AbstractDTO[ModelT]] | EmptyType = Empty
     """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for create operations."""
     update_dto: type[AbstractDTO[ModelT]] | EmptyType = Empty
@@ -99,13 +95,29 @@ class GenericController(Controller, Generic[ModelT, IdAttrT]):
     get_many_http_method: HttpMethod = HttpMethod.GET
     """The HTTP method for get many operations."""
 
-    def _normalize_annotation(self, annotation: Any) -> Any:
+    def __init__(self, owner: Router) -> None:
+        """Initialize a controller.
+
+        Should only be called by routers as part of controller registration.
+
+        Args:
+            owner: An instance of :class:`Router <.router.Router>`
+        """
+        super().__init__(owner=owner)
+
+        if not getattr(self, "repository_type", None):
+            raise ImproperlyConfiguredException("generic controllers must define a `repository_type` attribute")
+        # TODO add DTO init logic here
+
+    def _normalize_annotation(self, key: str, annotation: Any) -> Any:
         if (origin := get_origin(annotation)) and (args := get_args(annotation)):
             safe_origin = get_safe_generic_origin(origin, origin)
-            return safe_origin[tuple(self._normalize_annotation(arg) for arg in args)]
+            return safe_origin[tuple(self._normalize_annotation(key, arg) for arg in args)]
         if annotation is ModelT:  # type: ignore[misc]
             return self.model_type
-        return self.id_attribute_type if annotation is IdAttrT else annotation  # type: ignore[misc]
+        if key in ("item_id", "item_ids") and annotation is Any:
+            return self.id_attribute_type
+        return annotation
 
     def get_route_handlers(self) -> list[BaseRouteHandler]:
         route_handlers = super().get_route_handlers()
@@ -120,7 +132,7 @@ class GenericController(Controller, Generic[ModelT, IdAttrT]):
                 # we are replacing the generic parameters with the concrete types in the method `__annotations__`
                 # this is required to ensure we model the signautre correctly, and generate the schemas as required.
                 for k, v in get_type_hints(method, localns={"Request": Request}).items():
-                    method.__annotations__[k] = self._normalize_annotation(v)
+                    method.__annotations__[k] = self._normalize_annotation(k, v)
 
                 route_handler = HTTPRouteHandler(
                     handler_path.replace("path_param_type", self.path_param_type),
@@ -156,8 +168,13 @@ class GenericController(Controller, Generic[ModelT, IdAttrT]):
         )
 
     @property
-    def id_attribute_type(self) -> type[IdAttrT]:
-        return cast("type[IdAttrT]", self.get_generic_annotations()[1])
+    def id_attribute_type(self) -> Any:
+        try:
+            return self.model_type.__annotations__[self.repository_type.id_attribute]
+        except KeyError as e:
+            raise ImproperlyConfiguredException(
+                f"the configured `id_attribute` on the controller repository does not exist in model {self.model_type.__name__}"
+            ) from e
 
     @property
     def model_type(self) -> type[ModelT]:
@@ -165,9 +182,9 @@ class GenericController(Controller, Generic[ModelT, IdAttrT]):
 
     @property
     def path_param_type(self) -> str:
-        if self.id_attribute_type is str or is_class_and_subclass(self.id_attribute, str):
+        if self.id_attribute_type is str or is_class_and_subclass(self.id_attribute_type, str):
             return "str"
-        if self.id_attribute_type is int or is_class_and_subclass(self.id_attribute, int):
+        if self.id_attribute_type is int or is_class_and_subclass(self.id_attribute_type, int):
             return "int"
         return "uuid"
 
@@ -189,12 +206,12 @@ class GenericController(Controller, Generic[ModelT, IdAttrT]):
             result = await result
         return cast("ModelT", result)
 
-    async def delete_instance(self, item_id: IdAttrT, request: Request[Any, Any, Any]) -> None:
+    async def delete_instance(self, item_id: Any, request: Request[Any, Any, Any]) -> None:
         result = self.create_repository(request=request).delete(item_id=item_id)
         if isawaitable(result):
             await result
 
-    async def get_instance(self, item_id: IdAttrT, request: Request[Any, Any, Any]) -> ModelT:
+    async def get_instance(self, item_id: Any, request: Request[Any, Any, Any]) -> ModelT:
         result = self.create_repository(request=request).get(item_id=item_id)
         if isawaitable(result):
             result = await result
@@ -212,14 +229,14 @@ class GenericController(Controller, Generic[ModelT, IdAttrT]):
             result = await result
         return cast("list[ModelT]", result)
 
-    async def delete_many(self, item_ids: List[IdAttrT], request: Request[Any, Any, Any]) -> None:
+    async def delete_many(self, item_ids: List[Any], request: Request[Any, Any, Any]) -> None:
         result = self.create_repository(request=request).delete_many(item_ids=item_ids)
         if isawaitable(result):
             await result
 
-    async def get_many(self, item_ids: List[IdAttrT], request: Request[Any, Any, Any]) -> List[ModelT]:
+    async def get_many(self, item_ids: List[Any], request: Request[Any, Any, Any]) -> List[ModelT]:
         result = self.create_repository(request=request).list(
-            CollectionFilter(field_name=self.id_attribute, values=item_ids)
+            CollectionFilter(field_name=self.repository_type.id_attribute, values=item_ids)
         )
         if isawaitable(result):
             result = await result
