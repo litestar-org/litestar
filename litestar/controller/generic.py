@@ -1,23 +1,34 @@
 # ruff: noqa: UP007, UP006
 from __future__ import annotations
 
+from dataclasses import is_dataclass
+from functools import cached_property
 from inspect import isawaitable
 from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Generic, List, Sequence, TypeVar, cast, get_args
 
-from typing_extensions import get_origin, get_type_hints
+from typing_extensions import Self, get_origin, get_type_hints
 
 from litestar.connection.request import Request
 from litestar.controller.base import Controller
+from litestar.dto import DataclassDTO, DTOConfig, DTOData, MsgspecDTO
 from litestar.enums import HttpMethod
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler, HTTPRouteHandler
 from litestar.repository.filters import CollectionFilter
 from litestar.types import Empty
-from litestar.utils import is_class_and_subclass
+from litestar.typing import FieldDefinition
+from litestar.utils import (
+    is_class_and_subclass,
+    is_piccolo_class,
+    is_pydantic_model_class,
+    is_sqlalchemy_model,
+    is_struct_class,
+)
 from litestar.utils.typing import get_safe_generic_origin
 
 if TYPE_CHECKING:
+    from litestar import Litestar
     from litestar.dto import AbstractDTO
     from litestar.repository import AbstractAsyncRepository, AbstractSyncRepository
     from litestar.router import Router
@@ -40,6 +51,8 @@ GENERIC_METHOD_NAMES = (
 class GenericController(Controller, Generic[ModelT]):
     repository_type: type[AbstractAsyncRepository[ModelT]] | type[AbstractSyncRepository[ModelT]]
     """Repository for the controller's model."""
+    dto_type: type[AbstractDTO] | EmptyType = Empty
+    """Subclass of :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for generating DTOs."""
     create_dto: type[AbstractDTO[ModelT]] | EmptyType = Empty
     """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for create operations."""
     update_dto: type[AbstractDTO[ModelT]] | EmptyType = Empty
@@ -107,7 +120,6 @@ class GenericController(Controller, Generic[ModelT]):
 
         if not getattr(self, "repository_type", None):
             raise ImproperlyConfiguredException("generic controllers must define a `repository_type` attribute")
-        # TODO add DTO init logic here
 
     def _normalize_annotation(self, key: str, annotation: Any) -> Any:
         if (origin := get_origin(annotation)) and (args := get_args(annotation)):
@@ -115,7 +127,7 @@ class GenericController(Controller, Generic[ModelT]):
             return safe_origin[tuple(self._normalize_annotation(key, arg) for arg in args)]
         if annotation is ModelT:  # type: ignore[misc]
             return self.model_type
-        if key in ("item_id", "item_ids") and annotation is Any:
+        if key in {"item_id", "item_ids"} and annotation is Any:
             return self.id_attribute_type
         return annotation
 
@@ -134,6 +146,12 @@ class GenericController(Controller, Generic[ModelT]):
                 for k, v in get_type_hints(method, localns={"Request": Request}).items():
                     method.__annotations__[k] = self._normalize_annotation(k, v)
 
+                data_dto: type[AbstractDTO] | EmptyType = Empty
+                if http_method is HttpMethod.POST:
+                    data_dto = self._create_dto
+                elif http_method in {HttpMethod.PATCH, HttpMethod.PUT}:
+                    data_dto = self._update_dto
+
                 route_handler = HTTPRouteHandler(
                     handler_path.replace("path_param_type", self.path_param_type),
                     http_method=http_method,
@@ -142,6 +160,8 @@ class GenericController(Controller, Generic[ModelT]):
                         self.model_type.__name__: self.model_type,
                         self.id_attribute_type.__name__: self.id_attribute_type,
                     },
+                    dto=data_dto,
+                    return_dto=self._return_dto,
                 )(method)
                 route_handler.owner = self
                 route_handlers.append(route_handler)
@@ -150,7 +170,7 @@ class GenericController(Controller, Generic[ModelT]):
         return route_handlers
 
     @classmethod
-    def get_generic_annotations(cls) -> tuple[type, type]:
+    def get_generic_annotations(cls) -> tuple[Any, ...]:
         try:
             if (generic_bases := getattr(cls, "__orig_bases__", None)) and (
                 args := next(
@@ -159,13 +179,11 @@ class GenericController(Controller, Generic[ModelT]):
                     if is_class_and_subclass(getattr(base, "__origin__", None), GenericController)
                 )
             ):
-                return cast("tuple[type, type]", args)
+                return cast("tuple[Any, ...]", args)
         except StopIteration:
             pass
 
-        raise ImproperlyConfiguredException(
-            "generic controllers must be defined with two generic parameters - a model type and id attribute type"
-        )
+        raise ImproperlyConfiguredException("generic controllers must receive a generic parameter for model type")
 
     @property
     def id_attribute_type(self) -> Any:
@@ -188,20 +206,102 @@ class GenericController(Controller, Generic[ModelT]):
             return "int"
         return "uuid"
 
+    @property
+    def ownership_layers(self) -> list[Self | Router | Litestar]:
+        """Return the layers from the app down to the generic controller handler.
+
+        ``app -> ... -> generic controller``
+        """
+        layers: list[Self | Router | Litestar] = []
+
+        cur: Self | Router | Litestar | None = self
+        while cur:
+            layers.append(cur)
+            cur = cur.owner
+
+        return list(reversed(layers))
+
+    @cached_property
+    def _create_dto(self) -> type[AbstractDTO[ModelT]]:
+        if self.create_dto is not Empty:
+            return self.create_dto
+
+        class _CreateDTO(self._dto_type[self.model_type]):
+            config = DTOConfig(exclude={self.repository_type.id_attribute}, partial=True)
+
+        return _CreateDTO
+
+    @cached_property
+    def _update_dto(self) -> type[AbstractDTO[ModelT]]:
+        if self.update_dto is not Empty:
+            return self.update_dto
+
+        class _UpdateDTO(self._dto_type[self.model_type]):
+            config = DTOConfig(partial=True)
+
+        return _UpdateDTO
+
+    @cached_property
+    def _return_dto(self) -> type[AbstractDTO[ModelT]] | None:
+        if self.return_dto is not Empty:
+            return self.return_dto
+
+        app = cast("Litestar", self.ownership_layers[0])
+        if any(
+            plugin.supports_type(FieldDefinition.from_annotation(self.model_type))
+            for plugin in app.plugins.serialization
+        ):
+            # since there is a serialization plugin in place, a return dto type is not required.
+            return None
+
+        return self._dto_type[self.model_type]
+
+    @cached_property
+    def _dto_type(self) -> type[AbstractDTO]:
+        if self.dto_type is not Empty:
+            return self.dto_type
+        if is_dataclass(self.model_type):
+            return DataclassDTO
+        if is_struct_class(self.model_type):
+            return MsgspecDTO
+        if is_pydantic_model_class(self.model_type):
+            from litestar.contrib.pydantic import PydanticDTO
+
+            return PydanticDTO
+        if is_piccolo_class(self.model_type):
+            from litestar.contrib.piccolo import PiccoloDTO
+
+            return PiccoloDTO
+        if is_sqlalchemy_model(self.model_type):
+            from litestar.contrib.sqlalchemy import SQLAlchemyDTO
+
+            return SQLAlchemyDTO
+
+        if filtered_data_dtos := [
+            layer.dto for layer in self.ownership_layers if layer.dto is not Empty and layer.dto is not None
+        ]:
+            return cast("type[AbstractDTO]", filtered_data_dtos[-1])
+
+        raise ImproperlyConfiguredException(
+            f"cannot determine DTO type for {self.model_type.__name__} on {type(self).__name__} "
+            f"Generic Controller. Please specify a `dto_type` to have dtos automatically generated, or "
+            f"specify the `create_dto`, `update_dto` and `return_dto` attributes to avoid dto generation.`"
+        )
+
     def create_repository(
         self, *, request: Request[Any, Any, Any], **kwargs: Any
     ) -> AbstractAsyncRepository[ModelT] | AbstractSyncRepository[ModelT]:
         kwargs["request"] = request
         return self.repository_type(**kwargs)
 
-    async def create_instance(self, data: ModelT, request: Request[Any, Any, Any]) -> ModelT:
-        result = self.create_repository(request=request).add(data=data)
+    async def create_instance(self, data: DTOData[ModelT], request: Request[Any, Any, Any]) -> ModelT:
+        result = self.create_repository(request=request).add(data=data.as_builtins())
         if isawaitable(result):
             result = await result
         return cast("ModelT", result)
 
-    async def update_instance(self, data: ModelT, request: Request[Any, Any, Any]) -> ModelT:
-        result = self.create_repository(request=request).update(data=data)
+    async def update_instance(self, data: DTOData[ModelT], request: Request[Any, Any, Any]) -> ModelT:
+        result = self.create_repository(request=request).update(data=data.as_builtins())
         if isawaitable(result):
             result = await result
         return cast("ModelT", result)
@@ -217,14 +317,14 @@ class GenericController(Controller, Generic[ModelT]):
             result = await result
         return cast("ModelT", result)
 
-    async def create_many(self, data: List[ModelT], request: Request[Any, Any, Any]) -> List[ModelT]:
-        result = self.create_repository(request=request).add_many(data)
+    async def create_many(self, data: List[DTOData[ModelT]], request: Request[Any, Any, Any]) -> List[ModelT]:
+        result = self.create_repository(request=request).add_many([datum.as_builtins() for datum in data])
         if isawaitable(result):
             result = await result
         return cast("list[ModelT]", result)
 
-    async def update_many(self, data: List[ModelT], request: Request[Any, Any, Any]) -> List[ModelT]:
-        result = self.create_repository(request=request).update_many(data=data)
+    async def update_many(self, data: List[DTOData[ModelT]], request: Request[Any, Any, Any]) -> List[ModelT]:
+        result = self.create_repository(request=request).update_many(data=[datum.as_builtins() for datum in data])
         if isawaitable(result):
             result = await result
         return cast("list[ModelT]", result)
