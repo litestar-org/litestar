@@ -17,6 +17,7 @@ from litestar.testing import create_test_client
 from litestar.types import Method
 from tests import VanillaDataClassPerson, VanillaDataClassPersonFactory
 
+
 def _get_generic_handlers(
     app: Litestar, controller_type: type[GenericController]
 ) -> dict[str, dict[Method, HTTPRouteHandler]]:
@@ -29,10 +30,10 @@ class PersonRepository(AbstractAsyncRepository[VanillaDataClassPerson]):
         self.request = kwargs.pop("request", None)
         super().__init__()
 
-    async def add_many(self, data: list[dict[str, Any]]) -> list[VanillaDataClassPerson]:
+    async def add_many(self, data: list[dict[str, Any]]) -> list[VanillaDataClassPerson]:  # type: ignore[override]
         return [VanillaDataClassPersonFactory.build(**datum) for datum in data]
 
-    async def add(self, data: dict[str, Any]) -> VanillaDataClassPerson:
+    async def add(self, data: dict[str, Any]) -> VanillaDataClassPerson:  # type: ignore[override]
         return VanillaDataClassPersonFactory.build(**data)
 
     async def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
@@ -59,17 +60,17 @@ class PersonRepository(AbstractAsyncRepository[VanillaDataClassPerson]):
     async def get_one_or_none(self, **kwargs: Any) -> VanillaDataClassPerson | None:
         return VanillaDataClassPersonFactory.build(**kwargs)
 
-    async def update(self, data: dict[str, Any]) -> VanillaDataClassPerson:
+    async def update(self, data: dict[str, Any], **kwargs: Any) -> VanillaDataClassPerson:  # type: ignore[override]
         return VanillaDataClassPersonFactory.build(**data)
 
-    async def update_many(self, data: list[dict[str, Any]]) -> list[VanillaDataClassPerson]:
+    async def update_many(self, data: list[dict[str, Any]], **kwargs: Any) -> list[VanillaDataClassPerson]:  # type: ignore[override]
         return [VanillaDataClassPersonFactory.build(**datum) for datum in data]
 
-    async def upsert(self, data: VanillaDataClassPerson) -> VanillaDataClassPerson:
-        return VanillaDataClassPersonFactory.build(**asdict(data))
+    async def upsert(self, data: dict[str, Any], **kwargs: Any) -> VanillaDataClassPerson:  # type: ignore[override]
+        return VanillaDataClassPersonFactory.build(**data)
 
-    async def upsert_many(self, data: list[VanillaDataClassPerson]) -> list[VanillaDataClassPerson]:
-        return [VanillaDataClassPersonFactory.build(**asdict(datum)) for datum in data]
+    async def upsert_many(self, data: list[dict[str, Any]], **kwargs: Any) -> list[VanillaDataClassPerson]:  # type: ignore[override]
+        return [VanillaDataClassPersonFactory.build(**datum) for datum in data]
 
     async def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[list[VanillaDataClassPerson], int]:
         return VanillaDataClassPersonFactory.batch(size=5, **kwargs), 5
@@ -246,126 +247,139 @@ def test_schema_generation() -> None:
     assert generic_controller_base_paths
     assert generic_controller_base_paths == {
         "get": {
-            "deprecated": False,
+            "summary": "GetMany",
             "operationId": "getManyVanillaDataClassPerson",
             "parameters": [
                 {
+                    "name": "item_ids",
+                    "in": "query",
+                    "schema": {"items": {"type": "string"}, "type": "array"},
+                    "required": True,
+                    "deprecated": False,
                     "allowEmptyValue": False,
                     "allowReserved": False,
-                    "deprecated": False,
-                    "in": "query",
-                    "name": "item_ids",
-                    "required": True,
-                    "schema": {"items": {"type": "string"}, "type": "array"},
                 }
             ],
             "responses": {
                 "200": {
+                    "description": "Request fulfilled, document follows",
+                    "headers": {},
                     "content": {
                         "application/json": {
                             "schema": {
-                                "items": {"$ref": "#/components/schemas/VanillaDataClassPerson"},
+                                "items": {"$ref": "#/components/schemas/GetManyVanillaDataClassPersonResponseBody"},
                                 "type": "array",
                             }
                         }
                     },
-                    "description": "Request fulfilled, document follows",
-                    "headers": {},
                 },
                 "400": {
+                    "description": "Bad request syntax or unsupported method",
                     "content": {
                         "application/json": {
                             "schema": {
-                                "description": "Validation Exception",
-                                "examples": [{"detail": "Bad Request", "extra": {}, "status_code": 400}],
                                 "properties": {
+                                    "status_code": {"type": "integer"},
                                     "detail": {"type": "string"},
                                     "extra": {"additionalProperties": {}, "type": ["null", "object", "array"]},
-                                    "status_code": {"type": "integer"},
                                 },
-                                "required": ["detail", "status_code"],
                                 "type": "object",
+                                "required": ["detail", "status_code"],
+                                "description": "Validation Exception",
+                                "examples": [{"status_code": 400, "detail": "Bad Request", "extra": {}}],
                             }
                         }
                     },
-                    "description": "Bad request syntax or unsupported method",
                 },
             },
-            "summary": "GetMany",
-        },
-        "patch": {
             "deprecated": False,
-            "operationId": "updateVanillaDataClassPerson",
-            "requestBody": {
-                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/VanillaDataClassPerson"}}},
-                "required": True,
-            },
-            "responses": {
-                "200": {
-                    "content": {
-                        "application/json": {"schema": {"$ref": "#/components/schemas/VanillaDataClassPerson"}}
-                    },
-                    "description": "Request fulfilled, document follows",
-                    "headers": {},
-                },
-                "400": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "description": "Validation Exception",
-                                "examples": [{"detail": "Bad Request", "extra": {}, "status_code": 400}],
-                                "properties": {
-                                    "detail": {"type": "string"},
-                                    "extra": {"additionalProperties": {}, "type": ["null", "object", "array"]},
-                                    "status_code": {"type": "integer"},
-                                },
-                                "required": ["detail", "status_code"],
-                                "type": "object",
-                            }
-                        }
-                    },
-                    "description": "Bad request syntax or unsupported method",
-                },
-            },
-            "summary": "UpdateInstance",
         },
         "post": {
-            "deprecated": False,
+            "summary": "CreateInstance",
             "operationId": "createVanillaDataClassPerson",
             "requestBody": {
-                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/VanillaDataClassPerson"}}},
+                "content": {
+                    "application/json": {
+                        "schema": {"$ref": "#/components/schemas/CreateInstanceVanillaDataClassPersonRequestBody"}
+                    }
+                },
                 "required": True,
             },
             "responses": {
                 "201": {
-                    "content": {
-                        "application/json": {"schema": {"$ref": "#/components/schemas/VanillaDataClassPerson"}}
-                    },
                     "description": "Document created, URL follows",
                     "headers": {},
+                    "content": {
+                        "application/json": {
+                            "schema": {"$ref": "#/components/schemas/CreateInstanceVanillaDataClassPersonResponseBody"}
+                        }
+                    },
                 },
                 "400": {
+                    "description": "Bad request syntax or unsupported method",
                     "content": {
                         "application/json": {
                             "schema": {
-                                "description": "Validation Exception",
-                                "examples": [{"detail": "Bad Request", "extra": {}, "status_code": 400}],
                                 "properties": {
+                                    "status_code": {"type": "integer"},
                                     "detail": {"type": "string"},
                                     "extra": {"additionalProperties": {}, "type": ["null", "object", "array"]},
-                                    "status_code": {"type": "integer"},
                                 },
-                                "required": ["detail", "status_code"],
                                 "type": "object",
+                                "required": ["detail", "status_code"],
+                                "description": "Validation Exception",
+                                "examples": [{"status_code": 400, "detail": "Bad Request", "extra": {}}],
                             }
                         }
                     },
-                    "description": "Bad request syntax or unsupported method",
                 },
             },
-            "summary": "CreateInstance",
+            "deprecated": False,
+        },
+        "patch": {
+            "summary": "UpdateInstance",
+            "operationId": "updateVanillaDataClassPerson",
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {"$ref": "#/components/schemas/UpdateInstanceVanillaDataClassPersonRequestBody"}
+                    }
+                },
+                "required": True,
+            },
+            "responses": {
+                "200": {
+                    "description": "Request fulfilled, document follows",
+                    "headers": {},
+                    "content": {
+                        "application/json": {
+                            "schema": {"$ref": "#/components/schemas/UpdateInstanceVanillaDataClassPersonResponseBody"}
+                        }
+                    },
+                },
+                "400": {
+                    "description": "Bad request syntax or unsupported method",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "status_code": {"type": "integer"},
+                                    "detail": {"type": "string"},
+                                    "extra": {"additionalProperties": {}, "type": ["null", "object", "array"]},
+                                },
+                                "type": "object",
+                                "required": ["detail", "status_code"],
+                                "description": "Validation Exception",
+                                "examples": [{"status_code": 400, "detail": "Bad Request", "extra": {}}],
+                            }
+                        }
+                    },
+                },
+            },
+            "deprecated": False,
         },
     }
+
     generic_controller_bulk_create_paths = paths.get("/generic-controller/bulk-create")
     assert generic_controller_bulk_create_paths
     assert generic_controller_bulk_create_paths == {
@@ -375,7 +389,10 @@ def test_schema_generation() -> None:
             "requestBody": {
                 "content": {
                     "application/json": {
-                        "schema": {"items": {"$ref": "#/components/schemas/VanillaDataClassPerson"}, "type": "array"}
+                        "schema": {
+                            "items": {"$ref": "#/components/schemas/CreateManyVanillaDataClassPersonRequestBody"},
+                            "type": "array",
+                        }
                     }
                 },
                 "required": True,
@@ -387,7 +404,7 @@ def test_schema_generation() -> None:
                     "content": {
                         "application/json": {
                             "schema": {
-                                "items": {"$ref": "#/components/schemas/VanillaDataClassPerson"},
+                                "items": {"$ref": "#/components/schemas/CreateManyVanillaDataClassPersonResponseBody"},
                                 "type": "array",
                             }
                         }
@@ -438,7 +455,9 @@ def test_schema_generation() -> None:
                     "description": "Request fulfilled, document follows",
                     "headers": {},
                     "content": {
-                        "application/json": {"schema": {"$ref": "#/components/schemas/VanillaDataClassPerson"}}
+                        "application/json": {
+                            "schema": {"$ref": "#/components/schemas/GetInstanceVanillaDataClassPersonResponseBody"}
+                        }
                     },
                 },
                 "400": {
@@ -552,7 +571,10 @@ def test_schema_generation() -> None:
             "requestBody": {
                 "content": {
                     "application/json": {
-                        "schema": {"items": {"$ref": "#/components/schemas/VanillaDataClassPerson"}, "type": "array"}
+                        "schema": {
+                            "items": {"$ref": "#/components/schemas/UpdateManyVanillaDataClassPersonRequestBody"},
+                            "type": "array",
+                        }
                     }
                 },
                 "required": True,
@@ -564,7 +586,7 @@ def test_schema_generation() -> None:
                     "content": {
                         "application/json": {
                             "schema": {
-                                "items": {"$ref": "#/components/schemas/VanillaDataClassPerson"},
+                                "items": {"$ref": "#/components/schemas/UpdateManyVanillaDataClassPersonResponseBody"},
                                 "type": "array",
                             }
                         }

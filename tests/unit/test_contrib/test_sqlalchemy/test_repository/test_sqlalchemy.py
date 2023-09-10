@@ -212,7 +212,7 @@ async def test_sqlalchemy_repo_add_many(
     monkeypatch.setattr(mock_repo, "model_type", UUIDModel)
     mocker.patch.object(mock_repo.session, "scalars", return_value=mock_instances)
 
-    instances = await maybe_async(mock_repo.add_many(mock_instances))
+    instances = await maybe_async(mock_repo.add_many(mock_instances))  # type: ignore
 
     assert len(instances) == 3
     for row in instances:
@@ -242,7 +242,7 @@ async def test_sqlalchemy_repo_update_many(
     monkeypatch.setattr(mock_repo, "model_type", UUIDModel)
     mocker.patch.object(mock_repo.session, "scalars", return_value=mock_instances)
 
-    instances = await maybe_async(mock_repo.update_many(mock_instances))
+    instances = await maybe_async(mock_repo.update_many(mock_instances))  # type: ignore
 
     assert len(instances) == 3
     for row in instances:
@@ -288,7 +288,7 @@ async def test_sqlalchemy_repo_delete_many_uuid(
     monkeypatch.setattr(mock_repo, "model_type", UUIDModel)
     monkeypatch.setattr(mock_repo.session.bind.dialect, "insertmanyvalues_max_parameters", 2)
 
-    added_instances = await maybe_async(mock_repo.add_many(mock_instances))
+    added_instances = await maybe_async(mock_repo.add_many(mock_instances))  # type: ignore
     instances = await maybe_async(mock_repo.delete_many([obj.id for obj in added_instances]))
 
     assert len(instances) == len(mock_instances)
@@ -318,7 +318,7 @@ async def test_sqlalchemy_repo_delete_many_bigint(
     monkeypatch.setattr(mock_repo, "model_type", BigIntModel)
     monkeypatch.setattr(mock_repo.session.bind.dialect, "insertmanyvalues_max_parameters", 2)
 
-    added_instances = await maybe_async(mock_repo.add_many(mock_instances))
+    added_instances = await maybe_async(mock_repo.add_many(mock_instances))  # type: ignore
     instances = await maybe_async(mock_repo.delete_many([obj.id for obj in added_instances]))
 
     assert len(instances) == len(mock_instances)

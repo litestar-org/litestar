@@ -161,7 +161,7 @@ async def test_sets_updated_on_update(author_repository: AuthorRepository) -> No
     necessary."""
 
     instance = next(iter(author_repository.collection.values()))
-    original_updated = instance.updated_at
+    original_updated = instance.updated_at  # type: ignore
     instance = await maybe_async(author_repository.update(instance))
     assert instance.updated_at > original_updated
 

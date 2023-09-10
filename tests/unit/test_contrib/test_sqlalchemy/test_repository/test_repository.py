@@ -721,7 +721,7 @@ async def test_repo_update_many_method(author_repo: AuthorRepository) -> None:
     objs = await maybe_async(author_repo.list())
     for idx, obj in enumerate(objs):
         obj.name = f"Update {idx}"
-    objs = await maybe_async(author_repo.update_many(objs))
+    objs = await maybe_async(author_repo.update_many(objs))  # type: ignore
     for obj in objs:
         assert obj.name.startswith("Update")
 
@@ -758,7 +758,7 @@ async def test_repo_delete_method(author_repo: AuthorRepository, first_author_id
 
 async def test_repo_delete_many_method(author_repo: AuthorRepository, author_model: AuthorModel) -> None:
     data_to_insert = [author_model(name="author name %d" % chunk) for chunk in range(2000)]
-    _ = await maybe_async(author_repo.add_many(data_to_insert))
+    _ = await maybe_async(author_repo.add_many(data_to_insert))  # type: ignore
     all_objs = await maybe_async(author_repo.list())
     ids_to_delete = [existing_obj.id for existing_obj in all_objs]
     objs = await maybe_async(author_repo.delete_many(ids_to_delete))

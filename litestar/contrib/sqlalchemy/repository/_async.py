@@ -91,9 +91,9 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             raise ValueError("Session improperly configure")
         self._dialect = self.session.bind.dialect
 
-    async def add(
+    async def add(  # type: ignore[override]
         self,
-        data: ModelT,
+        data: ModelT | dict[str, Any],
         auto_commit: bool | None = None,
         auto_expunge: bool | None = None,
         auto_refresh: bool | None = None,
@@ -119,9 +119,9 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             self._expunge(instance, auto_expunge=auto_expunge)
             return instance
 
-    async def add_many(
+    async def add_many(  # type: ignore[override]
         self,
-        data: list[ModelT],
+        data: list[ModelT | dict[str, Any]],
         auto_commit: bool | None = None,
         auto_expunge: bool | None = None,
     ) -> list[ModelT]:
@@ -138,11 +138,11 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             The added instances.
         """
         with wrap_sqlalchemy_exception():
-            self.session.add_all(data)
+            self.session.add_all([self.model_type(**datum) if isinstance(datum, dict) else datum for datum in data])
             await self._flush_or_commit(auto_commit=auto_commit)
             for datum in data:
                 self._expunge(datum, auto_expunge=auto_expunge)
-            return data
+            return [self.model_type(**datum) if isinstance(datum, dict) else datum for datum in data]
 
     async def delete(
         self,
@@ -465,9 +465,9 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         results = await self._execute(statement)
         return results.scalar_one()  # type: ignore
 
-    async def update(
+    async def update(  #   type: ignore[override]
         self,
-        data: ModelT,
+        data: ModelT | dict[str, Any],
         attribute_names: Iterable[str] | None = None,
         with_for_update: bool | None = None,
         auto_commit: bool | None = None,
@@ -515,9 +515,9 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             self._expunge(instance, auto_expunge=auto_expunge)
             return instance
 
-    async def update_many(
+    async def update_many(  #   type: ignore[override]
         self,
-        data: list[ModelT],
+        data: list[ModelT | dict[str, Any]],
         auto_commit: bool | None = None,
         auto_expunge: bool | None = None,
     ) -> list[ModelT]:
@@ -560,7 +560,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                 return instances
             await self.session.execute(statement, data_to_update)
             await self._flush_or_commit(auto_commit=auto_commit)
-            return data
+            return [self.model_type(**datum) if isinstance(datum, dict) else datum for datum in data]
 
     @staticmethod
     def _get_update_many_statement(model_type: type[ModelT], supports_returning: bool) -> StatementLambdaElement:
@@ -601,11 +601,15 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             return await self._list_and_count_basic(*filters, auto_expunge=auto_expunge, statement=statement, **kwargs)
         return await self._list_and_count_window(*filters, auto_expunge=auto_expunge, statement=statement, **kwargs)
 
-    def _expunge(self, instance: ModelT, auto_expunge: bool | None) -> None:
+    def _expunge(self, instance: ModelT | dict[str, Any], auto_expunge: bool | None) -> None:
         if auto_expunge is None:
             auto_expunge = self.auto_expunge
 
-        return self.session.expunge(instance) if auto_expunge else None
+        return (
+            self.session.expunge(self.model_type(**instance) if isinstance(instance, dict) else instance)
+            if auto_expunge
+            else None
+        )
 
     async def _flush_or_commit(self, auto_commit: bool | None) -> None:
         if auto_commit is None:
@@ -705,9 +709,9 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         statement += lambda s: s.order_by(None)
         return statement
 
-    async def upsert(
+    async def upsert(  #   type: ignore[override]
         self,
-        data: ModelT,
+        data: ModelT | dict[str, Any],
         attribute_names: Iterable[str] | None = None,
         with_for_update: bool | None = None,
         auto_expunge: bool | None = None,
@@ -749,9 +753,9 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             self._expunge(instance, auto_expunge=auto_expunge)
             return instance
 
-    async def upsert_many(
+    async def upsert_many(  #   type: ignore[override]
         self,
-        data: list[ModelT],
+        data: list[ModelT | dict[str, Any]],
         attribute_names: Iterable[str] | None = None,
         with_for_update: bool | None = None,
         auto_expunge: bool | None = None,
@@ -864,11 +868,13 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             return text("SELECT 1 FROM DUAL")
         return text("SELECT 1")
 
-    async def _attach_to_session(self, model: ModelT, strategy: Literal["add", "merge"] = "add") -> ModelT:
+    async def _attach_to_session(
+        self, data: ModelT | dict[str, Any], strategy: Literal["add", "merge"] = "add"
+    ) -> ModelT:
         """Attach detached instance to the session.
 
         Args:
-            model: The instance to be attached to the session.
+            data: The instance to be attached to the session.
             strategy: How the instance should be attached.
                 - "add": New instance added to session
                 - "merge": Instance merged with existing, or new one added.
@@ -877,11 +883,15 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             Instance attached to the session - if `"merge"` strategy, may not be same instance
             that was provided.
         """
+        model = self.model_type(**data) if isinstance(data, dict) else data
+
         if strategy == "add":
             self.session.add(model)
             return model
+
         if strategy == "merge":
             return await self.session.merge(model)
+
         raise ValueError("Unexpected value for `strategy`, must be `'add'` or `'merge'`")
 
     async def _execute(self, statement: Select[Any] | StatementLambdaElement) -> Result[Any]:

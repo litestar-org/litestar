@@ -118,7 +118,7 @@ def test_create_ws_route_handlers(
         assert ws.receive_json(mode=socket_send_mode, timeout=2) == ["foo"]
 
 
-@pytest.mark.flaky(reruns=5)
+@pytest.mark.flaky(reruns=10)
 async def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, Sequence, TypeVar
 
 from litestar.repository.exceptions import NotFoundError
 
@@ -19,6 +19,7 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
 
     model_type: type[T]
     """Type of object represented by the repository."""
+
     id_attribute: Any = "id"
     """Name of the primary identifying attribute on :attr:`model_type`."""
 
@@ -27,22 +28,24 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         super().__init__(**kwargs)
 
     @abstractmethod
-    def add(self, data: T) -> T:
+    def add(self, data: T | dict[str, Any], **kwargs: Any) -> T:
         """Add ``data`` to the collection.
 
         Args:
-            data: Instance to be added to the collection.
+            data: Instance or dictionary of values to be created.
+            **kwargs: Additional arguments.
 
         Returns:
             The added instance.
         """
 
     @abstractmethod
-    def add_many(self, data: list[T]) -> list[T]:
+    def add_many(self, data: Sequence[T | dict[str, Any]], **kwargs: Any) -> Sequence[T]:
         """Add multiple ``data`` to the collection.
 
         Args:
-            data: Instances to be added to the collection.
+            data: Sequence of instances or dictionaries to be created.
+            **kwargs: Additional arguments.
 
         Returns:
             The added instances.
@@ -150,12 +153,12 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def update(self, data: T) -> T:
+    def update(self, data: T | dict[str, Any], **kwargs: Any) -> T:
         """Update instance with the attribute values present on ``data``.
 
         Args:
-            data: An instance that should have a value for :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` that exists in the
-                collection.
+            data: An instance or dictionary of values to update.
+            **kwargs: Additional arguments
 
         Returns:
             The updated instance.
@@ -165,12 +168,12 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def update_many(self, data: list[T]) -> list[T]:
+    def update_many(self, data: list[T | dict[str, Any]], **kwargs: Any) -> list[T]:
         """Update multiple instances with the attribute values present on instances in ``data``.
 
         Args:
-            data: A list of instance that should have a value for :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` that exists in the
-                collection.
+            data: A list of instances or dictionaries to update.
+            **kwargs: Additional arguments
 
         Returns:
             a list of the updated instances.
@@ -180,7 +183,7 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def upsert(self, data: T) -> T:
+    def upsert(self, data: T | dict[str, Any], **kwargs: Any) -> T:
         """Update or create instance.
 
         Updates instance with the attribute values present on ``data``, or creates a new instance if
@@ -190,6 +193,7 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
             data: Instance to update existing, or be created. Identifier used to determine if an
                 existing instance exists is the value of an attribute on ``data`` named as value of
                 :attr:`id_attribute <AbstractAsyncRepository.id_attribute>`.
+            **kwargs: Additional arguments
 
         Returns:
             The updated or created instance.
@@ -199,7 +203,7 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def upsert_many(self, data: list[T]) -> list[T]:
+    def upsert_many(self, data: list[T | dict[str, Any]], **kwargs: Any) -> list[T]:
         """Update or create multiple instances.
 
         Update instances with the attribute values present on ``data``, or create a new instance if
@@ -209,6 +213,7 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
             data: Instances to update or created. Identifier used to determine if an
                 existing instance exists is the value of an attribute on ``data`` named as value of
                 :attr:`id_attribute <AbstractAsyncRepository.id_attribute>`.
+            **kwargs: Additional arguments
 
         Returns:
             The updated or created instances.
@@ -260,22 +265,22 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
             RepositoryError: if a named attribute doesn't exist on :attr:`model_type <AbstractAsyncRepository.model_type>`.
         """
 
-    @staticmethod
-    def check_not_found(item_or_none: T | None) -> T:
+    def check_not_found(self, item: T | dict[str, Any] | None) -> T:
         """Raise :class:`NotFoundError` if ``item_or_none`` is ``None``.
 
         Args:
-            item_or_none: Item (:class:`T <T>`) to be tested for existence.
+            item: Item (:class:`T <T>`) to be tested for existence.
 
         Returns:
             The item, if it exists.
         """
-        if item_or_none is None:
+        if item is None:
             raise NotFoundError("No item found when one was expected")
-        return item_or_none
+
+        return self.model_type(**item) if isinstance(item, dict) else item
 
     @classmethod
-    def get_id_attribute_value(cls, item: T | type[T], id_attribute: str | None = None) -> Any:
+    def get_id_attribute_value(cls, item: T | type[T] | dict[str, Any], id_attribute: str | None = None) -> Any:
         """Get value of attribute named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` on ``item``.
 
         Args:
@@ -286,10 +291,16 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         Returns:
             The value of attribute on ``item`` named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>`.
         """
-        return getattr(item, id_attribute if id_attribute is not None else cls.id_attribute)
+        return (
+            getattr(item, id_attribute or cls.id_attribute)
+            if not isinstance(item, dict)
+            else item.get(id_attribute or cls.id_attribute)
+        )
 
     @classmethod
-    def set_id_attribute_value(cls, item_id: Any, item: T, id_attribute: str | None = None) -> T:
+    def set_id_attribute_value(
+        cls, item_id: Any, item: T | dict[str, Any], id_attribute: str | None = None
+    ) -> T | dict[str, Any]:
         """Return the ``item`` after the ID is set to the appropriate attribute.
 
         Args:
@@ -301,5 +312,8 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         Returns:
             Item with ``item_id`` set to :attr:`id_attribute <AbstractAsyncRepository.id_attribute>`
         """
-        setattr(item, id_attribute if id_attribute is not None else cls.id_attribute, item_id)
+        if isinstance(item, dict):
+            item[id_attribute or cls.id_attribute] = item_id
+        else:
+            setattr(item, id_attribute or cls.id_attribute, item_id)
         return item

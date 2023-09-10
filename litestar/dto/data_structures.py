@@ -30,8 +30,10 @@ class DTOData(Generic[T]):
             **kwargs: Additional data to create the instance with. Takes precedence over DTO validated data.
         """
         data = dict(self._data_as_builtins)
+
         for k, v in kwargs.items():
             _set_nested_dict_value(data, k.split("__"), v)
+
         return self._backend.transfer_data_from_builtins(  # type:ignore[no-any-return]
             data, override_serialization_name=True
         )

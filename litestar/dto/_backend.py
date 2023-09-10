@@ -27,7 +27,8 @@ from litestar.enums import RequestEncodingType
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils.typing import safe_generic_origin_map
+from litestar.utils import is_non_string_sequence
+from litestar.utils.typing import get_safe_generic_origin, safe_generic_origin_map
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
@@ -45,6 +46,7 @@ class DTOBackend:
         "field_definition",
         "handler_id",
         "is_data_field",
+        "is_dto_data_sequence",
         "model_type",
         "override_serialization_name",
         "parsed_field_definitions",
@@ -87,12 +89,23 @@ class DTOBackend:
         self.transfer_model_type = self.create_transfer_model_type(
             model_name=model_type.__name__, field_definitions=self.parsed_field_definitions
         )
-        self.dto_data_type: type[DTOData] | None = None
-
         self.override_serialization_name: bool = False
+        self.is_dto_data_sequence: bool = False
+
+        self.dto_data_type: type[DTOData] | None = None
         if field_definition.is_subclass_of(DTOData):
             self.dto_data_type = field_definition.annotation
             annotation = self.field_definition.inner_types[0].annotation
+        elif (
+            field_definition.is_non_string_sequence
+            and field_definition.inner_types
+            and field_definition.inner_types[0].is_subclass_of(DTOData)
+        ):
+            self.is_dto_data_sequence = True
+            inner_field = field_definition.inner_types[0]
+            self.dto_data_type = inner_field.annotation
+            origin_type = get_safe_generic_origin(field_definition.origin, inner_field.inner_types[0].annotation)
+            annotation = origin_type[inner_field.inner_types[0].annotation]
         else:
             annotation = field_definition.annotation
 
@@ -225,29 +238,53 @@ class DTOBackend:
             str_keys=True,
         )
 
-    def populate_data_from_builtins(self, builtins: Any, asgi_connection: ASGIConnection) -> Any:
-        """Populate model instance from builtin types.
+    def populate_data(self, data: Any, asgi_connection: ASGIConnection) -> Any:
+        """Parse arbitrary data into an instance of `model_type`.
 
         Args:
-            builtins: Builtin type.
+            data: Arbitrary data
             asgi_connection: The current ASGI Connection
 
         Returns:
             Instance or collection of ``model_type`` instances.
         """
-        if self.dto_data_type:
-            return self.dto_data_type(
-                backend=self,
-                data_as_builtins=_transfer_data(
-                    destination_type=dict,
-                    source_data=self.parse_builtins(builtins, asgi_connection),
-                    field_definitions=self.parsed_field_definitions,
-                    field_definition=self.field_definition,
-                    is_data_field=self.is_data_field,
-                    override_serialization_name=self.override_serialization_name,
-                ),
-            )
-        return self.transfer_data_from_builtins(self.parse_builtins(builtins, asgi_connection))
+        destination_type: Any = dict if self.dto_data_type else self.model_type
+        parsed_data = (
+            self.parse_raw(data, asgi_connection)
+            if isinstance(data, bytes)
+            else self.parse_builtins(data, asgi_connection)
+        )
+
+        if self.dto_data_type and self.is_dto_data_sequence and is_non_string_sequence(type(parsed_data)):
+            return [
+                self.dto_data_type(
+                    backend=self,
+                    data_as_builtins=_transfer_data(
+                        destination_type=destination_type,
+                        source_data=datum,
+                        field_definitions=self.parsed_field_definitions,
+                        field_definition=self.field_definition.inner_types[0],
+                        is_data_field=self.is_data_field,
+                        override_serialization_name=self.override_serialization_name,
+                    ),
+                )
+                for datum in parsed_data  # pyright: ignore
+            ]
+
+        transferred_data = _transfer_data(
+            destination_type=destination_type,
+            source_data=parsed_data,
+            field_definitions=self.parsed_field_definitions,
+            field_definition=self.field_definition,
+            is_data_field=self.is_data_field,
+            override_serialization_name=self.override_serialization_name,
+        )
+
+        return (
+            self.dto_data_type(backend=self, data_as_builtins=transferred_data)
+            if self.dto_data_type
+            else transferred_data
+        )
 
     def transfer_data_from_builtins(self, builtins: Any, override_serialization_name: bool = False) -> Any:
         """Populate model instance from builtin types.
@@ -271,37 +308,6 @@ class DTOBackend:
         )
         self.override_serialization_name = False
         return data
-
-    def populate_data_from_raw(self, raw: bytes, asgi_connection: ASGIConnection) -> Any:
-        """Parse raw bytes into instance of `model_type`.
-
-        Args:
-            raw: bytes
-            asgi_connection: The current ASGI Connection
-
-        Returns:
-            Instance or collection of ``model_type`` instances.
-        """
-        if self.dto_data_type:
-            return self.dto_data_type(
-                backend=self,
-                data_as_builtins=_transfer_data(
-                    destination_type=dict,
-                    source_data=self.parse_raw(raw, asgi_connection),
-                    field_definitions=self.parsed_field_definitions,
-                    field_definition=self.field_definition,
-                    is_data_field=self.is_data_field,
-                    override_serialization_name=self.override_serialization_name,
-                ),
-            )
-        return _transfer_data(
-            destination_type=self.model_type,
-            source_data=self.parse_raw(raw, asgi_connection),
-            field_definitions=self.parsed_field_definitions,
-            field_definition=self.field_definition,
-            is_data_field=self.is_data_field,
-            override_serialization_name=self.override_serialization_name,
-        )
 
     def encode_data(self, data: Any) -> LitestarEncodableType:
         """Encode data into a ``LitestarEncodableType``.
@@ -676,22 +682,18 @@ def _transfer_nested_union_type_data(
     override_serialization_name: bool,
 ) -> Any:
     for inner_type in transfer_type.inner_types:
-        if isinstance(inner_type, CompositeType):
-            raise RuntimeError("Composite inner types not supported for nested unions.")
-
-        if inner_type.nested_field_info and isinstance(
+        if (nested_field_info := getattr(inner_type, "nested_field_info", None)) and isinstance(
             source_value,
-            inner_type.nested_field_info.model if is_data_field else inner_type.field_definition.annotation,
+            nested_field_info.model if is_data_field else inner_type.field_definition.annotation,
         ):
             return _transfer_instance_data(
-                destination_type=inner_type.field_definition.annotation
-                if is_data_field
-                else inner_type.nested_field_info.model,
+                destination_type=inner_type.field_definition.annotation if is_data_field else nested_field_info.model,
                 source_instance=source_value,
-                field_definitions=inner_type.nested_field_info.field_definitions,
+                field_definitions=nested_field_info.field_definitions,
                 is_data_field=is_data_field,
                 override_serialization_name=override_serialization_name,
             )
+
     return source_value
 
 

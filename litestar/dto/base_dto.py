@@ -87,13 +87,13 @@ class AbstractDTO(Generic[T]):
         """Decode a dictionary of Python values into an the DTO's datatype."""
 
         backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["data_backend"]  # pyright: ignore
-        return backend.populate_data_from_builtins(value, self.asgi_connection)
+        return backend.populate_data(value, self.asgi_connection)
 
     def decode_bytes(self, value: bytes) -> Any:
         """Decode a byte string into an the DTO's datatype."""
 
         backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["data_backend"]  # pyright: ignore
-        return backend.populate_data_from_raw(value, self.asgi_connection)
+        return backend.populate_data(value, self.asgi_connection)
 
     def data_to_encodable_type(self, data: T | Collection[T]) -> LitestarEncodableType:
         backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["return_backend"]  # pyright: ignore

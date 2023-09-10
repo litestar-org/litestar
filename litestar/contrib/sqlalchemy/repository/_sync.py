@@ -92,9 +92,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             raise ValueError("Session improperly configure")
         self._dialect = self.session.bind.dialect
 
-    def add(
+    def add(  # type: ignore[override]
         self,
-        data: ModelT,
+        data: ModelT | dict[str, Any],
         auto_commit: bool | None = None,
         auto_expunge: bool | None = None,
         auto_refresh: bool | None = None,
@@ -120,9 +120,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             self._expunge(instance, auto_expunge=auto_expunge)
             return instance
 
-    def add_many(
+    def add_many(  # type: ignore[override]
         self,
-        data: list[ModelT],
+        data: list[ModelT | dict[str, Any]],
         auto_commit: bool | None = None,
         auto_expunge: bool | None = None,
     ) -> list[ModelT]:
@@ -139,11 +139,11 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             The added instances.
         """
         with wrap_sqlalchemy_exception():
-            self.session.add_all(data)
+            self.session.add_all([self.model_type(**datum) if isinstance(datum, dict) else datum for datum in data])
             self._flush_or_commit(auto_commit=auto_commit)
             for datum in data:
                 self._expunge(datum, auto_expunge=auto_expunge)
-            return data
+            return [self.model_type(**datum) if isinstance(datum, dict) else datum for datum in data]
 
     def delete(
         self,
@@ -466,9 +466,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         results = self._execute(statement)
         return results.scalar_one()  # type: ignore
 
-    def update(
+    def update(  #   type: ignore[override]
         self,
-        data: ModelT,
+        data: ModelT | dict[str, Any],
         attribute_names: Iterable[str] | None = None,
         with_for_update: bool | None = None,
         auto_commit: bool | None = None,
@@ -516,9 +516,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             self._expunge(instance, auto_expunge=auto_expunge)
             return instance
 
-    def update_many(
+    def update_many(  #   type: ignore[override]
         self,
-        data: list[ModelT],
+        data: list[ModelT | dict[str, Any]],
         auto_commit: bool | None = None,
         auto_expunge: bool | None = None,
     ) -> list[ModelT]:
@@ -561,7 +561,7 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
                 return instances
             self.session.execute(statement, data_to_update)
             self._flush_or_commit(auto_commit=auto_commit)
-            return data
+            return [self.model_type(**datum) if isinstance(datum, dict) else datum for datum in data]
 
     @staticmethod
     def _get_update_many_statement(model_type: type[ModelT], supports_returning: bool) -> StatementLambdaElement:
@@ -602,11 +602,15 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             return self._list_and_count_basic(*filters, auto_expunge=auto_expunge, statement=statement, **kwargs)
         return self._list_and_count_window(*filters, auto_expunge=auto_expunge, statement=statement, **kwargs)
 
-    def _expunge(self, instance: ModelT, auto_expunge: bool | None) -> None:
+    def _expunge(self, instance: ModelT | dict[str, Any], auto_expunge: bool | None) -> None:
         if auto_expunge is None:
             auto_expunge = self.auto_expunge
 
-        return self.session.expunge(instance) if auto_expunge else None
+        return (
+            self.session.expunge(self.model_type(**instance) if isinstance(instance, dict) else instance)
+            if auto_expunge
+            else None
+        )
 
     def _flush_or_commit(self, auto_commit: bool | None) -> None:
         if auto_commit is None:
@@ -706,9 +710,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
         statement += lambda s: s.order_by(None)
         return statement
 
-    def upsert(
+    def upsert(  #   type: ignore[override]
         self,
-        data: ModelT,
+        data: ModelT | dict[str, Any],
         attribute_names: Iterable[str] | None = None,
         with_for_update: bool | None = None,
         auto_expunge: bool | None = None,
@@ -750,9 +754,9 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             self._expunge(instance, auto_expunge=auto_expunge)
             return instance
 
-    def upsert_many(
+    def upsert_many(  #   type: ignore[override]
         self,
-        data: list[ModelT],
+        data: list[ModelT | dict[str, Any]],
         attribute_names: Iterable[str] | None = None,
         with_for_update: bool | None = None,
         auto_expunge: bool | None = None,
@@ -865,11 +869,11 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             return text("SELECT 1 FROM DUAL")
         return text("SELECT 1")
 
-    def _attach_to_session(self, model: ModelT, strategy: Literal["add", "merge"] = "add") -> ModelT:
+    def _attach_to_session(self, data: ModelT | dict[str, Any], strategy: Literal["add", "merge"] = "add") -> ModelT:
         """Attach detached instance to the session.
 
         Args:
-            model: The instance to be attached to the session.
+            data: The instance to be attached to the session.
             strategy: How the instance should be attached.
                 - "add": New instance added to session
                 - "merge": Instance merged with existing, or new one added.
@@ -878,11 +882,15 @@ class SQLAlchemySyncRepository(AbstractSyncRepository[ModelT], Generic[ModelT]):
             Instance attached to the session - if `"merge"` strategy, may not be same instance
             that was provided.
         """
+        model = self.model_type(**data) if isinstance(data, dict) else data
+
         if strategy == "add":
             self.session.add(model)
             return model
+
         if strategy == "merge":
             return self.session.merge(model)
+
         raise ValueError("Unexpected value for `strategy`, must be `'add'` or `'merge'`")
 
     def _execute(self, statement: Select[Any] | StatementLambdaElement) -> Result[Any]:

@@ -395,7 +395,7 @@ def is_pydantic_constrained_field(
         return False
 
 
-def is_sqlalchemy_model(annotation: Any) -> TypeGuard[sqlalchemy.orm.DeclarativeBase]:
+def is_sqlalchemy_model(annotation: Any) -> TypeGuard[sqlalchemy.orm.DeclarativeBase]:  # pyright: ignore
     """Check if the given annotation is a sqlalchemy model.
 
     Args:

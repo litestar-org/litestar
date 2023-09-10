@@ -224,9 +224,11 @@ class GenericController(Controller, Generic[ModelT]):
     @cached_property
     def _create_dto(self) -> type[AbstractDTO[ModelT]]:
         if self.create_dto is not Empty:
-            return self.create_dto
+            return cast("type[AbstractDTO[ModelT]]", self.create_dto)
 
-        class _CreateDTO(self._dto_type[self.model_type]):
+        dto_type = self._dto_type[self.model_type]  # type: ignore[index]
+
+        class _CreateDTO(dto_type):  # type: ignore[misc,valid-type]
             config = DTOConfig(exclude={self.repository_type.id_attribute}, partial=True)
 
         return _CreateDTO
@@ -234,9 +236,11 @@ class GenericController(Controller, Generic[ModelT]):
     @cached_property
     def _update_dto(self) -> type[AbstractDTO[ModelT]]:
         if self.update_dto is not Empty:
-            return self.update_dto
+            return cast("type[AbstractDTO[ModelT]]", self.update_dto)
 
-        class _UpdateDTO(self._dto_type[self.model_type]):
+        dto_type = self._dto_type[self.model_type]  # type: ignore[index]
+
+        class _UpdateDTO(dto_type):  # type: ignore[misc,valid-type]
             config = DTOConfig(partial=True)
 
         return _UpdateDTO
@@ -244,7 +248,7 @@ class GenericController(Controller, Generic[ModelT]):
     @cached_property
     def _return_dto(self) -> type[AbstractDTO[ModelT]] | None:
         if self.return_dto is not Empty:
-            return self.return_dto
+            return cast("type[AbstractDTO[ModelT]] | None", self.return_dto)
 
         app = cast("Litestar", self.ownership_layers[0])
         if any(
@@ -254,12 +258,12 @@ class GenericController(Controller, Generic[ModelT]):
             # since there is a serialization plugin in place, a return dto type is not required.
             return None
 
-        return self._dto_type[self.model_type]
+        return cast("type[AbstractDTO[ModelT]]", self._dto_type[self.model_type])  # type: ignore[index]
 
     @cached_property
     def _dto_type(self) -> type[AbstractDTO]:
         if self.dto_type is not Empty:
-            return self.dto_type
+            return cast("type[AbstractDTO]", self.dto_type)
         if is_dataclass(self.model_type):
             return DataclassDTO
         if is_struct_class(self.model_type):

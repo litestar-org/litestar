@@ -33,7 +33,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
     Uses a :class:`dict` for storage.
     """
 
-    collection: MutableMapping[Hashable, ModelT]
+    collection: MutableMapping[Hashable, ModelT | dict[str, Any]]
     model_type: type[ModelT]
     match_fields: list[str] | str | None = None
 
@@ -67,45 +67,59 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
         )
 
     def _find_or_raise_not_found(self, item_id: Any) -> ModelT:
-        return self.check_not_found(self.collection.get(item_id))
+        data = self.check_not_found(self.collection.get(item_id))
+        return self.model_type(**data) if isinstance(data, dict) else data
 
     def _find_or_none(self, item_id: Any) -> ModelT | None:
-        return self.collection.get(item_id)
+        if data := self.collection.get(item_id):
+            return self.model_type(**data) if isinstance(data, dict) else data
+        return None
 
     def _now(self) -> datetime:
         return datetime.now(tz=self.tz).replace(tzinfo=None)
 
-    def _update_audit_attributes(self, data: ModelT, now: datetime | None = None, do_created: bool = False) -> ModelT:
+    def _update_audit_attributes(
+        self, data: ModelT | dict[str, Any], now: datetime | None = None, do_created: bool = False
+    ) -> ModelT | dict[str, Any]:
         now = now or self._now()
         if self._model_has_updated_at:
-            data.updated_at = now  # type:ignore[attr-defined]
-            if do_created:
-                data.created_at = now  # type:ignore[attr-defined]
+            if isinstance(data, dict):
+                data["updated_at"] = now
+                if do_created:
+                    data["created_at"] = now
+            else:
+                setattr(data, "updated_at", now)
+                if do_created:
+                    setattr(data, "created_at", now)
         return data
 
-    async def add(self, data: ModelT) -> ModelT:
+    async def add(self, data: ModelT | dict[str, Any], **kwargs: Any) -> ModelT:
         """Add ``data`` to the collection.
 
         Args:
             data: Instance to be added to the collection.
+            **kwargs: Additional arguments.
 
         Returns:
             The added instance.
         """
         if self.allow_ids_on_add is False and self.get_id_attribute_value(data) is not None:
             raise ConflictError("`add()` received identified item.")
+
         self._update_audit_attributes(data, do_created=True)
         if self.allow_ids_on_add is False:
             id_ = self._id_factory()
             self.set_id_attribute_value(id_, data)
-        self.collection[data.id] = data
-        return data
 
-    async def add_many(self, data: Iterable[ModelT]) -> list[ModelT]:
+        self.collection[self.get_id_attribute_value(data)] = data
+        return self.model_type(**data) if isinstance(data, dict) else data
+
+    async def add_many(self, data: Iterable[ModelT | dict[str, Any]], **kwargs: Any) -> list[ModelT]:
         """Add multiple ``data`` to the collection.
 
         Args:
             data: Instance to be added to the collection.
+            **kwargs: Additional arguments.
 
         Returns:
             The added instance.
@@ -119,8 +133,9 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
             if self.allow_ids_on_add is False:
                 id_ = self._id_factory()
                 self.set_id_attribute_value(id_, data_row)
-                self.collection[data_row.id] = data_row
-        return list(data)
+                self.collection[self.get_id_attribute_value(data_row)] = data_row
+
+        return [self.model_type(**row) if isinstance(row, dict) else row for row in data]
 
     async def delete(self, item_id: Any) -> ModelT:
         """Delete instance identified by ``item_id``.
@@ -257,12 +272,13 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
         """
         return len(await self.list(*filters, **kwargs))
 
-    async def update(self, data: ModelT) -> ModelT:
+    async def update(self, data: ModelT | dict[str, Any], **kwargs: Any) -> ModelT:
         """Update instance with the attribute values present on ``data``.
 
         Args:
             data: An instance that should have a value for :attr:`id_attribute <AsyncGenericMockRepository.id_attribute>` that exists in the
                 collection.
+            **kwargs: Additional arguments
 
         Returns:
             The updated instance.
@@ -276,12 +292,13 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
             setattr(item, key, val)
         return item
 
-    async def update_many(self, data: list[ModelT]) -> list[ModelT]:
+    async def update_many(self, data: list[ModelT | dict[str, Any]], **kwargs: Any) -> list[ModelT]:
         """Update instances with the attribute values present on ``data``.
 
         Args:
             data: A list of instances that should have a value for :attr:`id_attribute <AsyncGenericMockRepository.id_attribute>`
                 that exists in the collection.
+            **kwargs: Additional arguments
 
         Returns:
             The updated instances.
@@ -297,7 +314,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
                 setattr(item, key, val)
         return items
 
-    async def upsert(self, data: ModelT) -> ModelT:
+    async def upsert(self, data: ModelT | dict[str, Any], **kwargs: Any) -> ModelT:
         """Update or create instance.
 
         Updates instance with the attribute values present on ``data``, or creates a new instance if
@@ -307,6 +324,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
             data: Instance to update existing, or be created. Identifier used to determine if an
                 existing instance exists is the value of an attribute on `data` named as value of
                 :attr:`id_attribute <AsyncGenericMockRepository.id_attribute>`.
+            **kwargs: Additional arguments.
 
         Returns:
             The updated or created instance.
@@ -319,7 +337,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
             return await self.update(data)
         return await self.add(data)
 
-    async def upsert_many(self, data: list[ModelT]) -> list[ModelT]:
+    async def upsert_many(self, data: list[ModelT | dict[str, Any]], **kwargs: Any) -> list[ModelT]:
         """Update or create multiple instance.
 
         Update instance with the attribute values present on ``data``, or create a new instance if
@@ -329,6 +347,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
             data: List of instances to update existing, or be created. Identifier used to determine if an
                 existing instance exists is the value of an attribute on `data` named as value of
                 :attr:`id_attribute <AsyncGenericMockRepository.id_attribute>`.
+            **kwargs: Additional arguments.
 
         Returns:
             The updated or created instances.
@@ -369,7 +388,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
         return list(self.filter_collection_by_kwargs(self.collection, **kwargs).values())
 
     def filter_collection_by_kwargs(  # type:ignore[override]
-        self, collection: MutableMapping[Hashable, ModelT], /, **kwargs: Any
+        self, collection: MutableMapping[Hashable, ModelT | dict[str, Any]], /, **kwargs: Any
     ) -> MutableMapping[Hashable, ModelT]:
         """Filter the collection by kwargs.
 
@@ -380,9 +399,10 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
         """
         new_collection: dict[Hashable, ModelT] = {}
         for item in self.collection.values():
+            model = self.model_type(**item) if isinstance(item, dict) else item
             try:
-                if all(getattr(item, name) == value for name, value in kwargs.items()):
-                    new_collection[item.id] = item
+                if all(getattr(model, name) == value for name, value in kwargs.items()):
+                    new_collection[model.id] = model
             except AttributeError as orig:
                 raise RepositoryError from orig
         return new_collection
@@ -447,7 +467,8 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         )
 
     def _find_or_raise_not_found(self, item_id: Any) -> ModelT:
-        return self.check_not_found(self.collection.get(item_id))
+        data = self.check_not_found(self.collection.get(item_id))
+        return self.model_type(**data) if isinstance(data, dict) else data
 
     def _find_or_none(self, item_id: Any) -> ModelT | None:
         return self.collection.get(item_id)
@@ -455,19 +476,27 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
     def _now(self) -> datetime:
         return datetime.now(tz=self.tz).replace(tzinfo=None)
 
-    def _update_audit_attributes(self, data: ModelT, now: datetime | None = None, do_created: bool = False) -> ModelT:
+    def _update_audit_attributes(
+        self, data: ModelT | dict[str, Any], now: datetime | None = None, do_created: bool = False
+    ) -> ModelT:
         now = now or self._now()
         if self._model_has_updated_at:
-            data.updated_at = now  # type:ignore[attr-defined]
-            if do_created:
-                data.created_at = now  # type:ignore[attr-defined]
-        return data
+            if isinstance(data, dict):
+                data["updated_at"] = now
+                if do_created:
+                    data["created_at"] = now
+            else:
+                setattr(data, "updated_at", now)
+                if do_created:
+                    setattr(data, "created_at", now)
+        return self.model_type(**data) if isinstance(data, dict) else data
 
-    def add(self, data: ModelT) -> ModelT:
+    def add(self, data: ModelT | dict[str, Any], **kwargs: Any) -> ModelT:
         """Add ``data`` to the collection.
 
         Args:
             data: Instance to be added to the collection.
+            **kwargs: Additional arguments.
 
         Returns:
             The added instance.
@@ -478,19 +507,23 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         if self.allow_ids_on_add is False:
             id_ = self._id_factory()
             self.set_id_attribute_value(id_, data)
-        self.collection[data.id] = data
-        return data
 
-    def add_many(self, data: Iterable[ModelT]) -> list[ModelT]:
+        model_instance = self.model_type(**data) if isinstance(data, dict) else data
+        self.collection[model_instance.id] = model_instance
+        return model_instance
+
+    def add_many(self, data: Iterable[ModelT | dict[str, Any]], **kwargs: Any) -> list[ModelT]:
         """Add multiple ``data`` to the collection.
 
         Args:
             data: Instance to be added to the collection.
+            **kwargs: Additional arguments.
 
         Returns:
             The added instance.
         """
         now = self._now()
+        model_instances: list[ModelT] = []
         for data_row in data:
             if self.allow_ids_on_add is False and self.get_id_attribute_value(data_row) is not None:
                 raise ConflictError("`add()` received identified item.")
@@ -499,8 +532,11 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
             if self.allow_ids_on_add is False:
                 id_ = self._id_factory()
                 self.set_id_attribute_value(id_, data_row)
-                self.collection[data_row.id] = data_row
-        return list(data)
+
+            model_instance = self.model_type(**data_row) if isinstance(data_row, dict) else data_row
+            self.collection[model_instance.id] = model_instance
+            model_instances.append(model_instance)
+        return model_instances
 
     def delete(self, item_id: Any) -> ModelT:
         """Delete instance identified by ``item_id``.
@@ -635,12 +671,13 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         """
         return len(self.list(*filters, **kwargs))
 
-    def update(self, data: ModelT) -> ModelT:
+    def update(self, data: ModelT | dict[str, Any], **kwargs: Any) -> ModelT:
         """Update instance with the attribute values present on ``data``.
 
         Args:
             data: An instance that should have a value for :attr:`id_attribute <AsyncGenericMockRepository.id_attribute>` that exists in the
                 collection.
+            **kwargs: Additional arguments.
 
         Returns:
             The updated instance.
@@ -654,12 +691,13 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
             setattr(item, key, val)
         return item
 
-    def update_many(self, data: list[ModelT]) -> list[ModelT]:
+    def update_many(self, data: list[ModelT | dict[str, Any]], **kwargs: Any) -> list[ModelT]:
         """Update instances with the attribute values present on ``data``.
 
         Args:
             data: A list of instances that should have a value for :attr:`id_attribute <AsyncGenericMockRepository.id_attribute>`
                 that exists in the collection.
+            **kwargs: Additional arguments.
 
         Returns:
             The updated instances.
@@ -675,7 +713,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
                 setattr(item, key, val)
         return items
 
-    def upsert(self, data: ModelT) -> ModelT:
+    def upsert(self, data: ModelT | dict[str, Any], **kwargs: Any) -> ModelT:
         """Update or create instance.
 
         Updates instance with the attribute values present on ``data``, or creates a new instance if
@@ -685,6 +723,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
             data: Instance to update existing, or be created. Identifier used to determine if an
                 existing instance exists is the value of an attribute on `data` named as value of
                 :attr:`id_attribute <AsyncGenericMockRepository.id_attribute>`.
+            **kwargs: Additional arguments.
 
         Returns:
             The updated or created instance.
@@ -695,7 +734,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         item_id = self.get_id_attribute_value(data)
         return self.update(data) if item_id in self.collection else self.add(data)
 
-    def upsert_many(self, data: list[ModelT]) -> list[ModelT]:
+    def upsert_many(self, data: list[ModelT | dict[str, Any]], **kwargs: Any) -> list[ModelT]:
         """Update or create multiple instance.
 
         Update instance with the attribute values present on ``data``, or create a new instance if
@@ -705,6 +744,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
             data: List of instances to update existing, or be created. Identifier used to determine if an
                 existing instance exists is the value of an attribute on `data` named as value of
                 :attr:`id_attribute <AsyncGenericMockRepository.id_attribute>`.
+            **kwargs: Additional arguments.
 
         Returns:
             The updated or created instances.

@@ -175,7 +175,7 @@ def test_backend_populate_data_from_builtins(
         wrapper_attribute_name=None,
         is_data_field=True,
     )
-    data = backend.populate_data_from_builtins(builtins=DESTRUCTURED, asgi_connection=asgi_connection)
+    data = backend.populate_data(data=DESTRUCTURED, asgi_connection=asgi_connection)
     assert data == STRUCTURED
 
 
@@ -248,7 +248,7 @@ def test_backend_populate_data_from_raw(
         wrapper_attribute_name=None,
         is_data_field=True,
     )
-    data = backend.populate_data_from_raw(RAW, asgi_connection)
+    data = backend.populate_data(RAW, asgi_connection)
     assert data == STRUCTURED
 
 
@@ -263,7 +263,7 @@ def test_backend_populate_collection_data_from_raw(
         wrapper_attribute_name=None,
         is_data_field=True,
     )
-    data = backend.populate_data_from_raw(COLLECTION_RAW, asgi_connection)
+    data = backend.populate_data(COLLECTION_RAW, asgi_connection)
     assert data == [STRUCTURED]
 
 
