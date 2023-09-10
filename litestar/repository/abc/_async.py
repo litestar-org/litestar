@@ -76,7 +76,7 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def delete_many(self, item_ids: list[Any]) -> list[T]:
+    async def delete_many(self, item_ids: list[Any]) -> Sequence[T]:
         """Delete multiple instances identified by list of IDs ``item_ids``.
 
         Args:
@@ -166,7 +166,7 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def update_many(self, data: list[T | dict[str, Any]], **kwargs: Any) -> list[T]:
+    async def update_many(self, data: list[T | dict[str, Any]], **kwargs: Any) -> Sequence[T]:
         """Update multiple instances with the attribute values present on instances in ``data``.
 
         Args:
@@ -201,7 +201,7 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def upsert_many(self, data: list[T | dict[str, Any]], **kwargs: Any) -> list[T]:
+    async def upsert_many(self, data: list[T | dict[str, Any]], **kwargs: Any) -> Sequence[T]:
         """Update or create multiple instances.
 
         Update instances with the attribute values present on ``data``, or create a new instance if
@@ -221,7 +221,7 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[list[T], int]:
+    async def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[Sequence[T], int]:
         """List records with total count.
 
         Args:
@@ -233,7 +233,7 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[T]:
+    async def list(self, *filters: FilterTypes, **kwargs: Any) -> Sequence[T]:
         """Get a list of instances, optionally filtered.
 
         Args:

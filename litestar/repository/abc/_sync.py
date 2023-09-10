@@ -78,7 +78,7 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def delete_many(self, item_ids: list[Any]) -> list[T]:
+    def delete_many(self, item_ids: list[Any]) -> Sequence[T]:
         """Delete multiple instances identified by list of IDs ``item_ids``.
 
         Args:
@@ -168,7 +168,7 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def update_many(self, data: list[T | dict[str, Any]], **kwargs: Any) -> list[T]:
+    def update_many(self, data: list[T | dict[str, Any]], **kwargs: Any) -> Sequence[T]:
         """Update multiple instances with the attribute values present on instances in ``data``.
 
         Args:
@@ -203,7 +203,7 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def upsert_many(self, data: list[T | dict[str, Any]], **kwargs: Any) -> list[T]:
+    def upsert_many(self, data: list[T | dict[str, Any]], **kwargs: Any) -> Sequence[T]:
         """Update or create multiple instances.
 
         Update instances with the attribute values present on ``data``, or create a new instance if
@@ -223,7 +223,7 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[list[T], int]:
+    def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[Sequence[T], int]:
         """List records with total count.
 
         Args:
@@ -235,7 +235,7 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def list(self, *filters: FilterTypes, **kwargs: Any) -> list[T]:
+    def list(self, *filters: FilterTypes, **kwargs: Any) -> Sequence[T]:
         """Get a list of instances, optionally filtered.
 
         Args:
