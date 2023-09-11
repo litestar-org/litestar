@@ -166,7 +166,7 @@ def test_msgspec_schema_generation(create_examples: bool) -> None:
         assert response.status_code == HTTP_200_OK
         assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
             "description": "A unique identifier",
-            "examples": [{"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}],
+            "examples": ["e4eaaaf2-d142-11e1-b3e4-080027620cdd"],
             "maxLength": 16,
             "minLength": 12,
             "type": "string",
@@ -214,7 +214,7 @@ def test_pydantic_schema_generation(create_examples: bool) -> None:
         assert response.status_code == HTTP_200_OK
         assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
             "description": "A unique identifier",
-            "examples": [{"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}],
+            "examples": ["e4eaaaf2-d142-11e1-b3e4-080027620cdd"],
             "maxLength": 16,
             "minLength": 12,
             "type": "string",

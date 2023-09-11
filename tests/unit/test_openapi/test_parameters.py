@@ -105,18 +105,21 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
                 "items": {
                     "type": "string",
                     "enum": ["M", "F", "O", "A"],
-                    "examples": [{"description": "Example  value", "value": "F"}],
+                    "description": "Example  value",
+                    "examples": ["F"],
                 },
                 "type": "array",
-                "examples": [{"description": "Example  value", "value": ["A"]}],
+                "description": "Example  value",
+                "examples": [["A"]],
             },
             {
                 "type": "string",
                 "enum": ["M", "F", "O", "A"],
-                "examples": [{"description": "Example  value", "value": "M"}],
+                "description": "Example  value",
+                "examples": ["M"],
             },
         ],
-        "examples": [{"value": "M"}, {"value": ["M", "O"]}],
+        "examples": ["M", ["M", "O"]],
     }
     assert not gender.required
 

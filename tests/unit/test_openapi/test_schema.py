@@ -256,7 +256,7 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
     schema = schemas["Lookup"]
 
     assert schema.properties["id"].type == OpenAPIType.STRING  # type: ignore
-    assert schema.properties["id"].examples == [Example(value="example")]  # type: ignore
+    assert schema.properties["id"].examples == ["example"]  # type: ignore
     assert schema.properties["id"].description == "description"  # type: ignore
     assert schema.properties["id"].title == "title"  # type: ignore
     assert schema.properties["id"].max_length == 16  # type: ignore
@@ -279,7 +279,7 @@ def test_create_schema_for_pydantic_field() -> None:
 
     assert schema.properties["value"].description == "description"  # type: ignore
     assert schema.properties["value"].title == "title"  # type: ignore
-    assert schema.properties["value"].examples == [Example(value="example")]  # type: ignore
+    assert schema.properties["value"].examples == ["example"]  # type: ignore
 
 
 def test_annotated_types() -> None:
