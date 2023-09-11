@@ -10,7 +10,6 @@ from msgspec import UnsetType
 from typing_extensions import Annotated, NotRequired, Required, Self, get_args, get_origin
 
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.openapi.spec import Example
 from litestar.params import BodyKwarg, DependencyKwarg, KwargDefinition, ParameterKwarg
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType, UnionTypes
@@ -75,9 +74,9 @@ def _parse_metadata(value: Any, is_sequence_container: bool, extra: dict[str, An
         **(getattr(value, "json_schema_extra", None) or {}),
     }
     if example := extra.pop("example", None):
-        example_list = [Example(value=example)]
+        example_list = [example]
     elif examples := getattr(value, "examples", None):
-        example_list = [Example(value=example) for example in cast("list[str]", examples)]
+        example_list = examples
     else:
         example_list = None
 

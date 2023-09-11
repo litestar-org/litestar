@@ -6,7 +6,7 @@ from typing_extensions import Annotated, get_type_hints
 
 from litestar._openapi.schema_generation.schema import SchemaCreator, _get_type_schema_name
 from litestar.exceptions import MissingDependencyException
-from litestar.openapi.spec import Example, OpenAPIFormat, OpenAPIType, Schema
+from litestar.openapi.spec import OpenAPIFormat, OpenAPIType, Schema
 from litestar.plugins import OpenAPISchemaPluginProtocol
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
@@ -170,14 +170,20 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
             k: getattr(f, "field_info", f)
             for k, f in getattr(annotation, "__fields__", getattr(annotation, "model_fields", {})).items()
         }
+        examples: list[Any] | None = None
 
         # pydantic v2 logic
         if isinstance(model_config, dict):
             title = model_config.get("title")
-            example = model_config.get("example")
+            if json_schema_extra := model_config.get("json_schema_extra"):
+                if isinstance(json_schema_extra, dict):
+                    examples = json_schema_extra.get("examples")
+                else:
+                    ...  #  json_schema_extra(..., ...?)
         else:  # pragma: no cover
             title = getattr(model_config, "title", None)
-            example = getattr(model_config, "example", None)
+            if example := getattr(model_config, "example", None):
+                examples = [example]
 
         field_definitions = {
             f.alias
@@ -197,5 +203,5 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
             properties={k: schema_creator.for_field_definition(f) for k, f in field_definitions.items()},
             type=OpenAPIType.OBJECT,
             title=title or _get_type_schema_name(annotation),
-            examples=[Example(example)] if example else None,
+            examples=examples,
         )
