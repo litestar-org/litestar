@@ -131,7 +131,7 @@ class GenericController(Controller, Generic[ModelT]):
             return safe_origin[tuple(self._normalize_annotation(key, arg) for arg in args)]
         if annotation is ModelT:  # type: ignore[misc]
             return self.model_type
-        if key in ("item_id", "item_ids") and annotation is Any:
+        if key in {"item_id", "item_ids"} and annotation is Any:
             return self.id_attribute_type
         return annotation
 
