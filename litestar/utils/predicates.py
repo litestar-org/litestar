@@ -56,6 +56,16 @@ try:
 except ImportError:  # pragma: no cover
     attrs = Empty  # type: ignore
 
+try:
+    import piccolo
+except ImportError:  # pragma: no cover
+    piccolo = Empty  # type: ignore
+
+try:
+    import sqlalchemy
+except ImportError:  # pragma: no cover
+    sqlalchemy = Empty  # type: ignore
+
 __all__ = (
     "is_annotated_type",
     "is_any",
@@ -70,9 +80,11 @@ __all__ = (
     "is_non_string_iterable",
     "is_non_string_sequence",
     "is_optional_union",
+    "is_piccolo_class",
     "is_pydantic_constrained_field",
     "is_pydantic_model_class",
     "is_pydantic_model_instance",
+    "is_sqlalchemy_model",
     "is_struct_class",
     "is_sync_or_async_generator",
     "is_typed_dict",
@@ -299,6 +311,20 @@ def is_pydantic_model_class(annotation: Any) -> TypeGuard[type[pydantic.BaseMode
     return False  # pragma: no cover
 
 
+def is_piccolo_class(annotation: Any) -> TypeGuard[type[piccolo.table.Table]]:  # pyright: ignore
+    """Given a type annotation determine if the annotation is a subclass of piccolo's Table.
+
+    Args:
+        annotation: A type.
+
+    Returns:
+        A typeguard determining whether the type is :data:`Table piccolo.table.Table>`.
+    """
+    if piccolo is not Empty:  # type: ignore[comparison-overlap]
+        return is_class_and_subclass(annotation, piccolo.table.Table)  # pyright: ignore
+    return False  # pyright: ignore
+
+
 def is_pydantic_model_instance(annotation: Any) -> TypeGuard[pydantic.BaseModel]:  # pyright: ignore
     """Given a type annotation determine if the annotation is an instance of pydantic's BaseModel.
 
@@ -367,6 +393,20 @@ def is_pydantic_constrained_field(
         )
     except ImportError:
         return False
+
+
+def is_sqlalchemy_model(annotation: Any) -> TypeGuard[sqlalchemy.orm.DeclarativeBase]:  # pyright: ignore
+    """Check if the given annotation is a sqlalchemy model.
+
+    Args:
+        annotation: A type annotation
+
+    Returns:
+        True if sqlalchemy is installed and the type is a sqlalchemy model, otherwise False.
+    """
+    if sqlalchemy is not Empty:  # type: ignore[comparison-overlap]
+        return is_class_and_subclass(annotation, sqlalchemy.orm.DeclarativeMeta)  # pyright: ignore
+    return False  # pyright: ignore
 
 
 def is_struct_class(annotation: Any) -> TypeGuard[type[Struct]]:

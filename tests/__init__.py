@@ -5,6 +5,7 @@ from uuid import UUID
 
 import attrs
 import msgspec
+from polyfactory.factories import DataclassFactory
 from polyfactory.factories.pydantic_factory import ModelFactory
 from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass as pydantic_dataclass
@@ -34,14 +35,6 @@ class PydanticPerson(BaseModel):
     optional: Optional[str]
     complex: Dict[str, List[Dict[str, str]]]
     pets: Optional[List[PydanticPet]] = None
-
-
-class PydanticPersonFactory(ModelFactory[PydanticPerson]):
-    __model__ = PydanticPerson
-
-
-class PydanticPetFactory(ModelFactory[PydanticPet]):
-    __model__ = PydanticPet
 
 
 class PartialPersonDTO(PydanticDTO[PydanticPerson]):
@@ -101,5 +94,21 @@ class User(BaseModel):
     id: UUID
 
 
+# factories
+
+
 class UserFactory(ModelFactory[User]):
     __model__ = User
+
+
+class PydanticPersonFactory(ModelFactory[PydanticPerson]):
+    __model__ = PydanticPerson
+
+
+class PydanticPetFactory(ModelFactory[PydanticPet]):
+    __model__ = PydanticPet
+
+
+class VanillaDataClassPersonFactory(DataclassFactory[VanillaDataClassPerson]):
+    __model__ = VanillaDataClassPerson
+    pets = None
