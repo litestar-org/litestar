@@ -144,6 +144,7 @@ class Litestar(Router):
         "csrf_config",
         "event_emitter",
         "get_logger",
+        "include_in_schema",
         "logger",
         "logging_config",
         "multipart_form_part_limit",
@@ -183,6 +184,7 @@ class Litestar(Router):
         event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: OptionalSequence[Guard] | None = None,
+        include_in_schema: bool | EmptyType | None = Empty,
         listeners: OptionalSequence[EventListener] | None = None,
         logging_config: BaseLoggingConfig | EmptyType | None = Empty,
         middleware: OptionalSequence[Middleware] | None = None,
@@ -248,6 +250,7 @@ class Litestar(Router):
                 :class:`BaseEventEmitterBackend <.events.emitter.BaseEventEmitterBackend>`.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
+            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             lifespan: A list of callables returning async context managers, wrapping the lifespan of the ASGI application
             listeners: A sequence of :class:`EventListener <.events.listener.EventListener>`.
             logging_config: A subclass of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>`.
@@ -326,6 +329,7 @@ class Litestar(Router):
             event_emitter_backend=event_emitter_backend,
             exception_handlers=exception_handlers or {},
             guards=list(guards or []),
+            include_in_schema=include_in_schema,
             lifespan=lifespan or [],
             listeners=list(listeners or []),
             logging_config=cast("BaseLoggingConfig | None", logging_config),
@@ -394,6 +398,7 @@ class Litestar(Router):
         self.websocket_class = config.websocket_class or WebSocket
         self.debug = config.debug
         self.pdb_on_exception: bool = config.pdb_on_exception
+        self.include_in_schema = include_in_schema
 
         if self.pdb_on_exception:
             warn_pdb_on_exception()
@@ -423,6 +428,7 @@ class Litestar(Router):
             tags=config.tags,
             type_encoders=config.type_encoders,
             type_decoders=config.type_decoders,
+            include_in_schema=config.include_in_schema,
         )
 
         for route_handler in config.route_handlers:
@@ -812,7 +818,9 @@ class Litestar(Router):
         for route in self.routes:
             if (
                 isinstance(route, HTTPRoute)
-                and any(route_handler.include_in_schema for route_handler, _ in route.route_handler_map.values())
+                and any(
+                    route_handler.resolve_include_in_schema() for route_handler, _ in route.route_handler_map.values()
+                )
                 and (route.path_format or "/") not in self._openapi_schema.paths
             ):
                 path_item, created_operation_ids = create_path_item(
