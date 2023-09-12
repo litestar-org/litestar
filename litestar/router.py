@@ -90,7 +90,7 @@ class Router:
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: Sequence[Guard] | None = None,
-        include_in_schema: bool | EmptyType | None = Empty,
+        include_in_schema: bool | EmptyType = Empty,
         middleware: Sequence[Middleware] | None = None,
         opt: Mapping[str, Any] | None = None,
         parameters: ParametersMap | None = None,
