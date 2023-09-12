@@ -58,6 +58,7 @@ class Router:
         "etag",
         "exception_handlers",
         "guards",
+        "include_in_schema",
         "middleware",
         "opt",
         "owner",
@@ -89,6 +90,7 @@ class Router:
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: Sequence[Guard] | None = None,
+        include_in_schema: bool | EmptyType = Empty,
         middleware: Sequence[Middleware] | None = None,
         opt: Mapping[str, Any] | None = None,
         parameters: ParametersMap | None = None,
@@ -123,6 +125,7 @@ class Router:
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :data:`Guard <.types.Guard>` callables.
+            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             middleware: A sequence of :data:`Middleware <.types.Middleware>`.
             opt: A string keyed mapping of arbitrary values that can be accessed in :data:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or
@@ -160,6 +163,7 @@ class Router:
         self.dependencies = dict(dependencies or {})
         self.exception_handlers = dict(exception_handlers or {})
         self.guards = list(guards or [])
+        self.include_in_schema = include_in_schema
         self.middleware = list(middleware or [])
         self.opt = dict(opt or {})
         self.owner: Router | None = None

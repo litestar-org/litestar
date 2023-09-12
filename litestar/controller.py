@@ -55,6 +55,7 @@ class Controller:
         "etag",
         "exception_handlers",
         "guards",
+        "include_in_schema",
         "middleware",
         "opt",
         "owner",
@@ -106,6 +107,8 @@ class Controller:
     """A map of handler functions to status codes and/or exception types."""
     guards: OptionalSequence[Guard]
     """A sequence of :class:`Guard <.types.Guard>` callables."""
+    include_in_schema: bool | EmptyType
+    """A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema"""
     middleware: OptionalSequence[Middleware]
     """A sequence of :class:`Middleware <.types.Middleware>`."""
     opt: Mapping[str, Any] | None
@@ -167,6 +170,9 @@ class Controller:
 
         if not hasattr(self, "return_dto"):
             self.return_dto = Empty
+
+        if not hasattr(self, "include_in_schema"):
+            self.include_in_schema = Empty
 
         for key in self.__slots__:
             if not hasattr(self, key):

@@ -52,7 +52,7 @@ def test_create_responses(person_controller: Type[Controller], pet_controller: T
     for route in Litestar(route_handlers=[person_controller]).routes:
         assert isinstance(route, HTTPRoute)
         for route_handler, _ in route.route_handler_map.values():
-            if route_handler.include_in_schema:
+            if route_handler.resolve_include_in_schema():
                 responses = create_responses(
                     route_handler, raises_validation_error=True, schema_creator=SchemaCreator(generate_examples=True)
                 )

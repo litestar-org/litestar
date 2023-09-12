@@ -75,6 +75,7 @@ def create_test_client(
     event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
     exception_handlers: ExceptionHandlersMap | None = None,
     guards: OptionalSequence[Guard] | None = None,
+    include_in_schema: bool | EmptyType = Empty,
     listeners: OptionalSequence[EventListener] | None = None,
     logging_config: BaseLoggingConfig | EmptyType | None = Empty,
     middleware: OptionalSequence[Middleware] | None = None,
@@ -175,6 +176,7 @@ def create_test_client(
             :class:`BaseEventEmitterBackend <.events.emitter.BaseEventEmitterBackend>`.
         exception_handlers: A mapping of status codes and/or exception types to handler functions.
         guards: A sequence of :class:`Guard <.types.Guard>` callables.
+        include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
         lifespan: A list of callables returning async context managers, wrapping the lifespan of the ASGI application
         listeners: A sequence of :class:`EventListener <.events.listener.EventListener>`.
         logging_config: A subclass of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>`.
@@ -252,6 +254,7 @@ def create_test_client(
         event_emitter_backend=event_emitter_backend,
         exception_handlers=exception_handlers,
         guards=guards,
+        include_in_schema=include_in_schema,
         listeners=listeners,
         logging_config=logging_config,
         middleware=middleware,
@@ -317,6 +320,7 @@ def create_async_test_client(
     event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
     exception_handlers: ExceptionHandlersMap | None = None,
     guards: OptionalSequence[Guard] | None = None,
+    include_in_schema: bool | EmptyType = Empty,
     lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
     listeners: OptionalSequence[EventListener] | None = None,
     logging_config: BaseLoggingConfig | EmptyType | None = Empty,
@@ -417,6 +421,7 @@ def create_async_test_client(
             :class:`BaseEventEmitterBackend <.events.emitter.BaseEventEmitterBackend>`.
         exception_handlers: A mapping of status codes and/or exception types to handler functions.
         guards: A sequence of :class:`Guard <.types.Guard>` callables.
+        include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
         lifespan: A list of callables returning async context managers, wrapping the lifespan of the ASGI application
         listeners: A sequence of :class:`EventListener <.events.listener.EventListener>`.
         logging_config: A subclass of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>`.
@@ -493,6 +498,7 @@ def create_async_test_client(
         event_emitter_backend=event_emitter_backend,
         exception_handlers=exception_handlers,
         guards=guards,
+        include_in_schema=include_in_schema,
         lifespan=lifespan,
         listeners=listeners,
         logging_config=logging_config,

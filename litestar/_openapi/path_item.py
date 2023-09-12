@@ -91,7 +91,7 @@ def create_path_item(
     for http_method, handler_tuple in route.route_handler_map.items():
         route_handler, _ = handler_tuple
 
-        if route_handler.include_in_schema:
+        if route_handler.resolve_include_in_schema():
             handler_fields = route_handler.signature_model._fields if route_handler.signature_model else {}
             parameters = (
                 create_parameter_for_handler(
