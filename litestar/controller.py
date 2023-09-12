@@ -107,7 +107,7 @@ class Controller:
     """A map of handler functions to status codes and/or exception types."""
     guards: OptionalSequence[Guard]
     """A sequence of :class:`Guard <.types.Guard>` callables."""
-    include_in_schema: bool | EmptyType | None
+    include_in_schema: bool | EmptyType
     """A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema"""
     middleware: OptionalSequence[Middleware]
     """A sequence of :class:`Middleware <.types.Middleware>`."""
