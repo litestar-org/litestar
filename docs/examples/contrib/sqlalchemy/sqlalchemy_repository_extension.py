@@ -8,13 +8,13 @@ from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
 from pydantic import BaseModel as _BaseModel
-from pydantic import parse_obj_as
+from pydantic import TypeAdapter
 from sqlalchemy.orm import Mapped, declarative_mixin, mapped_column
 from sqlalchemy.types import String
 
 from litestar import Litestar, get, post
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from litestar.contrib.sqlalchemy.plugins import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
 from litestar.contrib.sqlalchemy.repository import (
     ModelT,
     SQLAlchemyAsyncRepository,
@@ -132,8 +132,9 @@ async def provide_blog_post_repo(db_session: AsyncSession) -> BlogPostRepository
     return BlogPostRepository(session=db_session)
 
 
+session_config = AsyncSessionConfig(expire_on_commit=False)
 sqlalchemy_config = SQLAlchemyAsyncConfig(
-    connection_string="sqlite+aiosqlite:///test.sqlite"
+    connection_string="sqlite+aiosqlite:///test.sqlite", session_config=session_config
 )  # Create 'async_session' dependency.
 sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 
@@ -150,7 +151,8 @@ async def get_blogs(
 ) -> list[BlogPostDTO]:
     """Interact with SQLAlchemy engine and session."""
     objs = await blog_post_repo.list()
-    return parse_obj_as(list[BlogPostDTO], objs)
+    type_adapter = TypeAdapter(list[BlogPostDTO])
+    return type_adapter.validate_python(objs)
 
 
 @get(path="/{post_slug:str}")
@@ -160,7 +162,7 @@ async def get_blog_details(
 ) -> BlogPostDTO:
     """Interact with SQLAlchemy engine and session."""
     obj = await blog_post_repo.get_one(slug=post_slug)
-    return BlogPostDTO.from_orm(obj)
+    return BlogPostDTO.model_validate(obj)
 
 
 @post(path="/")
@@ -173,7 +175,7 @@ async def create_blog(
     _data["slug"] = await blog_post_repo.get_available_slug(_data["title"])
     obj = await blog_post_repo.add(BlogPost(**_data))
     await blog_post_repo.session.commit()
-    return BlogPostDTO.from_orm(obj)
+    return BlogPostDTO.model_validate(obj)
 
 
 app = Litestar(
