@@ -1236,7 +1236,7 @@ and <code class="docutils literal notranslate"><span class="pre">BigIntAuditBase
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">UUIDAuditBase</span><span class="p">,</span> <span class="n">UUIDBase</span>
-<span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
+<span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">AsyncSessionConfig</span><span class="p">,</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">AsyncEngine</span><span class="p">,</span> <span class="n">AsyncSession</span>
@@ -1259,8 +1259,9 @@ and <code class="docutils literal notranslate"><span class="pre">BigIntAuditBase
     <span class="n">author</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">Author</span><span class="p">]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">lazy</span><span class="o">=</span><span class="s2">&quot;joined&quot;</span><span class="p">,</span> <span class="n">innerjoin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">viewonly</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
+<span class="n">session_config</span> <span class="o">=</span> <span class="n">AsyncSessionConfig</span><span class="p">(</span><span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">sqlalchemy_config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
-    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span>
+    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span>
 <span class="p">)</span>  <span class="c1"># Create &#39;async_session&#39; dependency.</span>
 <span class="n">sqlalchemy_plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)</span>
 
@@ -1299,13 +1300,13 @@ your controllers and function based routes.</p>
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
 
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span> <span class="k">as</span> <span class="n">_BaseModel</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">parse_obj_as</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">TypeAdapter</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">select</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span><span class="p">,</span> <span class="n">relationship</span><span class="p">,</span> <span class="n">selectinload</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">UUIDAuditBase</span><span class="p">,</span> <span class="n">UUIDBase</span>
-<span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins.init</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
+<span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">AsyncSessionConfig</span><span class="p">,</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
 <span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.repository</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncRepository</span>
 <span class="kn">from</span> <span class="nn">litestar.controller</span> <span class="kn">import</span> <span class="n">Controller</span>
 <span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
@@ -1420,8 +1421,9 @@ your controllers and function based routes.</p>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Author</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List authors.&quot;&quot;&quot;</span>
         <span class="n">results</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">limit_offset</span><span class="p">)</span>
+        <span class="n">type_adapter</span> <span class="o">=</span> <span class="n">TypeAdapter</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="n">Author</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Author</span><span class="p">](</span>
-            <span class="n">items</span><span class="o">=</span><span class="n">parse_obj_as</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="n">Author</span><span class="p">],</span> <span class="n">results</span><span class="p">),</span>
+            <span class="n">items</span><span class="o">=</span><span class="n">type_adapter</span><span class="o">.</span><span class="n">validate_python</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
             <span class="n">total</span><span class="o">=</span><span class="n">total</span><span class="p">,</span>
             <span class="n">limit</span><span class="o">=</span><span class="n">limit_offset</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span>
             <span class="n">offset</span><span class="o">=</span><span class="n">limit_offset</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span>
@@ -1435,10 +1437,10 @@ your controllers and function based routes.</p>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new author.&quot;&quot;&quot;</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-            <span class="n">AuthorModel</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">by_alias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
+            <span class="n">AuthorModel</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
         <span class="p">)</span>
         <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
     <span class="c1"># we override the authors_repo to use the version that joins the Books in</span>
     <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">)})</span>
@@ -1452,7 +1454,7 @@ your controllers and function based routes.</p>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get an existing author.&quot;&quot;&quot;</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
     <span class="nd">@patch</span><span class="p">(</span>
         <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span>
@@ -1468,7 +1470,7 @@ your controllers and function based routes.</p>
         <span class="p">),</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update an author.&quot;&quot;&quot;</span>
-        <span class="n">raw_obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">by_alias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">raw_obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">raw_obj</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">author_id</span><span class="p">})</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">AuthorModel</span><span class="p">(</span><span class="o">**</span><span class="n">raw_obj</span><span class="p">))</span>
         <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
@@ -1488,8 +1490,9 @@ your controllers and function based routes.</p>
         <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 
 
+<span class="n">session_config</span> <span class="o">=</span> <span class="n">AsyncSessionConfig</span><span class="p">(</span><span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">sqlalchemy_config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
-    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span>
+    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span>
 <span class="p">)</span>  <span class="c1"># Create &#39;db_session&#39; dependency.</span>
 <span class="n">sqlalchemy_plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)</span>
 
@@ -1519,7 +1522,7 @@ your controllers and function based routes.</p>
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
 
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span> <span class="k">as</span> <span class="n">_BaseModel</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">parse_obj_as</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">TypeAdapter</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">select</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span><span class="p">,</span> <span class="n">relationship</span><span class="p">,</span> <span class="n">selectinload</span>
 
@@ -1641,8 +1644,9 @@ your controllers and function based routes.</p>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Author</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List authors.&quot;&quot;&quot;</span>
         <span class="n">results</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">limit_offset</span><span class="p">)</span>
+        <span class="n">type_adapter</span> <span class="o">=</span> <span class="n">TypeAdapter</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="n">Author</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Author</span><span class="p">](</span>
-            <span class="n">items</span><span class="o">=</span><span class="n">parse_obj_as</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="n">Author</span><span class="p">],</span> <span class="n">results</span><span class="p">),</span>
+            <span class="n">items</span><span class="o">=</span><span class="n">type_adapter</span><span class="o">.</span><span class="n">validate_python</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
             <span class="n">total</span><span class="o">=</span><span class="n">total</span><span class="p">,</span>
             <span class="n">limit</span><span class="o">=</span><span class="n">limit_offset</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span>
             <span class="n">offset</span><span class="o">=</span><span class="n">limit_offset</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span>
@@ -1656,10 +1660,10 @@ your controllers and function based routes.</p>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new author.&quot;&quot;&quot;</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-            <span class="n">AuthorModel</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">by_alias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
+            <span class="n">AuthorModel</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
         <span class="p">)</span>
         <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
     <span class="c1"># we override the authors_repo to use the version that joins the Books in</span>
     <span class="nd">@get</span><span class="p">(</span>
@@ -1676,7 +1680,7 @@ your controllers and function based routes.</p>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get an existing author.&quot;&quot;&quot;</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
     <span class="nd">@patch</span><span class="p">(</span>
         <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span>
@@ -1692,11 +1696,11 @@ your controllers and function based routes.</p>
         <span class="p">),</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update an author.&quot;&quot;&quot;</span>
-        <span class="n">raw_obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">by_alias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">raw_obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">raw_obj</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">author_id</span><span class="p">})</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">AuthorModel</span><span class="p">(</span><span class="o">**</span><span class="n">raw_obj</span><span class="p">))</span>
         <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
     <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">delete_author</span><span class="p">(</span>

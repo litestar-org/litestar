@@ -1179,7 +1179,7 @@ to make working with models easier.</p>
 <span class="linenos"> 7</span>
 <span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 <span class="hll"><span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">UUIDAuditBase</span><span class="p">,</span> <span class="n">UUIDBase</span>
-</span><span class="linenos">10</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
+</span><span class="linenos">10</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">AsyncSessionConfig</span><span class="p">,</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
 <span class="linenos">11</span>
 <span class="linenos">12</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 <span class="linenos">13</span>    <span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">AsyncEngine</span><span class="p">,</span> <span class="n">AsyncSession</span>
@@ -1202,29 +1202,30 @@ to make working with models easier.</p>
 <span class="linenos">30</span>    <span class="n">author</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">Author</span><span class="p">]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">lazy</span><span class="o">=</span><span class="s2">&quot;joined&quot;</span><span class="p">,</span> <span class="n">innerjoin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">viewonly</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="linenos">31</span>
 <span class="linenos">32</span>
-<span class="linenos">33</span><span class="n">sqlalchemy_config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
-<span class="linenos">34</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span>
-<span class="linenos">35</span><span class="p">)</span>  <span class="c1"># Create &#39;async_session&#39; dependency.</span>
-<span class="linenos">36</span><span class="n">sqlalchemy_plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)</span>
-<span class="linenos">37</span>
+<span class="linenos">33</span><span class="n">session_config</span> <span class="o">=</span> <span class="n">AsyncSessionConfig</span><span class="p">(</span><span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">34</span><span class="n">sqlalchemy_config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
+<span class="linenos">35</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span>
+<span class="linenos">36</span><span class="p">)</span>  <span class="c1"># Create &#39;async_session&#39; dependency.</span>
+<span class="linenos">37</span><span class="n">sqlalchemy_plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)</span>
 <span class="linenos">38</span>
-<span class="linenos">39</span><span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">40</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-<span class="linenos">41</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-<span class="linenos">42</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
-<span class="linenos">43</span>
+<span class="linenos">39</span>
+<span class="linenos">40</span><span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">41</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
+<span class="linenos">42</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="linenos">43</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 <span class="linenos">44</span>
-<span class="linenos">45</span><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
-<span class="linenos">46</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_authors</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="s2">&quot;AsyncSession&quot;</span><span class="p">,</span> <span class="n">db_engine</span><span class="p">:</span> <span class="s2">&quot;AsyncEngine&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Author</span><span class="p">]:</span>
-<span class="linenos">47</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Interact with SQLAlchemy engine and session.&quot;&quot;&quot;</span>
-<span class="linenos">48</span>    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Author</span><span class="p">)))</span>
-<span class="linenos">49</span>
+<span class="linenos">45</span>
+<span class="linenos">46</span><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
+<span class="linenos">47</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_authors</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="s2">&quot;AsyncSession&quot;</span><span class="p">,</span> <span class="n">db_engine</span><span class="p">:</span> <span class="s2">&quot;AsyncEngine&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Author</span><span class="p">]:</span>
+<span class="linenos">48</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Interact with SQLAlchemy engine and session.&quot;&quot;&quot;</span>
+<span class="linenos">49</span>    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Author</span><span class="p">)))</span>
 <span class="linenos">50</span>
-<span class="linenos">51</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-<span class="linenos">52</span>    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_authors</span><span class="p">],</span>
-<span class="linenos">53</span>    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
-<span class="linenos">54</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)],</span>
-<span class="linenos">55</span><span class="p">)</span>
+<span class="linenos">51</span>
+<span class="linenos">52</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+<span class="linenos">53</span>    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_authors</span><span class="p">],</span>
+<span class="linenos">54</span>    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
+<span class="linenos">55</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)],</span>
+<span class="linenos">56</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1249,7 +1250,7 @@ key constraints when using the <code class="docutils literal notranslate"><span 
 <span class="linenos"> 7</span>
 <span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 <span class="hll"><span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.base</span> <span class="kn">import</span> <span class="n">UUIDAuditBase</span><span class="p">,</span> <span class="n">UUIDBase</span>
-</span><span class="linenos">10</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
+</span><span class="linenos">10</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">AsyncSessionConfig</span><span class="p">,</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
 <span class="linenos">11</span>
 <span class="linenos">12</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 <span class="linenos">13</span>    <span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">AsyncEngine</span><span class="p">,</span> <span class="n">AsyncSession</span>
@@ -1272,29 +1273,30 @@ key constraints when using the <code class="docutils literal notranslate"><span 
 </span><span class="hll"><span class="linenos">30</span>    <span class="n">author</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">Author</span><span class="p">]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">lazy</span><span class="o">=</span><span class="s2">&quot;joined&quot;</span><span class="p">,</span> <span class="n">innerjoin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">viewonly</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span class="linenos">31</span>
 <span class="linenos">32</span>
-<span class="linenos">33</span><span class="n">sqlalchemy_config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
-<span class="linenos">34</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span>
-<span class="linenos">35</span><span class="p">)</span>  <span class="c1"># Create &#39;async_session&#39; dependency.</span>
-<span class="linenos">36</span><span class="n">sqlalchemy_plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)</span>
-<span class="linenos">37</span>
+<span class="linenos">33</span><span class="n">session_config</span> <span class="o">=</span> <span class="n">AsyncSessionConfig</span><span class="p">(</span><span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">34</span><span class="n">sqlalchemy_config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
+<span class="linenos">35</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span>
+<span class="linenos">36</span><span class="p">)</span>  <span class="c1"># Create &#39;async_session&#39; dependency.</span>
+<span class="linenos">37</span><span class="n">sqlalchemy_plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)</span>
 <span class="linenos">38</span>
-<span class="linenos">39</span><span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">40</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-<span class="linenos">41</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-<span class="linenos">42</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
-<span class="linenos">43</span>
+<span class="linenos">39</span>
+<span class="linenos">40</span><span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">41</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
+<span class="linenos">42</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="linenos">43</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 <span class="linenos">44</span>
-<span class="linenos">45</span><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
-<span class="linenos">46</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_authors</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="s2">&quot;AsyncSession&quot;</span><span class="p">,</span> <span class="n">db_engine</span><span class="p">:</span> <span class="s2">&quot;AsyncEngine&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Author</span><span class="p">]:</span>
-<span class="linenos">47</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Interact with SQLAlchemy engine and session.&quot;&quot;&quot;</span>
-<span class="linenos">48</span>    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Author</span><span class="p">)))</span>
-<span class="linenos">49</span>
+<span class="linenos">45</span>
+<span class="linenos">46</span><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
+<span class="linenos">47</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_authors</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="s2">&quot;AsyncSession&quot;</span><span class="p">,</span> <span class="n">db_engine</span><span class="p">:</span> <span class="s2">&quot;AsyncEngine&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Author</span><span class="p">]:</span>
+<span class="linenos">48</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Interact with SQLAlchemy engine and session.&quot;&quot;&quot;</span>
+<span class="linenos">49</span>    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Author</span><span class="p">)))</span>
 <span class="linenos">50</span>
-<span class="linenos">51</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-<span class="linenos">52</span>    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_authors</span><span class="p">],</span>
-<span class="linenos">53</span>    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
-<span class="linenos">54</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)],</span>
-<span class="linenos">55</span><span class="p">)</span>
+<span class="linenos">51</span>
+<span class="linenos">52</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+<span class="linenos">53</span>    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_authors</span><span class="p">],</span>
+<span class="linenos">54</span>    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
+<span class="linenos">55</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)],</span>
+<span class="linenos">56</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
