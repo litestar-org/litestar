@@ -144,7 +144,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         content_media_type: str | None = None,
         deprecated: bool = False,
         description: str | None = None,
-        include_in_schema: bool | EmptyType | None = Empty,
+        include_in_schema: bool | EmptyType = Empty,
         operation_class: type[Operation] = Operation,
         operation_id: str | OperationIDCreator | None = None,
         raises: Sequence[type[HTTPException]] | None = None,
@@ -279,7 +279,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._resolved_after_response: AsyncCallable | None | EmptyType = Empty
         self._resolved_before_request: AsyncCallable | None | EmptyType = Empty
         self._response_handler_mapping: ResponseHandlerMap = {"default_handler": Empty, "response_type_handler": Empty}
-        self._resolved_include_in_schema: bool | EmptyType | None = Empty
+        self._resolved_include_in_schema: bool | EmptyType = Empty
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
         """Replace a function with itself."""
@@ -389,22 +389,22 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         return cast("AsyncCallable | None", self._resolved_after_response)
 
-    def resolve_include_in_schema(self) -> bool | None:
+    def resolve_include_in_schema(self) -> bool:
         """Resolve the 'include_in_schema' property by starting from the route handler and moving up.
 
         If 'include_in_schema' is found in any of the ownership layers, the last value found is returned.
         If not found in any layer, the default value ``True`` is returned.
 
         Returns:
-            bool | None: The resolved 'include_in_schema' property.
+            bool: The resolved 'include_in_schema' property.
         """
         if self._resolved_include_in_schema is Empty:
             include_in_schemas = [
-                i.include_in_schema for i in self.ownership_layers if i.include_in_schema is not Empty
+                i.include_in_schema for i in self.ownership_layers if isinstance(i.include_in_schema, bool)
             ]
             self._resolved_include_in_schema = include_in_schemas[-1] if include_in_schemas else True
 
-        return cast("bool | None", self._resolved_include_in_schema)
+        return cast(bool, self._resolved_include_in_schema)
 
     def get_response_handler(self, is_response_type_data: bool = False) -> Callable[[Any], Awaitable[ASGIApp]]:
         """Resolve the response_handler function for the route handler.
