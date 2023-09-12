@@ -184,7 +184,7 @@ class Litestar(Router):
         event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: OptionalSequence[Guard] | None = None,
-        include_in_schema: bool | EmptyType | None = Empty,
+        include_in_schema: bool | EmptyType = Empty,
         listeners: OptionalSequence[EventListener] | None = None,
         logging_config: BaseLoggingConfig | EmptyType | None = Empty,
         middleware: OptionalSequence[Middleware] | None = None,
