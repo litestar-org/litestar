@@ -3,10 +3,16 @@ name = "litestar"
 version = "2.0.0"
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 authors = [
-    "Na'aman Hirschfeld <nhirschfeld@gmail.com>"
+    "Cody Fincher <cody.fincher@gmail.com>",
+    "Jacob Coffee <jacob@z7x.org>",
+    "Janek Nouvertné <provinzkraut@posteo.de>",
+    "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
+    "Peter Schutt <peter.github@proton.me>",
 ]
 maintainers = [
-    "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
+    "Cody Fincher <cody.fincher@gmail.com>",
+    "Jacob Coffee <jacob@z7x.org>",
+    "Janek Nouvertné <provinzkraut@posteo.de>",
 ]
 license = "MIT"
 readme = "docs/PYPI_README.md"
