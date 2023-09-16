@@ -310,7 +310,7 @@ def test_does_not_override_existing_last_modified_header(header_name: str, tmpdi
     with create_test_client(handler) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        assert [h.lower() for h in response.headers.get_list("last-modified")] == ["foo"]
+        assert response.headers.get_list("last-modified") == ["foo"]
 
 
 def test_asgi_response_encoded_headers(file: Path) -> None:
