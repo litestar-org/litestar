@@ -223,4 +223,6 @@ Creating a new release
    * Fill in the release description. You can use the "Generate release notes" function to get a draft for this
 3. Commit your changes and push to ``main``
 4. Publish the release
-5. Check that the "publish" `action <https://github.com/litestar-org/litestar/actions>`_ has run successfully
+5. Publish the release.
+6. Go to `Actions <https://github.com/litestar-org/litestar/actions>`_ and approve the workflow
+7. Check that the workflow runs successfully

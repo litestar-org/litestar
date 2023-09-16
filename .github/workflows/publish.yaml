@@ -30,9 +30,6 @@ jobs:
       - name: Test
         run: mv tests/examples/test_hello_world.py test_hello_world.py && poetry run pytest test_hello_world.py
   publish-release:
-    #    needs:
-    #      - test_minimal_app
-    if: always()
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -45,8 +42,8 @@ jobs:
         uses: snok/install-poetry@v1
       - name: Install dependencies
         run: poetry install --no-interaction --no-root --no-dev
-      - name: publish
+      - name: build
         shell: bash
-        run: |
-          poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
-          poetry publish --build --no-interaction
+        run: poetry build
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
