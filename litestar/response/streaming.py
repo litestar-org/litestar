@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 from functools import partial
 from typing import TYPE_CHECKING, Any, AsyncGenerator, AsyncIterable, AsyncIterator, Callable, Iterable, Iterator, Union
 
@@ -9,7 +10,7 @@ from litestar.enums import MediaType
 from litestar.response.base import ASGIResponse, Response
 from litestar.types.helper_types import StreamType
 from litestar.utils.deprecation import warn_deprecation
-from litestar.utils.helpers import filter_cookies, get_enum_string_value
+from litestar.utils.helpers import get_enum_string_value
 from litestar.utils.sync import AsyncIteratorWrapper
 
 if TYPE_CHECKING:
@@ -33,14 +34,48 @@ class ASGIStreamingResponse(ASGIResponse):
 
     _should_set_content_length = False
 
-    def __init__(self, *, iterator: StreamType, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *,
+        iterator: StreamType,
+        background: BackgroundTask | BackgroundTasks | None = None,
+        body: bytes | str = b"",
+        content_length: int | None = None,
+        cookies: Iterable[Cookie] | None = None,
+        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
+        encoding: str = "utf-8",
+        headers: dict[str, Any] | None = None,
+        is_head_response: bool = False,
+        media_type: MediaType | str | None = None,
+        status_code: int | None = None,
+    ) -> None:
         """A low-level ASGI streaming response.
 
         Args:
+            background: A background task or a list of background tasks to be executed after the response is sent.
+            body: encoded content to send in the response body.
+            content_length: The response content length.
+            cookies: The response cookies.
+            encoded_headers: The response headers.
+            encoding: The response encoding.
+            headers: The response headers.
+            is_head_response: A boolean indicating if the response is a HEAD response.
             iterator: An async iterator or iterable.
-            **kwargs: Additional keyword arguments propagated to :class:`ASGIResponse <.response.base.ASGIResponse>`.
+            media_type: The response media type.
+            status_code: The response status code.
         """
-        super().__init__(**kwargs)
+        super().__init__(
+            background=background,
+            body=body,
+            content_length=content_length,
+            cookies=cookies,
+            encoding=encoding,
+            headers=headers,
+            is_head_response=is_head_response,
+            media_type=media_type,
+            status_code=status_code,
+            encoded_headers=encoded_headers,
+        )
         self.iterator: AsyncIterable[str | bytes] | AsyncGenerator[str | bytes, None] = (
             iterator if isinstance(iterator, (AsyncIterable, AsyncIterator)) else AsyncIteratorWrapper(iterator)
         )
@@ -146,8 +181,8 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
         request: Request,
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
-        cookies: list[Cookie] | None = None,
-        encoded_headers: list[tuple[bytes, bytes]] | None = None,
+        cookies: Iterable[Cookie] | None = None,
+        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
         headers: dict[str, str] | None = None,
         is_head_response: bool = False,
         media_type: MediaType | str | None = None,
@@ -181,7 +216,7 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
             )
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
-        cookies = self.cookies if cookies is None else filter_cookies(self.cookies, cookies)
+        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
 
         media_type = get_enum_string_value(media_type or self.media_type or MediaType.JSON)
 
@@ -194,7 +229,7 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
             body=b"",
             content_length=0,
             cookies=cookies,
-            encoded_headers=encoded_headers or [],
+            encoded_headers=encoded_headers,
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,

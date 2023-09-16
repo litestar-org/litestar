@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import itertools
 from email.utils import formatdate
 from inspect import iscoroutine
 from mimetypes import encodings_map, guess_type
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Coroutine, Literal, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Coroutine, Iterable, Literal, cast
 from urllib.parse import quote
 from zlib import adler32
 
@@ -13,7 +14,7 @@ from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
 from litestar.response.base import Response
 from litestar.response.streaming import ASGIStreamingResponse
 from litestar.utils.deprecation import warn_deprecation
-from litestar.utils.helpers import filter_cookies, get_enum_string_value
+from litestar.utils.helpers import get_enum_string_value
 
 if TYPE_CHECKING:
     from os import PathLike
@@ -87,46 +88,70 @@ class ASGIFileResponse(ASGIStreamingResponse):
     def __init__(
         self,
         *,
+        background: BackgroundTask | BackgroundTasks | None = None,
+        body: bytes | str = b"",
         chunk_size: int = ONE_MEGABYTE,
         content_disposition_type: Literal["attachment", "inline"] = "attachment",
-        encoded_headers: list[tuple[bytes, bytes]] | None = None,
+        content_length: int | None = None,
+        cookies: Iterable[Cookie] | None = None,
+        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
+        encoding: str = "utf-8",
         etag: ETag | None = None,
         file_info: FileInfo | Coroutine[None, None, FileInfo] | None = None,
         file_path: str | PathLike | Path,
         file_system: FileSystemProtocol | None = None,
         filename: str = "",
         headers: dict[str, str] | None = None,
+        is_head_response: bool = False,
         media_type: MediaType | str | None = None,
         stat_result: stat_result_type | None = None,
-        **kwargs: Any,
+        status_code: int | None = None,
     ) -> None:
         """A low-level ASGI response, streaming a file as response body.
 
         Args:
+            background: A background task or a list of background tasks to be executed after the response is sent.
+            body: encoded content to send in the response body.
             chunk_size: The chunk size to use.
             content_disposition_type: The type of the ``Content-Disposition``. Either ``inline`` or ``attachment``.
+            content_length: The response content length.
+            cookies: The response cookies.
             encoded_headers: A list of encoded headers.
+            encoding: The response encoding.
             etag: An etag.
             file_info: A file info.
             file_path: A path to a file.
             file_system: A file system adapter.
             filename: The name of the file.
             headers: A dictionary of headers.
+            headers: The response headers.
+            is_head_response: A boolean indicating if the response is a HEAD response.
             media_type: The media type of the file.
             stat_result: A stat result.
-            **kwargs: Additional keyword arguments, propagated to :class:`ASGIResponse <.response.base.ASGIResponse>`.
+            status_code: The response status code.
         """
-        encoded_headers = encoded_headers or []
         headers = headers or {}
-        headers.pop("content-length", None)
-        headers.pop("etag", None)
-        headers.pop("last-modified", None)
-
         if not media_type:
             mimetype, content_encoding = guess_type(filename) if filename else (None, None)
             media_type = mimetype or "application/octet-stream"
             if content_encoding is not None:
                 headers.update({"content-encoding": content_encoding})
+
+        self.adapter = FileSystemAdapter(file_system or BaseLocalFileSystem())
+
+        super().__init__(
+            iterator=async_file_iterator(file_path=file_path, chunk_size=chunk_size, adapter=self.adapter),
+            headers=headers,
+            media_type=media_type,
+            cookies=cookies,
+            background=background,
+            status_code=status_code,
+            body=body,
+            content_length=content_length,
+            encoding=encoding,
+            is_head_response=is_head_response,
+            encoded_headers=encoded_headers,
+        )
 
         quoted_filename = quote(filename)
         is_utf8 = quoted_filename == filename
@@ -135,17 +160,8 @@ class ASGIFileResponse(ASGIStreamingResponse):
         else:
             content_disposition = f"{content_disposition_type}; filename*=utf-8''{quoted_filename}"
 
-        encoded_headers.append((b"content-disposition", content_disposition.encode("ascii")))
+        self.headers.setdefault("content-disposition", content_disposition)
 
-        self.adapter = FileSystemAdapter(file_system or BaseLocalFileSystem())
-
-        super().__init__(
-            iterator=async_file_iterator(file_path=file_path, chunk_size=chunk_size, adapter=self.adapter),
-            encoded_headers=encoded_headers,
-            headers=headers,
-            media_type=media_type,
-            **kwargs,
-        )
         self.chunk_size = chunk_size
         self.etag = etag
         self.file_path = file_path
@@ -199,15 +215,17 @@ class ASGIFileResponse(ASGIStreamingResponse):
             raise ImproperlyConfiguredException(f"{self.file_path} is not a file")
 
         self.content_length = fs_info["size"]
-        self.encoded_headers.append((b"content-length", str(self.content_length).encode("ascii")))
 
-        self.encoded_headers.append((b"last-modified", formatdate(fs_info["mtime"], usegmt=True).encode("ascii")))
+        self.headers.setdefault("content-length", str(self.content_length))
+        self.headers.setdefault("last-modified", formatdate(fs_info["mtime"], usegmt=True))
 
         if self.etag:
-            self.encoded_headers.append((b"etag", self.etag.to_header().encode("ascii")))
+            self.headers.setdefault("etag", self.etag.to_header())
         else:
-            etag = create_etag_for_file(path=self.file_path, modified_time=fs_info["mtime"], file_size=fs_info["size"])
-            self.encoded_headers.append((b"etag", etag.encode("ascii")))
+            self.headers.setdefault(
+                "etag",
+                create_etag_for_file(path=self.file_path, modified_time=fs_info["mtime"], file_size=fs_info["size"]),
+            )
 
         await super().start_response(send=send)
 
@@ -305,8 +323,8 @@ class File(Response):
         request: Request,
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
-        cookies: list[Cookie] | None = None,
-        encoded_headers: list[tuple[bytes, bytes]] | None = None,
+        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
+        cookies: Iterable[Cookie] | None = None,
         headers: dict[str, str] | None = None,
         is_head_response: bool = False,
         media_type: MediaType | str | None = None,
@@ -340,7 +358,7 @@ class File(Response):
             )
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
-        cookies = self.cookies if cookies is None else filter_cookies(self.cookies, cookies)
+        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
 
         media_type = self.media_type or media_type
         if media_type is not None:
@@ -353,7 +371,7 @@ class File(Response):
             content_disposition_type=self.content_disposition_type,  # pyright: ignore
             content_length=0,
             cookies=cookies,
-            encoded_headers=encoded_headers or [],
+            encoded_headers=encoded_headers,
             encoding=self.encoding,
             etag=self.etag,
             file_info=self.file_info,

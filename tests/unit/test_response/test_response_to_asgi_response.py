@@ -158,12 +158,14 @@ async def test_to_response_returning_redirect_response(anyio_backend: str) -> No
         response = await route_handler.to_response(
             data=route_handler.fn.value(), app=client.app, request=RequestFactory().get()
         )
+        encoded_headers = response.encode_headers()  # type: ignore[attr-defined]
+
         assert isinstance(response, ASGIResponse)
-        assert (b"location", b"/somewhere-else") in response.encoded_headers
-        assert (b"local-header", b"123") in response.encoded_headers
-        assert (b"response-header", b"abc") in response.encoded_headers
-        assert (b"set-cookie", b"general-cookie=xxx; Path=/; SameSite=lax") in response.encoded_headers
-        assert (b"set-cookie", b"redirect-cookie=xyz; Path=/; SameSite=lax") in response.encoded_headers
+        assert (b"location", b"/somewhere-else") in encoded_headers
+        assert (b"local-header", b"123") in encoded_headers
+        assert (b"response-header", b"abc") in encoded_headers
+        assert (b"set-cookie", b"general-cookie=xxx; Path=/; SameSite=lax") in encoded_headers
+        assert (b"set-cookie", b"redirect-cookie=xyz; Path=/; SameSite=lax") in encoded_headers
         assert response.background == background_task
 
 
@@ -214,11 +216,13 @@ async def test_to_response_returning_file_response(anyio_backend: str) -> None:
         assert response.file_info
         if iscoroutine(response.file_info):
             await response.file_info
-        assert (b"local-header", b"123") in response.encoded_headers
-        assert (b"response-header", b"abc") in response.encoded_headers
-        assert (b"set-cookie", b"file-cookie=xyz; Path=/; SameSite=lax") in response.encoded_headers
-        assert (b"set-cookie", b"general-cookie=xxx; Path=/; SameSite=lax") in response.encoded_headers
-        assert (b"set-cookie", b"redirect-cookie=aaa; Path=/; SameSite=lax") in response.encoded_headers
+
+        encoded_headers = response.encode_headers()
+        assert (b"local-header", b"123") in encoded_headers
+        assert (b"response-header", b"abc") in encoded_headers
+        assert (b"set-cookie", b"file-cookie=xyz; Path=/; SameSite=lax") in encoded_headers
+        assert (b"set-cookie", b"general-cookie=xxx; Path=/; SameSite=lax") in encoded_headers
+        assert (b"set-cookie", b"redirect-cookie=aaa; Path=/; SameSite=lax") in encoded_headers
         assert response.background == background_task
 
 
@@ -271,11 +275,12 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool,
                 data=route_handler.fn.value(), app=client.app, request=RequestFactory().get()
             )
             assert isinstance(response, ASGIStreamingResponse)
-            assert (b"local-header", b"123") in response.encoded_headers
-            assert (b"response-header", b"abc") in response.encoded_headers
-            assert (b"set-cookie", b"general-cookie=xxx; Path=/; SameSite=lax") in response.encoded_headers
-            assert (b"set-cookie", b"redirect-cookie=aaa; Path=/; SameSite=lax") in response.encoded_headers
-            assert (b"set-cookie", b"streaming-cookie=xyz; Path=/; SameSite=lax") in response.encoded_headers
+            encoded_headers = response.encode_headers()
+            assert (b"local-header", b"123") in encoded_headers
+            assert (b"response-header", b"abc") in encoded_headers
+            assert (b"set-cookie", b"general-cookie=xxx; Path=/; SameSite=lax") in encoded_headers
+            assert (b"set-cookie", b"redirect-cookie=aaa; Path=/; SameSite=lax") in encoded_headers
+            assert (b"set-cookie", b"streaming-cookie=xyz; Path=/; SameSite=lax") in encoded_headers
             assert response.background == background_task
 
 
@@ -316,10 +321,12 @@ async def test_to_response_template_response(anyio_backend: str, tmp_path: Path)
             data=route_handler.fn.value(), app=client.app, request=RequestFactory(app=app).get()
         )
         assert isinstance(response, ASGIResponse)
-        assert (b"local-header", b"123") in response.encoded_headers
-        assert (b"response-header", b"abc") in response.encoded_headers
-        assert (b"set-cookie", b"general-cookie=xxx; Path=/; SameSite=lax") in response.encoded_headers
-        assert (b"set-cookie", b"template-cookie=xyz; Path=/; SameSite=lax") in response.encoded_headers
+        encoded_headers = response.encode_headers()
+
+        assert (b"local-header", b"123") in encoded_headers
+        assert (b"response-header", b"abc") in encoded_headers
+        assert (b"set-cookie", b"general-cookie=xxx; Path=/; SameSite=lax") in encoded_headers
+        assert (b"set-cookie", b"template-cookie=xyz; Path=/; SameSite=lax") in encoded_headers
         assert response.background == background_task
 
 
@@ -364,13 +371,15 @@ async def test_to_response_sse_events(content: str | bytes | StreamType[str | by
         response = await route_handler.to_response(
             data=route_handler.fn.value(), app=client.app, request=RequestFactory().get()
         )
+        encoded_headers = response.encode_headers()  # type: ignore[attr-defined]
+
         assert isinstance(response, ASGIStreamingResponse)
-        assert ((b"cache-control", b"no-cache")) in response.encoded_headers
-        assert (b"x-accel-buffering", b"no") in response.encoded_headers
-        assert (b"connection", b"keep-alive") in response.encoded_headers
-        assert (b"content-type", b"text/event-stream; charset=utf-8") in response.encoded_headers
-        assert (b"response-header", b"abc") in response.encoded_headers
-        assert (b"set-cookie", b"streaming-cookie=xyz; Path=/; SameSite=lax") in response.encoded_headers
+        assert ((b"cache-control", b"no-cache")) in encoded_headers
+        assert (b"x-accel-buffering", b"no") in encoded_headers
+        assert (b"connection", b"keep-alive") in encoded_headers
+        assert (b"content-type", b"text/event-stream; charset=utf-8") in encoded_headers
+        assert (b"response-header", b"abc") in encoded_headers
+        assert (b"set-cookie", b"streaming-cookie=xyz; Path=/; SameSite=lax") in encoded_headers
         assert response.background == background_task
 
 
