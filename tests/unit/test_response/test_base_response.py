@@ -206,3 +206,8 @@ def test_get_serializer() -> None:
 def test_head_response_doesnt_support_content() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         ASGIResponse(body=b"hello world", media_type=MediaType.TEXT, is_head_response=True)
+
+
+def test_asgi_response_encoded_headers() -> None:
+    response = ASGIResponse(encoded_headers=[(b"foo", b"bar")])
+    assert response.encode_headers() == [(b"foo", b"bar")]

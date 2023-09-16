@@ -129,11 +129,11 @@ class ASGIResponse:
 
     @property
     @deprecated("3.0", kind="property", alternative="encode_headers()")
-    def encoded_headers(self) -> tuple[tuple[bytes, bytes], ...]:
+    def encoded_headers(self) -> list[tuple[bytes, bytes]]:
         return self.encode_headers()
 
-    def encode_headers(self) -> tuple[tuple[bytes, bytes], ...]:
-        return *self.headers.headers, *self._encoded_cookies
+    def encode_headers(self) -> list[tuple[bytes, bytes]]:
+        return [*self.headers.headers, *self._encoded_cookies]
 
     async def after_response(self) -> None:
         """Execute after the response is sent.
