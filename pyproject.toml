@@ -439,10 +439,9 @@ known-first-party = ["litestar", "tests", "examples"]
 add_editors_note = true
 ruff_fix = true
 
-[tool.unasyncd.files] 
+[tool.unasyncd.files]
 "litestar/repository/abc/_async.py" = "litestar/repository/abc/_sync.py"
 
 [tool.unasyncd.per_file_add_replacements."litestar/repository/abc/_async.py"]
 "AbstractAsyncRepository" = "AbstractSyncRepository"
 "AsyncRepoT" = "SyncRepoT"
-
