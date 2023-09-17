@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal
+import itertools
+from typing import TYPE_CHECKING, Any, Iterable, Literal
 
 from litestar.constants import REDIRECT_ALLOWED_MEDIA_TYPES, REDIRECT_STATUS_CODES
 from litestar.enums import MediaType
@@ -9,7 +10,7 @@ from litestar.response.base import ASGIResponse, Response
 from litestar.status_codes import HTTP_302_FOUND
 from litestar.utils import url_quote
 from litestar.utils.deprecation import warn_deprecation
-from litestar.utils.helpers import filter_cookies, get_enum_string_value
+from litestar.utils.helpers import get_enum_string_value
 
 if TYPE_CHECKING:
     from litestar.app import Litestar
@@ -37,7 +38,13 @@ class ASGIRedirectResponse(ASGIResponse):
         media_type: str | None = None,
         status_code: RedirectStatusType | None = None,
         headers: dict[str, Any] | None = None,
-        **kwargs: Any,
+        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
+        background: BackgroundTask | BackgroundTasks | None = None,
+        body: bytes | str = b"",
+        content_length: int | None = None,
+        cookies: Iterable[Cookie] | None = None,
+        encoding: str = "utf-8",
+        is_head_response: bool = False,
     ) -> None:
         headers = {**(headers or {}), "location": url_quote(path)}
         media_type = media_type or MediaType.TEXT
@@ -57,7 +64,18 @@ class ASGIRedirectResponse(ASGIResponse):
                 f"the following values: {', '.join([str(s) for s in REDIRECT_ALLOWED_MEDIA_TYPES])}"
             )
 
-        super().__init__(status_code=status_code, headers=headers, media_type=media_type, **kwargs)
+        super().__init__(
+            status_code=status_code,
+            headers=headers,
+            media_type=media_type,
+            background=background,
+            is_head_response=is_head_response,
+            encoding=encoding,
+            cookies=cookies,
+            content_length=content_length,
+            body=body,
+            encoded_headers=encoded_headers,
+        )
 
 
 class Redirect(Response[Any]):
@@ -115,8 +133,8 @@ class Redirect(Response[Any]):
         request: Request,
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
-        cookies: list[Cookie] | None = None,
-        encoded_headers: list[tuple[bytes, bytes]] | None = None,
+        cookies: Iterable[Cookie] | None = None,
+        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
         headers: dict[str, str] | None = None,
         is_head_response: bool = False,
         media_type: MediaType | str | None = None,
@@ -124,7 +142,7 @@ class Redirect(Response[Any]):
         type_encoders: TypeEncodersMap | None = None,
     ) -> ASGIResponse:
         headers = {**headers, **self.headers} if headers is not None else self.headers
-        cookies = self.cookies if cookies is None else filter_cookies(self.cookies, cookies)
+        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
         media_type = get_enum_string_value(self.media_type or media_type or MediaType.TEXT)
 
         if app is not None:
@@ -142,7 +160,7 @@ class Redirect(Response[Any]):
             body=b"",
             content_length=None,
             cookies=cookies,
-            encoded_headers=encoded_headers or [],
+            encoded_headers=encoded_headers,
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,
