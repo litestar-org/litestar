@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from advanced_alchemy.extensions.litestar.plugins import SQLAlchemyPlugin
 
 from .init import (
     AsyncSessionConfig,
@@ -12,8 +13,6 @@ from .init import (
     SyncSessionConfig,
 )
 from .serialization import SQLAlchemySerializationPlugin
-from advanced_alchemy.extensions.litestar.plugins import SQLAlchemyPlugin
-
 
 __all__ = (
     "AsyncSessionConfig",

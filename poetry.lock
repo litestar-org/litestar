@@ -4287,7 +4287,7 @@ attrs = ["attrs"]
 brotli = ["brotli"]
 cli = ["click", "jsbeautifier", "rich", "rich-click", "uvicorn"]
 cryptography = ["cryptography"]
-full = ["advanced-alchemy", "alembic", "annotated-types", "attrs", "brotli", "click", "cryptography", "jinja2", "jsbeautifier", "mako", "minijinja", "opentelemetry-instrumentation-asgi", "piccolo", "picologging", "prometheus-client", "pydantic", "pydantic-extra-types", "python-jose", "redis", "rich", "rich-click", "sqlalchemy", "structlog", "uvicorn"]
+full = ["advanced-alchemy", "annotated-types", "attrs", "brotli", "click", "cryptography", "jinja2", "jsbeautifier", "mako", "minijinja", "opentelemetry-instrumentation-asgi", "piccolo", "picologging", "prometheus-client", "pydantic", "pydantic-extra-types", "python-jose", "redis", "rich", "rich-click", "structlog", "uvicorn"]
 jinja = ["jinja2"]
 jwt = ["cryptography", "python-jose"]
 mako = ["mako"]
@@ -4305,4 +4305,4 @@ structlog = ["structlog"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "185497af530793093e2299faf65404480fa88f23b39fa24ab798a71d8221bc5c"
+content-hash = "d67dbb9b335cce2a29c076804e902a7562fae4678a11b4caf639d9291c59a074"

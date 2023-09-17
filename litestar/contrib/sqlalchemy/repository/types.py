@@ -1,12 +1,11 @@
 from advanced_alchemy.repository.typing import (
-    T,
-    RowT,
     ModelT,
+    RowT,
     SelectT,
     SQLAlchemyAsyncRepositoryT,
     SQLAlchemySyncRepositoryT,
+    T,
 )
-
 
 __all__ = (
     "T",
