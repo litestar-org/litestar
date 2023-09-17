@@ -6,11 +6,10 @@ from datetime import date, datetime
 from typing import List
 from uuid import UUID
 
-from sqlalchemy import Column, FetchedValue, ForeignKey, String, Table, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from advanced_alchemy import SQLAlchemyAsyncRepository, SQLAlchemySyncRepository, base
 from advanced_alchemy.base import UUIDAuditBase, UUIDBase
+from sqlalchemy import Column, FetchedValue, ForeignKey, String, Table, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class UUIDAuthor(UUIDAuditBase):
