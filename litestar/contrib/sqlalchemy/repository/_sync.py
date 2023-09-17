@@ -2,4 +2,8 @@
 # litestar/contrib/sqlalchemy/repository/_async.py
 from __future__ import annotations
 
-__all__ = ()
+
+from advanced_alchemy.repository import SQLAlchemySyncRepository
+
+
+__all__ = ("SQLAlchemySyncRepository",)
