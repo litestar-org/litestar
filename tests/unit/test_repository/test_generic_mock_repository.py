@@ -17,7 +17,7 @@ from litestar.repository.testing.generic_mock_repository import (
     GenericSyncMockRepository,
 )
 from tests.helpers import maybe_async
-from tests.unit.test_contrib.test_sqlalchemy.models_uuid import UUIDAuthor, UUIDBook
+from tests.unit.test_repository.models_uuid import UUIDAuthor, UUIDBook
 
 AuthorRepository = GenericAsyncMockRepository[UUIDAuthor]
 AuthorRepositoryType = Type[AuthorRepository]
