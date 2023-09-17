@@ -16,8 +16,8 @@ from piccolo.testing.model_builder import ModelBuilder
 pytestmark = [
     pytest.mark.xdist_group("piccolo"),
     pytest.mark.skipif(
-        sys.platform == "win32",
-        reason="piccolo ORM itself is not tested against windows",
+        sys.platform != "linux",
+        reason="piccolo ORM itself is not tested against windows and macOS",
     ),
 ]
 

@@ -32,7 +32,7 @@ jobs:
 
   test:
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
         pydantic-version: ["1", "2"]
@@ -44,7 +44,6 @@ jobs:
       python-version: ${{ matrix.python-version }}
 
   test-platform-compat:
-    if: github.event_name == 'push'
     strategy:
       fail-fast: false
       matrix:
