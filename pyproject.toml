@@ -240,7 +240,7 @@ exclude_lines = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "-m='not sqlalchemy_integration' --dist=loadgroup"
+addopts = "--dist=loadgroup"
 asyncio_mode = "auto"
 filterwarnings = [
     "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:",
