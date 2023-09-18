@@ -51,6 +51,7 @@ intersphinx_mapping = {
     "tortoise": ("https://tortoise.github.io/", None),
     "piccolo": ("https://piccolo-orm.readthedocs.io/en/latest", None),
     "opentelemetry": ("https://opentelemetry-python.readthedocs.io/en/latest/", None),
+    "advanced-alchemy": ("https://docs.advanced-alchemy.jolt.rs/latest/", None),
 }
 
 
