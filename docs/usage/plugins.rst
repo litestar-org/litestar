@@ -88,7 +88,7 @@ The following example shows the actual implementation of the ``SerializationPlug
    :language: python
    :caption: ``SerializationPluginProtocol`` implementation example
 
-:meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.supports_type>`
+:meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <advanced_alchemy.extensions.litestar.plugins.serialization.SQLAlchemySerializationPlugin.supports_type>`
 returns a :class:`bool` indicating whether the plugin supports serialization for the given type. Specifically, we return
 ``True`` if the parsed type is either a collection of SQLAlchemy models or a single SQLAlchemy model.
 
