@@ -1,5 +1,4 @@
 repository
 ==========
 
-.. automodule:: litestar.contrib.sqlalchemy.repository
-    :members:
+This page has moved to :doc:`advanced-alchemy:reference/repository`
