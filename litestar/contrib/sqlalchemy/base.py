@@ -12,6 +12,7 @@ from advanced_alchemy.base import (
     UUIDBase,
     UUIDPrimaryKey,
     create_registry,
+    orm_registry,
     touch_updated_timestamp,
 )
 
@@ -27,4 +28,5 @@ __all__ = (
     "UUIDAuditBase",
     "UUIDBase",
     "UUIDPrimaryKey",
+    "orm_registry",
 )
