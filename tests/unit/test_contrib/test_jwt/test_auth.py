@@ -5,7 +5,7 @@ from uuid import uuid4
 
 import pytest
 from hypothesis import given, settings
-from hypothesis.strategies import integers, none, one_of, sampled_from, text, timedeltas
+from hypothesis.strategies import dictionaries, integers, none, one_of, sampled_from, text, timedeltas
 from pydantic import BaseModel, Field
 
 from litestar import Litestar, Request, Response, get
@@ -41,6 +41,7 @@ def mock_db() -> MemoryStore:
     token_issuer=one_of(none(), text(max_size=256)),
     token_audience=one_of(none(), text(max_size=256, alphabet=string.ascii_letters)),
     token_unique_jwt_id=one_of(none(), text(max_size=256)),
+    token_extras=one_of(none(), dictionaries(text(max_size=256), text(max_size=256))),
 )
 @settings(deadline=None)
 async def test_jwt_auth(
@@ -54,6 +55,7 @@ async def test_jwt_auth(
     token_issuer: Optional[str],
     token_audience: Optional[str],
     token_unique_jwt_id: Optional[str],
+    token_extras: Optional[Dict[str, Any]],
 ) -> None:
     user = UserFactory.build()
 
@@ -86,6 +88,7 @@ async def test_jwt_auth(
             token_issuer=token_issuer,
             token_audience=token_audience,
             token_unique_jwt_id=token_unique_jwt_id,
+            token_extras=token_extras,
         )
 
     with create_test_client(route_handlers=[my_handler, login_handler]) as client:
@@ -98,6 +101,9 @@ async def test_jwt_auth(
         assert decoded_token.iss == token_issuer
         assert decoded_token.aud == token_audience
         assert decoded_token.jti == token_unique_jwt_id
+        if token_extras is not None:
+            for key, value in token_extras.items():
+                assert decoded_token.extras[key] == value
 
         response = client.get("/my-endpoint")
         assert response.status_code == HTTP_401_UNAUTHORIZED
@@ -140,6 +146,7 @@ async def test_jwt_auth(
     token_issuer=one_of(none(), text(max_size=256)),
     token_audience=one_of(none(), text(max_size=256, alphabet=string.ascii_letters)),
     token_unique_jwt_id=one_of(none(), text(max_size=256)),
+    token_extras=one_of(none(), dictionaries(text(max_size=256), text(max_size=256))),
 )
 @settings(deadline=None)
 async def test_jwt_cookie_auth(
@@ -154,6 +161,7 @@ async def test_jwt_cookie_auth(
     token_issuer: Optional[str],
     token_audience: Optional[str],
     token_unique_jwt_id: Optional[str],
+    token_extras: Optional[Dict[str, Any]],
 ) -> None:
     user = UserFactory.build()
 
@@ -188,6 +196,7 @@ async def test_jwt_cookie_auth(
             token_issuer=token_issuer,
             token_audience=token_audience,
             token_unique_jwt_id=token_unique_jwt_id,
+            token_extras=token_extras,
         )
 
     with create_test_client(route_handlers=[my_handler, login_handler]) as client:
@@ -200,6 +209,9 @@ async def test_jwt_cookie_auth(
         assert decoded_token.iss == token_issuer
         assert decoded_token.aud == token_audience
         assert decoded_token.jti == token_unique_jwt_id
+        if token_extras is not None:
+            for key, value in token_extras.items():
+                assert decoded_token.extras[key] == value
 
         client.cookies.clear()
         response = client.get("/my-endpoint")
