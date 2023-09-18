@@ -158,8 +158,8 @@
         model instances.
 
         .. seealso::
-            ``~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.upsert_many`
-            ``~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.upsert_many`
+            ``~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.upsert_many``
+            ``~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.upsert_many``
 
     .. change:: SQLAlchemy repository: New filters: ``OnBeforeAfter``, ``NotInCollectionFilter`` and ``NotInSearchFilter``
         :type: feature
@@ -727,7 +727,7 @@
         :pr: 1802
 
         When exporting models using the
-        ``~litestar.contrib.sqlalchemy.base.CommonTableAttributes.to_dict` method,
+        ``~litestar.contrib.sqlalchemy.base.CommonTableAttributes.to_dict`` method,
         unloaded columns will now always be excluded. This prevents implicit I/O via
         lazy loading, and errors when using an asynchronous session.
 
@@ -1199,7 +1199,7 @@
         :pr: 1657
 
         On databases without native support for GUIDs,
-         ``~litestar.contrib.sqlalchemy.types.GUID`` will now fall back to
+        ``~litestar.contrib.sqlalchemy.types.GUID`` will now fall back to
         ``BINARY(16)``.
 
     .. change:: Application lifespan context managers

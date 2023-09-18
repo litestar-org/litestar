@@ -72,21 +72,21 @@ and rollback upon failure.
 Configuring the plugins
 #######################
 
-Both the :class:`SQLAlchemyAsyncConfig <advanced_alchemy.extensions.litestar.plugins.SQLAlchemyAsyncConfig>` and the
-:class:`SQLAlchemySyncConfig <advanced_alchemy.extensions.litestar.plugins.SQLAlchemySyncConfig>` have an ``engine_config``
+Both the :class:`SQLAlchemyAsyncConfig <advanced_alchemy.extensions.litestar.config.SQLAlchemyAsyncConfig>` and the
+:class:`SQLAlchemySyncConfig <advanced_alchemy.extensions.litestar.config.SQLAlchemySyncConfig>` have an ``engine_config``
 attribute that is used to configure the engine. The ``engine_config`` attribute is an instance of
 :class:`EngineConfig <advanced_alchemy.config.EngineConfig>` and exposes all of the configuration options
 available to the SQLAlchemy engine.
 
-The :class:`SQLAlchemyAsyncConfig <advanced_alchemy.extensions.litestar.plugins.SQLAlchemyAsyncConfig>` class and the
-:class:`SQLAlchemySyncConfig <advanced_alchemy.extensions.litestar.plugins.SQLAlchemySyncConfig>` class also have a
+The :class:`SQLAlchemyAsyncConfig <advanced_alchemy.extensions.litestar.config.SQLAlchemyAsyncConfig>` class and the
+:class:`SQLAlchemySyncConfig <advanced_alchemy.extensions.litestar.config.SQLAlchemySyncConfig>` class also have a
 ``session_config`` attribute that is used to configure the session. This is either an instance of
 :class:`AsyncSessionConfig <advanced_alchemy.config.AsyncSessionConfig>` or
 :class:`SyncSessionConfig <advanced_alchemy.config.SyncSessionConfig>` depending on the type of config
 object. These classes expose all of the configuration options available to the SQLAlchemy session.
 
-Finally, the :class:`SQLAlchemyAsyncConfig <advanced_alchemy.extensions.litestar.plugins.SQLAlchemyAsyncConfig>` class and the
-:class:`SQLAlchemySyncConfig <advanced_alchemy.extensions.litestar.plugins.SQLAlchemySyncConfig>` class expose configuration
+Finally, the :class:`SQLAlchemyAsyncConfig <advanced_alchemy.extensions.litestar.config.SQLAlchemyAsyncConfig>` class and the
+:class:`SQLAlchemySyncConfig <advanced_alchemy.extensions.litestar.config.SQLAlchemySyncConfig>` class expose configuration
 options to control their behavior.
 
 Consult the reference documentation for more information.
