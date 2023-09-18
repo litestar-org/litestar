@@ -65,7 +65,7 @@ Additional features provided by the built-in base models include:
 - A :class:`GUID <advanced_alchemy.types.GUID>` database type that
   establishes a native UUID in supported engines or a ``Binary(16)`` as a fallback.
 - A ``BigInteger`` variant
-  :class:`BigIntIdentity <advanced_alchemy.BigIntIdentity>` that
+  :class:`BigIntIdentity <advanced_alchemy.types.BigIntIdentity>` that
   reverts to an ``Integer`` for unsupported variants.
 - A custom :class:`JsonB <advanced_alchemy.types.JsonB>` type that uses
   native ``JSONB`` where possible and ``Binary`` or ``Blob`` as an alternative.

@@ -1456,7 +1456,7 @@
         :pr: 1345
 
         Add a ``match_fields`` argument to
-        :meth:`SQLAlchemyAsyncRepository <litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get_or_create>`.
+        ``litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get_or_create``.
         This lets you lookup a model using a subset of the kwargs you've provided. If the remaining kwargs are different
         from the retrieved model's stored values, an update is performed.
 
