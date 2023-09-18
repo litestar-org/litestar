@@ -127,6 +127,7 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
         token_issuer: str | None = None,
         token_audience: str | None = None,
         token_unique_jwt_id: str | None = None,
+        token_extras: dict[str, Any] | None = None,
         send_token_as_response_body: bool = False,
     ) -> Response[Any]:
         """Create a response with a JWT header.
@@ -140,6 +141,7 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
             token_issuer: An optional value of the token ``iss`` field.
             token_audience: An optional value for the token ``aud`` field.
             token_unique_jwt_id: An optional value for the token ``jti`` field.
+            token_extras: An optional dictionary to include in the token ``extras`` field.
             send_token_as_response_body: If ``True`` the response will be a dict including the token: ``{ "token": <token> }``
                 will be returned as the response body. Note: if a response body is passed this setting will be ignored.
 
@@ -152,6 +154,7 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
             token_issuer=token_issuer,
             token_audience=token_audience,
             token_unique_jwt_id=token_unique_jwt_id,
+            token_extras=token_extras,
         )
 
         if response_body is not Empty:
@@ -175,6 +178,7 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
         token_issuer: str | None = None,
         token_audience: str | None = None,
         token_unique_jwt_id: str | None = None,
+        token_extras: dict | None = None,
     ) -> str:
         """Create a Token instance from the passed in parameters, persists and returns it.
 
@@ -184,6 +188,7 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
             token_issuer: An optional value of the token ``iss`` field.
             token_audience: An optional value for the token ``aud`` field.
             token_unique_jwt_id: An optional value for the token ``jti`` field.
+            token_extras: An optional dictionary to include in the token ``extras`` field.
 
         Returns:
             The created token.
@@ -194,6 +199,7 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
             iss=token_issuer,
             aud=token_audience,
             jti=token_unique_jwt_id,
+            extras=token_extras or {},
         )
         return token.encode(secret=self.token_secret, algorithm=self.algorithm)
 
@@ -404,6 +410,7 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
         token_issuer: str | None = None,
         token_audience: str | None = None,
         token_unique_jwt_id: str | None = None,
+        token_extras: dict[str, Any] | None = None,
         send_token_as_response_body: bool = False,
     ) -> Response[Any]:
         """Create a response with a JWT header.
@@ -417,6 +424,7 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
             token_issuer: An optional value of the token ``iss`` field.
             token_audience: An optional value for the token ``aud`` field.
             token_unique_jwt_id: An optional value for the token ``jti`` field.
+            token_extras: An optional dictionary to include in the token ``extras`` field.
             send_token_as_response_body: If ``True`` the response will be a dict including the token: ``{ "token": <token> }``
                 will be returned as the response body. Note: if a response body is passed this setting will be ignored.
 
@@ -430,6 +438,7 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
             token_issuer=token_issuer,
             token_audience=token_audience,
             token_unique_jwt_id=token_unique_jwt_id,
+            token_extras=token_extras,
         )
         cookie = Cookie(
             key=self.key,
@@ -620,6 +629,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
         token_issuer: str | None = None,
         token_audience: str | None = None,
         token_unique_jwt_id: str | None = None,
+        token_extras: dict[str, Any] | None = None,
         send_token_as_response_body: bool = True,
     ) -> Response[Any]:
         """Create a response with a JWT header.
@@ -633,6 +643,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
             token_issuer: An optional value of the token ``iss`` field.
             token_audience: An optional value for the token ``aud`` field.
             token_unique_jwt_id: An optional value for the token ``jti`` field.
+            token_extras: An optional dictionary to include in the token ``extras`` field.
             send_token_as_response_body: If ``True`` the response will be an oAuth2 token response dict.
                 Note: if a response body is passed this setting will be ignored.
 
@@ -645,6 +656,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
             token_issuer=token_issuer,
             token_audience=token_audience,
             token_unique_jwt_id=token_unique_jwt_id,
+            token_extras=token_extras,
         )
         expires_in = int((token_expiration or self.default_token_expiration).total_seconds())
         cookie = Cookie(

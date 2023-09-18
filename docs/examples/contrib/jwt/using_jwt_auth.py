@@ -48,7 +48,7 @@ async def login_handler(data: User) -> Response[User]:
     MOCK_DB[str(data.id)] = data
     # you can do whatever you want to update the response instance here
     # e.g. response.set_cookie(...)
-    return jwt_auth.login(identifier=str(data.id), response_body=data)
+    return jwt_auth.login(identifier=str(data.id), token_extras={"email": data.email}, response_body=data)
 
 
 # We also have some other routes, for example:
