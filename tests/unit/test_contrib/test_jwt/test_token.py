@@ -2,7 +2,7 @@ import secrets
 import sys
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 from uuid import uuid4
 
 import pytest
@@ -26,7 +26,7 @@ def test_token(
     token_issuer: Optional[str],
     token_audience: Optional[str],
     token_unique_jwt_id: Optional[str],
-    token_extras: Optional[dict[str, Any]],
+    token_extras: Optional[Dict[str, Any]],
 ) -> None:
     token_secret = secrets.token_hex()
     token = Token(
