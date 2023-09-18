@@ -4,11 +4,9 @@ from advanced_alchemy.repository.typing import (
     SelectT,
     SQLAlchemyAsyncRepositoryT,
     SQLAlchemySyncRepositoryT,
-    T,
 )
 
 __all__ = (
-    "T",
     "ModelT",
     "SelectT",
     "RowT",

@@ -39,8 +39,7 @@ Renaming the dependencies
 #########################
 
 You can change the name that the engine and session are bound to by setting the
-:attr:`engine_dependency_key <litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.engine_dependency_key>` and
-:attr:`session_dependency_key <litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_dependency_key>`
+:attr:`engine_dependency_key` and :attr:`session_dependency_key`
 attributes on the plugin configuration.
 
 Configuring the before send handler
@@ -50,7 +49,7 @@ The plugin configures a ``before_send`` handler that is called before sending a 
 session and removes it from the connection scope.
 
 You can change the handler by setting the
-:attr:`before_send_handler <litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.before_send_handler>` attribute
+:attr:`before_send_handler` attribute
 on the configuration object. For example, an alternate handler is available that will also commit the session on success
 and rollback upon failure.
 
