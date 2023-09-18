@@ -16,6 +16,7 @@ PY_RE = r"py:.*"
 PY_METH = "py:meth"
 PY_ATTR = "py:attr"
 PY_OBJ = "py:obj"
+PY_FUNC = "py:func"
 
 project = "Litestar"
 copyright = "2023, Litestar-Org"
@@ -139,6 +140,9 @@ nitpick_ignore = [
     (PY_METH, "litestar.dto.factory.DTOData.create_instance"),
     (PY_METH, "litestar.dto.interface.DTOInterface.data_to_encodable_type"),
     (PY_CLASS, "advanced_alchemy.repository.typing.ModelT"),
+    (PY_CLASS, "advanced_alchemy.config.common.EngineT"),
+    (PY_CLASS, "advanced_alchemy.config.common.SessionT"),
+    (PY_FUNC, "sqlalchemy.get_engine"),
     (PY_ATTR, "advanced_alchemy.repository.AbstractAsyncRepository.id_attribute"),
 ]
 
