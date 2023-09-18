@@ -1,5 +1,4 @@
 DTO
 ===
 
-.. automodule:: litestar.contrib.sqlalchemy.dto
-    :members:
+This page has moved to :doc:`advanced-alchemy:reference/extensions/litestar/dto`

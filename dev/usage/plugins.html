@@ -1298,63 +1298,28 @@ that annotation.</p>
 <section id="id1">
 <h3>Example<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
 <p>The following example shows the actual implementation of the <code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code> for
-<a class="reference external" href="https://www.sqlalchemy.org/">SQLAlchemy</a> models that is is provided in <code class="docutils literal notranslate"><span class="pre">litestar.contrib.sqlalchemy</span></code>.</p>
+<a class="reference external" href="https://www.sqlalchemy.org/">SQLAlchemy</a> models that is is provided in <code class="docutils literal notranslate"><span class="pre">advanced_alchemy</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code> implementation example</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">advanced_alchemy.extensions.litestar.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
 
-<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">DeclarativeBase</span>
-
-<span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.dto</span> <span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
-<span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">SerializationPluginProtocol</span>
-
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_slots_base</span>
-
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">litestar.typing</span> <span class="kn">import</span> <span class="n">FieldDefinition</span>
-
-
-<span class="k">class</span> <span class="nc">SQLAlchemySerializationPlugin</span><span class="p">(</span><span class="n">SerializationPluginProtocol</span><span class="p">,</span> <span class="n">_slots_base</span><span class="o">.</span><span class="n">SlotsBase</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_type_dto_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">DeclarativeBase</span><span class="p">],</span> <span class="nb">type</span><span class="p">[</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="k">def</span> <span class="nf">supports_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="n">field_definition</span><span class="o">.</span><span class="n">is_collection</span> <span class="ow">and</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">has_inner_subclass_of</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">)</span>
-        <span class="p">)</span> <span class="ow">or</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">create_dto_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
-        <span class="c1"># assumes that the type is a container of SQLAlchemy models or a single SQLAlchemy model</span>
-        <span class="n">annotation</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="n">inner_type</span><span class="o">.</span><span class="n">annotation</span>
-                <span class="k">for</span> <span class="n">inner_type</span> <span class="ow">in</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">inner_types</span>
-                <span class="k">if</span> <span class="n">inner_type</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">)</span>
-            <span class="p">),</span>
-            <span class="n">field_definition</span><span class="o">.</span><span class="n">annotation</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="n">annotation</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_dto_map</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_dto_map</span><span class="p">[</span><span class="n">annotation</span><span class="p">]</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_type_dto_map</span><span class="p">[</span><span class="n">annotation</span><span class="p">]</span> <span class="o">=</span> <span class="n">dto_type</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">annotation</span><span class="p">]</span>  <span class="c1"># type:ignore[valid-type]</span>
-
-        <span class="k">return</span> <span class="n">dto_type</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;SQLAlchemySerializationPlugin&quot;</span><span class="p">,)</span>
 </pre></div>
 </div>
 </div>
-<p><a class="reference internal" href="../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.supports_type" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.supports_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">supports_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">bool:</span></code></a>
+<p><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/serialization.html#advanced_alchemy.extensions.litestar.plugins.serialization.SQLAlchemySerializationPlugin.supports_type" title="(in advanced_alchemy v0.1.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">supports_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">bool:</span></code></a>
 returns a <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> indicating whether the plugin supports serialization for the given type. Specifically, we return
 <code class="docutils literal notranslate"><span class="pre">True</span></code> if the parsed type is either a collection of SQLAlchemy models or a single SQLAlchemy model.</p>
-<p><a class="reference internal" href="../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[AbstractDTO]:</span></code></a>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[AbstractDTO]:</span></code>
 takes a <a class="reference internal" href="../reference/typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance as an argument and returns a
-<a class="reference internal" href="../reference/contrib/sqlalchemy/dto.html#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO" title="litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a> subclass and includes some logic that may be
+<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a> subclass and includes some logic that may be
 interesting to potential serialization plugin authors.</p>
 <p>The first thing the method does is check if the parsed type is a collection of SQLAlchemy models or a single SQLAlchemy
 model, retrieves the model type in either case and assigns it to the <code class="docutils literal notranslate"><span class="pre">annotation</span></code> variable.</p>
 <p>The method then checks if <code class="docutils literal notranslate"><span class="pre">annotation</span></code> is already in the <code class="docutils literal notranslate"><span class="pre">_type_dto_map</span></code> dictionary. If it is, it returns the
-corresponding DTO type. This is done to ensure that multiple <a class="reference internal" href="../reference/contrib/sqlalchemy/dto.html#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO" title="litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a>
+corresponding DTO type. This is done to ensure that multiple <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a>
 subtypes are not created for the same model.</p>
 <p>If the annotation is not in the <code class="docutils literal notranslate"><span class="pre">_type_dto_map</span></code> dictionary, the method creates a new DTO type for the annotation,
 adds it to the <code class="docutils literal notranslate"><span class="pre">_type_dto_map</span></code> dictionary, and returns it.</p>

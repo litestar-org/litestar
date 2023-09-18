@@ -514,10 +514,6 @@ document.write(`
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
-      <span class="fa-solid fa-outdent"></span>
-    </label>
-  
 </div>
 
     </nav>
@@ -1171,46 +1167,9 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="module-litestar.contrib.sqlalchemy.dto">
-<span id="dto"></span><h1>DTO<a class="headerlink" href="#module-litestar.contrib.sqlalchemy.dto" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.dto.</span></span><span class="sig-name descname"><span class="pre">SQLAlchemyDTO</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../../dto/base_dto.html#litestar.dto.base_dto.AbstractDTO" title="litestar.dto.base_dto.AbstractDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDTO</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
-<p>Support for domain modelling with SQLAlchemy.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO.config">
-<span class="sig-name descname"><span class="pre">config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../dto/config.html#litestar.dto.config.SQLAlchemyDTOConfig" title="litestar.dto.config.SQLAlchemyDTOConfig"><span class="pre">SQLAlchemyDTOConfig</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO.config" title="Permalink to this definition">#</a></dt>
-<dd><p>Config objects to define properties of the DTO.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO.generate_field_definitions">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_field_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DeclarativeBase</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../dto/data_structures.html#litestar.dto.data_structures.DTOFieldDefinition" title="litestar.dto.data_structures.DTOFieldDefinition"><span class="pre">DTOFieldDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO.generate_field_definitions" title="Permalink to this definition">#</a></dt>
-<dd><p>Generate <code class="docutils literal notranslate"><span class="pre">FieldDefinition</span></code> instances from <code class="docutils literal notranslate"><span class="pre">model_type</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Yields<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">FieldDefinition</span></code> instances.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO.detect_nested_field">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">detect_nested_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO.detect_nested_field" title="Permalink to this definition">#</a></dt>
-<dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">field_definition</span></code> represents a nested model field.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>field_definition</strong> – inspect type to determine if field represents a nested model.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">field_definition</span></code> represents a nested model field.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+  <section id="dto">
+<h1>DTO<a class="headerlink" href="#dto" title="Permalink to this heading">#</a></h1>
+<p>This page has moved to <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html" title="(in advanced_alchemy v0.1.0)"><span>dto</span></a></p>
 </section>
 
 
@@ -1251,25 +1210,6 @@ document.write(`
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO"><code class="docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO.config"><code class="docutils literal notranslate"><span class="pre">SQLAlchemyDTO.config</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO.generate_field_definitions"><code class="docutils literal notranslate"><span class="pre">SQLAlchemyDTO.generate_field_definitions()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO.detect_nested_field"><code class="docutils literal notranslate"><span class="pre">SQLAlchemyDTO.detect_nested_field()</span></code></a></li>
-</ul>
-</li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>

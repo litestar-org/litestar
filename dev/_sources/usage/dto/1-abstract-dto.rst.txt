@@ -11,7 +11,7 @@ The following factories are currently available:
 - :class:`DataclassDTO <litestar.dto.dataclass_dto.DataclassDTO>`
 - :class:`MsgspecDTO <litestar.dto.msgspec_dto.MsgspecDTO>`
 - :class:`PydanticDTO <litestar.contrib.pydantic.PydanticDTO>`
-- :class:`SQLAlchemyDTO <litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO>`
+- :class:`SQLAlchemyDTO <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>`
 
 Using DTO Factories
 -------------------
@@ -25,7 +25,7 @@ a DTO for use with a SQLAlchemy model:
 
 Here we see that a SQLAlchemy model is used as both the ``data`` and return annotation for the handler, and while
 Litestar does not natively support encoding/decoding to/from SQLAlchemy models, through
-:class:`SQLAlchemyDTO <litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO>` we can do this.
+:class:`SQLAlchemyDTO <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>` we can do this.
 
 However, we do have some issues with the above example. Firstly, the user's password has been returned to them in the
 response from the handler. Secondly, the user is able to set the ``created_at`` field on the model, which should only
@@ -307,7 +307,7 @@ Now, create a DTO for your data object and configure it using ``DTOConfig``. In 
 
 .. code-block:: python
 
-   from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+   from advanced_alchemy.dto import SQLAlchemyDTO
    from litestar.dto import DTOConfig
 
 
@@ -361,7 +361,7 @@ representation of our users.
 
 .. code-block:: python
 
-   from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+   from advanced_alchemy.dto import SQLAlchemyDTO
    from litestar.dto import DTOConfig
 
 
@@ -415,7 +415,7 @@ from the serialized output.
 
 .. code-block:: python
 
-   from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+   from advanced_alchemy.dto import SQLAlchemyDTO
    from litestar.dto import DTOConfig
 
 

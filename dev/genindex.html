@@ -1567,14 +1567,6 @@ document.write(`
 </li>
         <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig.__init__">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig method)</a>
 </li>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.__init__">(litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.__init__">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.GUID.__init__">(litestar.contrib.sqlalchemy.types.GUID method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.ORA_JSONB.__init__">(litestar.contrib.sqlalchemy.types.ORA_JSONB method)</a>
-</li>
         <li><a href="reference/controller.html#litestar.controller.Controller.__init__">(litestar.controller.Controller method)</a>
 </li>
         <li><a href="reference/data_extractors.html#litestar.data_extractors.ConnectionDataExtractor.__init__">(litestar.data_extractors.ConnectionDataExtractor method)</a>
@@ -1612,8 +1604,6 @@ document.write(`
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.__init__">(litestar.dto.base_dto.AbstractDTO method)</a>
 </li>
         <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.__init__">(litestar.dto.config.DTOConfig method)</a>
-</li>
-        <li><a href="reference/dto/config.html#litestar.dto.config.SQLAlchemyDTOConfig.__init__">(litestar.dto.config.SQLAlchemyDTOConfig method)</a>
 </li>
         <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOData.__init__">(litestar.dto.data_structures.DTOData method)</a>
 </li>
@@ -2006,25 +1996,17 @@ document.write(`
 </li>
       <li><a href="reference/contrib/jwt.html#litestar.contrib.jwt.OAuth2Login.access_token">access_token (litestar.contrib.jwt.OAuth2Login attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.add">add() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+      <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.add">add() (litestar.datastructures.MutableScopeHeaders method)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.add">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
-</li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.add">(litestar.datastructures.MutableScopeHeaders method)</a>
-</li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.add">(litestar.repository.abc.AbstractAsyncRepository method)</a>
 </li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.add">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.add_many">add_many() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+      <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.add_many">add_many() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.add_many">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
-</li>
-        <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.add_many">(litestar.repository.abc.AbstractAsyncRepository method)</a>
-</li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.add_many">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
@@ -2106,10 +2088,10 @@ document.write(`
         <li><a href="reference/config.html#litestar.config.app.AppConfig.allowed_hosts">(litestar.config.app.AppConfig attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/config.html#litestar.config.cors.CORSConfig.allowed_origins_regex">allowed_origins_regex (litestar.config.cors.CORSConfig property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/config.html#litestar.config.allowed_hosts.AllowedHostsConfig">AllowedHostsConfig (class in litestar.config.allowed_hosts)</a>
 </li>
       <li><a href="reference/middleware/allowed_hosts.html#litestar.middleware.allowed_hosts.AllowedHostsMiddleware">AllowedHostsMiddleware (class in litestar.middleware.allowed_hosts)</a>
@@ -2304,6 +2286,8 @@ document.write(`
 </li>
       <li><a href="reference/repository/filters.html#litestar.repository.filters.BeforeAfter.before">before (litestar.repository.filters.BeforeAfter attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/config.html#litestar.config.app.AppConfig.before_request">before_request (litestar.config.app.AppConfig attribute)</a>
 
       <ul>
@@ -2312,11 +2296,7 @@ document.write(`
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.before_request">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/config.html#litestar.config.app.AppConfig.before_send">before_send (litestar.config.app.AppConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.before_send_handler">before_send_handler (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig.before_send_handler">before_send_handler() (litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig method)</a>
 
@@ -2335,8 +2315,6 @@ document.write(`
       <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntAuditBase">BigIntAuditBase (class in litestar.contrib.sqlalchemy.base)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntBase">BigIntBase (class in litestar.contrib.sqlalchemy.base)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.BigIntIdentity">BigIntIdentity (in module litestar.contrib.sqlalchemy.types)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntPrimaryKey">BigIntPrimaryKey (class in litestar.contrib.sqlalchemy.base)</a>
 </li>
@@ -2386,14 +2364,6 @@ document.write(`
 </li>
       <li><a href="reference/logging/config.html#litestar.logging.config.StructLoggingConfig.cache_logger_on_first_use">cache_logger_on_first_use (litestar.logging.config.StructLoggingConfig attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.DateTimeUTC.cache_ok">cache_ok (litestar.contrib.sqlalchemy.types.DateTimeUTC attribute)</a>
-
-      <ul>
-        <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.GUID.cache_ok">(litestar.contrib.sqlalchemy.types.GUID attribute)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.ORA_JSONB.cache_ok">(litestar.contrib.sqlalchemy.types.ORA_JSONB attribute)</a>
-</li>
-      </ul></li>
       <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader">CacheControlHeader (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.CacheKeyBuilder">CacheKeyBuilder (in module litestar.types)</a>
@@ -2412,12 +2382,6 @@ document.write(`
 </li>
       <li><a href="reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin">ChannelsPlugin (class in litestar.channels.plugin)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.check_health">check_health() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository class method)</a>
-
-      <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.check_health">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository class method)</a>
-</li>
-      </ul></li>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.check_not_found">check_not_found() (litestar.repository.abc.AbstractAsyncRepository static method)</a>
 
       <ul>
@@ -2464,8 +2428,6 @@ document.write(`
       </ul></li>
       <li><a href="reference/exceptions.html#litestar.exceptions.WebSocketException.code">code (litestar.exceptions.WebSocketException attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.ORA_JSONB.coerce_compared_value">coerce_compared_value() (litestar.contrib.sqlalchemy.types.ORA_JSONB method)</a>
-</li>
       <li><a href="reference/repository/filters.html#litestar.repository.filters.CollectionFilter">CollectionFilter (class in litestar.repository.filters)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.CommonTableAttributes">CommonTableAttributes (class in litestar.contrib.sqlalchemy.base)</a>
@@ -2488,12 +2450,8 @@ document.write(`
 </li>
       <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware">CompressionMiddleware (class in litestar.middleware.compression)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/dto.html#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO.config">config (litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO attribute)</a>
-
-      <ul>
-        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.config">(litestar.dto.base_dto.AbstractDTO attribute)</a>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.config">config (litestar.dto.base_dto.AbstractDTO attribute)</a>
 </li>
-      </ul></li>
       <li><a href="reference/logging/config.html#litestar.logging.config.BaseLoggingConfig.configure">configure() (litestar.logging.config.BaseLoggingConfig method)</a>
 
       <ul>
@@ -2538,14 +2496,14 @@ document.write(`
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.RequestBody.content">(litestar.openapi.spec.RequestBody attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.content_encoding">content_encoding (litestar.openapi.spec.Schema attribute)</a>
 
       <ul>
         <li><a href="reference/params.html#litestar.params.KwargDefinition.content_encoding">(litestar.params.KwargDefinition attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.content_media_type">content_media_type (litestar.openapi.spec.Schema attribute)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.content_schema">content_schema (litestar.openapi.spec.Schema attribute)</a>
@@ -2596,18 +2554,18 @@ document.write(`
 </li>
       <li><a href="reference/middleware/cors.html#litestar.middleware.cors.CORSMiddleware">CORSMiddleware (class in litestar.middleware.cors)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.count">count() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+      <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.count">count() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.count">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
-</li>
-        <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.count">(litestar.repository.abc.AbstractAsyncRepository method)</a>
-</li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.count">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.create_app_state_items">create_app_state_items() (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig method)</a>
+      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig.create_app_state_items">create_app_state_items() (litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig method)</a>
+
+      <ul>
+        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig.create_app_state_items">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig method)</a>
 </li>
+      </ul></li>
       <li><a href="reference/testing.html#litestar.testing.create_async_test_client">create_async_test_client() (in module litestar.testing)</a>
 </li>
       <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware.create_compression_send_wrapper">create_compression_send_wrapper() (litestar.middleware.compression.CompressionMiddleware method)</a>
@@ -2618,16 +2576,8 @@ document.write(`
         <li><a href="reference/plugins.html#litestar.plugins.SerializationPluginProtocol.create_dto_for_type">(litestar.plugins.SerializationPluginProtocol method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.create_engine">create_engine() (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig method)</a>
-</li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.create_engine_callable">create_engine_callable (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig.create_engine_callable">create_engine_callable() (litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig method)</a>
-
-      <ul>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig.create_engine_callable">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig method)</a>
-</li>
-      </ul></li>
       <li><a href="reference/response/file.html#litestar.response.file.create_etag_for_file">create_etag_for_file() (in module litestar.response.file)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.create_examples">create_examples (litestar.openapi.OpenAPIConfig attribute)</a>
@@ -2661,7 +2611,13 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.create_session_maker">create_session_maker() (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig method)</a>
+
+      <ul>
+        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig.create_session_maker">(litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig method)</a>
 </li>
+        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig.create_session_maker">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig method)</a>
+</li>
+      </ul></li>
       <li><a href="reference/response/index.html#litestar.response.Template.create_template_context">create_template_context() (litestar.response.Template method)</a>
 
       <ul>
@@ -2703,8 +2659,6 @@ document.write(`
       <li><a href="reference/openapi/openapi.html#litestar.openapi.ResponseSpec.data_container">data_container (litestar.openapi.ResponseSpec attribute)</a>
 </li>
       <li><a href="reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO">DataclassDTO (class in litestar.dto.dataclass_dto)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.DateTimeUTC">DateTimeUTC (class in litestar.contrib.sqlalchemy.types)</a>
 </li>
       <li><a href="reference/config.html#litestar.config.app.AppConfig.debug">debug (litestar.config.app.AppConfig attribute)</a>
 </li>
@@ -2776,13 +2730,9 @@ document.write(`
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.PathItem.delete">(litestar.openapi.spec.PathItem attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete">delete() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+      <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.delete">delete() (litestar.middleware.session.server_side.ServerSideSessionBackend method)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
-</li>
-        <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.delete">(litestar.middleware.session.server_side.ServerSideSessionBackend method)</a>
-</li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.delete">(litestar.repository.abc.AbstractAsyncRepository method)</a>
 </li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.delete">(litestar.repository.abc.AbstractSyncRepository method)</a>
@@ -2824,13 +2774,9 @@ document.write(`
         <li><a href="reference/stores/memory.html#litestar.stores.memory.MemoryStore.delete_expired">(litestar.stores.memory.MemoryStore method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete_many">delete_many() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+      <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.delete_many">delete_many() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete_many">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
-</li>
-        <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.delete_many">(litestar.repository.abc.AbstractAsyncRepository method)</a>
-</li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.delete_many">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
@@ -2864,8 +2810,6 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.dependent_required">dependent_required (litestar.openapi.spec.Schema attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.dependent_schemas">dependent_schemas (litestar.openapi.spec.Schema attribute)</a>
 </li>
       <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.deprecated">deprecated (litestar.datastructures.ResponseHeader attribute)</a>
@@ -2880,6 +2824,8 @@ document.write(`
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.deprecated">(litestar.openapi.spec.Schema attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/contrib/jwt.html#litestar.contrib.jwt.BaseJWTAuth.description">description (litestar.contrib.jwt.BaseJWTAuth attribute)</a>
 
       <ul>
@@ -2942,8 +2888,6 @@ document.write(`
 
       <ul>
         <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO.detect_nested_field">(litestar.contrib.pydantic.PydanticDTO class method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/dto.html#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO.detect_nested_field">(litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO class method)</a>
 </li>
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.detect_nested_field">(litestar.dto.base_dto.AbstractDTO class method)</a>
 </li>
@@ -3060,16 +3004,30 @@ document.write(`
 </li>
       <li><a href="reference/template.html#litestar.template.TemplateConfig.engine">engine (litestar.template.TemplateConfig attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.engine_app_state_key">engine_app_state_key (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
+      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig.engine_app_state_key">engine_app_state_key (litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig.engine_app_state_key">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig attribute)</a>
 </li>
+      </ul></li>
       <li><a href="reference/template.html#litestar.template.TemplateConfig.engine_callback">engine_callback (litestar.template.TemplateConfig attribute)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.engine_config">engine_config (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig.engine_config">(litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig attribute)</a>
 </li>
+        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig.engine_config">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig attribute)</a>
+</li>
+      </ul></li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.engine_config_dict">engine_config_dict (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig property)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.engine_dependency_key">engine_dependency_key (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
+      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig.engine_dependency_key">engine_dependency_key (litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig.engine_dependency_key">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig attribute)</a>
 </li>
+      </ul></li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.engine_instance">engine_instance (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
 
       <ul>
@@ -3236,13 +3194,9 @@ document.write(`
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.execution_options">execution_options (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.exists">exists() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+      <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.exists">exists() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.exists">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
-</li>
-        <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.exists">(litestar.repository.abc.AbstractAsyncRepository method)</a>
-</li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.exists">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
         <li><a href="reference/stores/base.html#litestar.stores.base.Store.exists">(litestar.stores.base.Store method)</a>
@@ -3410,13 +3364,9 @@ document.write(`
 </li>
       <li><a href="reference/types.html#litestar.types.FileSystemProtocol">FileSystemProtocol (class in litestar.types)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.filter_collection_by_kwargs">filter_collection_by_kwargs() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+      <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.filter_collection_by_kwargs">filter_collection_by_kwargs() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.filter_collection_by_kwargs">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
-</li>
-        <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.filter_collection_by_kwargs">(litestar.repository.abc.AbstractAsyncRepository method)</a>
-</li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.filter_collection_by_kwargs">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
@@ -3426,10 +3376,10 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.SecurityScheme.flows">flows (litestar.openapi.spec.SecurityScheme attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.flush_all">flush_all() (litestar.channels.backends.redis.RedisChannelsStreamBackend method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.fn">fn (litestar.handlers.BaseRouteHandler property)</a>
 </li>
       <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.for_pydantic_model">for_pydantic_model() (litestar.contrib.pydantic.PydanticSchemaPlugin class method)</a>
@@ -3497,8 +3447,6 @@ document.write(`
       <ul>
         <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO.generate_field_definitions">(litestar.contrib.pydantic.PydanticDTO class method)</a>
 </li>
-        <li><a href="reference/contrib/sqlalchemy/dto.html#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO.generate_field_definitions">(litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO class method)</a>
-</li>
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.generate_field_definitions">(litestar.dto.base_dto.AbstractDTO class method)</a>
 </li>
         <li><a href="reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO.generate_field_definitions">(litestar.dto.dataclass_dto.DataclassDTO class method)</a>
@@ -3520,13 +3468,9 @@ document.write(`
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.PathItem.get">(litestar.openapi.spec.PathItem attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get">get() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+      <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.get">get() (litestar.middleware.session.server_side.ServerSideSessionBackend method)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.get">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
-</li>
-        <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.get">(litestar.middleware.session.server_side.ServerSideSessionBackend method)</a>
-</li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.get">(litestar.repository.abc.AbstractAsyncRepository method)</a>
 </li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.get">(litestar.repository.abc.AbstractSyncRepository method)</a>
@@ -3551,6 +3495,8 @@ document.write(`
       <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys">get_cookie_keys() (litestar.middleware.session.client_side.ClientSideSessionBackend method)</a>
 </li>
       <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_dto_config_from_annotated_type">get_dto_config_from_annotated_type() (litestar.dto.base_dto.AbstractDTO static method)</a>
+</li>
+      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.get_engine">get_engine() (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig method)</a>
 </li>
       <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.get_fs_info">get_fs_info() (litestar.static_files.StaticFiles method)</a>
 </li>
@@ -3586,37 +3532,25 @@ document.write(`
         <li><a href="reference/pagination.html#litestar.pagination.AbstractSyncOffsetPaginator.get_items">(litestar.pagination.AbstractSyncOffsetPaginator method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_model_type_hints">get_model_type_hints() (litestar.dto.base_dto.AbstractDTO static method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get_one">get_one() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_model_type_hints">get_model_type_hints() (litestar.dto.base_dto.AbstractDTO static method)</a>
+</li>
+      <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.get_one">get_one() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.get_one">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
-</li>
-        <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.get_one">(litestar.repository.abc.AbstractAsyncRepository method)</a>
-</li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.get_one">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get_one_or_none">get_one_or_none() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+      <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.get_one_or_none">get_one_or_none() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.get_one_or_none">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
-</li>
-        <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.get_one_or_none">(litestar.repository.abc.AbstractAsyncRepository method)</a>
-</li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.get_one_or_none">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get_or_create">get_or_create() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+      <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.get_or_create">get_or_create() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.get_or_create">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
-</li>
-        <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.get_or_create">(litestar.repository.abc.AbstractAsyncRepository method)</a>
-</li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.get_or_create">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
@@ -3692,8 +3626,6 @@ document.write(`
         <li><a href="reference/static_files.html#litestar.static_files.StaticFilesConfig.guards">(litestar.static_files.StaticFilesConfig attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.GUID">GUID (class in litestar.contrib.sqlalchemy.types)</a>
-</li>
       <li><a href="reference/config.html#litestar.config.compression.CompressionConfig.gzip_compress_level">gzip_compress_level (litestar.config.compression.CompressionConfig attribute)</a>
 </li>
   </ul></td>
@@ -3984,8 +3916,6 @@ document.write(`
 </li>
       <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState">ImmutableState (class in litestar.datastructures)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.ORA_JSONB.impl">impl (litestar.contrib.sqlalchemy.types.ORA_JSONB attribute)</a>
-</li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OAuthFlows.implicit">implicit (litestar.openapi.spec.OAuthFlows attribute)</a>
 </li>
       <li><a href="reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException">ImproperlyConfiguredException</a>
@@ -3993,8 +3923,6 @@ document.write(`
       <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.include">include (litestar.dto.config.DTOConfig attribute)</a>
 </li>
       <li><a href="reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddlewareConfig.include_compressed_body">include_compressed_body (litestar.middleware.logging.LoggingMiddlewareConfig attribute)</a>
-</li>
-      <li><a href="reference/dto/config.html#litestar.dto.config.SQLAlchemyDTOConfig.include_implicit_fields">include_implicit_fields (litestar.dto.config.SQLAlchemyDTOConfig attribute)</a>
 </li>
       <li><a href="reference/config.html#litestar.config.app.AppConfig.include_in_schema">include_in_schema (litestar.config.app.AppConfig attribute)</a>
 
@@ -4038,10 +3966,10 @@ document.write(`
 </li>
       <li><a href="reference/config.html#litestar.config.cors.CORSConfig.is_allow_all_headers">is_allow_all_headers (litestar.config.cors.CORSConfig property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/config.html#litestar.config.cors.CORSConfig.is_allow_all_methods">is_allow_all_methods (litestar.config.cors.CORSConfig property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/config.html#litestar.config.cors.CORSConfig.is_allow_all_origins">is_allow_all_origins (litestar.config.cors.CORSConfig property)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_annotated">is_annotated (litestar.typing.FieldDefinition property)</a>
@@ -4136,11 +4064,9 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI.json_schema_dialect">json_schema_dialect (litestar.openapi.spec.OpenAPI attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.json_serializer">json_serializer() (litestar.contrib.sqlalchemy.plugins.EngineConfig method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.JsonB">JsonB (in module litestar.contrib.sqlalchemy.types)</a>
+      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.json_serializer">json_serializer() (litestar.contrib.sqlalchemy.plugins.EngineConfig method)</a>
 </li>
       <li><a href="reference/contrib/jwt.html#litestar.contrib.jwt.Token.jti">jti (litestar.contrib.jwt.Token attribute)</a>
 </li>
@@ -4250,23 +4176,15 @@ document.write(`
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPIResponse.links">(litestar.openapi.spec.OpenAPIResponse attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.list">list() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+      <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.list">list() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.list">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
-</li>
-        <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.list">(litestar.repository.abc.AbstractAsyncRepository method)</a>
-</li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.list">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.list_and_count">list_and_count() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+      <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.list_and_count">list_and_count() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.list_and_count">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
-</li>
-        <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.list_and_count">(litestar.repository.abc.AbstractAsyncRepository method)</a>
-</li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.list_and_count">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
@@ -4521,31 +4439,10 @@ document.write(`
 </li>
       </ul></li>
       <li>
-    litestar.contrib.sqlalchemy.dto
-
-      <ul>
-        <li><a href="reference/contrib/sqlalchemy/dto.html#module-litestar.contrib.sqlalchemy.dto">module</a>
-</li>
-      </ul></li>
-      <li>
     litestar.contrib.sqlalchemy.plugins
 
       <ul>
         <li><a href="reference/contrib/sqlalchemy/plugins.html#module-litestar.contrib.sqlalchemy.plugins">module</a>
-</li>
-      </ul></li>
-      <li>
-    litestar.contrib.sqlalchemy.repository
-
-      <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#module-litestar.contrib.sqlalchemy.repository">module</a>
-</li>
-      </ul></li>
-      <li>
-    litestar.contrib.sqlalchemy.types
-
-      <ul>
-        <li><a href="reference/contrib/sqlalchemy/types.html#module-litestar.contrib.sqlalchemy.types">module</a>
 </li>
       </ul></li>
       <li>
@@ -4590,8 +4487,6 @@ document.write(`
         <li><a href="reference/dto/config.html#module-litestar.dto.config">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.data_structures
 
@@ -4606,6 +4501,8 @@ document.write(`
         <li><a href="reference/dto/dataclass_dto.html#module-litestar.dto.dataclass_dto">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.field
 
@@ -4976,12 +4873,6 @@ document.write(`
 </li>
       <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.load_data">load_data() (litestar.middleware.session.client_side.ClientSideSessionBackend method)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.GUID.load_dialect_impl">load_dialect_impl() (litestar.contrib.sqlalchemy.types.GUID method)</a>
-
-      <ul>
-        <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.ORA_JSONB.load_dialect_impl">(litestar.contrib.sqlalchemy.types.ORA_JSONB method)</a>
-</li>
-      </ul></li>
       <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseSessionBackend.load_from_connection">load_from_connection() (litestar.middleware.session.base.BaseSessionBackend method)</a>
 
       <ul>
@@ -5254,13 +5145,7 @@ document.write(`
 </li>
         <li><a href="reference/contrib/sqlalchemy/base.html#module-litestar.contrib.sqlalchemy.base">litestar.contrib.sqlalchemy.base</a>
 </li>
-        <li><a href="reference/contrib/sqlalchemy/dto.html#module-litestar.contrib.sqlalchemy.dto">litestar.contrib.sqlalchemy.dto</a>
-</li>
         <li><a href="reference/contrib/sqlalchemy/plugins.html#module-litestar.contrib.sqlalchemy.plugins">litestar.contrib.sqlalchemy.plugins</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#module-litestar.contrib.sqlalchemy.repository">litestar.contrib.sqlalchemy.repository</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/types.html#module-litestar.contrib.sqlalchemy.types">litestar.contrib.sqlalchemy.types</a>
 </li>
         <li><a href="reference/controller.html#module-litestar.controller">litestar.controller</a>
 </li>
@@ -5533,8 +5418,12 @@ document.write(`
         <li><a href="reference/security/index.html#litestar.security.AbstractSecurityConfig.on_app_init">(litestar.security.AbstractSecurityConfig method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/plugins.html#litestar.plugins.CLIPluginProtocol.on_cli_init">on_cli_init() (litestar.plugins.CLIPluginProtocol method)</a>
+      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin.on_cli_init">on_cli_init() (litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin method)</a>
+
+      <ul>
+        <li><a href="reference/plugins.html#litestar.plugins.CLIPluginProtocol.on_cli_init">(litestar.plugins.CLIPluginProtocol method)</a>
 </li>
+      </ul></li>
       <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener.on_disconnect">on_disconnect (litestar.handlers.WebsocketListener attribute)</a>
 
       <ul>
@@ -5591,10 +5480,10 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.SecurityScheme.open_id_connect_url">open_id_connect_url (litestar.openapi.spec.SecurityScheme attribute)</a>
 </li>
-      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI">OpenAPI (class in litestar.openapi.spec)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI">OpenAPI (class in litestar.openapi.spec)</a>
+</li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI.openapi">openapi (litestar.openapi.spec.OpenAPI attribute)</a>
 </li>
       <li><a href="reference/contrib/jwt.html#litestar.contrib.jwt.BaseJWTAuth.openapi_components">openapi_components (litestar.contrib.jwt.BaseJWTAuth property)</a>
@@ -5685,8 +5574,6 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.TestClient.options">(litestar.testing.TestClient method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.ORA_JSONB">ORA_JSONB (class in litestar.contrib.sqlalchemy.types)</a>
-</li>
       <li><a href="reference/repository/filters.html#litestar.repository.filters.OrderBy">OrderBy (class in litestar.repository.filters)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.origin">origin (litestar.typing.FieldDefinition attribute)</a>
@@ -5829,14 +5716,14 @@ document.write(`
         <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.plugins">(litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool">pool (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool_logging_name">pool_logging_name (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool_pre_ping">pool_pre_ping (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool_recycle">pool_recycle (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool_reset_on_return">pool_reset_on_return (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
@@ -5885,22 +5772,6 @@ document.write(`
 </li>
       <li><a href="reference/dto/field.html#litestar.dto.field.Mark.PRIVATE">PRIVATE (litestar.dto.field.Mark attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.DateTimeUTC.process_bind_param">process_bind_param() (litestar.contrib.sqlalchemy.types.DateTimeUTC method)</a>
-
-      <ul>
-        <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.GUID.process_bind_param">(litestar.contrib.sqlalchemy.types.GUID method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.ORA_JSONB.process_bind_param">(litestar.contrib.sqlalchemy.types.ORA_JSONB method)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.DateTimeUTC.process_result_value">process_result_value() (litestar.contrib.sqlalchemy.types.DateTimeUTC method)</a>
-
-      <ul>
-        <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.GUID.process_result_value">(litestar.contrib.sqlalchemy.types.GUID method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.ORA_JSONB.process_result_value">(litestar.contrib.sqlalchemy.types.ORA_JSONB method)</a>
-</li>
-      </ul></li>
       <li><a href="reference/logging/config.html#litestar.logging.config.StructLoggingConfig.processors">processors (litestar.logging.config.StructLoggingConfig attribute)</a>
 </li>
       <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails.prompt">prompt (litestar.contrib.htmx.request.HTMXDetails property)</a>
@@ -5915,10 +5786,18 @@ document.write(`
 </li>
       <li><a href="reference/di.html#litestar.di.Provide">Provide (class in litestar.di)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.provide_engine">provide_engine() (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig method)</a>
+      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig.provide_engine">provide_engine() (litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig method)</a>
+
+      <ul>
+        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig.provide_engine">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig method)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.provide_session">provide_session() (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig method)</a>
+      </ul></li>
+      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig.provide_session">provide_session() (litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig method)</a>
+
+      <ul>
+        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig.provide_session">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig method)</a>
 </li>
+      </ul></li>
       <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.proxy_revalidate">proxy_revalidate (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
       <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.public">public (litestar.datastructures.CacheControlHeader attribute)</a>
@@ -5961,12 +5840,6 @@ document.write(`
 </li>
       <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin">PydanticSchemaPlugin (class in litestar.contrib.pydantic)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.GUID.python_type">python_type (litestar.contrib.sqlalchemy.types.GUID property)</a>
-
-      <ul>
-        <li><a href="reference/contrib/sqlalchemy/types.html#litestar.contrib.sqlalchemy.types.ORA_JSONB.python_type">(litestar.contrib.sqlalchemy.types.ORA_JSONB property)</a>
-</li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -6627,10 +6500,6 @@ document.write(`
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_config">session_config (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig.session_config">(litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig attribute)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig.session_config">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig attribute)</a>
-</li>
         <li><a href="reference/testing.html#litestar.testing.AsyncTestClient.session_config">(litestar.testing.AsyncTestClient attribute)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.BaseTestClient.session_config">(litestar.testing.BaseTestClient attribute)</a>
@@ -6640,8 +6509,12 @@ document.write(`
       </ul></li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_config_dict">session_config_dict (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig property)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_dependency_key">session_dependency_key (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
+      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig.session_dependency_key">session_dependency_key (litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig.session_dependency_key">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig attribute)</a>
 </li>
+      </ul></li>
       <li>
     SESSION_ID
 
@@ -6653,20 +6526,18 @@ document.write(`
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_maker">session_maker (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_maker_app_state_key">session_maker_app_state_key (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_maker_class">session_maker_class (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
+      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig.session_maker_app_state_key">session_maker_app_state_key (litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig attribute)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig.session_maker_class">(litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig attribute)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig.session_maker_class">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig attribute)</a>
+        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig.session_maker_app_state_key">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth">SessionAuth (class in litestar.security.session_auth)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_maker_class">session_maker_class (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
+</li>
+      <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth">SessionAuth (class in litestar.security.session_auth)</a>
+</li>
       <li><a href="reference/security/session_auth.html#litestar.security.session_auth.middleware.SessionAuthMiddleware">SessionAuthMiddleware (class in litestar.security.session_auth.middleware)</a>
 </li>
       <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware">SessionMiddleware (class in litestar.middleware.session.base)</a>
@@ -6734,8 +6605,6 @@ document.write(`
       <li><a href="reference/config.html#litestar.config.app.AppConfig.signature_namespace">signature_namespace (litestar.config.app.AppConfig attribute)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.signature_namespace">(litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig property)</a>
-</li>
         <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig.signature_namespace">(litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig property)</a>
 </li>
         <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig.signature_namespace">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig property)</a>
@@ -6761,12 +6630,6 @@ document.write(`
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig">SQLAlchemyAsyncConfig (class in litestar.contrib.sqlalchemy.plugins)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository">SQLAlchemyAsyncRepository (class in litestar.contrib.sqlalchemy.repository)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/dto.html#litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO">SQLAlchemyDTO (class in litestar.contrib.sqlalchemy.dto)</a>
-</li>
-      <li><a href="reference/dto/config.html#litestar.dto.config.SQLAlchemyDTOConfig">SQLAlchemyDTOConfig (class in litestar.dto.config)</a>
-</li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin">SQLAlchemyInitPlugin (class in litestar.contrib.sqlalchemy.plugins)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin">SQLAlchemyPlugin (class in litestar.contrib.sqlalchemy.plugins)</a>
@@ -6774,8 +6637,6 @@ document.write(`
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin">SQLAlchemySerializationPlugin (class in litestar.contrib.sqlalchemy.plugins)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig">SQLAlchemySyncConfig (class in litestar.contrib.sqlalchemy.plugins)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository">SQLAlchemySyncRepository (class in litestar.contrib.sqlalchemy.repository)</a>
 </li>
       <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.stale_while_revalidate">stale_while_revalidate (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
@@ -7175,27 +7036,23 @@ document.write(`
         <li><a href="reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.unsubscribe">(litestar.channels.plugin.ChannelsPlugin method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.update">update() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+      <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.update">update() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.update">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
-</li>
-        <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.update">(litestar.repository.abc.AbstractAsyncRepository method)</a>
-</li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.update">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.update_app_state">update_app_state() (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig method)</a>
-</li>
-      <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOData.update_instance">update_instance() (litestar.dto.data_structures.DTOData method)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.update_many">update_many() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig.update_app_state">update_app_state() (litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig method)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.update_many">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
+        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig.update_app_state">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig method)</a>
 </li>
-        <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.update_many">(litestar.repository.abc.AbstractAsyncRepository method)</a>
+      </ul></li>
+      <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOData.update_instance">update_instance() (litestar.dto.data_structures.DTOData method)</a>
 </li>
+      <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.update_many">update_many() (litestar.repository.abc.AbstractAsyncRepository method)</a>
+
+      <ul>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.update_many">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
@@ -7207,25 +7064,17 @@ document.write(`
 </li>
       <li><a href="reference/params.html#litestar.params.KwargDefinition.upper_case">upper_case (litestar.params.KwargDefinition attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.upsert">upsert() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.upsert">upsert() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.upsert">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
-</li>
-        <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.upsert">(litestar.repository.abc.AbstractAsyncRepository method)</a>
-</li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.upsert">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.upsert_many">upsert_many() (litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository method)</a>
+      <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.upsert_many">upsert_many() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.upsert_many">(litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository method)</a>
-</li>
-        <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.upsert_many">(litestar.repository.abc.AbstractAsyncRepository method)</a>
-</li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.upsert_many">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
@@ -7375,10 +7224,10 @@ document.write(`
 </li>
       <li><a href="reference/types.html#litestar.types.WebSocketSendMessage">WebSocketSendMessage (in module litestar.types)</a>
 </li>
-      <li><a href="reference/testing.html#litestar.testing.WebSocketTestSession">WebSocketTestSession (class in litestar.testing)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/testing.html#litestar.testing.WebSocketTestSession">WebSocketTestSession (class in litestar.testing)</a>
+</li>
       <li><a href="reference/stores/redis.html#litestar.stores.redis.RedisStore.with_client">with_client() (litestar.stores.redis.RedisStore class method)</a>
 </li>
       <li><a href="reference/stores/base.html#litestar.stores.base.NamespacedStore.with_namespace">with_namespace() (litestar.stores.base.NamespacedStore method)</a>
@@ -7390,8 +7239,6 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/datastructures.html#litestar.datastructures.URL.with_replacements">with_replacements() (litestar.datastructures.URL method)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.wrap_sqlalchemy_exception">wrap_sqlalchemy_exception() (in module litestar.contrib.sqlalchemy.repository)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.XML.wrapped">wrapped (litestar.openapi.spec.XML attribute)</a>
 </li>
