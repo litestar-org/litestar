@@ -16,6 +16,7 @@ PY_RE = r"py:.*"
 PY_METH = "py:meth"
 PY_ATTR = "py:attr"
 PY_OBJ = "py:obj"
+PY_FUNC = "py:func"
 
 project = "Litestar"
 copyright = "2023, Litestar-Org"
@@ -51,6 +52,7 @@ intersphinx_mapping = {
     "tortoise": ("https://tortoise.github.io/", None),
     "piccolo": ("https://piccolo-orm.readthedocs.io/en/latest", None),
     "opentelemetry": ("https://opentelemetry-python.readthedocs.io/en/latest/", None),
+    "advanced-alchemy": ("https://docs.advanced-alchemy.jolt.rs/latest/", None),
 }
 
 
@@ -132,9 +134,27 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.response.RedirectResponse"),
     (PY_CLASS, "litestar.response_containers.Redirect"),
     (PY_CLASS, "litestar.response_containers.Template"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.types.BigIntIdentity"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.types.JsonB"),
     (PY_CLASS, "litestar.typing.ParsedType"),
     (PY_METH, "litestar.dto.factory.DTOData.create_instance"),
     (PY_METH, "litestar.dto.interface.DTOInterface.data_to_encodable_type"),
+    (PY_CLASS, "advanced_alchemy.repository.typing.ModelT"),
+    (PY_CLASS, "advanced_alchemy.config.common.EngineT"),
+    (PY_CLASS, "advanced_alchemy.config.common.SessionT"),
+    (PY_CLASS, "advanced_alchemy.config.EngineConfig"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemyPlugin"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemyInitPlugin"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.config.SQLAlchemySyncConfig"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.config.SQLAlchemyAsyncConfig"),
+    (PY_METH, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin.create_dto_for_type"),
+    (PY_CLASS, "advanced_alchemy.config.AsyncSessionConfig"),
+    (PY_CLASS, "advanced_alchemy.config.SyncSessionConfig"),
+    (PY_CLASS, "advanced_alchemy.types.JsonB"),
+    (PY_CLASS, "advanced_alchemy.types.BigIntIdentity"),
+    (PY_FUNC, "sqlalchemy.get_engine"),
+    (PY_ATTR, "advanced_alchemy.repository.AbstractAsyncRepository.id_attribute"),
 ]
 
 nitpick_ignore_regex = [

@@ -96,6 +96,7 @@ rich = { version = ">=13.0.0", optional = true }
 rich-click = { version = "*", optional = true }
 sqlalchemy = { version = ">=2.0.12", optional = true }
 structlog = { version = "*", optional = true }
+advanced-alchemy = { version = "0.1.0", optional = true }
 typing-extensions = "*"
 uvicorn = { extras = ["standard"], version = ">=0.22.0", optional = true }
 
@@ -177,12 +178,11 @@ picologging = ["picologging"]
 prometheus = ["prometheus-client"]
 pydantic = ["pydantic", "pydantic-extra-types"]
 redis = ["redis"]
-sqlalchemy = ["sqlalchemy", "alembic"]
+sqlalchemy = ["advanced-alchemy"]
 standard = ["click", "jinja2", "jsbeautifier", "rich", "uvicorn", "rich-click"]
 structlog = ["structlog"]
 
 full = [
-    "alembic",
     "annotated-types",
     "attrs",
     "brotli",
@@ -202,9 +202,9 @@ full = [
     "python-jose",
     "redis",
     "rich",
-    "sqlalchemy",
     "structlog",
     "uvicorn",
+    "advanced-alchemy"
 ]
 
 [tool.poetry.scripts]
@@ -240,7 +240,7 @@ exclude_lines = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "-m='not sqlalchemy_integration' --dist=loadgroup"
+addopts = "--dist=loadgroup"
 asyncio_mode = "auto"
 filterwarnings = [
     "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:",
@@ -440,14 +440,8 @@ add_editors_note = true
 ruff_fix = true
 
 [tool.unasyncd.files]
-"litestar/contrib/sqlalchemy/repository/_async.py" = "litestar/contrib/sqlalchemy/repository/_sync.py"
 "litestar/repository/abc/_async.py" = "litestar/repository/abc/_sync.py"
 
 [tool.unasyncd.per_file_add_replacements."litestar/repository/abc/_async.py"]
 "AbstractAsyncRepository" = "AbstractSyncRepository"
 "AsyncRepoT" = "SyncRepoT"
-
-[tool.unasyncd.per_file_add_replacements."litestar/contrib/sqlalchemy/repository/_async.py"]
-SQLAlchemyAsyncRepository = "SQLAlchemySyncRepository"
-"sqlalchemy.ext.asyncio.AsyncSession" = "sqlalchemy.orm.Session"
-"litestar.repository.AbstractAsyncRepository" = "litestar.repository.AbstractSyncRepository"

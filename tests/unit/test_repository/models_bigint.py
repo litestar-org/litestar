@@ -4,11 +4,10 @@ from __future__ import annotations
 from datetime import date, datetime
 from typing import List
 
+from advanced_alchemy import SQLAlchemyAsyncRepository, SQLAlchemySyncRepository
+from advanced_alchemy.base import BigIntAuditBase, BigIntBase
 from sqlalchemy import Column, FetchedValue, ForeignKey, String, Table, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from litestar.contrib.sqlalchemy.base import BigIntAuditBase, BigIntBase
-from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository, SQLAlchemySyncRepository
 
 
 class BigIntAuthor(BigIntAuditBase):
@@ -16,7 +15,7 @@ class BigIntAuthor(BigIntAuditBase):
 
     name: Mapped[str] = mapped_column(String(length=100))  # pyright: ignore
     dob: Mapped[date] = mapped_column(nullable=True)  # pyright: ignore
-    books: Mapped[List[BigIntBook]] = relationship(
+    books: Mapped[List[BigIntBook]] = relationship(  # noqa
         lazy="selectin",
         back_populates="author",
         cascade="all, delete",
@@ -29,7 +28,9 @@ class BigIntBook(BigIntBase):
     title: Mapped[str] = mapped_column(String(length=250))  # pyright: ignore
     author_id: Mapped[int] = mapped_column(ForeignKey("big_int_author.id"))  # pyright: ignore
     author: Mapped[BigIntAuthor] = relationship(  # pyright: ignore
-        lazy="joined", innerjoin=True, back_populates="books"
+        lazy="joined",
+        innerjoin=True,
+        back_populates="books",
     )
 
 
@@ -62,14 +63,14 @@ bigint_item_tag = Table(
 class BigIntItem(BigIntBase):
     name: Mapped[str] = mapped_column(String(length=50))  # pyright: ignore
     description: Mapped[str] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
-    tags: Mapped[List[BigIntTag]] = relationship(secondary=lambda: bigint_item_tag, back_populates="items")
+    tags: Mapped[List[BigIntTag]] = relationship(secondary=lambda: bigint_item_tag, back_populates="items")  # noqa
 
 
 class BigIntTag(BigIntBase):
     """The event log domain object."""
 
     name: Mapped[str] = mapped_column(String(length=50))  # pyright: ignore
-    items: Mapped[List[BigIntItem]] = relationship(secondary=lambda: bigint_item_tag, back_populates="tags")
+    items: Mapped[List[BigIntItem]] = relationship(secondary=lambda: bigint_item_tag, back_populates="tags")  # noqa
 
 
 class BigIntRule(BigIntAuditBase):

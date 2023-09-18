@@ -18,38 +18,6 @@ docs: docs-clean
 test-examples:
 	pytest tests/examples
 
-.PHONY: test-sqlalchemy-asyncpg
-test-sqlalchemy-asyncpg:
-	pytest tests -m='sqlalchemy_asyncpg'
-
-.PHONY: test-sqlalchemy-psycopg-async
-test-sqlalchemy-psycopg-async:
-	pytest tests -m='sqlalchemy_psycopg_async'
-
-.PHONY: test-sqlalchemy-psycopg-sync
-test-sqlalchemy-psycopg-sync:
-	pytest tests -m='sqlalchemy_psycopg_sync'
-
-.PHONY: test-sqlalchemy-asyncmy
-test-sqlalchemy-asyncmy:
-	pytest tests -m='sqlalchemy_asyncmy'
-
-.PHONY: test-sqlalchemy-oracledb
-test-sqlalchemy-oracledb:
-	pytest tests -m='sqlalchemy_oracledb'
-
-.PHONY: test-sqlalchemy-duckdb
-test-sqlalchemy-duckdb:
-	pytest tests -m='sqlalchemy_duckdb'
-
-.PHONY: test-sqlalchemy-spanner
-test-sqlalchemy-spanner:
-	pytest tests -m='sqlalchemy_spanner'
-
-.PHONY: test-sqlalchemy-integration
-test-sqlalchemy-integration:
-	pytest tests -m='sqlalchemy_integration'
-
 .PHONY: tests
 test:
 	pytest tests -n auto

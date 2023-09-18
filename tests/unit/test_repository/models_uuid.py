@@ -6,12 +6,10 @@ from datetime import date, datetime
 from typing import List
 from uuid import UUID
 
+from advanced_alchemy import SQLAlchemyAsyncRepository, SQLAlchemySyncRepository, base
+from advanced_alchemy.base import UUIDAuditBase, UUIDBase
 from sqlalchemy import Column, FetchedValue, ForeignKey, String, Table, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from litestar.contrib.sqlalchemy import base
-from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
-from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository, SQLAlchemySyncRepository
 
 
 class UUIDAuthor(UUIDAuditBase):
@@ -19,7 +17,7 @@ class UUIDAuthor(UUIDAuditBase):
 
     name: Mapped[str] = mapped_column(String(length=100))  # pyright: ignore
     dob: Mapped[date] = mapped_column(nullable=True)  # pyright: ignore
-    books: Mapped[List[UUIDBook]] = relationship(
+    books: Mapped[List[UUIDBook]] = relationship(  # noqa
         lazy="selectin",
         back_populates="author",
         cascade="all, delete",
@@ -63,14 +61,14 @@ uuid_item_tag = Table(
 class UUIDItem(UUIDBase):
     name: Mapped[str] = mapped_column(String(length=50))  # pyright: ignore
     description: Mapped[str] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
-    tags: Mapped[List[UUIDTag]] = relationship(secondary=lambda: uuid_item_tag, back_populates="items")
+    tags: Mapped[List[UUIDTag]] = relationship(secondary=lambda: uuid_item_tag, back_populates="items")  # noqa
 
 
 class UUIDTag(UUIDAuditBase):
     """The event log domain object."""
 
     name: Mapped[str] = mapped_column(String(length=50))  # pyright: ignore
-    items: Mapped[List[UUIDItem]] = relationship(secondary=lambda: uuid_item_tag, back_populates="tags")
+    items: Mapped[List[UUIDItem]] = relationship(secondary=lambda: uuid_item_tag, back_populates="tags")  # noqa
 
 
 class UUIDRule(UUIDAuditBase):

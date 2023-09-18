@@ -5,6 +5,7 @@ from typing import Any
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 from sqlalchemy import Engine, StaticPool, create_engine
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from litestar.testing import TestClient
 
@@ -19,10 +20,17 @@ def sqlite_engine() -> Engine:
     return create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
 
 
-def test_sqlalchemy_async_plugin_example(data: dict[str, Any], monkeypatch: MonkeyPatch) -> None:
+@pytest.fixture()
+def aiosqlite_engine() -> Engine:
+    return create_async_engine("sqlite+aiosqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
+
+
+def test_sqlalchemy_async_plugin_example(
+    data: dict[str, Any], monkeypatch: MonkeyPatch, aiosqlite_engine: AsyncEngine
+) -> None:
     from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_async_plugin_example
 
-    monkeypatch.setattr(sqlalchemy_async_plugin_example.config, "connection_string", "sqlite+aiosqlite://")
+    monkeypatch.setattr(sqlalchemy_async_plugin_example.config, "engine_instance", aiosqlite_engine)
 
     with TestClient(sqlalchemy_async_plugin_example.app) as client:
         assert client.post("/", json=data[0]).json() == data
@@ -37,10 +45,12 @@ def test_sqlalchemy_sync_plugin_example(data: dict[str, Any], monkeypatch: Monke
         assert client.post("/", json=data[0]).json() == data
 
 
-def test_sqlalchemy_async_init_plugin_example(data: dict[str, Any], monkeypatch: MonkeyPatch) -> None:
+def test_sqlalchemy_async_init_plugin_example(
+    data: dict[str, Any], monkeypatch: MonkeyPatch, aiosqlite_engine: AsyncEngine
+) -> None:
     from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_async_init_plugin_example
 
-    monkeypatch.setattr(sqlalchemy_async_init_plugin_example.config, "connection_string", "sqlite+aiosqlite://")
+    monkeypatch.setattr(sqlalchemy_async_init_plugin_example.config, "engine_instance", aiosqlite_engine)
 
     with TestClient(sqlalchemy_async_init_plugin_example.app) as client:
         assert client.post("/", json=data[0]).json() == data

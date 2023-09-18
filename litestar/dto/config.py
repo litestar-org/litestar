@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from litestar.exceptions import ImproperlyConfiguredException
 
@@ -10,10 +10,7 @@ if TYPE_CHECKING:
 
     from litestar.dto.types import RenameStrategy
 
-__all__ = (
-    "DTOConfig",
-    "SQLAlchemyDTOConfig",
-)
+__all__ = ("DTOConfig",)
 
 
 @dataclass(frozen=True)
@@ -65,17 +62,3 @@ class DTOConfig:
             raise ImproperlyConfiguredException(
                 "'include' and 'exclude' are mutually exclusive options, please use one of them"
             )
-
-
-@dataclass(frozen=True)
-class SQLAlchemyDTOConfig(DTOConfig):
-    """Additional controls for the generated SQLAlchemy DTO."""
-
-    include_implicit_fields: bool | Literal["hybrid-only"] = True
-    """Fields that are implicitly mapped are included.
-
-    Turning this off will lead to exclude all fields not using ``Mapped`` annotation,
-
-    When setting this to ``hybrid-only``, all implicitly mapped fields are excluded
-    with the exception for hybrid properties.
-    """

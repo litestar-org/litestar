@@ -26,7 +26,7 @@ Example
 How it works
 ============
 
-The plugin works by defining a :class:`SQLAlchemyDTO <litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO>` class for each
+The plugin works by defining a :class:`SQLAlchemyDTO <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>` class for each
 handler ``data`` or return annotation that is a SQLAlchemy model, or collection of SQLAlchemy models, that isn't
 otherwise managed by an explicitly defined DTO class.
 
