@@ -138,6 +138,8 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.typing.ParsedType"),
     (PY_METH, "litestar.dto.factory.DTOData.create_instance"),
     (PY_METH, "litestar.dto.interface.DTOInterface.data_to_encodable_type"),
+    (PY_CLASS, "advanced_alchemy.repository.typing.ModelT"),
+    (PY_ATTR, "advanced_alchemy.repository.AbstractAsyncRepository.id_attribute"),
 ]
 
 nitpick_ignore_regex = [
@@ -150,8 +152,6 @@ nitpick_ignore_regex = [
     (PY_RE, r".*UserType"),
     (PY_RE, r"ModelT"),
     (PY_RE, r"litestar.*\.T"),
-    (PY_RE, r"advanced_sqlalchemy.repository.typing.ModelT"),
-    (PY_RE, r"advanced_sqlalchemy.config.common.SessionT"),
     (PY_RE, r"litestar.contrib.sqlalchemy.repository.ModelT"),
     (PY_RE, r"litestar\.middleware\.session\.base\.BaseSessionBackendT"),
     (PY_RE, r"litestar\.types.*"),
