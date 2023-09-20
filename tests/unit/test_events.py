@@ -1,3 +1,4 @@
+from contextvars import ContextVar
 from typing import Any
 from unittest.mock import MagicMock
 
@@ -49,6 +50,29 @@ def test_event_listener(mock: MagicMock, event_listener: EventListener, anyio_ba
         assert response.status_code == HTTP_200_OK
 
     mock.assert_called_with("positional", keyword="keyword-value")
+
+
+@pytest.mark.parametrize("event_listener", [lazy_fixture("sync_listener"), lazy_fixture("async_listener")])
+def test_event_listener_context_propagation(
+    mock: MagicMock, event_listener: EventListener, anyio_backend: AnyIOBackend
+) -> None:
+    test_context: ContextVar = ContextVar("test_context")
+
+    def check_context() -> None:
+        assert test_context.get() == "test_value"
+
+    mock.side_effect = check_context
+
+    @get("/")
+    def route_handler(request: Request[Any, Any, Any]) -> None:
+        test_context.set("test_value")
+        request.app.emit("test_event")
+
+    with create_test_client(
+        route_handlers=[route_handler], listeners=[event_listener], backend=anyio_backend
+    ) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
 
 
 async def test_shutdown_awaits_pending(async_listener: EventListener, mock: MagicMock) -> None:
