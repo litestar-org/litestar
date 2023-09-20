@@ -5,6 +5,7 @@ import sys
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from contextlib import AsyncExitStack
+from contextvars import copy_context
 from functools import partial
 from typing import TYPE_CHECKING, Any, Sequence
 
@@ -86,10 +87,10 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         """
         async with receive_stream, anyio.create_task_group() as task_group:
             async for item in receive_stream:
-                fn, args, kwargs = item
+                fn, args, kwargs, ctx = item
                 if kwargs:
                     fn = partial(fn, **kwargs)
-                task_group.start_soon(fn, *args)
+                ctx.run(task_group.start_soon, fn, *args)
 
     async def __aenter__(self) -> SimpleEventEmitter:
         self._exit_stack = AsyncExitStack()
@@ -131,6 +132,6 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
 
         if listeners := self.listeners.get(event_id):
             for listener in listeners:
-                self._send_stream.send_nowait((listener.fn, args, kwargs))
+                self._send_stream.send_nowait((listener.fn, args, kwargs, copy_context()))
             return
         raise ImproperlyConfiguredException(f"no event listeners are registered for event ID: {event_id}")
