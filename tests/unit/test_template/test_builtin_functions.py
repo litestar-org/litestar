@@ -15,7 +15,7 @@ from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
 
 
-@pytest.mark.xfail(sys.platform == "win32", reason="For some reason this is flaky on windows")
+@pytest.mark.xfail(sys.platform == "win32", reason="For some reason this is flaky on windows", strict=False)
 def test_jinja_url_for(tmp_path: Path) -> None:
     template_config = TemplateConfig(engine=JinjaTemplateEngine, directory=tmp_path)
 
@@ -75,7 +75,8 @@ def test_jinja_url_for(tmp_path: Path) -> None:
         assert response.status_code == 500
 
 
-@pytest.mark.xfail(sys.platform == "win32", reason="For some reason this is flaky on windows")
+# TODO: use some other flaky test technique, probably re-running flaky tests?
+@pytest.mark.xfail(sys.platform == "win32", reason="For some reason this is flaky on windows", strict=False)
 def test_jinja_url_for_static_asset(tmp_path: Path) -> None:
     template_config = TemplateConfig(engine=JinjaTemplateEngine, directory=tmp_path)
 
@@ -180,7 +181,7 @@ def test_mako_url_for(tmp_path: Path, builtin: str, expected_status: int, expect
             assert response.text == expected_text
 
 
-@pytest.mark.xfail(sys.platform == "win32", reason="For some reason this is flaky on windows")
+@pytest.mark.xfail(sys.platform == "win32", reason="For some reason this is flaky on windows", strict=False)
 def test_minijinja_url_for(tmp_path: Path) -> None:
     template_config = TemplateConfig(engine=MiniJinjaTemplateEngine, directory=tmp_path)
 
@@ -244,7 +245,7 @@ def test_minijinja_url_for(tmp_path: Path) -> None:
         assert response.status_code == 500
 
 
-@pytest.mark.xfail(sys.platform == "win32", reason="For some reason this is flaky on windows")
+@pytest.mark.xfail(sys.platform == "win32", reason="For some reason this is flaky on windows", strict=False)
 def test_minijinja_url_for_static_asset(tmp_path: Path) -> None:
     template_config = TemplateConfig(engine=MiniJinjaTemplateEngine, directory=tmp_path)
 
