@@ -242,6 +242,7 @@ exclude_lines = [
 [tool.pytest.ini_options]
 addopts = "--strict-markers --strict-config --dist=loadgroup"
 asyncio_mode = "auto"
+xfail_strict = true
 filterwarnings = [
     "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:",
     "ignore::DeprecationWarning:pkg_resources.*",
