@@ -228,7 +228,6 @@ def test_authentication_middleware_exclude_from_auth_custom_key() -> None:
         assert response.status_code == HTTP_403_FORBIDDEN
 
 
-@pytest.mark.noww
 def test_authentication_exclude_http_methods() -> None:
     auth_mw = DefineMiddleware(AuthMiddleware, exclude_http_methods=[HttpMethod.GET])
 
@@ -244,7 +243,6 @@ def test_authentication_exclude_http_methods() -> None:
         assert response.status_code == HTTP_403_FORBIDDEN
 
 
-@pytest.mark.noww
 def test_authentication_exclude_http_methods_default() -> None:
     auth_mw = DefineMiddleware(AuthMiddleware)
 
