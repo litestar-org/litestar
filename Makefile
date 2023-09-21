@@ -14,6 +14,14 @@ docs-serve:
 docs: docs-clean
 	sphinx-build -M html docs docs/_build/ -a -j auto -W --keep-going
 
+.PHONY: docs-linkcheck
+docs-linkcheck:
+	sphinx-build -b linkcheck ./docs ./docs/_build -D linkcheck_ignore='http://.*','https://.*'
+
+.PHONY: docs-linkcheck-full
+docs-linkcheck-full:
+	sphinx-build -b linkcheck ./docs ./docs/_build
+
 .PHONY: test-examples
 test-examples:
 	pytest tests/examples
