@@ -268,9 +268,20 @@ def update_html_context(
     context["generate_toctree_html"] = partial(context["generate_toctree_html"], startdepth=0)
 
 
-def setup(app: Sphinx) -> dict[str, bool]:
-    app.setup_extension("litestar_sphinx_theme")
+def delayed_setup(app: Sphinx) -> None:
+    # When running linkcheck pydata_sphinx_theme causes a build failure, and checking
+    # the builder in the initial `setup` function call is not possible, so the check
+    # and extension setup has to be delayed until the builder is initialized.
+    if app.builder.name == "linkcheck":
+        return
+
     app.setup_extension("pydata_sphinx_theme")
     app.connect("html-page-context", update_html_context)
+
+
+def setup(app: Sphinx) -> dict[str, bool]:
+    app.connect("builder-inited", delayed_setup, priority=0)
+
+    app.setup_extension("litestar_sphinx_theme")
 
     return {"parallel_read_safe": True, "parallel_write_safe": True}
