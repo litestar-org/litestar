@@ -194,3 +194,8 @@ async def test_sse_steaming_response() -> None:
             assert sse.data == "1\n, \n2\n, \n3\n, \n4\n, \n5"
             assert sse.id == "123"
             assert sse.retry == 1000
+
+
+def test_asgi_response_encoded_headers() -> None:
+    response = ASGIStreamingResponse(encoded_headers=[(b"foo", b"bar")], iterator="")
+    assert response.encode_headers() == [(b"foo", b"bar"), (b"content-type", b"application/json")]

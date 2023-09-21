@@ -121,6 +121,8 @@ class AppConfig:
     """A dictionary that maps handler functions to status codes and/or exception types."""
     guards: list[Guard] = field(default_factory=list)
     """A list of :class:`Guard <.types.Guard>` callables."""
+    include_in_schema: bool | EmptyType = field(default=Empty)
+    """A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema"""
     lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] = field(
         default_factory=list
     )

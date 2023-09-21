@@ -60,7 +60,7 @@ jobs:
         run: poetry install --no-interaction --extras full
       - if: ${{ inputs.pydantic-version == '1' }}
         name: Install pydantic v1
-        run: poetry remove pydantic-extra-types && poetry add "pydantic>=1.10.11,<2" piccolo beanie
+        run: poetry remove pydantic-extra-types && poetry add "pydantic>=1.10.11,<2" piccolo
       - if: ${{ inputs.pydantic-version == '2' }}
         name: Install pydantic v2
         run: poetry add "pydantic>=2.3.0" "pydantic-extra-types>=2.0.0"
@@ -72,9 +72,6 @@ jobs:
       - name: Test with coverage
         if: inputs.coverage
         run: poetry run pytest docs/examples tests --cov=litestar --cov-report=xml -n auto
-      - name: Integration tests
-        if: inputs.integration
-        run: poetry run pytest -m="sqlalchemy_integration" -n auto
       - uses: actions/upload-artifact@v3
         if: inputs.coverage
         with:

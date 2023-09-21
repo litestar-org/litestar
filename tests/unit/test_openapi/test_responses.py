@@ -52,7 +52,7 @@ def test_create_responses(person_controller: Type[Controller], pet_controller: T
     for route in Litestar(route_handlers=[person_controller]).routes:
         assert isinstance(route, HTTPRoute)
         for route_handler, _ in route.route_handler_map.values():
-            if route_handler.include_in_schema:
+            if route_handler.resolve_include_in_schema():
                 responses = create_responses(
                     route_handler, raises_validation_error=True, schema_creator=SchemaCreator(generate_examples=True)
                 )
@@ -249,6 +249,23 @@ def test_create_success_response_with_stream() -> None:
 
 
 def test_create_success_response_redirect() -> None:
+    @get(path="/test", name="test")
+    def redirect_handler() -> Redirect:
+        return Redirect(path="/target")
+
+    handler = get_registered_route_handler(redirect_handler, "test")
+
+    response = create_success_response(handler, SchemaCreator(generate_examples=True))
+    assert response.description == "Redirect Response"
+    assert response.headers
+    location = response.headers["location"]
+    assert isinstance(location, OpenAPIHeader)
+    assert isinstance(location.schema, Schema)
+    assert location.schema.type == OpenAPIType.STRING
+    assert location.description
+
+
+def test_create_success_response_redirect_override() -> None:
     @get(path="/test", status_code=HTTP_307_TEMPORARY_REDIRECT, name="test")
     def redirect_handler() -> Redirect:
         return Redirect(path="/target")

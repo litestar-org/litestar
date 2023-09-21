@@ -1,18 +1,18 @@
 SQLAlchemy Plugin
 -----------------
 
-The :class:`SQLAlchemyPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin>` provides complete support for
+The :class:`SQLAlchemyPlugin <advanced_alchemy.extensions.litestar.plugins.SQLAlchemyPlugin>` provides complete support for
 working with `SQLAlchemy <https://www.sqlalchemy.org/>`_ in Litestar applications.
 
 .. note::
 
     This plugin is only compatible with SQLAlchemy 2.0+.
 
-The :class:`SQLAlchemyPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin>` combines the functionality of
-:class:`SQLAlchemyInitPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin>` and
-:class:`SQLAlchemySerializationPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin>`, each of
+The :class:`SQLAlchemyPlugin <advanced_alchemy.extensions.litestar.plugins.SQLAlchemyPlugin>` combines the functionality of
+:class:`SQLAlchemyInitPlugin <advanced_alchemy.extensions.litestar.plugins.SQLAlchemyInitPlugin>` and
+:class:`SQLAlchemySerializationPlugin <advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin>`, each of
 which are examined in detail in the following sections. As such, this section describes a complete example of using the
-:class:`SQLAlchemyPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin>` with a Litestar application and a
+:class:`SQLAlchemyPlugin <advanced_alchemy.extensions.litestar.plugins.SQLAlchemyPlugin>` with a Litestar application and a
 SQLite database.
 
 Or, skip ahead to :doc:`/usage/databases/sqlalchemy/plugins/sqlalchemy_init_plugin` or

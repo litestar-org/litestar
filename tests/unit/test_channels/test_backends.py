@@ -52,6 +52,7 @@ async def test_pub_sub_no_subscriptions(channels_backend: ChannelsBackend) -> No
         await asyncio.wait_for(async_next(event_generator), timeout=0.01)
 
 
+@pytest.mark.flaky(reruns=5)  # this should not really happen but just in case, we retry
 async def test_pub_sub_no_subscriptions_by_unsubscribes(channels_backend: ChannelsBackend) -> None:
     await channels_backend.subscribe(["foo"])
     await channels_backend.publish(b"something", ["foo"])

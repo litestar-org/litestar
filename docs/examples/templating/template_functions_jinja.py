@@ -19,13 +19,13 @@ def register_template_callables(engine: JinjaTemplateEngine) -> None:
 
 
 template_config = TemplateConfig(
-    directory=Path("templates"),
+    directory=Path(__file__).parent / "templates",
     engine=JinjaTemplateEngine,
     engine_callback=register_template_callables,
 )
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def index() -> Template:
     return Template(template_name="index.html.jinja2")
 

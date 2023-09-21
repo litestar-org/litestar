@@ -78,31 +78,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  snyk:
-    needs:
-      - test
-      - validate
-    if: github.event.pull_request.head.repo.fork == false && github.repository_owner == 'litestar-org'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-
-      - name: Run Snyk Monitor
-        if: ${{ github.ref == 'refs/heads/main' }}
-        uses: snyk/actions/python-3.8@master
-        with:
-          command: monitor
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
-      - name: Run Snyk Test
-        if: ${{ github.ref != 'refs/heads/main' }}
-        uses: snyk/actions/python-3.8@master
-        with:
-          command: test
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
   codeql:
     needs:
       - test

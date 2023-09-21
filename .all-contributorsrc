@@ -663,7 +663,8 @@
       "profile": "https://github.com/dialvarezs",
       "contributions": [
         "doc",
-        "code"
+        "code",
+        "test"
       ]
     },
     {
@@ -1235,6 +1236,35 @@
       "name": "Sean Donoghue",
       "avatar_url": "https://avatars.githubusercontent.com/u/64597271?v=4",
       "profile": "https://github.com/sean-donoghue",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "sykloid",
+      "name": "P.C. Shyamshankar",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22753?v=4",
+      "profile": "https://sykloid.org/",
+      "contributions": [
+        "bug",
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "wevonosky",
+      "name": "William Evonosky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19598171?v=4",
+      "profile": "https://github.com/wevonosky",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "geeshta",
+      "name": "geeshta",
+      "avatar_url": "https://avatars.githubusercontent.com/u/61031243?v=4",
+      "profile": "https://github.com/geeshta",
       "contributions": [
         "doc"
       ]

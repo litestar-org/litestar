@@ -62,7 +62,7 @@ Model Repository
 ^^^^^^^^^^^^^^^^
 
 Here we import the
-:class:`SQLAlchemyAsyncRepository <litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository>`
+:class:`SQLAlchemyAsyncRepository <advanced_alchemy.repository.SQLAlchemyAsyncRepository>`
 class and create an ``AuthorRepository`` repository class. This is all that's required
 to include all of the integrated repository features.
 

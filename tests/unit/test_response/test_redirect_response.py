@@ -57,7 +57,7 @@ def test_redirect_response_content_length_header() -> None:
     client: TestClient = TestClient(app)
     response = client.request("GET", "/redirect", follow_redirects=False)
     assert str(response.url) == "http://testserver.local/redirect"
-    assert "content-length" not in response.headers
+    assert "content-length" in response.headers
 
 
 def test_redirect_response_status_validation() -> None:
@@ -110,8 +110,8 @@ def test_redirect_dynamic_status_code(status_code: Optional[int], expected_statu
 def test_redirect(handler_status_code: Optional[int]) -> None:
     @get("/", status_code=handler_status_code)
     def handler() -> Redirect:
-        return Redirect(path="/something-else", status_code=301)
+        return Redirect(path="/something-else", status_code=handler_status_code)  # type: ignore[arg-type]
 
     with create_test_client([handler]) as client:
         res = client.get("/", follow_redirects=False)
-        assert res.status_code == 301
+        assert res.status_code == 302 if handler_status_code is None else handler_status_code

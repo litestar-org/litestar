@@ -114,3 +114,32 @@ def test_env_from_env_autodiscover_from_files_ignore_paths(
 
     with pytest.raises(ClickException):
         LitestarEnv.from_env(None)
+
+
+@pytest.mark.parametrize("use_file_in_app_path", [True, False])
+def test_env_using_app_dir(
+    app_file_content: str, app_file_app_name: str, create_app_file: CreateAppFileFixture, use_file_in_app_path: bool
+) -> None:
+    app_file = "main.py"
+    app_file_without_extension = app_file.split(".")[0]
+    tmp_file_path = create_app_file(
+        file=app_file,
+        directory="src",
+        content=app_file_content,
+        subdir=f"litestar_test_{app_file_app_name}",
+        init_content=f"from .{app_file_without_extension} import {app_file_app_name}",
+    )
+    app_path_components = [f"litestar_test_{app_file_app_name}"]
+    if use_file_in_app_path:
+        app_path_components.append(app_file_without_extension)
+
+    app_path = f"{'.'.join(app_path_components)}:{app_file_app_name}"
+    env = LitestarEnv.from_env(app_path, app_dir=Path().cwd() / "src")
+
+    dotted_path = _path_to_dotted_path(tmp_file_path.relative_to(Path.cwd()))
+
+    assert isinstance(env.app, Litestar)
+    dotted_path = dotted_path.replace("src.", "")
+    if not use_file_in_app_path:
+        dotted_path = dotted_path.replace(".main", "")
+    assert env.app_path == f"{dotted_path}:{app_file_app_name}"

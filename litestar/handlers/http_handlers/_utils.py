@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Any, Sequence, cast
 from litestar.enums import HttpMethod
 from litestar.exceptions import ValidationException
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-from litestar.utils import encode_headers
 
 if TYPE_CHECKING:
     from litestar.app import Litestar
@@ -60,7 +59,6 @@ def create_data_handler(
         A handler function.
 
     """
-    raw_headers = encode_headers(normalize_headers(headers).items(), cookies, [])
 
     async def handler(
         data: Any,
@@ -82,7 +80,7 @@ def create_data_handler(
         if after_request:
             response = await after_request(response)  # type: ignore[arg-type,misc]
 
-        return response.to_asgi_response(app=app, request=request, encoded_headers=raw_headers)
+        return response.to_asgi_response(app=None, request=request, headers=normalize_headers(headers), cookies=cookies)
 
     return handler
 
@@ -153,7 +151,7 @@ def create_response_handler(
     ) -> ASGIApp:
         response = await after_request(data) if after_request else data  # type:ignore[arg-type,misc]
         return response.to_asgi_response(  # type: ignore
-            app=app,
+            app=None,
             background=background,
             cookies=cookie_list,
             headers=normalized_headers,
