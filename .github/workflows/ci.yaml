@@ -132,6 +132,11 @@ jobs:
           LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT: 1
         run: poetry run make docs
 
+      - name: Check docs links
+        env:
+          LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT: 1
+        run: poetry run make docs-linkcheck
+
       - name: Save PR number
         env:
           PR_NUMBER: ${{ github.event.number }}
