@@ -1688,6 +1688,13 @@ or <code class="docutils literal notranslate"><span class="pre">flake8-type-chec
 <p>In this example, Litestar will be unable to generate the signature model because the type <code class="docutils literal notranslate"><span class="pre">Model</span></code> does not exist in
 the module scope at runtime. We can address this on a case-by-case basis by silencing our linters, for example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">post</span>
+
+<span class="c1"># Choose the appropriate noqa directive according to your linter</span>
+<span class="kn">from</span> <span class="nn">domain</span> <span class="kn">import</span> <span class="n">Model</span>  <span class="c1"># noqa: TCH002</span>
 </pre></div>
 </div>
 <p>However, this approach can get tedious, so as an alternative, Litestar accepts a <code class="docutils literal notranslate"><span class="pre">signature_namespace</span></code> mapping at
