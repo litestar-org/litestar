@@ -315,6 +315,7 @@ def test_does_not_override_existing_last_modified_header(header_name: str, tmpdi
 
 def test_asgi_response_encoded_headers(file: Path) -> None:
     response = ASGIFileResponse(encoded_headers=[(b"foo", b"bar")], file_path=file)
+    response.file_info.close()  # silence the ResourceWarning
     assert response.encode_headers() == [
         (b"foo", b"bar"),
         (b"content-type", b"application/octet-stream"),
