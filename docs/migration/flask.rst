@@ -128,7 +128,9 @@ Path parameters
 ..  seealso::
 
     To learn more about path parameters, check out this chapter
-    in the documentation: `Path parameters <usage/3-parameters/0-path-parameters/>`_
+    in the documentation:
+
+    * :doc:`/usage/routing/parameters`
 
 Request object
 ~~~~~~~~~~~~~~
@@ -282,8 +284,9 @@ in Litestar.
 
 ..  seealso::
 
-    To learn more about static files, check out this chapter in the documentation:
-    `Static files <usage/0-the-litestar-app/3-static-files/>`_
+    To learn more about static files, check out this chapter in the documentation
+
+    * :doc:`/usage/static-files`
 
 Templates
 ~~~~~~~~~
@@ -335,7 +338,8 @@ In addition to Jinja, Litestar supports `Mako <https://www.makotemplates.org/>`_
 
 ..  seealso::
     To learn more about templates, check out this chapter in the documentation:
-    `Template engines <usage/16-templating/0-template-engines/>`_
+
+    * :doc:`/usage/templating`
 
 Setting cookies and headers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -488,7 +492,9 @@ Instead of using the ``abort`` function, raise an ``HTTPException``:
 
 
 ..  seealso::
-    To learn more about exceptions, check out this chapter in the documentation: `Exceptions <usage/17-exceptions>`_
+    To learn more about exceptions, check out this chapter in the documentation:
+
+    * :doc:`/usage/exceptions`
 
 Setting status codes
 ~~~~~~~~~~~~~~~~~~~~

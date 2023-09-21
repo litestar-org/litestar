@@ -58,8 +58,8 @@ litestar
 
 The main entrypoint to the Litestar CLI is the ``litestar`` command.
 
-If you don't pass the ``--app`` flag, the application will be automatically discovered, as explained in the
-`autodiscovery section <autodiscovery>`_.
+If you don't pass the ``--app`` flag, the application will be automatically discovered, as explained in
+`Autodiscovery`_.
 
 Options
 ~~~~~~~
