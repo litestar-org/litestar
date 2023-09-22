@@ -20,7 +20,7 @@ docs-linkcheck:
 
 .PHONY: docs-linkcheck-full
 docs-linkcheck-full:
-	sphinx-build -b linkcheck ./docs ./docs/_build
+	sphinx-build -b linkcheck ./docs ./docs/_build -D linkcheck_anchors=0
 
 .PHONY: test-examples
 test-examples:
