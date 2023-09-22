@@ -201,7 +201,11 @@ ignore_missing_refs = {
 }
 
 # Do not warn about broken links to the following:
-linkcheck_ignore = [r"http://localhost(:\d+)?", r"http://127.0.0.1(:\d+)?", "http://testserver"]
+linkcheck_ignore = [
+    r"http://localhost(:\d+)?",
+    r"http://127.0.0.1(:\d+)?",
+    "http://testserver",
+]
 
 auto_pytabs_min_version = (3, 8)
 auto_pytabs_max_version = (3, 11)
