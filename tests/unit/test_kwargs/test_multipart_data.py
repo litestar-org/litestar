@@ -10,13 +10,12 @@ from pydantic import BaseConfig, BaseModel
 from typing_extensions import Annotated
 
 from litestar import Request, post
-from litestar.contrib.pydantic import _model_dump, _model_dump_json
+from litestar.contrib.pydantic import _model_dump
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.status_codes import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
-from tests import PydanticPerson, PydanticPersonFactory
 
 from . import Form
 
@@ -100,26 +99,24 @@ def test_request_body_multi_part(t_type: type) -> None:
 
 
 def test_request_body_multi_part_mixed_field_content_types() -> None:
-    person = PydanticPersonFactory.build()
-
     @dataclass
     class MultiPartFormWithMixedFields:
         image: UploadFile
         tags: List[int]
-        profile: PydanticPerson
 
     @post(path="/form")
     async def test_method(data: MultiPartFormWithMixedFields = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
         file_data = await data.image.read()
         assert file_data == b"data"
         assert data.tags == [1, 2, 3]
-        assert data.profile == person
 
     with create_test_client(test_method) as client:
         response = client.post(
             "/form",
             files={"image": ("image.png", b"data")},
-            data={"tags": ["1", "2", "3"], "profile": _model_dump_json(person)},
+            data={
+                "tags": ["1", "2", "3"],
+            },
         )
         assert response.status_code == HTTP_201_CREATED
 
@@ -449,7 +446,7 @@ def test_multipart_form_part_limit_body_param_precedence() -> None:
 class ProductForm:
     name: str
     int_field: int
-    options: List[int]
+    options: str
     optional_without_default: Optional[float]
     optional_with_default: Optional[int] = None
 

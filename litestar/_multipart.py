@@ -31,8 +31,7 @@ from typing import TYPE_CHECKING, Any
 from urllib.parse import unquote
 
 from litestar.datastructures.upload_file import UploadFile
-from litestar.exceptions import SerializationException, ValidationException
-from litestar.serialization import decode_json
+from litestar.exceptions import ValidationException
 
 __all__ = ("parse_body", "parse_content_header", "parse_multipart_form")
 
@@ -151,15 +150,13 @@ def parse_multipart_form(
         if field_name:
             post_data = form_part[line_index:-4].lstrip(b"\r\n")
             if file_name:
-                form_file = UploadFile(
-                    content_type=content_type, filename=file_name, file_data=post_data, headers=dict(headers)
+                fields[field_name].append(
+                    UploadFile(
+                        content_type=content_type, filename=file_name, file_data=post_data, headers=dict(headers)
+                    )
                 )
-                fields[field_name].append(form_file)
             elif post_data:
-                try:
-                    fields[field_name].append(decode_json(post_data, type_decoders=type_decoders))
-                except SerializationException:
-                    fields[field_name].append(post_data.decode(content_charset))
+                fields[field_name].append(post_data.decode(content_charset))
             else:
                 fields[field_name].append(None)
 
