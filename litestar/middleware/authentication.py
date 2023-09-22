@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Sequence
 
 from litestar.connection import ASGIConnection
-from litestar.enums import ScopeType
+from litestar.enums import HttpMethod, ScopeType
 from litestar.middleware._utils import (
     build_exclude_path_pattern,
     should_bypass_middleware,
@@ -62,7 +62,7 @@ class AbstractAuthenticationMiddleware(ABC):
         """
         self.app = app
         self.exclude = build_exclude_path_pattern(exclude=exclude)
-        self.exclude_http_methods = exclude_http_methods
+        self.exclude_http_methods = (HttpMethod.OPTIONS,) if exclude_http_methods is None else exclude_http_methods
         self.exclude_opt_key = exclude_from_auth_key
         self.scopes = scopes or {ScopeType.HTTP, ScopeType.WEBSOCKET}
 
