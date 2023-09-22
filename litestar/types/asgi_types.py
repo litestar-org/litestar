@@ -44,6 +44,8 @@ from typing import (
     Union,
 )
 
+from litestar.enums import HttpMethod
+
 __all__ = (
     "ASGIApp",
     "ASGIVersion",
@@ -101,7 +103,7 @@ if TYPE_CHECKING:
     from .internal_types import LitestarType, RouteHandlerType
     from .serialization import DataContainerType
 
-Method: TypeAlias = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD", "TRACE", "OPTIONS"]
+Method: TypeAlias = Union[Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD", "TRACE", "OPTIONS"], HttpMethod]
 ScopeSession: TypeAlias = "EmptyType | Dict[str, Any] | DataContainerType | None"
 
 

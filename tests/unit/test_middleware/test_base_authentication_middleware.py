@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 from litestar import Litestar, get, websocket
 from litestar.connection import Request, WebSocket
+from litestar.enums import HttpMethod
 from litestar.exceptions import PermissionDeniedException, WebSocketDisconnect
 from litestar.middleware.authentication import (
     AbstractAuthenticationMiddleware,
@@ -225,3 +226,34 @@ def test_authentication_middleware_exclude_from_auth_custom_key() -> None:
 
         response = client.get("/west")
         assert response.status_code == HTTP_403_FORBIDDEN
+
+
+def test_authentication_exclude_http_methods() -> None:
+    auth_mw = DefineMiddleware(AuthMiddleware, exclude_http_methods=[HttpMethod.GET])
+
+    @get("/")
+    def exclude_get_handler() -> None:
+        return None
+
+    with create_test_client(route_handlers=[exclude_get_handler], middleware=[auth_mw]) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.options("/")
+        assert response.status_code == HTTP_403_FORBIDDEN
+
+
+def test_authentication_exclude_http_methods_default() -> None:
+    auth_mw = DefineMiddleware(AuthMiddleware)
+
+    @get("/")
+    def exclude_get_handler() -> None:
+        return None
+
+    with create_test_client(route_handlers=[exclude_get_handler], middleware=[auth_mw]) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_403_FORBIDDEN
+
+        # OPTIONS should be excluded by default
+        response = client.options("/")
+        assert response.is_success
