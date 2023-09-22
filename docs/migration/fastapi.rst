@@ -62,7 +62,9 @@ controller methods. The handler can then be registered on an application or rout
 ..  seealso::
 
     To learn more about registering routes, check out this chapter
-    in the documentation: :ref:`registering routes <usage/routing/overview:registering routes>`
+    in the documentation:
+
+    * :ref:`Routing - Registering Routes <usage/routing/overview:registering routes>`
 
 Routers and Routes
 ~~~~~~~~~~~~~~~~~~
@@ -234,7 +236,9 @@ preferred way of handling this is extending :doc:`/usage/security/abstract-authe
 ..  seealso::
 
     To learn more about security and authentication, check out this chapter in the
-    documentation: :doc:`/usage/security/index`
+    documentation:
+
+    * :doc:`/usage/security/index`
 
 Dependency overrides
 ^^^^^^^^^^^^^^^^^^^^

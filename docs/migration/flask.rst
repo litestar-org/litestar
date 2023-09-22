@@ -398,8 +398,8 @@ Setting cookies and headers
     To learn more about response headers and cookies, check out these chapters in the
     documentation:
 
-    - :ref:`Response headers <usage/responses:setting response headers>`
-    - :ref:`Response cookies <usage/responses:setting response cookies>`
+    - :ref:`Responses - Setting Response Headers <usage/responses:setting response headers>`
+    - :ref:`Responses - Setting Response Cookies <usage/responses:setting response cookies>`
 
 Redirects
 ~~~~~~~~~
@@ -642,4 +642,5 @@ Error handling
 ..  seealso::
 
     To learn more about exception handling, check out this chapter in the documentation:
-    :ref:`usage/exceptions:exception handling`
+
+    * :ref:`usage/exceptions:exception handling`
