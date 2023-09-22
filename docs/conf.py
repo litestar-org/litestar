@@ -269,9 +269,11 @@ def update_html_context(
 
 
 def delayed_setup(app: Sphinx) -> None:
-    # When running linkcheck pydata_sphinx_theme causes a build failure, and checking
-    # the builder in the initial `setup` function call is not possible, so the check
-    # and extension setup has to be delayed until the builder is initialized.
+    """
+    When running linkcheck pydata_sphinx_theme causes a build failure, and checking
+    the builder in the initial `setup` function call is not possible, so the check
+    and extension setup has to be delayed until the builder is initialized.
+    """
     if app.builder.name == "linkcheck":
         return
 
