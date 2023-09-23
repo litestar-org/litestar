@@ -281,7 +281,7 @@ which offers strong AES-CGM encryption security best practices while support coo
 
 .. seealso::
 
-    :class:`CookieBackendConfig <litestar.middleware.session.client_side.CookieBackendConfig>`
+    * :class:`CookieBackendConfig <litestar.middleware.session.client_side.CookieBackendConfig>`
 
 
 Server-side sessions
@@ -296,5 +296,5 @@ and load the appropriate data from the store
 
 .. seealso::
 
-    - :doc:`/usage/stores`
-    - :class:`ServerSideSessionConfig <litestar.middleware.session.server_side.ServerSideSessionConfig>`
+    * :doc:`/usage/stores`
+    * :class:`ServerSideSessionConfig <litestar.middleware.session.server_side.ServerSideSessionConfig>`

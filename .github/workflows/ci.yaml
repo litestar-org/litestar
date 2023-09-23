@@ -39,7 +39,6 @@ jobs:
     uses: ./.github/workflows/test.yaml
     with:
       coverage: ${{ matrix.python-version == '3.11' && matrix.pydantic-version == '2' }}
-      integration: ${{ matrix.python-version == '3.11' && matrix.pydantic-version == '2' }}
       pydantic-version: ${{ matrix.pydantic-version }}
       python-version: ${{ matrix.python-version }}
 
@@ -131,6 +130,11 @@ jobs:
         env:
           LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT: 1
         run: poetry run make docs
+
+      - name: Check docs links
+        env:
+          LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT: 1
+        run: poetry run make docs-linkcheck
 
       - name: Save PR number
         env:

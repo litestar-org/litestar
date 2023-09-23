@@ -75,4 +75,5 @@ Alternately, you may use the ``SQLAlchemySyncRepository`` class for your synchro
     :language: python
 
 .. seealso::
-    :doc:`/tutorials/repository-tutorial/index`
+
+    * :doc:`/tutorials/repository-tutorial/index`
