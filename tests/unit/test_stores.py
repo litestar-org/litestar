@@ -94,6 +94,7 @@ async def test_get_and_renew(store: Store, renew_for: int | timedelta, frozen_da
 
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
+@pytest.mark.xdist_group("redis")
 async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | timedelta) -> None:
     # we can't sleep() in frozen datetime, and frozen datetime doesn't affect the redis
     # instance, so we test this separately
