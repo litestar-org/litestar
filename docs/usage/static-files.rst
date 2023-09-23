@@ -32,7 +32,7 @@ no file is found the application will look for a ``404.html`` file in order to r
 
 You can provide a ``name`` parameter to ``StaticFilesConfig`` to identify the given config and generate links to files in
 folders belonging to that config. ``name`` should be a unique string across all static configs and
-`route handlers <usage/route-handlers:Route Handler Indexing>`_.
+:doc:`/usage/routing/handlers`.
 
 .. code-block:: python
 

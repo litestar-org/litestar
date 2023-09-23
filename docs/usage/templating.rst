@@ -382,7 +382,5 @@ the call method. For example:
 Run the example with ``uvicorn template_functions:app`` , visit  http://127.0.0.1:8000, and
 you'll see
 
-
 .. image:: /images/examples/template_engine_callable.png
-   :target: /images/examples/template_engine_callable.png
-   :alt: Template engine callable example
+    :alt: Template engine callable example

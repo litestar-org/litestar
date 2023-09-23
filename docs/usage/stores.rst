@@ -185,7 +185,7 @@ It operates on a few basic principles:
 - An initial mapping of stores can be provided to the registry
 - Registered stores can be requested with :meth:`get <.registry.StoreRegistry.get>`
 - If a store has been requested that has not been registered yet, a store of that name will be created and registered
-  using the `default factory <the default factory>`_
+  using the `the default factory`_
 
 
 .. literalinclude:: /examples/stores/registry.py
