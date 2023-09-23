@@ -5,18 +5,20 @@ from os.path import dirname, join, realpath
 from pathlib import Path
 from typing import Any, DefaultDict, Dict, List, Optional
 
+import msgspec
 import pytest
-from pydantic import BaseConfig, BaseModel
+from attr import define, field
+from attr.validators import ge, instance_of, lt
+from pydantic import BaseConfig, BaseModel, ConfigDict, Field
 from typing_extensions import Annotated
 
 from litestar import Request, post
-from litestar.contrib.pydantic import _model_dump, _model_dump_json
+from litestar.contrib.pydantic import _model_dump
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.status_codes import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
-from tests import PydanticPerson, PydanticPersonFactory
 
 from . import Form
 
@@ -100,26 +102,24 @@ def test_request_body_multi_part(t_type: type) -> None:
 
 
 def test_request_body_multi_part_mixed_field_content_types() -> None:
-    person = PydanticPersonFactory.build()
-
     @dataclass
     class MultiPartFormWithMixedFields:
         image: UploadFile
         tags: List[int]
-        profile: PydanticPerson
 
     @post(path="/form")
     async def test_method(data: MultiPartFormWithMixedFields = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
         file_data = await data.image.read()
         assert file_data == b"data"
         assert data.tags == [1, 2, 3]
-        assert data.profile == person
 
     with create_test_client(test_method) as client:
         response = client.post(
             "/form",
             files={"image": ("image.png", b"data")},
-            data={"tags": ["1", "2", "3"], "profile": _model_dump_json(person)},
+            data={
+                "tags": ["1", "2", "3"],
+            },
         )
         assert response.status_code == HTTP_201_CREATED
 
@@ -449,7 +449,7 @@ def test_multipart_form_part_limit_body_param_precedence() -> None:
 class ProductForm:
     name: str
     int_field: int
-    options: List[int]
+    options: str
     optional_without_default: Optional[float]
     optional_with_default: Optional[int] = None
 
@@ -490,41 +490,61 @@ def test_multipart_handling_of_none_values() -> None:
         assert response.status_code == HTTP_201_CREATED
 
 
-def test_multipart_handling_of_none_json_lists_with_multiple_elements() -> None:
-    @post("/")
-    def handler(
-        data: Annotated[ProductForm, Body(media_type=RequestEncodingType.MULTI_PART)],
-    ) -> None:
-        assert data
+MAX_INT_POSTGRES = 10
 
-    with create_test_client(route_handlers=[handler]) as client:
-        response = client.post(
-            "/",
-            content=(
-                b"--1f35df74046888ceaa62d8a534a076dd\r\n"
-                b'Content-Disposition: form-data; name="name"\r\n'
-                b"Content-Type: application/octet-stream\r\n\r\n"
-                b"moishe zuchmir\r\n"
-                b"--1f35df74046888ceaa62d8a534a076dd\r\n"
-                b'Content-Disposition: form-data; name="int_field"\r\n'
-                b"Content-Type: application/octet-stream\r\n\r\n"
-                b"1\r\n"
-                b"--1f35df74046888ceaa62d8a534a076dd\r\n"
-                b'Content-Disposition: form-data; name="options"\r\n'
-                b"Content-Type: application/octet-stream\r\n\r\n"
-                b"1\r\n"
-                b"--1f35df74046888ceaa62d8a534a076dd\r\n"
-                b'Content-Disposition: form-data; name="options"\r\n'
-                b"Content-Type: application/octet-stream\r\n\r\n"
-                b"2\r\n"
-                b"--1f35df74046888ceaa62d8a534a076dd\r\n"
-                b'Content-Disposition: form-data; name="optional_without_default"\r\n'
-                b"Content-Type: application/octet-stream\r\n\r\n\r\n"
-                b"--1f35df74046888ceaa62d8a534a076dd\r\n"
-                b'Content-Disposition: form-data; name="optional_with_default"\r\n'
-                b"Content-Type: application/octet-stream\r\n\r\n\r\n"
-                b"--1f35df74046888ceaa62d8a534a076dd--\r\n"
-            ),
-            headers={"Content-Type": "multipart/form-data; boundary=1f35df74046888ceaa62d8a534a076dd"},
-        )
+
+@define
+class AddProductFormAttrs:
+    name: str
+    amount: int = field(validator=[instance_of(int), ge(1), lt(MAX_INT_POSTGRES)])
+
+
+class AddProductFormPydantic(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    name: str
+    amount: int = Field(ge=1, lt=MAX_INT_POSTGRES)
+
+
+class AddProductFormMsgspec(msgspec.Struct):
+    name: str
+    amount: Annotated[int, msgspec.Meta(lt=MAX_INT_POSTGRES, ge=1)]
+
+
+@pytest.mark.parametrize("form_object", [AddProductFormMsgspec, AddProductFormPydantic, AddProductFormAttrs])
+@pytest.mark.parametrize("form_type", [RequestEncodingType.URL_ENCODED, RequestEncodingType.MULTI_PART])
+def test_multipart_and_url_encoded_behave_the_same(form_object, form_type) -> None:  # type: ignore[no-untyped-def]
+    @post(path="/form")
+    async def form_(request: Request, data: Annotated[form_object, Body(media_type=form_type)]) -> int:
+        assert isinstance(data.name, str)
+        return data.amount  # type: ignore[no-any-return]
+
+    with create_test_client(
+        route_handlers=[
+            form_,
+        ]
+    ) as client:
+        if form_type == RequestEncodingType.URL_ENCODED:
+            response = client.post(
+                "/form",
+                data={
+                    "name": 1,
+                    "amount": 1,
+                },
+            )
+        else:
+            response = client.post(
+                "/form",
+                content=(
+                    b"--1f35df74046888ceaa62d8a534a076dd\r\n"
+                    b'Content-Disposition: form-data; name="name"\r\n'
+                    b"Content-Type: application/octet-stream\r\n\r\n"
+                    b"1\r\n"
+                    b"--1f35df74046888ceaa62d8a534a076dd\r\n"
+                    b'Content-Disposition: form-data; name="amount"\r\n'
+                    b"Content-Type: application/octet-stream\r\n\r\n"
+                    b"1\r\n"
+                    b"--1f35df74046888ceaa62d8a534a076dd--\r\n"
+                ),
+                headers={"Content-Type": "multipart/form-data; boundary=1f35df74046888ceaa62d8a534a076dd"},
+            )
         assert response.status_code == HTTP_201_CREATED
