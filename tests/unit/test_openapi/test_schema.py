@@ -268,7 +268,7 @@ def test_create_schema_for_pydantic_field() -> None:
         if pydantic.VERSION.startswith("1"):
             value: str = Field(title="title", description="description", example="example", max_length=16)
         else:
-            value: str = Field(
+            value: str = Field(  # type: ignore[no-redef]
                 title="title", description="description", max_length=16, json_schema_extra={"example": "example"}
             )
 
