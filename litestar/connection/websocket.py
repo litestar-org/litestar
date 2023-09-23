@@ -172,11 +172,11 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
         return event.get("text") or "" if mode == "text" else event.get("bytes") or b""
 
     @overload
-    def iter_data(self, mode: Literal["text"]) -> AsyncGenerator[str, None]:
+    async def iter_data(self, mode: Literal["text"]) -> AsyncGenerator[str, None]:
         ...
 
     @overload
-    def iter_data(self, mode: Literal["binary"]) -> AsyncGenerator[bytes, None]:
+    async def iter_data(self, mode: Literal["binary"]) -> AsyncGenerator[bytes, None]:
         ...
 
     async def iter_data(self, mode: WebSocketMode = "text") -> AsyncGenerator[str | bytes, None]:
