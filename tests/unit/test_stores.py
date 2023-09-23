@@ -94,15 +94,15 @@ async def test_get_and_renew(store: Store, renew_for: int | timedelta, frozen_da
 
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
-async def test_get_and_renew_redis(store: RedisStore, renew_for: int | timedelta) -> None:
+async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | timedelta) -> None:
     # we can't sleep() in frozen datetime, and frozen datetime doesn't affect the redis
     # instance, so we test this separately
-    await store.set("foo", b"bar", expires_in=1)
-    await store.get("foo", renew_for=renew_for)
+    await redis_store.set("foo", b"bar", expires_in=1)
+    await redis_store.get("foo", renew_for=renew_for)
 
     await asyncio.sleep(1.1)
 
-    stored_value = await store.get("foo")
+    stored_value = await redis_store.get("foo")
 
     assert stored_value is not None
 
