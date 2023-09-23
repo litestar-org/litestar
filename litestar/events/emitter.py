@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from contextlib import AsyncExitStack
 from contextvars import copy_context
+from dataclasses import dataclass
 from functools import partial
 from typing import TYPE_CHECKING, Any, Sequence
 
@@ -22,11 +23,23 @@ __all__ = ("BaseEventEmitterBackend", "SimpleEventEmitter")
 
 
 if TYPE_CHECKING:
+    from contextvars import Context
     from types import TracebackType
 
     from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 
     from litestar.events.listener import EventListener
+    from litestar.utils import AsyncCallable
+
+
+@dataclass
+class EventMessage:
+    """Event message to send to the event emitter."""
+
+    fn: "AsyncCallable"
+    args: Sequence[Any]
+    kwargs: dict[str, Any]
+    ctx: Context | None
 
 
 class BaseEventEmitterBackend(AsyncContextManager["BaseEventEmitterBackend"], ABC):
@@ -74,12 +87,12 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
             listeners: A list of listeners.
         """
         super().__init__(listeners=listeners)
-        self._receive_stream: MemoryObjectReceiveStream | None = None
+        self._receive_stream: MemoryObjectReceiveStream[EventMessage] | None = None
         self._send_stream: MemoryObjectSendStream | None = None
         self._exit_stack: AsyncExitStack | None = None
 
     @staticmethod
-    async def _worker(receive_stream: MemoryObjectReceiveStream) -> None:
+    async def _worker(receive_stream: MemoryObjectReceiveStream[EventMessage]) -> None:
         """Run items from ``receive_stream`` in a task group.
 
         Returns:
@@ -87,10 +100,12 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         """
         async with receive_stream, anyio.create_task_group() as task_group:
             async for item in receive_stream:
-                fn, args, kwargs, ctx = item
-                if kwargs:
-                    fn = partial(fn, **kwargs)
-                ctx.run(task_group.start_soon, fn, *args)
+                fn = partial(item.fn, **item.kwargs) if item.kwargs else item.fn
+
+                if item.ctx:
+                    item.ctx.run(task_group.start_soon, fn, *item.args)
+                else:
+                    task_group.start_soon(fn, *item.args)
 
     async def __aenter__(self) -> SimpleEventEmitter:
         self._exit_stack = AsyncExitStack()
@@ -132,6 +147,6 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
 
         if listeners := self.listeners.get(event_id):
             for listener in listeners:
-                self._send_stream.send_nowait((listener.fn, args, kwargs, copy_context()))
+                self._send_stream.send_nowait(EventMessage(listener.fn, args, kwargs, copy_context()))
             return
         raise ImproperlyConfiguredException(f"no event listeners are registered for event ID: {event_id}")
