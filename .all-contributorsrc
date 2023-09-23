@@ -1268,6 +1268,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "RobertRosca",
+      "name": "Robert Rosca",
+      "avatar_url": "https://avatars.githubusercontent.com/u/32569096?v=4",
+      "profile": "https://fosstodon.org/@robertrosca",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
