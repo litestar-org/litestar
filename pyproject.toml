@@ -129,6 +129,7 @@ sqlalchemy-spanner = "*"
 starlette = "*"
 time-machine = "*"
 trio = "*"
+pydantic = "==2.*"
 
 [tool.poetry.group.docs]
 optional = true
