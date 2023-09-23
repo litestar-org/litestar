@@ -517,7 +517,7 @@ Of the two declarations of ``my-cookie`` only the route handler one will be used
 
 .. seealso::
 
-    :class:`Cookie reference <.datastructures.cookie.Cookie>`
+    * :class:`Cookie reference <.datastructures.cookie.Cookie>`
 
 
 

@@ -24,7 +24,8 @@ request data in the form of JSON and use the type annotation we gave it to conve
 into the correct format.
 
 .. seealso::
-    :doc:`/usage/requests`
+
+    * :doc:`/usage/requests`
 
 
 Using the interactive documentation to test a route
@@ -122,4 +123,5 @@ list.
 
 
 .. seealso::
-    :ref:`usage/routing/parameters:path parameters`
+
+    * :ref:`usage/routing/parameters:path parameters`

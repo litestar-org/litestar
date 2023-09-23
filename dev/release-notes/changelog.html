@@ -1737,7 +1737,7 @@ caused by the renaming of <code class="docutils literal notranslate"><span class
 <p>Expose the previously private <code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.typing.ParsedType</span></code>. This is
 mainly indented for usage with
 <a class="reference internal" href="../reference/plugins.html#litestar.plugins.SerializationPluginProtocol.supports_type" title="litestar.plugins.SerializationPluginProtocol.supports_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">litestar.plugins.SerializationPluginProtocol.supports_type()</span></code></a></p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1677,">litestar-org/litestar#1677,</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1567">litestar-org/litestar#1567</a></span></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1677">litestar-org/litestar#1677</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1567">litestar-org/litestar#1567</a></span></p>
 </div>
 </dd>
 <dt>Improved debugging capabilities<a class="headerlink reference internal" href="#2.0.0beta1-improved debugging capabilities" id="2.0.0beta1-improved debugging capabilities">#</a></dt><dd><div class="changelog-change docutils container">
@@ -1855,7 +1855,7 @@ using a double-underscore syntax, for example
 <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/hybrid.html">hybrid attribute</a>
 and <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/associationproxy.html">associationproxy</a>.</p>
 <p>The generated field will be marked read-only.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1754,">litestar-org/litestar#1754,</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1776">litestar-org/litestar#1776</a></span></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1754">litestar-org/litestar#1754</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1776">litestar-org/litestar#1776</a></span></p>
 </div>
 </dd>
 <dt>DTOs: Transfer to generic collection types<a class="headerlink reference internal" href="#2.0.0beta1-dtos: transfer to generic collection types" id="2.0.0beta1-dtos: transfer to generic collection types">#</a></dt><dd><div class="changelog-change docutils container">
@@ -1947,7 +1947,7 @@ into a model type for nested models.</p>
 <dt>Incorrect <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> usage warnings for generator dependencies<a class="headerlink reference internal" href="#2.0.0beta1-incorrect" id="2.0.0beta1-incorrect">#</a></dt><dd><div class="changelog-change docutils container">
 <p>A bug was fixed that caused incorrect warnings about missing <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code>
 usage were issues when asynchronous generators were being used as dependencies.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1711">litestar-org/litestar#1711</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1716,">litestar-org/litestar#1716,</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1740">litestar-org/litestar#1740</a></span></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1711">litestar-org/litestar#1711</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1716">litestar-org/litestar#1716</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1740">litestar-org/litestar#1740</a></span></p>
 </div>
 </dd>
 <dt>Dependency injection custom dependencies in <code class="docutils literal notranslate"><span class="pre">WebSocketListener</span></code><a class="headerlink reference internal" href="#2.0.0beta1-dependency injection custom dependencies in" id="2.0.0beta1-dependency injection custom dependencies in">#</a></dt><dd><div class="changelog-change docutils container">
@@ -2227,7 +2227,7 @@ thread.</p>
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="../topics/sync-vs-async.html"><span class="doc">Sync vs. Async</span></a></p>
 </div>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1648,">litestar-org/litestar#1648,</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1655">litestar-org/litestar#1655</a></span></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1648">litestar-org/litestar#1648</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1655">litestar-org/litestar#1655</a></span></p>
 </div>
 </dd>
 <dt>Warn about <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> with async callables<a class="headerlink reference internal" href="#2.0.0alpha7-warn about" id="2.0.0alpha7-warn about">#</a></dt><dd><div class="changelog-change docutils container">
@@ -3027,7 +3027,7 @@ was fixed by adding it to the provider map.</p>
 <p>The HTML generated by the ReDoc and Swagger OpenAPI handlers would cause
 <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse">JSON.parse</a>
 to throw an error. This was fixed by removing the call to <code class="docutils literal notranslate"><span class="pre">JSON.parse</span></code>.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1363ad">litestar-org/litestar#1363ad</a></span></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1363">litestar-org/litestar#1363</a></span></p>
 </div>
 </dd>
 <dt>Fix CLI prints application info twice<a class="headerlink reference internal" href="#2.0.0alpha2-fix cli prints application info twice" id="2.0.0alpha2-fix cli prints application info twice">#</a></dt><dd><div class="changelog-change docutils container">
@@ -3060,7 +3060,7 @@ used within synchronous route handlers.</p>
 <li><p>Move <code class="docutils literal notranslate"><span class="pre">plugins.piccolo_orm</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">contrib.piccolo_orm</span></code></p></li>
 <li><p>Move <code class="docutils literal notranslate"><span class="pre">plugins.tortoise_orm</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">contrib.tortoise_orm</span></code></p></li>
 </ul>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/Move">litestar-org/litestar#Move</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3rd">litestar-org/litestar#3rd</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/party">litestar-org/litestar#party</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/integration">litestar-org/litestar#integration</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/plugins">litestar-org/litestar#plugins</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/to">litestar-org/litestar#to</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/``contrib``">litestar-org/litestar#``contrib``</a></span></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1279">litestar-org/litestar#1279</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1252">litestar-org/litestar#1252</a></span></p>
 </div>
 </dd>
 <dt>Remove <code class="docutils literal notranslate"><span class="pre">picologging</span></code> dependency from the <code class="docutils literal notranslate"><span class="pre">standard</span></code> package extra<a class="headerlink reference internal" href="#2.0.0alpha2-remove" id="2.0.0alpha2-remove">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
@@ -3242,12 +3242,12 @@ cookie.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1223">litestar-org/litestar#1223</a></span></p>
 </div>
 </dd>
-<dt>Fix <a class="github reference external" href="https://github.com/litestar-org/starlite/issues/1201">litestar-org/starlite#1201</a>: Can not serve static file in <code class="docutils literal notranslate"><span class="pre">/</span></code> path<a class="headerlink reference internal" href="#2.0.0alpha1-fix" id="2.0.0alpha1-fix">#</a></dt><dd><div class="changelog-change docutils container">
+<dt>Fix <a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1201">litestar-org/litestar#1201</a>: Can not serve static file in <code class="docutils literal notranslate"><span class="pre">/</span></code> path<a class="headerlink reference internal" href="#2.0.0alpha1-fix" id="2.0.0alpha1-fix">#</a></dt><dd><div class="changelog-change docutils container">
 <p>A validation error made it impossible to serve static files from the root path <code class="docutils literal notranslate"><span class="pre">/</span></code> .</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1201">litestar-org/litestar#1201</a></span></p>
 </div>
 </dd>
-<dt>Fix <a class="github reference external" href="https://github.com/litestar-org/starlite/issues/1149">litestar-org/starlite#1149</a>: Middleware not excluding static path<a class="headerlink reference internal" href="#2.0.0alpha1-fix" id="2.0.0alpha1-fix">#</a></dt><dd><div class="changelog-change docutils container">
+<dt>Fix <a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1149">litestar-org/litestar#1149</a>: Middleware not excluding static path<a class="headerlink reference internal" href="#2.0.0alpha1-fix" id="2.0.0alpha1-fix">#</a></dt><dd><div class="changelog-change docutils container">
 <p>A middleware’s <code class="docutils literal notranslate"><span class="pre">exclude</span></code> parameter would sometimes not be honoured if the path was used to serve static files
 using <code class="docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code>.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1149">litestar-org/litestar#1149</a></span></p>

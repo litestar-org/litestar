@@ -63,4 +63,4 @@ engine and session lifecycle, and register our ``transaction`` dependency.
 
 .. seealso::
 
-    :doc:`SQLAlchemy Plugins Usage Guide </usage/databases/sqlalchemy/plugins/index>`
+    * :doc:`SQLAlchemy Plugins Usage Guide </usage/databases/sqlalchemy/plugins/index>`
