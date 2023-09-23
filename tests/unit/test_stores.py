@@ -12,6 +12,7 @@ from unittest.mock import MagicMock, Mock, patch
 import pytest
 from _pytest.fixtures import FixtureRequest
 from pytest_mock import MockerFixture
+from time_machine import Coordinates
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.stores.file import FileStore
@@ -21,7 +22,6 @@ from litestar.stores.registry import StoreRegistry
 
 if TYPE_CHECKING:
     from redis.asyncio import Redis
-    from time_machine import Coordinates
 
     from litestar.stores.base import NamespacedStore, Store
 
@@ -79,15 +79,31 @@ async def test_expires(store: Store, frozen_datetime: Coordinates) -> None:
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
 async def test_get_and_renew(store: Store, renew_for: int | timedelta, frozen_datetime: Coordinates) -> None:
+    if isinstance(store, RedisStore):
+        pytest.skip()
+
     await store.set("foo", b"bar", expires_in=1)
     await store.get("foo", renew_for=renew_for)
 
     frozen_datetime.shift(2)
 
-    if isinstance(store, RedisStore):
-        await asyncio.sleep(1.1)
-
     stored_value = await store.get("foo")
+
+    assert stored_value is not None
+
+
+@pytest.mark.flaky(reruns=5)
+@pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
+@pytest.mark.xdist_group("redis")
+async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | timedelta) -> None:
+    # we can't sleep() in frozen datetime, and frozen datetime doesn't affect the redis
+    # instance, so we test this separately
+    await redis_store.set("foo", b"bar", expires_in=1)
+    await redis_store.get("foo", renew_for=renew_for)
+
+    await asyncio.sleep(1.1)
+
+    stored_value = await redis_store.get("foo")
 
     assert stored_value is not None
 

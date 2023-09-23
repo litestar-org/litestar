@@ -26,6 +26,7 @@ class OpenAPIFormat(str, Enum):
     IRI_REFERENCE = "iri-reference"  # noqa: PIE796
     UUID = "uuid"
     REGEX = "regex"
+    BINARY = "binary"
 
 
 class OpenAPIType(str, Enum):

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Dict, List, Literal
 
 import annotated_types
 import msgspec
+import pydantic
 import pytest
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated
@@ -264,7 +265,12 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
 
 def test_create_schema_for_pydantic_field() -> None:
     class Model(BaseModel):
-        value: str = Field(title="title", description="description", example="example", max_length=16)
+        if pydantic.VERSION.startswith("1"):
+            value: str = Field(title="title", description="description", example="example", max_length=16)
+        else:
+            value: str = Field(  # type: ignore[no-redef]
+                title="title", description="description", max_length=16, json_schema_extra={"example": "example"}
+            )
 
     schemas: Dict[str, Schema] = {}
     field_definition = FieldDefinition.from_kwarg(name="Model", annotation=Model)
