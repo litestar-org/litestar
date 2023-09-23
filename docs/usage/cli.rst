@@ -2,28 +2,10 @@ CLI
 ===
 
 Litestar provides a convenient command line interface (CLI) for running and managing Litestar applications. The CLI is
-powered by `click <https://click.palletsprojects.com/>`_ and `rich <https://rich.readthedocs.io>`_.
+powered by `click <https://click.palletsprojects.com/>`_, `rich <https://rich.readthedocs.io>`_,
+and `rich-click <https://github.com/ewels/rich-click>`_.
 
-Enabling the CLI
-----------------
-
-By default, the CLI dependencies are not included during the installation of Litestar to minimize the required packages.
-To enable the CLI, you need to install Litestar with the ``cli`` or ``standard`` extras:
-
-.. code-block:: shell
-
-   pip install litestar[cli]
-
-.. code-block:: shell
-
-   pip install litestar[standard]
-
-Once you have installed either of these, you can access the CLI functionality through the ``litestar`` command.
-
-.. note::
-   Installing the CLI automatically includes the ``click``, ``rich``, and ``rich-click`` packages. While we recommend
-    using ``rich-click`` for the best experience, it is an optional dependency. If you prefer not to use it, you can
-    manually install ``click`` and ``rich`` in your project instead of using the built-in Litestar extras flag.
+The CLI and its dependencies are included by default. You can access the CLI functionality through the ``litestar`` command.
 
 Autodiscovery
 -------------
