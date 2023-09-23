@@ -1278,6 +1278,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "syshenyu",
+      "name": "DICE_Lab",
+      "avatar_url": "https://avatars.githubusercontent.com/u/92897003?v=4",
+      "profile": "https://github.com/syshenyu",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
