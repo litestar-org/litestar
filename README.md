@@ -436,6 +436,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/geeshta"><img src="https://avatars.githubusercontent.com/u/61031243?v=4?s=100" width="100px;" alt="geeshta"/><br /><sub><b>geeshta</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=geeshta" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://fosstodon.org/@robertrosca"><img src="https://avatars.githubusercontent.com/u/32569096?v=4?s=100" width="100px;" alt="Robert Rosca"/><br /><sub><b>Robert Rosca</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=RobertRosca" title="Documentation">📖</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/syshenyu"><img src="https://avatars.githubusercontent.com/u/92897003?v=4?s=100" width="100px;" alt="DICE_Lab"/><br /><sub><b>DICE_Lab</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=syshenyu" title="Code">💻</a></td>
+    </tr>
   </tbody>
 </table>
 
