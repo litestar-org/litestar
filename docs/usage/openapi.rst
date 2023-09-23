@@ -304,7 +304,7 @@ Customizing Pydantic model schemas
 ----------------------------------
 
 You can customize the OpenAPI schemas generated for pydantic models by following the guidelines in
-the `pydantic docs <https://pydantic-docs.helpmanual.io/usage/schema/>`_.
+the `Pydantic docs <https://docs.pydantic.dev/latest/usage/json_schema/>`_.
 
 Additionally, you can affect how pydantic models are translated into OpenAPI ``components`` by settings a special dunder
 attribute on the model called ``__schema_name__``:

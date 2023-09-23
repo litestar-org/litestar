@@ -87,7 +87,8 @@ Litestar that you only want to use this function when a ``GET`` request is being
 
 
 .. seealso::
-    :doc:`/usage/routing/handlers`
+
+    * :doc:`/usage/routing/handlers`
 
 
 Type annotations
@@ -134,7 +135,8 @@ as the first argument:
 
 
 .. seealso::
-    :doc:`/usage/applications`
+
+    * :doc:`/usage/applications`
 
 
 
@@ -163,4 +165,5 @@ When you run ``litestar run``, it will recognise the ``app.py`` file and the
 
 
 .. seealso::
-    :doc:`/usage/cli`
+
+    * :doc:`/usage/cli`

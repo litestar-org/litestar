@@ -206,7 +206,8 @@ be compared against the ``TodoItem.done`` attribute:
 
 
 .. seealso::
-    :ref:`usage/routing/parameters:type coercion`
+
+    * :ref:`Routing - Parameters - Type coercion <usage/routing/parameters:type coercion>`
 
 
 Making the query parameter optional
@@ -244,7 +245,8 @@ supplied.
 
 
 .. seealso::
-    :ref:`usage/routing/parameters:query parameters`
+
+    * :ref:`Routing - Parameters - Query Parameters <usage/routing/parameters:query parameters>`
 
 
 Interactive documentation

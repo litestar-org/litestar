@@ -312,8 +312,8 @@ These requirements are enforced using inspection, and if any of them is unfulfil
 
 .. seealso::
 
-    :class:`WebsocketRouteHandler <litestar.handlers.WebsocketRouteHandler>`
-    :doc:`/usage/websockets`
+    * :class:`WebsocketRouteHandler <litestar.handlers.WebsocketRouteHandler>`
+    * :doc:`/usage/websockets`
 
 
 ASGI route handlers
