@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Optional
 
 import msgspec
+import pydantic
 import pytest
 import yaml
 from pydantic import BaseModel, Field
@@ -175,15 +176,26 @@ def test_msgspec_schema_generation(create_examples: bool) -> None:
 @pytest.mark.parametrize("create_examples", CREATE_EXAMPLES_VALUES)
 def test_pydantic_schema_generation(create_examples: bool) -> None:
     class Lookup(BaseModel):
-        id: Annotated[
-            str,
-            Field(
-                min_length=12,
-                max_length=16,
-                description="A unique identifier",
-                example="e4eaaaf2-d142-11e1-b3e4-080027620cdd",
-            ),
-        ]
+        if pydantic.VERSION.startswith("1"):
+            id: Annotated[
+                str,
+                Field(
+                    min_length=12,
+                    max_length=16,
+                    description="A unique identifier",
+                    example="e4eaaaf2-d142-11e1-b3e4-080027620cdd",
+                ),
+            ]
+        else:
+            id: Annotated[  # type: ignore[no-redef]
+                str,
+                Field(
+                    min_length=12,
+                    max_length=16,
+                    description="A unique identifier",
+                    json_schema_extra={"example": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"},
+                ),
+            ]
 
     @post("/example")
     async def example_route() -> Lookup:
