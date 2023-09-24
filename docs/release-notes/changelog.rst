@@ -43,7 +43,7 @@
         :pr: 2195
         :issue: 965
 
-        Adds the ability to pass a custom Jinja2 :class:`Environment` or Mako :class:`TemplateLookup` by providing a
+        Adds the ability to pass a custom Jinja2 ``Environment`` or Mako ``TemplateLookup`` by providing a
         dedicated class method.
 
     .. change:: Add support for `minjinja <https://github.com/mitsuhiko/minijinja>`_
@@ -212,28 +212,34 @@
 
         Update :class:`ASGIResponse`, :class:`Response` and friends to address a few issues related to headers:
 
-        - If :meth:`encoded_headers` were passed in at any point, they were mutated within responses, leading to a growing list of headers with every response
-        - While mutating :meth:`encoded_headers`, the checks performed to assert a value was (not) already present, headers were not treated case-insensitive
+        - If ``encoded_headers`` were passed in at any point, they were mutated within responses, leading to a growing list of headers with every response
+        - While mutating ``encoded_headers``, the checks performed to assert a value was (not) already present, headers were not treated case-insensitive
         - Unnecessary work was performed while converting cookies / headers into an encoded headers list
 
         This was fixed by:
 
-        - Removing the use of and deprecate :meth:`encoded_headers`
+        - Removing the use of and deprecate ``encoded_headers``
         - Handling headers on :class:`ASGIResponse` with :class:`MutableScopeHeaders`, which allows for case-insensitive membership tests, ``.setdefault`` operations, etc.
 
     .. change:: Adds missing ORM registry export
         :type: bugfix
         :pr: 2316
 
+        Adds an export that was overlooked for the base repo
+
     .. change:: Discrepancy in ``attrs``, ``msgspec`` and ``Pydantic`` for multi-part forms
         :type: bugfix
         :pr: 2280
         :issue: 2278
 
+        Resolves issue in ``attrs``, ``msgspec`` and Pydantic for multi-part forms
+
     .. change:: Set proper default for ``exclude_http_methods`` in auth middleware
         :type: bugfix
         :pr: 2325
         :issue: 2205
+
+        Sets ``OPTIONS`` as the default value for ``exclude_http_methods`` in the base authentication middleware class.
 
 .. changelog:: 2.0.0
     :date: 2023/08/19
