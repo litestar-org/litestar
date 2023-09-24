@@ -283,6 +283,12 @@ class KwargsModel:
             layered_parameters=layered_parameters,
         )
 
+        cls._validate_dependencies_annotations(
+            handler=signature_model.__name__.replace("_signature_model", ""),
+            handler_fields=parsed_signature.parameters,
+            dependencies=dependencies,
+        )
+
         param_definitions, expected_dependencies = cls._get_param_definitions(
             path_parameters=path_parameters,
             layered_parameters=layered_parameters,
@@ -358,6 +364,51 @@ class KwargsModel:
             is_data_optional=field_definitions["data"].is_optional if "data" in expected_reserved_kwargs else False,
             sequence_query_parameter_names=sequence_query_parameter_names,
         )
+
+    @classmethod
+    def _validate_dependencies_annotations(
+        cls,
+        handler: str,
+        handler_fields: dict[str, FieldDefinition],
+        dependencies: dict[str, FieldDefinition],
+    ) -> bool:
+        """Validate that the dependencies type annotations and handler expected dependency type annotation are consistent.
+        Example::
+
+            ..code-block:: python
+
+                from litestar import Litestar
+                from litestar import get
+                from litestar.di import Provide
+
+                def get_dependency() -> list[str]:
+                    return ["db"]
+
+                dependencies = {"db": Provide(get_dependency)}
+
+                @get("/")
+                def handler(db: List[str]) -> dict[str, str]:
+                    return {"hello": "world"}
+
+        Args:
+            dependencies_fields: A string keyed dictionary of dependency fields.
+            handler_fields: A string keyed dictionary of handler fields.
+
+        Returns:
+            True if the annotations are consistent, False otherwise
+        """
+        for dependency_field_name, dependency_field in dependencies.items():
+            if dependency_field_name not in handler_fields:
+                continue
+            handler_field = handler_fields[dependency_field_name]
+            dependency_return_annotation = dependency_field.signature_model._return_annotation
+            if dependency_return_annotation == handler_field.annotation:
+                continue
+            print(
+                f"Dependency annotation mismatch. Handler '{handler}' expects dependency '{dependency_field_name}', to be a {handler_field.annotation} but dependency returns a '{dependency_return_annotation}'."
+            )
+            return False
+        return True
 
     def to_kwargs(self, connection: ASGIConnection) -> dict[str, Any]:
         """Return a dictionary of kwargs. Async values, i.e. CoRoutines, are not resolved to ensure this function is
