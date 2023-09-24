@@ -6,7 +6,7 @@ Litestar is a powerful, flexible, highly performant, and opinionated ASGI framew
 The Litestar framework supports :doc:`/usage/plugins`, ships
 with :doc:`dependency injection </usage/dependency-injection>`, :doc:`security primitives </usage/security/index>`,
 :doc:`OpenAPI schema generation </usage/openapi>`, `MessagePack <https://msgpack.org/>`_,
-:doc:`middlewares </usage/middleware/index>`, and much more.
+:doc:`middlewares </usage/middleware/index>`, a great :doc:`CLI </usage/cli>` experience, ``uvicorn``, and much more.
 
 Installation
 ------------
@@ -15,8 +15,7 @@ Installation
 
    pip install litestar
 
-.. tip:: ``litestar[standard]`` includes everything you need to get started with Litestar. It has: ``click`` and ``rich`` for a great :doc:`CLI </usage/cli>` experience, ``jinja2`` for templating,
-        and ``uvicorn`` for running your app.
+.. tip:: ``litestar[standard]`` includes commonly used extras (like ``jinja2`` for templating).
 
 .. dropdown:: Extras
     :icon: star
