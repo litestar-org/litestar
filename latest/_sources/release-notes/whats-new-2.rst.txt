@@ -445,7 +445,7 @@ and can be used to define DTOs:
 
 - :class:`litestar.dto.dataclass_dto.DataclassDTO`
 - :class:`litestar.dto.msgspec_dto.MsgspecDTO`
-- :class:`litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO`
+- :class:`advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO`
 - :class:`litestar.contrib.pydantic.PydanticDTO`
 - :class:`litestar.contrib.piccolo.PiccoloDTO`
 

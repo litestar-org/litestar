@@ -1,7 +1,7 @@
 SQLAlchemy Init Plugin
 ----------------------
 
-The :class:`SQLAlchemyInitPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin>` adds functionality to the
+The :class:`SQLAlchemyInitPlugin <advanced_alchemy.extensions.litestar.plugins.SQLAlchemyInitPlugin>` adds functionality to the
 application that supports using Litestar with `SQLAlchemy <http://www.sqlalchemy.org/>`_.
 
 The plugin:
@@ -39,8 +39,7 @@ Renaming the dependencies
 #########################
 
 You can change the name that the engine and session are bound to by setting the
-:attr:`engine_dependency_key <litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.engine_dependency_key>` and
-:attr:`session_dependency_key <litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_dependency_key>`
+:attr:`engine_dependency_key` and :attr:`session_dependency_key`
 attributes on the plugin configuration.
 
 Configuring the before send handler
@@ -50,7 +49,7 @@ The plugin configures a ``before_send`` handler that is called before sending a 
 session and removes it from the connection scope.
 
 You can change the handler by setting the
-:attr:`before_send_handler <litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.before_send_handler>` attribute
+:attr:`before_send_handler` attribute
 on the configuration object. For example, an alternate handler is available that will also commit the session on success
 and rollback upon failure.
 
@@ -73,21 +72,21 @@ and rollback upon failure.
 Configuring the plugins
 #######################
 
-Both the :class:`SQLAlchemyAsyncConfig <litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig>` and the
-:class:`SQLAlchemySyncConfig <litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig>` have an ``engine_config``
+Both the :class:`SQLAlchemyAsyncConfig <advanced_alchemy.extensions.litestar.config.SQLAlchemyAsyncConfig>` and the
+:class:`SQLAlchemySyncConfig <advanced_alchemy.extensions.litestar.config.SQLAlchemySyncConfig>` have an ``engine_config``
 attribute that is used to configure the engine. The ``engine_config`` attribute is an instance of
-:class:`EngineConfig <litestar.contrib.sqlalchemy.plugins.EngineConfig>` and exposes all of the configuration options
+:class:`EngineConfig <advanced_alchemy.config.EngineConfig>` and exposes all of the configuration options
 available to the SQLAlchemy engine.
 
-The :class:`SQLAlchemyAsyncConfig <litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig>` class and the
-:class:`SQLAlchemySyncConfig <litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig>` class also have a
+The :class:`SQLAlchemyAsyncConfig <advanced_alchemy.extensions.litestar.config.SQLAlchemyAsyncConfig>` class and the
+:class:`SQLAlchemySyncConfig <advanced_alchemy.extensions.litestar.config.SQLAlchemySyncConfig>` class also have a
 ``session_config`` attribute that is used to configure the session. This is either an instance of
-:class:`AsyncSessionConfig <litestar.contrib.sqlalchemy.plugins.AsyncSessionConfig>` or
-:class:`SyncSessionConfig <litestar.contrib.sqlalchemy.plugins.SyncSessionConfig>` depending on the type of config
+:class:`AsyncSessionConfig <advanced_alchemy.config.AsyncSessionConfig>` or
+:class:`SyncSessionConfig <advanced_alchemy.config.SyncSessionConfig>` depending on the type of config
 object. These classes expose all of the configuration options available to the SQLAlchemy session.
 
-Finally, the :class:`SQLAlchemyAsyncConfig <litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig>` class and the
-:class:`SQLAlchemySyncConfig <litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig>` class expose configuration
+Finally, the :class:`SQLAlchemyAsyncConfig <advanced_alchemy.extensions.litestar.config.SQLAlchemyAsyncConfig>` class and the
+:class:`SQLAlchemySyncConfig <advanced_alchemy.extensions.litestar.config.SQLAlchemySyncConfig>` class expose configuration
 options to control their behavior.
 
 Consult the reference documentation for more information.
@@ -98,7 +97,7 @@ Example
 The below example is a complete demonstration of use of the init plugin. Readers who are familiar with the prior section
 may note the additional complexity involved in managing the conversion to and from SQLAlchemy objects within the
 handlers. Read on to see how this increased complexity is efficiently handled by the
-:class:`SQLAlchemySerializationPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin>`.
+:class:`SQLAlchemySerializationPlugin <advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin>`.
 
 .. tab-set::
 

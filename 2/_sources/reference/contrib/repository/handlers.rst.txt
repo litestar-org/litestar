@@ -1,5 +1,6 @@
+:orphan:
+
 handlers
 =========
 
-.. automodule:: litestar.contrib.repository.handlers
-    :members:
+This page has moved to :doc:`/reference/repository/handlers`

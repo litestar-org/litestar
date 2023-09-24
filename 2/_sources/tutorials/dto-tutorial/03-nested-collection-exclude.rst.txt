@@ -16,7 +16,7 @@ To demonstrate, lets add a self-referencing ``children`` relationship to our ``P
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/nested_collection_exclude.py
    :language: python
    :linenos:
-   :emphasize-lines: 23,27,35,36,42
+   :emphasize-lines: 22,26,34,35,41
 
 Now, a ``Person`` can have one or many ``children``, and each ``child`` can have one or many ``children``, and so on.
 
@@ -30,7 +30,7 @@ Here's the output:
 .. image:: images/nested_collection_exclude.png
     :align: center
 
-Fantastic! Our ``children`` are now represented in the output, and their email and addresses are excluded. However,
+Fantastic! Our ``children`` are now represented in the output, and their emails and addresses are excluded. However,
 astute readers may have noticed that we didn't exclude the ``children`` field of ``Person.children``
-(e.g., ``children.0.children``) yet that field is not represented in the output. To understand why, we'll next look at
+(e.g., ``children.0.children``), yet that field is not represented in the output. To understand why, we'll next look at
 the :attr:`max_nested_depth <litestar.dto.config.DTOConfig.max_nested_depth>` configuration option.

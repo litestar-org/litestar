@@ -255,7 +255,8 @@ be used to fetch this history and put it into a subscriber's :term:`event stream
     previous events have been processed.
 
     .. seealso::
-        `Managing backpressure`
+
+        * `Managing backpressure`_
 
 
 The ``Subscriber``

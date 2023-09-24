@@ -2,10 +2,10 @@ Using the serialization plugin
 ------------------------------
 
 Our next improvement is to leverage the
-:class:`serialization plugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin>` so that we can receive
-and return our SQLAlchemy models directly to and from our handlers.
+:class:`SQLAlchemySerializationPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin>`
+so that we can receive and return our SQLAlchemy models directly to and from our handlers.
 
-Here's the code.
+Here's the code:
 
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_serialization_plugin.py
     :language: python
