@@ -3,23 +3,6 @@
 2.x Changelog
 =============
 
-Sponsors
---------
-
-A special thank you to our financial sponsors that help support Litestar's development!
-
-`GitHub Sponsors <https://github.com/sponsors/litestar-org/>`_:
-
-* `@benjamin-kirkbride <https://github.com/benjamin-kirkbride>`_
-* `@crisog <https://github.com/crisog>`_
-
-`OpenCollective <https://opencollective.com/litestar>`_:
-
-* Christian Y
-* GitHub Sponsors
-* Shubham Prajapati
-* Snyk
-
 .. changelog:: 2.1.0
     :date: 2023/09/23
 
