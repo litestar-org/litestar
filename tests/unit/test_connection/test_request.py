@@ -149,7 +149,10 @@ def test_request_url() -> None:
 
     client = TestClient(app)
     response = client.get("/123?a=abc")
-    assert response.json() == {"method": "GET", "url": "http://testserver.local/123?a=abc"}
+    assert response.json() == {
+        "method": "GET",
+        "url": "http://testserver.local/123?a=abc",
+    }
 
     response = client.get("https://example.org:123/")
     assert response.json() == {"method": "GET", "url": "https://example.org:123/"}
@@ -201,7 +204,10 @@ def test_request_accept_header() -> None:
 @pytest.mark.parametrize(
     "scope,expected_client",
     (
-        ({"type": "http", "route_handler": _route_handler, "client": ["client", 42]}, Address("client", 42)),
+        (
+            {"type": "http", "route_handler": _route_handler, "client": ["client", 42]},
+            Address("client", 42),
+        ),
         ({"type": "http", "route_handler": _route_handler, "client": None}, None),
         ({"type": "http", "route_handler": _route_handler}, None),
     ),
@@ -353,7 +359,16 @@ async def test_request_disconnect() -> None:
         return {"type": "http.disconnect"}
 
     with pytest.raises(InternalServerException):
-        await app({"type": "http", "route_handler": _route_handler, "method": "POST", "path": "/"}, receiver, empty_send)  # type: ignore
+        await app(
+            {
+                "type": "http",
+                "route_handler": _route_handler,
+                "method": "POST",
+                "path": "/",
+            },
+            receiver,
+            empty_send,
+        )  # type: ignore
 
 
 def test_request_state() -> None:
@@ -484,7 +499,9 @@ def test_state() -> None:
         return {"state": request.state.main}
 
     with create_test_client(
-        route_handlers=[get_state], middleware=[BeforeRequestMiddleWare], before_request=before_request
+        route_handlers=[get_state],
+        middleware=[BeforeRequestMiddleWare],
+        before_request=before_request,
     ) as client:
         response = client.get("/")
         assert response.json() == {"state": 2}

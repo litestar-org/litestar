@@ -47,21 +47,21 @@ class OpenAPIController(Controller):
     """Download url for the Redoc JS bundle."""
     swagger_css_url: str = f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui.css"
     """Download url for the Swagger UI CSS bundle."""
-    swagger_ui_bundle_js_url: str = (
-        f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui-bundle.js"
-    )
+    swagger_ui_bundle_js_url: (
+        str
+    ) = f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui-bundle.js"
     """Download url for the Swagger UI JS bundle."""
-    swagger_ui_standalone_preset_js_url: str = (
-        f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui-standalone-preset.js"
-    )
+    swagger_ui_standalone_preset_js_url: (
+        str
+    ) = f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui-standalone-preset.js"
     """Download url for the Swagger Standalone Preset JS bundle."""
-    stoplight_elements_css_url: str = (
-        f"https://unpkg.com/@stoplight/elements@{stoplight_elements_version}/styles.min.css"
-    )
+    stoplight_elements_css_url: (
+        str
+    ) = f"https://unpkg.com/@stoplight/elements@{stoplight_elements_version}/styles.min.css"
     """Download url for the Stoplight Elements CSS bundle."""
-    stoplight_elements_js_url: str = (
-        f"https://unpkg.com/@stoplight/elements@{stoplight_elements_version}/web-components.min.js"
-    )
+    stoplight_elements_js_url: (
+        str
+    ) = f"https://unpkg.com/@stoplight/elements@{stoplight_elements_version}/web-components.min.js"
     """Download url for the Stoplight Elements JS bundle."""
 
     # internal
@@ -121,7 +121,9 @@ class OpenAPIController(Controller):
         return f"<link rel='icon' type='image/x-icon' href='{self.favicon_url}'>" if self.favicon_url else "<meta/>"
 
     @cached_property
-    def render_methods_map(self) -> dict[Literal["redoc", "swagger", "elements"], Callable[[Request], bytes]]:
+    def render_methods_map(
+        self,
+    ) -> dict[Literal["redoc", "swagger", "elements"], Callable[[Request], bytes]]:
         """Map render method names to render methods.
 
         Returns:
@@ -133,7 +135,12 @@ class OpenAPIController(Controller):
             "elements": self.render_stoplight_elements,
         }
 
-    @get(path="/openapi.yaml", media_type=OpenAPIMediaType.OPENAPI_YAML, include_in_schema=False, sync_to_thread=False)
+    @get(
+        path="/openapi.yaml",
+        media_type=OpenAPIMediaType.OPENAPI_YAML,
+        include_in_schema=False,
+        sync_to_thread=False,
+    )
     def retrieve_schema_yaml(self, request: Request[Any, Any, Any]) -> ASGIResponse:
         """Return the OpenAPI schema as YAML with an ``application/vnd.oai.openapi`` Content-Type header.
 
@@ -152,7 +159,12 @@ class OpenAPIController(Controller):
             return ASGIResponse(body=self._dumped_yaml_schema, media_type=OpenAPIMediaType.OPENAPI_YAML)
         return ASGIResponse(body=b"", status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
-    @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False, sync_to_thread=False)
+    @get(
+        path="/openapi.json",
+        media_type=OpenAPIMediaType.OPENAPI_JSON,
+        include_in_schema=False,
+        sync_to_thread=False,
+    )
     def retrieve_schema_json(self, request: Request[Any, Any, Any]) -> ASGIResponse:
         """Return the OpenAPI schema as JSON with an ``application/vnd.oai.openapi+json`` Content-Type header.
 
@@ -195,7 +207,11 @@ class OpenAPIController(Controller):
 
         if self.should_serve_endpoint(request):
             return ASGIResponse(body=render_method(request), media_type=MediaType.HTML)
-        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+        return ASGIResponse(
+            body=self.render_404_page(),
+            status_code=HTTP_404_NOT_FOUND,
+            media_type=MediaType.HTML,
+        )
 
     @get(path="/swagger", include_in_schema=False, sync_to_thread=False)
     def swagger_ui(self, request: Request[Any, Any, Any]) -> ASGIResponse:
@@ -210,9 +226,18 @@ class OpenAPIController(Controller):
         """
         if self.should_serve_endpoint(request):
             return ASGIResponse(body=self.render_swagger_ui(request), media_type=MediaType.HTML)
-        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+        return ASGIResponse(
+            body=self.render_404_page(),
+            status_code=HTTP_404_NOT_FOUND,
+            media_type=MediaType.HTML,
+        )
 
-    @get(path="/elements", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
+    @get(
+        path="/elements",
+        media_type=MediaType.HTML,
+        include_in_schema=False,
+        sync_to_thread=False,
+    )
     def stoplight_elements(self, request: Request[Any, Any, Any]) -> ASGIResponse:
         """Route handler responsible for rendering StopLight Elements.
 
@@ -225,9 +250,18 @@ class OpenAPIController(Controller):
         """
         if self.should_serve_endpoint(request):
             return ASGIResponse(body=self.render_stoplight_elements(request), media_type=MediaType.HTML)
-        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+        return ASGIResponse(
+            body=self.render_404_page(),
+            status_code=HTTP_404_NOT_FOUND,
+            media_type=MediaType.HTML,
+        )
 
-    @get(path="/redoc", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
+    @get(
+        path="/redoc",
+        media_type=MediaType.HTML,
+        include_in_schema=False,
+        sync_to_thread=False,
+    )
     def redoc(self, request: Request[Any, Any, Any]) -> ASGIResponse:  # pragma: no cover
         """Route handler responsible for rendering Redoc.
 
@@ -240,7 +274,11 @@ class OpenAPIController(Controller):
         """
         if self.should_serve_endpoint(request):
             return ASGIResponse(body=self.render_redoc(request), media_type=MediaType.HTML)
-        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+        return ASGIResponse(
+            body=self.render_404_page(),
+            status_code=HTTP_404_NOT_FOUND,
+            media_type=MediaType.HTML,
+        )
 
     def render_swagger_ui(self, request: Request[Any, Any, Any]) -> bytes:
         """Render an HTML page for Swagger-UI.

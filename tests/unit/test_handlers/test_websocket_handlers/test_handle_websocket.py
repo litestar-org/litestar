@@ -28,7 +28,12 @@ def test_websocket_signature_namespace() -> None:
 
         @websocket(path="/", signature_namespace={"d": List[str]})
         async def simple_websocket_handler(
-            self, socket: WebSocket, a: "a", b: "b", c: "c", d: "d"  # type:ignore[name-defined]  # noqa: F821
+            self,
+            socket: WebSocket,
+            a: "a",  # type:ignore[name-defined]  # noqa: F821
+            b: "b",  # type:ignore[name-defined]  # noqa: F821
+            c: "c",  # type:ignore[name-defined]  # noqa: F821
+            d: "d",  # type:ignore[name-defined]  # noqa: F821
         ) -> None:
             await socket.accept()
             data = await socket.receive_json()

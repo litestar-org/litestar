@@ -4,13 +4,20 @@ from typing import Any
 
 from typing_extensions import Annotated, get_type_hints
 
-from litestar._openapi.schema_generation.schema import SchemaCreator, _get_type_schema_name
+from litestar._openapi.schema_generation.schema import (
+    SchemaCreator,
+    _get_type_schema_name,
+)
 from litestar.exceptions import MissingDependencyException
 from litestar.openapi.spec import Example, OpenAPIFormat, OpenAPIType, Schema
 from litestar.plugins import OpenAPISchemaPluginProtocol
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils import is_class_and_subclass, is_pydantic_model_class, is_undefined_sentinel
+from litestar.utils import (
+    is_class_and_subclass,
+    is_pydantic_model_class,
+    is_undefined_sentinel,
+)
 
 try:
     import pydantic
@@ -63,7 +70,11 @@ PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
         ]
     ),
     pydantic.Json: Schema(type=OpenAPIType.OBJECT, format=OpenAPIFormat.JSON_POINTER),
-    pydantic.NameEmail: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL, description="Name and email"),
+    pydantic.NameEmail: Schema(
+        type=OpenAPIType.STRING,
+        format=OpenAPIFormat.EMAIL,
+        description="Name and email",
+    ),
 }
 
 if pydantic.VERSION.startswith("1"):  # pragma: no cover
@@ -100,7 +111,9 @@ if pydantic.VERSION.startswith("1"):  # pragma: no cover
             pydantic.DirectoryPath: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI_REFERENCE),
             pydantic.AnyUrl: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URL),
             pydantic.AnyHttpUrl: Schema(
-                type=OpenAPIType.STRING, format=OpenAPIFormat.URL, description="must be a valid HTTP based URL"
+                type=OpenAPIType.STRING,
+                format=OpenAPIFormat.URL,
+                description="must be a valid HTTP based URL",
             ),
             pydantic.FilePath: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI_REFERENCE),
             pydantic.HttpUrl: Schema(
@@ -109,8 +122,16 @@ if pydantic.VERSION.startswith("1"):  # pragma: no cover
                 description="must be a valid HTTP based URL",
                 max_length=2083,
             ),
-            pydantic.RedisDsn: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI, description="redis DSN"),
-            pydantic.PostgresDsn: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI, description="postgres DSN"),
+            pydantic.RedisDsn: Schema(
+                type=OpenAPIType.STRING,
+                format=OpenAPIFormat.URI,
+                description="redis DSN",
+            ),
+            pydantic.PostgresDsn: Schema(
+                type=OpenAPIType.STRING,
+                format=OpenAPIFormat.URI,
+                description="postgres DSN",
+            ),
             pydantic.SecretBytes: Schema(type=OpenAPIType.STRING),
             pydantic.SecretStr: Schema(type=OpenAPIType.STRING),
             pydantic.StrictBool: Schema(type=OpenAPIType.BOOLEAN),
@@ -151,9 +172,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
         return PYDANTIC_TYPE_MAP[field_definition.annotation]  # pragma: no cover
 
     @classmethod
-    def for_pydantic_model(
-        cls, annotation: type[pydantic.BaseModel], schema_creator: SchemaCreator
-    ) -> Schema:  # pyright: ignore
+    def for_pydantic_model(cls, annotation: type[pydantic.BaseModel], schema_creator: SchemaCreator) -> Schema:  # pyright: ignore
         """Create a schema object for a given pydantic model class.
 
         Args:
@@ -180,9 +199,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
             example = getattr(model_config, "example", None)
 
         field_definitions = {
-            f.alias
-            if f.alias and schema_creator.prefer_alias
-            else k: FieldDefinition.from_kwarg(
+            f.alias if f.alias and schema_creator.prefer_alias else k: FieldDefinition.from_kwarg(
                 annotation=Annotated[annotation_hints[k], f, f.metadata]  # pyright: ignore
                 if pydantic.VERSION.startswith("2")
                 else Annotated[annotation_hints[k], f],  # pyright: ignore

@@ -11,7 +11,12 @@ from litestar._asgi.routing_trie.types import (
 from litestar._asgi.utils import wrap_in_exception_handler
 from litestar.types.internal_types import PathParameterDefinition
 
-__all__ = ("add_mount_route", "add_route_to_trie", "build_route_middleware_stack", "configure_node")
+__all__ = (
+    "add_mount_route",
+    "add_route_to_trie",
+    "build_route_middleware_stack",
+    "configure_node",
+)
 
 
 if TYPE_CHECKING:
@@ -189,7 +194,8 @@ def build_route_middleware_stack(
 
     # we wrap the route.handle method in the ExceptionHandlerMiddleware
     asgi_handler = wrap_in_exception_handler(
-        app=route.handle, exception_handlers=route_handler.resolve_exception_handlers()  # type: ignore[arg-type]
+        app=route.handle,
+        exception_handlers=route_handler.resolve_exception_handlers(),  # type: ignore[arg-type]
     )
 
     if app.csrf_config:

@@ -100,7 +100,11 @@ def create_app_file(tmp_project_dir: Path, request: FixtureRequest) -> CreateApp
             request.addfinalizer(lambda: rmtree(directory))
             request.addfinalizer(
                 lambda: _purge_module(
-                    [directory, _path_to_dotted_path(tmp_app_file.relative_to(Path.cwd()))], tmp_app_file  # type: ignore[list-item]
+                    [
+                        directory,
+                        _path_to_dotted_path(tmp_app_file.relative_to(Path.cwd())),
+                    ],
+                    tmp_app_file,  # type: ignore[list-item]
                 )
             )
         else:
@@ -141,8 +145,14 @@ def mock_confirm_ask(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
         pytest.param((APP_FILE_CONTENT, "app"), id="app_obj"),
         pytest.param((CREATE_APP_FILE_CONTENT, "create_app"), id="create_app"),
         pytest.param((GENERIC_APP_FACTORY_FILE_CONTENT, "any_name"), id="app_factory"),
-        pytest.param((GENERIC_APP_FACTORY_FILE_CONTENT_STRING_ANNOTATION, "any_name"), id="app_factory_str_annot"),
-        pytest.param((GENERIC_APP_FACTORY_FILE_CONTENT_FUTURE_ANNOTATIONS, "any_name"), id="app_factory_future_annot"),
+        pytest.param(
+            (GENERIC_APP_FACTORY_FILE_CONTENT_STRING_ANNOTATION, "any_name"),
+            id="app_factory_str_annot",
+        ),
+        pytest.param(
+            (GENERIC_APP_FACTORY_FILE_CONTENT_FUTURE_ANNOTATIONS, "any_name"),
+            id="app_factory_future_annot",
+        ),
     ]
 )
 def _app_file_content(request: FixtureRequest) -> tuple[str, str]:

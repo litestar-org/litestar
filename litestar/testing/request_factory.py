@@ -16,7 +16,11 @@ from litestar.handlers.http_handlers import get
 from litestar.serialization import decode_json, encode_json
 from litestar.types import DataContainerType, HTTPScope, RouteHandlerType
 from litestar.types.asgi_types import ASGIVersion
-from litestar.utils import is_attrs_class, is_dataclass_instance, is_pydantic_model_instance
+from litestar.utils import (
+    is_attrs_class,
+    is_dataclass_instance,
+    is_pydantic_model_instance,
+)
 
 if TYPE_CHECKING:
     from httpx._types import FileTypes
@@ -219,7 +223,10 @@ class RequestFactory:
         headers = headers or {}
         self._create_cookie_header(headers, cookies)
         return [
-            ((key.lower()).encode("latin-1", errors="ignore"), value.encode("latin-1", errors="ignore"))
+            (
+                (key.lower()).encode("latin-1", errors="ignore"),
+                value.encode("latin-1", errors="ignore"),
+            )
             for key, value in headers.items()
         ]
 
@@ -295,7 +302,9 @@ class RequestFactory:
             if request_media_type == RequestEncodingType.JSON:
                 encoding_headers, stream = httpx_encode_json(data)
             elif request_media_type == RequestEncodingType.MULTI_PART:
-                encoding_headers, stream = encode_multipart_data(cast("dict[str, Any]", data), files=files or [], boundary=None)  # type: ignore[assignment]
+                encoding_headers, stream = encode_multipart_data(
+                    cast("dict[str, Any]", data), files=files or [], boundary=None
+                )  # type: ignore[assignment]
             else:
                 encoding_headers, stream = encode_urlencoded_data(decode_json(value=encode_json(data)))
             headers.update(encoding_headers)

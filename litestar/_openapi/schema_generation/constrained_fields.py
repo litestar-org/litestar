@@ -44,7 +44,8 @@ def create_date_constrained_field_schema(
 ) -> Schema:
     """Create Schema from Constrained Date Field."""
     schema = Schema(
-        type=OpenAPIType.STRING, format=OpenAPIFormat.DATE if issubclass(field_type, date) else OpenAPIFormat.DATE_TIME
+        type=OpenAPIType.STRING,
+        format=OpenAPIFormat.DATE if issubclass(field_type, date) else OpenAPIFormat.DATE_TIME,
     )
     for kwarg_definition_attr, schema_attr in [
         ("le", "maximum"),
@@ -80,7 +81,9 @@ def create_string_constrained_field_schema(
         schema.max_length = kwarg_definition.max_length
     if kwarg_definition.pattern:
         schema.pattern = (
-            kwarg_definition.pattern.pattern if isinstance(kwarg_definition.pattern, Pattern) else kwarg_definition.pattern  # type: ignore[attr-defined,unreachable]
+            kwarg_definition.pattern.pattern
+            if isinstance(kwarg_definition.pattern, Pattern)
+            else kwarg_definition.pattern  # type: ignore[attr-defined,unreachable]
         )
     if kwarg_definition.lower_case:
         schema.description = "must be in lower case"

@@ -132,7 +132,10 @@ async def test_trigger_event_response_success() -> None:
     @get("/")
     def handler() -> TriggerEvent:
         return TriggerEvent(
-            content="Success!", name="alert", after="receive", params={"warning": "Confirm your choice!"}
+            content="Success!",
+            name="alert",
+            after="receive",
+            params={"warning": "Confirm your choice!"},
         )
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
@@ -159,7 +162,10 @@ async def test_trigger_event_response_after_settle() -> None:
     @get("/")
     def handler() -> TriggerEvent:
         return TriggerEvent(
-            content="Success!", name="alert", after="settle", params={"warning": "Confirm your choice!"}
+            content="Success!",
+            name="alert",
+            after="settle",
+            params={"warning": "Confirm your choice!"},
         )
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
@@ -172,7 +178,12 @@ async def test_trigger_event_response_after_settle() -> None:
 async def test_trigger_event_response_after_swap() -> None:
     @get("/")
     def handler() -> TriggerEvent:
-        return TriggerEvent(content="Success!", name="alert", after="swap", params={"warning": "Confirm your choice!"})
+        return TriggerEvent(
+            content="Success!",
+            name="alert",
+            after="swap",
+            params={"warning": "Confirm your choice!"},
+        )
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
@@ -185,7 +196,10 @@ async def test_trigger_event_response_invalid_after() -> None:
     @get("/")
     def handler() -> TriggerEvent:
         return TriggerEvent(
-            content="Success!", name="alert", after="invalid", params={"warning": "Confirm your choice!"}  # type: ignore
+            content="Success!",
+            name="alert",
+            after="invalid",
+            params={"warning": "Confirm your choice!"},  # type: ignore
         )
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
@@ -252,7 +266,10 @@ def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str
     def handler() -> HTMXTemplate:
         return HTMXTemplate(
             template_name="abc.html",
-            context={"request": {"scope": {"path": "nope"}}, "custom_key": "custom_value"},
+            context={
+                "request": {"scope": {"path": "nope"}},
+                "custom_key": "custom_value",
+            },
             push_url="/about",
             re_swap="beforebegin",
             re_target="#new-target-id",

@@ -22,10 +22,11 @@ if typing.TYPE_CHECKING:
 _GLOBAL_NAMES = {
     namespace: export
     for namespace, export in chain(
-        tuple(getmembers(types)), tuple(getmembers(connection)), tuple(getmembers(datastructures))
+        tuple(getmembers(types)),
+        tuple(getmembers(connection)),
+        tuple(getmembers(datastructures)),
     )
-    if namespace[0].isupper()
-    and namespace in chain(types.__all__, connection.__all__, datastructures.__all__)  # pyright: ignore
+    if namespace[0].isupper() and namespace in chain(types.__all__, connection.__all__, datastructures.__all__)  # pyright: ignore
 }
 """A mapping of names used for handler signature forward-ref resolution.
 
@@ -143,7 +144,9 @@ class ParsedSignature:
         )
 
 
-def infer_request_encoding_from_field_definition(field_definition: FieldDefinition) -> RequestEncodingType | str:
+def infer_request_encoding_from_field_definition(
+    field_definition: FieldDefinition,
+) -> RequestEncodingType | str:
     """Infer the request encoding type from a parsed type.
 
     Args:

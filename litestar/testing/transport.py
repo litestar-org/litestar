@@ -64,7 +64,11 @@ class TestClientTransport(Generic[T]):
                 return disconnect_event
 
             body = cast("Union[bytes, str, GeneratorType]", (request.read() or b""))
-            request_event: HTTPRequestEvent = {"type": "http.request", "body": b"", "more_body": False}
+            request_event: HTTPRequestEvent = {
+                "type": "http.request",
+                "body": b"",
+                "more_body": False,
+            }
             if isinstance(body, GeneratorType):  # pragma: no cover
                 try:
                     chunk = body.send(None)
@@ -83,18 +87,14 @@ class TestClientTransport(Generic[T]):
     def create_send(request: Request, context: SendReceiveContext) -> Send:
         async def send(message: Message) -> None:
             if message["type"] == "http.response.start":
-                assert not context[  # noqa: S101
-                    "response_started"
-                ], 'Received multiple "http.response.start" messages.'
+                assert not context["response_started"], 'Received multiple "http.response.start" messages.'  # noqa: S101
                 context["raw_kwargs"]["status_code"] = message["status"]
                 context["raw_kwargs"]["headers"] = [
                     (k.decode("utf-8"), v.decode("utf-8")) for k, v in message.get("headers", [])
                 ]
                 context["response_started"] = True
             elif message["type"] == "http.response.body":
-                assert context[  # noqa: S101
-                    "response_started"
-                ], 'Received "http.response.body" without "http.response.start".'
+                assert context["response_started"], 'Received "http.response.body" without "http.response.start".'  # noqa: S101
                 assert not context[  # noqa: S101
                     "response_complete"
                 ].is_set(), 'Received "http.response.body" after response completed.'
@@ -151,7 +151,11 @@ class TestClientTransport(Generic[T]):
             session = WebSocketTestSession(client=self.client, scope=cast("WebSocketScope", scope))  # type: ignore[arg-type]
             raise ConnectionUpgradeExceptionError(session)
 
-        scope.update(method=request.method, http_version="1.1", extensions={"http.response.template": {}})
+        scope.update(
+            method=request.method,
+            http_version="1.1",
+            extensions={"http.response.template": {}},
+        )
 
         raw_kwargs: dict[str, Any] = {"stream": BytesIO()}
 
@@ -176,14 +180,20 @@ class TestClientTransport(Generic[T]):
             if self.raise_server_exceptions:
                 raise exc
             return Response(
-                status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
+                status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+                headers=[],
+                stream=ByteStream(b""),
+                request=request,
             )
         else:
             if not context["response_started"]:  # pragma: no cover
                 if self.raise_server_exceptions:
                     assert context["response_started"], "TestClient did not receive any response."  # noqa: S101
                 return Response(
-                    status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
+                    status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+                    headers=[],
+                    stream=ByteStream(b""),
+                    request=request,
                 )
 
             stream = ByteStream(raw_kwargs.pop("stream", BytesIO()).read())

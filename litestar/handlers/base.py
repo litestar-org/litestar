@@ -141,9 +141,7 @@ class BaseRouteHandler:
         self.type_encoders = type_encoders
 
         self.paths = (
-            {normalize_path(p) for p in path}
-            if path and isinstance(path, list)
-            else {normalize_path(path or "/")}  # type: ignore
+            {normalize_path(p) for p in path} if path and isinstance(path, list) else {normalize_path(path or "/")}  # type: ignore
         )
 
     def __call__(self, fn: AsyncAnyCallable) -> Self:
@@ -314,7 +312,11 @@ class BaseRouteHandler:
                 parameter_kwargs.update(getattr(layer, "parameters", {}) or {})
 
             self._resolved_layered_parameters = {
-                key: FieldDefinition.from_kwarg(name=key, annotation=parameter.annotation, kwarg_definition=parameter)
+                key: FieldDefinition.from_kwarg(
+                    name=key,
+                    annotation=parameter.annotation,
+                    kwarg_definition=parameter,
+                )
                 for key, parameter in parameter_kwargs.items()
             }
 
@@ -343,7 +345,9 @@ class BaseRouteHandler:
                         provider = Provide(provider)
 
                     self._validate_dependency_is_unique(
-                        dependencies=self._resolved_dependencies, key=key, provider=provider
+                        dependencies=self._resolved_dependencies,
+                        key=key,
+                        provider=provider,
                     )
 
                     if not getattr(provider, "signature_model", None):
@@ -351,7 +355,8 @@ class BaseRouteHandler:
                             dependency_name_set=self.dependency_name_set,
                             fn=provider.dependency.value,
                             parsed_signature=ParsedSignature.from_fn(
-                                unwrap_partial(provider.dependency.value), self.resolve_signature_namespace()
+                                unwrap_partial(provider.dependency.value),
+                                self.resolve_signature_namespace(),
                             ),
                             data_dto=self.resolve_data_dto(),
                             type_decoders=self.resolve_type_decoders(),
@@ -467,7 +472,8 @@ class BaseRouteHandler:
 
             if return_dto and return_dto.is_supported_model_type_field(self.parsed_return_field):
                 return_dto.create_for_field_definition(
-                    field_definition=self.parsed_return_field, handler_id=self.handler_id
+                    field_definition=self.parsed_return_field,
+                    handler_id=self.handler_id,
                 )
                 self._resolved_return_dto = return_dto
             else:

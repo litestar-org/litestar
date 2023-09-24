@@ -100,7 +100,9 @@ def create_success_response(  # noqa: C901
 
         if dto := route_handler.resolve_return_dto():
             result = dto.create_openapi_schema(
-                field_definition=field_definition, handler_id=route_handler.handler_id, schema_creator=schema_creator
+                field_definition=field_definition,
+                handler_id=route_handler.handler_id,
+                schema_creator=schema_creator,
             )
         else:
             result = schema_creator.for_field_definition(FieldDefinition.from_annotation(return_annotation))
@@ -111,7 +113,8 @@ def create_success_response(  # noqa: C901
         schema.content_media_type = route_handler.content_media_type
 
         response = OpenAPIResponse(
-            content={get_enum_string_value(media_type): OpenAPIMediaType(schema=result)}, description=description
+            content={get_enum_string_value(media_type): OpenAPIMediaType(schema=result)},
+            description=description,
         )
 
     elif field_definition.is_subclass_of(Redirect):
@@ -120,7 +123,8 @@ def create_success_response(  # noqa: C901
             description=description,
             headers={
                 "location": OpenAPIHeader(
-                    schema=Schema(type=OpenAPIType.STRING), description="target path for the redirect"
+                    schema=Schema(type=OpenAPIType.STRING),
+                    description="target path for the redirect",
                 )
             },
         )
@@ -139,7 +143,8 @@ def create_success_response(  # noqa: C901
             description=description,
             headers={
                 "content-length": OpenAPIHeader(
-                    schema=Schema(type=OpenAPIType.STRING), description="File size in bytes"
+                    schema=Schema(type=OpenAPIType.STRING),
+                    description="File size in bytes",
                 ),
                 "last-modified": OpenAPIHeader(
                     schema=Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.DATE_TIME),
@@ -181,7 +186,9 @@ def create_success_response(  # noqa: C901
     return response
 
 
-def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tuple[str, OpenAPIResponse]]:
+def create_error_responses(
+    exceptions: list[type[HTTPException]],
+) -> Iterator[tuple[str, OpenAPIResponse]]:
     """Create the schema for error responses, if any."""
     grouped_exceptions: dict[int, list[type[HTTPException]]] = {}
     for exc in exceptions:
@@ -209,12 +216,22 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
                         "status_code": Schema(type=OpenAPIType.INTEGER),
                         "detail": Schema(type=OpenAPIType.STRING),
                         "extra": Schema(
-                            type=[OpenAPIType.NULL, OpenAPIType.OBJECT, OpenAPIType.ARRAY],
+                            type=[
+                                OpenAPIType.NULL,
+                                OpenAPIType.OBJECT,
+                                OpenAPIType.ARRAY,
+                            ],
                             additional_properties=Schema(),
                         ),
                     },
                     description=pascal_case_to_text(get_name(exc)),
-                    examples=[{"status_code": status_code, "detail": example_detail, "extra": {}}],
+                    examples=[
+                        {
+                            "status_code": status_code,
+                            "detail": example_detail,
+                            "extra": {},
+                        }
+                    ],
                 )
             )
         if len(exceptions_schemas) > 1:  # noqa: SIM108
@@ -226,9 +243,12 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
             with contextlib.suppress(Exception):
                 group_description = HTTPStatus(status_code).description
 
-        yield str(status_code), OpenAPIResponse(
-            description=group_description,
-            content={MediaType.JSON: OpenAPIMediaType(schema=schema)},
+        yield (
+            str(status_code),
+            OpenAPIResponse(
+                description=group_description,
+                content={MediaType.JSON: OpenAPIMediaType(schema=schema)},
+            ),
         )
 
 
@@ -245,14 +265,19 @@ def create_additional_responses(
         schema = schema_creator.for_field_definition(
             FieldDefinition.from_annotation(additional_response.data_container)
         )
-        yield str(status_code), OpenAPIResponse(
-            description=additional_response.description,
-            content={additional_response.media_type: OpenAPIMediaType(schema=schema)},
+        yield (
+            str(status_code),
+            OpenAPIResponse(
+                description=additional_response.description,
+                content={additional_response.media_type: OpenAPIMediaType(schema=schema)},
+            ),
         )
 
 
 def create_responses(
-    route_handler: HTTPRouteHandler, raises_validation_error: bool, schema_creator: SchemaCreator
+    route_handler: HTTPRouteHandler,
+    raises_validation_error: bool,
+    schema_creator: SchemaCreator,
 ) -> Responses | None:
     """Create a Response model embedded in a `Responses` dictionary for the given RouteHandler or return None."""
     responses: Responses = {

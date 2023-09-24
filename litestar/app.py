@@ -3,12 +3,26 @@ from __future__ import annotations
 import inspect
 import logging
 import os
-from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager, suppress
+from contextlib import (
+    AbstractAsyncContextManager,
+    AsyncExitStack,
+    asynccontextmanager,
+    suppress,
+)
 from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Mapping, Sequence, TypedDict, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    AsyncGenerator,
+    Callable,
+    Mapping,
+    Sequence,
+    TypedDict,
+    cast,
+)
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
@@ -469,7 +483,10 @@ class Litestar(Router):
     def _get_default_plugins() -> list[PluginProtocol]:
         default_plugins: list[PluginProtocol] = []
         with suppress(MissingDependencyException):
-            from litestar.contrib.pydantic import PydanticInitPlugin, PydanticSchemaPlugin
+            from litestar.contrib.pydantic import (
+                PydanticInitPlugin,
+                PydanticSchemaPlugin,
+            )
 
             default_plugins.extend((PydanticInitPlugin(), PydanticSchemaPlugin()))
 
@@ -773,7 +790,8 @@ class Litestar(Router):
             asgi_handler = CORSMiddleware(app=asgi_handler, config=self.cors_config)
 
         return wrap_in_exception_handler(
-            app=asgi_handler, exception_handlers=self.exception_handlers or {}  # pyright: ignore
+            app=asgi_handler,
+            exception_handlers=self.exception_handlers or {},  # pyright: ignore
         )
 
     def _wrap_send(self, send: Send, scope: Scope) -> Send:

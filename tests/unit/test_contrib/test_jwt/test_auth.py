@@ -5,7 +5,15 @@ from uuid import uuid4
 
 import pytest
 from hypothesis import given, settings
-from hypothesis.strategies import dictionaries, integers, none, one_of, sampled_from, text, timedeltas
+from hypothesis.strategies import (
+    dictionaries,
+    integers,
+    none,
+    one_of,
+    sampled_from,
+    text,
+    timedeltas,
+)
 from pydantic import BaseModel, Field
 
 from litestar import Litestar, Request, Response, get
@@ -108,7 +116,10 @@ async def test_jwt_auth(
         response = client.get("/my-endpoint")
         assert response.status_code == HTTP_401_UNAUTHORIZED
 
-        response = client.get("/my-endpoint", headers={auth_header: jwt_auth.format_auth_header(encoded_token)})
+        response = client.get(
+            "/my-endpoint",
+            headers={auth_header: jwt_auth.format_auth_header(encoded_token)},
+        )
         assert response.status_code == HTTP_200_OK
 
         response = client.get("/my-endpoint", headers={auth_header: encoded_token})
@@ -125,7 +136,10 @@ async def test_jwt_auth(
             exp=(datetime.now(timezone.utc) + token_expiration),
         ).encode(secret=token_secret, algorithm=algorithm)
 
-        response = client.get("/my-endpoint", headers={auth_header: jwt_auth.format_auth_header(fake_token)})
+        response = client.get(
+            "/my-endpoint",
+            headers={auth_header: jwt_auth.format_auth_header(fake_token)},
+        )
         assert response.status_code == HTTP_401_UNAUTHORIZED
 
 
@@ -218,7 +232,10 @@ async def test_jwt_cookie_auth(
         assert response.status_code == HTTP_401_UNAUTHORIZED
 
         client.cookies.clear()
-        response = client.get("/my-endpoint", headers={auth_header: jwt_auth.format_auth_header(encoded_token)})
+        response = client.get(
+            "/my-endpoint",
+            headers={auth_header: jwt_auth.format_auth_header(encoded_token)},
+        )
         assert response.status_code == HTTP_200_OK
 
         client.cookies = {auth_cookie: jwt_auth.format_auth_header(encoded_token)}  # type: ignore[assignment]
@@ -236,7 +253,10 @@ async def test_jwt_cookie_auth(
         assert response.status_code == HTTP_401_UNAUTHORIZED
 
         client.cookies.clear()
-        response = client.get("/my-endpoint", headers={auth_header: jwt_auth.format_auth_header(uuid4().hex)})
+        response = client.get(
+            "/my-endpoint",
+            headers={auth_header: jwt_auth.format_auth_header(uuid4().hex)},
+        )
         assert response.status_code == HTTP_401_UNAUTHORIZED
 
         client.cookies = {auth_cookie: jwt_auth.format_auth_header(uuid4().hex)}  # type: ignore[assignment]
@@ -255,7 +275,10 @@ async def test_jwt_cookie_auth(
         ).encode(secret=token_secret, algorithm=algorithm)
 
         client.cookies.clear()
-        response = client.get("/my-endpoint", headers={auth_header: jwt_auth.format_auth_header(fake_token)})
+        response = client.get(
+            "/my-endpoint",
+            headers={auth_header: jwt_auth.format_auth_header(fake_token)},
+        )
         assert response.status_code == HTTP_401_UNAUTHORIZED
 
         client.cookies = {auth_cookie: jwt_auth.format_auth_header(fake_token)}  # type: ignore[assignment]
@@ -286,7 +309,8 @@ async def test_path_exclusion() -> None:
         return None
 
     with create_test_client(
-        route_handlers=[north_handler, south_handler, west_handler], on_app_init=[jwt_auth.on_app_init]
+        route_handlers=[north_handler, south_handler, west_handler],
+        on_app_init=[jwt_auth.on_app_init],
     ) as client:
         response = client.get("/north/1")
         assert response.status_code == HTTP_200_OK
@@ -346,7 +370,9 @@ async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStore") -> No
         return await mock_db.get(token.sub)
 
     jwt_auth = OAuth2PasswordBearerAuth(
-        token_url="/login", token_secret="abc123", retrieve_user_handler=retrieve_user_handler  # type: ignore
+        token_url="/login",
+        token_secret="abc123",
+        retrieve_user_handler=retrieve_user_handler,  # type: ignore
     )
 
     @get("/login")
@@ -447,7 +473,10 @@ async def retrieve_user_handler(token: Token, connection: "ASGIConnection[Any, A
             exclude=["/"],
         ),
         OAuth2PasswordBearerAuth(
-            token_url="/", exclude=["/"], token_secret="abc123", retrieve_user_handler=retrieve_user_handler
+            token_url="/",
+            exclude=["/"],
+            token_secret="abc123",
+            retrieve_user_handler=retrieve_user_handler,
         ),
     ),
 )
@@ -476,7 +505,10 @@ def test_returns_token_in_response_when_configured(config: JWTAuth) -> None:
             exclude=["/"],
         ),
         OAuth2PasswordBearerAuth(
-            token_url="/", exclude=["/"], token_secret="abc123", retrieve_user_handler=retrieve_user_handler
+            token_url="/",
+            exclude=["/"],
+            token_secret="abc123",
+            retrieve_user_handler=retrieve_user_handler,
         ),
     ),
 )

@@ -185,7 +185,9 @@ def decode_json(  # type: ignore
         if target_type is Empty:
             return _msgspec_json_decoder.decode(value)
         return msgspec.json.decode(
-            value, dec_hook=partial(default_deserializer, type_decoders=type_decoders), type=target_type
+            value,
+            dec_hook=partial(default_deserializer, type_decoders=type_decoders),
+            type=target_type,
         )
     except msgspec.DecodeError as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error
@@ -232,7 +234,11 @@ def decode_msgpack(value: bytes, target_type: type[T], type_decoders: TypeDecode
     ...
 
 
-def decode_msgpack(value: bytes, target_type: type[T] | EmptyType = Empty, type_decoders: TypeDecodersSequence | None = None) -> Any:  # type: ignore[misc]
+def decode_msgpack(
+    value: bytes,
+    target_type: type[T] | EmptyType = Empty,
+    type_decoders: TypeDecodersSequence | None = None,
+) -> Any:  # type: ignore[misc]
     """Decode a MessagePack string/bytes into an object.
 
     Args:
@@ -250,7 +256,9 @@ def decode_msgpack(value: bytes, target_type: type[T] | EmptyType = Empty, type_
         if target_type is Empty:
             return _msgspec_msgpack_decoder.decode(value)
         return msgspec.msgpack.decode(
-            value, dec_hook=partial(default_deserializer, type_decoders=type_decoders), type=target_type
+            value,
+            dec_hook=partial(default_deserializer, type_decoders=type_decoders),
+            type=target_type,
         )
     except msgspec.DecodeError as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error

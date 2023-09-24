@@ -57,7 +57,9 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
         model_field_definitions = cls.get_model_type_hints(model_type)
 
         if pydantic.VERSION.startswith("1"):  # pragma: no cover
-            model_fields: dict[str, pydantic.fields.FieldInfo] = {k: model_field.field_info for k, model_field in model_type.__fields__.items()}  # type: ignore
+            model_fields: dict[str, pydantic.fields.FieldInfo] = {
+                k: model_field.field_info for k, model_field in model_type.__fields__.items()
+            }  # type: ignore
         else:
             model_fields = dict(model_type.model_fields)
 

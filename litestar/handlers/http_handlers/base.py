@@ -44,7 +44,10 @@ from litestar.types import (
 from litestar.types.builtin_types import NoneType
 from litestar.utils import AsyncCallable, async_partial
 from litestar.utils.predicates import is_async_callable
-from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
+from litestar.utils.warnings import (
+    warn_implicit_sync_to_thread,
+    warn_sync_to_thread_with_async_callable,
+)
 
 if TYPE_CHECKING:
     from typing import Any, Awaitable, Callable, Sequence
@@ -278,7 +281,10 @@ class HTTPRouteHandler(BaseRouteHandler):
         # memoized attributes, defaulted to Empty
         self._resolved_after_response: AsyncCallable | None | EmptyType = Empty
         self._resolved_before_request: AsyncCallable | None | EmptyType = Empty
-        self._response_handler_mapping: ResponseHandlerMap = {"default_handler": Empty, "response_type_handler": Empty}
+        self._response_handler_mapping: ResponseHandlerMap = {
+            "default_handler": Empty,
+            "response_type_handler": Empty,
+        }
         self._resolved_include_in_schema: bool | EmptyType = Empty
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
@@ -367,7 +373,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if self._resolved_before_request is Empty:
             before_request_handlers: list[AsyncCallable] = [
-                layer.before_request for layer in self.ownership_layers if layer.before_request  # type: ignore[misc]
+                layer.before_request
+                for layer in self.ownership_layers
+                if layer.before_request  # type: ignore[misc]
             ]
             self._resolved_before_request = before_request_handlers[-1] if before_request_handlers else None
         return cast("AsyncCallable | None", self._resolved_before_request)
@@ -383,7 +391,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if self._resolved_after_response is Empty:
             after_response_handlers: list[AsyncCallable] = [
-                layer.after_response for layer in self.ownership_layers if layer.after_response  # type: ignore[misc]
+                layer.after_response
+                for layer in self.ownership_layers
+                if layer.after_response  # type: ignore[misc]
             ]
             self._resolved_after_response = after_response_handlers[-1] if after_response_handlers else None
 
@@ -419,7 +429,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if self._response_handler_mapping["default_handler"] is Empty:
             after_request_handlers: list[AsyncCallable] = [
-                layer.after_request for layer in self.ownership_layers if layer.after_request  # type: ignore[misc]
+                layer.after_request
+                for layer in self.ownership_layers
+                if layer.after_request  # type: ignore[misc]
             ]
             after_request = cast(
                 "AfterRequestHookHandler | None",

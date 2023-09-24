@@ -9,16 +9,25 @@ from litestar.testing import create_test_client
 
 
 @pytest.mark.parametrize(
-    ("method", "decorator"), [("GET", get), ("PUT", put), ("POST", post), ("PATCH", patch), ("DELETE", delete)]
+    ("method", "decorator"),
+    [("GET", get), ("PUT", put), ("POST", post), ("PATCH", patch), ("DELETE", delete)],
 )
 def test_websocket_signature_namespace(method: str, decorator: type[get | put | post | patch | delete]) -> None:
     class MyController(Controller):
         path = "/"
         signature_namespace = {"c": float}
 
-        @decorator(path="/", signature_namespace={"d": List[str], "dict": Dict}, status_code=200)
+        @decorator(
+            path="/",
+            signature_namespace={"d": List[str], "dict": Dict},
+            status_code=200,
+        )
         async def simple_handler(
-            self, a: a, b: b, c: c, d: d  # type:ignore[name-defined]  # noqa: F821
+            self,
+            a: a,  # type:ignore[name-defined]  # noqa: F821
+            b: b,  # type:ignore[name-defined]  # noqa: F821
+            c: c,  # type:ignore[name-defined]  # noqa: F821
+            d: d,  # type:ignore[name-defined]  # noqa: F821
         ) -> dict[str, Any]:
             return {"a": a, "b": b, "c": c, "d": d}
 
