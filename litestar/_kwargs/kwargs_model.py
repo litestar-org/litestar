@@ -392,12 +392,12 @@ class KwargsModel:
         for dependency_field_name, dependency_field in dependencies.items():
             if dependency_field_name not in handler_params:
                 continue
-            handler_field = handler_params[dependency_field_name]
+            handler_param = handler_params[dependency_field_name]
             dependency_return_annotation = dependency_field.signature_model._return_annotation
-            if dependency_return_annotation == handler_field.annotation:
+            if dependency_return_annotation == handler_param.annotation:
                 continue
             raise ImproperlyConfiguredException(
-                f"Dependency annotation mismatch. Handler '{handler}' expects dependency '{dependency_field_name}', to be a {handler_field.annotation} but dependency returns a '{dependency_return_annotation}'."
+                f"Dependency annotation mismatch. Handler '{handler}' expects dependency '{dependency_field_name}', to be a {handler_param.annotation} but dependency returns a '{dependency_return_annotation}'."
             )
 
     def to_kwargs(self, connection: ASGIConnection) -> dict[str, Any]:
