@@ -31,15 +31,12 @@ repos:
     hooks:
       - id: ruff
         args: ["--fix"]
+      - id: ruff-format
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.5
     hooks:
       - id: codespell
         exclude: "tests/openapi/typescript_converter/test_converter"
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.0.291
-    hooks:
-      - id: ruff-format
   - repo: https://github.com/asottile/blacken-docs
     rev: 1.16.0
     hooks:
