@@ -379,7 +379,7 @@ class KwargsModel:
 
         Args:
             handler: A string keyed dictionary of dependency fields.
-            handler_fields: A string keyed dictionary of handler fields.
+            handler_params: A string keyed dictionary of handler parameters.
             dependencies: A string keyed dictionary of dependency fields.
 
         Raises:
