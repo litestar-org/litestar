@@ -187,7 +187,7 @@ def test_pydantic_schema_generation(create_examples: bool) -> None:
                 ),
             ]
         else:
-            id: Annotated[
+            id: Annotated[  # type: ignore[no-redef]
                 str,
                 Field(
                     min_length=12,
