@@ -431,8 +431,6 @@ class KwargsModel:
             raise ImproperlyConfiguredException(
                 f"Dependency annotation mismatch. Handler '{handler}' expects dependency '{dependency_field_name}', to be a {handler_field.annotation} but dependency returns a '{dependency_return_annotation}'."
             )
-            return False
-        return True
 
     def to_kwargs(self, connection: ASGIConnection) -> dict[str, Any]:
         """Return a dictionary of kwargs. Async values, i.e. CoRoutines, are not resolved to ensure this function is
