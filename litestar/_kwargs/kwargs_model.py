@@ -138,7 +138,8 @@ class KwargsModel:
         }
 
         extractors: list[Callable[[dict[str, Any], ASGIConnection], None]] = [
-            reserved_kwargs_extractors[reserved_kwarg] for reserved_kwarg in self.expected_reserved_kwargs
+            reserved_kwargs_extractors[reserved_kwarg]
+            for reserved_kwarg in self.expected_reserved_kwargs
         ]
 
         if self.expected_header_params:
@@ -228,11 +229,17 @@ class KwargsModel:
         }
 
         for field_name, field_definition in (
-            (k, v) for k, v in field_definitions.items() if k not in ignored_keys and k in layered_parameters
+            (k, v)
+            for k, v in field_definitions.items()
+            if k not in ignored_keys and k in layered_parameters
         ):
             layered_parameter = layered_parameters[field_name]
             field = field_definition if field_definition.is_parameter_field else layered_parameter
-            default = field_definition.default if field_definition.has_default else layered_parameter.default
+            default = (
+                field_definition.default
+                if field_definition.has_default
+                else layered_parameter.default
+            )
 
             param_definitions.add(
                 create_parameter_definition(
@@ -296,12 +303,22 @@ class KwargsModel:
             field_definitions=field_definitions,
         )
 
-        expected_reserved_kwargs = {field_name for field_name in field_definitions if field_name in RESERVED_KWARGS}
+        expected_reserved_kwargs = {
+            field_name for field_name in field_definitions if field_name in RESERVED_KWARGS
+        }
         expected_path_parameters = {p for p in param_definitions if p.param_type == ParamType.PATH}
-        expected_header_parameters = {p for p in param_definitions if p.param_type == ParamType.HEADER}
-        expected_cookie_parameters = {p for p in param_definitions if p.param_type == ParamType.COOKIE}
-        expected_query_parameters = {p for p in param_definitions if p.param_type == ParamType.QUERY}
-        sequence_query_parameter_names = {p.field_alias for p in expected_query_parameters if p.is_sequence}
+        expected_header_parameters = {
+            p for p in param_definitions if p.param_type == ParamType.HEADER
+        }
+        expected_cookie_parameters = {
+            p for p in param_definitions if p.param_type == ParamType.COOKIE
+        }
+        expected_query_parameters = {
+            p for p in param_definitions if p.param_type == ParamType.QUERY
+        }
+        sequence_query_parameter_names = {
+            p.field_alias for p in expected_query_parameters if p.is_sequence
+        }
 
         expected_form_data: tuple[RequestEncodingType | str, FieldDefinition] | None = None
         expected_msgpack_data: FieldDefinition | None = None
@@ -342,14 +359,19 @@ class KwargsModel:
                 expected_header_parameters, dependency_kwargs_model.expected_header_params
             )
 
-            if "data" in expected_reserved_kwargs and "data" in dependency_kwargs_model.expected_reserved_kwargs:
+            if (
+                "data" in expected_reserved_kwargs
+                and "data" in dependency_kwargs_model.expected_reserved_kwargs
+            ):
                 cls._validate_dependency_data(
                     expected_form_data=expected_form_data,
                     dependency_kwargs_model=dependency_kwargs_model,
                 )
 
             expected_reserved_kwargs.update(dependency_kwargs_model.expected_reserved_kwargs)
-            sequence_query_parameter_names.update(dependency_kwargs_model.sequence_query_parameter_names)
+            sequence_query_parameter_names.update(
+                dependency_kwargs_model.sequence_query_parameter_names
+            )
 
         return KwargsModel(
             expected_cookie_params=expected_cookie_parameters,
@@ -361,7 +383,9 @@ class KwargsModel:
             expected_path_params=expected_path_parameters,
             expected_query_params=expected_query_parameters,
             expected_reserved_kwargs=expected_reserved_kwargs,
-            is_data_optional=field_definitions["data"].is_optional if "data" in expected_reserved_kwargs else False,
+            is_data_optional=field_definitions["data"].is_optional
+            if "data" in expected_reserved_kwargs
+            else False,
             sequence_query_parameter_names=sequence_query_parameter_names,
         )
 
@@ -404,7 +428,7 @@ class KwargsModel:
             dependency_return_annotation = dependency_field.signature_model._return_annotation
             if dependency_return_annotation == handler_field.annotation:
                 continue
-            print(
+            raise ImproperlyConfiguredException(
                 f"Dependency annotation mismatch. Handler '{handler}' expects dependency '{dependency_field_name}', to be a {handler_field.annotation} but dependency returns a '{dependency_return_annotation}'."
             )
             return False
@@ -428,7 +452,9 @@ class KwargsModel:
 
         return output
 
-    async def resolve_dependencies(self, connection: ASGIConnection, kwargs: dict[str, Any]) -> DependencyCleanupGroup:
+    async def resolve_dependencies(
+        self, connection: ASGIConnection, kwargs: dict[str, Any]
+    ) -> DependencyCleanupGroup:
         """Resolve all dependencies into the kwargs, recursively.
 
         Args:
@@ -443,7 +469,9 @@ class KwargsModel:
             else:
                 async with create_task_group() as task_group:
                     for dependency in batch:
-                        task_group.start_soon(resolve_dependency, dependency, connection, kwargs, cleanup_group)
+                        task_group.start_soon(
+                            resolve_dependency, dependency, connection, kwargs, cleanup_group
+                        )
         return cleanup_group
 
     @classmethod
@@ -456,7 +484,10 @@ class KwargsModel:
         return Dependency(
             key=key,
             provide=provide,
-            dependencies=[cls._create_dependency_graph(key=k, dependencies=dependencies) for k in sub_dependency_keys],
+            dependencies=[
+                cls._create_dependency_graph(key=k, dependencies=dependencies)
+                for k in sub_dependency_keys
+            ],
         )
 
     @classmethod
@@ -496,7 +527,11 @@ class KwargsModel:
                 k
                 for k, f in field_definitions.items()
                 if isinstance(f.kwarg_definition, ParameterKwarg)
-                and (f.kwarg_definition.header or f.kwarg_definition.query or f.kwarg_definition.cookie)
+                and (
+                    f.kwarg_definition.header
+                    or f.kwarg_definition.query
+                    or f.kwarg_definition.cookie
+                )
             ),
             *list(layered_parameters.keys()),
         }
