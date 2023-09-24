@@ -72,8 +72,6 @@ Installation
 Minimal Example
 ---------------
 
-At a minimum, make sure you have installed ``litestar[standard]``, which includes ``litestar``, the CLI, and uvicorn.
-
 First, create a file named ``app.py`` with the following contents:
 
 .. code-block:: python
