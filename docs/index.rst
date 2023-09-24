@@ -15,10 +15,8 @@ Installation
 
    pip install litestar
 
-.. tip:: ``litestar[standard]`` includes everything you need to get started with Litestar. It has: ``click`` and ``rich`` for a great CLI experience, ``jinja2`` for templating,
+.. tip:: ``litestar[standard]`` includes everything you need to get started with Litestar. It has: ``click`` and ``rich`` for a great :doc:`CLI </usage/cli>` experience, ``jinja2`` for templating,
         and ``uvicorn`` for running your app.
-
-        You can also install just the :doc:`CLI </usage/cli>` with ``litestar[cli]``!
 
 .. dropdown:: Extras
     :icon: star
@@ -56,16 +54,13 @@ Installation
     :doc:`SQLAlchemy </usage/databases/sqlalchemy/index>`
         :code:`pip install litestar[sqlalchemy]`
 
-    :doc:`CLI </usage/cli>`
-        :code:`pip install litestar[cli]`
-
     :doc:`Jinja Templating </usage/templating>`
         :code:`pip install litestar[jinja]`
 
     :doc:`Mako Templating </usage/templating>`
         :code:`pip install litestar[mako]`
 
-    Standard Installation (includes CLI and Jinja templating):
+    Standard Installation (includes Jinja templating):
         :code:`pip install litestar[standard]`
 
     All Extras:
