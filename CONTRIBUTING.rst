@@ -94,8 +94,8 @@ Project documentation
 
 The documentation is located in the ``/docs`` directory and is `ReST <https://docutils.sourceforge.io/rst.html>`_ and
 `Sphinx <https://www.sphinx-doc.org/en/master/>`_. If you're unfamiliar with any of those,
-`ReStructuredText primer <https://www.sphinx-doc.org/en/master/lib/usage/restructuredtext/basics.html>`_ and
-`Sphinx quickstart <https://www.sphinx-doc.org/en/master/lib/usage/quickstart.html>`_ are recommended reads.
+`ReStructuredText primer <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_ and
+`Sphinx quickstart <https://www.sphinx-doc.org/en/master/usage/quickstart.html>`_ are recommended reads.
 
 Docs theme and appearance
 +++++++++++++++++++++++++
@@ -123,7 +123,7 @@ restructure the docs, etc., but make sure to follow these guidelines:
 - Opt for `Oxford commas <https://en.wikipedia.org/wiki/Serial_comma>`_ when listing a series of terms
 - Keep examples simple and self contained
 - Provide links where applicable
-- Use `intersphinx <https://www.sphinx-doc.org/en/master/lib/usage/extensions/intersphinx.html>`_ wherever possible when
+- Use `intersphinx <https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html>`_ wherever possible when
   referencing external libraries
 - Provide diagrams using `mermaidjs <https://mermaid.js.org/>`_ where applicable and possible
 
@@ -216,11 +216,12 @@ Creating a new release
 ----------------------
 
 1. Increment the version in ``pyproject.toml`` according to the
-   `versioning scheme <https://litestar-org.github.io/litestar/latest/litestar-releases.html#version-numbering>`_
+   `versioning scheme <https://litestar.dev/about/litestar-releases#version-numbering>`_
 2. `Draft a new release <https://github.com/litestar-org/litestar/releases/new>`_ on GitHub
 
    * Use ``vMAJOR.MINOR.PATCH`` (e.g. ``v1.2.3``) as both the tag and release title
    * Fill in the release description. You can use the "Generate release notes" function to get a draft for this
 3. Commit your changes and push to ``main``
 4. Publish the release
-5. Check that the "publish" `action <https://github.com/litestar-org/litestar/actions>`_ has run successfully
+5. Go to `Actions <https://github.com/litestar-org/litestar/actions>`_ and approve the release workflow
+6. Check that the workflow runs successfully

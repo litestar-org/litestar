@@ -139,15 +139,15 @@
         The following methods now accept an ``id_attribute`` argument, allowing to
         specify an alternative value to the models primary key:
 
-        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete`
-        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete_many`
-        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get`
-        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.update`
+        - ``~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete``
+        - ``~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete_many``
+        - ``~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get``
+        - ``~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.update``
 
-        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete`
-        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete_many`
-        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.get`
-        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.update`
+        - ``~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete``
+        - ``~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete_many``
+        - ``~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.get``
+        - ``~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.update``
 
     .. change:: SQLAlchemy repository: New ``upsert_many`` method
         :type: feature
@@ -158,8 +158,8 @@
         model instances.
 
         .. seealso::
-            :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.upsert_many`
-            :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.upsert_many`
+            ``~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.upsert_many``
+            ``~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.upsert_many``
 
     .. change:: SQLAlchemy repository: New filters: ``OnBeforeAfter``, ``NotInCollectionFilter`` and ``NotInSearchFilter``
         :type: feature
@@ -197,15 +197,15 @@
         ``id_attribute``, and the following methods:
 
 
-        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete`
-        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete_many`
-        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get`
-        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.update`
+        - ``~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete``
+        - ``~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.delete_many``
+        - ``~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get``
+        - ``~litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.update``
 
-        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete`
-        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete_many`
-        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.get`
-        - :meth:`~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.update`
+        - ``~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete``
+        - ``~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.delete_many``
+        - ``~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.get``
+        - ``~litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository.update``
 
     .. change:: OpenAPI: Support callable ``operation_id`` on route handlers
         :type: feature
@@ -354,14 +354,14 @@
 
             Available in:
 
-            - :meth:`~SQLAlchemyAsyncRepository.add`
-            - :meth:`~SQLAlchemyAsyncRepository.add_many`
-            - :meth:`~SQLAlchemyAsyncRepository.delete`
-            - :meth:`~SQLAlchemyAsyncRepository.delete_many`
-            - :meth:`~SQLAlchemyAsyncRepository.get_or_create`
-            - :meth:`~SQLAlchemyAsyncRepository.update`
-            - :meth:`~SQLAlchemyAsyncRepository.update_many`
-            - :meth:`~SQLAlchemyAsyncRepository.upsert`
+            - ``~SQLAlchemyAsyncRepository.add``
+            - ``~SQLAlchemyAsyncRepository.add_many``
+            - ``~SQLAlchemyAsyncRepository.delete``
+            - ``~SQLAlchemyAsyncRepository.delete_many``
+            - ``~SQLAlchemyAsyncRepository.get_or_create``
+            - ``~SQLAlchemyAsyncRepository.update``
+            - ``~SQLAlchemyAsyncRepository.update_many``
+            - ``~SQLAlchemyAsyncRepository.upsert``
 
             (and their sync equivalents)
 
@@ -371,10 +371,10 @@
 
             Available in:
 
-            - :meth:`~SQLAlchemyAsyncRepository.add`
-            - :meth:`~SQLAlchemyAsyncRepository.get_or_create`
-            - :meth:`~SQLAlchemyAsyncRepository.update`
-            - :meth:`~SQLAlchemyAsyncRepository.upsert`
+            - ``~SQLAlchemyAsyncRepository.add``
+            - ``~SQLAlchemyAsyncRepository.get_or_create``
+            - ``~SQLAlchemyAsyncRepository.update``
+            - ``~SQLAlchemyAsyncRepository.upsert``
 
             (and their sync equivalents)
 
@@ -385,18 +385,18 @@
 
             Available in:
 
-            - :meth:`~SQLAlchemyAsyncRepository.add`
-            - :meth:`~SQLAlchemyAsyncRepository.add_many`
-            - :meth:`~SQLAlchemyAsyncRepository.delete`
-            - :meth:`~SQLAlchemyAsyncRepository.delete_many`
-            - :meth:`~SQLAlchemyAsyncRepository.get`
-            - :meth:`~SQLAlchemyAsyncRepository.get_one`
-            - :meth:`~SQLAlchemyAsyncRepository.get_one_or_none`
-            - :meth:`~SQLAlchemyAsyncRepository.get_or_create`
-            - :meth:`~SQLAlchemyAsyncRepository.update`
-            - :meth:`~SQLAlchemyAsyncRepository.update_many`
-            - :meth:`~SQLAlchemyAsyncRepository.list`
-            - :meth:`~SQLAlchemyAsyncRepository.upsert`
+            - ``~SQLAlchemyAsyncRepository.add``
+            - ``~SQLAlchemyAsyncRepository.add_many``
+            - ``~SQLAlchemyAsyncRepository.delete``
+            - ``~SQLAlchemyAsyncRepository.delete_many``
+            - ``~SQLAlchemyAsyncRepository.get``
+            - ``~SQLAlchemyAsyncRepository.get_one``
+            - ``~SQLAlchemyAsyncRepository.get_one_or_none``
+            - ``~SQLAlchemyAsyncRepository.get_or_create``
+            - ``~SQLAlchemyAsyncRepository.update``
+            - ``~SQLAlchemyAsyncRepository.update_many``
+            - ``~SQLAlchemyAsyncRepository.list``
+            - ``~SQLAlchemyAsyncRepository.upsert``
 
             (and their sync equivalents)
 
@@ -433,7 +433,7 @@
 
 
         The ``_sentinel`` column of
-        :class:`~litestar.contrib.sqlalchemy.base.UUIDPrimaryKey` has been renamed to
+        ``~litestar.contrib.sqlalchemy.base.UUIDPrimaryKey`` has been renamed to
         ``sa_orm_sentinel``, to support Spanner, which does not support tables starting
         with ``_``.
 
@@ -442,8 +442,8 @@
         :pr: 1894
 
         A bug was fixed where
-        :attr:`~litestar.contrib.sqlalchemy.base.AuditColumns.created_at` and
-        :attr:`~litestar.contrib.sqlalchemy.base.AuditColumns.updated_at` would default
+        ``~litestar.contrib.sqlalchemy.base.AuditColumns.created_at`` and
+        ``~litestar.contrib.sqlalchemy.base.AuditColumns.updated_at`` would default
         to the :class:`~datetime.datetime` at initialization time, instead of the time
         of the update.
 
@@ -613,7 +613,7 @@
 
     .. change:: Expose ``ParsedType`` as public API
         :type: feature
-        :pr: 1677, 1567
+        :pr: 1677 1567
 
         Expose the previously private :class:`litestar.typing.ParsedType`. This is
         mainly indented for usage with
@@ -674,7 +674,7 @@
         :pr: 1683
 
         Add a new synchronous repository base class:
-        :class:`litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository`,
+        ``litestar.contrib.sqlalchemy.repository.SQLAlchemySyncRepository``,
         which offer the same functionality as its asynchronous counterpart while
         operating on a synchronous :class:`sqlalchemy.orm.Session`.
 
@@ -719,7 +719,7 @@
         :pr: 1816
         :breaking:
 
-        A new timezone aware type :class:`litestar.contrib.sqlalchemy.types.DateTimeUTC`
+        A new timezone aware type ``litestar.contrib.sqlalchemy.types.DateTimeUTC``
         has been added, which enforces UTC timestamps stored in the database.
 
     .. change:: SQLAlchemy repository: Exclude unloaded columns in ``to_dict``
@@ -727,7 +727,7 @@
         :pr: 1802
 
         When exporting models using the
-        :meth:`~litestar.contrib.sqlalchemy.base.CommonTableAttributes.to_dict` method,
+        ``~litestar.contrib.sqlalchemy.base.CommonTableAttributes.to_dict`` method,
         unloaded columns will now always be excluded. This prevents implicit I/O via
         lazy loading, and errors when using an asynchronous session.
 
@@ -747,9 +747,9 @@
 
     .. change:: DTOs: Hybrid properties and association proxies in ``SQLAlchemyDTO``
         :type: feature
-        :pr: 1754, 1776
+        :pr: 1754 1776
 
-        The :class:`~litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO` now supports
+        The ``~litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO`` now supports
         `hybrid attribute <https://docs.sqlalchemy.org/en/20/orm/extensions/hybrid.html>`_
         and `associationproxy <https://docs.sqlalchemy.org/en/20/orm/extensions/associationproxy.html>`_.
 
@@ -919,7 +919,7 @@
 
     .. change:: Incorrect ``sync_to_thread`` usage warnings for generator dependencies
         :type: bugfix
-        :pr: 1716, 1740
+        :pr: 1716 1740
         :issue: 1711
 
         A bug was fixed that caused incorrect warnings about missing ``sync_to_thread``
@@ -959,7 +959,7 @@
         :pr: 1676
 
         Migrations generated for models with a
-        :class:`~litestar.contrib.sqlalchemy.types.GUID` type would erroneously add a
+        ``~litestar.contrib.sqlalchemy.types.GUID`` type would erroneously add a
         ``length=16`` on the input.  Since this parameter is not defined in the type's
         the ``__init__`` method. This was fixed by adding the appropriate parameter to
         the type's signature.
@@ -1112,7 +1112,7 @@
 
     .. change:: Warn about sync callables in route handlers and dependencies without an explicit ``sync_to_thread`` value
         :type: feature
-        :pr: 1648, 1655
+        :pr: 1648 1655
 
         A warning will now be raised when a synchronous callable is being used in an
         :class:`~.handlers.HTTPRouteHandler` or :class:`~.di.Provide`, without setting
@@ -1191,7 +1191,7 @@
         :type: feature
         :pr: 1657
 
-        :class:`~litestar.contrib.sqlalchemy.base.BigIntPrimaryKey` mixin, providing a
+        ``~litestar.contrib.sqlalchemy.base.BigIntPrimaryKey`` mixin, providing a
         ``BigInt`` primary key column, with a fallback to ``Integer`` for sqlite.
 
     .. change:: SQLAlchemy repository: Store GUIDs as binary on databases that don't have a native GUID type
@@ -1199,7 +1199,7 @@
         :pr: 1657
 
         On databases without native support for GUIDs,
-        :class:`~litestar.contrib.sqlalchemy.types.GUID` will now fall back to
+        ``~litestar.contrib.sqlalchemy.types.GUID`` will now fall back to
         ``BINARY(16)``.
 
     .. change:: Application lifespan context managers
@@ -1456,7 +1456,7 @@
         :pr: 1345
 
         Add a ``match_fields`` argument to
-        :meth:`SQLAlchemyAsyncRepository <litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get_or_create>`.
+        ``litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get_or_create``.
         This lets you lookup a model using a subset of the kwargs you've provided. If the remaining kwargs are different
         from the retrieved model's stored values, an update is performed.
 
@@ -1474,7 +1474,7 @@
         :pr: 1345
 
         ``SQLAlchemyRepository`` has been renamed to
-        :class:`SQLAlchemyAsyncRepository <litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository>`.
+        ``litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository``.
 
 
     .. change:: DTO: Add ``AbstractDTOFactory`` and backends
@@ -2000,7 +2000,7 @@
 
     .. change:: Fix ``JSON.parse`` error in ReDoc and Swagger OpenAPI handlers
         :type: bugfix
-        :pr: 1363ad
+        :pr: 1363
 
         The HTML generated by the ReDoc and Swagger OpenAPI handlers would cause
         `JSON.parse <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse>`_
@@ -2037,7 +2037,7 @@
     .. change:: Move 3rd party integration plugins to ``contrib``
         :type: misc
         :breaking:
-        :pr: Move 3rd party integration plugins to ``contrib``
+        :pr: 1279 1252
 
         - Move ``plugins.piccolo_orm`` > ``contrib.piccolo_orm``
         - Move ``plugins.tortoise_orm`` > ``contrib.tortoise_orm``
@@ -2362,13 +2362,13 @@
         cookie.
 
 
-    .. change:: Fix https://github.com/litestar-org/starlite/issues/1201: Can not serve static file in ``/`` path
+    .. change:: Fix https://github.com/litestar-org/litestar/issues/1201: Can not serve static file in ``/`` path
         :type: bugfix
         :issue: 1201
 
         A validation error made it impossible to serve static files from the root path ``/`` .
 
-    .. change:: Fix https://github.com/litestar-org/starlite/issues/1149: Middleware not excluding static path
+    .. change:: Fix https://github.com/litestar-org/litestar/issues/1149: Middleware not excluding static path
         :type: bugfix
         :issue: 1149
 

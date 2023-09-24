@@ -2,7 +2,7 @@ import os
 from email.utils import formatdate
 from os import stat, urandom
 from pathlib import Path
-from typing import Any
+from typing import Any, Coroutine
 
 import pytest
 from fsspec.implementations.local import LocalFileSystem
@@ -276,3 +276,49 @@ async def test_file_response_with_missing_file_raises_error(tmpdir: Path) -> Non
     with pytest.raises(ImproperlyConfiguredException):
         asgi_response = ASGIFileResponse(file_path=path, filename="404.txt")
         await asgi_response.start_response(empty_send)
+
+
+@pytest.fixture()
+def file(tmpdir: Path) -> Path:
+    path = tmpdir / "file.txt"
+    content = b"a"
+    Path(path).write_bytes(content)
+    return path
+
+
+@pytest.mark.parametrize("header_name", ["content-length", "Content-Length", "contenT-leNgTh"])
+def test_does_not_override_existing_content_length_header(header_name: str, file: Path) -> None:
+    @get("/")
+    def handler() -> File:
+        return File(path=file, headers={header_name: "2"})
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers.get_list("content-length") == ["2"]
+
+
+@pytest.mark.parametrize("header_name", ["last-modified", "Last-Modified", "LasT-modiFieD"])
+def test_does_not_override_existing_last_modified_header(header_name: str, tmpdir: Path) -> None:
+    path = Path(tmpdir / "file.txt")
+    path.write_bytes(b"")
+
+    @get("/")
+    def handler() -> File:
+        return File(path=path, headers={header_name: "foo"})
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers.get_list("last-modified") == ["foo"]
+
+
+def test_asgi_response_encoded_headers(file: Path) -> None:
+    response = ASGIFileResponse(encoded_headers=[(b"foo", b"bar")], file_path=file)
+    if isinstance(response.file_info, Coroutine):
+        response.file_info.close()  # silence the ResourceWarning
+    assert response.encode_headers() == [
+        (b"foo", b"bar"),
+        (b"content-type", b"application/octet-stream"),
+        (b"content-disposition", b'attachment; filename=""'),
+    ]

@@ -26,7 +26,7 @@ template_config = TemplateConfig(
 )
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def index() -> Template:
     return Template(template_name="index.html.minijinja")
 

@@ -22,12 +22,12 @@ repos:
     hooks:
       - id: poetry-check
   - repo: https://github.com/provinzkraut/unasyncd
-    rev: "v0.6.0"
+    rev: "v0.6.1"
     hooks:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.287"
+    rev: "v0.0.290"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -37,7 +37,7 @@ repos:
       - id: codespell
         exclude: "tests/openapi/typescript_converter/test_converter"
   - repo: https://github.com/psf/black
-    rev: 23.7.0
+    rev: 23.9.1
     hooks:
       - id: black
         args: [--config=./pyproject.toml]
@@ -83,7 +83,7 @@ repos:
             exceptiongroup,
             fast-query-parsers>=1.0.2,
             fsspec,
-            httpx,
+            httpx==0.24.1,
             httpx_sse,
             hypothesis,
             jsbeautifier,
@@ -115,6 +115,7 @@ repos:
             sqlalchemy>=2.0.12,
             starlette,
             structlog,
+            advanced-alchemy==0.2.0,
             time-machine,
             types-beautifulsoup4,
             types-python-jose,
@@ -123,7 +124,7 @@ repos:
             uvicorn,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.326
+    rev: v1.1.327
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures"
@@ -144,7 +145,7 @@ repos:
             exceptiongroup,
             fast-query-parsers>=1.0.2,
             fsspec,
-            httpx,
+            httpx==0.24.1,
             httpx_sse,
             hypothesis,
             jsbeautifier,
@@ -175,6 +176,7 @@ repos:
             rich,
             rich-click,
             sqlalchemy>=2.0.12,
+            advanced-alchemy==0.2.0,
             starlette,
             structlog,
             time-machine,

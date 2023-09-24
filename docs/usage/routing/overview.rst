@@ -174,7 +174,7 @@ better code organization and organize code by logical concerns.
            ...
 
 The above is a simple example of a "CRUD" controller for a model called ``UserOrder``. You can place as
-many `route handler methods <usage/router-handlers:http route handlers>`_ on a controller,
+many :doc:`route handler methods </usage/routing/handlers>` on a controller,
 as long as the combination of path+http method is unique.
 
 The ``path`` that is defined on the Controller is appended before the path that is defined for the route handlers declared

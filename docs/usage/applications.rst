@@ -22,7 +22,8 @@ and Route Handlers should be registered on it.
 .. seealso::
 
     To learn more about registering routes, check out this chapter in the documentation:
-    :ref:`usage/routing/overview:Registering Routes`
+
+    * :ref:`Routing - Registering Routes <usage/routing/overview:Registering Routes>`
 
 
 Startup and Shutdown

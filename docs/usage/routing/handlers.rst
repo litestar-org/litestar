@@ -312,8 +312,8 @@ These requirements are enforced using inspection, and if any of them is unfulfil
 
 .. seealso::
 
-    :class:`WebsocketRouteHandler <litestar.handlers.WebsocketRouteHandler>`
-    :doc:`/usage/websockets`
+    * :class:`WebsocketRouteHandler <litestar.handlers.WebsocketRouteHandler>`
+    * :doc:`/usage/websockets`
 
 
 ASGI route handlers
@@ -560,6 +560,7 @@ In this example, Litestar will be unable to generate the signature model because
 the module scope at runtime. We can address this on a case-by-case basis by silencing our linters, for example:
 
 .. code-block:: python
+    :no-upgrade:
 
     from __future__ import annotations
 
@@ -567,7 +568,8 @@ the module scope at runtime. We can address this on a case-by-case basis by sile
 
     from litestar import Controller, post
 
-    from domain import Model  # noqa: TC002
+    # Choose the appropriate noqa directive according to your linter
+    from domain import Model  # noqa: TCH002
 
 However, this approach can get tedious, so as an alternative, Litestar accepts a ``signature_namespace`` mapping at
 every :ref:`layer <layered-architecture>` of the application. The following is a demonstration of how to use this

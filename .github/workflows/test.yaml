@@ -17,15 +17,11 @@ on:
         required: false
         type: string
         default: "ubuntu-latest"
-      integration:
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   test:
     runs-on: ${{ inputs.os }}
-    timeout-minutes: ${{ inputs.integrations && 15 || 30 }}
+    timeout-minutes: 10
     defaults:
       run:
         shell: bash
@@ -72,9 +68,6 @@ jobs:
       - name: Test with coverage
         if: inputs.coverage
         run: poetry run pytest docs/examples tests --cov=litestar --cov-report=xml -n auto
-      - name: Integration tests
-        if: inputs.integration
-        run: poetry run pytest -m="sqlalchemy_integration" -n auto
       - uses: actions/upload-artifact@v3
         if: inputs.coverage
         with:

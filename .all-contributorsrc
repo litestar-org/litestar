@@ -663,7 +663,8 @@
       "profile": "https://github.com/dialvarezs",
       "contributions": [
         "doc",
-        "code"
+        "code",
+        "test"
       ]
     },
     {
@@ -1124,7 +1125,8 @@
       "profile": "https://github.com/euri10",
       "contributions": [
         "code",
-        "doc"
+        "doc",
+        "bug"
       ]
     },
     {
@@ -1266,6 +1268,24 @@
       "profile": "https://github.com/geeshta",
       "contributions": [
         "doc"
+      ]
+    },
+    {
+      "login": "RobertRosca",
+      "name": "Robert Rosca",
+      "avatar_url": "https://avatars.githubusercontent.com/u/32569096?v=4",
+      "profile": "https://fosstodon.org/@robertrosca",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "syshenyu",
+      "name": "DICE_Lab",
+      "avatar_url": "https://avatars.githubusercontent.com/u/92897003?v=4",
+      "profile": "https://github.com/syshenyu",
+      "contributions": [
+        "code"
       ]
     }
   ],

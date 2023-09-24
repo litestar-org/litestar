@@ -13,7 +13,7 @@ to make working with models easier.
 
 We'll begin by modelling the entities and relationships between authors and books.
 We'll start by creating the ``Author`` table, utilizing the
-:class:`UUIDBase <litestar.contrib.sqlalchemy.base.UUIDBase>` class. To keep things
+:class:`UUIDBase <advanced_alchemy.base.UUIDBase>` class. To keep things
 simple, our first model will encompass only three fields: ``id``, ``name``, and ``dob``.
 
 The book entity is not considered a "strong" entity and therefore always requires an
@@ -33,7 +33,7 @@ By using the audit model, we can automatically record the time a record was crea
 last updated.
 
 To implement this, we will define a new ``Book`` model via the
-:class:`UUIDAuditBase <litestar.contrib.sqlalchemy.base.UUIDAuditBase>` class. Observe
+:class:`UUIDAuditBase <advanced_alchemy.base.UUIDAuditBase>` class. Observe
 that the only modification here is the parent class from which we inherit. This minor
 change endows the `book` table with automatic timestamp columns
 (`created` and `updated`) upon deployment!
@@ -42,8 +42,8 @@ change endows the `book` table with automatic timestamp columns
 
     If your application requires integer-based primary keys, equivalent base model
     and base audit model implementations can be found at
-    :class:`BigIntBase <litestar.contrib.sqlalchemy.base.BigIntAuditBase>` and
-    :class:`BigIntAuditBase <litestar.contrib.sqlalchemy.base.UUIDAuditBase>`
+    :class:`BigIntBase <advanced_alchemy.base.BigIntAuditBase>` and
+    :class:`BigIntAuditBase <advanced_alchemy.base.UUIDAuditBase>`
     respectively.
 
 .. important::
@@ -62,12 +62,12 @@ Additional features provided by the built-in base models include:
   Postgres, SQLite, MySQL, DuckDB, Oracle, and Spanner.
 - Automatic table name deduction from model name. For instance, a model named
   ``EventLog`` would correspond to the ``event_log`` database table.
-- A :class:`GUID <litestar.contrib.sqlalchemy.types.GUID>` database type that
+- A :class:`GUID <advanced_alchemy.types.GUID>` database type that
   establishes a native UUID in supported engines or a ``Binary(16)`` as a fallback.
 - A ``BigInteger`` variant
-  :class:`BigIntIdentity <litestar.contrib.sqlalchemy.types.BigIntIdentity>` that
+  :class:`BigIntIdentity <advanced_alchemy.types.BigIntIdentity>` that
   reverts to an ``Integer`` for unsupported variants.
-- A custom :class:`JsonB <litestar.contrib.sqlalchemy.types.JsonB>` type that uses
+- A custom :class:`JsonB <advanced_alchemy.types.JsonB>` type that uses
   native ``JSONB`` where possible and ``Binary`` or ``Blob`` as an alternative.
 
 Let's build on this as we look at the repository classes.

@@ -16,6 +16,7 @@ PY_RE = r"py:.*"
 PY_METH = "py:meth"
 PY_ATTR = "py:attr"
 PY_OBJ = "py:obj"
+PY_FUNC = "py:func"
 
 project = "Litestar"
 copyright = "2023, Litestar-Org"
@@ -51,6 +52,7 @@ intersphinx_mapping = {
     "tortoise": ("https://tortoise.github.io/", None),
     "piccolo": ("https://piccolo-orm.readthedocs.io/en/latest", None),
     "opentelemetry": ("https://opentelemetry-python.readthedocs.io/en/latest/", None),
+    "advanced-alchemy": ("https://docs.advanced-alchemy.jolt.rs/latest/", None),
 }
 
 
@@ -132,9 +134,27 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.response.RedirectResponse"),
     (PY_CLASS, "litestar.response_containers.Redirect"),
     (PY_CLASS, "litestar.response_containers.Template"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.types.BigIntIdentity"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.types.JsonB"),
     (PY_CLASS, "litestar.typing.ParsedType"),
     (PY_METH, "litestar.dto.factory.DTOData.create_instance"),
     (PY_METH, "litestar.dto.interface.DTOInterface.data_to_encodable_type"),
+    (PY_CLASS, "advanced_alchemy.repository.typing.ModelT"),
+    (PY_CLASS, "advanced_alchemy.config.common.EngineT"),
+    (PY_CLASS, "advanced_alchemy.config.common.SessionT"),
+    (PY_CLASS, "advanced_alchemy.config.EngineConfig"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemyPlugin"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemyInitPlugin"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.config.SQLAlchemySyncConfig"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.config.SQLAlchemyAsyncConfig"),
+    (PY_METH, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin.create_dto_for_type"),
+    (PY_CLASS, "advanced_alchemy.config.AsyncSessionConfig"),
+    (PY_CLASS, "advanced_alchemy.config.SyncSessionConfig"),
+    (PY_CLASS, "advanced_alchemy.types.JsonB"),
+    (PY_CLASS, "advanced_alchemy.types.BigIntIdentity"),
+    (PY_FUNC, "sqlalchemy.get_engine"),
+    (PY_ATTR, "advanced_alchemy.repository.AbstractAsyncRepository.id_attribute"),
 ]
 
 nitpick_ignore_regex = [
@@ -180,6 +200,12 @@ ignore_missing_refs = {
     re.compile(r"litestar\.dto.*"): re.compile(".*T|.*FieldDefinition|Empty"),
 }
 
+# Do not warn about broken links to the following:
+linkcheck_ignore = [
+    r"http://localhost(:\d+)?",
+    r"http://127.0.0.1(:\d+)?",
+    "http://testserver",
+]
 
 auto_pytabs_min_version = (3, 8)
 auto_pytabs_max_version = (3, 11)
@@ -248,9 +274,22 @@ def update_html_context(
     context["generate_toctree_html"] = partial(context["generate_toctree_html"], startdepth=0)
 
 
-def setup(app: Sphinx) -> dict[str, bool]:
-    app.setup_extension("litestar_sphinx_theme")
+def delayed_setup(app: Sphinx) -> None:
+    """
+    When running linkcheck pydata_sphinx_theme causes a build failure, and checking
+    the builder in the initial `setup` function call is not possible, so the check
+    and extension setup has to be delayed until the builder is initialized.
+    """
+    if app.builder.name == "linkcheck":
+        return
+
     app.setup_extension("pydata_sphinx_theme")
     app.connect("html-page-context", update_html_context)
+
+
+def setup(app: Sphinx) -> dict[str, bool]:
+    app.connect("builder-inited", delayed_setup, priority=0)
+
+    app.setup_extension("litestar_sphinx_theme")
 
     return {"parallel_read_safe": True, "parallel_write_safe": True}

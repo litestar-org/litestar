@@ -39,7 +39,6 @@ jobs:
     uses: ./.github/workflows/test.yaml
     with:
       coverage: ${{ matrix.python-version == '3.11' && matrix.pydantic-version == '2' }}
-      integration: ${{ matrix.python-version == '3.11' && matrix.pydantic-version == '2' }}
       pydantic-version: ${{ matrix.pydantic-version }}
       python-version: ${{ matrix.python-version }}
 
@@ -77,31 +76,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  snyk:
-    needs:
-      - test
-      - validate
-    if: github.event.pull_request.head.repo.fork == false && github.repository_owner == 'litestar-org'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-
-      - name: Run Snyk Monitor
-        if: ${{ github.ref == 'refs/heads/main' }}
-        uses: snyk/actions/python-3.8@master
-        with:
-          command: monitor
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
-      - name: Run Snyk Test
-        if: ${{ github.ref != 'refs/heads/main' }}
-        uses: snyk/actions/python-3.8@master
-        with:
-          command: test
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
   codeql:
     needs:
@@ -156,6 +130,11 @@ jobs:
         env:
           LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT: 1
         run: poetry run make docs
+
+      - name: Check docs links
+        env:
+          LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT: 1
+        run: poetry run make docs-linkcheck
 
       - name: Save PR number
         env:
