@@ -1160,6 +1160,217 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.1.0">
+<h2>2.1.0<a class="headerlink" href="#2.1.0" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2023/09/23<p><a class="reference external" href="https://github.com/litestar-org/litestar/compare/v2.0.0...v2.1.0x">View the full changelog</a></p>
+<section id="2.1.0-feature">
+<h3>Features<a class="headerlink" href="#2.1.0-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Make <code class="docutils literal notranslate"><span class="pre">302</span></code> the default <code class="docutils literal notranslate"><span class="pre">status_code</span></code> for redirect responses<a class="headerlink reference internal" href="#2.1.0-make" id="2.1.0-make">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Make <code class="docutils literal notranslate"><span class="pre">302</span></code> the default <code class="docutils literal notranslate"><span class="pre">status_code</span></code> for redirect responses</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2138">litestar-org/litestar#2138</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2189">litestar-org/litestar#2189</a></span></p>
+</div>
+</dd>
+<dt>Add <a class="reference internal" href="../reference/config.html#litestar.config.app.AppConfig.include_in_schema" title="litestar.config.app.AppConfig.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option for all layers<a class="headerlink reference internal" href="#2.1.0-add" id="2.1.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds the <a class="reference internal" href="../reference/config.html#litestar.config.app.AppConfig.include_in_schema" title="litestar.config.app.AppConfig.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option to all layers, allowing to include/exclude
+specific routes from the generated OpenAPI schema.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2267">litestar-org/litestar#2267</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2295">litestar-org/litestar#2295</a></span></p>
+</div>
+</dd>
+<dt>Deprecate parameter <code class="docutils literal notranslate"><span class="pre">app</span></code> of <code class="docutils literal notranslate"><span class="pre">Response.to_asgi_response</span></code><a class="headerlink reference internal" href="#2.1.0-deprecate parameter" id="2.1.0-deprecate parameter">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds deprecation warning for unused <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">to_asgi_response</span></code> as
+it is unused and redundant due to <code class="docutils literal notranslate"><span class="pre">request.app</span></code> being available.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2217">litestar-org/litestar#2217</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2268">litestar-org/litestar#2268</a></span></p>
+</div>
+</dd>
+<dt>Authentication: Add parameters to set the JWT <code class="docutils literal notranslate"><span class="pre">extras</span></code> field<a class="headerlink reference internal" href="#2.1.0-authentication: add parameters to set the jwt" id="2.1.0-authentication: add parameters to set the jwt">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds <code class="docutils literal notranslate"><span class="pre">token_extras</span></code> to both <a class="reference internal" href="../reference/contrib/jwt.html#litestar.contrib.jwt.BaseJWTAuth.login" title="litestar.contrib.jwt.BaseJWTAuth.login"><code class="xref py py-func docutils literal notranslate"><span class="pre">BaseJWTAuth.login()</span></code></a> and <a class="reference internal" href="../reference/contrib/jwt.html#litestar.contrib.jwt.BaseJWTAuth.create_token" title="litestar.contrib.jwt.BaseJWTAuth.create_token"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseJWTAuth.create_token()</span></code></a> methods,
+to allow the definition of the <code class="docutils literal notranslate"><span class="pre">extras</span></code> JWT field.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2313">litestar-org/litestar#2313</a></span></p>
+</div>
+</dd>
+<dt>Templating: Add possibility to customize Jinja environment<a class="headerlink reference internal" href="#2.1.0-templating: add possibility to customize jinja environment" id="2.1.0-templating: add possibility to customize jinja environment">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds the ability to pass a custom Jinja2 <code class="docutils literal notranslate"><span class="pre">Environment</span></code> or Mako <code class="docutils literal notranslate"><span class="pre">TemplateLookup</span></code> by providing a
+dedicated class method.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/965">litestar-org/litestar#965</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2195">litestar-org/litestar#2195</a></span></p>
+</div>
+</dd>
+<dt>Add support for <a class="reference external" href="https://github.com/mitsuhiko/minijinja">minjinja</a><a class="headerlink reference internal" href="#2.1.0-add support for" id="2.1.0-add support for">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds support for MiniJinja, a minimal Jinja2 implementation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/templating.html"><span class="doc">Templating</span></a></p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2250">litestar-org/litestar#2250</a></span></p>
+</div>
+</dd>
+<dt>SQLAlchemy: Exclude implicit fields for SQLAlchemy DTO<a class="headerlink reference internal" href="#2.1.0-sqlalchemy: exclude implicit fields for sqlalchemy dto" id="2.1.0-sqlalchemy: exclude implicit fields for sqlalchemy dto">#</a></dt><dd><div class="changelog-change docutils container">
+<p><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be
+configured using a separate config object. This can be set using both
+class inheritance and <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated">Annotated</a>:</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">config</span></code> object.</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModelDTO</span><span class="p">(</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">MyModel</span><span class="p">]):</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>or</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>.</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="n">MyModelDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()]]</span>
+</pre></div>
+</div>
+</div>
+<p>The new configuration currently accepts a single attribute which is <code class="docutils literal notranslate"><span class="pre">include_implicit_fields</span></code> that has
+a default value of <code class="docutils literal notranslate"><span class="pre">True</span></code>. If set to to <code class="docutils literal notranslate"><span class="pre">False</span></code>, all implicitly mapped columns will be hidden
+from the <code class="docutils literal notranslate"><span class="pre">DTO</span></code>. If set to <code class="docutils literal notranslate"><span class="pre">hybrid-only</span></code>, then hybrid properties will be shown but not other
+implicit columns.</p>
+<p>Finally, implicit columns that are marked with <code class="docutils literal notranslate"><span class="pre">Mark.READ_ONLY</span></code> or <code class="docutils literal notranslate"><span class="pre">Mark.WRITE_ONLY</span></code>
+will always be shown regardless of the value of <code class="docutils literal notranslate"><span class="pre">include_implicit_fields</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2170">litestar-org/litestar#2170</a></span></p>
+</div>
+</dd>
+<dt>SQLAlchemy: Allow repository functions to be filtered by expressions<a class="headerlink reference internal" href="#2.1.0-sqlalchemy: allow repository functions to be filtered by expressions" id="2.1.0-sqlalchemy: allow repository functions to be filtered by expressions">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Enhances the SQLALchemy repository so that you can more easily pass in complex <code class="docutils literal notranslate"><span class="pre">where</span></code> expressions into the repository functions.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Without this, you have to override the <code class="docutils literal notranslate"><span class="pre">statement</span></code> parameter and it separates the where conditions from the filters and the <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>.</p>
+</div>
+<p>Allows usage of this syntax:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">locations</span><span class="p">,</span> <span class="n">total_count</span> <span class="o">=</span> <span class="k">await</span> <span class="n">model_service</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span>
+    <span class="n">ST_DWithin</span><span class="p">(</span><span class="n">UniqueLocation</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">geog</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">account_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">account_id</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>instead of the previous method of overriding the <code class="docutils literal notranslate"><span class="pre">statement</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">locations</span><span class="p">,</span> <span class="n">total_count</span> <span class="o">=</span> <span class="k">await</span> <span class="n">model_service</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span>
+    <span class="n">statement</span><span class="o">=</span><span class="n">select</span><span class="p">(</span><span class="n">Model</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ST_DWithin</span><span class="p">(</span><span class="n">UniqueLocation</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">geog</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)),</span>
+    <span class="n">account_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">account_id</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2265">litestar-org/litestar#2265</a></span></p>
+</div>
+</dd>
+<dt>SQLAlchemy: Use <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/sqlelement.html#sqlalchemy.sql.expression.lambda_stmt" title="(in SQLAlchemy v2.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">lambda_stmt</span></code></a> in the repository<a class="headerlink reference internal" href="#2.1.0-sqlalchemy: use" id="2.1.0-sqlalchemy: use">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Converts the repository to use <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/sqlelement.html#sqlalchemy.sql.expression.lambda_stmt" title="(in SQLAlchemy v2.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">lambda_stmt</span></code></a>
+instead of the normal <code class="docutils literal notranslate"><span class="pre">select</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2179">litestar-org/litestar#2179</a></span></p>
+</div>
+</dd>
+<dt>SQLAlchemy: Swap to the <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs">advanced_alchemy</a> implementations<a class="headerlink reference internal" href="#2.1.0-sqlalchemy: swap to the" id="2.1.0-sqlalchemy: swap to the">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Swaps the internal SQLAlchemy repository to use the external
+<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs">advanced_alchemy</a> library implementations</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2312">litestar-org/litestar#2312</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.1.0-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.1.0-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Remove usages of deprecated <code class="docutils literal notranslate"><span class="pre">ExceptionHandlerMiddleware</span></code> <code class="docutils literal notranslate"><span class="pre">debug</span></code> parameter<a class="headerlink reference internal" href="#2.1.0-remove usages of deprecated" id="2.1.0-remove usages of deprecated">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Removes leftover usages of deprecated <code class="docutils literal notranslate"><span class="pre">ExceptionHandlerMiddleware</span></code> debug parameter.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2192">litestar-org/litestar#2192</a></span></p>
+</div>
+</dd>
+<dt>DTOs: Raise <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ValidationException" title="litestar.exceptions.ValidationException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationException</span></code></a> when Pydantic validation fails<a class="headerlink reference internal" href="#2.1.0-dtos: raise" id="2.1.0-dtos: raise">#</a></dt><dd><div class="changelog-change docutils container">
+<blockquote>
+<div><p>Ensures that when the Pydantic validation fails in the Pydantic DTO,
+a <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ValidationException" title="litestar.exceptions.ValidationException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationException</span></code></a> is raised with the extras set to the errors given by Pydantic.</p>
+</div></blockquote>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2190">litestar-org/litestar#2190</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2204">litestar-org/litestar#2204</a></span></p>
+</div>
+</dd>
+<dt>Set the max width of the console to 80<a class="headerlink reference internal" href="#2.1.0-set the max width of the console to 80" id="2.1.0-set the max width of the console to 80">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Sets the max width of the console to 80, to prevent the output from being
+wrapped.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2244">litestar-org/litestar#2244</a></span></p>
+</div>
+</dd>
+<dt>Handling of optional path parameters<a class="headerlink reference internal" href="#2.1.0-handling of optional path parameters" id="2.1.0-handling of optional path parameters">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Resolves an issue where optional path parameters caused a 500 error to be raised.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2222">litestar-org/litestar#2222</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2224">litestar-org/litestar#2224</a></span></p>
+</div>
+</dd>
+<dt>Use os.replace instead of shutil.move for renaming files<a class="headerlink reference internal" href="#2.1.0-use os.replace instead of shutil.move for renaming files" id="2.1.0-use os.replace instead of shutil.move for renaming files">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Change to using <a class="reference external" href="https://docs.python.org/3/library/os.html#os.replace" title="(in Python v3.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.replace()</span></code></a> instead of <a class="reference external" href="https://docs.python.org/3/library/shutil.html#shutil.move" title="(in Python v3.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">shutil.move()</span></code></a> for renaming files, to
+ensure atomicity.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2223">litestar-org/litestar#2223</a></span></p>
+</div>
+</dd>
+<dt>Exception detail attribute<a class="headerlink reference internal" href="#2.1.0-exception detail attribute" id="2.1.0-exception detail attribute">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Set correctly the detail attribute on <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.LitestarException" title="litestar.exceptions.LitestarException"><code class="xref py py-class docutils literal notranslate"><span class="pre">LitestarException</span></code></a> and <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.HTTPException" title="litestar.exceptions.HTTPException"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPException</span></code></a>
+regardless of whether it’s passed positionally or by name.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2231">litestar-org/litestar#2231</a></span></p>
+</div>
+</dd>
+<dt>Filters not available in <code class="docutils literal notranslate"><span class="pre">exists()</span></code><a class="headerlink reference internal" href="#2.1.0-filters not available in" id="2.1.0-filters not available in">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes <a class="reference internal" href="../reference/stores/base.html#litestar.stores.base.Store.exists" title="litestar.stores.base.Store.exists"><code class="xref py py-meth docutils literal notranslate"><span class="pre">exists()</span></code></a> method for SQLAlchemy sync and async.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2221">litestar-org/litestar#2221</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2228">litestar-org/litestar#2228</a></span></p>
+</div>
+</dd>
+<dt>Add Pydantic types to SQLAlchemy registry only if Pydantic is installed<a class="headerlink reference internal" href="#2.1.0-add pydantic types to sqlalchemy registry only if pydantic is installed" id="2.1.0-add pydantic types to sqlalchemy registry only if pydantic is installed">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Allows importing from <code class="docutils literal notranslate"><span class="pre">litestar.contrib.sqlalchemy.base</span></code> even if Pydantic is not installed.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2252">litestar-org/litestar#2252</a></span></p>
+</div>
+</dd>
+<dt>Don’t add content type for responses that don’t have a body<a class="headerlink reference internal" href="#2.1.0-don't add content type for responses that don't have a body" id="2.1.0-don't add content type for responses that don't have a body">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Ensures that the <code class="docutils literal notranslate"><span class="pre">content-type</span></code> header is not added for responses that do not have a
+body such as responses with status code <code class="docutils literal notranslate"><span class="pre">204</span> <span class="pre">(No</span> <span class="pre">Content)</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2106">litestar-org/litestar#2106</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2263">litestar-org/litestar#2263</a></span></p>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code> refactored<a class="headerlink reference internal" href="#2.1.0-sqlalchemyplugin" id="2.1.0-sqlalchemyplugin">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Changes the way the <code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code> to now append the other plugins instead of the
+inheritance that was previously used. This makes using the <code class="docutils literal notranslate"><span class="pre">plugins.get</span></code> function work as expected.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2269">litestar-org/litestar#2269</a></span></p>
+</div>
+</dd>
+<dt>Ensure <code class="docutils literal notranslate"><span class="pre">app-dir</span></code> is appended to path during autodiscovery<a class="headerlink reference internal" href="#2.1.0-ensure" id="2.1.0-ensure">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes a bug which caused the <code class="docutils literal notranslate"><span class="pre">--app-dir</span></code> option to the Litestar CLI to not be propagated during autodiscovery.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2266">litestar-org/litestar#2266</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2277">litestar-org/litestar#2277</a></span></p>
+</div>
+</dd>
+<dt>Set content length header by default<a class="headerlink reference internal" href="#2.1.0-set content length header by default" id="2.1.0-set content length header by default">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Sets the <code class="docutils literal notranslate"><span class="pre">content-length</span></code> header by default even if the length of the body is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2271">litestar-org/litestar#2271</a></span></p>
+</div>
+</dd>
+<dt>Incorrect handling of mutable headers in <a class="reference internal" href="../reference/response/base.html#litestar.response.base.ASGIResponse" title="litestar.response.base.ASGIResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIResponse</span></code></a><a class="headerlink reference internal" href="#2.1.0-incorrect handling of mutable headers in" id="2.1.0-incorrect handling of mutable headers in">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Update <a class="reference internal" href="../reference/response/base.html#litestar.response.base.ASGIResponse" title="litestar.response.base.ASGIResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIResponse</span></code></a>, <a class="reference internal" href="../reference/response/base.html#litestar.response.base.Response" title="litestar.response.base.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a> and friends to address a few issues related to headers:</p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">encoded_headers</span></code> were passed in at any point, they were mutated within responses, leading to a growing list of headers with every response</p></li>
+<li><p>While mutating <code class="docutils literal notranslate"><span class="pre">encoded_headers</span></code>, the checks performed to assert a value was (not) already present, headers were not treated case-insensitive</p></li>
+<li><p>Unnecessary work was performed while converting cookies / headers into an encoded headers list</p></li>
+</ul>
+<p>This was fixed by:</p>
+<ul class="simple">
+<li><p>Removing the use of and deprecate <code class="docutils literal notranslate"><span class="pre">encoded_headers</span></code></p></li>
+<li><p>Handling headers on <a class="reference internal" href="../reference/response/base.html#litestar.response.base.ASGIResponse" title="litestar.response.base.ASGIResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIResponse</span></code></a> with <a class="reference internal" href="../reference/datastructures.html#litestar.datastructures.MutableScopeHeaders" title="litestar.datastructures.MutableScopeHeaders"><code class="xref py py-class docutils literal notranslate"><span class="pre">MutableScopeHeaders</span></code></a>, which allows for case-insensitive membership tests, <code class="docutils literal notranslate"><span class="pre">.setdefault</span></code> operations, etc.</p></li>
+</ul>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2196">litestar-org/litestar#2196</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2308">litestar-org/litestar#2308</a></span></p>
+</div>
+</dd>
+<dt>Adds missing ORM registry export<a class="headerlink reference internal" href="#2.1.0-adds missing orm registry export" id="2.1.0-adds missing orm registry export">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds an export that was overlooked for the base repo</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2316">litestar-org/litestar#2316</a></span></p>
+</div>
+</dd>
+<dt>Discrepancy in <code class="docutils literal notranslate"><span class="pre">attrs</span></code>, <code class="docutils literal notranslate"><span class="pre">msgspec</span></code> and <code class="docutils literal notranslate"><span class="pre">Pydantic</span></code> for multi-part forms<a class="headerlink reference internal" href="#2.1.0-discrepancy in" id="2.1.0-discrepancy in">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Resolves issue in <code class="docutils literal notranslate"><span class="pre">attrs</span></code>, <code class="docutils literal notranslate"><span class="pre">msgspec</span></code> and Pydantic for multi-part forms</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2278">litestar-org/litestar#2278</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2280">litestar-org/litestar#2280</a></span></p>
+</div>
+</dd>
+<dt>Set proper default for <code class="docutils literal notranslate"><span class="pre">exclude_http_methods</span></code> in auth middleware<a class="headerlink reference internal" href="#2.1.0-set proper default for" id="2.1.0-set proper default for">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Sets <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> as the default value for <code class="docutils literal notranslate"><span class="pre">exclude_http_methods</span></code> in the base authentication middleware class.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2205">litestar-org/litestar#2205</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2325">litestar-org/litestar#2325</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.0.0">
 <h2>2.0.0<a class="headerlink" href="#2.0.0" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2023/08/19<section id="2.0.0-bugfix">
@@ -1440,7 +1651,7 @@ has been added.</p>
 <strong>Released: </strong>2023/07/20<section id="2.0.0beta3-feature">
 <h3>Features<a class="headerlink" href="#2.0.0beta3-feature" title="Permalink to this heading">#</a></h3>
 <dl>
-<dt>SQLAlchemyDTO: column/relationship type inference<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto: column/relationship type inference" id="2.0.0beta3-sqlalchemydto: column/relationship type inference">#</a></dt><dd><div class="changelog-change docutils container">
+<dt><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: column/relationship type inference<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
 <p>If type annotations aren’t available for a given column/relationship, they may
 be inferred from the mapped object.</p>
 <p>For columns, the <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/reflection.html#sqlalchemy.engine.interfaces.ReflectedColumn.type" title="(in SQLAlchemy v2.0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code></a>‘s
@@ -1562,7 +1773,7 @@ of the update.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1894">litestar-org/litestar#1894</a></span></p>
 </div>
 </dd>
-<dt>SQLAlchemyDTO: Fix handling of <code class="docutils literal notranslate"><span class="pre">Sequence</span></code> with defaults<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto: fix handling of" id="2.0.0beta3-sqlalchemydto: fix handling of">#</a></dt><dd><div class="changelog-change docutils container">
+<dt><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: Fix handling of <code class="docutils literal notranslate"><span class="pre">Sequence</span></code> with defaults<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fixes handling of columns defined with
 <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/defaults.html#defining-sequences">Sequence</a>
 default values.</p>
@@ -1653,8 +1864,8 @@ available.</p>
 where the originated.</p>
 <p>An optional <code class="docutils literal notranslate"><span class="pre">source</span></code> key has been added, signifying whether the value is from
 the body, a cookie, a header, or a query param.</p>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">before</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">before</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;status_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Validation failed for POST http://localhost:8000/some-route&quot;</span><span class="p">,</span>
@@ -1668,8 +1879,8 @@ the body, a cookie, a header, or a query param.</p>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">after</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">after</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;status_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Validation failed for POST http://localhost:8000/some-route&quot;</span><span class="p">,</span>
@@ -1850,9 +2061,10 @@ using a double-underscore syntax, for example
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1727">litestar-org/litestar#1727</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1741">litestar-org/litestar#1741</a></span></p>
 </div>
 </dd>
-<dt>DTOs: Hybrid properties and association proxies in <code class="docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code><a class="headerlink reference internal" href="#2.0.0beta1-dtos: hybrid properties and association proxies in" id="2.0.0beta1-dtos: hybrid properties and association proxies in">#</a></dt><dd><div class="changelog-change docutils container">
-<p>The <code class="docutils literal notranslate"><span class="pre">~litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO</span></code> now supports
-<a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/hybrid.html">hybrid attribute</a>
+<dt>DTOs: Hybrid properties and association proxies in
+<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a><a class="headerlink reference internal" href="#2.0.0beta1-dtos: hybrid properties and association proxies in" id="2.0.0beta1-dtos: hybrid properties and association proxies in">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>
+now supports <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/hybrid.html">hybrid attribute</a>
 and <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/associationproxy.html">associationproxy</a>.</p>
 <p>The generated field will be marked read-only.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1754">litestar-org/litestar#1754</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1776">litestar-org/litestar#1776</a></span></p>
@@ -3389,6 +3601,11 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.1.0">2.1.0</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.1.0-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.1.0-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0">2.0.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0-bugfix">Bugfixes</a></li>
 </ul>
