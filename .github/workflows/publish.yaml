@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
-          
+
       - uses: pdm-project/setup-pdm@v3
         name: Set up PDM
         with:
@@ -29,16 +29,16 @@ jobs:
 
       - name: Install dependencies
         run: pdm install -G:all
-        
+
       - name: Install Test Dependencies
         run: pdm install -G:test
-        
+
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
 
       - name: Test
         run: mv tests/examples/test_hello_world.py test_hello_world.py && pdm run pytest test_hello_world.py
-        
+
   publish-release:
     name: upload release to PyPI
     runs-on: ubuntu-latest
