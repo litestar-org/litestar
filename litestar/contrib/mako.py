@@ -61,6 +61,9 @@ class MakoTemplate(TemplateProtocol):
 
         return str(self.template.render(*args, **kwargs))
 
+    async def render_async(self, *args: Any, **kwargs: Any) -> str:
+        raise NotImplementedError("Mako engine doesn't support async rendering")
+
 
 class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
     """Mako based TemplateEngine."""
@@ -131,3 +134,7 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
             MakoTemplateEngine instance
         """
         return cls(directory=None, engine_instance=template_lookup)
+
+    @property
+    def is_async(self) -> bool:
+        return False

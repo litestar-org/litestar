@@ -93,6 +93,18 @@ class TemplateProtocol(Protocol):  # pragma: no cover
         """
         ...
 
+    async def render_async(self, *args: Any, **kwargs: Any) -> str:
+        """Eeturns a coroutine that when awaited returns the entire rendered template string.
+
+        Args:
+            *args: Positional arguments passed to the TemplateEngine
+            **kwargs: A string keyed mapping of values passed to the TemplateEngine
+
+        Returns:
+            The rendered template string wrapped in a coroutine
+        """
+        ...
+
 
 T_co = TypeVar("T_co", bound=TemplateProtocol, covariant=True)
 
@@ -134,3 +146,13 @@ class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
         Returns:
             None
         """
+
+    @property
+    def is_async(self) -> bool:
+        """Whether the templating engine supports async rendering.
+
+        Returns:
+            bool
+
+        """
+        ...

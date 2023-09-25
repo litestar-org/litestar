@@ -93,3 +93,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
             JinjaTemplateEngine instance
         """
         return cls(directory=None, engine_instance=jinja_environment)
+
+    @property
+    def is_async(self) -> bool:
+        return self.engine.is_async

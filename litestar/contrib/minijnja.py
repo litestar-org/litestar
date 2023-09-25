@@ -59,6 +59,9 @@ class MiniJinjaTemplate(TemplateProtocol):
         """
         return str(self.engine.render_template(self.template_name, *args, **kwargs))
 
+    async def render_async(self, *args: Any, **kwargs: Any) -> str:
+        raise NotImplementedError("MiniJinja engine doesn't support async rendering")
+
 
 class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate"]):
     """The engine instance."""
@@ -153,3 +156,7 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate"]):
             MiniJinjaTemplateEngine instance
         """
         return cls(directory=None, engine_instance=minijinja_environment)
+
+    @property
+    def is_async(self) -> bool:
+        return False
