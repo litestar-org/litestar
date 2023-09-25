@@ -3,22 +3,202 @@ from __future__ import annotations
 import itertools
 from mimetypes import guess_type
 from pathlib import PurePath
-from typing import TYPE_CHECKING, Any, Iterable
+from typing import TYPE_CHECKING, Any, ClassVar, Iterable
 
+from litestar.datastructures.headers import MutableScopeHeaders
 from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import ASGIResponse, Response
-from litestar.status_codes import HTTP_200_OK
-from litestar.utils.deprecation import warn_deprecation
+from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
+from litestar.utils.deprecation import deprecated, warn_deprecation
+from litestar.utils.helpers import get_enum_string_value
 
 if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.connection import Request
     from litestar.datastructures import Cookie
-    from litestar.types import ResponseCookies, TypeEncodersMap
+    from litestar.template.base import TemplateProtocol
+    from litestar.types import (
+        HTTPResponseBodyEvent,
+        HTTPResponseStartEvent,
+        Receive,
+        ResponseCookies,
+        Scope,
+        Send,
+        TypeEncodersMap,
+    )
 
 __all__ = ("Template",)
+
+
+class ASGITemplateResponse(ASGIResponse):
+    """A low-level ASGI response class."""
+
+    __slots__ = ("template", "context", "is_async", "media_type")
+
+    _should_set_content_length: ClassVar[bool] = True
+    """A flag to indicate whether the content-length header should be set by default or not."""
+
+    def __init__(
+        self,
+        *,
+        template: TemplateProtocol,
+        context: dict[str, Any],
+        is_async: bool = False,
+        background: BackgroundTask | BackgroundTasks | None = None,
+        cookies: Iterable[Cookie] | None = None,
+        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
+        encoding: str = "utf-8",
+        headers: dict[str, Any] | Iterable[tuple[str, str]] | None = None,
+        is_head_response: bool = False,
+        media_type: MediaType | str | None = None,
+        status_code: int | None = None,
+    ) -> None:
+        """A low-level ASGI response class.
+
+        Args:
+            template: An object adhering to TemplateProtocol to be rendered in the response
+            context: A dictionary of key/value pairs to be passed to the temple engine's render method.
+            is_async: Whether the instance of the used templating engine supports async rendering
+            background: A background task or a list of background tasks to be executed after the response is sent.
+            cookies: The response cookies.
+            encoded_headers: The response headers.
+            encoding: The response encoding.
+            headers: The response headers.
+            is_head_response: A boolean indicating if the response is a HEAD response.
+            media_type: The response media type.
+            status_code: The response status code.
+        """
+
+        status_code = status_code or HTTP_200_OK
+        self.headers = MutableScopeHeaders()
+
+        if encoded_headers is not None:
+            warn_deprecation("3.0", kind="parameter", deprecated_name="encoded_headers", alternative="headers")
+            for header_name, header_value in encoded_headers:
+                self.headers.add(header_name.decode("latin-1"), header_value.decode("latin-1"))
+
+        if headers is not None:
+            for k, v in headers.items() if isinstance(headers, dict) else headers:
+                self.headers.add(k, v)  # pyright: ignore
+
+        self.is_async = is_async
+        self.template = template
+        self.context = context
+        self.media_type = media_type
+
+        self.background = background
+        self._encoded_cookies = tuple(
+            cookie.to_encoded_header() for cookie in (cookies or ()) if not cookie.documentation_only
+        )
+        self.encoding = encoding
+        self.is_head_response = is_head_response
+        self.status_code = status_code
+
+    @property
+    @deprecated("3.0", kind="property", alternative="encode_headers()")
+    def encoded_headers(self) -> list[tuple[bytes, bytes]]:
+        return self.encode_headers()
+
+    def encode_headers(self) -> list[tuple[bytes, bytes]]:
+        return [*self.headers.headers, *self._encoded_cookies]
+
+    async def prepare_content(self) -> None:
+        if self.is_async:
+            rendered_template = await self.template.render_async(**self.context)
+        else:
+            rendered_template = self.template.render(**self.context)
+
+        body = rendered_template.encode(self.encoding)
+        content_length = len(body)
+
+        status_allows_body = (
+            self.status_code not in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} and self.status_code >= HTTP_200_OK
+        )
+        media_type = get_enum_string_value(self.media_type or MediaType.JSON)
+
+        if not status_allows_body or self.is_head_response:
+            if body and body != b"null":
+                raise ImproperlyConfiguredException(
+                    "response content is not supported for HEAD responses and responses with a status code "
+                    "that does not allow content (304, 204, < 200)"
+                )
+            self.body = b""
+        else:
+            self.headers.setdefault(
+                "content-type",
+                (f"{media_type}; charset={self.encoding}" if media_type.startswith("text/") else media_type),
+            )
+
+            if self._should_set_content_length:
+                self.headers.setdefault("content-length", str(content_length))
+
+            self.body = body
+            self.content_length = content_length
+
+    async def after_response(self) -> None:
+        """Execute after the response is sent.
+
+        Returns:
+            None
+        """
+        if self.background is not None:
+            await self.background()
+
+    async def start_response(self, send: Send) -> None:
+        """Emit the start event of the response. This event includes the headers and status codes.
+
+        Args:
+            send: The ASGI send function.
+
+        Returns:
+            None
+        """
+        await self.prepare_content()
+        event: HTTPResponseStartEvent = {
+            "type": "http.response.start",
+            "status": self.status_code,
+            "headers": self.encode_headers(),
+        }
+        await send(event)
+
+    async def send_body(self, send: Send, receive: Receive) -> None:
+        """Emit the response body.
+
+        Args:
+            send: The ASGI send function.
+            receive: The ASGI receive function.
+
+        Notes:
+            - Response subclasses should customize this method if there is a need to customize sending data.
+
+        Returns:
+            None
+        """
+        event: HTTPResponseBodyEvent = {"type": "http.response.body", "body": self.body, "more_body": False}
+        await send(event)
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """ASGI callable of the ``Response``.
+
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+
+        Returns:
+            None
+        """
+        await self.start_response(send=send)
+
+        if self.is_head_response:
+            event: HTTPResponseBodyEvent = {"type": "http.response.body", "body": b"", "more_body": False}
+            await send(event)
+        else:
+            await self.send_body(send=send, receive=receive)
+
+        await self.after_response()
 
 
 class Template(Response[bytes]):
@@ -127,12 +307,12 @@ class Template(Response[bytes]):
 
         template = request.app.template_engine.get_template(self.template_name)
         context = self.create_template_context(request)
-        body = template.render(**context).encode(self.encoding)
 
-        return ASGIResponse(
+        return ASGITemplateResponse(
+            template=template,
+            context=context,
+            is_async=request.app.template_engine.is_async,
             background=self.background or background,
-            body=body,
-            content_length=None,
             cookies=cookies,
             encoded_headers=encoded_headers,
             encoding=self.encoding,
