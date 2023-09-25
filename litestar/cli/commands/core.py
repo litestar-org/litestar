@@ -113,8 +113,9 @@ def run_command(
         os.environ["LITESTAR_PDB"] = "1"
 
     if not UVICORN_INSTALLED:
-        console.print("uvicorn is not installed. Please install the standard group,"
-                      " litestar\[standard], to use this command.")
+        console.print(
+            r"uvicorn is not installed. Please install the standard group, litestar\[standard], to use this command."
+        )
         sys.exit(1)
 
     if callable(ctx.obj):
@@ -142,7 +143,8 @@ def run_command(
     show_app_info(app)
 
     if workers == 1 and not reload:
-        uvicorn.run(
+        # A guard statement at the beginning of this function prevents uvicorn from being unbound
+        uvicorn.run(  # pyright: ignore
             app=env.app_path,
             host=host,
             port=port,
