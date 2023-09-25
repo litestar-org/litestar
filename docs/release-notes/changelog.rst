@@ -3,6 +3,244 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.1.0
+    :date: 2023/09/23
+
+    `View the full changelog <https://github.com/litestar-org/litestar/compare/v2.0.0...v2.1.0x>`_
+
+    .. change:: Make ``302`` the default ``status_code`` for redirect responses
+        :type: feature
+        :pr: 2189
+        :issue: 2138
+
+        Make ``302`` the default ``status_code`` for redirect responses
+
+    .. change:: Add :meth:`include_in_schema` option for all layers
+        :type: feature
+        :pr: 2295
+        :issue: 2267
+
+        Adds the :meth:`include_in_schema` option to all layers, allowing to include/exclude
+        specific routes from the generated OpenAPI schema.
+
+    .. change:: Deprecate parameter ``app`` of ``Response.to_asgi_response``
+        :type: feature
+        :pr: 2268
+        :issue: 2217
+
+        Adds deprecation warning for unused ``app`` parameter of ``to_asgi_response`` as
+        it is unused and redundant due to ``request.app`` being available.
+
+    .. change:: Authentication: Add parameters to set the JWT ``extras`` field
+        :type: feature
+        :pr: 2313
+
+        Adds ``token_extras`` to both :func:`BaseJWTAuth.login` and :meth:`BaseJWTAuth.create_token` methods,
+        to allow the definition of the ``extras`` JWT field.
+
+    .. change:: Templating: Add possibility to customize Jinja environment
+        :type: feature
+        :pr: 2195
+        :issue: 965
+
+        Adds the ability to pass a custom Jinja2 ``Environment`` or Mako ``TemplateLookup`` by providing a
+        dedicated class method.
+
+    .. change:: Add support for `minjinja <https://github.com/mitsuhiko/minijinja>`_
+        :type: feature
+        :pr: 2250
+
+        Adds support for MiniJinja, a minimal Jinja2 implementation.
+
+        .. seealso:: :doc:`/usage/templating`
+
+    .. change:: SQLAlchemy: Exclude implicit fields for SQLAlchemy DTO
+        :type: feature
+        :pr: 2170
+
+        :class:`SQLAlchemyDTO (Advanced Alchemy) <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>` can now be
+        configured using a separate config object. This can be set using both
+        class inheritance and `Annotated <https://docs.python.org/3/library/typing.html#typing.Annotated>`_:
+
+        .. code-block:: python
+            :caption: :class:`SQLAlchemyDTO (Advanced Alchemy) <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>` can now be configured using a separate config object using ``config`` object.
+
+            class MyModelDTO(SQLAlchemyDTO[MyModel]):
+                config = SQLAlchemyDTOConfig()
+
+        or
+
+        .. code-block:: python
+            :caption: :class:`SQLAlchemyDTO (Advanced Alchemy) <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>` can now be configured using a separate config object using ``Annotated``.
+
+             MyModelDTO = SQLAlchemyDTO[Annotated[MyModel, SQLAlchemyDTOConfig()]]
+
+        The new configuration currently accepts a single attribute which is ``include_implicit_fields`` that has
+        a default value of ``True``. If set to to ``False``, all implicitly mapped columns will be hidden
+        from the ``DTO``. If set to ``hybrid-only``, then hybrid properties will be shown but not other
+        implicit columns.
+
+        Finally, implicit columns that are marked with ``Mark.READ_ONLY`` or ``Mark.WRITE_ONLY``
+        will always be shown regardless of the value of ``include_implicit_fields``.
+
+    .. change:: SQLAlchemy: Allow repository functions to be filtered by expressions
+        :type: feature
+        :pr: 2265
+
+        Enhances the SQLALchemy repository so that you can more easily pass in complex ``where`` expressions into the repository functions.
+
+        .. tip:: Without this, you have to override the ``statement`` parameter and it separates the where conditions from the filters and the ``kwargs``.
+
+        Allows usage of this syntax:
+
+        .. code-block:: python
+
+            locations, total_count = await model_service.list_and_count(
+                ST_DWithin(UniqueLocation.location, geog, 1000), account_id=str(account_id)
+            )
+
+        instead of the previous method of overriding the ``statement``:
+
+        .. code-block:: python
+
+            locations, total_count = await model_service.list_and_count(
+                statement=select(Model).where(ST_DWithin(UniqueLocation.location, geog, 1000)),
+                account_id=str(account_id),
+            )
+
+    .. change:: SQLAlchemy: Use :func:`lambda_stmt <sqlalchemy.sql.expression.lambda_stmt>` in the repository
+        :type: feature
+        :pr: 2179
+
+        Converts the repository to use :func:`lambda_stmt <sqlalchemy.sql.expression.lambda_stmt>`
+        instead of the normal ``select``
+
+    .. change:: SQLAlchemy: Swap to the `advanced_alchemy <https://docs.advanced-alchemy.jolt.rs>`_ implementations
+        :type: feature
+        :pr: 2312
+
+        Swaps the internal SQLAlchemy repository to use the external
+        `advanced_alchemy <https://docs.advanced-alchemy.jolt.rs>`_ library implementations
+
+    .. change:: Remove usages of deprecated ``ExceptionHandlerMiddleware`` ``debug`` parameter
+        :type: bugfix
+        :pr: 2192
+
+        Removes leftover usages of deprecated ``ExceptionHandlerMiddleware`` debug parameter.
+
+    .. change:: DTOs: Raise :class:`ValidationException` when Pydantic validation fails
+        :type: bugfix
+        :pr: 2204
+        :issue: 2190
+
+         Ensures that when the Pydantic validation fails in the Pydantic DTO,
+         a :class:`ValidationException` is raised with the extras set to the errors given by Pydantic.
+
+    .. change:: Set the max width of the console to 80
+        :type: bugfix
+        :pr: 2244
+
+        Sets the max width of the console to 80, to prevent the output from being
+        wrapped.
+
+    .. change:: Handling of optional path parameters
+        :type: bugfix
+        :pr: 2224
+        :issue: 2222
+
+        Resolves an issue where optional path parameters caused a 500 error to be raised.
+
+    .. change:: Use os.replace instead of shutil.move for renaming files
+        :type: bugfix
+        :pr: 2223
+
+        Change to using :func:`os.replace` instead of :func:`shutil.move` for renaming files, to
+        ensure atomicity.
+
+    .. change:: Exception detail attribute
+        :type: bugfix
+        :pr: 2231
+
+        Set correctly the detail attribute on :class:`LitestarException` and :class:`HTTPException`
+        regardless of whether it's passed positionally or by name.
+
+    .. change:: Filters not available in ``exists()``
+        :type: bugfix
+        :pr: 2228
+        :issue: 2221
+
+        Fixes :meth:`exists` method for SQLAlchemy sync and async.
+
+    .. change:: Add Pydantic types to SQLAlchemy registry only if Pydantic is installed
+        :type: bugfix
+        :pr: 2252
+
+        Allows importing from ``litestar.contrib.sqlalchemy.base`` even if Pydantic is not installed.
+
+    .. change:: Don't add content type for responses that don't have a body
+        :type: bugfix
+        :pr: 2263
+        :issue: 2106
+
+        Ensures that the ``content-type`` header is not added for responses that do not have a
+        body such as responses with status code ``204 (No Content)``.
+
+    .. change:: ``SQLAlchemyPlugin`` refactored
+        :type: bugfix
+        :pr: 2269
+
+        Changes the way the ``SQLAlchemyPlugin`` to now append the other plugins instead of the
+        inheritance that was previously used. This makes using the ``plugins.get`` function work as expected.
+
+    .. change:: Ensure ``app-dir`` is appended to path during autodiscovery
+        :type: bugfix
+        :pr: 2277
+        :issue: 2266
+
+        Fixes a bug which caused the ``--app-dir`` option to the Litestar CLI to not be propagated during autodiscovery.
+
+    .. change:: Set content length header by default
+        :type: bugfix
+        :pr: 2271
+
+        Sets the ``content-length`` header by default even if the length of the body is ``0``.
+
+    .. change:: Incorrect handling of mutable headers in :class:`ASGIResponse`
+        :type: bugfix
+        :pr: 2308
+        :issue: 2196
+
+        Update :class:`ASGIResponse`, :class:`Response` and friends to address a few issues related to headers:
+
+        - If ``encoded_headers`` were passed in at any point, they were mutated within responses, leading to a growing list of headers with every response
+        - While mutating ``encoded_headers``, the checks performed to assert a value was (not) already present, headers were not treated case-insensitive
+        - Unnecessary work was performed while converting cookies / headers into an encoded headers list
+
+        This was fixed by:
+
+        - Removing the use of and deprecate ``encoded_headers``
+        - Handling headers on :class:`ASGIResponse` with :class:`MutableScopeHeaders`, which allows for case-insensitive membership tests, ``.setdefault`` operations, etc.
+
+    .. change:: Adds missing ORM registry export
+        :type: bugfix
+        :pr: 2316
+
+        Adds an export that was overlooked for the base repo
+
+    .. change:: Discrepancy in ``attrs``, ``msgspec`` and ``Pydantic`` for multi-part forms
+        :type: bugfix
+        :pr: 2280
+        :issue: 2278
+
+        Resolves issue in ``attrs``, ``msgspec`` and Pydantic for multi-part forms
+
+    .. change:: Set proper default for ``exclude_http_methods`` in auth middleware
+        :type: bugfix
+        :pr: 2325
+        :issue: 2205
+
+        Sets ``OPTIONS`` as the default value for ``exclude_http_methods`` in the base authentication middleware class.
+
 .. changelog:: 2.0.0
     :date: 2023/08/19
 
@@ -296,7 +534,7 @@
 .. changelog:: 2.0.0beta3
     :date: 2023/07/20
 
-    .. change:: SQLAlchemyDTO: column/relationship type inference
+    .. change:: :class:`SQLAlchemyDTO (Advanced Alchemy) <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>`: column/relationship type inference
         :type: feature
         :pr: 1879
         :issue: 1853
@@ -447,7 +685,7 @@
         to the :class:`~datetime.datetime` at initialization time, instead of the time
         of the update.
 
-    .. change:: SQLAlchemyDTO: Fix handling of ``Sequence`` with defaults
+    .. change:: :class:`SQLAlchemyDTO (Advanced Alchemy) <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>`: Fix handling of ``Sequence`` with defaults
         :type: bugfix
         :pr: 1883
         :issue: 1851
@@ -745,12 +983,13 @@
         .. seealso::
             :ref:`usage/dto/1-abstract-dto:Providing values for nested data`
 
-    .. change:: DTOs: Hybrid properties and association proxies in ``SQLAlchemyDTO``
+    .. change:: DTOs: Hybrid properties and association proxies in
+        :class:`SQLAlchemyDTO (Advanced Alchemy) <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>`
         :type: feature
         :pr: 1754 1776
 
-        The ``~litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO`` now supports
-        `hybrid attribute <https://docs.sqlalchemy.org/en/20/orm/extensions/hybrid.html>`_
+        The :class:`SQLAlchemyDTO (Advanced Alchemy) <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>`
+        now supports `hybrid attribute <https://docs.sqlalchemy.org/en/20/orm/extensions/hybrid.html>`_
         and `associationproxy <https://docs.sqlalchemy.org/en/20/orm/extensions/associationproxy.html>`_.
 
         The generated field will be marked read-only.
