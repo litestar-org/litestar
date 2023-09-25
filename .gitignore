@@ -29,3 +29,4 @@ target/
 /docs/_build/
 coverage.*
 setup.py
+/.dmypy.json

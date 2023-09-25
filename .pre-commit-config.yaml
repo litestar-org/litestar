@@ -65,6 +65,7 @@ repos:
     rev: "v1.5.1"
     hooks:
       - id: mypy
+        entry: dmypy run --
         exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures|tests/unit/test_contrib/test_pydantic/test_beanie_integration"
         additional_dependencies:
           [
