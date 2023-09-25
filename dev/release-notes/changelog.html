@@ -1160,6 +1160,22 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.1.1">
+<h2>2.1.1<a class="headerlink" href="#2.1.1" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2023/09/24<section id="2.1.1-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.1.1-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix <code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code> raised by <code class="docutils literal notranslate"><span class="pre">Response.to_asgi_response</span></code><a class="headerlink reference internal" href="#2.1.1-fix" id="2.1.1-fix">#</a></dt><dd><div class="changelog-change docutils container">
+<p><a class="reference internal" href="../reference/response/index.html#litestar.response.Response.to_asgi_response" title="litestar.response.Response.to_asgi_response"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_asgi_response()</span></code></a> was passing a
+non-<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> default value (<code class="docutils literal notranslate"><span class="pre">[]</span></code>) to <code class="docutils literal notranslate"><span class="pre">ASGIResponse</span></code> for
+<code class="docutils literal notranslate"><span class="pre">encoded_headers</span></code>, resulting in a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#DeprecationWarning" title="(in Python v3.11)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">DeprecationWarning</span></code></a> being raised.
+This was fixed by leaving the default value as <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2364">litestar-org/litestar#2364</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.1.0">
 <h2>2.1.0<a class="headerlink" href="#2.1.0" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2023/09/23<p><a class="reference external" href="https://github.com/litestar-org/litestar/compare/v2.0.0...v2.1.0x">View the full changelog</a></p>
@@ -3601,6 +3617,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.1.1">2.1.1</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.1.1-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.1.0">2.1.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.1.0-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.1.0-bugfix">Bugfixes</a></li>
