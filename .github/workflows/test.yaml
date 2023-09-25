@@ -28,46 +28,41 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
       - name: Set up python ${{ inputs.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ inputs.python-version }}
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+
+      - uses: pdm-project/setup-pdm@v3
+        name: Set up PDM
         with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
-      - name: Load cached venv
-        if: runner.os != 'Windows'
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: v1-venv-${{ runner.os }}-${{ inputs.python-version }}-${{ inputs.pydantic-version }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Load cached pip wheels
-        if: runner.os == 'Windows'
-        id: cached-pip-wheels
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache
-          key: cache-${{ runner.os }}-${{ inputs.python-version }}-${{ inputs.pydantic-version }}-${{ hashFiles('**/poetry.lock') }}
+          python-version: ${{ matrix.python-version }}
+          allow-python-prereleases: true
+          cache: true
+
       - name: Install dependencies
-        run: poetry install --no-interaction --extras full
+        run: pdm install -G:all
+
       - if: ${{ inputs.pydantic-version == '1' }}
         name: Install pydantic v1
-        run: poetry remove pydantic-extra-types && poetry add "pydantic>=1.10.11,<2" piccolo
+        run: pdm remove pydantic-extra-types && pdm add "pydantic>=1.10.11,<2" piccolo
+
       - if: ${{ inputs.pydantic-version == '2' }}
         name: Install pydantic v2
-        run: poetry add "pydantic>=2.3.0" "pydantic-extra-types>=2.0.0"
+        run: pdm add "pydantic>=2.3.0" "pydantic-extra-types>=2.0.0"
+
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+
       - name: Test
         if: ${{ !inputs.coverage }}
-        run: poetry run pytest docs/examples tests -n auto
+        run: pdm run pytest docs/examples tests -n auto
+
       - name: Test with coverage
         if: inputs.coverage
-        run: poetry run pytest docs/examples tests --cov=litestar --cov-report=xml -n auto
+        run: pdm run pytest docs/examples tests --cov=litestar --cov-report=xml -n auto
+
       - uses: actions/upload-artifact@v3
         if: inputs.coverage
         with:
