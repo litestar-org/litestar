@@ -8,7 +8,7 @@ from litestar import Litestar
 from litestar._openapi.typescript_converter.converter import (
     convert_openapi_to_typescript,
 )
-from litestar.cli._utils import RICH_CLICK_INSTALLED, JSBEAUTIFIER_INSTALLED, LitestarCLIException, LitestarGroup
+from litestar.cli._utils import JSBEAUTIFIER_INSTALLED, RICH_CLICK_INSTALLED, LitestarCLIException, LitestarGroup
 
 if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     from click import Path as ClickPath
@@ -17,14 +17,14 @@ else:
     from rich_click import Path as ClickPath
     from rich_click import group, option
 
+beautifier = None
 if JSBEAUTIFIER_INSTALLED:  # pragma: no cover
     from jsbeautifier import Beautifier
+
     beautifier = Beautifier()
 
 
 __all__ = ("generate_openapi_schema", "generate_typescript_specs", "schema_group")
-
-
 
 
 @group(cls=LitestarGroup, name="schema")
@@ -66,7 +66,10 @@ def generate_typescript_specs(app: Litestar, output: Path, namespace: str) -> No
     """Generate TypeScript specs from the OpenAPI schema."""
     try:
         specs = convert_openapi_to_typescript(app.openapi_schema, namespace)
-        specs_output = beautifier.beautify(specs.write()) if JSBEAUTIFIER_INSTALLED else specs.write()
+        if JSBEAUTIFIER_INSTALLED and beautifier is not None:
+            specs_output = beautifier.beautify(specs.write())
+        else:
+            specs_output = specs.write()
         output.write_text(specs_output)
     except OSError as e:  # pragma: no cover
         raise LitestarCLIException(f"failed to write schema to path {output}") from e
