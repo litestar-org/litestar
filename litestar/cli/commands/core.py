@@ -7,12 +7,14 @@ import subprocess
 import sys
 from typing import TYPE_CHECKING, Any
 
-import uvicorn
 from rich.tree import Tree
 
-from litestar.cli._utils import RICH_CLICK_INSTALLED, LitestarEnv, console, show_app_info
+from litestar.cli._utils import RICH_CLICK_INSTALLED, UVICORN_INSTALLED, LitestarEnv, console, show_app_info
 from litestar.routes import HTTPRoute, WebSocketRoute
 from litestar.utils.helpers import unwrap_partial
+
+if UVICORN_INSTALLED:
+    import uvicorn
 
 if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     import click
@@ -95,7 +97,7 @@ def run_command(
     pdb: bool,
     ctx: Context,
 ) -> None:
-    """Run a Litestar app.
+    """Run a Litestar app; requires uvicorn.
 
     The app can be either passed as a module path in the form of <module name>.<submodule>:<app instance or factory>,
     set as an environment variable LITESTAR_APP with the same format or automatically discovered from one of these
@@ -109,6 +111,11 @@ def run_command(
 
     if pdb:
         os.environ["LITESTAR_PDB"] = "1"
+
+    if not UVICORN_INSTALLED:
+        console.print("uvicorn is not installed. Please install the standard group,"
+                      " litestar\[standard], to use this command.")
+        sys.exit(1)
 
     if callable(ctx.obj):
         ctx.obj = ctx.obj()

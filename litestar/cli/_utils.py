@@ -27,6 +27,22 @@ try:
 except ImportError:
     pass
 
+UVICORN_INSTALLED = False
+try:
+    import uvicorn  # noqa: F401
+
+    UVICORN_INSTALLED = True
+except ImportError:
+    pass
+
+JSBEAUTIFIER_INSTALLED = False
+try:
+    import jsbeautifier  # noqa: F401
+
+    JSBEAUTIFIER_INSTALLED = True
+except ImportError:
+    pass
+
 if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     from click import ClickException, Command, Context, Group, pass_context
 else:
@@ -37,6 +53,8 @@ else:
 
 __all__ = (
     "RICH_CLICK_INSTALLED",
+    "UVICORN_INSTALLED",
+    "JSBEAUTIFIER_INSTALLED",
     "LoadedApp",
     "LitestarCLIException",
     "LitestarEnv",

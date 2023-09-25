@@ -6,7 +6,7 @@ Litestar is a powerful, flexible, highly performant, and opinionated ASGI framew
 The Litestar framework supports :doc:`/usage/plugins`, ships
 with :doc:`dependency injection </usage/dependency-injection>`, :doc:`security primitives </usage/security/index>`,
 :doc:`OpenAPI schema generation </usage/openapi>`, `MessagePack <https://msgpack.org/>`_,
-:doc:`middlewares </usage/middleware/index>`, a great :doc:`CLI </usage/cli>` experience, ``uvicorn``, and much more.
+:doc:`middlewares </usage/middleware/index>`, a great :doc:`CLI </usage/cli>` experience, and much more.
 
 Installation
 ------------
@@ -15,7 +15,7 @@ Installation
 
    pip install litestar
 
-.. tip:: ``litestar[standard]`` includes commonly used extras (like ``jinja2`` for templating).
+.. tip:: ``litestar[standard]`` includes commonly used extras like ``uvicorn`` and ``jinja2`` (for templating).
 
 .. dropdown:: Extras
     :icon: star
@@ -53,13 +53,20 @@ Installation
     :doc:`SQLAlchemy </usage/databases/sqlalchemy/index>`
         :code:`pip install litestar[sqlalchemy]`
 
+    :doc:`CLI </usage/cli>`
+        DEPRECATED (to be removed in v3) - Base installation now includes the CLI dependencies
+        and this group is no longer required to use the CLI. If you need the optional CLI dependencies,
+        install the ``standard`` group instead.
+
+        :code:`pip install litestar[cli]`
+
     :doc:`Jinja Templating </usage/templating>`
         :code:`pip install litestar[jinja]`
 
     :doc:`Mako Templating </usage/templating>`
         :code:`pip install litestar[mako]`
 
-    Standard Installation (includes Jinja templating):
+    Standard Installation (includes uvicorn and Jinja templating):
         :code:`pip install litestar[standard]`
 
     All Extras:
@@ -70,6 +77,8 @@ Installation
 
 Minimal Example
 ---------------
+
+At a minimum, make sure you have installed ``litestar[standard]``, which includes uvicorn.
 
 First, create a file named ``app.py`` with the following contents:
 
