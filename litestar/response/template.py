@@ -3,14 +3,14 @@ from __future__ import annotations
 import itertools
 from mimetypes import guess_type
 from pathlib import PurePath
-from typing import TYPE_CHECKING, Any, ClassVar, Iterable
+from typing import TYPE_CHECKING, Any, Iterable
 
 from litestar.datastructures.headers import MutableScopeHeaders
 from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import ASGIResponse, Response
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
-from litestar.utils.deprecation import deprecated, warn_deprecation
+from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.helpers import get_enum_string_value
 
 if TYPE_CHECKING:
@@ -20,11 +20,8 @@ if TYPE_CHECKING:
     from litestar.datastructures import Cookie
     from litestar.template.base import TemplateProtocol
     from litestar.types import (
-        HTTPResponseBodyEvent,
         HTTPResponseStartEvent,
-        Receive,
         ResponseCookies,
-        Scope,
         Send,
         TypeEncodersMap,
     )
@@ -33,12 +30,9 @@ __all__ = ("Template",)
 
 
 class ASGITemplateResponse(ASGIResponse):
-    """A low-level ASGI response class."""
+    """A low-level ASGI response class, rendering a template into the response."""
 
     __slots__ = ("template", "context", "is_async", "media_type")
-
-    _should_set_content_length: ClassVar[bool] = True
-    """A flag to indicate whether the content-length header should be set by default or not."""
 
     def __init__(
         self,
@@ -96,14 +90,6 @@ class ASGITemplateResponse(ASGIResponse):
         self.is_head_response = is_head_response
         self.status_code = status_code
 
-    @property
-    @deprecated("3.0", kind="property", alternative="encode_headers()")
-    def encoded_headers(self) -> list[tuple[bytes, bytes]]:
-        return self.encode_headers()
-
-    def encode_headers(self) -> list[tuple[bytes, bytes]]:
-        return [*self.headers.headers, *self._encoded_cookies]
-
     async def prepare_content(self) -> None:
         if self.is_async:
             rendered_template = await self.template.render_async(**self.context)
@@ -137,15 +123,6 @@ class ASGITemplateResponse(ASGIResponse):
             self.body = body
             self.content_length = content_length
 
-    async def after_response(self) -> None:
-        """Execute after the response is sent.
-
-        Returns:
-            None
-        """
-        if self.background is not None:
-            await self.background()
-
     async def start_response(self, send: Send) -> None:
         """Emit the start event of the response. This event includes the headers and status codes.
 
@@ -162,43 +139,6 @@ class ASGITemplateResponse(ASGIResponse):
             "headers": self.encode_headers(),
         }
         await send(event)
-
-    async def send_body(self, send: Send, receive: Receive) -> None:
-        """Emit the response body.
-
-        Args:
-            send: The ASGI send function.
-            receive: The ASGI receive function.
-
-        Notes:
-            - Response subclasses should customize this method if there is a need to customize sending data.
-
-        Returns:
-            None
-        """
-        event: HTTPResponseBodyEvent = {"type": "http.response.body", "body": self.body, "more_body": False}
-        await send(event)
-
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """ASGI callable of the ``Response``.
-
-        Args:
-            scope: The ASGI connection scope.
-            receive: The ASGI receive function.
-            send: The ASGI send function.
-
-        Returns:
-            None
-        """
-        await self.start_response(send=send)
-
-        if self.is_head_response:
-            event: HTTPResponseBodyEvent = {"type": "http.response.body", "body": b"", "more_body": False}
-            await send(event)
-        else:
-            await self.send_body(send=send, receive=receive)
-
-        await self.after_response()
 
 
 class Template(Response[bytes]):
