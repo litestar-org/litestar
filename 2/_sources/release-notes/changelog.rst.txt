@@ -3,6 +3,19 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.1.1
+    :date: 2023/09/24
+
+    .. change:: Fix ``DeprecationWarning`` raised by ``Response.to_asgi_response``
+        :type: bugfix
+        :pr: 2364
+
+        :meth:`~litestar.response.Response.to_asgi_response` was passing a
+        non-:obj:`None` default value (``[]``) to ``ASGIResponse`` for
+        ``encoded_headers``, resulting in a :exc:`DeprecationWarning` being raised.
+        This was fixed by leaving the default value as :obj:`None`.
+
+
 .. changelog:: 2.1.0
     :date: 2023/09/23
 
