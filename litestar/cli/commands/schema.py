@@ -17,7 +17,6 @@ else:
     from rich_click import Path as ClickPath
     from rich_click import group, option
 
-beautifier = None
 if JSBEAUTIFIER_INSTALLED:  # pragma: no cover
     from jsbeautifier import Beautifier
 
@@ -66,10 +65,10 @@ def generate_typescript_specs(app: Litestar, output: Path, namespace: str) -> No
     """Generate TypeScript specs from the OpenAPI schema."""
     try:
         specs = convert_openapi_to_typescript(app.openapi_schema, namespace)
-        if JSBEAUTIFIER_INSTALLED and beautifier is not None:
-            specs_output = beautifier.beautify(specs.write())
-        else:
-            specs_output = specs.write()
+        # beautifier will be defined if JSBEAUTIFIER_INSTALLED is True
+        specs_output = (
+            beautifier.beautify(specs.write()) if JSBEAUTIFIER_INSTALLED else specs.write()  # pyright: ignore
+        )
         output.write_text(specs_output)
     except OSError as e:  # pragma: no cover
         raise LitestarCLIException(f"failed to write schema to path {output}") from e
