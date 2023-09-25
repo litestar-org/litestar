@@ -113,7 +113,7 @@ jobs:
       - uses: pdm-project/setup-pdm@v3
         name: Set up PDM
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python-version }}
           allow-python-prereleases: true
           cache: true
 
