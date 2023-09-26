@@ -66,7 +66,7 @@ Installation
     :doc:`Mako Templating </usage/templating>`
         :code:`pip install litestar[mako]`
 
-    Standard Installation (includes uvicorn and Jinja templating):
+    Standard Installation (includes Uvicorn and Jinja2 templating):
         :code:`pip install litestar[standard]`
 
     All Extras:
