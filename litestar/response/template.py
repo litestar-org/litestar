@@ -20,7 +20,6 @@ if TYPE_CHECKING:
     from litestar.datastructures import Cookie
     from litestar.template.base import TemplateProtocol
     from litestar.types import (
-        HTTPResponseStartEvent,
         ResponseCookies,
         Send,
         TypeEncodersMap,
@@ -133,12 +132,7 @@ class ASGITemplateResponse(ASGIResponse):
             None
         """
         await self.prepare_content()
-        event: HTTPResponseStartEvent = {
-            "type": "http.response.start",
-            "status": self.status_code,
-            "headers": self.encode_headers(),
-        }
-        await send(event)
+        await super().start_response(send)
 
 
 class Template(Response[bytes]):
