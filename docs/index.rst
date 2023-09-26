@@ -54,9 +54,11 @@ Installation
         :code:`pip install litestar[sqlalchemy]`
 
     :doc:`CLI </usage/cli>`
-        DEPRECATED (to be removed in v3) - Base installation now includes the CLI dependencies
-        and this group is no longer required to use the CLI. If you need the optional CLI dependencies,
-        install the ``standard`` group instead.
+        .. deprecated:: 3.0.0
+        
+        The `litestar` base installation now includes the CLI dependencies and this group is no longer required 
+        to use the CLI. 
+        If you need the optional CLI dependencies,install the ``standard`` group instead.
 
         :code:`pip install litestar[cli]`
 
