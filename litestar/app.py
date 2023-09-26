@@ -212,7 +212,9 @@ class Litestar(Router):
         type_encoders: TypeEncodersMap | None = None,
         type_decoders: TypeDecodersSequence | None = None,
         websocket_class: type[WebSocket] | None = None,
-        lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
+        lifespan: OptionalSequence[
+            Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager
+        ] = None,
         pdb_on_exception: bool | None = None,
     ) -> None:
         """Initialize a ``Litestar`` application.
@@ -330,7 +332,7 @@ class Litestar(Router):
             exception_handlers=exception_handlers or {},
             guards=list(guards or []),
             include_in_schema=include_in_schema,
-            lifespan=lifespan or [],
+            lifespan=list(lifespan or []),
             listeners=list(listeners or []),
             logging_config=cast("BaseLoggingConfig | None", logging_config),
             middleware=list(middleware or []),
