@@ -313,6 +313,6 @@ async def redis_client(docker_ip: str, redis_service: None) -> AsyncGenerator[As
     client: AsyncRedis = AsyncRedis(host=docker_ip, port=6397)
     yield client
     try:
-        await client.close()
+        await client.aclose()  # type: ignore[attr-defined]
     except RuntimeError:
         pass

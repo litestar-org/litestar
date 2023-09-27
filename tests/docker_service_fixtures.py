@@ -124,7 +124,7 @@ async def redis_responsive(host: str) -> bool:
     except (ConnectionError, RedisConnectionError):
         return False
     finally:
-        await client.close()
+        await client.aclose()
 
 
 @pytest.fixture()
