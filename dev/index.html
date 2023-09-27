@@ -1139,7 +1139,7 @@ document.write(`
 <p>The Litestar framework supports <a class="reference internal" href="usage/plugins.html"><span class="doc">Plugins</span></a>, ships
 with <a class="reference internal" href="usage/dependency-injection.html"><span class="doc">dependency injection</span></a>, <a class="reference internal" href="usage/security/index.html"><span class="doc">security primitives</span></a>,
 <a class="reference internal" href="usage/openapi.html"><span class="doc">OpenAPI schema generation</span></a>, <a class="reference external" href="https://msgpack.org/">MessagePack</a>,
-<a class="reference internal" href="usage/middleware/index.html"><span class="doc">middlewares</span></a>, and much more.</p>
+<a class="reference internal" href="usage/middleware/index.html"><span class="doc">middlewares</span></a>, a great <a class="reference internal" href="usage/cli.html"><span class="doc">CLI</span></a> experience, and much more.</p>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>litestar
@@ -1147,9 +1147,7 @@ with <a class="reference internal" href="usage/dependency-injection.html"><span 
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p><code class="docutils literal notranslate"><span class="pre">litestar[standard]</span></code> includes everything you need to get started with Litestar. It has: <code class="docutils literal notranslate"><span class="pre">click</span></code> and <code class="docutils literal notranslate"><span class="pre">rich</span></code> for a great CLI experience, <code class="docutils literal notranslate"><span class="pre">jinja2</span></code> for templating,
-and <code class="docutils literal notranslate"><span class="pre">uvicorn</span></code> for running your app.</p>
-<p>You can also install just the <a class="reference internal" href="usage/cli.html"><span class="doc">CLI</span></a> with <code class="docutils literal notranslate"><span class="pre">litestar[cli]</span></code>!</p>
+<p><code class="docutils literal notranslate"><span class="pre">litestar[standard]</span></code> includes commonly used extras like <code class="docutils literal notranslate"><span class="pre">uvicorn</span></code> and <code class="docutils literal notranslate"><span class="pre">jinja2</span></code> (for templating).</p>
 </div>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
@@ -1158,7 +1156,7 @@ and <code class="docutils literal notranslate"><span class="pre">uvicorn</span><
 <div class="sd-summary-up docutils">
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
-<dl class="simple">
+<dl>
 <dt><a class="reference external" href="https://docs.pydantic.dev/latest/">Pydantic</a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[pydantic]</span></code></p>
 </dd>
 <dt><a class="reference external" href="https://www.attrs.org">Attrs</a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[attrs]</span></code></p>
@@ -1181,13 +1179,19 @@ and <code class="docutils literal notranslate"><span class="pre">uvicorn</span><
 </dd>
 <dt><a class="reference internal" href="usage/databases/sqlalchemy/index.html"><span class="doc">SQLAlchemy</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[sqlalchemy]</span></code></p>
 </dd>
-<dt><a class="reference internal" href="usage/cli.html"><span class="doc">CLI</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[cli]</span></code></p>
+<dt><a class="reference internal" href="usage/cli.html"><span class="doc">CLI</span></a></dt><dd><div class="deprecated">
+<p class="sd-card-text"><span class="versionmodified deprecated">Deprecated since version 2.1.1: </span>The <code class="docutils literal notranslate"><span class="pre">litestar</span></code> base installation now includes the CLI dependencies and this group is no longer required
+to use the CLI.
+If you need the optional CLI dependencies, install the <code class="docutils literal notranslate"><span class="pre">standard</span></code> group instead.
+<strong>Will be removed in 3.0</strong></p>
+</div>
+<p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[cli]</span></code></p>
 </dd>
 <dt><a class="reference internal" href="usage/templating.html"><span class="doc">Jinja Templating</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[jinja]</span></code></p>
 </dd>
 <dt><a class="reference internal" href="usage/templating.html"><span class="doc">Mako Templating</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[mako]</span></code></p>
 </dd>
-<dt>Standard Installation (includes CLI and Jinja templating):</dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[standard]</span></code></p>
+<dt>Standard Installation (includes Uvicorn and Jinja2 templating):</dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[standard]</span></code></p>
 </dd>
 <dt>All Extras:</dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[full]</span></code></p>
 </dd>
@@ -1200,7 +1204,7 @@ and <code class="docutils literal notranslate"><span class="pre">uvicorn</span><
 </details></section>
 <section id="minimal-example">
 <h2>Minimal Example<a class="headerlink" href="#minimal-example" title="Permalink to this heading">#</a></h2>
-<p>At a minimum, make sure you have installed <code class="docutils literal notranslate"><span class="pre">litestar[standard]</span></code>, which includes <code class="docutils literal notranslate"><span class="pre">litestar</span></code>, the CLI, and uvicorn.</p>
+<p>At a minimum, make sure you have installed <code class="docutils literal notranslate"><span class="pre">litestar[standard]</span></code>, which includes uvicorn.</p>
 <p>First, create a file named <code class="docutils literal notranslate"><span class="pre">app.py</span></code> with the following contents:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 

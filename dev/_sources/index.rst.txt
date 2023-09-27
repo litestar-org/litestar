@@ -6,7 +6,7 @@ Litestar is a powerful, flexible, highly performant, and opinionated ASGI framew
 The Litestar framework supports :doc:`/usage/plugins`, ships
 with :doc:`dependency injection </usage/dependency-injection>`, :doc:`security primitives </usage/security/index>`,
 :doc:`OpenAPI schema generation </usage/openapi>`, `MessagePack <https://msgpack.org/>`_,
-:doc:`middlewares </usage/middleware/index>`, and much more.
+:doc:`middlewares </usage/middleware/index>`, a great :doc:`CLI </usage/cli>` experience, and much more.
 
 Installation
 ------------
@@ -15,10 +15,7 @@ Installation
 
    pip install litestar
 
-.. tip:: ``litestar[standard]`` includes everything you need to get started with Litestar. It has: ``click`` and ``rich`` for a great CLI experience, ``jinja2`` for templating,
-        and ``uvicorn`` for running your app.
-
-        You can also install just the :doc:`CLI </usage/cli>` with ``litestar[cli]``!
+.. tip:: ``litestar[standard]`` includes commonly used extras like ``uvicorn`` and ``jinja2`` (for templating).
 
 .. dropdown:: Extras
     :icon: star
@@ -57,6 +54,12 @@ Installation
         :code:`pip install litestar[sqlalchemy]`
 
     :doc:`CLI </usage/cli>`
+        .. deprecated:: 2.1.1
+           The ``litestar`` base installation now includes the CLI dependencies and this group is no longer required
+           to use the CLI.
+           If you need the optional CLI dependencies, install the ``standard`` group instead.
+           **Will be removed in 3.0**
+
         :code:`pip install litestar[cli]`
 
     :doc:`Jinja Templating </usage/templating>`
@@ -65,7 +68,7 @@ Installation
     :doc:`Mako Templating </usage/templating>`
         :code:`pip install litestar[mako]`
 
-    Standard Installation (includes CLI and Jinja templating):
+    Standard Installation (includes Uvicorn and Jinja2 templating):
         :code:`pip install litestar[standard]`
 
     All Extras:
@@ -77,7 +80,7 @@ Installation
 Minimal Example
 ---------------
 
-At a minimum, make sure you have installed ``litestar[standard]``, which includes ``litestar``, the CLI, and uvicorn.
+At a minimum, make sure you have installed ``litestar[standard]``, which includes uvicorn.
 
 First, create a file named ``app.py`` with the following contents:
 
