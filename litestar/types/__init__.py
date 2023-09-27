@@ -73,7 +73,7 @@ from .composite_types import (
 )
 from .empty import Empty, EmptyType
 from .file_types import FileInfo, FileSystemProtocol
-from .helper_types import AnyIOBackend, MaybePartial, StreamType, SyncOrAsyncUnion
+from .helper_types import AnyIOBackend, MaybePartial, OptionalSequence, StreamType, SyncOrAsyncUnion
 from .internal_types import (
     ControllerRouterHandler,
     ReservedKwargs,
@@ -138,6 +138,7 @@ __all__ = (
     "Middleware",
     "OnAppInitHandler",
     "OperationIDCreator",
+    "OptionalSequence",
     "ParametersMap",
     "PathType",
     "Receive",
