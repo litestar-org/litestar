@@ -11,7 +11,6 @@ from litestar.params import Body, Parameter
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT
 from litestar.testing import TestClient, create_test_client
 from litestar.types import Empty
-from litestar.types.helper_types import OptionalSequence
 from litestar.utils.signature import ParsedSignature
 
 
@@ -114,7 +113,7 @@ def test_field_definition_is_non_string_iterable() -> None:
 
 
 def test_field_definition_is_non_string_sequence() -> None:
-    def fn(a: Sequence[int], b: OptionalSequence[int]) -> None:
+    def fn(a: Sequence[int], b: Optional[Sequence[int]]) -> None:
         pass
 
     model = SignatureModel.create(

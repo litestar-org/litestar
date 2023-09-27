@@ -4,7 +4,7 @@ from collections import defaultdict
 from copy import deepcopy
 from functools import partial
 from operator import attrgetter
-from typing import TYPE_CHECKING, Any, Mapping, cast
+from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.exceptions import ImproperlyConfiguredException
@@ -31,7 +31,6 @@ if TYPE_CHECKING:
         ExceptionHandlersMap,
         Guard,
         Middleware,
-        OptionalSequence,
         ParametersMap,
         ResponseCookies,
         TypeEncodersMap,
@@ -105,11 +104,11 @@ class Controller:
     """
     exception_handlers: ExceptionHandlersMap | None
     """A map of handler functions to status codes and/or exception types."""
-    guards: OptionalSequence[Guard]
+    guards: Sequence[Guard] | None
     """A sequence of :class:`Guard <.types.Guard>` callables."""
     include_in_schema: bool | EmptyType
     """A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema"""
-    middleware: OptionalSequence[Middleware]
+    middleware: Sequence[Middleware] | None
     """A sequence of :class:`Middleware <.types.Middleware>`."""
     opt: Mapping[str, Any] | None
     """A string key mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or wherever you
@@ -139,9 +138,9 @@ class Controller:
     """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing outbound response
     data.
     """
-    tags: OptionalSequence[str]
+    tags: Sequence[str] | None
     """A sequence of string tags that will be appended to the schema of all route handlers under the controller."""
-    security: OptionalSequence[SecurityRequirement]
+    security: Sequence[SecurityRequirement] | None
     """A sequence of dictionaries that to the schema of all route handlers under the controller."""
     signature_namespace: dict[str, Any]
     """A mapping of names to types for use in forward reference resolution during signature modelling."""
