@@ -113,7 +113,7 @@ def test_field_definition_is_non_string_iterable() -> None:
 
 
 def test_field_definition_is_non_string_sequence() -> None:
-    def fn(a: Sequence[int], b: Sequence[int] | None) -> None:
+    def fn(a: Sequence[int], b: Optional[Sequence[int]]) -> None:
         pass
 
     model = SignatureModel.create(
