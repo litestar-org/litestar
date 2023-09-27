@@ -9,6 +9,8 @@ from typing import (
     Iterable,
     Iterator,
     Literal,
+    Optional,
+    Sequence,
     TypeVar,
     Union,
 )
@@ -18,7 +20,10 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
-__all__ = ("SyncOrAsyncUnion", "AnyIOBackend", "StreamType", "MaybePartial")
+__all__ = ("OptionalSequence", "SyncOrAsyncUnion", "AnyIOBackend", "StreamType", "MaybePartial")
+
+OptionalSequence: TypeAlias = Optional[Sequence[T]]
+"""Types 'T' as union of Sequence[T] and None."""
 
 SyncOrAsyncUnion: TypeAlias = Union[T, Awaitable[T]]
 """Types 'T' as a union of T and awaitable T."""
