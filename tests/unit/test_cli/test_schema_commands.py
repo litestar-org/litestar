@@ -56,3 +56,24 @@ def test_openapi_typescript_command(
     result = runner.invoke(cli_command, command)
     assert result.exit_code == 0
     assert mock_path_write_text.called
+
+
+@pytest.mark.parametrize(
+    "namespace, filename", (("Custom", ""), ("", "custom_specs.ts"), ("Custom", "custom_specs.ts"))
+)
+def test_openapi_typescript_command_without_jsbeautifier(
+    runner: CliRunner, mocker: MockerFixture, monkeypatch: MonkeyPatch, filename: str, namespace: str
+) -> None:
+    monkeypatch.setenv("LITESTAR_APP", "test_apps.openapi_test_app.main:app")
+    mocker.patch("litestar.cli.commands.schema.JSBEAUTIFIER_INSTALLED", False)
+    mock_path_write_text = mocker.patch("pathlib.Path.write_text")
+    command = "schema typescript"
+
+    if namespace:
+        command += f" --namespace {namespace}"
+    if filename:
+        command += f" --output {filename}"
+
+    result = runner.invoke(cli_command, command)
+    assert result.exit_code == 0
+    assert mock_path_write_text.called

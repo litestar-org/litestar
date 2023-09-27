@@ -70,7 +70,7 @@ annotated-types = { version = "*", optional = true }
 anyio = ">=3"
 attrs = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
-click = { version = "*", optional = true }
+click = "*"
 cryptography = { version = "*", optional = true }
 fast-query-parsers = ">=1.0.2"
 httpx = ">=0.22"
@@ -92,8 +92,8 @@ pydantic-extra-types = { version = "*", optional = true }
 python-jose = { version = "*", optional = true }
 pyyaml = "*"
 redis = { version = ">=4.4.4", optional = true, extras = ["hiredis"] }
-rich = { version = ">=13.0.0", optional = true }
-rich-click = { version = "*", optional = true }
+rich = ">=13.0.0"
+rich-click = "*"
 sqlalchemy = { version = ">=2.0.12", optional = true }
 structlog = { version = "*", optional = true }
 advanced-alchemy = { version = "0.2.1", optional = true }
@@ -166,9 +166,10 @@ types-redis = "*"
 annotated-types = ["annotated-types"]
 attrs = ["attrs"]
 brotli = ["brotli"]
-cli = ["click", "rich", "rich-click", "jsbeautifier", "uvicorn"]
+cli = ["jsbeautifier", "uvicorn"]
 cryptography = ["cryptography"]
 jinja = ["jinja2"]
+jsbeautifier = ["jsbeautifier"]
 jwt = ["python-jose", "cryptography"]
 mako = ["mako"]
 minijinja = ["minijinja"]
@@ -179,15 +180,13 @@ prometheus = ["prometheus-client"]
 pydantic = ["pydantic", "pydantic-extra-types"]
 redis = ["redis"]
 sqlalchemy = ["advanced-alchemy"]
-standard = ["click", "jinja2", "jsbeautifier", "rich", "uvicorn", "rich-click"]
+standard = ["jinja2", "jsbeautifier", "uvicorn"]
 structlog = ["structlog"]
 
 full = [
     "annotated-types",
     "attrs",
     "brotli",
-    "click",
-    "rich-click",
     "cryptography",
     "jinja2",
     "jsbeautifier",
@@ -201,14 +200,13 @@ full = [
     "pydantic-extra-types",
     "python-jose",
     "redis",
-    "rich",
     "structlog",
     "uvicorn",
     "advanced-alchemy"
 ]
 
 [tool.poetry.scripts]
-litestar = { callable = "litestar.__main__:run_cli", extras = ["cli"] }
+litestar = { callable = "litestar.__main__:run_cli" }
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
