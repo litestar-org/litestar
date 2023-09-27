@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from contextlib import ExitStack
-from typing import TYPE_CHECKING, Any, Generic, Mapping, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar
 from urllib.parse import urljoin
 
 from httpx import USE_CLIENT_DEFAULT, Client, Response
@@ -28,7 +28,6 @@ if TYPE_CHECKING:
 
     from litestar.middleware.session.base import BaseBackendConfig
     from litestar.testing.websocket_test_session import WebSocketTestSession
-    from litestar.types.helper_types import OptionalSequence
 
 
 T = TypeVar("T", bound=ASGIApp)
@@ -476,7 +475,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
     def websocket_connect(
         self,
         url: str,
-        subprotocols: OptionalSequence[str] | None = None,
+        subprotocols: Sequence[str] | None = None,
         params: QueryParamTypes | None = None,
         headers: HeaderTypes | None = None,
         cookies: CookieTypes | None = None,
