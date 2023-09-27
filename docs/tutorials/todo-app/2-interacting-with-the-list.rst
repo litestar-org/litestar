@@ -59,7 +59,7 @@ default values for the dataclass we have defined:
 
 .. figure:: images/swagger-dict-vs-dataclass.png
 
-    Documentation for the ``create_item`` route with ``data`` typed as a ``dict`` vs
+    Documentation for the ``add_item`` route with ``data`` typed as a ``dict`` vs
     ``dataclass``
 
 Using a dataclass also gives you better validation: Omitting a key such as ``title``
