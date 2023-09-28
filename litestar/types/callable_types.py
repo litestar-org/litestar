@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Generator
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
-    from typing import Any
-
     from typing_extensions import TypeAlias
 
     from litestar.config.app import AppConfig
@@ -25,8 +22,8 @@ AfterRequestHookHandler: TypeAlias = (
     "Callable[[ASGIApp], SyncOrAsyncUnion[ASGIApp]] | Callable[[Response], SyncOrAsyncUnion[Response]]"
 )
 AfterResponseHookHandler: TypeAlias = "Callable[[Request], SyncOrAsyncUnion[None]]"
-AsyncAnyCallable: TypeAlias = "Callable[..., Awaitable[Any]]"
-AnyCallable: TypeAlias = "Callable[..., Any]"
+AsyncAnyCallable: TypeAlias = Callable[..., Awaitable[Any]]
+AnyCallable: TypeAlias = Callable[..., Any]
 AnyGenerator: TypeAlias = "Generator[Any, Any, Any] | AsyncGenerator[Any, Any]"
 BeforeMessageSendHookHandler: TypeAlias = "Callable[[Message, Scope], SyncOrAsyncUnion[None]]"
 BeforeRequestHookHandler: TypeAlias = "Callable[[Request], Any | Awaitable[Any]]"
@@ -38,4 +35,4 @@ Guard: TypeAlias = "Callable[[ASGIConnection, BaseRouteHandler], SyncOrAsyncUnio
 LifespanHook: TypeAlias = "Callable[[LitestarType], SyncOrAsyncUnion[Any]] | Callable[[], SyncOrAsyncUnion[Any]]"
 OnAppInitHandler: TypeAlias = "Callable[[AppConfig], AppConfig]"
 OperationIDCreator: TypeAlias = "Callable[[HTTPRouteHandler, Method, list[str | PathParameterDefinition]], str]"
-Serializer: TypeAlias = "Callable[[Any], Any]"
+Serializer: TypeAlias = Callable[[Any], Any]

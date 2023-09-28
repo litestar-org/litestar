@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, NamedTuple
+from typing import TYPE_CHECKING, Any, Callable, Literal, NamedTuple
 
 __all__ = (
     "ControllerRouterHandler",
@@ -15,9 +15,6 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-    from typing import Any, Literal
-
     from typing_extensions import TypeAlias
 
     from litestar.app import Litestar
@@ -29,7 +26,7 @@ if TYPE_CHECKING:
     from litestar.router import Router
     from litestar.types import Method
 
-ReservedKwargs: TypeAlias = 'Literal["request", "socket", "headers", "query", "cookies", "state", "data"]'
+ReservedKwargs: TypeAlias = Literal["request", "socket", "headers", "query", "cookies", "state", "data"]
 LitestarType: TypeAlias = "Litestar"
 RouteHandlerType: TypeAlias = "HTTPRouteHandler | WebsocketRouteHandler | ASGIRouteHandler"
 ResponseType: TypeAlias = "type[Response]"
