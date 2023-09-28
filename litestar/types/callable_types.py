@@ -3,7 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any, AsyncGenerator, Awaitable, Callable, Generator, List, Union
+    from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
+    from typing import Any
 
     from typing_extensions import TypeAlias
 
@@ -21,20 +22,20 @@ if TYPE_CHECKING:
 
 AfterExceptionHookHandler: TypeAlias = "Callable[[Exception, Scope], SyncOrAsyncUnion[None]]"
 AfterRequestHookHandler: TypeAlias = (
-    "Union[Callable[[ASGIApp], SyncOrAsyncUnion[ASGIApp]], Callable[[Response], SyncOrAsyncUnion[Response]]]"
+    "Callable[[ASGIApp], SyncOrAsyncUnion[ASGIApp]] | Callable[[Response], SyncOrAsyncUnion[Response]]"
 )
 AfterResponseHookHandler: TypeAlias = "Callable[[Request], SyncOrAsyncUnion[None]]"
 AsyncAnyCallable: TypeAlias = "Callable[..., Awaitable[Any]]"
 AnyCallable: TypeAlias = "Callable[..., Any]"
-AnyGenerator: TypeAlias = "Union[Generator[Any, Any, Any], AsyncGenerator[Any, Any]]"
+AnyGenerator: TypeAlias = "Generator[Any, Any, Any] | AsyncGenerator[Any, Any]"
 BeforeMessageSendHookHandler: TypeAlias = "Callable[[Message, Scope], SyncOrAsyncUnion[None]]"
-BeforeRequestHookHandler: TypeAlias = "Callable[[Request], Union[Any, Awaitable[Any]]]"
+BeforeRequestHookHandler: TypeAlias = "Callable[[Request], Any | Awaitable[Any]]"
 CacheKeyBuilder: TypeAlias = "Callable[[Request], str]"
 ExceptionHandler: TypeAlias = "Callable[[Request, Exception], Response]"
-ExceptionLoggingHandler: TypeAlias = "Callable[[Logger, Scope, List[str]], None]"
+ExceptionLoggingHandler: TypeAlias = "Callable[[Logger, Scope, list[str]], None]"
 GetLogger: TypeAlias = "Callable[..., Logger]"
 Guard: TypeAlias = "Callable[[ASGIConnection, BaseRouteHandler], SyncOrAsyncUnion[None]]"
-LifespanHook: TypeAlias = "Union[Callable[[LitestarType], SyncOrAsyncUnion[Any]], Callable[[], SyncOrAsyncUnion[Any]]]"
+LifespanHook: TypeAlias = "Callable[[LitestarType], SyncOrAsyncUnion[Any]] | Callable[[], SyncOrAsyncUnion[Any]]"
 OnAppInitHandler: TypeAlias = "Callable[[AppConfig], AppConfig]"
-OperationIDCreator: TypeAlias = "Callable[[HTTPRouteHandler, Method, List[Union[str, PathParameterDefinition]]], str]"
+OperationIDCreator: TypeAlias = "Callable[[HTTPRouteHandler, Method, list[str | PathParameterDefinition]], str]"
 Serializer: TypeAlias = "Callable[[Any], Any]"
