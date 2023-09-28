@@ -1240,8 +1240,8 @@ and Route Handlers should be registered on it.</p>
 order, once the ASGI server (uvicorn, hypercorn, etc.) emits the respective event.</p>
 <div class="mermaid">
             flowchart LR
-    Startup[ASGI-Event: lifespan.startup] --&gt; before_startup --&gt; on_startup --&gt; after_startup
-    Shutdown[ASGI-Event: lifespan.shutdown] --&gt; before_shutdown --&gt; on_shutdown --&gt; after_shutdown
+    Startup[ASGI-Event: lifespan.startup] --&gt; on_startup
+    Shutdown[ASGI-Event: lifespan.shutdown] --&gt; on_shutdown
         </div><p>A classic use case for this is database connectivity. Often, we want to establish a database connection on application
 startup, and then close it gracefully upon shutdown.</p>
 <p>For example, lets create a database connection using the async engine from
