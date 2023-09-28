@@ -528,9 +528,8 @@ class Litestar(Router):
 
         It will be entered when the ``lifespan`` message has been received from the
         server, and exit after the ``asgi.shutdown`` message. During this period, it is
-        responsible for calling the ``before_startup``, ``after_startup``,
-        `on_startup``, ``before_shutdown``, ``on_shutdown`` and ``after_shutdown``
-        hooks, as well as custom lifespan managers.
+        responsible for calling the ``on_startup``, ``on_shutdown`` hooks, as well as
+        custom lifespan managers.
         """
         async with AsyncExitStack() as exit_stack:
             for hook in self.on_shutdown[::-1]:
