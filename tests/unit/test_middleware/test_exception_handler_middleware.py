@@ -1,3 +1,4 @@
+from inspect import getinnerframes
 from typing import TYPE_CHECKING, Any, Callable, Optional
 
 import pytest
@@ -10,6 +11,7 @@ from litestar import Litestar, Request, Response, get
 from litestar.exceptions import HTTPException, InternalServerException, ValidationException
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
 from litestar.middleware.exceptions import ExceptionHandlerMiddleware
+from litestar.middleware.exceptions._debug_response import get_symbol_name
 from litestar.middleware.exceptions.middleware import get_exception_handler
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
@@ -340,3 +342,23 @@ def test_get_debug_from_scope(get_logger: "GetLogger", caplog: "LogCaptureFixtur
         assert caplog.records[0].message.startswith(
             "exception raised on http connection to route /test\n\nTraceback (most recent call last):\n"
         )
+
+
+def test_get_symbol_name_where_type_doesnt_support_bool() -> None:
+    class Test:
+        def __bool__(self) -> bool:
+            raise TypeError("This type doesn't support bool")
+
+        def method(self) -> None:
+            raise RuntimeError("Oh no!")
+
+    exc = None
+
+    try:
+        Test().method()
+    except Exception as e:
+        exc = e
+
+    if exc is not None and exc.__traceback__ is not None:
+        frame = getinnerframes(exc.__traceback__, 2)[-1]
+        assert get_symbol_name(frame) == "Test.method"
