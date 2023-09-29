@@ -1,10 +1,29 @@
 {
   "name": "litestar-org/litestar",
-  "image": "mcr.microsoft.com/devcontainers/python:3",
-  "forwardPorts": [8000],
-  "onCreateCommand": "apt-get update && apt-get install -y fish zsh",
-  "postCreateCommand": ["curl", "-sSL", "https://install.python-poetry.org", "|", "python3", "-", "&&", "poetry", "install", "--extras", "full", "--with", "docs,lint"],
+  "build": {
+      "dockerfile": "./Dockerfile",
+      "context": "."
+  },
+  "features": {
+      "ghcr.io/devcontainers/features/common-utils:2":{
+          "installZsh": "true",
+          "username": "vscode",
+          "userUid": "1000",
+          "userGid": "1000",
+          "upgradePackages": "true"
+      },
+      "ghcr.io/devcontainers/features/python:1": "none",
+      "ghcr.io/devcontainers/features/git:1": {
+          "version": "latest",
+          "ppa": "false"
+      }
+  },
   "customizations": {
+    "codespaces": {
+      "openFiles": [
+        "CONTRIBUTING.rst"
+      ]
+    },
     "vscode": {
       "settings": {
         "terminal.integrated.shell.linux": "/bin/bash",
@@ -16,5 +35,8 @@
         ]
       }
     }
-  }
+  },
+"forwardPorts": [8000],
+"postCreateCommand": ["poetry", "install", "--extras", "full", "--with", "docs,lint"],
+"remoteUser": "vscode"
 }
