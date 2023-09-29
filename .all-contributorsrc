@@ -1287,6 +1287,17 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "lsanpablo",
+      "name": "Luis San Pablo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7145688?v=4",
+      "profile": "https://github.com/lsanpablo",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

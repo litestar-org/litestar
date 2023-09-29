@@ -1,14 +1,6 @@
 from __future__ import annotations
 
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    Literal,
-    NamedTuple,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, Callable, Literal, NamedTuple
 
 __all__ = (
     "ControllerRouterHandler",
@@ -34,19 +26,12 @@ if TYPE_CHECKING:
     from litestar.router import Router
     from litestar.types import Method
 
-    ReservedKwargs: TypeAlias = Literal["request", "socket", "headers", "query", "cookies", "state", "data"]
-    LitestarType: TypeAlias = Litestar
-    RouteHandlerType: TypeAlias = Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandler]
-    ResponseType: TypeAlias = type[Response]
-    ControllerRouterHandler: TypeAlias = Union[type[Controller], RouteHandlerType, Router, Callable[..., Any]]
-    RouteHandlerMapItem: TypeAlias = Dict[Union[Method, Literal["websocket", "asgi"]], RouteHandlerType]
-else:
-    ReservedKwargs: TypeAlias = Any
-    LitestarType: TypeAlias = Any
-    RouteHandlerType: TypeAlias = Any
-    ResponseType: TypeAlias = Any
-    ControllerRouterHandler: TypeAlias = Any
-    RouteHandlerMapItem: TypeAlias = Any
+ReservedKwargs: TypeAlias = Literal["request", "socket", "headers", "query", "cookies", "state", "data"]
+LitestarType: TypeAlias = "Litestar"
+RouteHandlerType: TypeAlias = "HTTPRouteHandler | WebsocketRouteHandler | ASGIRouteHandler"
+ResponseType: TypeAlias = "type[Response]"
+ControllerRouterHandler: TypeAlias = "type[Controller] | RouteHandlerType | Router | Callable[..., Any]"
+RouteHandlerMapItem: TypeAlias = 'dict[Method | Literal["websocket", "asgi"], RouteHandlerType]'
 
 
 class PathParameterDefinition(NamedTuple):
