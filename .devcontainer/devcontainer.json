@@ -1,0 +1,24 @@
+{
+  "name": "litestar-org/litestar",
+  "image": "mcr.microsoft.com/devcontainers/python:3",
+  "forwardPorts": [8000],
+  "onCreateCommand": [
+    "apt-get update",
+    "&&",
+    "apt-get install -y fish zsh",
+    "curl -sSL https://install.python-poetry.org | python3 - && poetry install --extras full --with docs,lint"
+  ],
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash",
+        "python.defaultInterpreterPath": "${workspaceFolder}/.venv",
+        "python.terminal.activateEnvInCurrentTerminal": true,
+        "python.terminal.launchArgs": [
+          "-X",
+          "dev"
+        ]
+      }
+    }
+  }
+}
