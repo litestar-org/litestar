@@ -175,6 +175,7 @@ class DTOCodegenBackend(DTOBackend):
         Args:
             destination_type: the model type received by the DTO on type narrowing.
             field_definition: the parsed type that represents the handler annotation for which the DTO is being applied.
+            override_serialization_name: Override serialization name
 
         Returns:
             Data parsed into ``destination_type``.
