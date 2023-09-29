@@ -48,11 +48,7 @@ def get_symbol_name(frame: FrameInfo) -> str:
     locals_dict = frame.frame.f_locals
     # this piece assumes that the code uses standard names "self" and "cls"
     # in instance and class methods
-    instance_or_cls = None
-    if "self" in locals_dict:
-        instance_or_cls = locals_dict["self"]
-    elif "cls" in locals_dict:
-        instance_or_cls = locals_dict["cls"]
+    instance_or_cls = inst if (inst := locals_dict.get("self")) is not None else locals_dict.get("cls")
 
     classname = f"{get_name(instance_or_cls)}." if instance_or_cls is not None else ""
 
