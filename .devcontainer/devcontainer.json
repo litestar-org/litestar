@@ -1,52 +1,46 @@
 {
   "name": "litestar-org/litestar",
   "build": {
-      "dockerfile": "./Dockerfile",
-      "context": "."
+    "dockerfile": "./Dockerfile",
+    "context": "."
   },
   "features": {
-      "ghcr.io/devcontainers/features/common-utils:2":{
-          "installZsh": "true",
-          "username": "vscode",
-          "userUid": "1000",
-          "userGid": "1000",
-          "upgradePackages": "true"
-      },
-      "ghcr.io/devcontainers/features/github-cli:1": {},
-      "ghcr.io/devcontainers-contrib/features/pre-commit:2": {},
-      "ghcr.io/devcontainers/features/python:1": "none",
-      "ghcr.io/devcontainers/features/git:1": {
-          "version": "latest",
-          "ppa": "false"
-      }
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": "true",
+      "username": "vscode",
+      "userUid": "1000",
+      "userGid": "1000",
+      "upgradePackages": "true"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers-contrib/features/pre-commit:2": {},
+    "ghcr.io/devcontainers/features/python:1": "none",
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest",
+      "ppa": "false"
+    }
   },
   "customizations": {
-    "extensions": [
-      "mhutchie.git-graph",
-      "eamodio.gitlens",
-      "github.vscode-github-actions",
-      "ms-python.black-formatter",
-      "ms-python.mypy-type-checker"
-    ],
     "codespaces": {
-      "openFiles": [
-        "CONTRIBUTING.rst"
-      ]
+      "openFiles": ["CONTRIBUTING.rst"]
     },
     "vscode": {
+      "extensions": [
+        "mhutchie.git-graph",
+        "eamodio.gitlens",
+        "github.vscode-github-actions",
+        "ms-python.black-formatter",
+        "ms-python.mypy-type-checker",
+        "charliermarsh.ruff"
+      ],
       "settings": {
         "python.editor.defaultFormatter": "ms-python.black-formatter",
         "python.defaultInterpreterPath": "${workspaceFolder}/.venv",
         "python.terminal.activateEnvInCurrentTerminal": true,
         "python.testing.unittestEnabled": false,
         "python.testing.pytestEnabled": true,
-        "python.testing.pytestArgs": [
-          "."
-        ],
-        "python.terminal.launchArgs": [
-          "-X",
-          "dev"
-        ],
+        "python.testing.pytestArgs": ["."],
+        "python.terminal.launchArgs": ["-X", "dev"],
         "terminal.integrated.shell.linux": "/bin/bash",
         "terminal.integrated.profiles.linux": {
           "bash": {
@@ -63,7 +57,14 @@
       }
     }
   },
-"forwardPorts": [8000],
-"postCreateCommand": ["poetry", "install", "--extras", "full", "--with", "docs,lint"],
-"remoteUser": "vscode"
+  "forwardPorts": [8000],
+  "postCreateCommand": [
+    "poetry",
+    "install",
+    "--extras",
+    "full",
+    "--with",
+    "docs,lint"
+  ],
+  "remoteUser": "vscode"
 }
