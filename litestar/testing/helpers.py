@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
     from litestar import Request, WebSocket
     from litestar.config.allowed_hosts import AllowedHostsConfig
+    from litestar.config.app import ExperimentalFeatures
     from litestar.config.compression import CompressionConfig
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
@@ -107,6 +108,7 @@ def create_test_client(
     timeout: float | None = None,
     type_encoders: TypeEncodersMap | None = None,
     websocket_class: type[WebSocket] | None = None,
+    experimental_features: list[ExperimentalFeatures] | None = None,
 ) -> TestClient[Litestar]:
     """Create a Litestar app instance and initializes it.
 
@@ -226,6 +228,8 @@ def create_test_client(
         type_encoders: A mapping of types to callables that transform them into types supported for serialization.
         websocket_class: An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket
             connections.
+        experimental_features: An iterable of experimental features to enable
+
 
     Returns:
         An instance of :class:`TestClient <.testing.TestClient>` with a created app instance.
@@ -282,6 +286,7 @@ def create_test_client(
         template_config=template_config,
         type_encoders=type_encoders,
         websocket_class=websocket_class,
+        experimental_features=experimental_features,
     )
 
     return TestClient[Litestar](
@@ -352,6 +357,7 @@ def create_async_test_client(
     timeout: float | None = None,
     type_encoders: TypeEncodersMap | None = None,
     websocket_class: type[WebSocket] | None = None,
+    experimental_features: list[ExperimentalFeatures] | None = None,
 ) -> AsyncTestClient[Litestar]:
     """Create a Litestar app instance and initializes it.
 
@@ -471,6 +477,7 @@ def create_async_test_client(
         type_encoders: A mapping of types to callables that transform them into types supported for serialization.
         websocket_class: An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket
             connections.
+        experimental_features: An iterable of experimental features to enable
 
     Returns:
         An instance of :class:`AsyncTestClient <litestar.testing.AsyncTestClient>` with a created app instance.
@@ -527,6 +534,7 @@ def create_async_test_client(
         template_config=template_config,
         type_encoders=type_encoders,
         websocket_class=websocket_class,
+        experimental_features=experimental_features,
     )
 
     return AsyncTestClient[Litestar](

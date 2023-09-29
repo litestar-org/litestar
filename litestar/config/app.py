@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import enum
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Callable, Sequence
 
@@ -51,7 +52,10 @@ if TYPE_CHECKING:
     from litestar.types.empty import EmptyType
 
 
-__all__ = ("AppConfig",)
+__all__ = (
+    "AppConfig",
+    "ExperimentalFeatures",
+)
 
 
 @dataclass
@@ -198,6 +202,7 @@ class AppConfig:
     multipart_form_part_limit: int = field(default=1000)
     """The maximal number of allowed parts in a multipart/formdata request. This limit is intended to protect from
     DoS attacks."""
+    experimental_features: list[ExperimentalFeatures] | None = None
 
     def __post_init__(self) -> None:
         """Normalize the allowed hosts to be a config or None.
@@ -207,3 +212,7 @@ class AppConfig:
         """
         if self.allowed_hosts and isinstance(self.allowed_hosts, list):
             self.allowed_hosts = AllowedHostsConfig(allowed_hosts=self.allowed_hosts)
+
+
+class ExperimentalFeatures(enum.StrEnum):
+    DTO_CODEGEN = "DTO_CODEGEN"

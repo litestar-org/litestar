@@ -140,18 +140,18 @@ class AbstractDTO(Generic[T]):
         )
 
     @classmethod
-    def _get_backend_cls(cls) -> type[DTOBackend | DTOCodegenBackend]:
-        if cls.config.experimental_codegen_backend:
-            return DTOCodegenBackend
-        return DTOBackend
-
-    @classmethod
-    def create_for_field_definition(cls, field_definition: FieldDefinition, handler_id: str) -> None:
+    def create_for_field_definition(
+        cls,
+        field_definition: FieldDefinition,
+        handler_id: str,
+        backend_cls: type[DTOBackend] | None = None,
+    ) -> None:
         """Creates a DTO subclass for a field definition.
 
         Args:
             field_definition: A :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance.
             handler_id: ID of the route handler for which to create a DTO instance.
+            backend_cls: Alternative DTO backend class to use
 
         Returns:
             None
@@ -177,7 +177,11 @@ class AbstractDTO(Generic[T]):
                         f"DTO narrowed with '{cls.model_type}', handler type is '{field_definition.annotation}'"
                     )
 
-            backend_cls = cls._get_backend_cls()
+            if backend_cls is None:
+                backend_cls = DTOCodegenBackend if cls.config.experimental_codegen_backend else DTOBackend
+            elif backend_cls is DTOCodegenBackend and cls.config.experimental_codegen_backend is False:
+                backend_cls = DTOBackend
+
             backend_context[key] = backend_cls(  # type: ignore[literal-required]
                 dto_factory=cls,
                 field_definition=field_definition,

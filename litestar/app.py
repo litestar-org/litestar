@@ -8,7 +8,7 @@ from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Mapping, Sequence, TypedDict, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Iterable, Mapping, Sequence, TypedDict, cast
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
@@ -51,6 +51,7 @@ from litestar.utils.warnings import warn_pdb_on_exception
 if TYPE_CHECKING:
     from typing_extensions import Self
 
+    from litestar.config.app import ExperimentalFeatures
     from litestar.config.compression import CompressionConfig
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
@@ -160,6 +161,7 @@ class Litestar(Router):
         "template_engine",
         "websocket_class",
         "pdb_on_exception",
+        "experimental_features",
     )
 
     def __init__(
@@ -214,6 +216,7 @@ class Litestar(Router):
         lifespan: Sequence[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager]
         | None = None,
         pdb_on_exception: bool | None = None,
+        experimental_features: Iterable[ExperimentalFeatures] | None = None,
     ) -> None:
         """Initialize a ``Litestar`` application.
 
@@ -298,9 +301,11 @@ class Litestar(Router):
                 application.
             template_config: An instance of :class:`TemplateConfig <.template.TemplateConfig>`
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
-            type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
+            type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
+                hook for deserialization.
             websocket_class: An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket
                 connections.
+            experimental_features: An iterable of experimental features to enable
         """
         if logging_config is Empty:
             logging_config = LoggingConfig()
@@ -359,6 +364,7 @@ class Litestar(Router):
             type_encoders=type_encoders,
             type_decoders=type_decoders,
             websocket_class=websocket_class,
+            experimental_features=list(experimental_features or []),
         )
         for handler in chain(
             on_app_init or [],
@@ -371,6 +377,7 @@ class Litestar(Router):
         self._openapi_schema: OpenAPI | None = None
         self._debug: bool = True
         self._lifespan_managers = config.lifespan
+        self.experimental_features = frozenset(config.experimental_features or [])
 
         self.get_logger: GetLogger = get_logger_placeholder
         self.logger: Logger | None = None
