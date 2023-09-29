@@ -1169,184 +1169,160 @@ document.write(`
 <h2>Callable types<a class="headerlink" href="#callable-types" title="Permalink to this heading">#</a></h2>
 <dl class="py data">
 <dt class="sig sig-object py" id="litestar.types.AfterExceptionHookHandler">
-<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">AfterExceptionHookHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">typing.Any</span></em><a class="headerlink" href="#litestar.types.AfterExceptionHookHandler" title="Permalink to this definition">#</a></dt>
-<dd><p>Special type indicating an unconstrained type.</p>
-<ul class="simple">
-<li><p>Any is compatible with every type.</p></li>
-<li><p>Any assumed to have all methods.</p></li>
-<li><p>All values assumed to be instances of Any.</p></li>
-</ul>
-<p>Note that all the above statements are true from the point of view of
-static type checkers. At runtime, Any should not be used with instance
-checks.</p>
+<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">AfterExceptionHookHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Callable[[Exception,</span> <span class="pre">Scope],</span> <span class="pre">SyncOrAsyncUnion[None]]'</span></em><a class="headerlink" href="#litestar.types.AfterExceptionHookHandler" title="Permalink to this definition">#</a></dt>
+<dd><p>str(object=’’) -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.__str__() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to ‘strict’.</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="litestar.types.AfterRequestHookHandler">
-<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">AfterRequestHookHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">typing.Any</span></em><a class="headerlink" href="#litestar.types.AfterRequestHookHandler" title="Permalink to this definition">#</a></dt>
-<dd><p>Special type indicating an unconstrained type.</p>
-<ul class="simple">
-<li><p>Any is compatible with every type.</p></li>
-<li><p>Any assumed to have all methods.</p></li>
-<li><p>All values assumed to be instances of Any.</p></li>
-</ul>
-<p>Note that all the above statements are true from the point of view of
-static type checkers. At runtime, Any should not be used with instance
-checks.</p>
+<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">AfterRequestHookHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Callable[[ASGIApp],</span> <span class="pre">SyncOrAsyncUnion[ASGIApp]]</span> <span class="pre">|</span> <span class="pre">Callable[[Response],</span> <span class="pre">SyncOrAsyncUnion[Response]]'</span></em><a class="headerlink" href="#litestar.types.AfterRequestHookHandler" title="Permalink to this definition">#</a></dt>
+<dd><p>str(object=’’) -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.__str__() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to ‘strict’.</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="litestar.types.AfterResponseHookHandler">
-<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">AfterResponseHookHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">typing.Any</span></em><a class="headerlink" href="#litestar.types.AfterResponseHookHandler" title="Permalink to this definition">#</a></dt>
-<dd><p>Special type indicating an unconstrained type.</p>
-<ul class="simple">
-<li><p>Any is compatible with every type.</p></li>
-<li><p>Any assumed to have all methods.</p></li>
-<li><p>All values assumed to be instances of Any.</p></li>
-</ul>
-<p>Note that all the above statements are true from the point of view of
-static type checkers. At runtime, Any should not be used with instance
-checks.</p>
+<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">AfterResponseHookHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Callable[[Request],</span> <span class="pre">SyncOrAsyncUnion[None]]'</span></em><a class="headerlink" href="#litestar.types.AfterResponseHookHandler" title="Permalink to this definition">#</a></dt>
+<dd><p>str(object=’’) -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.__str__() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to ‘strict’.</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="litestar.types.AnyCallable">
-<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">AnyCallable</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">typing.Any</span></em><a class="headerlink" href="#litestar.types.AnyCallable" title="Permalink to this definition">#</a></dt>
-<dd><p>Special type indicating an unconstrained type.</p>
-<ul class="simple">
-<li><p>Any is compatible with every type.</p></li>
-<li><p>Any assumed to have all methods.</p></li>
-<li><p>All values assumed to be instances of Any.</p></li>
-</ul>
-<p>Note that all the above statements are true from the point of view of
-static type checkers. At runtime, Any should not be used with instance
-checks.</p>
+<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">AnyCallable</span></span><a class="headerlink" href="#litestar.types.AnyCallable" title="Permalink to this definition">#</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[…], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>]</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="litestar.types.AsyncAnyCallable">
-<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">AsyncAnyCallable</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">typing.Any</span></em><a class="headerlink" href="#litestar.types.AsyncAnyCallable" title="Permalink to this definition">#</a></dt>
-<dd><p>Special type indicating an unconstrained type.</p>
-<ul class="simple">
-<li><p>Any is compatible with every type.</p></li>
-<li><p>Any assumed to have all methods.</p></li>
-<li><p>All values assumed to be instances of Any.</p></li>
-</ul>
-<p>Note that all the above statements are true from the point of view of
-static type checkers. At runtime, Any should not be used with instance
-checks.</p>
+<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">AsyncAnyCallable</span></span><a class="headerlink" href="#litestar.types.AsyncAnyCallable" title="Permalink to this definition">#</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[…], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Awaitable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>]]</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="litestar.types.BeforeMessageSendHookHandler">
-<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">BeforeMessageSendHookHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">typing.Any</span></em><a class="headerlink" href="#litestar.types.BeforeMessageSendHookHandler" title="Permalink to this definition">#</a></dt>
-<dd><p>Special type indicating an unconstrained type.</p>
-<ul class="simple">
-<li><p>Any is compatible with every type.</p></li>
-<li><p>Any assumed to have all methods.</p></li>
-<li><p>All values assumed to be instances of Any.</p></li>
-</ul>
-<p>Note that all the above statements are true from the point of view of
-static type checkers. At runtime, Any should not be used with instance
-checks.</p>
+<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">BeforeMessageSendHookHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Callable[[Message,</span> <span class="pre">Scope],</span> <span class="pre">SyncOrAsyncUnion[None]]'</span></em><a class="headerlink" href="#litestar.types.BeforeMessageSendHookHandler" title="Permalink to this definition">#</a></dt>
+<dd><p>str(object=’’) -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.__str__() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to ‘strict’.</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="litestar.types.BeforeRequestHookHandler">
-<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">BeforeRequestHookHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">typing.Any</span></em><a class="headerlink" href="#litestar.types.BeforeRequestHookHandler" title="Permalink to this definition">#</a></dt>
-<dd><p>Special type indicating an unconstrained type.</p>
-<ul class="simple">
-<li><p>Any is compatible with every type.</p></li>
-<li><p>Any assumed to have all methods.</p></li>
-<li><p>All values assumed to be instances of Any.</p></li>
-</ul>
-<p>Note that all the above statements are true from the point of view of
-static type checkers. At runtime, Any should not be used with instance
-checks.</p>
+<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">BeforeRequestHookHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Callable[[Request],</span> <span class="pre">Any</span> <span class="pre">|</span> <span class="pre">Awaitable[Any]]'</span></em><a class="headerlink" href="#litestar.types.BeforeRequestHookHandler" title="Permalink to this definition">#</a></dt>
+<dd><p>str(object=’’) -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.__str__() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to ‘strict’.</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="litestar.types.CacheKeyBuilder">
-<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">CacheKeyBuilder</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">typing.Any</span></em><a class="headerlink" href="#litestar.types.CacheKeyBuilder" title="Permalink to this definition">#</a></dt>
-<dd><p>Special type indicating an unconstrained type.</p>
-<ul class="simple">
-<li><p>Any is compatible with every type.</p></li>
-<li><p>Any assumed to have all methods.</p></li>
-<li><p>All values assumed to be instances of Any.</p></li>
-</ul>
-<p>Note that all the above statements are true from the point of view of
-static type checkers. At runtime, Any should not be used with instance
-checks.</p>
+<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">CacheKeyBuilder</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Callable[[Request],</span> <span class="pre">str]'</span></em><a class="headerlink" href="#litestar.types.CacheKeyBuilder" title="Permalink to this definition">#</a></dt>
+<dd><p>str(object=’’) -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.__str__() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to ‘strict’.</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="litestar.types.ExceptionHandler">
-<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">ExceptionHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">typing.Any</span></em><a class="headerlink" href="#litestar.types.ExceptionHandler" title="Permalink to this definition">#</a></dt>
-<dd><p>Special type indicating an unconstrained type.</p>
-<ul class="simple">
-<li><p>Any is compatible with every type.</p></li>
-<li><p>Any assumed to have all methods.</p></li>
-<li><p>All values assumed to be instances of Any.</p></li>
-</ul>
-<p>Note that all the above statements are true from the point of view of
-static type checkers. At runtime, Any should not be used with instance
-checks.</p>
+<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">ExceptionHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Callable[[Request,</span> <span class="pre">Exception],</span> <span class="pre">Response]'</span></em><a class="headerlink" href="#litestar.types.ExceptionHandler" title="Permalink to this definition">#</a></dt>
+<dd><p>str(object=’’) -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.__str__() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to ‘strict’.</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="litestar.types.Guard">
-<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">Guard</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">typing.Any</span></em><a class="headerlink" href="#litestar.types.Guard" title="Permalink to this definition">#</a></dt>
-<dd><p>Special type indicating an unconstrained type.</p>
-<ul class="simple">
-<li><p>Any is compatible with every type.</p></li>
-<li><p>Any assumed to have all methods.</p></li>
-<li><p>All values assumed to be instances of Any.</p></li>
-</ul>
-<p>Note that all the above statements are true from the point of view of
-static type checkers. At runtime, Any should not be used with instance
-checks.</p>
+<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">Guard</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Callable[[ASGIConnection,</span> <span class="pre">BaseRouteHandler],</span> <span class="pre">SyncOrAsyncUnion[None]]'</span></em><a class="headerlink" href="#litestar.types.Guard" title="Permalink to this definition">#</a></dt>
+<dd><p>str(object=’’) -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.__str__() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to ‘strict’.</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="litestar.types.LifespanHook">
-<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">LifespanHook</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">typing.Any</span></em><a class="headerlink" href="#litestar.types.LifespanHook" title="Permalink to this definition">#</a></dt>
-<dd><p>Special type indicating an unconstrained type.</p>
-<ul class="simple">
-<li><p>Any is compatible with every type.</p></li>
-<li><p>Any assumed to have all methods.</p></li>
-<li><p>All values assumed to be instances of Any.</p></li>
-</ul>
-<p>Note that all the above statements are true from the point of view of
-static type checkers. At runtime, Any should not be used with instance
-checks.</p>
+<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">LifespanHook</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Callable[[LitestarType],</span> <span class="pre">SyncOrAsyncUnion[Any]]</span> <span class="pre">|</span> <span class="pre">Callable[[],</span> <span class="pre">SyncOrAsyncUnion[Any]]'</span></em><a class="headerlink" href="#litestar.types.LifespanHook" title="Permalink to this definition">#</a></dt>
+<dd><p>str(object=’’) -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.__str__() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to ‘strict’.</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="litestar.types.OnAppInitHandler">
-<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">OnAppInitHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">typing.Any</span></em><a class="headerlink" href="#litestar.types.OnAppInitHandler" title="Permalink to this definition">#</a></dt>
-<dd><p>Special type indicating an unconstrained type.</p>
-<ul class="simple">
-<li><p>Any is compatible with every type.</p></li>
-<li><p>Any assumed to have all methods.</p></li>
-<li><p>All values assumed to be instances of Any.</p></li>
-</ul>
-<p>Note that all the above statements are true from the point of view of
-static type checkers. At runtime, Any should not be used with instance
-checks.</p>
+<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">OnAppInitHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Callable[[AppConfig],</span> <span class="pre">AppConfig]'</span></em><a class="headerlink" href="#litestar.types.OnAppInitHandler" title="Permalink to this definition">#</a></dt>
+<dd><p>str(object=’’) -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.__str__() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to ‘strict’.</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="litestar.types.Serializer">
-<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">Serializer</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">typing.Any</span></em><a class="headerlink" href="#litestar.types.Serializer" title="Permalink to this definition">#</a></dt>
-<dd><p>Special type indicating an unconstrained type.</p>
-<ul class="simple">
-<li><p>Any is compatible with every type.</p></li>
-<li><p>Any assumed to have all methods.</p></li>
-<li><p>All values assumed to be instances of Any.</p></li>
-</ul>
-<p>Note that all the above statements are true from the point of view of
-static type checkers. At runtime, Any should not be used with instance
-checks.</p>
+<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">Serializer</span></span><a class="headerlink" href="#litestar.types.Serializer" title="Permalink to this definition">#</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>]</p>
 </dd></dl>
 
 </section>
