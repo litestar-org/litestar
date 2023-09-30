@@ -10,7 +10,6 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Container,
     ContextManager,
     Generator,
     Mapping,
@@ -29,6 +28,7 @@ from litestar.dto._types import (
     TransferType,
     UnionType,
 )
+from litestar.utils.helpers import unique_name_for_scope
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
@@ -192,15 +192,6 @@ class DTOCodegenBackend(DTOBackend):
         )
 
 
-def _gen_uniq_name(ctx: Container[str], name: str) -> str:
-    i = 0
-    while True:
-        unique_name = f"{name}_{i}"
-        if unique_name not in ctx:
-            return unique_name
-        i += 1
-
-
 class FieldAccessManager(Protocol):
     def __call__(self, source_name: str, field_name: str, expect_optional: bool) -> ContextManager[str]:
         ...
@@ -221,12 +212,12 @@ class TransferFunctionFactory:
         self._re_index_access = re.compile(r"\[['\"](\w+?)['\"]]")
 
     def _add_to_fn_globals(self, name: str, value: Any) -> str:
-        unique_name = _gen_uniq_name(self._fn_locals, name)
+        unique_name = unique_name_for_scope(name, self._fn_locals)
         self._fn_locals[unique_name] = value
         return unique_name
 
     def _create_local_name(self, name: str) -> str:
-        unique_name = _gen_uniq_name(self.names, name)
+        unique_name = unique_name_for_scope(name, self.names)
         self.names.add(unique_name)
         return unique_name
 
