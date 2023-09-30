@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Container, Generic, TypeVar, cast
 from urllib.parse import quote
 
 if TYPE_CHECKING:
@@ -18,6 +18,7 @@ __all__ = (
     "get_name",
     "unwrap_partial",
     "url_quote",
+    "unique_name_for_scope",
 )
 
 T = TypeVar("T")
@@ -99,3 +100,12 @@ def url_quote(value: str | bytes) -> str:
         A quoted URL.
     """
     return quote(value, safe="/#%[]=:;$&()+,!?*@'~")
+
+
+def unique_name_for_scope(base_name: str, scope: Container[str]) -> str:
+    """Create a name derived from ``base_name`` that's unique within ``scope``"""
+    i = 0
+    while True:
+        if (unique_name := f"{base_name}_{i}") not in scope:
+            return unique_name
+        i += 1
