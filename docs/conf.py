@@ -115,6 +115,7 @@ nitpick_ignore = [
     (PY_CLASS, "NoneType"),
     (PY_CLASS, "litestar._openapi.schema_generation.schema.SchemaCreator"),
     (PY_CLASS, "litestar._signature.model.SignatureModel"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.init.config.compat._CreateEngineMixin"),
     (PY_CLASS, "litestar.utils.signature.ParsedSignature"),
     (PY_CLASS, "litestar.utils.sync.AsyncCallable"),
     # types in changelog that no longer exist
