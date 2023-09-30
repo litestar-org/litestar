@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Container, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 from urllib.parse import quote
 
 if TYPE_CHECKING:
+    from collections.abc import Container
     from typing import Iterable
 
     from litestar.datastructures import Cookie
