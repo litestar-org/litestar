@@ -42,7 +42,6 @@ from litestar._openapi.schema_generation.constrained_fields import (
     create_numerical_constrained_field_schema,
     create_string_constrained_field_schema,
 )
-from litestar._openapi.schema_generation.examples import create_examples_for_field
 from litestar._openapi.schema_generation.utils import sort_schemas_and_references
 from litestar.datastructures import UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
@@ -586,6 +585,8 @@ class SchemaCreator:
                     setattr(schema, schema_key, value)
 
         if not schema.examples and self.generate_examples:
+            from litestar._openapi.schema_generation.examples import create_examples_for_field
+
             schema.examples = create_examples_for_field(field)
 
         if schema.title and schema.type in (OpenAPIType.OBJECT, OpenAPIType.ARRAY):
