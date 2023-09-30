@@ -205,7 +205,7 @@ sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 
 def on_startup() -> None:
     """Initializes the database."""
-    with sqlalchemy_config.create_engine().begin() as conn:
+    with sqlalchemy_config.get_engine().begin() as conn:
         UUIDBase.metadata.create_all(conn)
 
 
