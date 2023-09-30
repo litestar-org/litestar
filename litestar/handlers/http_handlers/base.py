@@ -435,11 +435,6 @@ class HTTPRouteHandler(BaseRouteHandler):
             return_type = self.parsed_fn_signature.return_type
             return_annotation = return_type.annotation
 
-            if before_request_handler := self.resolve_before_request():
-                handler_return_type = before_request_handler.parsed_signature.return_type
-                if not handler_return_type.is_subclass_of((Empty, NoneType)):
-                    return_annotation = handler_return_type.annotation
-
             self._response_handler_mapping["response_type_handler"] = response_type_handler = create_response_handler(
                 after_request=after_request,
                 background=self.background,
@@ -494,9 +489,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         return await response_handler(app=app, data=data, request=request)  # type: ignore
 
     def on_registration(self, app: Litestar) -> None:
-        if before_request := self.resolve_before_request():
-            before_request.set_parsed_signature(self.resolve_signature_namespace())
-
         super().on_registration(app)
         self.resolve_after_response()
         self.resolve_include_in_schema()
@@ -526,13 +518,6 @@ class HTTPRouteHandler(BaseRouteHandler):
                 "A status code 204, 304 or in the range below 200 does not support a response body."
                 "If the function should return a value, change the route handler status code to an appropriate value.",
             )
-
-        if (
-            (before_request := self.resolve_before_request())
-            and not before_request.parsed_signature.return_type.is_subclass_of(NoneType)
-            and not before_request.parsed_signature.return_type.is_optional
-        ):
-            return_type = before_request.parsed_signature.return_type
 
         if not self.media_type:
             if return_type.is_subclass_of((str, bytes)) or return_type.annotation is AnyStr:
