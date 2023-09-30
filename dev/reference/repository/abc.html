@@ -1221,7 +1221,7 @@ document.write(`
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.repository.abc.AbstractAsyncRepository.count">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="filters.html#litestar.repository.filters.FilterTypes" title="litestar.repository.filters.FilterTypes"><span class="pre">FilterTypes</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractAsyncRepository.count" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FilterTypes</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractAsyncRepository.count" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the count of records returned by a query.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1248,7 +1248,7 @@ document.write(`
 <dd class="field-even"><p>The deleted instance.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.repository.exceptions.NotFoundError" title="litestar.repository.exceptions.NotFoundError"><strong>NotFoundError</strong></a> – If no instance found identified by <code class="docutils literal notranslate"><span class="pre">item_id</span></code>.</p>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no instance found identified by <code class="docutils literal notranslate"><span class="pre">item_id</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1269,7 +1269,7 @@ document.write(`
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.repository.abc.AbstractAsyncRepository.exists">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="filters.html#litestar.repository.filters.FilterTypes" title="litestar.repository.filters.FilterTypes"><span class="pre">FilterTypes</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractAsyncRepository.exists" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FilterTypes</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractAsyncRepository.exists" title="Permalink to this definition">#</a></dt>
 <dd><p>Return true if the object specified by <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> exists.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1299,7 +1299,7 @@ document.write(`
 <dd class="field-even"><p>The retrieved instance.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.repository.exceptions.NotFoundError" title="litestar.repository.exceptions.NotFoundError"><strong>NotFoundError</strong></a> – If no instance found identified by <code class="docutils literal notranslate"><span class="pre">item_id</span></code>.</p>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no instance found identified by <code class="docutils literal notranslate"><span class="pre">item_id</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1316,7 +1316,7 @@ document.write(`
 <dd class="field-even"><p>The retrieved instance.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.repository.exceptions.NotFoundError" title="litestar.repository.exceptions.NotFoundError"><strong>NotFoundError</strong></a> – If no instance found identified by <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>.</p>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no instance found identified by <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1362,7 +1362,7 @@ collection.</p>
 <dd class="field-even"><p>The updated instance.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.repository.exceptions.NotFoundError" title="litestar.repository.exceptions.NotFoundError"><strong>NotFoundError</strong></a> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1380,7 +1380,7 @@ collection.</p>
 <dd class="field-even"><p>a list of the updated instances.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.repository.exceptions.NotFoundError" title="litestar.repository.exceptions.NotFoundError"><strong>NotFoundError</strong></a> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1401,7 +1401,7 @@ existing instance exists is the value of an attribute on <code class="docutils l
 <dd class="field-even"><p>The updated or created instance.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.repository.exceptions.NotFoundError" title="litestar.repository.exceptions.NotFoundError"><strong>NotFoundError</strong></a> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1422,14 +1422,14 @@ existing instance exists is the value of an attribute on <code class="docutils l
 <dd class="field-even"><p>The updated or created instances.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.repository.exceptions.NotFoundError" title="litestar.repository.exceptions.NotFoundError"><strong>NotFoundError</strong></a> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.repository.abc.AbstractAsyncRepository.list_and_count">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_and_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="filters.html#litestar.repository.filters.FilterTypes" title="litestar.repository.filters.FilterTypes"><span class="pre">FilterTypes</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractAsyncRepository.list_and_count" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_and_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FilterTypes</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractAsyncRepository.list_and_count" title="Permalink to this definition">#</a></dt>
 <dd><p>List records with total count.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1446,7 +1446,7 @@ existing instance exists is the value of an attribute on <code class="docutils l
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.repository.abc.AbstractAsyncRepository.list">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="filters.html#litestar.repository.filters.FilterTypes" title="litestar.repository.filters.FilterTypes"><span class="pre">FilterTypes</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractAsyncRepository.list" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FilterTypes</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractAsyncRepository.list" title="Permalink to this definition">#</a></dt>
 <dd><p>Get a list of instances, optionally filtered.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1478,7 +1478,7 @@ have the property that their attribute named <code class="docutils literal notra
 <dd class="field-even"><p>The filtered objects</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.repository.exceptions.RepositoryError" title="litestar.repository.exceptions.RepositoryError"><strong>RepositoryError</strong></a> – if a named attribute doesn’t exist on <a class="reference internal" href="#litestar.repository.abc.AbstractAsyncRepository.model_type" title="litestar.repository.abc.AbstractAsyncRepository.model_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">model_type</span></code></a>.</p>
+<dd class="field-odd"><p><strong>RepositoryError</strong> – if a named attribute doesn’t exist on <a class="reference internal" href="#litestar.repository.abc.AbstractAsyncRepository.model_type" title="litestar.repository.abc.AbstractAsyncRepository.model_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">model_type</span></code></a>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1486,7 +1486,7 @@ have the property that their attribute named <code class="docutils literal notra
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.repository.abc.AbstractAsyncRepository.check_not_found">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_not_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item_or_none</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractAsyncRepository.check_not_found" title="Permalink to this definition">#</a></dt>
-<dd><p>Raise <a class="reference internal" href="exceptions.html#litestar.repository.exceptions.NotFoundError" title="litestar.repository.exceptions.NotFoundError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotFoundError</span></code></a> if <code class="docutils literal notranslate"><span class="pre">item_or_none</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dd><p>Raise <code class="xref py py-class docutils literal notranslate"><span class="pre">NotFoundError</span></code> if <code class="docutils literal notranslate"><span class="pre">item_or_none</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>item_or_none</strong> – Item (<code class="xref py py-class docutils literal notranslate"><span class="pre">T</span></code>) to be tested for existence.</p>
@@ -1589,7 +1589,7 @@ Defaults to <cite>None</cite>, but can reference any surrogate or candidate key 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.repository.abc.AbstractSyncRepository.count">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="filters.html#litestar.repository.filters.FilterTypes" title="litestar.repository.filters.FilterTypes"><span class="pre">FilterTypes</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractSyncRepository.count" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FilterTypes</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractSyncRepository.count" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the count of records returned by a query.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1616,7 +1616,7 @@ Defaults to <cite>None</cite>, but can reference any surrogate or candidate key 
 <dd class="field-even"><p>The deleted instance.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.repository.exceptions.NotFoundError" title="litestar.repository.exceptions.NotFoundError"><strong>NotFoundError</strong></a> – If no instance found identified by <code class="docutils literal notranslate"><span class="pre">item_id</span></code>.</p>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no instance found identified by <code class="docutils literal notranslate"><span class="pre">item_id</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1637,7 +1637,7 @@ Defaults to <cite>None</cite>, but can reference any surrogate or candidate key 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.repository.abc.AbstractSyncRepository.exists">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="filters.html#litestar.repository.filters.FilterTypes" title="litestar.repository.filters.FilterTypes"><span class="pre">FilterTypes</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractSyncRepository.exists" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FilterTypes</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractSyncRepository.exists" title="Permalink to this definition">#</a></dt>
 <dd><p>Return true if the object specified by <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> exists.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1667,7 +1667,7 @@ Defaults to <cite>None</cite>, but can reference any surrogate or candidate key 
 <dd class="field-even"><p>The retrieved instance.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.repository.exceptions.NotFoundError" title="litestar.repository.exceptions.NotFoundError"><strong>NotFoundError</strong></a> – If no instance found identified by <code class="docutils literal notranslate"><span class="pre">item_id</span></code>.</p>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no instance found identified by <code class="docutils literal notranslate"><span class="pre">item_id</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1684,7 +1684,7 @@ Defaults to <cite>None</cite>, but can reference any surrogate or candidate key 
 <dd class="field-even"><p>The retrieved instance.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.repository.exceptions.NotFoundError" title="litestar.repository.exceptions.NotFoundError"><strong>NotFoundError</strong></a> – If no instance found identified by <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>.</p>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no instance found identified by <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1730,7 +1730,7 @@ collection.</p>
 <dd class="field-even"><p>The updated instance.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.repository.exceptions.NotFoundError" title="litestar.repository.exceptions.NotFoundError"><strong>NotFoundError</strong></a> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1748,7 +1748,7 @@ collection.</p>
 <dd class="field-even"><p>a list of the updated instances.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.repository.exceptions.NotFoundError" title="litestar.repository.exceptions.NotFoundError"><strong>NotFoundError</strong></a> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1769,7 +1769,7 @@ existing instance exists is the value of an attribute on <code class="docutils l
 <dd class="field-even"><p>The updated or created instance.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.repository.exceptions.NotFoundError" title="litestar.repository.exceptions.NotFoundError"><strong>NotFoundError</strong></a> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1790,14 +1790,14 @@ existing instance exists is the value of an attribute on <code class="docutils l
 <dd class="field-even"><p>The updated or created instances.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.repository.exceptions.NotFoundError" title="litestar.repository.exceptions.NotFoundError"><strong>NotFoundError</strong></a> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no instance found with same identifier as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.repository.abc.AbstractSyncRepository.list_and_count">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_and_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="filters.html#litestar.repository.filters.FilterTypes" title="litestar.repository.filters.FilterTypes"><span class="pre">FilterTypes</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractSyncRepository.list_and_count" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_and_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FilterTypes</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractSyncRepository.list_and_count" title="Permalink to this definition">#</a></dt>
 <dd><p>List records with total count.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1814,7 +1814,7 @@ existing instance exists is the value of an attribute on <code class="docutils l
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.repository.abc.AbstractSyncRepository.list">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="filters.html#litestar.repository.filters.FilterTypes" title="litestar.repository.filters.FilterTypes"><span class="pre">FilterTypes</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractSyncRepository.list" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FilterTypes</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractSyncRepository.list" title="Permalink to this definition">#</a></dt>
 <dd><p>Get a list of instances, optionally filtered.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1846,7 +1846,7 @@ have the property that their attribute named <code class="docutils literal notra
 <dd class="field-even"><p>The filtered objects</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.repository.exceptions.RepositoryError" title="litestar.repository.exceptions.RepositoryError"><strong>RepositoryError</strong></a> – if a named attribute doesn’t exist on <a class="reference internal" href="#litestar.repository.abc.AbstractAsyncRepository.model_type" title="litestar.repository.abc.AbstractAsyncRepository.model_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">model_type</span></code></a>.</p>
+<dd class="field-odd"><p><strong>RepositoryError</strong> – if a named attribute doesn’t exist on <a class="reference internal" href="#litestar.repository.abc.AbstractAsyncRepository.model_type" title="litestar.repository.abc.AbstractAsyncRepository.model_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">model_type</span></code></a>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1854,7 +1854,7 @@ have the property that their attribute named <code class="docutils literal notra
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.repository.abc.AbstractSyncRepository.check_not_found">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_not_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item_or_none</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#litestar.repository.abc.AbstractSyncRepository.check_not_found" title="Permalink to this definition">#</a></dt>
-<dd><p>Raise <a class="reference internal" href="exceptions.html#litestar.repository.exceptions.NotFoundError" title="litestar.repository.exceptions.NotFoundError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotFoundError</span></code></a> if <code class="docutils literal notranslate"><span class="pre">item_or_none</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dd><p>Raise <code class="xref py py-class docutils literal notranslate"><span class="pre">NotFoundError</span></code> if <code class="docutils literal notranslate"><span class="pre">item_or_none</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>item_or_none</strong> – Item (<code class="xref py py-class docutils literal notranslate"><span class="pre">T</span></code>) to be tested for existence.</p>
