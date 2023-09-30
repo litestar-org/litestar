@@ -23,6 +23,7 @@ Features
   - Oracle via `oracledb <https://oracle.github.io/python-oracledb/>`_
   - Google Spanner via `spanner-sqlalchemy <https://github.com/googleapis/python-spanner-sqlalchemy/>`_
   - DuckDB via `duckdb_engine <https://github.com/Mause/duckdb_engine>`_
+  - Microsoft SQL Server via `pyodbc <https://github.com/mkleehammer/pyodbc>`_
 
 Basic Use
 ---------

@@ -1267,7 +1267,9 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/61031243?v=4",
       "profile": "https://github.com/geeshta",
       "contributions": [
-        "doc"
+        "doc",
+        "code",
+        "bug"
       ]
     },
     {
@@ -1286,6 +1288,17 @@
       "profile": "https://github.com/syshenyu",
       "contributions": [
         "code"
+      ]
+    },
+    {
+      "login": "lsanpablo",
+      "name": "Luis San Pablo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7145688?v=4",
+      "profile": "https://github.com/lsanpablo",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
       ]
     }
   ],

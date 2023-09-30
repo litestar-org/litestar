@@ -443,7 +443,7 @@ class Response(Generic[T]):
             background=self.background or background,
             body=self.render(self.content, media_type, get_serializer(type_encoders)),
             cookies=cookies,
-            encoded_headers=encoded_headers or [],
+            encoded_headers=encoded_headers,
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,

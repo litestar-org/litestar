@@ -115,6 +115,7 @@ nitpick_ignore = [
     (PY_CLASS, "NoneType"),
     (PY_CLASS, "litestar._openapi.schema_generation.schema.SchemaCreator"),
     (PY_CLASS, "litestar._signature.model.SignatureModel"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.init.config.compat._CreateEngineMixin"),
     (PY_CLASS, "litestar.utils.signature.ParsedSignature"),
     (PY_CLASS, "litestar.utils.sync.AsyncCallable"),
     # types in changelog that no longer exist
@@ -155,6 +156,7 @@ nitpick_ignore = [
     (PY_CLASS, "advanced_alchemy.types.BigIntIdentity"),
     (PY_FUNC, "sqlalchemy.get_engine"),
     (PY_ATTR, "advanced_alchemy.repository.AbstractAsyncRepository.id_attribute"),
+    ("py:exc", "RepositoryError"),
 ]
 
 nitpick_ignore_regex = [
@@ -179,6 +181,7 @@ nitpick_ignore_regex = [
     (PY_RE, r"litestar\.connection\.base\.UserT"),
     (PY_RE, r"litestar\.pagination\.C"),
     (PY_RE, r"multidict\..*"),
+    (PY_RE, r"advanced_alchemy.*\.T"),
 ]
 
 # Warnings about missing references to those targets in the specified location will be ignored.

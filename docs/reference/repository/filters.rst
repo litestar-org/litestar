@@ -1,5 +1,4 @@
 filters
 =======
 
-.. automodule:: litestar.repository.filters
-    :members:
+This page has moved to :doc:`advanced-alchemy:reference/filters`

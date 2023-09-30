@@ -20,13 +20,20 @@ from litestar.middleware import DefineMiddleware
 from litestar.utils import get_name
 
 RICH_CLICK_INSTALLED = False
-try:
+with contextlib.suppress(ImportError):
     import rich_click  # noqa: F401
 
     RICH_CLICK_INSTALLED = True
-except ImportError:
-    pass
+UVICORN_INSTALLED = False
+with contextlib.suppress(ImportError):
+    import uvicorn  # noqa: F401
 
+    UVICORN_INSTALLED = True
+JSBEAUTIFIER_INSTALLED = False
+with contextlib.suppress(ImportError):
+    import jsbeautifier  # noqa: F401
+
+    JSBEAUTIFIER_INSTALLED = True
 if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     from click import ClickException, Command, Context, Group, pass_context
 else:
@@ -37,6 +44,8 @@ else:
 
 __all__ = (
     "RICH_CLICK_INSTALLED",
+    "UVICORN_INSTALLED",
+    "JSBEAUTIFIER_INSTALLED",
     "LoadedApp",
     "LitestarCLIException",
     "LitestarEnv",

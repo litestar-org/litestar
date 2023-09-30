@@ -250,6 +250,24 @@ def test_run_command_pdb(
     assert os.getenv("LITESTAR_PDB") == "1"
 
 
+@pytest.mark.usefixtures("mock_uvicorn_run", "unset_env")
+def test_run_command_without_uvicorn_installed(
+    app_file: Path,
+    runner: CliRunner,
+    monkeypatch: MonkeyPatch,
+    create_app_file: CreateAppFileFixture,
+    mocker: MockerFixture,
+) -> None:
+    mocker.patch("litestar.cli.commands.core.UVICORN_INSTALLED", False)
+    console_print_mock = mocker.patch("litestar.cli.commands.core.console.print")
+    path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)
+    app_path = f"{path.stem}:create_app"
+
+    result = runner.invoke(cli_command, ["--app", app_path, "run"])
+    assert result.exit_code == 1
+    assert any("uvicorn is not installed" in arg for args, kwargs in console_print_mock.call_args_list for arg in args)
+
+
 @pytest.mark.parametrize("short", [True, False])
 def test_version_command(short: bool, runner: CliRunner) -> None:
     result = runner.invoke(cli_command, "version --short" if short else "version")

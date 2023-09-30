@@ -84,7 +84,6 @@ if TYPE_CHECKING:
         Message,
         Middleware,
         OnAppInitHandler,
-        OptionalSequence,
         ParametersMap,
         Receive,
         ResponseCookies,
@@ -165,14 +164,14 @@ class Litestar(Router):
 
     def __init__(
         self,
-        route_handlers: OptionalSequence[ControllerRouterHandler] | None = None,
+        route_handlers: Sequence[ControllerRouterHandler] | None = None,
         *,
-        after_exception: OptionalSequence[AfterExceptionHookHandler] | None = None,
+        after_exception: Sequence[AfterExceptionHookHandler] | None = None,
         after_request: AfterRequestHookHandler | None = None,
         after_response: AfterResponseHookHandler | None = None,
         allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
         before_request: BeforeRequestHookHandler | None = None,
-        before_send: OptionalSequence[BeforeMessageSendHookHandler] | None = None,
+        before_send: Sequence[BeforeMessageSendHookHandler] | None = None,
         cache_control: CacheControlHeader | None = None,
         compression_config: CompressionConfig | None = None,
         cors_config: CORSConfig | None = None,
@@ -183,36 +182,37 @@ class Litestar(Router):
         etag: ETag | None = None,
         event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
         exception_handlers: ExceptionHandlersMap | None = None,
-        guards: OptionalSequence[Guard] | None = None,
+        guards: Sequence[Guard] | None = None,
         include_in_schema: bool | EmptyType = Empty,
-        listeners: OptionalSequence[EventListener] | None = None,
+        listeners: Sequence[EventListener] | None = None,
         logging_config: BaseLoggingConfig | EmptyType | None = Empty,
-        middleware: OptionalSequence[Middleware] | None = None,
+        middleware: Sequence[Middleware] | None = None,
         multipart_form_part_limit: int = 1000,
-        on_app_init: OptionalSequence[OnAppInitHandler] | None = None,
-        on_shutdown: OptionalSequence[LifespanHook] | None = None,
-        on_startup: OptionalSequence[LifespanHook] | None = None,
+        on_app_init: Sequence[OnAppInitHandler] | None = None,
+        on_shutdown: Sequence[LifespanHook] | None = None,
+        on_startup: Sequence[LifespanHook] | None = None,
         openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
         opt: Mapping[str, Any] | None = None,
         parameters: ParametersMap | None = None,
-        plugins: OptionalSequence[PluginProtocol] | None = None,
+        plugins: Sequence[PluginProtocol] | None = None,
         request_class: type[Request] | None = None,
         response_cache_config: ResponseCacheConfig | None = None,
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
-        response_headers: OptionalSequence[ResponseHeader] | None = None,
+        response_headers: Sequence[ResponseHeader] | None = None,
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
-        security: OptionalSequence[SecurityRequirement] | None = None,
+        security: Sequence[SecurityRequirement] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
         state: State | None = None,
-        static_files_config: OptionalSequence[StaticFilesConfig] | None = None,
+        static_files_config: Sequence[StaticFilesConfig] | None = None,
         stores: StoreRegistry | dict[str, Store] | None = None,
         tags: Sequence[str] | None = None,
         template_config: TemplateConfig | None = None,
         type_encoders: TypeEncodersMap | None = None,
         type_decoders: TypeDecodersSequence | None = None,
         websocket_class: type[WebSocket] | None = None,
-        lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
+        lifespan: Sequence[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager]
+        | None = None,
         pdb_on_exception: bool | None = None,
     ) -> None:
         """Initialize a ``Litestar`` application.
@@ -330,7 +330,7 @@ class Litestar(Router):
             exception_handlers=exception_handlers or {},
             guards=list(guards or []),
             include_in_schema=include_in_schema,
-            lifespan=lifespan or [],
+            lifespan=list(lifespan or []),
             listeners=list(listeners or []),
             logging_config=cast("BaseLoggingConfig | None", logging_config),
             middleware=list(middleware or []),
@@ -528,9 +528,8 @@ class Litestar(Router):
 
         It will be entered when the ``lifespan`` message has been received from the
         server, and exit after the ``asgi.shutdown`` message. During this period, it is
-        responsible for calling the ``before_startup``, ``after_startup``,
-        `on_startup``, ``before_shutdown``, ``on_shutdown`` and ``after_shutdown``
-        hooks, as well as custom lifespan managers.
+        responsible for calling the ``on_startup``, ``on_shutdown`` hooks, as well as
+        custom lifespan managers.
         """
         async with AsyncExitStack() as exit_stack:
             for hook in self.on_shutdown[::-1]:

@@ -3,7 +3,6 @@ back again, to bytes.
 """
 from __future__ import annotations
 
-import secrets
 from dataclasses import replace
 from typing import TYPE_CHECKING, AbstractSet, Any, Callable, ClassVar, Collection, Final, Mapping, Union, cast
 
@@ -27,6 +26,7 @@ from litestar.enums import RequestEncodingType
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
+from litestar.utils import unique_name_for_scope
 from litestar.utils.typing import safe_generic_origin_map
 
 if TYPE_CHECKING:
@@ -154,6 +154,18 @@ class DTOBackend:
             defined_fields.append(transfer_field_definition)
         return tuple(defined_fields)
 
+    def _create_transfer_model_name(self, model_name: str) -> str:
+        long_name_prefix = self.handler_id.split("::")[0]
+        short_name_prefix = _camelize(long_name_prefix.split(".")[-1], True)
+
+        name_suffix = "RequestBody" if self.is_data_field else "ResponseBody"
+
+        if (short_name := f"{short_name_prefix}{model_name}{name_suffix}") not in self._seen_model_names:
+            return short_name
+        if (long_name := f"{long_name_prefix}{model_name}{name_suffix}") not in self._seen_model_names:
+            return long_name
+        return unique_name_for_scope(long_name, self._seen_model_names)
+
     def create_transfer_model_type(
         self, model_name: str, field_definitions: tuple[TransferDTOFieldDefinition, ...]
     ) -> type[Struct]:
@@ -166,19 +178,9 @@ class DTOBackend:
         Returns:
             A ``BackendT`` class.
         """
-        long_name_prefix = self.handler_id.split("::")[0]
-        short_name_prefix = _camelize(long_name_prefix.split(".")[-1], True)
-
-        name_suffix = "RequestBody" if self.is_data_field else "ResponseBody"
-
-        if f"{short_name_prefix}{model_name}{name_suffix}" not in self._seen_model_names:
-            struct_name = f"{short_name_prefix}{model_name}{name_suffix}"
-        elif f"{long_name_prefix}{model_name}{name_suffix}" not in self._seen_model_names:
-            struct_name = f"{long_name_prefix}{model_name}{name_suffix}"
-        else:
-            struct_name = f"{long_name_prefix}{model_name}{name_suffix}{secrets.token_hex(8)}"
-
+        struct_name = self._create_transfer_model_name(model_name)
         self._seen_model_names.add(struct_name)
+
         struct = _create_struct_for_field_definitions(struct_name, field_definitions)
         setattr(struct, "__schema_name__", struct_name)
         return struct
