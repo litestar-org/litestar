@@ -1174,7 +1174,7 @@ document.write(`
   <section id="sqlalchemy-models-repository">
 <h1>SQLAlchemy Models &amp; Repository<a class="headerlink" href="#sqlalchemy-models-repository" title="Permalink to this heading">#</a></h1>
 <p>Litestar comes with a built-in repository class
-(<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/repository.html#advanced_alchemy.repository.SQLAlchemyAsyncRepository" title="(in advanced_alchemy v0.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code></a>)
+(<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/repository.html#advanced_alchemy.repository.SQLAlchemyAsyncRepository" title="(in advanced_alchemy v0.2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code></a>)
 for <a class="reference external" href="https://docs.sqlalchemy.org/">SQLAlchemy</a> to make CRUD operations easier.</p>
 <section id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this heading">#</a></h2>
@@ -1201,7 +1201,7 @@ an optional version with audit columns.</p></li>
 </section>
 <section id="basic-use">
 <h2>Basic Use<a class="headerlink" href="#basic-use" title="Permalink to this heading">#</a></h2>
-<p>To use the <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/repository.html#advanced_alchemy.repository.SQLAlchemyAsyncRepository" title="(in advanced_alchemy v0.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code></a>
+<p>To use the <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/repository.html#advanced_alchemy.repository.SQLAlchemyAsyncRepository" title="(in advanced_alchemy v0.2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code></a>
 repository, you must first define your models using one of the included built-in <code class="docutils literal notranslate"><span class="pre">DeclarativeBase</span></code> ORM base
 implementations:</p>
 <ul class="simple">
@@ -1269,7 +1269,7 @@ and <code class="docutils literal notranslate"><span class="pre">BigIntAuditBase
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 
 
@@ -1500,7 +1500,7 @@ your controllers and function based routes.</p>
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 
 
@@ -1723,7 +1723,7 @@ your controllers and function based routes.</p>
 
 <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
         <span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
 
 

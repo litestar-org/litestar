@@ -1319,7 +1319,7 @@ can add functionality on top of the repository pattern.</p>
 <span class="linenos">141</span>
 <span class="linenos">142</span><span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">143</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-<span class="linenos">144</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="linenos">144</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
 <span class="linenos">145</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDAuditBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 <span class="linenos">146</span>
 <span class="linenos">147</span>
@@ -1522,7 +1522,7 @@ to have the slugified value of “follow-the-yellow-brick-road”.</p>
 <span class="linenos">141</span>
 <span class="linenos">142</span><span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">143</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-<span class="linenos">144</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="linenos">144</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
 <span class="linenos">145</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDAuditBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 <span class="linenos">146</span>
 <span class="linenos">147</span>
@@ -1715,7 +1715,7 @@ a random set of digits are appended to the end of the slug to make it unique.</p
 <span class="linenos">141</span>
 <span class="linenos">142</span><span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">143</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-<span class="linenos">144</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="linenos">144</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
 <span class="linenos">145</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDAuditBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 <span class="linenos">146</span>
 <span class="linenos">147</span>

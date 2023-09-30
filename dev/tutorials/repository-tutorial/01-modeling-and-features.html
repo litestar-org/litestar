@@ -1211,7 +1211,7 @@ to make working with models easier.</p>
 <span class="linenos">39</span>
 <span class="linenos">40</span><span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">41</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-<span class="linenos">42</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="linenos">42</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
 <span class="linenos">43</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 <span class="linenos">44</span>
 <span class="linenos">45</span>
@@ -1282,7 +1282,7 @@ key constraints when using the <code class="docutils literal notranslate"><span 
 <span class="linenos">39</span>
 <span class="linenos">40</span><span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">41</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-<span class="linenos">42</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="linenos">42</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
 <span class="linenos">43</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 <span class="linenos">44</span>
 <span class="linenos">45</span>
@@ -1331,7 +1331,7 @@ with various popular database engines. As of now, six database engines are suppo
 Postgres, SQLite, MySQL, DuckDB, Oracle, and Spanner.</p></li>
 <li><p>Automatic table name deduction from model name. For instance, a model named
 <code class="docutils literal notranslate"><span class="pre">EventLog</span></code> would correspond to the <code class="docutils literal notranslate"><span class="pre">event_log</span></code> database table.</p></li>
-<li><p>A <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/types.html#advanced_alchemy.types.GUID" title="(in advanced_alchemy v0.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">GUID</span></code></a> database type that
+<li><p>A <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/types.html#advanced_alchemy.types.GUID" title="(in advanced_alchemy v0.2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">GUID</span></code></a> database type that
 establishes a native UUID in supported engines or a <code class="docutils literal notranslate"><span class="pre">Binary(16)</span></code> as a fallback.</p></li>
 <li><p>A <code class="docutils literal notranslate"><span class="pre">BigInteger</span></code> variant
 <code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntIdentity</span></code> that

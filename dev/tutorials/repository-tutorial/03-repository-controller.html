@@ -1379,7 +1379,7 @@ parameters.</p>
 <span class="linenos">204</span>
 <span class="linenos">205</span><span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">206</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-<span class="linenos">207</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="linenos">207</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
 <span class="linenos">208</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 <span class="linenos">209</span>
 <span class="linenos">210</span>
@@ -1605,7 +1605,7 @@ statement:</p>
 <span class="linenos">204</span>
 <span class="linenos">205</span><span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">206</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-<span class="linenos">207</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="linenos">207</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
 <span class="linenos">208</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 <span class="linenos">209</span>
 <span class="linenos">210</span>
@@ -1831,7 +1831,7 @@ interacting with the <code class="docutils literal notranslate"><span class="pre
 <span class="linenos">204</span>
 <span class="linenos">205</span><span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">206</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-<span class="linenos">207</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="linenos">207</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
 <span class="linenos">208</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 <span class="linenos">209</span>
 <span class="linenos">210</span>
@@ -2058,7 +2058,7 @@ Here’s a corresponding synchronous version of the previous example:</p>
 <span class="linenos">205</span>
 <span class="linenos">206</span><span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">207</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-<span class="linenos">208</span>    <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="linenos">208</span>    <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
 <span class="linenos">209</span>        <span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
 <span class="linenos">210</span>
 <span class="linenos">211</span>

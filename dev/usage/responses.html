@@ -2953,7 +2953,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 
 
@@ -3014,7 +3014,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">create_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 
 
