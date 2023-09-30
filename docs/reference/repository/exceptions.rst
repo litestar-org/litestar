@@ -1,5 +1,4 @@
 exceptions
 ==========
 
-.. automodule:: litestar.repository.exceptions
-    :members:
+This page has moved to :doc:`advanced-alchemy:reference/filters`
