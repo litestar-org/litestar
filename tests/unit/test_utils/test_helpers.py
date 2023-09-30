@@ -1,6 +1,6 @@
 from functools import partial
 
-from litestar.utils.helpers import unwrap_partial
+from litestar.utils.helpers import unique_name_for_scope, unwrap_partial
 
 
 def test_unwrap_partial() -> None:
@@ -11,3 +11,11 @@ def test_unwrap_partial() -> None:
 
     assert wrapped() == 3
     assert unwrap_partial(wrapped) is func
+
+
+def test_unique_name_for_scope() -> None:
+    assert unique_name_for_scope("a", []) == "a_0"
+
+    assert unique_name_for_scope("a", ["a", "a_0", "b"]) == "a_1"
+
+    assert unique_name_for_scope("b", ["a", "a_0", "b"]) == "b_0"

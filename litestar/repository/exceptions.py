@@ -1,15 +1,6 @@
-from __future__ import annotations
+try:
+    from advanced_alchemy.exceptions import ConflictError, NotFoundError, RepositoryError
+except ImportError:
+    from ._exceptions import ConflictError, NotFoundError, RepositoryError  # type: ignore[assignment]
 
 __all__ = ("ConflictError", "NotFoundError", "RepositoryError")
-
-
-class RepositoryError(Exception):
-    """Base repository exception type."""
-
-
-class ConflictError(RepositoryError):
-    """Data integrity error."""
-
-
-class NotFoundError(RepositoryError):
-    """An identity does not exist."""
