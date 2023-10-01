@@ -1,7 +1,7 @@
 import gzip
 import random
 from datetime import timedelta
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Type, Union
 from unittest.mock import MagicMock
 from uuid import uuid4
 
@@ -211,7 +211,7 @@ def test_does_not_apply_to_non_cached_routes(mock: MagicMock) -> None:
     ],
 )
 def test_middleware_not_applied_to_non_cached_routes(
-    cache: bool | int | type[CACHE_FOREVER], expect_applied: bool
+    cache: Union[bool, int, Type[CACHE_FOREVER]], expect_applied: bool
 ) -> None:
     @get(path="/", cache=cache)
     def handler() -> None:
