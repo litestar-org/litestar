@@ -1,13 +1,18 @@
+import gzip
 import random
 from datetime import timedelta
 from typing import TYPE_CHECKING, Optional
 from unittest.mock import MagicMock
 from uuid import uuid4
 
+import msgspec
 import pytest
 
 from litestar import Litestar, Request, get
+from litestar.config.compression import CompressionConfig
 from litestar.config.response_cache import CACHE_FOREVER, ResponseCacheConfig
+from litestar.enums import CompressionEncoding
+from litestar.middleware.response_cache import ResponseCacheMiddleware
 from litestar.stores.base import Store
 from litestar.stores.memory import MemoryStore
 from litestar.testing import TestClient, create_test_client
@@ -180,3 +185,66 @@ async def test_with_stores(store: Store, mock: MagicMock) -> None:
         assert response_two.text == mock.return_value
 
         assert mock.call_count == 1
+
+
+def test_does_not_apply_to_non_cached_routes(mock: MagicMock) -> None:
+    @get("/")
+    def handler() -> str:
+        return mock()  # type: ignore[no-any-return]
+
+    with create_test_client([handler]) as client:
+        first_response = client.get("/")
+        second_response = client.get("/")
+
+        assert first_response.status_code == 200
+        assert second_response.status_code == 200
+        assert mock.call_count == 2
+
+
+@pytest.mark.parametrize(
+    "cache,expect_applied",
+    [
+        (True, True),
+        (False, False),
+        (1, True),
+        (CACHE_FOREVER, True),
+    ],
+)
+def test_middleware_not_applied_to_non_cached_routes(
+    cache: bool | int | type[CACHE_FOREVER], expect_applied: bool
+) -> None:
+    @get(path="/", cache=cache)
+    def handler() -> None:
+        ...
+
+    client = create_test_client(route_handlers=[handler])
+    unpacked_middleware = []
+    cur = client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0]
+    while hasattr(cur, "app"):
+        unpacked_middleware.append(cur)
+        cur = cur.app
+    unpacked_middleware.append(cur)
+
+    assert len([m for m in unpacked_middleware if isinstance(m, ResponseCacheMiddleware)]) == int(expect_applied)
+
+
+async def test_compression_applies_before_cache() -> None:
+    return_value = "_litestar_" * 4000
+    mock = MagicMock(return_value=return_value)
+
+    @get(path="/", cache=True)
+    def handler_fn() -> str:
+        return mock()  # type: ignore[no-any-return]
+
+    app = Litestar(
+        route_handlers=[handler_fn],
+        compression_config=CompressionConfig(backend="gzip"),
+    )
+
+    with TestClient(app) as client:
+        client.get("/", headers={"Accept-Encoding": str(CompressionEncoding.GZIP.value)})
+
+    stored_value = await app.response_cache_config.get_store_from_app(app).get("/")
+    assert stored_value
+    stored_messages = msgspec.msgpack.decode(stored_value)
+    assert gzip.decompress(stored_messages[1]["body"]).decode() == return_value

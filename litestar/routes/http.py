@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import pickle
 from itertools import chain
 from typing import TYPE_CHECKING, Any, cast
 
-from litestar.constants import DEFAULT_ALLOWED_CORS_HEADERS
+from litestar.constants import DEFAULT_ALLOWED_CORS_HEADERS, SCOPE_STATE_IS_CACHED
 from litestar.datastructures.headers import Headers
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import HttpMethod, MediaType, ScopeType
@@ -13,6 +12,8 @@ from litestar.handlers.http_handlers import HTTPRouteHandler
 from litestar.response import Response
 from litestar.routes.base import BaseRoute
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
+from litestar.utils import set_litestar_scope_state
+from msgspec.msgpack import decode as _decode_msgpack_plain
 
 if TYPE_CHECKING:
     from litestar._kwargs import KwargsModel
@@ -128,18 +129,9 @@ class HTTPRoute(BaseRoute):
         ):
             return response
 
-        response = await self._call_handler_function(
+        return await self._call_handler_function(
             scope=scope, request=request, parameter_model=parameter_model, route_handler=route_handler
         )
-
-        if route_handler.cache:
-            await self._set_cached_response(
-                response=response,
-                request=request,
-                route_handler=route_handler,
-            )
-
-        return response
 
     async def _call_handler_function(
         self, scope: Scope, request: Request, parameter_model: KwargsModel, route_handler: HTTPRouteHandler
@@ -225,30 +217,19 @@ class HTTPRoute(BaseRoute):
         cache_key = (route_handler.cache_key_builder or cache_config.key_builder)(request)
         store = cache_config.get_store_from_app(request.app)
 
-        cached_response = await store.get(key=cache_key)
+        if not (cached_response_data := await store.get(key=cache_key)):
+            return None
 
-        if cached_response:
-            return cast("ASGIApp", pickle.loads(cached_response))  # noqa: S301
+        # we use the regular msgspec.msgpack.decode here since we don't need any of
+        # the added decoders
+        messages = _decode_msgpack_plain(cached_response_data)
 
-        return None
+        async def cached_response(scope: Scope, receive: Receive, send: Send) -> None:
+            set_litestar_scope_state(scope, SCOPE_STATE_IS_CACHED, True)
+            for message in messages:
+                await send(message)
 
-    @staticmethod
-    async def _set_cached_response(
-        response: Response | ASGIApp, request: Request, route_handler: HTTPRouteHandler
-    ) -> None:
-        """Pickles and caches a response object."""
-        cache_config = request.app.response_cache_config
-        cache_key = (route_handler.cache_key_builder or cache_config.key_builder)(request)
-
-        expires_in: int | None = None
-        if route_handler.cache is True:
-            expires_in = cache_config.default_expiration
-        elif route_handler.cache is not False and isinstance(route_handler.cache, int):
-            expires_in = route_handler.cache
-
-        store = cache_config.get_store_from_app(request.app)
-
-        await store.set(key=cache_key, value=pickle.dumps(response, pickle.HIGHEST_PROTOCOL), expires_in=expires_in)
+        return cached_response
 
     def create_options_handler(self, path: str) -> HTTPRouteHandler:
         """Args:
