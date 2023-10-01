@@ -4,12 +4,12 @@ from gzip import GzipFile
 from io import BytesIO
 from typing import TYPE_CHECKING, Any, Literal, Optional
 
-from litestar.constants import SCOPE_STATE_RESPONSE_COMPRESSED
+from litestar.constants import SCOPE_STATE_IS_CACHED, SCOPE_STATE_RESPONSE_COMPRESSED
 from litestar.datastructures import Headers, MutableScopeHeaders
 from litestar.enums import CompressionEncoding, ScopeType
 from litestar.exceptions import MissingDependencyException
 from litestar.middleware.base import AbstractMiddleware
-from litestar.utils import Ref, set_litestar_scope_state
+from litestar.utils import Ref, get_litestar_scope_state, set_litestar_scope_state
 
 __all__ = ("CompressionFacade", "CompressionMiddleware")
 
@@ -176,6 +176,8 @@ class CompressionMiddleware(AbstractMiddleware):
         initial_message = Ref[Optional["HTTPResponseStartEvent"]](None)
         started = Ref[bool](False)
 
+        _own_encoding = compression_encoding.encode("latin-1")
+
         async def send_wrapper(message: Message) -> None:
             """Handle and compresses the HTTP Message with brotli.
 
@@ -185,6 +187,11 @@ class CompressionMiddleware(AbstractMiddleware):
 
             if message["type"] == "http.response.start":
                 initial_message.value = message
+                return
+
+            if initial_message.value and get_litestar_scope_state(scope, SCOPE_STATE_IS_CACHED):
+                await send(initial_message.value)
+                await send(message)
                 return
 
             if initial_message.value and message["type"] == "http.response.body":
