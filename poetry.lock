@@ -1104,7 +1104,7 @@ typing-extensions = {version = ">=3.10.0.1", markers = "python_version <= \"3.8\
 name = "fast-query-parsers"
 version = "1.0.3"
 description = "Ultra-fast query string and url-encoded form-data parsers"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "fast_query_parsers-1.0.3-cp38-abi3-macosx_10_7_x86_64.whl", hash = "sha256:afbf71c1b4398dacfb9d84755eb026f8e759f68a066f1f3cc19e471fc342e74f"},
@@ -4293,7 +4293,7 @@ attrs = ["attrs"]
 brotli = ["brotli"]
 cli = ["jsbeautifier", "uvicorn"]
 cryptography = ["cryptography"]
-full = ["advanced-alchemy", "annotated-types", "attrs", "brotli", "cryptography", "jinja2", "jsbeautifier", "mako", "minijinja", "opentelemetry-instrumentation-asgi", "piccolo", "picologging", "prometheus-client", "pydantic", "pydantic-extra-types", "python-jose", "redis", "structlog", "uvicorn"]
+full = ["advanced-alchemy", "annotated-types", "attrs", "brotli", "cryptography", "fast-query-parsers", "jinja2", "jsbeautifier", "mako", "minijinja", "opentelemetry-instrumentation-asgi", "piccolo", "picologging", "prometheus-client", "pydantic", "pydantic-extra-types", "python-jose", "redis", "structlog", "uvicorn"]
 jinja = ["jinja2"]
 jsbeautifier = ["jsbeautifier"]
 jwt = ["cryptography", "python-jose"]
@@ -4306,10 +4306,10 @@ prometheus = ["prometheus-client"]
 pydantic = ["pydantic", "pydantic-extra-types"]
 redis = ["redis"]
 sqlalchemy = ["advanced-alchemy"]
-standard = ["jinja2", "jsbeautifier", "uvicorn"]
+standard = ["fast-query-parsers", "jinja2", "jsbeautifier", "uvicorn"]
 structlog = ["structlog"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "ea7b1c0ac6f00e05451ed86ad33c3d47bb46418d728beb69780f42c61f850f3f"
+content-hash = "162ff5be14a8e045a386af07cecc80464c936d38bd59f04d98f4bdb2d45338bd"

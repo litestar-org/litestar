@@ -72,7 +72,7 @@ attrs = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
 click = "*"
 cryptography = { version = "*", optional = true }
-fast-query-parsers = ">=1.0.2"
+fast-query-parsers = {version = ">=1.0.2", optional = true }
 httpx = ">=0.22"
 importlib-metadata = { version = "*", python = "<3.10" }
 importlib-resources = { version = ">=5.12.0", python = "<3.9" }
@@ -180,7 +180,7 @@ prometheus = ["prometheus-client"]
 pydantic = ["pydantic", "pydantic-extra-types"]
 redis = ["redis"]
 sqlalchemy = ["advanced-alchemy"]
-standard = ["jinja2", "jsbeautifier", "uvicorn"]
+standard = ["jinja2", "jsbeautifier", "uvicorn", "fast-query-parsers"]
 structlog = ["structlog"]
 
 full = [
@@ -202,7 +202,8 @@ full = [
     "redis",
     "structlog",
     "uvicorn",
-    "advanced-alchemy"
+    "advanced-alchemy",
+    "fast-query-parsers",
 ]
 
 [tool.poetry.scripts]
