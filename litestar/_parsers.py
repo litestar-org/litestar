@@ -1,18 +1,25 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from functools import lru_cache
 from http.cookies import _unquote as unquote_cookie
-from typing import Any, Iterable
+from typing import Iterable
 from urllib.parse import unquote
 
-from fast_query_parsers import parse_query_string as fast_parse_query_string
-from fast_query_parsers import parse_url_encoded_dict
+try:
+    from fast_query_parsers import parse_query_string as parse_qsl
+except ImportError:
+    from urllib.parse import parse_qsl as _parse_qsl
+
+    def parse_qsl(qs: bytes, separator: str) -> list[tuple[str, str]]:
+        return _parse_qsl(qs.decode("latin-1"), keep_blank_values=True, separator=separator)
+
 
 __all__ = ("parse_cookie_string", "parse_headers", "parse_query_string", "parse_url_encoded_form_data")
 
 
 @lru_cache(1024)
-def parse_url_encoded_form_data(encoded_data: bytes) -> dict[str, Any]:
+def parse_url_encoded_form_data(encoded_data: bytes) -> dict[str, str | list[str]]:
     """Parse an url encoded form data dict.
 
     Args:
@@ -21,11 +28,14 @@ def parse_url_encoded_form_data(encoded_data: bytes) -> dict[str, Any]:
     Returns:
         A parsed dict.
     """
-    return parse_url_encoded_dict(qs=encoded_data, parse_numbers=False)
+    decoded_dict: defaultdict[str, list[str]] = defaultdict(list)
+    for k, v in parse_qsl(encoded_data, separator="&"):
+        decoded_dict[k].append(v)
+    return {k: v if len(v) > 1 else v[0] for k, v in decoded_dict.items()}
 
 
 @lru_cache(1024)
-def parse_query_string(query_string: bytes) -> tuple[tuple[str, Any], ...]:
+def parse_query_string(query_string: bytes) -> tuple[tuple[str, str], ...]:
     """Parse a query string into a tuple of key value pairs.
 
     Args:
@@ -34,7 +44,7 @@ def parse_query_string(query_string: bytes) -> tuple[tuple[str, Any], ...]:
     Returns:
         A tuple of key value pairs.
     """
-    return tuple(fast_parse_query_string(query_string, "&"))
+    return tuple(parse_qsl(query_string, separator="&"))
 
 
 @lru_cache(1024)
