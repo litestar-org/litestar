@@ -40,9 +40,7 @@ class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):
     """MultiDict, using :class:`MultiDict <multidict.MultiDictProxy>`."""
 
     def __init__(self, args: MultiMapping | Mapping[str, T] | Iterable[tuple[str, T]] | None = None) -> None:
-        """Initialize ``MultiDict`` from a.
-
-        ``MultiMapping``, :class:`Mapping <typing.Mapping>` or an iterable of tuples.
+        """Initialize ``MultiDict`` from a`MultiMapping``, :class:`Mapping <typing.Mapping>` or an iterable of tuples.
 
         Args:
             args: Mapping-like structure to create the ``MultiDict`` from

@@ -9,7 +9,7 @@ from litestar._parsers import (
     parse_query_string,
     parse_url_encoded_form_data,
 )
-from litestar.datastructures import Headers
+from litestar.datastructures import Headers, MultiDict
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ValidationException
@@ -155,7 +155,7 @@ def parse_connection_query_params(connection: ASGIConnection, kwargs_model: Kwar
     )
 
 
-def parse_connection_headers(connection: ASGIConnection, _: KwargsModel) -> Headers:
+def parse_connection_headers(connection: ASGIConnection, _: KwargsModel) -> MultiDict:
     """Parse header parameters and cache the result in scope.
 
     Args:
@@ -165,7 +165,7 @@ def parse_connection_headers(connection: ASGIConnection, _: KwargsModel) -> Head
     Returns:
         A Headers instance
     """
-    return Headers.from_scope(connection.scope)
+    return MultiDict(Headers.from_scope(connection.scope))
 
 
 def state_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
