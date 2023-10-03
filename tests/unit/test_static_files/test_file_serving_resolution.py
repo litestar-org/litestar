@@ -220,3 +220,32 @@ def test_service_from_relative_path_using_path(tmpdir: "Path") -> None:
         response = client.get("/static/test.txt")
         assert response.status_code == HTTP_200_OK
         assert response.text == "content"
+
+
+def test_service_from_base_path_using_string(tmpdir: "Path") -> None:
+    sub_dir = Path(tmpdir.mkdir("low")).resolve()  # type: ignore
+
+    path = tmpdir / "test.txt"
+    path.write_text("content", "utf-8")
+
+    @get("/", media_type=MediaType.TEXT)
+    def index_handler() -> str:
+        return "index"
+
+    @get("/sub")
+    def sub_handler() -> dict:
+        return {"hello": "world"}
+
+    static_files_config = StaticFilesConfig(path="/", directories=[f"{sub_dir}/.."])
+    with create_test_client([index_handler, sub_handler], static_files_config=[static_files_config]) as client:
+        response = client.get("/test.txt")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "content"
+
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "index"
+
+        response = client.get("/sub")
+        assert response.status_code == HTTP_200_OK
+        assert response.json() == {"hello": "world"}

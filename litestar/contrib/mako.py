@@ -3,7 +3,7 @@ from __future__ import annotations
 from functools import partial
 from typing import TYPE_CHECKING, Any, Callable
 
-from litestar.exceptions import MissingDependencyException, TemplateNotFoundException
+from litestar.exceptions import ImproperlyConfiguredException, MissingDependencyException, TemplateNotFoundException
 from litestar.template.base import (
     TemplateEngineProtocol,
     TemplateProtocol,
@@ -65,16 +65,25 @@ class MakoTemplate(TemplateProtocol):
 class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
     """Mako based TemplateEngine."""
 
-    def __init__(self, directory: DirectoryPath | list[DirectoryPath]) -> None:
+    def __init__(
+        self, directory: DirectoryPath | list[DirectoryPath] | None = None, engine_instance: Any | None = None
+    ) -> None:
         """Initialize template engine.
 
         Args:
             directory: Direct path or list of directory paths from which to serve templates.
+            engine_instance: A mako TemplateLookup instance.
         """
-        super().__init__(directory=directory)
-        self.engine = TemplateLookup(
-            directories=directory if isinstance(directory, (list, tuple)) else [directory], default_filters=["h"]
-        )
+        super().__init__(directory, engine_instance)
+        if directory and engine_instance:
+            raise ImproperlyConfiguredException("You must provide either a directory or a mako TemplateLookup.")
+        if directory:
+            self.engine = TemplateLookup(
+                directories=directory if isinstance(directory, (list, tuple)) else [directory], default_filters=["h"]
+            )
+        elif engine_instance:
+            self.engine = engine_instance
+
         self._template_callables: list[tuple[str, Callable[[dict[str, Any]], Any]]] = []
         self.register_template_callable(key="url_for_static_asset", template_callable=url_for_static_asset)  # type: ignore
         self.register_template_callable(key="csrf_token", template_callable=csrf_token)  # type: ignore
@@ -110,3 +119,15 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
             None
         """
         self._template_callables.append((key, template_callable))
+
+    @classmethod
+    def from_template_lookup(cls, template_lookup: TemplateLookup) -> MakoTemplateEngine:
+        """Create a template engine from an existing mako TemplateLookup instance.
+
+        Args:
+            template_lookup: A mako TemplateLookup instance.
+
+        Returns:
+            MakoTemplateEngine instance
+        """
+        return cls(directory=None, engine_instance=template_lookup)

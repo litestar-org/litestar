@@ -8,12 +8,14 @@ from typing import TYPE_CHECKING, List, Tuple
 from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest
+from click import Group
 from pydantic import VERSION
 from pytest import MonkeyPatch
 
 from litestar import Litestar, MediaType, Request, Response, get, post
 from litestar.config.app import AppConfig
 from litestar.config.response_cache import ResponseCacheConfig
+from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
 from litestar.datastructures import MutableScopeHeaders, State
 from litestar.events.emitter import SimpleEventEmitter
 from litestar.exceptions import (
@@ -23,6 +25,7 @@ from litestar.exceptions import (
     NotFoundException,
 )
 from litestar.logging.config import LoggingConfig
+from litestar.plugins import CLIPluginProtocol
 from litestar.router import Router
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
@@ -112,6 +115,7 @@ def test_set_debug_updates_logging_level() -> None:
         ("1", True, True),
     ],
 )
+@pytest.mark.filterwarnings("ignore::litestar.utils.warnings.LitestarWarning:")
 def test_set_env_flags(
     monkeypatch: MonkeyPatch,
     env_value: str | None,
@@ -378,3 +382,27 @@ def test_registering_route_handler_generates_openapi_docs() -> None:
 
     app.register(get("/path2")(fn))
     assert paths.get("/path2")
+
+
+def test_plugin_properties() -> None:
+    class FooPlugin(CLIPluginProtocol):
+        def on_cli_init(self, cli: Group) -> None:
+            return
+
+    app = Litestar(plugins=[FooPlugin(), SQLAlchemySerializationPlugin()])
+
+    assert app.openapi_schema_plugins == list(app.plugins.openapi)
+    assert app.cli_plugins == list(app.plugins.cli)
+    assert app.serialization_plugins == list(app.plugins.serialization)
+
+
+def test_plugin_registry() -> None:
+    class FooPlugin(CLIPluginProtocol):
+        def on_cli_init(self, cli: Group) -> None:
+            return
+
+    foo = FooPlugin()
+
+    app = Litestar(plugins=[foo])
+
+    assert foo in app.plugins.cli

@@ -3,20 +3,23 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import TYPE_CHECKING, Collection, Generic, TypeVar
 
-from litestar.dto.base_factory import AbstractDTOFactory
+from typing_extensions import override
+
+from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField
-from litestar.exceptions import MissingDependencyException
+from litestar.exceptions import MissingDependencyException, ValidationException
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
-    from typing import ClassVar, Generator
+    from typing import Any, Generator
 
     from litestar.typing import FieldDefinition
 
 
 try:
     import pydantic
+    from pydantic import ValidationError
 
     if pydantic.VERSION.startswith("2"):
         from pydantic_core import PydanticUndefined
@@ -30,12 +33,22 @@ __all__ = ("PydanticDTO",)
 T = TypeVar("T", bound="pydantic.BaseModel | Collection[pydantic.BaseModel]")
 
 
-class PydanticDTO(AbstractDTOFactory[T], Generic[T]):
+class PydanticDTO(AbstractDTO[T], Generic[T]):
     """Support for domain modelling with Pydantic."""
 
-    __slots__ = ()
+    @override
+    def decode_builtins(self, value: dict[str, Any]) -> Any:
+        try:
+            return super().decode_builtins(value)
+        except ValidationError as ex:
+            raise ValidationException(extra=ex.errors()) from ex
 
-    model_type: ClassVar[type[pydantic.BaseModel]]
+    @override
+    def decode_bytes(self, value: bytes) -> Any:
+        try:
+            return super().decode_bytes(value)
+        except ValidationError as ex:
+            raise ValidationException(extra=ex.errors()) from ex
 
     @classmethod
     def generate_field_definitions(
@@ -67,7 +80,6 @@ class PydanticDTO(AbstractDTOFactory[T], Generic[T]):
                     default_factory=field_info.default_factory
                     if field_info.default_factory and field_info.default_factory is not PydanticUndefined  # type: ignore[comparison-overlap]
                     else Empty,
-                    dto_for=None,
                 ),
                 default=default,
                 name=field_name,

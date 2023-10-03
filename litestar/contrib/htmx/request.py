@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 from urllib.parse import unquote, urlsplit, urlunsplit
 
 from litestar import Request
+from litestar.connection.base import empty_receive, empty_send
 from litestar.contrib.htmx._utils import HTMXHeaders
 from litestar.exceptions import SerializationException
 from litestar.serialization import decode_json
@@ -106,7 +107,7 @@ class HTMXRequest(Request):
 
     __slots__ = ("htmx",)
 
-    def __init__(self, scope: Scope, receive: Receive, send: Send) -> None:
+    def __init__(self, scope: Scope, receive: Receive = empty_receive, send: Send = empty_send) -> None:
         """Initialize :class:`HTMXRequest`"""
         super().__init__(scope=scope, receive=receive, send=send)
         self.htmx = HTMXDetails(self)

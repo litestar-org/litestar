@@ -2,7 +2,7 @@ import secrets
 import sys
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
-from typing import Optional
+from typing import Any, Dict, Optional
 from uuid import uuid4
 
 import pytest
@@ -15,14 +15,18 @@ from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedExce
 
 
 @pytest.mark.parametrize("algorithm", ["HS256", "HS384", "HS512"])
-@pytest.mark.parametrize("token_issuer", [None, secrets.token_hex()])
-@pytest.mark.parametrize("token_audience", [None, secrets.token_hex()])
-@pytest.mark.parametrize("token_unique_jwt_id", [None, secrets.token_hex()])
+@pytest.mark.parametrize("token_issuer", [None, "e3d7d10edbbc28bfebd8861d39ae7587acde1e1fcefe2cbbec686d235d68f475"])
+@pytest.mark.parametrize("token_audience", [None, "627224198b4245ed91cf8353e4ccdf1650728c7ee92748f55fe1e9a9c4d961df"])
+@pytest.mark.parametrize(
+    "token_unique_jwt_id", [None, "10f5c6967783ddd6bb0c4e8262d7097caeae64705e45f83275e3c32eee5d30f2"]
+)
+@pytest.mark.parametrize("token_extras", [None, {"email": "test@test.com"}])
 def test_token(
     algorithm: str,
     token_issuer: Optional[str],
     token_audience: Optional[str],
     token_unique_jwt_id: Optional[str],
+    token_extras: Optional[Dict[str, Any]],
 ) -> None:
     token_secret = secrets.token_hex()
     token = Token(
@@ -31,6 +35,7 @@ def test_token(
         aud=token_audience,
         iss=token_issuer,
         jti=token_unique_jwt_id,
+        extras=token_extras or {},
     )
     encoded_token = token.encode(secret=token_secret, algorithm=algorithm)
     decoded_token = token.decode(encoded_token=encoded_token, secret=token_secret, algorithm=algorithm)

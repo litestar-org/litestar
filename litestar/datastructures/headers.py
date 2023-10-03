@@ -26,7 +26,7 @@ from typing_extensions import get_type_hints
 from litestar._multipart import parse_content_header
 from litestar._parsers import parse_headers
 from litestar.datastructures.multi_dicts import MultiMixin
-from litestar.dto.base_factory import AbstractDTOFactory
+from litestar.dto.base_dto import AbstractDTO
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 
 __all__ = ("Accept", "CacheControlHeader", "ETag", "Header", "Headers", "MutableScopeHeaders")
@@ -369,7 +369,7 @@ class CacheControlHeader(Header):
             for key, value in get_type_hints(cls, include_extras=True).items():
                 definition = FieldDefinition.from_kwarg(annotation=value, name=key)
                 # resolve_model_type so that field_definition.raw has the real raw type e.g. <class 'bool'>
-                cls._field_definitions[key] = AbstractDTOFactory.resolve_model_type(definition)
+                cls._field_definitions[key] = AbstractDTO.resolve_model_type(definition)
         return cls._field_definitions
 
     @classmethod

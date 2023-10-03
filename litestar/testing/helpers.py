@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from litestar.config.csrf import CSRFConfig
     from litestar.config.response_cache import ResponseCacheConfig
     from litestar.datastructures import CacheControlHeader, ETag, ResponseHeader, State
-    from litestar.dto.interface import DTOInterface
+    from litestar.dto import AbstractDTO
     from litestar.events import BaseEventEmitterBackend, EventListener
     from litestar.logging.config import BaseLoggingConfig
     from litestar.middleware.session.base import BaseBackendConfig
@@ -44,7 +44,6 @@ if TYPE_CHECKING:
         LifespanHook,
         Middleware,
         OnAppInitHandler,
-        OptionalSequence,
         ParametersMap,
         ResponseCookies,
         ResponseType,
@@ -55,7 +54,7 @@ if TYPE_CHECKING:
 def create_test_client(
     route_handlers: ControllerRouterHandler | Sequence[ControllerRouterHandler] | None = None,
     *,
-    after_exception: OptionalSequence[AfterExceptionHookHandler] | None = None,
+    after_exception: Sequence[AfterExceptionHookHandler] | None = None,
     after_request: AfterRequestHookHandler | None = None,
     after_response: AfterResponseHookHandler | None = None,
     allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
@@ -63,29 +62,30 @@ def create_test_client(
     backend_options: Mapping[str, Any] | None = None,
     base_url: str = "http://testserver.local",
     before_request: BeforeRequestHookHandler | None = None,
-    before_send: OptionalSequence[BeforeMessageSendHookHandler] | None = None,
+    before_send: Sequence[BeforeMessageSendHookHandler] | None = None,
     cache_control: CacheControlHeader | None = None,
     compression_config: CompressionConfig | None = None,
     cors_config: CORSConfig | None = None,
     csrf_config: CSRFConfig | None = None,
     debug: bool = True,
     dependencies: Dependencies | None = None,
-    dto: type[DTOInterface] | None | EmptyType = Empty,
+    dto: type[AbstractDTO] | None | EmptyType = Empty,
     etag: ETag | None = None,
     event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
     exception_handlers: ExceptionHandlersMap | None = None,
-    guards: OptionalSequence[Guard] | None = None,
-    listeners: OptionalSequence[EventListener] | None = None,
+    guards: Sequence[Guard] | None = None,
+    include_in_schema: bool | EmptyType = Empty,
+    listeners: Sequence[EventListener] | None = None,
     logging_config: BaseLoggingConfig | EmptyType | None = Empty,
-    middleware: OptionalSequence[Middleware] | None = None,
+    middleware: Sequence[Middleware] | None = None,
     multipart_form_part_limit: int = 1000,
-    on_app_init: OptionalSequence[OnAppInitHandler] | None = None,
-    on_shutdown: OptionalSequence[LifespanHook] | None = None,
-    on_startup: OptionalSequence[LifespanHook] | None = None,
+    on_app_init: Sequence[OnAppInitHandler] | None = None,
+    on_shutdown: Sequence[LifespanHook] | None = None,
+    on_startup: Sequence[LifespanHook] | None = None,
     openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
     opt: Mapping[str, Any] | None = None,
     parameters: ParametersMap | None = None,
-    plugins: OptionalSequence[PluginProtocol] | None = None,
+    plugins: Sequence[PluginProtocol] | None = None,
     lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
     raise_server_exceptions: bool = True,
     pdb_on_exception: bool | None = None,
@@ -93,14 +93,14 @@ def create_test_client(
     response_cache_config: ResponseCacheConfig | None = None,
     response_class: ResponseType | None = None,
     response_cookies: ResponseCookies | None = None,
-    response_headers: OptionalSequence[ResponseHeader] | None = None,
-    return_dto: type[DTOInterface] | None | EmptyType = Empty,
+    response_headers: Sequence[ResponseHeader] | None = None,
+    return_dto: type[AbstractDTO] | None | EmptyType = Empty,
     root_path: str = "",
-    security: OptionalSequence[SecurityRequirement] | None = None,
+    security: Sequence[SecurityRequirement] | None = None,
     session_config: BaseBackendConfig | None = None,
     signature_namespace: Mapping[str, Any] | None = None,
     state: State | None = None,
-    static_files_config: OptionalSequence[StaticFilesConfig] | None = None,
+    static_files_config: Sequence[StaticFilesConfig] | None = None,
     stores: StoreRegistry | dict[str, Store] | None = None,
     tags: Sequence[str] | None = None,
     template_config: TemplateConfig | None = None,
@@ -167,7 +167,7 @@ def create_test_client(
         csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
         debug: If ``True``, app errors rendered as HTML with a stack trace.
         dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
-        dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
+        dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
             validation of request data.
         etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
             Can be overridden by route handlers.
@@ -175,6 +175,7 @@ def create_test_client(
             :class:`BaseEventEmitterBackend <.events.emitter.BaseEventEmitterBackend>`.
         exception_handlers: A mapping of status codes and/or exception types to handler functions.
         guards: A sequence of :class:`Guard <.types.Guard>` callables.
+        include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
         lifespan: A list of callables returning async context managers, wrapping the lifespan of the ASGI application
         listeners: A sequence of :class:`EventListener <.events.listener.EventListener>`.
         logging_config: A subclass of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>`.
@@ -203,7 +204,7 @@ def create_test_client(
         response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>`.
         response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
         response_cache_config: Configures caching behavior of the application.
-        return_dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing
+        return_dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing
             outbound response data.
         route_handlers: A sequence of route handlers, which can include instances of
             :class:`Router <.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or any
@@ -252,6 +253,7 @@ def create_test_client(
         event_emitter_backend=event_emitter_backend,
         exception_handlers=exception_handlers,
         guards=guards,
+        include_in_schema=include_in_schema,
         listeners=listeners,
         logging_config=logging_config,
         middleware=middleware,
@@ -297,7 +299,7 @@ def create_test_client(
 def create_async_test_client(
     route_handlers: ControllerRouterHandler | Sequence[ControllerRouterHandler] | None = None,
     *,
-    after_exception: OptionalSequence[AfterExceptionHookHandler] | None = None,
+    after_exception: Sequence[AfterExceptionHookHandler] | None = None,
     after_request: AfterRequestHookHandler | None = None,
     after_response: AfterResponseHookHandler | None = None,
     allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
@@ -305,44 +307,45 @@ def create_async_test_client(
     backend_options: Mapping[str, Any] | None = None,
     base_url: str = "http://testserver.local",
     before_request: BeforeRequestHookHandler | None = None,
-    before_send: OptionalSequence[BeforeMessageSendHookHandler] | None = None,
+    before_send: Sequence[BeforeMessageSendHookHandler] | None = None,
     cache_control: CacheControlHeader | None = None,
     compression_config: CompressionConfig | None = None,
     cors_config: CORSConfig | None = None,
     csrf_config: CSRFConfig | None = None,
     debug: bool = True,
     dependencies: Dependencies | None = None,
-    dto: type[DTOInterface] | None | EmptyType = Empty,
+    dto: type[AbstractDTO] | None | EmptyType = Empty,
     etag: ETag | None = None,
     event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
     exception_handlers: ExceptionHandlersMap | None = None,
-    guards: OptionalSequence[Guard] | None = None,
+    guards: Sequence[Guard] | None = None,
+    include_in_schema: bool | EmptyType = Empty,
     lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
-    listeners: OptionalSequence[EventListener] | None = None,
+    listeners: Sequence[EventListener] | None = None,
     logging_config: BaseLoggingConfig | EmptyType | None = Empty,
-    middleware: OptionalSequence[Middleware] | None = None,
+    middleware: Sequence[Middleware] | None = None,
     multipart_form_part_limit: int = 1000,
-    on_app_init: OptionalSequence[OnAppInitHandler] | None = None,
-    on_shutdown: OptionalSequence[LifespanHook] | None = None,
-    on_startup: OptionalSequence[LifespanHook] | None = None,
+    on_app_init: Sequence[OnAppInitHandler] | None = None,
+    on_shutdown: Sequence[LifespanHook] | None = None,
+    on_startup: Sequence[LifespanHook] | None = None,
     openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
     opt: Mapping[str, Any] | None = None,
     parameters: ParametersMap | None = None,
     pdb_on_exception: bool | None = None,
-    plugins: OptionalSequence[PluginProtocol] | None = None,
+    plugins: Sequence[PluginProtocol] | None = None,
     raise_server_exceptions: bool = True,
     request_class: type[Request] | None = None,
     response_cache_config: ResponseCacheConfig | None = None,
     response_class: ResponseType | None = None,
     response_cookies: ResponseCookies | None = None,
-    response_headers: OptionalSequence[ResponseHeader] | None = None,
-    return_dto: type[DTOInterface] | None | EmptyType = Empty,
+    response_headers: Sequence[ResponseHeader] | None = None,
+    return_dto: type[AbstractDTO] | None | EmptyType = Empty,
     root_path: str = "",
-    security: OptionalSequence[SecurityRequirement] | None = None,
+    security: Sequence[SecurityRequirement] | None = None,
     session_config: BaseBackendConfig | None = None,
     signature_namespace: Mapping[str, Any] | None = None,
     state: State | None = None,
-    static_files_config: OptionalSequence[StaticFilesConfig] | None = None,
+    static_files_config: Sequence[StaticFilesConfig] | None = None,
     stores: StoreRegistry | dict[str, Store] | None = None,
     tags: Sequence[str] | None = None,
     template_config: TemplateConfig | None = None,
@@ -409,7 +412,7 @@ def create_async_test_client(
         csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
         debug: If ``True``, app errors rendered as HTML with a stack trace.
         dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
-        dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
+        dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
             validation of request data.
         etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
             Can be overridden by route handlers.
@@ -417,6 +420,7 @@ def create_async_test_client(
             :class:`BaseEventEmitterBackend <.events.emitter.BaseEventEmitterBackend>`.
         exception_handlers: A mapping of status codes and/or exception types to handler functions.
         guards: A sequence of :class:`Guard <.types.Guard>` callables.
+        include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
         lifespan: A list of callables returning async context managers, wrapping the lifespan of the ASGI application
         listeners: A sequence of :class:`EventListener <.events.listener.EventListener>`.
         logging_config: A subclass of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>`.
@@ -445,7 +449,7 @@ def create_async_test_client(
         response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>`.
         response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
         response_cache_config: Configures caching behavior of the application.
-        return_dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing
+        return_dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing
             outbound response data.
         route_handlers: A sequence of route handlers, which can include instances of
             :class:`Router <.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or any
@@ -493,6 +497,7 @@ def create_async_test_client(
         event_emitter_backend=event_emitter_backend,
         exception_handlers=exception_handlers,
         guards=guards,
+        include_in_schema=include_in_schema,
         lifespan=lifespan,
         listeners=listeners,
         logging_config=logging_config,

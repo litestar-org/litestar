@@ -5,7 +5,7 @@ Routing Decorators
 ~~~~~~~~~~~~~~~~~~
 
 Litestar does not include any decorator as part of the ``Router`` or ``Litestar`` instances.
-Instead, all routes are declared using :doc:`route handlers </usage/route-handlers>`, either as standalone functions or
+Instead, all routes are declared using :doc:`route handlers </usage/routing/handlers>`, either as standalone functions or
 controller methods. The handler can then be registered on an application or router instance.
 
 .. tab-set::
@@ -62,7 +62,9 @@ controller methods. The handler can then be registered on an application or rout
 ..  seealso::
 
     To learn more about registering routes, check out this chapter
-    in the documentation: :ref:`registering routes <usage/routing:registering routes>`
+    in the documentation:
+
+    * :ref:`Routing - Registering Routes <usage/routing/overview:registering routes>`
 
 Routers and Routes
 ~~~~~~~~~~~~~~~~~~
@@ -70,10 +72,10 @@ Routers and Routes
 There are a few key differences between Litestar’s and Starlette’s ``Router`` class:
 
 1. The Litestar version is not an ASGI app
-2. The Litestar version does not include decorators: Use :doc:`route handlers </usage/route-handlers>`.
+2. The Litestar version does not include decorators: Use :doc:`route handlers </usage/routing/handlers>`.
 3. The Litestar version does not support lifecycle hooks: Those have to be handled on the application layer. See :doc:`lifecycle hooks </usage/lifecycle-hooks>`
 
-If you are using Starlette’s ``Route``\ s, you will need to replace these with :doc:`route handlers </usage/route-handlers>`.
+If you are using Starlette’s ``Route``\ s, you will need to replace these with :doc:`route handlers </usage/routing/handlers>`.
 
 Host based routing
 ~~~~~~~~~~~~~~~~~~
@@ -181,7 +183,9 @@ and to easily access dependencies from higher levels.
 ..  seealso::
 
     To learn more about dependency injection, check out this chapter
-    in the documentation: `Dependency injection <usage/6-dependency-injection/0-dependency-injection-intro/>`__
+    in the documentation:
+
+    * :doc:`/usage/dependency-injection`
 
 Authentication
 ^^^^^^^^^^^^^^
@@ -232,7 +236,9 @@ preferred way of handling this is extending :doc:`/usage/security/abstract-authe
 ..  seealso::
 
     To learn more about security and authentication, check out this chapter in the
-    documentation: `Security <usage/8-security/0-intro/>`_
+    documentation:
+
+    * :doc:`/usage/security/index`
 
 Dependency overrides
 ^^^^^^^^^^^^^^^^^^^^
@@ -260,5 +266,4 @@ Middleware
 Pure ASGI middleware is fully compatible, and can be used with any ASGI framework. Middlewares
 that make use of FastAPI/Starlette specific middleware features such as
 Starlette’s `BaseHTTPMiddleware <https://www.starlette.io/middleware/#basehttpmiddleware>`_ are not compatible,
-but can be easily replaced by making use of `AbstractMiddleware
-<usage/7-middleware/2-creating-middleware/2-using-abstract-middleware/>`_
+but can be easily replaced by :doc:`Creating Middlewares </usage/middleware/creating-middleware>`.

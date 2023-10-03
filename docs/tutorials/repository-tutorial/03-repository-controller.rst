@@ -12,11 +12,11 @@ parameters.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 76,77,78
+    :emphasize-lines: 78-80
     :linenos:
 
 Because we'll be using the SQLAlchemy plugin in Litestar, the session is automatically
-configured as a dependency
+configured as a dependency.
 
 By default, the repository doesn't add any additional query options to your base
 statement, but provides the flexibility to override it, allowing you to pass your own
@@ -25,7 +25,7 @@ statement:
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 82,83,84
+    :emphasize-lines: 83-90
     :linenos:
 
 In this instance, we enhance the repository function by adding a ``selectinload``
@@ -38,11 +38,11 @@ interacting with the ``Author`` model:
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 110-183
+    :emphasize-lines: 116-194
     :linenos:
 
 In our list detail endpoint, we use the pagination filter for limiting the amount of
-data returned, allowing to retrieve large datasets in smaller, more manageable chunks.
+data returned, allowing us to retrieve large datasets in smaller, more manageable chunks.
 
 In the above examples, we've used the asynchronous repository implementation. However,
 Litestar also supports synchronous database drivers with an identical implementation.

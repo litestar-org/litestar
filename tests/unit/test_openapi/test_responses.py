@@ -18,7 +18,7 @@ from litestar._openapi.responses import (
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar.contrib.pydantic import PydanticSchemaPlugin
 from litestar.datastructures import Cookie, ResponseHeader
-from litestar.dto.interface import DTOInterface
+from litestar.dto import AbstractDTO
 from litestar.exceptions import (
     HTTPException,
     PermissionDeniedException,
@@ -37,6 +37,7 @@ from litestar.status_codes import (
     HTTP_400_BAD_REQUEST,
     HTTP_406_NOT_ACCEPTABLE,
 )
+from litestar.typing import FieldDefinition
 from tests import PydanticPerson, PydanticPersonFactory
 
 from .utils import PetException
@@ -51,7 +52,7 @@ def test_create_responses(person_controller: Type[Controller], pet_controller: T
     for route in Litestar(route_handlers=[person_controller]).routes:
         assert isinstance(route, HTTPRoute)
         for route_handler, _ in route.route_handler_map.values():
-            if route_handler.include_in_schema:
+            if route_handler.resolve_include_in_schema():
                 responses = create_responses(
                     route_handler, raises_validation_error=True, schema_creator=SchemaCreator(generate_examples=True)
                 )
@@ -137,6 +138,20 @@ def test_create_error_responses() -> None:
         assert schema.properties
         assert schema.required
         assert schema.type
+
+
+def test_create_error_responses_with_non_http_status_code() -> None:
+    class HouseNotFoundError(HTTPException):
+        status_code: int = 420
+        detail: str = "House not found."
+
+    house_not_found_exc_response, _ = tuple(
+        create_error_responses(exceptions=[HouseNotFoundError, ValidationException])
+    )
+
+    assert house_not_found_exc_response
+    assert house_not_found_exc_response[0] == str(HouseNotFoundError.status_code)
+    assert house_not_found_exc_response[1].description == HouseNotFoundError.detail
 
 
 def test_create_success_response_with_headers() -> None:
@@ -234,6 +249,23 @@ def test_create_success_response_with_stream() -> None:
 
 
 def test_create_success_response_redirect() -> None:
+    @get(path="/test", name="test")
+    def redirect_handler() -> Redirect:
+        return Redirect(path="/target")
+
+    handler = get_registered_route_handler(redirect_handler, "test")
+
+    response = create_success_response(handler, SchemaCreator(generate_examples=True))
+    assert response.description == "Redirect Response"
+    assert response.headers
+    location = response.headers["location"]
+    assert isinstance(location, OpenAPIHeader)
+    assert isinstance(location.schema, Schema)
+    assert location.schema.type == OpenAPIType.STRING
+    assert location.description
+
+
+def test_create_success_response_redirect_override() -> None:
     @get(path="/test", status_code=HTTP_307_TEMPORARY_REDIRECT, name="test")
     def redirect_handler() -> Redirect:
         return Redirect(path="/target")
@@ -427,13 +459,30 @@ def handler() -> int:
 
 
 def test_response_generation_with_dto() -> None:
-    mock_dto = MagicMock(spec=DTOInterface)
+    mock_dto = MagicMock(spec=AbstractDTO)
     mock_dto.create_openapi_schema.return_value = Schema()
 
     @post(path="/form-upload", return_dto=mock_dto)
     async def handler(data: Dict[str, Any]) -> Dict[str, Any]:
         return data
 
-    schema_creator = SchemaCreator(generate_examples=False)
+    Litestar(route_handlers=[handler])
+
+    field_definition = FieldDefinition.from_annotation(Dict[str, Any])
+    schema_creator = SchemaCreator()
     create_success_response(handler, schema_creator)
-    mock_dto.create_openapi_schema.assert_called_once_with("return", str(handler), schema_creator)
+    mock_dto.create_openapi_schema.assert_called_once_with(
+        field_definition=field_definition, handler_id=handler.handler_id, schema_creator=schema_creator
+    )
+
+
+@pytest.mark.parametrize(
+    "content_media_type, expected", ((MediaType.TEXT, MediaType.TEXT), (None, "application/octet-stream"))
+)
+def test_file_response_media_type(content_media_type: Any, expected: Any) -> None:
+    @get("/", content_media_type=content_media_type)
+    def handler() -> File:
+        return File("test.txt")
+
+    openapi_response = create_success_response(handler, SchemaCreator())
+    assert next(iter(openapi_response.content.values())).schema.content_media_type == expected  # type: ignore

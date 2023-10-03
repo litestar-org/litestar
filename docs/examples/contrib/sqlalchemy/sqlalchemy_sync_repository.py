@@ -5,12 +5,11 @@ from typing import TYPE_CHECKING
 from uuid import UUID
 
 from pydantic import BaseModel as _BaseModel
-from pydantic import parse_obj_as
+from pydantic import TypeAdapter
 from sqlalchemy import ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
 from litestar import Litestar, get
-from litestar.contrib.repository.filters import LimitOffset
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
 from litestar.contrib.sqlalchemy.plugins.init import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
 from litestar.contrib.sqlalchemy.repository import SQLAlchemySyncRepository
@@ -19,6 +18,7 @@ from litestar.di import Provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
 from litestar.pagination import OffsetPagination
 from litestar.params import Parameter
+from litestar.repository.filters import LimitOffset
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
@@ -127,8 +127,9 @@ class AuthorController(Controller):
     ) -> OffsetPagination[Author]:
         """List authors."""
         results, total = authors_repo.list_and_count(limit_offset)
+        type_adapter = TypeAdapter(list[Author])
         return OffsetPagination[Author](
-            items=parse_obj_as(list[Author], results),
+            items=type_adapter.validate_python(results),
             total=total,
             limit=limit_offset.limit,
             offset=limit_offset.offset,
@@ -142,10 +143,10 @@ class AuthorController(Controller):
     ) -> Author:
         """Create a new author."""
         obj = authors_repo.add(
-            AuthorModel(**data.dict(exclude_unset=True, by_alias=False, exclude_none=True)),
+            AuthorModel(**data.model_dump(exclude_unset=True, exclude_none=True)),
         )
         authors_repo.session.commit()
-        return Author.from_orm(obj)
+        return Author.model_validate(obj)
 
     # we override the authors_repo to use the version that joins the Books in
     @get(
@@ -162,7 +163,7 @@ class AuthorController(Controller):
     ) -> Author:
         """Get an existing author."""
         obj = authors_repo.get(author_id)
-        return Author.from_orm(obj)
+        return Author.model_validate(obj)
 
     @patch(
         path="/authors/{author_id:uuid}",
@@ -178,11 +179,11 @@ class AuthorController(Controller):
         ),
     ) -> Author:
         """Update an author."""
-        raw_obj = data.dict(exclude_unset=True, by_alias=False, exclude_none=True)
+        raw_obj = data.model_dump(exclude_unset=True, exclude_none=True)
         raw_obj.update({"id": author_id})
         obj = authors_repo.update(AuthorModel(**raw_obj))
         authors_repo.session.commit()
-        return Author.from_orm(obj)
+        return Author.model_validate(obj)
 
     @delete(path="/authors/{author_id:uuid}")
     def delete_author(
@@ -204,7 +205,7 @@ sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 
 def on_startup() -> None:
     """Initializes the database."""
-    with sqlalchemy_config.create_engine().begin() as conn:
+    with sqlalchemy_config.get_engine().begin() as conn:
         UUIDBase.metadata.create_all(conn)
 
 

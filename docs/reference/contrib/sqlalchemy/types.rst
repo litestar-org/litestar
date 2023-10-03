@@ -1,5 +1,4 @@
 types
 =====
 
-.. automodule:: litestar.contrib.sqlalchemy.types
-    :members:
+This page has moved to :doc:`advanced-alchemy:reference/types`

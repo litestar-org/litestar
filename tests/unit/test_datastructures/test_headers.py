@@ -224,6 +224,14 @@ def test_mutable_scope_headers_setitem_delitem(
     assert raw_headers == [(b"bar", b"baz")]
 
 
+def test_mutable_scope_headers_setdefault() -> None:
+    headers = MutableScopeHeaders()
+
+    assert headers.setdefault("foo", "bar") == "bar"
+    assert headers.setdefault("foo", "baz") == "bar"
+    assert headers.getall("foo") == ["bar"]
+
+
 def test_mutable_scope_header_len(mutable_headers: MutableScopeHeaders) -> None:
     assert len(mutable_headers) == 1
     mutable_headers.add("foo", "bar")

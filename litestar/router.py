@@ -20,7 +20,7 @@ __all__ = ("Router",)
 
 if TYPE_CHECKING:
     from litestar.datastructures import CacheControlHeader, ETag
-    from litestar.dto.interface import DTOInterface
+    from litestar.dto import AbstractDTO
     from litestar.openapi.spec import SecurityRequirement
     from litestar.routes import BaseRoute
     from litestar.types import (
@@ -58,6 +58,7 @@ class Router:
         "etag",
         "exception_handlers",
         "guards",
+        "include_in_schema",
         "middleware",
         "opt",
         "owner",
@@ -85,17 +86,18 @@ class Router:
         before_request: BeforeRequestHookHandler | None = None,
         cache_control: CacheControlHeader | None = None,
         dependencies: Dependencies | None = None,
-        dto: type[DTOInterface] | None | EmptyType = Empty,
+        dto: type[AbstractDTO] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: Sequence[Guard] | None = None,
+        include_in_schema: bool | EmptyType = Empty,
         middleware: Sequence[Middleware] | None = None,
         opt: Mapping[str, Any] | None = None,
         parameters: ParametersMap | None = None,
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
-        return_dto: type[DTOInterface] | None | EmptyType = Empty,
+        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         route_handlers: Sequence[ControllerRouterHandler],
         security: Sequence[SecurityRequirement] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
@@ -118,11 +120,12 @@ class Router:
                 :class:`CacheControlHeader <.datastructures.CacheControlHeader>` to add to route handlers of
                 this router. Can be overridden by route handlers.
             dependencies: A string keyed mapping of dependency :class:`Provide <.di.Provide>` instances.
-            dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
+            dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
                 validation of request data.
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :data:`Guard <.types.Guard>` callables.
+            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             middleware: A sequence of :data:`Middleware <.types.Middleware>`.
             opt: A string keyed mapping of arbitrary values that can be accessed in :data:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or
@@ -136,7 +139,7 @@ class Router:
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
             response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
                 instances.
-            return_dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing
+            return_dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing
                 outbound response data.
             route_handlers: A required sequence of route handlers, which can include instances of
                 :class:`Router <.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or any
@@ -160,6 +163,7 @@ class Router:
         self.dependencies = dict(dependencies or {})
         self.exception_handlers = dict(exception_handlers or {})
         self.guards = list(guards or [])
+        self.include_in_schema = include_in_schema
         self.middleware = list(middleware or [])
         self.opt = dict(opt or {})
         self.owner: Router | None = None

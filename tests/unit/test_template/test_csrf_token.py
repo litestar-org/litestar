@@ -8,6 +8,7 @@ from litestar import MediaType, get
 from litestar.config.csrf import CSRFConfig
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
+from litestar.contrib.minijnja import MiniJinjaTemplateEngine
 from litestar.middleware.csrf import generate_csrf_token
 from litestar.response.template import Template
 from litestar.template.config import TemplateConfig
@@ -20,6 +21,7 @@ from litestar.types import Scope
     (
         (JinjaTemplateEngine, "{{csrf_token()}}"),
         (MakoTemplateEngine, "${csrf_token()}"),
+        (MiniJinjaTemplateEngine, "{{csrf_token()}}"),
     ),
 )
 def test_csrf_token(engine: Any, template: str, tmp_path: Path) -> None:
@@ -48,6 +50,7 @@ def test_csrf_token(engine: Any, template: str, tmp_path: Path) -> None:
     (
         (JinjaTemplateEngine, "{{csrf_input}}"),
         (MakoTemplateEngine, "${csrf_input}"),
+        (MiniJinjaTemplateEngine, "{{csrf_input}}"),
     ),
 )
 def test_csrf_input(engine: Any, template: str, tmp_path: Path) -> None:

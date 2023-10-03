@@ -1,7 +1,7 @@
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 from unittest.mock import MagicMock
 from uuid import UUID, uuid1, uuid4
 
@@ -149,7 +149,7 @@ def test_path_param_type_resolution(
     def handler(test: param_type_class) -> None:
         mock(test)
 
-    with create_test_client(handler, debug=True) as client:
+    with create_test_client(handler) as client:
         response = client.get(f"/some/test/path/{value}")
 
     assert response.status_code == HTTP_200_OK
@@ -172,3 +172,17 @@ def test_differently_named_path_params_on_same_level() -> None:
         response = client.post("/Moishe")
         assert response.status_code == HTTP_201_CREATED
         assert response.text == "Hello, Moishe!"
+
+
+def test_optional_path_parameter() -> None:
+    @get(path=["/", "/{message:str}"], media_type=MediaType.TEXT, sync_to_thread=False)
+    def handler(message: Optional[str]) -> str:
+        return message or "no message"
+
+    with create_test_client(route_handlers=[handler]) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "no message"
+        response = client.get("/hello")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "hello"

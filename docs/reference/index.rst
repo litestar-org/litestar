@@ -27,7 +27,6 @@ API reference
     openapi/index
     pagination
     params
-    partial
     plugins
     response/index
     router
@@ -37,6 +36,7 @@ API reference
     static_files
     status_codes
     stores/index
+    repository/index
     template
     testing
     types

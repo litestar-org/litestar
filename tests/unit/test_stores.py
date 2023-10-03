@@ -5,11 +5,14 @@ import math
 import shutil
 import string
 from datetime import timedelta
+from pathlib import Path
 from typing import TYPE_CHECKING, cast
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 from _pytest.fixtures import FixtureRequest
+from pytest_mock import MockerFixture
+from time_machine import Coordinates
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.stores.file import FileStore
@@ -19,7 +22,6 @@ from litestar.stores.registry import StoreRegistry
 
 if TYPE_CHECKING:
     from redis.asyncio import Redis
-    from time_machine import Coordinates
 
     from litestar.stores.base import NamespacedStore, Store
 
@@ -77,15 +79,31 @@ async def test_expires(store: Store, frozen_datetime: Coordinates) -> None:
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
 async def test_get_and_renew(store: Store, renew_for: int | timedelta, frozen_datetime: Coordinates) -> None:
+    if isinstance(store, RedisStore):
+        pytest.skip()
+
     await store.set("foo", b"bar", expires_in=1)
     await store.get("foo", renew_for=renew_for)
 
     frozen_datetime.shift(2)
 
-    if isinstance(store, RedisStore):
-        await asyncio.sleep(1.1)
-
     stored_value = await store.get("foo")
+
+    assert stored_value is not None
+
+
+@pytest.mark.flaky(reruns=5)
+@pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
+@pytest.mark.xdist_group("redis")
+async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | timedelta) -> None:
+    # we can't sleep() in frozen datetime, and frozen datetime doesn't affect the redis
+    # instance, so we test this separately
+    await redis_store.set("foo", b"bar", expires_in=1)
+    await redis_store.get("foo", renew_for=renew_for)
+
+    await asyncio.sleep(1.1)
+
+    stored_value = await redis_store.get("foo")
 
     assert stored_value is not None
 
@@ -179,6 +197,7 @@ def test_redis_with_non_default(connection_pool_from_url_mock: Mock, mock_redis:
     assert backend._redis is mock_redis.return_value
 
 
+@pytest.mark.xdist_group("redis")
 async def test_redis_delete_all(redis_store: RedisStore) -> None:
     await redis_store._redis.set("test_key", b"test_value")
 
@@ -197,6 +216,7 @@ async def test_redis_delete_all(redis_store: RedisStore) -> None:
     assert stored_value == b"test_value"  # check it doesn't delete other values
 
 
+@pytest.mark.xdist_group("redis")
 async def test_redis_delete_all_no_namespace_raises(redis_client: Redis) -> None:
     redis_store = RedisStore(redis=redis_client, namespace=None)
 
@@ -204,11 +224,13 @@ async def test_redis_delete_all_no_namespace_raises(redis_client: Redis) -> None
         await redis_store.delete_all()
 
 
+@pytest.mark.xdist_group("redis")
 def test_redis_namespaced_key(redis_store: RedisStore) -> None:
     assert redis_store.namespace == "LITESTAR"
     assert redis_store._make_key("foo") == "LITESTAR:foo"
 
 
+@pytest.mark.xdist_group("redis")
 def test_redis_with_namespace(redis_store: RedisStore) -> None:
     namespaced_test = redis_store.with_namespace("TEST")
     namespaced_test_foo = namespaced_test.with_namespace("FOO")
@@ -217,6 +239,7 @@ def test_redis_with_namespace(redis_store: RedisStore) -> None:
     assert namespaced_test._redis is redis_store._redis
 
 
+@pytest.mark.xdist_group("redis")
 def test_redis_namespace_explicit_none(redis_client: Redis) -> None:
     assert RedisStore.with_client(url="redis://127.0.0.1", namespace=None).namespace is None
     assert RedisStore(redis=redis_client, namespace=None).namespace is None
@@ -244,7 +267,7 @@ def test_file_with_namespace_invalid_namespace_char(file_store: FileStore, inval
         file_store.with_namespace(f"foo{invalid_char}")
 
 
-@pytest.fixture(params=["redis_store", "file_store"])
+@pytest.fixture(params=[pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")), "file_store"])
 def namespaced_store(request: FixtureRequest) -> NamespacedStore:
     return cast("NamespacedStore", request.getfixturevalue(request.param))
 
@@ -334,3 +357,12 @@ def test_registry_register_exist_override(memory_store: MemoryStore) -> None:
 
     registry.register("foo", memory_store, allow_override=True)
     assert registry.get("foo") is memory_store
+
+
+async def test_file_store_handle_rename_fail(file_store: FileStore, mocker: MockerFixture) -> None:
+    mocker.patch("litestar.stores.file.os.replace", side_effect=OSError)
+    mock_unlink = mocker.patch("litestar.stores.file.os.unlink")
+
+    await file_store.set("foo", "bar")
+    mock_unlink.assert_called_once()
+    assert Path(mock_unlink.call_args_list[0].args[0]).with_suffix("") == file_store.path.joinpath("foo")

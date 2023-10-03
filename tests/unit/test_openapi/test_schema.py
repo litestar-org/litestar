@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from datetime import date
-from enum import Enum
-from typing import TYPE_CHECKING, Dict, Literal
+from enum import Enum, auto
+from typing import TYPE_CHECKING, Dict, List, Literal
 
 import annotated_types
 import msgspec
+import pydantic
 import pytest
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated
@@ -264,7 +265,12 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
 
 def test_create_schema_for_pydantic_field() -> None:
     class Model(BaseModel):
-        value: str = Field(title="title", description="description", example="example", max_length=16)
+        if pydantic.VERSION.startswith("1"):
+            value: str = Field(title="title", description="description", example="example", max_length=16)
+        else:
+            value: str = Field(  # type: ignore[no-redef]
+                title="title", description="description", max_length=16, json_schema_extra={"example": "example"}
+            )
 
     schemas: Dict[str, Schema] = {}
     field_definition = FieldDefinition.from_kwarg(name="Model", annotation=Model)
@@ -306,3 +312,19 @@ def test_annotated_types() -> None:
     assert schema.properties["constrainted_upper_case"].description == "must be in upper case"  # type: ignore
     assert schema.properties["constrainted_is_ascii"].pattern == "[[:ascii:]]"  # type: ignore
     assert schema.properties["constrainted_is_digit"].pattern == "[[:digit:]]"  # type: ignore
+
+
+def test_literal_enums() -> None:
+    class Foo(Enum):
+        A = auto()
+        B = auto()
+
+    @dataclass
+    class MyDataclass:
+        bar: List[Literal[Foo.A]]
+
+    schemas: Dict[str, Schema] = {}
+    SchemaCreator(schemas=schemas).for_field_definition(
+        FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass)
+    )
+    assert schemas["MyDataclass"].properties["bar"].items.const == 1  # type: ignore

@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ._utils import RICH_CLICK_INSTALLED, LitestarEnv, LitestarExtensionGroup
 from .commands import core, schema, sessions
 
-if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
+if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     import click
     from click import Context, group, option, pass_context
     from click import Path as ClickPath
@@ -27,7 +26,7 @@ else:
     click.rich_click.STYLE_ERRORS_SUGGESTION = "magenta italic"
     click.rich_click.ERRORS_SUGGESTION = ""
     click.rich_click.ERRORS_EPILOGUE = ""
-    click.rich_click.MAX_WIDTH = 100
+    click.rich_click.MAX_WIDTH = 80
     click.rich_click.SHOW_METAVARS_COLUMN = True
     click.rich_click.APPEND_METAVARS_HELP = True
 
@@ -47,8 +46,8 @@ __all__ = ("litestar_group",)
 @pass_context
 def litestar_group(ctx: Context, app_path: str | None, app_dir: Path | None = None) -> None:
     """Litestar CLI."""
-    sys.path.append(str(app_dir))
-    ctx.obj = lambda: LitestarEnv.from_env(app_path)
+    if ctx.obj is None:  # env has not been loaded yet, so we can lazy load it
+        ctx.obj = lambda: LitestarEnv.from_env(app_path, app_dir=app_dir)
 
 
 # add sub commands here

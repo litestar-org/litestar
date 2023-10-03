@@ -6,7 +6,7 @@ the user's email in the response.
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/simple_dto_exclude.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 6,7,17,18,21
+    :emphasize-lines: 6,16,17,20
     :linenos:
 
 Here we introduce a new DTO class (``ReadDTO``) and configure it to exclude the ``Person.email`` field. The route
@@ -18,7 +18,7 @@ The :class:`DTOConfig <litestar.dto.config.DTOConfig>` class is used to configur
 exclude the ``email`` field from the DTO, but there are many other configuration options available and we'll cover most
 of them in this tutorial.
 
-The :class:`DataclassDTO <litestar.dto.dataclass_dto_factory.DataclassDTO>` class is a factory class that specializes
+The :class:`DataclassDTO <litestar.dto.dataclass_dto.DataclassDTO>` class is a factory class that specializes
 in creating DTOs from dataclasses. It is also a :class:`Generic <typing.Generic>` class, which means that it it accepts
 a type parameter. When we provide a type parameter to a generic class it makes that class a specialized version of the
 generic class. In this case, we create a DTO type that specializes in transferring data to and from instances of the

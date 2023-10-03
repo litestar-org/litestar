@@ -1,14 +1,16 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, Literal, Mapping, TypeVar, overload
+import itertools
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Iterable, Literal, Mapping, TypeVar, overload
 
 from litestar.datastructures.cookie import Cookie
-from litestar.datastructures.headers import ETag
+from litestar.datastructures.headers import ETag, MutableScopeHeaders
 from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import default_serializer, encode_json, encode_msgpack, get_serializer
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
-from litestar.utils.helpers import encode_headers, filter_cookies, get_enum_string_value
+from litestar.utils.deprecation import deprecated, warn_deprecation
+from litestar.utils.helpers import get_enum_string_value
 
 if TYPE_CHECKING:
     from typing import Optional
@@ -40,11 +42,15 @@ class ASGIResponse:
         "background",
         "body",
         "content_length",
-        "encoded_headers",
         "encoding",
         "is_head_response",
         "status_code",
+        "_encoded_cookies",
+        "headers",
     )
+
+    _should_set_content_length: ClassVar[bool] = True
+    """A flag to indicate whether the content-length header should be set by default or not."""
 
     def __init__(
         self,
@@ -52,10 +58,10 @@ class ASGIResponse:
         background: BackgroundTask | BackgroundTasks | None = None,
         body: bytes | str = b"",
         content_length: int | None = None,
-        cookies: list[Cookie] | None = None,
-        encoded_headers: list[tuple[bytes, bytes]] | None = None,
+        cookies: Iterable[Cookie] | None = None,
+        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
         encoding: str = "utf-8",
-        headers: dict[str, Any] | None = None,
+        headers: dict[str, Any] | Iterable[tuple[str, str]] | None = None,
         is_head_response: bool = False,
         media_type: MediaType | str | None = None,
         status_code: int | None = None,
@@ -76,13 +82,25 @@ class ASGIResponse:
         """
         body = body.encode() if isinstance(body, str) else body
         status_code = status_code or HTTP_200_OK
-        encoded_headers = encoded_headers or []
-        headers = headers or {}
+        self.headers = MutableScopeHeaders()
+
+        if encoded_headers is not None:
+            warn_deprecation("3.0", kind="parameter", deprecated_name="encoded_headers", alternative="headers")
+            for header_name, header_value in encoded_headers:
+                self.headers.add(header_name.decode("latin-1"), header_value.decode("latin-1"))
+
+        if headers is not None:
+            for k, v in headers.items() if isinstance(headers, dict) else headers:
+                self.headers.add(k, v)  # pyright: ignore
+
         media_type = get_enum_string_value(media_type or MediaType.JSON)
 
         status_allows_body = (
             status_code not in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} and status_code >= HTTP_200_OK
         )
+
+        if content_length is None:
+            content_length = len(body)
 
         if not status_allows_body or is_head_response:
             if body and body != b"null":
@@ -91,30 +109,31 @@ class ASGIResponse:
                     "that does not allow content (304, 204, < 200)"
                 )
             body = b""
+        else:
+            self.headers.setdefault(
+                "content-type", (f"{media_type}; charset={encoding}" if media_type.startswith("text/") else media_type)
+            )
 
-        encoded_headers.append(
-            (
-                b"content-type",
-                (f"{media_type}; charset={encoding}" if media_type.startswith("text/") else media_type).encode(
-                    "latin-1"
-                ),
-            ),
-        )
-
-        if content_length is None:
-            content_length = len(body)
-
-        if "content-length" not in headers and content_length:
-            encoded_headers.append((b"content-length", str(content_length).encode("latin-1")))
+            if self._should_set_content_length:
+                self.headers.setdefault("content-length", str(content_length))
 
         self.background = background
         self.body = body
         self.content_length = content_length
-        cookies = cookies or []
-        self.encoded_headers = encode_headers(headers.items(), cookies, encoded_headers)
+        self._encoded_cookies = tuple(
+            cookie.to_encoded_header() for cookie in (cookies or ()) if not cookie.documentation_only
+        )
         self.encoding = encoding
         self.is_head_response = is_head_response
         self.status_code = status_code
+
+    @property
+    @deprecated("3.0", kind="property", alternative="encode_headers()")
+    def encoded_headers(self) -> list[tuple[bytes, bytes]]:
+        return self.encode_headers()
+
+    def encode_headers(self) -> list[tuple[bytes, bytes]]:
+        return [*self.headers.headers, *self._encoded_cookies]
 
     async def after_response(self) -> None:
         """Execute after the response is sent.
@@ -137,7 +156,7 @@ class ASGIResponse:
         event: HTTPResponseStartEvent = {
             "type": "http.response.start",
             "status": self.status_code,
-            "headers": self.encoded_headers,
+            "headers": self.encode_headers(),
         }
         await send(event)
 
@@ -371,12 +390,12 @@ class Response(Generic[T]):
 
     def to_asgi_response(
         self,
-        app: Litestar,
+        app: Litestar | None,
         request: Request,
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
-        cookies: list[Cookie] | None = None,
-        encoded_headers: list[tuple[bytes, bytes]] | None = None,
+        cookies: Iterable[Cookie] | None = None,
+        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
         headers: dict[str, str] | None = None,
         is_head_response: bool = False,
         media_type: MediaType | str | None = None,
@@ -401,8 +420,17 @@ class Response(Generic[T]):
             An ASGIResponse instance.
         """
 
+        if app is not None:
+            warn_deprecation(
+                version="2.1",
+                deprecated_name="app",
+                kind="parameter",
+                removal_in="3.0.0",
+                alternative="request.app",
+            )
+
         headers = {**headers, **self.headers} if headers is not None else self.headers
-        cookies = self.cookies if cookies is None else filter_cookies(self.cookies, cookies)
+        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
 
         if type_encoders:
             type_encoders = {**type_encoders, **(self.response_type_encoders or {})}
@@ -415,7 +443,7 @@ class Response(Generic[T]):
             background=self.background or background,
             body=self.render(self.content, media_type, get_serializer(type_encoders)),
             cookies=cookies,
-            encoded_headers=encoded_headers or [],
+            encoded_headers=encoded_headers,
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,

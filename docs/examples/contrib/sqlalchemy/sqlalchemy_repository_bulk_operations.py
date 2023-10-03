@@ -6,9 +6,9 @@ from rich import get_console
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Mapped, Session, sessionmaker
 
-from litestar.contrib.repository.filters import LimitOffset
 from litestar.contrib.sqlalchemy.base import UUIDBase
 from litestar.contrib.sqlalchemy.repository import SQLAlchemySyncRepository
+from litestar.repository.filters import LimitOffset
 
 here = Path(__file__).parent
 console = get_console()
@@ -63,7 +63,7 @@ def run_script() -> None:
         USState.metadata.create_all(conn)
 
     with session_factory() as db_session:
-        # 1) load the JSON data into the US States table
+        # 1) Load the JSON data into the US States table.
         repo = USStateRepository(session=db_session)
         fixture = open_fixture(here, USStateRepository.model_type.__tablename__)  # type: ignore
         objs = repo.add_many([USStateRepository.model_type(**raw_obj) for raw_obj in fixture])
@@ -74,11 +74,11 @@ def run_script() -> None:
         created_objs, total_objs = repo.list_and_count(LimitOffset(limit=10, offset=0))
         console.print(f"Selected {len(created_objs)} records out of a total of {total_objs}.")
 
-        # 2) Let's remove the batch of records selected.
+        # 3) Let's remove the batch of records selected.
         deleted_objs = repo.delete_many([new_obj.id for new_obj in created_objs])
         console.print(f"Removed {len(deleted_objs)} records out of a total of {total_objs}.")
 
-        # 3) Le'ts count the remaining rows
+        # 4) Let's count the remaining rows
         remaining_count = repo.count()
         console.print(f"Found {remaining_count} remaining records after delete.")
 

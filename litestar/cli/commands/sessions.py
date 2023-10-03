@@ -9,7 +9,7 @@ from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.server_side import ServerSideSessionBackend
 from litestar.utils import is_class_and_subclass
 
-if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
+if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     from click import argument, group
 else:
     from rich_click import argument, group

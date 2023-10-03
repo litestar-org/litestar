@@ -20,14 +20,21 @@ from litestar.middleware import DefineMiddleware
 from litestar.utils import get_name
 
 RICH_CLICK_INSTALLED = False
-try:
+with contextlib.suppress(ImportError):
     import rich_click  # noqa: F401
 
     RICH_CLICK_INSTALLED = True
-except ImportError:
-    pass
+UVICORN_INSTALLED = False
+with contextlib.suppress(ImportError):
+    import uvicorn  # noqa: F401
 
-if TYPE_CHECKING or not RICH_CLICK_INSTALLED:
+    UVICORN_INSTALLED = True
+JSBEAUTIFIER_INSTALLED = False
+with contextlib.suppress(ImportError):
+    import jsbeautifier  # noqa: F401
+
+    JSBEAUTIFIER_INSTALLED = True
+if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     from click import ClickException, Command, Context, Group, pass_context
 else:
     from rich_click import ClickException, Context, pass_context
@@ -37,6 +44,8 @@ else:
 
 __all__ = (
     "RICH_CLICK_INSTALLED",
+    "UVICORN_INSTALLED",
+    "JSBEAUTIFIER_INSTALLED",
     "LoadedApp",
     "LitestarCLIException",
     "LitestarEnv",
@@ -91,12 +100,12 @@ class LitestarEnv:
     is_app_factory: bool = False
 
     @classmethod
-    def from_env(cls, app_path: str | None) -> LitestarEnv:
+    def from_env(cls, app_path: str | None, app_dir: Path | None = None) -> LitestarEnv:
         """Load environment variables.
 
         If ``python-dotenv`` is installed, use it to populate environment first
         """
-        cwd = Path().cwd()
+        cwd = Path().cwd() if app_dir is None else app_dir
         cwd_str_path = str(cwd)
         if cwd_str_path not in sys.path:
             sys.path.append(cwd_str_path)
@@ -197,11 +206,45 @@ class LitestarExtensionGroup(LitestarGroup):
     ) -> None:
         """Init ``LitestarExtensionGroup``"""
         super().__init__(name=name, commands=commands, **attrs)
+        self._prepare_done = False
 
         for entry_point in entry_points(group="litestar.commands"):
             command = entry_point.load()
             _wrap_commands([command])
             self.add_command(command, entry_point.name)
+
+    def _prepare(self, ctx: Context) -> None:
+        if self._prepare_done:
+            return
+
+        if isinstance(ctx.obj, LitestarEnv):
+            env: LitestarEnv | None = ctx.obj
+        else:
+            try:
+                env = ctx.obj = LitestarEnv.from_env(ctx.params.get("app_path"), ctx.params.get("app_dir"))
+            except LitestarCLIException:
+                env = None
+
+        if env:
+            for plugin in env.app.plugins.cli:
+                plugin.on_cli_init(self)
+
+        self._prepare_done = True
+
+    def make_context(
+        self,
+        info_name: str | None,
+        args: list[str],
+        parent: Context | None = None,
+        **extra: Any,
+    ) -> Context:
+        ctx = super().make_context(info_name, args, parent, **extra)
+        self._prepare(ctx)
+        return ctx
+
+    def list_commands(self, ctx: Context) -> list[str]:
+        self._prepare(ctx)
+        return super().list_commands(ctx)
 
 
 def _inject_args(func: Callable[P, T]) -> Callable[Concatenate[Context, P], T]:

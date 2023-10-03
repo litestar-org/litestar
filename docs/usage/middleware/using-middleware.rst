@@ -53,7 +53,7 @@ because we declared it on the application level.
     Middlewares are part of Litestar's layered architecture* which means you can
     set them on every layer of the application.
 
-    You can read more about this here: :ref:`usage/the-litestar-app:layered architecture`
+    You can read more about this here: :ref:`usage/applications:layered architecture`
 
 
 Middleware Call Order

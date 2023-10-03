@@ -4,21 +4,23 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from types import ModuleType
 from typing import TYPE_CHECKING, Callable, List, Optional
+from unittest.mock import MagicMock
 
 import pytest
 from msgspec import Struct, to_builtins
 
+from litestar import Litestar, Request, get, post
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar.contrib.pydantic import PydanticInitPlugin
 from litestar.dto import DataclassDTO, DTOConfig, DTOField
 from litestar.dto._backend import DTOBackend
 from litestar.dto._types import CollectionType, SimpleType, TransferDTOFieldDefinition
 from litestar.dto.data_structures import DTOFieldDefinition
-from litestar.dto.interface import ConnectionContext
-from litestar.enums import MediaType, RequestEncodingType
+from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
 from litestar.openapi.spec.reference import Reference
-from litestar.serialization import default_deserializer, encode_json
+from litestar.serialization import encode_json
+from litestar.testing import RequestFactory
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
@@ -65,17 +67,16 @@ def fx_backend_factory() -> type[DataclassDTO]:
     return Factory
 
 
-@pytest.fixture(name="connection_context")
-def fx_connection_context() -> ConnectionContext:
-    return ConnectionContext(
-        handler_id="handler_id",
-        request_encoding_type=RequestEncodingType.JSON,
-        default_deserializer=default_deserializer,
-        type_decoders=PydanticInitPlugin.decoders(),
-    )
+@pytest.fixture(name="asgi_connection")
+def fx_asgi_connection() -> Request[Any, Any, Any]:
+    @get("/", name="handler_id", media_type=MediaType.JSON, type_decoders=PydanticInitPlugin.decoders())
+    def _handler() -> None:
+        ...
+
+    return RequestFactory().get(path="/", route_handler=_handler)
 
 
-def test_backend_parse_raw_json(dto_factory: type[DataclassDTO], connection_context: ConnectionContext) -> None:
+def test_backend_parse_raw_json(dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any]) -> None:
     assert (
         to_builtins(
             DTOBackend(
@@ -85,14 +86,20 @@ def test_backend_parse_raw_json(dto_factory: type[DataclassDTO], connection_cont
                 wrapper_attribute_name=None,
                 is_data_field=True,
                 handler_id="test",
-            ).parse_raw(b'{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}]}', connection_context)
+            ).parse_raw(b'{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}]}', asgi_connection)
         )
         == DESTRUCTURED
     )
 
 
-def test_backend_parse_raw_msgpack(dto_factory: type[DataclassDTO], connection_context: ConnectionContext) -> None:
-    connection_context.request_encoding_type = MediaType.MESSAGEPACK  # type:ignore[misc]
+def test_backend_parse_raw_msgpack(dto_factory: type[DataclassDTO]) -> None:
+    @get("/", name="handler_id", media_type=MediaType.MESSAGEPACK)
+    def _handler() -> None:
+        ...
+
+    asgi_connection = RequestFactory().get(
+        path="/", route_handler=_handler, headers={"Content-Type": MediaType.MESSAGEPACK}
+    )
     assert (
         to_builtins(
             DTOBackend(
@@ -104,7 +111,7 @@ def test_backend_parse_raw_msgpack(dto_factory: type[DataclassDTO], connection_c
                 handler_id="test",
             ).parse_raw(
                 b"\x83\xa1a\x01\xa6nested\x82\xa1a\x01\xa1b\xa3two\xabnested_list\x91\x82\xa1a\x01\xa1b\xa3two",
-                connection_context,
+                asgi_connection,
             )
         )
         == DESTRUCTURED
@@ -112,9 +119,14 @@ def test_backend_parse_raw_msgpack(dto_factory: type[DataclassDTO], connection_c
 
 
 def test_backend_parse_unsupported_media_type(
-    dto_factory: type[DataclassDTO], connection_context: ConnectionContext
+    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any]
 ) -> None:
-    connection_context.request_encoding_type = MediaType.CSS  # type:ignore[misc]
+    @get("/", name="handler_id", media_type="text/css")
+    def _handler() -> None:
+        ...
+
+    asgi_connection = RequestFactory().get(path="/", route_handler=_handler, headers={"Content-Type": "text/css"})
+
     with pytest.raises(SerializationException):
         DTOBackend(
             dto_factory=dto_factory,
@@ -123,7 +135,7 @@ def test_backend_parse_unsupported_media_type(
             wrapper_attribute_name=None,
             is_data_field=True,
             handler_id="test",
-        ).parse_raw(b"", connection_context)
+        ).parse_raw(b"", asgi_connection)
 
 
 def test_backend_iterable_annotation(dto_factory: type[DataclassDTO]) -> None:
@@ -153,7 +165,7 @@ def test_backend_scalar_annotation(dto_factory: type[DataclassDTO]) -> None:
 
 
 def test_backend_populate_data_from_builtins(
-    dto_factory: type[DataclassDTO], connection_context: ConnectionContext
+    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any]
 ) -> None:
     backend = DTOBackend(
         handler_id="test",
@@ -163,21 +175,23 @@ def test_backend_populate_data_from_builtins(
         wrapper_attribute_name=None,
         is_data_field=True,
     )
-    data = backend.populate_data_from_builtins(builtins=DESTRUCTURED, connection_context=connection_context)
+    data = backend.populate_data_from_builtins(builtins=DESTRUCTURED, asgi_connection=asgi_connection)
     assert data == STRUCTURED
 
 
 def test_backend_create_openapi_schema(dto_factory: type[DataclassDTO]) -> None:
-    backend = DTOBackend(
-        handler_id="test",
-        dto_factory=dto_factory,
-        field_definition=FieldDefinition.from_annotation(DC),
-        model_type=DC,
-        wrapper_attribute_name=None,
-        is_data_field=True,
-    )
+    @post("/", dto=dto_factory, name="test")
+    def handler(data: DC) -> DC:
+        return data
+
+    app = Litestar(route_handlers=[handler])
+
     schemas: dict[str, Any] = {}
-    ref = backend.create_openapi_schema(SchemaCreator(schemas=schemas))
+    ref = dto_factory.create_openapi_schema(
+        handler_id=app.get_handler_index_by_name("test")["handler"].handler_id,  # type: ignore[index]
+        field_definition=FieldDefinition.from_annotation(DC),
+        schema_creator=SchemaCreator(schemas=schemas),
+    )
     assert isinstance(ref, Reference)
     schema = schemas[ref.value]
     assert schema.properties["a"].type == "integer"
@@ -208,7 +222,6 @@ def test_backend_model_name_uniqueness(dto_factory: type[DataclassDTO]) -> None:
             default_factory=None,
             dto_field=DTOField(),
             model_name="some_module.SomeModel",
-            dto_for=None,
         ),
         serialization_name="a",
         transfer_type=SimpleType(field_definition=FieldDefinition.from_annotation(int), nested_field_info=None),
@@ -224,7 +237,9 @@ def test_backend_model_name_uniqueness(dto_factory: type[DataclassDTO]) -> None:
     assert backend._seen_model_names == unique_names
 
 
-def test_backend_populate_data_from_raw(dto_factory: type[DataclassDTO], connection_context: ConnectionContext) -> None:
+def test_backend_populate_data_from_raw(
+    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any]
+) -> None:
     backend = DTOBackend(
         handler_id="test",
         dto_factory=dto_factory,
@@ -233,12 +248,12 @@ def test_backend_populate_data_from_raw(dto_factory: type[DataclassDTO], connect
         wrapper_attribute_name=None,
         is_data_field=True,
     )
-    data = backend.populate_data_from_raw(RAW, connection_context)
+    data = backend.populate_data_from_raw(RAW, asgi_connection)
     assert data == STRUCTURED
 
 
 def test_backend_populate_collection_data_from_raw(
-    dto_factory: type[DataclassDTO], connection_context: ConnectionContext
+    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any]
 ) -> None:
     backend = DTOBackend(
         handler_id="test",
@@ -248,11 +263,11 @@ def test_backend_populate_collection_data_from_raw(
         wrapper_attribute_name=None,
         is_data_field=True,
     )
-    data = backend.populate_data_from_raw(COLLECTION_RAW, connection_context)
+    data = backend.populate_data_from_raw(COLLECTION_RAW, asgi_connection)
     assert data == [STRUCTURED]
 
 
-def test_backend_encode_data(dto_factory: type[DataclassDTO], connection_context: ConnectionContext) -> None:
+def test_backend_encode_data(dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any]) -> None:
     backend = DTOBackend(
         handler_id="test",
         dto_factory=dto_factory,
@@ -265,7 +280,9 @@ def test_backend_encode_data(dto_factory: type[DataclassDTO], connection_context
     assert encode_json(data) == RAW
 
 
-def test_backend_encode_collection_data(dto_factory: type[DataclassDTO], connection_context: ConnectionContext) -> None:
+def test_backend_encode_collection_data(
+    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any]
+) -> None:
     backend = DTOBackend(
         handler_id="test",
         dto_factory=dto_factory,
@@ -276,6 +293,37 @@ def test_backend_encode_collection_data(dto_factory: type[DataclassDTO], connect
     )
     data = backend.encode_data([STRUCTURED])
     assert encode_json(data) == COLLECTION_RAW
+
+
+def test_transfer_only_touches_included_attributes() -> None:
+    """Ensure attribute that are not included are never touched in any way during
+    transfer.
+
+    https://github.com/litestar-org/litestar/issues/2125
+    """
+    mock = MagicMock()
+
+    @dataclass()
+    class Foo:
+        id: str
+        bar: str = ""
+
+    class Factory(DataclassDTO):
+        config = DTOConfig(include={"excluded"})
+
+    backend = DTOBackend(
+        handler_id="test",
+        dto_factory=Factory,
+        field_definition=TransferDTOFieldDefinition.from_annotation(Foo),
+        model_type=Foo,
+        wrapper_attribute_name=None,
+        is_data_field=False,
+    )
+
+    Foo.bar = property(fget=lambda s: mock(return_value=""), fset=lambda s, v: None)  # type: ignore[assignment]
+
+    backend.encode_data(Foo(id="1"))
+    assert mock.call_count == 0
 
 
 def test_parse_model_nested_exclude(create_module: Callable[[str], ModuleType]) -> None:

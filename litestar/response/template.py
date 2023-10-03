@@ -1,14 +1,15 @@
 from __future__ import annotations
 
+import itertools
 from mimetypes import guess_type
 from pathlib import PurePath
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Iterable
 
 from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import ASGIResponse, Response
 from litestar.status_codes import HTTP_200_OK
-from litestar.utils.helpers import filter_cookies
+from litestar.utils.deprecation import warn_deprecation
 
 if TYPE_CHECKING:
     from litestar.app import Litestar
@@ -87,23 +88,32 @@ class Template(Response[bytes]):
 
     def to_asgi_response(
         self,
-        app: Litestar,
+        app: Litestar | None,
         request: Request,
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
-        cookies: list[Cookie] | None = None,
-        encoded_headers: list[tuple[bytes, bytes]] | None = None,
+        cookies: Iterable[Cookie] | None = None,
+        encoded_headers: Iterable[tuple[bytes, bytes]] | None = None,
         headers: dict[str, str] | None = None,
         is_head_response: bool = False,
         media_type: MediaType | str | None = None,
         status_code: int | None = None,
         type_encoders: TypeEncodersMap | None = None,
     ) -> ASGIResponse:
-        if not app.template_engine:
+        if app is not None:
+            warn_deprecation(
+                version="2.1",
+                deprecated_name="app",
+                kind="parameter",
+                removal_in="3.0.0",
+                alternative="request.app",
+            )
+
+        if not request.app.template_engine:
             raise ImproperlyConfiguredException("Template engine is not configured")
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
-        cookies = self.cookies if cookies is None else filter_cookies(self.cookies, cookies)
+        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
 
         media_type = self.media_type or media_type
         if not media_type:
@@ -115,7 +125,7 @@ class Template(Response[bytes]):
             else:
                 media_type = MediaType.TEXT
 
-        template = app.template_engine.get_template(self.template_name)
+        template = request.app.template_engine.get_template(self.template_name)
         context = self.create_template_context(request)
         body = template.render(**context).encode(self.encoding)
 
@@ -124,7 +134,7 @@ class Template(Response[bytes]):
             body=body,
             content_length=None,
             cookies=cookies,
-            encoded_headers=encoded_headers or [],
+            encoded_headers=encoded_headers,
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,

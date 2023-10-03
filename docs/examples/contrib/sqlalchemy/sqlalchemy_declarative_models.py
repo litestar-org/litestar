@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from litestar import Litestar, get
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from litestar.contrib.sqlalchemy.plugins import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
@@ -30,15 +30,16 @@ class Book(UUIDAuditBase):
     author: Mapped[Author] = relationship(lazy="joined", innerjoin=True, viewonly=True)
 
 
+session_config = AsyncSessionConfig(expire_on_commit=False)
 sqlalchemy_config = SQLAlchemyAsyncConfig(
-    connection_string="sqlite+aiosqlite:///test.sqlite"
+    connection_string="sqlite+aiosqlite:///test.sqlite", session_config=session_config
 )  # Create 'async_session' dependency.
 sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 
 
 async def on_startup() -> None:
     """Initializes the database."""
-    async with sqlalchemy_config.create_engine().begin() as conn:
+    async with sqlalchemy_config.get_engine().begin() as conn:
         await conn.run_sync(UUIDBase.metadata.create_all)
 
 

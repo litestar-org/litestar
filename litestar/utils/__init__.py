@@ -1,6 +1,6 @@
 from litestar.utils.deprecation import deprecated, warn_deprecation
 
-from .helpers import Ref, encode_headers, get_enum_string_value, get_name, url_quote
+from .helpers import Ref, get_enum_string_value, get_name, unique_name_for_scope, url_quote
 from .path import join_paths, normalize_path
 from .predicates import (
     is_annotated_type,
@@ -31,7 +31,7 @@ from .scope import (
     get_serializer_from_scope,
     set_litestar_scope_state,
 )
-from .sequence import compact, find_index, unique
+from .sequence import find_index, unique
 from .sync import AsyncCallable, AsyncIteratorWrapper, async_partial
 from .typing import annotation_is_iterable_of_type, get_origin_or_inner_type, make_non_optional_union
 
@@ -41,10 +41,8 @@ __all__ = (
     "Ref",
     "annotation_is_iterable_of_type",
     "async_partial",
-    "compact",
     "delete_litestar_scope_state",
     "deprecated",
-    "encode_headers",
     "find_index",
     "get_enum_string_value",
     "get_litestar_scope_state",
@@ -77,6 +75,7 @@ __all__ = (
     "normalize_path",
     "set_litestar_scope_state",
     "unique",
+    "unique_name_for_scope",
     "url_quote",
     "warn_deprecation",
 )

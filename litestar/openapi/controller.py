@@ -12,6 +12,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import get
 from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json
+from litestar.serialization.msgspec_hooks import decode_json
 from litestar.status_codes import HTTP_404_NOT_FOUND
 
 __all__ = ("OpenAPIController",)
@@ -64,7 +65,8 @@ class OpenAPIController(Controller):
     """Download url for the Stoplight Elements JS bundle."""
 
     # internal
-    _dumped_schema: str = ""
+    _dumped_json_schema: str = ""
+    _dumped_yaml_schema: bytes = b""
     # until swagger-ui supports v3.1.* of OpenAPI officially, we need to modify the schema for it and keep it
     # separate from the redoc version of the schema, which is unmodified.
     dto = None
@@ -143,10 +145,11 @@ class OpenAPIController(Controller):
             A Response instance with the YAML object rendered into a string.
         """
         if self.should_serve_endpoint(request):
-            content = dump_yaml(self.get_schema_from_request(request).to_schema(), default_flow_style=False).encode(
-                "utf-8"
-            )
-            return ASGIResponse(body=content, media_type=OpenAPIMediaType.OPENAPI_YAML)
+            if not self._dumped_json_schema:
+                schema_json = decode_json(self._get_schema_as_json(request))
+                schema_yaml = dump_yaml(schema_json, default_flow_style=False)
+                self._dumped_yaml_schema = schema_yaml.encode("utf-8")
+            return ASGIResponse(body=self._dumped_yaml_schema, media_type=OpenAPIMediaType.OPENAPI_YAML)
         return ASGIResponse(body=b"", status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
     @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False, sync_to_thread=False)
@@ -162,7 +165,7 @@ class OpenAPIController(Controller):
         """
         if self.should_serve_endpoint(request):
             return ASGIResponse(
-                body=encode_json(self.get_schema_from_request(request).to_schema()),
+                body=self._get_schema_as_json(request),
                 media_type=OpenAPIMediaType.OPENAPI_JSON,
             )
         return ASGIResponse(body=b"", status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
@@ -272,7 +275,7 @@ class OpenAPIController(Controller):
             <div id='swagger-container'/>
             <script type="text/javascript">
             const ui = SwaggerUIBundle({{
-                spec: {encode_json(schema.to_schema()).decode("utf-8")},
+                spec: {self._get_schema_as_json(request)},
                 dom_id: '#swagger-container',
                 deepLinking: true,
                 showExtensions: true,
@@ -353,9 +356,6 @@ class OpenAPIController(Controller):
         """
         schema = self.get_schema_from_request(request)
 
-        if not self._dumped_schema:
-            self._dumped_schema = encode_json(schema.to_schema()).decode("utf-8")
-
         head = f"""
           <head>
             <title>{schema.info.title}</title>
@@ -382,7 +382,7 @@ class OpenAPIController(Controller):
             <div id='redoc-container'/>
             <script type="text/javascript">
                 Redoc.init(
-                    {self._dumped_schema},
+                    {self._get_schema_as_json(request)},
                     undefined,
                     document.getElementById('redoc-container')
                 )
@@ -422,3 +422,13 @@ class OpenAPIController(Controller):
             </body>
         </html>
         """.encode()
+
+    def _get_schema_as_json(self, request: Request) -> str:
+        """Get the schema encoded as a JSON string."""
+
+        if not self._dumped_json_schema:
+            schema = self.get_schema_from_request(request).to_schema()
+            json_encoded_schema = encode_json(schema, request.route_handler.default_serializer)
+            self._dumped_json_schema = json_encoded_schema.decode("utf-8")
+
+        return self._dumped_json_schema

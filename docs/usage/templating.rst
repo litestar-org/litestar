@@ -1,20 +1,21 @@
-Templates
-=========
+Templating
+==========
 
-Litestar has built-in support for both the `Jinja2 <https://jinja.palletsprojects.com/en/3.0.x/>`_
-and `Mako <https://www.makotemplates.org/>`_ template engines, as well as abstractions to
+Litestar has built-in support for `Jinja2 <https://jinja.palletsprojects.com/en/3.0.x/>`_
+, `Mako <https://www.makotemplates.org/>`_ and `Minijinja <https://github.com/mitsuhiko/minijinja/tree/main/minijinja-py>`_ template engines, as well as abstractions to
 make use of any template engine you wish.
 
 Template engines
 ----------------
 
-To stay lightweight, a Litestar installation does not include the *Jinja* or *Mako*
+To stay lightweight, a Litestar installation does not include the *Jinja*, *Mako* or *Minijinja*
 libraries themselves. Before you can start using them, you have to install it via the
 respective extra:
 
 
 * ``pip install litestar[jinja]`` for Jinja2
 * ``pip install litestar[mako]`` for Mako
+* ``pip install litestar[minijinja]`` for Minijinja
 
 .. tip::
 
@@ -41,11 +42,41 @@ To register one of the built-in template engines you simply need to pass it to t
         .. literalinclude:: /examples/templating/template_engine_mako.py
             :language: python
 
+    .. tab-item:: MiniJinja
+        :sync: minijinja
+
+        .. literalinclude:: /examples/templating/template_engine_minijinja.py
+            :language: python
+
 .. note::
 
     The ``directory`` parameter passed to :class:`TemplateConfig <litestar.template.TemplateConfig>`
     can be either a directory or list of directories to use for loading templates.
 
+Registering a Custom Template Engine
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The above example will create a jinja Environment instance, but you can also pass in your own instance.
+
+.. code-block:: python
+
+
+    from litestar import Litestar
+    from litestar.contrib.jinja import JinjaTemplateEngine
+    from litestar.template import TemplateConfig
+    from jinja2 import Environment, DictLoader
+
+    my_custom_env = Environment(loader=DictLoader({"index.html": "Hello {{name}}!"}))
+    app = Litestar(
+        template_config=TemplateConfig(
+            instance=JinjaTemplateEngine.from_environment(my_custom_env)
+        )
+    )
+
+.. note::
+
+    The ``instance`` parameter passed to :class:`TemplateConfig <litestar.template.TemplateConfig>`
+    can not be used in conjunction with the ``directory`` parameter, if you choose to use instance you're fully responsible on the engine creation.
 
 Defining a custom template engine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -88,10 +119,16 @@ If you need to access the template engine instance, you can do so via the
         .. literalinclude:: /examples/templating/engine_instance_jinja.py
             :language: python
 
-    .. tab-item:: mako
+    .. tab-item:: Mako
         :sync: mako
 
         .. literalinclude:: /examples/templating/engine_instance_mako.py
+            :language: python
+
+    .. tab-item:: MiniJinja
+        :sync: minijinja
+
+        .. literalinclude:: /examples/templating/engine_instance_minijinja.py
             :language: python
 
 Template responses
@@ -108,12 +145,17 @@ your route handlers:
         .. literalinclude:: /examples/templating/returning_templates_jinja.py
             :language: python
 
-    .. tab-item:: mako
+    .. tab-item:: Mako
         :sync: mako
 
         .. literalinclude:: /examples/templating/returning_templates_mako.py
             :language: python
 
+    .. tab-item:: MiniJinja
+        :sync: minijinja
+
+        .. literalinclude:: /examples/templating/returning_templates_minijinja.py
+            :language: python
 
 * ``name`` is the name of the template file within on of the specified directories. If
   no file with that name is found, a :class:`TemplateNotFoundException <.exceptions.TemplateNotFoundException>`
@@ -131,7 +173,7 @@ Accessing the request instance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The current :class:`Request <litestar.connection.request.Request>` is available within the
-template context under ``request``, which also provides access to the :doc:`app instance </usage/the-litestar-app>`.
+template context under ``request``, which also provides access to the :doc:`app instance </usage/applications>`.
 
 Accessing ``app.state.key`` for example would look like this:
 <strong>check_context_key: </strong>{{ check_context_key() }}
@@ -152,7 +194,7 @@ Accessing ``app.state.key`` for example would look like this:
            </html>
 
 
-    .. tab-item:: mako
+    .. tab-item:: Mako
         :sync: mako
 
         .. code-block:: html
@@ -166,6 +208,19 @@ Accessing ``app.state.key`` for example would look like this:
                </body>
            </html>
 
+
+    .. tab-item:: MiniJinja
+        :sync: minijinja
+
+        .. code-block:: html
+
+           <html>
+               <body>
+                   <div>
+                       <span>My state value: {{request.app.state.some_key}}</span>
+                   </div>
+               </body>
+           </html>
 
 
 Adding CSRF inputs
@@ -197,7 +252,7 @@ With that in place, you can now insert the CSRF input field inside an HTML form:
                </body>
            </html>
 
-    .. tab-item:: mako
+    .. tab-item:: Mako
         :sync: mako
 
         .. code-block:: html
@@ -216,6 +271,24 @@ With that in place, you can now insert the CSRF input field inside an HTML form:
                </body>
            </html>
 
+    .. tab-item:: MiniJinja
+        :sync: minijinja
+
+        .. code-block:: html
+
+           <html>
+               <body>
+                   <div>
+                       <form action="https://myserverurl.com/some-endpoint" method="post">
+                           {{ csrf_input }}
+                           <label for="fname">First name:</label><br>
+                           <input type="text" id="fname" name="fname">
+                           <label for="lname">Last name:</label><br>
+                           <input type="text" id="lname" name="lname">
+                       </form>
+                   </div>
+               </body>
+           </html>
 
 
 The input holds a CSRF token as its value and is hidden so users cannot see or interact with it. The token is sent
@@ -250,7 +323,7 @@ Built-in callables
 ``url_for``
     To access urls for route handlers you can use the ``url_for`` function. Its signature and behaviour
     matches :meth:`route_reverse <litestar.app.Litestar.route_reverse>` behaviour. More details about route handler indexing
-    can be found :ref:`here <usage/route-handlers:route handler indexing>`.
+    can be found :ref:`here <usage/routing/handlers:route handler indexing>`.
 
 ``csrf_token``
     This function returns the request's unique :ref:`CSRF token <usage/middleware/builtin-middleware:csrf>` You can use this
@@ -295,11 +368,19 @@ the call method. For example:
             :language: html
             :caption: templates/index.html.mako
 
+    .. tab-item:: Minijinja
+        :sync: minijinja
+
+        .. literalinclude:: /examples/templating/template_functions_minijinja.py
+            :caption: template_functions.py
+            :language: python
+
+        .. literalinclude:: /examples/templating/templates/index.html.minijinja
+            :language: html
+            :caption: templates/index.html.minijinja
 
 Run the example with ``uvicorn template_functions:app`` , visit  http://127.0.0.1:8000, and
 you'll see
 
-
 .. image:: /images/examples/template_engine_callable.png
-   :target: /images/examples/template_engine_callable.png
-   :alt: Template engine callable example
+    :alt: Template engine callable example

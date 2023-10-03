@@ -24,8 +24,8 @@ class LifeSpanHandler(Generic[T]):
 
     def __init__(self, client: T) -> None:
         self.client = client
-        self.stream_send = StapledObjectStream[Optional["LifeSpanSendMessage"]](*create_memory_object_stream(inf))
-        self.stream_receive = StapledObjectStream["LifeSpanReceiveMessage"](*create_memory_object_stream(inf))
+        self.stream_send = StapledObjectStream[Optional["LifeSpanSendMessage"]](*create_memory_object_stream(inf))  # type: ignore[arg-type]
+        self.stream_receive = StapledObjectStream["LifeSpanReceiveMessage"](*create_memory_object_stream(inf))  # type: ignore[arg-type]
 
         with self.client.portal() as portal:
             self.task = portal.start_task_soon(self.lifespan)
@@ -46,7 +46,10 @@ class LifeSpanHandler(Generic[T]):
             "lifespan.startup.complete",
             "lifespan.startup.failed",
         ):
-            raise AssertionError
+            raise RuntimeError(
+                "Received unexpected ASGI message type. Expected 'lifespan.startup.complete' or "
+                f"'lifespan.startup.failed'. Got {message['type']!r}",
+            )
         if message["type"] == "lifespan.startup.failed":
             await self.receive()
 
@@ -60,7 +63,10 @@ class LifeSpanHandler(Generic[T]):
                 "lifespan.shutdown.complete",
                 "lifespan.shutdown.failed",
             ):
-                raise AssertionError
+                raise RuntimeError(
+                    "Received unexpected ASGI message type. Expected 'lifespan.shutdown.complete' or "
+                    f"'lifespan.shutdown.failed'. Got {message['type']!r}",
+                )
             if message["type"] == "lifespan.shutdown.failed":
                 await self.receive()
 

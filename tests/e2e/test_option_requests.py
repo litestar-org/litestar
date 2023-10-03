@@ -1,4 +1,3 @@
-import random
 from itertools import permutations
 from typing import TYPE_CHECKING, List, Mapping, Optional
 
@@ -8,6 +7,7 @@ from litestar import get, route
 from litestar.config.cors import CORSConfig
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
+from tests.helpers import RANDOM
 
 if TYPE_CHECKING:
     from litestar.types import Method
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 @pytest.mark.parametrize(
     "http_methods",
-    (list(perm) for perm in iter(permutations(["GET", "POST", "PATCH", "DELETE", "HEAD"], r=random.randrange(1, 6)))),
+    (list(perm) for perm in iter(permutations(["GET", "POST", "PATCH", "DELETE", "HEAD"], r=RANDOM.randrange(1, 6)))),
 )
 def test_regular_options_request(http_methods: List["Method"]) -> None:
     @route("/", http_method=http_methods)

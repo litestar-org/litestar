@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import replace
 from typing import TYPE_CHECKING
 
 from litestar.constants import RESERVED_KWARGS
@@ -49,8 +48,16 @@ class ParameterCollection:
         If an existing parameter with the same name but different type exists, raises
         ``ImproperlyConfiguredException``.
         """
+
         if parameter.name not in self._parameters:
-            self._parameters[parameter.name] = parameter
+            # because we are defining routes as unique per path, we have to handle here a situation when there is an optional
+            # path parameter. e.g. get(path=["/", "/{param:str}"]). When parsing the parameter for path, the route handler
+            # would still have a kwarg called param:
+            # def handler(param: str | None) -> ...
+            if parameter.param_in != ParamType.QUERY or all(
+                "{" + parameter.name + ":" not in path for path in self.route_handler.paths
+            ):
+                self._parameters[parameter.name] = parameter
             return
 
         pre_existing = self._parameters[parameter.name]
@@ -83,8 +90,7 @@ def create_parameter(
     if any(path_param.name == parameter_name for path_param in path_parameters):
         param_in = ParamType.PATH
         is_required = True
-        path_parameter = next(p for p in path_parameters if parameter_name in p.name)
-        result = schema_creator.for_field_definition(replace(field_definition, annotation=path_parameter.type))
+        result = schema_creator.for_field_definition(field_definition)
     elif kwarg_definition and kwarg_definition.header:
         parameter_name = kwarg_definition.header
         param_in = ParamType.HEADER
@@ -193,7 +199,6 @@ def create_parameter_for_handler(
     """Create a list of path/query/header Parameter models for the given PathHandler."""
     parameters = ParameterCollection(route_handler=route_handler)
     dependency_providers = route_handler.resolve_dependencies()
-
     layered_parameters = route_handler.resolve_layered_parameters()
 
     unique_handler_fields = tuple(

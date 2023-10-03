@@ -53,7 +53,12 @@ def test_transfer_nested_union_type_data_raises_runtime_error_for_complex_union(
         has_nested=True,
     )
     with pytest.raises(RuntimeError):
-        _transfer_nested_union_type_data(transfer_type=transfer_type, is_data_field=True, source_value=1)
+        _transfer_nested_union_type_data(
+            transfer_type=transfer_type,
+            is_data_field=True,
+            source_value=1,
+            override_serialization_name=True,
+        )
 
 
 def test_create_transfer_model_type_annotation_simple_type_without_nested_field_info() -> None:
@@ -162,7 +167,6 @@ def test_should_mark_private_underscore_fields_private_true() -> None:
                 model_name="A",
                 default_factory=None,
                 dto_field=DTOField(),
-                dto_for=None,
             ),
             True,
         )
@@ -175,7 +179,6 @@ def test_should_mark_private_underscore_fields_private_true() -> None:
                 model_name="A",
                 default_factory=None,
                 dto_field=DTOField(),
-                dto_for=None,
             ),
             True,
         )
@@ -188,7 +191,6 @@ def test_should_mark_private_underscore_fields_private_true() -> None:
                 model_name="A",
                 default_factory=None,
                 dto_field=DTOField(mark="read-only"),
-                dto_for=None,
             ),
             True,
         )
@@ -204,7 +206,6 @@ def test_should_mark_private_underscore_fields_private_false() -> None:
                 model_name="A",
                 default_factory=None,
                 dto_field=DTOField(),
-                dto_for=None,
             ),
             False,
         )
@@ -217,7 +218,6 @@ def test_should_mark_private_underscore_fields_private_false() -> None:
                 model_name="A",
                 default_factory=None,
                 dto_field=DTOField(),
-                dto_for=None,
             ),
             False,
         )
@@ -230,7 +230,6 @@ def test_should_mark_private_underscore_fields_private_false() -> None:
                 model_name="A",
                 default_factory=None,
                 dto_field=DTOField(mark="read-only"),
-                dto_for=None,
             ),
             False,
         )

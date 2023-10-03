@@ -1,7 +1,7 @@
 Basic Use
 =========
 
-Here we demonstrates how to declare DTO types to your route handlers. For demonstration purposes, we assume that we
+Here we demonstrate how to declare DTO types to your route handlers. For demonstration purposes, we assume that we
 are working with a data model ``User``, and already have two DTO types created in our application, ``UserDTO``, and
 ``UserReturnDTO``.
 
@@ -18,7 +18,7 @@ that will take responsibility for the data received and returned from handlers:
   provided, the DTO described by the ``dto`` parameter is used.
 
 The object provided to both of these parameters must be a class that conforms to the
-:class:`DTOInterface <litestar.dto.interface.DTOInterface>` protocol.
+:class:`AbstractDTO <litestar.dto.base_dto.AbstractDTO>` protocol.
 
 Defining DTOs on handlers
 ~~~~~~~~~~~~~~~~~~~~~~~~~

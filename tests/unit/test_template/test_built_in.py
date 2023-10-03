@@ -1,12 +1,15 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Type, Union
+from typing import TYPE_CHECKING, Any, Optional, Type, Union
 
 import pytest
+from jinja2 import DictLoader, Environment
+from mako.lookup import TemplateLookup
 
 from litestar import get
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
+from litestar.contrib.minijnja import MiniJinjaTemplateEngine
 from litestar.response.template import Template
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
@@ -17,22 +20,65 @@ if TYPE_CHECKING:
 
 @dataclass
 class EngineTest:
-    engine: Type[Union[JinjaTemplateEngine, MakoTemplateEngine]]
+    engine_class: Optional[Type[Union[JinjaTemplateEngine, MakoTemplateEngine, MiniJinjaTemplateEngine]]]
     index_template: str
     nested_template: str
+    instantiated: bool
+    instance: Optional[Union[JinjaTemplateEngine, MakoTemplateEngine, MiniJinjaTemplateEngine]]
+
+
+mako_template_lookup = TemplateLookup()
+mako_template_lookup.put_string("index.html", "<html>Injected? ${test}</html>")
+mako_template_lookup.put_string("nested-dir/nested.html", "<html>Does nested dirs work? ${test}</html>")
+mako_template_lookup.put_string("no_context.html", "<html>This works!</html>")
 
 
 @pytest.fixture(
     params=[
         EngineTest(
-            engine=JinjaTemplateEngine,
+            engine_class=JinjaTemplateEngine,
             index_template="<html>Injected? {{test}}</html>",
             nested_template="<html>Does nested dirs work? {{test}}</html>",
+            instantiated=False,
+            instance=None,
         ),
         EngineTest(
-            engine=MakoTemplateEngine,
+            engine_class=MakoTemplateEngine,
             index_template="<html>Injected? ${test}</html>",
             nested_template="<html>Does nested dirs work? ${test}</html>",
+            instantiated=False,
+            instance=None,
+        ),
+        EngineTest(
+            engine_class=MiniJinjaTemplateEngine,
+            index_template="<html>Injected? {{test}}</html>",
+            nested_template="<html>Does nested dirs work? {{test}}</html>",
+            instantiated=False,
+            instance=None,
+        ),
+        EngineTest(
+            engine_class=None,
+            index_template="<html>Injected? {{test}}</html>",
+            nested_template="<html>Does nested dirs work? {{test}}</html>",
+            instantiated=True,
+            instance=JinjaTemplateEngine.from_environment(
+                Environment(
+                    loader=DictLoader(
+                        {
+                            "index.html": "<html>Injected? {{test}}</html>",
+                            "nested-dir/nested.html": "<html>Does nested dirs work? {{test}}</html>",
+                            "no_context.html": "<html>This works!</html>",
+                        }
+                    )
+                )
+            ),
+        ),
+        EngineTest(
+            engine_class=None,
+            index_template="<html>Injected? ${test}</html>",
+            nested_template="<html>Does nested dirs work? ${test}</html>",
+            instantiated=True,
+            instance=MakoTemplateEngine.from_template_lookup(mako_template_lookup),
         ),
     ]
 )
@@ -66,7 +112,9 @@ def nested_path_handler(engine_test: EngineTest, tmp_path: Path) -> "HTTPRouteHa
 
 @pytest.fixture()
 def template_config(engine_test: EngineTest, tmp_path: Path) -> TemplateConfig:
-    return TemplateConfig(engine=engine_test.engine, directory=tmp_path)
+    if engine_test.instantiated:
+        return TemplateConfig(instance=engine_test.instance)
+    return TemplateConfig(engine=engine_test.engine_class, directory=tmp_path)
 
 
 def test_template(index_handler: "HTTPRouteHandler", template_config: TemplateConfig) -> None:
@@ -99,11 +147,11 @@ def test_raise_for_invalid_template_name(template_config: TemplateConfig) -> Non
 
 
 def test_no_context(tmp_path: Path, template_config: TemplateConfig) -> None:
-    Path(tmp_path / "index.html").write_text("<html>This works!</html>")
+    Path(tmp_path / "no_context.html").write_text("<html>This works!</html>")
 
     @get(path="/")
     def index() -> Template:
-        return Template(template_name="index.html")
+        return Template(template_name="no_context.html")
 
     with create_test_client(route_handlers=[index], template_config=template_config) as client:
         index_response = client.request("GET", "/")

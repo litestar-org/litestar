@@ -11,7 +11,6 @@ from uuid import UUID
 import msgspec
 
 from litestar._kwargs import KwargsModel
-from litestar._signature import get_signature_model
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.internal_types import PathParameterDefinition
 from litestar.utils import join_paths, normalize_path
@@ -134,12 +133,11 @@ class BaseRoute(ABC):
             path_parameters.add(param.name)
 
         return KwargsModel.create_for_signature_model(
-            signature_model=get_signature_model(route_handler),
+            signature_model=route_handler.signature_model,
             parsed_signature=route_handler.parsed_fn_signature,
             dependencies=route_handler.resolve_dependencies(),
             path_parameters=path_parameters,
             layered_parameters=route_handler.resolve_layered_parameters(),
-            data_dto=route_handler.resolve_dto(),
         )
 
     @staticmethod
@@ -158,7 +156,7 @@ class BaseRoute(ABC):
             raise ImproperlyConfiguredException("Path parameter names should be of length greater than zero")
         if param_type not in param_type_map:
             raise ImproperlyConfiguredException(
-                f"Path parameters should be declared with an allowed type, i.e. one of {','.join(param_type_map.keys())}"
+                f"Path parameters should be declared with an allowed type, i.e. one of {', '.join(param_type_map.keys())} in path: '{path}'"
             )
 
     @classmethod

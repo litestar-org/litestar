@@ -16,6 +16,7 @@ from litestar.status_codes import (
     HTTP_103_EARLY_HINTS,
     HTTP_200_OK,
     HTTP_204_NO_CONTENT,
+    HTTP_304_NOT_MODIFIED,
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 from litestar.testing import create_test_client
@@ -104,10 +105,20 @@ def test_empty_response(media_type: MediaType, expected: bytes, should_have_cont
     with create_test_client(handler) as client:
         response = client.get("/")
         assert response.content == expected
-        if should_have_content_length:
-            assert "content-length" in response.headers
-        else:
-            assert "content-length" not in response.headers
+        assert response.headers["content-length"] == str(len(expected))
+
+
+@pytest.mark.parametrize("status_code", (HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED))
+def test_response_without_payload(status_code: int) -> None:
+    @get("/")
+    def handler() -> Response:
+        return Response(b"", status_code=status_code)
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+
+        assert "content-type" not in response.headers
+        assert "content-length" not in response.headers
 
 
 @pytest.mark.parametrize(
@@ -195,3 +206,12 @@ def test_get_serializer() -> None:
 def test_head_response_doesnt_support_content() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         ASGIResponse(body=b"hello world", media_type=MediaType.TEXT, is_head_response=True)
+
+
+def test_asgi_response_encoded_headers() -> None:
+    response = ASGIResponse(encoded_headers=[(b"foo", b"bar")])
+    assert response.encode_headers() == [
+        (b"foo", b"bar"),
+        (b"content-type", b"application/json"),
+        (b"content-length", b"0"),
+    ]

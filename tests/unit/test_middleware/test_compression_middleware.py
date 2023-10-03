@@ -193,3 +193,26 @@ async def test_compression_streaming_response_emitted_messages(
     # second body message with more_body=True will be empty if zlib buffers output and is not flushed
     await wrapped_send(HTTPResponseBodyEvent(type="http.response.body", body=b"abc", more_body=True))
     assert mock.mock_calls[-1].args[0]["body"]
+
+
+@pytest.mark.parametrize(
+    "backend, compression_encoding", (("brotli", CompressionEncoding.BROTLI), ("gzip", CompressionEncoding.GZIP))
+)
+def test_dont_recompress_cached(backend: Literal["gzip", "brotli"], compression_encoding: CompressionEncoding) -> None:
+    mock = MagicMock(return_value="_litestar_" * 4000)
+
+    @get(path="/", media_type=MediaType.TEXT, cache=True)
+    def handler_fn() -> str:
+        return mock()  # type: ignore[no-any-return]
+
+    with create_test_client(
+        route_handlers=[handler_fn], compression_config=CompressionConfig(backend=backend)
+    ) as client:
+        client.get("/", headers={"Accept-Encoding": str(compression_encoding.value)})
+        response = client.get("/", headers={"Accept-Encoding": str(compression_encoding.value)})
+
+    assert mock.call_count == 1
+    assert response.status_code == HTTP_200_OK
+    assert response.text == "_litestar_" * 4000
+    assert response.headers["Content-Encoding"] == compression_encoding
+    assert int(response.headers["Content-Length"]) < 40000

@@ -10,7 +10,7 @@
 
 | Project   |     | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 |-----------|:----|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| CI/CD     |     | [![Latest Release](https://github.com/litestar-org/litestar/actions/workflows/publish.yaml/badge.svg?branch=main)](https://github.com/litestar-org/litestar/actions/workflows/publish.yaml) [![ci](https://github.com/litestar-org/litestar/actions/workflows/ci.yaml/badge.svg)](https://github.com/litestar-org/litestar/actions/workflows/ci.yaml) [![Documentation Building](https://github.com/litestar-org/litestar/actions/workflows/docs.yaml/badge.svg?branch=main)](https://github.com/litestar-org/litestar/actions/workflows/docs.yaml)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| CI/CD     |     | [![Latest Release](https://github.com/litestar-org/litestar/actions/workflows/publish.yaml/badge.svg)](https://github.com/litestar-org/litestar/actions/workflows/publish.yaml) [![ci](https://github.com/litestar-org/litestar/actions/workflows/ci.yaml/badge.svg)](https://github.com/litestar-org/litestar/actions/workflows/ci.yaml) [![Documentation Building](https://github.com/litestar-org/litestar/actions/workflows/docs.yaml/badge.svg?branch=main)](https://github.com/litestar-org/litestar/actions/workflows/docs.yaml)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | Quality   |     | [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=coverage)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar)                                                                                                                                                                                                                                                                        |
 | Package   |     | [![PyPI - Version](https://img.shields.io/pypi/v/litestar?labelColor=202235&color=edb641&logo=python&logoColor=edb641)](https://badge.fury.io/py/litestar) ![PyPI - Support Python Versions](https://img.shields.io/pypi/pyversions/litestar?labelColor=202235&color=edb641&logo=python&logoColor=edb641) ![Starlite PyPI - Downloads](https://img.shields.io/pypi/dm/starlite?logo=python&label=starlite%20downloads&labelColor=202235&color=edb641&logoColor=edb641) ![Litestar PyPI - Downloads](https://img.shields.io/pypi/dm/litestar?logo=python&label=litestar%20downloads&labelColor=202235&color=edb641&logoColor=edb641)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | Community |     | [![Reddit](https://img.shields.io/reddit/subreddit-subscribers/litestarapi?label=r%2FLitestar&logo=reddit&labelColor=202235&color=edb641&logoColor=edb641)](https://reddit.com/r/litestarapi) [![Discord](https://img.shields.io/discord/919193495116337154?labelColor=202235&color=edb641&label=chat%20on%20discord&logo=discord&logoColor=edb641)](https://discord.gg/X3FJqy8d2j) [![Matrix](https://img.shields.io/badge/chat%20on%20Matrix-bridged-202235?labelColor=202235&color=edb641&logo=matrix&logoColor=edb641)](https://matrix.to/#/#litestar:matrix.org) [![Medium](https://img.shields.io/badge/Medium-202235?labelColor=202235&color=edb641&logo=medium&logoColor=edb641)](https://blog.litestar.dev) [![Twitter](https://img.shields.io/twitter/follow/LitestarAPI?labelColor=202235&color=edb641&logo=twitter&logoColor=edb641&style=flat)](https://twitter.com/LitestarAPI) [![Blog](https://img.shields.io/badge/Blog-litestar.dev-202235?logo=blogger&labelColor=202235&color=edb641&logoColor=edb641)](https://blog.litestar.dev)                                                                                                                                                                                               |
@@ -19,29 +19,23 @@
 <!-- prettier-ignore-end -->
 </div>
 
-# Starlite → Litestar
-
-> [!IMPORTANT]\
-> [**_Starlite has been renamed to Litestar_**](https://litestar.dev/about/organization.html#litestar-and-starlite)
-
 <hr>
 
-Litestar is a powerful, performant, flexible and opinionated ASGI framework,
-offering first class typing support.
+Litestar is a powerful, flexible yet opinionated ASGI framework, focused on
+building APIs, and offers high-performance data validation and parsing,
+dependency injection, first-class ORM integration, authorization primitives, and much
+more that's needed to get applications up and running.
 
-Check out the [documentation 📚](https://docs.litestar.dev/).
+Check out the [documentation 📚](https://docs.litestar.dev/) for a detailed overview of
+its features!
+
+Additionally, the [Litestar fullstack repository](https://github.com/litestar-org/litestar-fullstack)
+can give you a good impression how a fully fledged Litestar application may look.
 
 ## Installation
 
 ```shell
 pip install litestar
-```
-
-**Litestar 2.0 is coming out soon**, bringing many new features and improvements.
-You can check out the latest pre-release version by instead running
-
-```shell
-pip install litestar==2.0.0beta3
 ```
 
 ## Quick Start
@@ -70,15 +64,14 @@ app = Litestar(route_handlers=[hello_world])
 - [Route Guards based Authorization](#route-guards)
 - Support for `dataclasses`, `TypedDict`, [pydantic version 1 and version 2](https://docs.pydantic.dev/latest/),
   [msgspec](https://github.com/jcrist/msgspec) and [attrs](https://www.attrs.org/en/stable/)
-- Layered Parameter declaration
-- Extended testing support
+- Layered parameter declaration
 - [Automatic API documentation with](#redoc-swagger-ui-and-stoplight-elements-api-documentation):
   - [Redoc](https://github.com/Redocly/redoc)
   - [Stoplight Elements](https://github.com/stoplightio/elements)
   - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
 - [Trio](https://trio.readthedocs.io/en/stable/) support (built-in, via [AnyIO](https://anyio.readthedocs.io/))
 - Ultra-fast validation, serialization and deserialization using [msgspec](https://github.com/jcrist/msgspec)
-- SQLAlchemy Support
+- SQLAlchemy integration
 - Piccolo ORM Support
 
 ## Example Applications
@@ -86,23 +79,10 @@ app = Litestar(route_handlers=[hello_world])
 - [starlite-pg-redis-docker](https://github.com/litestar-org/starlite-pg-redis-docker): In addition to Litestar, this
   demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
   Litestar projects, this application is open to contributions, big and small.
+- [litestar-fullstack](https://github.com/litestar-org/litestar-fullstack): A reference application that contains most of the boilerplate required for a web application.
+  It features a Litestar app configured with best practices, SQLAlchemy 2.0 and SAQ, a frontend integrated with Vitejs and Jinja2 templates, Docker, and more.
 - [litestar-hello-world](https://github.com/litestar-org/litestar-hello-world): A bare-minimum application setup. Great
   for testing and POC work.
-
-## Performance
-
-Litestar is fast. It is on par with, or significantly faster than comparable ASGI frameworks.
-
-You can see and run the benchmarks [here](https://github.com/litestar-org/api-performance-tests),
-or read more about it [here](https://docs.litestar.dev/latest/benchmarks) in our documentation.
-
-### JSON Benchmarks
-
-![JSON benchmarks](docs/images/benchmarks/rps_json.svg)
-
-### Plaintext Benchmarks
-
-![Plaintext benchmarks](docs/images/benchmarks/rps_plaintext.svg)
 
 ## Features
 
@@ -138,7 +118,9 @@ class UserController(Controller):
         ...
 
     @patch(path="/{user_id:uuid}", dto=PartialUserDTO)
-    async def partial_update_user(self, user_id: UUID4, data: DTOData[PartialUserDTO]) -> User:
+    async def partial_update_user(
+        self, user_id: UUID4, data: DTOData[PartialUserDTO]
+    ) -> User:
         ...
 
     @put(path="/{user_id:uuid}")
@@ -254,6 +236,13 @@ app = Litestar([index])
 ### Request Life Cycle Hooks
 
 Litestar supports request life cycle hooks, similarly to Flask - i.e. `before_request` and `after_request`
+
+## Performance
+
+Litestar is fast. It is on par with, or significantly faster than comparable ASGI frameworks.
+
+You can see and run the benchmarks [here](https://github.com/litestar-org/api-performance-tests),
+or read more about it [here](https://docs.litestar.dev/latest/benchmarks) in our documentation.
 
 ## Contributing
 

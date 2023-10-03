@@ -4,7 +4,6 @@ import asyncio
 from asyncio import CancelledError, Queue, Task, create_task
 from contextlib import AbstractAsyncContextManager, asynccontextmanager, suppress
 from functools import partial
-from os.path import join as join_path
 from typing import TYPE_CHECKING, AsyncGenerator, Awaitable, Callable, Iterable
 
 import msgspec.json
@@ -82,6 +81,10 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
         if not (channels or arbitrary_channels_allowed):
             raise ImproperlyConfiguredException("Must define either channels or set arbitrary_channels_allowed=True")
 
+        # make the path absolute, so we can simply concatenate it later
+        if not ws_handler_base_path.endswith("/"):
+            ws_handler_base_path += "/"
+
         self._arbitrary_channels_allowed = arbitrary_channels_allowed
         self._create_route_handlers = create_ws_route_handlers
         self._handler_root_path = ws_handler_base_path
@@ -112,11 +115,11 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
 
         if self._create_route_handlers:
             if self._arbitrary_channels_allowed:
-                path = join_path(self._handler_root_path, "{channel_name:str}")  # noqa: PTH118
+                path = self._handler_root_path + "{channel_name:str}"
                 route_handlers = [WebsocketRouteHandler(path)(self._ws_handler_func)]
             else:
                 route_handlers = [
-                    WebsocketRouteHandler(join_path(self._handler_root_path, channel_name))(  # noqa: PTH118
+                    WebsocketRouteHandler(self._handler_root_path + channel_name)(
                         self._create_ws_handler_func(channel_name)
                     )
                     for channel_name in self._channels
@@ -330,8 +333,6 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
             ]
         )
 
-        await self._backend.on_shutdown()
-
         if self._sub_task:
             self._sub_task.cancel()
             with suppress(CancelledError):
@@ -341,6 +342,8 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
             self._pub_task.cancel()
             with suppress(CancelledError):
                 await self._pub_task
+
+        await self._backend.on_shutdown()
 
     async def __aenter__(self) -> ChannelsPlugin:
         await self._on_startup()

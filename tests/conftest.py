@@ -91,7 +91,9 @@ def file_store(tmp_path: Path) -> FileStore:
     return FileStore(path=tmp_path)
 
 
-@pytest.fixture(params=["redis_store", "memory_store", "file_store"])
+@pytest.fixture(
+    params=[pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")), "memory_store", "file_store"]
+)
 def store(request: FixtureRequest) -> Store:
     return cast("Store", request.getfixturevalue(request.param))
 
@@ -311,6 +313,6 @@ async def redis_client(docker_ip: str, redis_service: None) -> AsyncGenerator[As
     client: AsyncRedis = AsyncRedis(host=docker_ip, port=6397)
     yield client
     try:
-        await client.close()
+        await client.aclose()  # type: ignore[attr-defined]
     except RuntimeError:
         pass

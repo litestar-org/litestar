@@ -14,7 +14,7 @@ full data model to be submitted for update.
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/put_handlers.py
    :language: python
    :linenos:
-   :emphasize-lines: 26,29,30
+   :emphasize-lines: 25,28,29
 
 This script defines a ``PUT`` handler with path ``/person/{person_id:int}`` that includes a route parameter,
 ``person_id`` to specify which person should be updated.
@@ -37,7 +37,7 @@ to be submitted.
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/patch_handlers.py
    :language: python
    :linenos:
-   :emphasize-lines: 22,23,26
+   :emphasize-lines: 21,22,25
 
 In this latest update, the handler has been changed to a :class:`@patch() <litestar.handlers.patch>`
 handler.

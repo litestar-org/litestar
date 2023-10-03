@@ -22,9 +22,11 @@ def test_parses_values_from_connection_kwargs_raises() -> None:
         pass
 
     model = SignatureModel.create(
-        fn=fn,
         dependency_name_set=set(),
+        fn=fn,
+        data_dto=None,
         parsed_signature=ParsedSignature.from_fn(fn, {}),
+        type_decoders=[],
     )
     with pytest.raises(ValidationException):
         model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), a="not an int")
@@ -37,9 +39,11 @@ def test_create_signature_validation() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         SignatureModel.create(
-            fn=my_fn.fn.value,
             dependency_name_set=set(),
+            fn=my_fn.fn.value,
+            data_dto=None,
             parsed_signature=ParsedSignature.from_fn(my_fn.fn.value, {}),
+            type_decoders=[],
         )
 
 
@@ -114,9 +118,11 @@ def test_validation_error_exception_key() -> None:
         pass
 
     model = SignatureModel.create(
-        fn=handler,
         dependency_name_set=set(),
+        fn=handler,
+        data_dto=None,
         parsed_signature=ParsedSignature.from_fn(handler.fn.value, {}),
+        type_decoders=[],
     )
 
     with pytest.raises(ValidationException) as exc_info:
@@ -153,12 +159,12 @@ def test_invalid_input_pydantic() -> None:
         ...
 
     with create_test_client(route_handlers=[test]) as client:
+        client.cookies.update({"int-cookie": "cookie"})
         response = client.post(
             "/",
             json={"child": {"val": "a", "other_val": "b"}, "other_child": {"val": [1, "c"]}},
             params={"int_param": "param", "length_param": "d"},
             headers={"X-SOME-INT": "header"},
-            cookies={"int-cookie": "cookie"},
         )
 
         assert response.status_code == HTTP_400_BAD_REQUEST
@@ -214,12 +220,12 @@ def test_invalid_input_attrs() -> None:
         ...
 
     with create_test_client(route_handlers=[test]) as client:
+        client.cookies.update({"int-cookie": "cookie"})
         response = client.post(
             "/",
             json={"child": {"val": "a", "other_val": "b"}, "other_child": {"val": [1, "c"]}},
             params={"int_param": "param"},
             headers={"X-SOME-INT": "header"},
-            cookies={"int-cookie": "cookie"},
         )
 
         assert response.status_code == HTTP_400_BAD_REQUEST
@@ -261,12 +267,12 @@ def test_invalid_input_dataclass() -> None:
         ...
 
     with create_test_client(route_handlers=[test]) as client:
+        client.cookies.update({"int-cookie": "cookie"})
         response = client.post(
             "/",
             json={"child": {"val": "a", "other_val": "b"}, "other_child": {"val": [1, "c"]}},
             params={"int_param": "param", "length_param": "d"},
             headers={"X-SOME-INT": "header"},
-            cookies={"int-cookie": "cookie"},
         )
 
         assert response.status_code == HTTP_400_BAD_REQUEST
@@ -306,12 +312,12 @@ def test_invalid_input_typed_dict() -> None:
         ...
 
     with create_test_client(route_handlers=[test]) as client:
+        client.cookies.update({"int-cookie": "cookie"})
         response = client.post(
             "/",
             json={"child": {"val": "a", "other_val": "b"}, "other_child": {"val": [1, "c"]}},
             params={"int_param": "param", "length_param": "d"},
             headers={"X-SOME-INT": "header"},
-            cookies={"int-cookie": "cookie"},
         )
 
         assert response.status_code == HTTP_400_BAD_REQUEST

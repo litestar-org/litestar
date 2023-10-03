@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Pattern
+from typing import TYPE_CHECKING, Pattern, Sequence
 
 from litestar.exceptions import ImproperlyConfiguredException
 
@@ -9,7 +9,7 @@ __all__ = ("build_exclude_path_pattern", "should_bypass_middleware")
 
 
 if TYPE_CHECKING:
-    from litestar.types import Scope, Scopes
+    from litestar.types import Method, Scope, Scopes
 
 
 def build_exclude_path_pattern(*, exclude: str | list[str] | None = None) -> Pattern | None:
@@ -34,19 +34,20 @@ def build_exclude_path_pattern(*, exclude: str | list[str] | None = None) -> Pat
 
 def should_bypass_middleware(
     *,
-    scope: Scope,
-    scopes: Scopes,
+    exclude_http_methods: Sequence[Method] | None = None,
     exclude_opt_key: str | None = None,
     exclude_path_pattern: Pattern | None = None,
+    scope: Scope,
+    scopes: Scopes,
 ) -> bool:
     """Determine weather a middleware should be bypassed.
 
     Args:
+        exclude_http_methods: A sequence of http methods that do not require authentication.
+        exclude_opt_key: Key in ``opt`` with which a route handler can "opt-out" of a middleware.
+        exclude_path_pattern: If this pattern matches scope["path"], the middleware should be bypassed.
         scope: The ASGI scope.
         scopes: A set with the ASGI scope types that are supported by the middleware.
-        exclude_opt_key: Key in ``opt`` with which a route handler can "opt-out" of a middleware.
-        exclude_path_pattern: If this pattern matches scope["path"], the middleware should
-            be bypassed.
 
     Returns:
         A boolean indicating if a middleware should be bypassed
@@ -55,6 +56,9 @@ def should_bypass_middleware(
         return True
 
     if exclude_opt_key and scope["route_handler"].opt.get(exclude_opt_key):
+        return True
+
+    if exclude_http_methods and scope.get("method") in exclude_http_methods:
         return True
 
     return bool(

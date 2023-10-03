@@ -7,7 +7,7 @@ from litestar import Controller, Litestar, post
 from litestar._openapi.request_body import create_request_body
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar.datastructures.upload_file import UploadFile
-from litestar.dto.interface import DTOInterface
+from litestar.dto import AbstractDTO
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.typing import FieldDefinition
@@ -24,11 +24,11 @@ class FormData(BaseModel):
 def test_create_request_body(person_controller: Type[Controller]) -> None:
     for route in Litestar(route_handlers=[person_controller]).routes:
         for route_handler, _ in route.route_handler_map.values():  # type: ignore
-            handler_fields = route_handler.signature_model._fields  # type: ignore
+            handler_fields = route_handler.signature_model._fields
             if "data" in handler_fields:
                 request_body = create_request_body(
                     route_handler=route_handler,
-                    field=handler_fields["data"],
+                    field_definition=handler_fields["data"],
                     schema_creator=SchemaCreator(generate_examples=True),
                 )
                 assert request_body
@@ -87,17 +87,21 @@ def test_upload_file_request_body_generation() -> None:
 
 
 def test_request_body_generation_with_dto() -> None:
-    mock_dto = MagicMock(spec=DTOInterface)
+    mock_dto = MagicMock(spec=AbstractDTO)
 
     @post(path="/form-upload", dto=mock_dto)
     async def handler(data: Dict[str, Any]) -> None:
         return None
 
-    schema_creator = SchemaCreator(generate_examples=False)
+    Litestar(route_handlers=[handler])
+    schema_creator = SchemaCreator()
+    field_definition = FieldDefinition.from_annotation(Dict[str, Any])
     create_request_body(
         route_handler=handler,
-        field=FieldDefinition.from_annotation(Dict[str, Any]),
+        field_definition=field_definition,
         schema_creator=schema_creator,
     )
 
-    mock_dto.create_openapi_schema.assert_called_once_with("data", str(handler), schema_creator)
+    mock_dto.create_openapi_schema.assert_called_once_with(
+        field_definition=field_definition, handler_id=handler.handler_id, schema_creator=schema_creator
+    )

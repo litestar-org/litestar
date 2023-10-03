@@ -1,19 +1,18 @@
 [tool.poetry]
 name = "litestar"
-version = "2.0.0beta4"
+version = "2.1.1"
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 authors = [
+    "Cody Fincher <cody.fincher@gmail.com>",
+    "Jacob Coffee <jacob@z7x.org>",
+    "Janek Nouvertné <provinzkraut@posteo.de>",
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
     "Peter Schutt <peter.github@proton.me>",
-    "Cody Fincher <cody.fincher@gmail.com>",
-    "Janek Nouvertné <provinzkraut@posteo.de>",
-    "Jacob Coffee <jacob@z7x.org>",
 ]
 maintainers = [
-    "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
     "Cody Fincher <cody.fincher@gmail.com>",
-    "Janek Nouvertné <provinzkraut@posteo.de>",
     "Jacob Coffee <jacob@z7x.org>",
+    "Janek Nouvertné <provinzkraut@posteo.de>",
 ]
 license = "MIT"
 readme = "docs/PYPI_README.md"
@@ -23,14 +22,9 @@ documentation = "https://docs.litestar.dev/"
 keywords = [
     "api",
     "rest",
-    "http",
     "asgi",
-    "pydantic",
     "litestar",
     "starlite",
-    "framework",
-    "websocket",
-    "litestar",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -48,12 +42,9 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
     "Topic :: Software Development",
     "Typing :: Typed",
-    "Framework :: AsyncIO",
     #    Pending trove-classifiers#148
     #    "Framework :: Litestar",
     #    "Framework :: Litestar :: 2",
-    "Framework :: Pydantic",
-    "Framework :: Pydantic :: 1",
     "Intended Audience :: Developers",
     "Intended Audience :: Information Technology",
     "Intended Audience :: System Administrators",
@@ -80,16 +71,17 @@ annotated-types = { version = "*", optional = true }
 anyio = ">=3"
 attrs = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
-click = { version = "*", optional = true }
+click = "*"
 cryptography = { version = "*", optional = true }
-fast-query-parsers = ">=1.0.2"
+fast-query-parsers = {version = ">=1.0.2", optional = true }
 httpx = ">=0.22"
 importlib-metadata = { version = "*", python = "<3.10" }
 importlib-resources = { version = ">=5.12.0", python = "<3.9" }
 jinja2 = { version = ">=3.1.2", optional = true }
 jsbeautifier = { version = "*", optional = true }
 mako = { version = ">=1.2.4", optional = true }
-msgspec = ">=0.17.0"
+minijinja = {version =">=1.0.0", optional = true}
+msgspec = ">=0.18.2"
 multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 piccolo = { version = "*", optional = true }
@@ -100,11 +92,12 @@ pydantic = { version = "*", optional = true, extras = ["email"] }
 pydantic-extra-types = { version = "*", optional = true }
 python-jose = { version = "*", optional = true }
 pyyaml = "*"
-redis = { version = ">=4.4.4, <4.5.0", optional = true, extras = ["hiredis"] }
-rich = { version = ">=13.0.0", optional = true }
-rich-click = { version = "*", optional = true }
+redis = { version = ">=4.4.4", optional = true, extras = ["hiredis"] }
+rich = ">=13.0.0"
+rich-click = "*"
 sqlalchemy = { version = ">=2.0.12", optional = true }
 structlog = { version = "*", optional = true }
+advanced-alchemy = { version = ">=0.2.2", optional = true }
 typing-extensions = "*"
 uvicorn = { extras = ["standard"], version = ">=0.22.0", optional = true }
 
@@ -112,8 +105,10 @@ uvicorn = { extras = ["standard"], version = ">=0.22.0", optional = true }
 aiosqlite = "*"
 asyncmy = "*"
 asyncpg = "*"
+beanie = ">=1.21.0"
 beautifulsoup4 = "*"
 duckdb-engine = "*"
+exceptiongroup = { version = "*", python = "<3.11" }
 fsspec = "*"
 greenlet = "*"
 httpx-sse = "*"
@@ -127,11 +122,14 @@ pytest-cov = "*"
 pytest-lazy-fixture = "*"
 pytest-mock = "*"
 pytest-rerunfailures = "*"
+pytest-timeout = "*"
+pytest-xdist = "*"
 python-dotenv = "*"
+sourcery = "*"
 sqlalchemy-spanner = "*"
 starlette = "*"
+time-machine = "*"
 trio = "*"
-time-machine = "^2.11.0"
 
 [tool.poetry.group.docs]
 optional = true
@@ -169,32 +167,32 @@ types-redis = "*"
 annotated-types = ["annotated-types"]
 attrs = ["attrs"]
 brotli = ["brotli"]
-cli = ["click", "rich", "rich-click", "jsbeautifier", "uvicorn"]
+cli = ["jsbeautifier", "uvicorn"]
 cryptography = ["cryptography"]
 jinja = ["jinja2"]
+jsbeautifier = ["jsbeautifier"]
 jwt = ["python-jose", "cryptography"]
 mako = ["mako"]
+minijinja = ["minijinja"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 piccolo = ["piccolo"]
 picologging = ["picologging"]
 prometheus = ["prometheus-client"]
 pydantic = ["pydantic", "pydantic-extra-types"]
 redis = ["redis"]
-sqlalchemy = ["sqlalchemy", "alembic"]
-standard = ["click", "jinja2", "jsbeautifier", "rich", "uvicorn", "rich-click"]
+sqlalchemy = ["advanced-alchemy"]
+standard = ["jinja2", "jsbeautifier", "uvicorn", "fast-query-parsers"]
 structlog = ["structlog"]
 
 full = [
-    "alembic",
     "annotated-types",
     "attrs",
     "brotli",
-    "click",
-    "rich-click",
     "cryptography",
     "jinja2",
     "jsbeautifier",
     "mako",
+    "minijinja",
     "opentelemetry-instrumentation-asgi",
     "piccolo",
     "picologging",
@@ -203,14 +201,14 @@ full = [
     "pydantic-extra-types",
     "python-jose",
     "redis",
-    "rich",
-    "sqlalchemy",
     "structlog",
     "uvicorn",
+    "advanced-alchemy",
+    "fast-query-parsers",
 ]
 
 [tool.poetry.scripts]
-litestar = { callable = "litestar.__main__:run_cli", extras = ["cli"] }
+litestar = { callable = "litestar.__main__:run_cli" }
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -225,7 +223,9 @@ ignore-words-list = "selectin"
 skip = 'poetry.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
-omit = ["*/tests/*", "litestar/contrib/sqlalchemy_1/*"]
+omit = ["*/tests/*"]
+parallel = true
+concurrency = ["multiprocessing", "thread"]
 
 [tool.coverage.report]
 exclude_lines = [
@@ -240,10 +240,11 @@ exclude_lines = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "--ignore=examples -m='not sqlalchemy_integration'"
+addopts = "--strict-markers --strict-config --dist=loadgroup"
 asyncio_mode = "auto"
+xfail_strict = true
 filterwarnings = [
-    "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:164",
+    "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:",
     "ignore::DeprecationWarning:pkg_resources.*",
     "ignore::DeprecationWarning:google.rpc",
     "ignore::DeprecationWarning:google.gcloud",
@@ -251,6 +252,12 @@ filterwarnings = [
     "ignore::DeprecationWarning:google",
     "ignore::DeprecationWarning:sphinxcontrib",
     "ignore::DeprecationWarning:litestar.*",
+    "ignore:The `__fields__` attribute is deprecated:DeprecationWarning:pydantic*",
+    "ignore:Support for class-based `config` is deprecated:DeprecationWarning:pydantic*",
+    "ignore:The `dict` method is deprecated:DeprecationWarning:",
+    "ignore:The `parse_obj` method is deprecated:DeprecationWarning:",
+    "ignore:The `json` method is deprecated:DeprecationWarning:",
+    "ignore:Extra keyword arguments on `Field` is deprecated:DeprecationWarning:pydantic*",
 ]
 markers = [
     "sqlalchemy_integration: SQLAlchemy integration tests",
@@ -280,7 +287,7 @@ implicit_reexport = false
 show_error_codes = true
 
 [[tool.mypy.overrides]]
-module = ["tests.*.test_sqlalchemy_sync", "tests.*.test_sqlalchemy_async"]
+module = ["tests.*.test_sqlalchemy", "tests.*.test_sqlalchemy"]
 disable_error_code = "attr-defined"
 
 [[tool.mypy.overrides]]
@@ -434,14 +441,8 @@ add_editors_note = true
 ruff_fix = true
 
 [tool.unasyncd.files]
-"litestar/contrib/sqlalchemy/repository/_async.py" = "litestar/contrib/sqlalchemy/repository/_sync.py"
-"litestar/contrib/repository/abc/_async.py" = "litestar/contrib/repository/abc/_sync.py"
+"litestar/repository/abc/_async.py" = "litestar/repository/abc/_sync.py"
 
-[tool.unasyncd.per_file_add_replacements."litestar/contrib/repository/abc/_async.py"]
+[tool.unasyncd.per_file_add_replacements."litestar/repository/abc/_async.py"]
 "AbstractAsyncRepository" = "AbstractSyncRepository"
 "AsyncRepoT" = "SyncRepoT"
-
-[tool.unasyncd.per_file_add_replacements."litestar/contrib/sqlalchemy/repository/_async.py"]
-SQLAlchemyAsyncRepository = "SQLAlchemySyncRepository"
-"sqlalchemy.ext.asyncio.AsyncSession" = "sqlalchemy.orm.Session"
-"litestar.contrib.repository.AbstractAsyncRepository" = "litestar.contrib.repository.AbstractSyncRepository"

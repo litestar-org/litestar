@@ -6,7 +6,7 @@ Litestar is a powerful, flexible, highly performant, and opinionated ASGI framew
 The Litestar framework supports :doc:`/usage/plugins`, ships
 with :doc:`dependency injection </usage/dependency-injection>`, :doc:`security primitives </usage/security/index>`,
 :doc:`OpenAPI schema generation </usage/openapi>`, `MessagePack <https://msgpack.org/>`_,
-:doc:`middlewares </usage/middleware/index>`, and much more.
+:doc:`middlewares </usage/middleware/index>`, a great :doc:`CLI </usage/cli>` experience, and much more.
 
 Installation
 ------------
@@ -15,10 +15,7 @@ Installation
 
    pip install litestar
 
-.. tip:: ``litestar[standard]`` includes everything you need to get started with Litestar. It has: ``click`` and ``rich`` for a great CLI experience, ``jinja2`` for templating,
-        and ``uvicorn`` for running your app.
-
-        You can also install just the :doc:`CLI </usage/cli>` with ``litestar[cli]``!
+.. tip:: ``litestar[standard]`` includes commonly used extras like ``uvicorn`` and ``jinja2`` (for templating).
 
 .. dropdown:: Extras
     :icon: star
@@ -35,28 +32,34 @@ Installation
     :ref:`Cookie Based Sessions <usage/middleware/builtin-middleware:client-side sessions>`
         :code:`pip install litestar[cryptography]`
 
-    :doc:`JWT Security Backends </usage/contrib/jwt>`
+    :doc:`JWT </usage/security/jwt>`
         :code:`pip install litestar[jwt]`
 
     :doc:`RedisStore </usage/stores>`
         :code:`pip install litestar[redis]`
 
-    :ref:`Picologging <usage/the-litestar-app:using picologging>`
+    :ref:`Picologging <usage/logging:using picologging>`
         :code:`pip install litestar[picologging]`
 
-    :ref:`StructLog <usage/the-litestar-app:using structlog>`
+    :ref:`StructLog <usage/logging:using structlog>`
         :code:`pip install litestar[structlog]`
 
-    :doc:`Prometheus Instrumentation </usage/contrib/prometheus>`
+    :doc:`Prometheus Instrumentation </usage/metrics/prometheus>`
         :code:`pip install litestar[prometheus]`
 
-    :doc:`Open Telemetry Instrumentation </usage/contrib/open-telemetry>`
+    :doc:`Open Telemetry Instrumentation </usage/metrics/open-telemetry>`
         :code:`pip install litestar[opentelemetry]`
 
-    :doc:`SQLAlchemy </usage/contrib/sqlalchemy/index>`
+    :doc:`SQLAlchemy </usage/databases/sqlalchemy/index>`
         :code:`pip install litestar[sqlalchemy]`
 
     :doc:`CLI </usage/cli>`
+        .. deprecated:: 2.1.1
+           The ``litestar`` base installation now includes the CLI dependencies and this group is no longer required
+           to use the CLI.
+           If you need the optional CLI dependencies, install the ``standard`` group instead.
+           **Will be removed in 3.0**
+
         :code:`pip install litestar[cli]`
 
     :doc:`Jinja Templating </usage/templating>`
@@ -65,19 +68,19 @@ Installation
     :doc:`Mako Templating </usage/templating>`
         :code:`pip install litestar[mako]`
 
-    Standard Installation (includes CLI and Jinja templating):
+    Standard Installation (includes Uvicorn and Jinja2 templating):
         :code:`pip install litestar[standard]`
 
     All Extras:
         :code:`pip install litestar[full]`
 
-    .. note:: the full extras is not recommended because it will add a lot of unnecessary extras.
+    .. note:: The full extras is not recommended because it will add a lot of unnecessary extras.
 
 
 Minimal Example
 ---------------
 
-At a minimum, make sure you have installed ``litestar[standard]``, which includes ``litestar``, the CLI, and uvicorn.
+At a minimum, make sure you have installed ``litestar[standard]``, which includes uvicorn.
 
 First, create a file named ``app.py`` with the following contents:
 
@@ -191,7 +194,7 @@ You can also use dataclasses (standard library and Pydantic),
             ...
 
         @patch(path="/{user_id:uuid}", dto=PartialUserDTO)
-        async def partial_update_user(self, user_id: UUID4, data: PartialUserDTO) -> User:
+        async def partial_update_user(self, user_id: UUID4, data: DTOData[User]) -> User:
             ...
 
         @put(path="/{user_id:uuid}")
@@ -286,8 +289,11 @@ Example Applications
 * `litestar-pg-redis-docker <https://github.com/litestar-org/starlite-pg-redis-docker>`_ : In addition to Litestar, this
   demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
   Litestar projects, this application is open to contributions, big and small.
-* `litestar-hello-world <https://github.com/litestar-org/litestar-hello-world>`_: A bare-minimum application setup. Great
-  for testing and POC work.
+* `litestar-fullstack <https://github.com/litestar-org/litestar-fullstack>`_ : A reference application that features a
+  Litestar app configured with best practices, SQLAlchemy 2.0 and SAQ, a frontend integrated with Vitejs and Jinja2
+  templates. Docker, and more.
+* `litestar-hello-world <https://github.com/litestar-org/litestar-hello-world>`_: A bare-minimum application setup.
+  Great for testing and POC work.
 
 
 .. toctree::
