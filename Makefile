@@ -85,7 +85,7 @@ lint: 												## Runs pre-commit hooks; includes ruff linting, codespell, bl
 .PHONY: coverage
 coverage:  											## Run the tests and generate coverage report
 	@echo "=> Running tests with coverage"
-	@$(ENV_PREFIX)pytest tests --cov=polyfactory
+	@$(ENV_PREFIX)pytest tests --cov=litestar -n auto
 	@$(ENV_PREFIX)coverage html
 	@$(ENV_PREFIX)coverage xml
 	@echo "=> Coverage report generated"
