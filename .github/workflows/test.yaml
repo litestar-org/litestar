@@ -40,19 +40,24 @@ jobs:
           python-version: ${{ inputs.python-version }}
           allow-python-prereleases: true
           cache: true
+          cache-dependency-path: |
+            ./pdm.lock
 
       - name: Install dependencies
-        run: pdm install -G:all
+        run: pdm install
 
       - if: ${{ inputs.pydantic-version == '1' }}
-        name: Install pydantic v1
-        run: pdm remove pydantic-extra-types && pdm add "pydantic>=1.10.11,<2" piccolo
+        name: Prepare for pydantic v1
+        run: pdm add --no-sync "pydantic>=1.10.11,<2" "piccolo"
 
       - if: ${{ inputs.pydantic-version == '2' }}
-        name: Install pydantic v2
-        run: pdm add "pydantic>=2.3.0" "pydantic-extra-types>=2.0.0"
+        name: Prepare for pydantic v2
+        run: pdm add --no-sync "pydantic>=2.3.0" "pydantic-extra-types>=2.0.0"
 
-      - name: Set pythonpath
+      - name: Sync dependencies
+        run: pdm sync
+
+      - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
 
       - name: Test

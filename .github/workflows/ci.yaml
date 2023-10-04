@@ -116,6 +116,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
           allow-python-prereleases: true
           cache: true
+          cache-dependency-path: |
+            ./pdm.lock
 
       - name: Install dependencies
         run: pdm install -G:docs
