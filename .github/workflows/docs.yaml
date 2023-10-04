@@ -39,7 +39,7 @@ jobs:
         if: github.event_name == 'release'
 
       - name: Build dev docs
-        run: pdm run python tools/build_docs.py docs-build
+        run: pdm run python tools/build_docs.py docs-build --version dev
         if: github.event_name == 'push'
 
       - name: Deploy
