@@ -64,10 +64,7 @@ dependencies = [
 annotated-types = ["annotated-types"]
 attrs = ["attrs"]
 brotli = ["brotli"]
-cli = [
-    "jsbeautifier",
-    "uvicorn"
-]
+cli = ["jsbeautifier", "uvicorn"]
 cryptography = ["cryptography"]
 jinja = ["jinja2>=3.1.2"]
 jwt = ["python-jose", "cryptography"]
@@ -84,13 +81,10 @@ standard = ["jinja2", "jsbeautifier", "uvicorn", "fast-query-parsers>=1.0.2"]
 structlog = ["structlog"]
 
 [project.group.dev.dependencies.exceptiongroup]
-# Is this valid? wtf. pdm import gave me this.
-# ? TODO: Please review @provinzkraut
 version = "*"
 python = "<3.11"
 
 [project.scripts]
-# ? TODO: Test
 litestar = "litestar.__main__:run_cli"
 
 [project.urls]
@@ -105,11 +99,9 @@ repository = "https://github.com/litestar-org/litestar"
 documentation = "https://docs.litestar.dev/"
 
 [tool.hatch.metadata]
-# ? TODO: Idk saw this on Pydantic repo - investigate
 allow-direct-references = true
 
 [tool.hatch.build.targets.sdist]
-# ? TODO: Review
 include = [
     'docs/PYPI_README.md',
     '/Makefile',
