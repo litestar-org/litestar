@@ -91,7 +91,7 @@ python = "<3.11"
 
 [project.scripts]
 # ? TODO: Test
-callable = "litestar.__main__:run_cli"
+litestar = "litestar.__main__:run_cli"
 
 [project.urls]
 "Issue Tracker" = "https://github.com/litestar-org/litestar/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc"
