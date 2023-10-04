@@ -178,15 +178,6 @@ dev = [
     "trio",
     "exceptiongroup",
 ]
-dev-db = [
-    "aiosqlite",
-    "asyncmy",
-    "asyncpg",
-    "duckdb-engine",
-    "oracledb",
-    "psycopg",
-    "sqlalchemy-spanner",
-]
 dev-contrib = ["opentelemetry-sdk", "httpx-sse"]
 
 [tool.black]
