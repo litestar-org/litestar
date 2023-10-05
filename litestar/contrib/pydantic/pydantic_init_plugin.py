@@ -71,11 +71,16 @@ _base_encoders: dict[Any, Callable[[Any], Any]] = {
 
 
 class PydanticInitPlugin(InitPluginProtocol):
+    __slots__ = ("prefer_alias",)
+
+    def __init__(self, prefer_alias: bool = False) -> None:
+        self.prefer_alias = prefer_alias
+
     @classmethod
-    def encoders(cls) -> dict[Any, Callable[[Any], Any]]:
+    def encoders(cls, prefer_alias: bool = False) -> dict[Any, Callable[[Any], Any]]:
         if pydantic.VERSION.startswith("1"):  # pragma: no cover
-            return {**_base_encoders, **cls._create_pydantic_v1_encoders()}
-        return {**_base_encoders, **cls._create_pydantic_v2_encoders()}
+            return {**_base_encoders, **cls._create_pydantic_v1_encoders(prefer_alias)}
+        return {**_base_encoders, **cls._create_pydantic_v2_encoders(prefer_alias)}
 
     @classmethod
     def decoders(cls) -> list[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]]:
@@ -89,10 +94,10 @@ class PydanticInitPlugin(InitPluginProtocol):
         return decoders
 
     @staticmethod
-    def _create_pydantic_v1_encoders() -> dict[Any, Callable[[Any], Any]]:  # pragma: no cover
+    def _create_pydantic_v1_encoders(prefer_alias: bool = False) -> dict[Any, Callable[[Any], Any]]:  # pragma: no cover
         return {
             pydantic.BaseModel: lambda model: {
-                k: v.decode() if isinstance(v, bytes) else v for k, v in model.dict().items()
+                k: v.decode() if isinstance(v, bytes) else v for k, v in model.dict(by_alias=prefer_alias).items()
             },
             pydantic.SecretField: str,
             pydantic.StrictBool: int,
@@ -102,9 +107,9 @@ class PydanticInitPlugin(InitPluginProtocol):
         }
 
     @staticmethod
-    def _create_pydantic_v2_encoders() -> dict[Any, Callable[[Any], Any]]:
+    def _create_pydantic_v2_encoders(prefer_alias: bool = False) -> dict[Any, Callable[[Any], Any]]:
         encoders: dict[Any, Callable[[Any], Any]] = {
-            pydantic.BaseModel: lambda model: model.model_dump(mode="json"),
+            pydantic.BaseModel: lambda model: model.model_dump(mode="json", by_alias=prefer_alias),
             pydantic.types.SecretStr: lambda val: "**********" if val else "",
             pydantic.types.SecretBytes: lambda val: "**********" if val else "",
         }
@@ -117,6 +122,6 @@ class PydanticInitPlugin(InitPluginProtocol):
         return encoders
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
-        app_config.type_encoders = {**self.encoders(), **(app_config.type_encoders or {})}
+        app_config.type_encoders = {**self.encoders(self.prefer_alias), **(app_config.type_encoders or {})}
         app_config.type_decoders = [*self.decoders(), *(app_config.type_decoders or [])]
         return app_config

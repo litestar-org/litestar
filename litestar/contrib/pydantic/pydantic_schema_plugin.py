@@ -132,6 +132,11 @@ _supported_types = (pydantic.BaseModel, *list(PYDANTIC_TYPE_MAP.keys()))
 
 
 class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
+    __slots__ = ("prefer_alias",)
+
+    def __init__(self, prefer_alias: bool = False) -> None:
+        self.prefer_alias = prefer_alias
+
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
         return isinstance(value, _supported_types) or is_class_and_subclass(value, _supported_types)  # type: ignore
@@ -146,6 +151,8 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
         Returns:
             An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
         """
+        if schema_creator.prefer_alias != self.prefer_alias:
+            schema_creator.prefer_alias = True
         if is_pydantic_model_class(field_definition.annotation):
             return self.for_pydantic_model(annotation=field_definition.annotation, schema_creator=schema_creator)
         return PYDANTIC_TYPE_MAP[field_definition.annotation]  # pragma: no cover
