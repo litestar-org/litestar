@@ -39,7 +39,7 @@ class PydanticPlugin(InitPluginProtocol):
         """Initialize ``PydanticPlugin``.
 
         Args:
-            prefer_alias: OpenAPI and type_encoders will export by alias
+            prefer_alias: OpenAPI and ``type_encoders`` will export by alias
         """
         self.prefer_alias = prefer_alias
 
