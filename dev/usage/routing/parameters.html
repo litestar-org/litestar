@@ -1316,9 +1316,9 @@ Python 3.11+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<p>The parameter defined inside the <code class="docutils literal notranslate"><span class="pre">path</span></code> kwarg is typed as <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> , because the value passed as part of the request will be
+<p>The parameter defined inside the <code class="docutils literal notranslate"><span class="pre">path</span></code> kwarg is typed as <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> , because the value passed as part of the request will be
 a timestamp in milliseconds without any decimals. The parameter in the function declaration though is typed
-as <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code></a>. This works because the int value will be passed to a pydantic model representing the function
+as <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code></a>. This works because the int value will be passed to a pydantic model representing the function
 signature, which will coerce the int into a datetime. Thus, when the function is called it will be called with a
 datetime typed parameter.</p>
 <div class="admonition note">

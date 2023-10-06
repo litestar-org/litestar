@@ -1225,7 +1225,7 @@ don’t spend a significant amount of time waiting.</p>
 <h3>Asynchronous CPU-bound tasks<a class="headerlink" href="#asynchronous-cpu-bound-tasks" title="Permalink to this heading">#</a></h3>
 <p>In some cases, CPU bound tasks can be made asynchronous, by introducing points for the
 event loop to switch to other tasks. An example of this would be an inner loop which
-awaits <a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.sleep" title="(in Python v3.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">asyncio.sleep(0)</span></code></a> at the beginning of each iteration.</p>
+awaits <a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.sleep" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">asyncio.sleep(0)</span></code></a> at the beginning of each iteration.</p>
 <p>This technique is mostly useful for long-running tasks, where each individual step does
 not block for an extended period of time.</p>
 </section>
