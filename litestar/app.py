@@ -341,9 +341,7 @@ class Litestar(Router):
             opt=dict(opt or {}),
             parameters=parameters or {},
             pdb_on_exception=pdb_on_exception,
-            plugins=[
-                *self._get_default_plugins(list(plugins or [])),
-            ],
+            plugins=self._get_default_plugins(list(plugins or [])),
             request_class=request_class,
             response_cache_config=response_cache_config or ResponseCacheConfig(),
             response_class=response_class,
