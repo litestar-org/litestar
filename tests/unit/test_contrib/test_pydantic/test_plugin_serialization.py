@@ -175,9 +175,13 @@ def test_serialization_of_model_instance(model: BaseModel) -> None:
     assert serializer(model) == _model_dump(model)
 
 
-def test_pydantic_json_compatibility(model: BaseModel) -> None:
-    raw = _model_dump_json(model)
-    encoded_json = encode_json(model, serializer=get_serializer(PydanticInitPlugin.encoders()))
+@pytest.mark.parametrize(
+    "prefer_alias",
+    [(False), (True)],
+)
+def test_pydantic_json_compatibility(model: BaseModel, prefer_alias: bool) -> None:
+    raw = _model_dump_json(model, by_alias=prefer_alias)
+    encoded_json = encode_json(model, serializer=get_serializer(PydanticInitPlugin.encoders(prefer_alias=prefer_alias)))
 
     raw_result = json.loads(raw)
     encoded_result = json.loads(encoded_json)
@@ -203,17 +207,25 @@ def test_decode_json_raises_serialization_exception(model: BaseModel, decoder: A
         decoder(b"str")
 
 
-def test_decode_json_typed(model: BaseModel) -> None:
-    dumped_model = _model_dump_json(model)
+@pytest.mark.parametrize(
+    "prefer_alias",
+    [(False), (True)],
+)
+def test_decode_json_typed(model: BaseModel, prefer_alias: bool) -> None:
+    dumped_model = _model_dump_json(model, by_alias=prefer_alias)
     decoded_model = decode_json(value=dumped_model, target_type=Model, type_decoders=PydanticInitPlugin.decoders())
-    assert _model_dump_json(decoded_model) == dumped_model
+    assert _model_dump_json(decoded_model, by_alias=prefer_alias) == dumped_model
 
 
-def test_decode_msgpack_typed(model: BaseModel) -> None:
-    model_json = _model_dump_json(model)
+@pytest.mark.parametrize(
+    "prefer_alias",
+    [(False), (True)],
+)
+def test_decode_msgpack_typed(model: BaseModel, prefer_alias: bool) -> None:
+    model_json = _model_dump_json(model, by_alias=prefer_alias)
     assert (
         decode_msgpack(
-            encode_msgpack(model, serializer=get_serializer(PydanticInitPlugin.encoders())),
+            encode_msgpack(model, serializer=get_serializer(PydanticInitPlugin.encoders(prefer_alias=prefer_alias))),
             Model,
             type_decoders=PydanticInitPlugin.decoders(),
         ).json()
