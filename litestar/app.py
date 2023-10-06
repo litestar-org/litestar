@@ -341,7 +341,9 @@ class Litestar(Router):
             opt=dict(opt or {}),
             parameters=parameters or {},
             pdb_on_exception=pdb_on_exception,
-            plugins=[*(plugins or []), *self._get_default_plugins()],
+            plugins=[
+                *self._get_default_plugins(list(plugins or [])),
+            ],
             request_class=request_class,
             response_cache_config=response_cache_config or ResponseCacheConfig(),
             response_class=response_class,
@@ -466,18 +468,24 @@ class Litestar(Router):
         return list(self.plugins.serialization)
 
     @staticmethod
-    def _get_default_plugins() -> list[PluginProtocol]:
-        default_plugins: list[PluginProtocol] = []
+    def _get_default_plugins(plugins: list[PluginProtocol] | None = None) -> list[PluginProtocol]:
+        if plugins is None:
+            plugins = []
         with suppress(MissingDependencyException):
-            from litestar.contrib.pydantic import PydanticInitPlugin, PydanticSchemaPlugin
+            from litestar.contrib.pydantic import PydanticInitPlugin, PydanticPlugin, PydanticSchemaPlugin
 
-            default_plugins.extend((PydanticInitPlugin(), PydanticSchemaPlugin()))
-
+            pre_configured = any(
+                isinstance(plugin, (PydanticPlugin, PydanticInitPlugin, PydanticSchemaPlugin)) for plugin in plugins
+            )
+            if not pre_configured:
+                plugins.append(PydanticPlugin())
         with suppress(MissingDependencyException):
             from litestar.contrib.attrs import AttrsSchemaPlugin
 
-            default_plugins.append(AttrsSchemaPlugin())
-        return default_plugins
+            pre_configured = any(isinstance(plugin, AttrsSchemaPlugin) for plugin in plugins)
+            if not pre_configured:
+                plugins.append(AttrsSchemaPlugin())
+        return plugins
 
     @property
     def debug(self) -> bool:
