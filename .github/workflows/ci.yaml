@@ -114,7 +114,7 @@ jobs:
         name: Set up PDM
         with:
           python-version: "3.11"
-          allow-python-prereleases: true
+          allow-python-prereleases: false
           cache: true
           cache-dependency-path: |
             ./pdm.lock

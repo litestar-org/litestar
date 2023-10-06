@@ -38,7 +38,7 @@ jobs:
         name: Set up PDM
         with:
           python-version: ${{ inputs.python-version }}
-          allow-python-prereleases: true
+          allow-python-prereleases: false
           cache: true
           cache-dependency-path: |
             ./pdm.lock
