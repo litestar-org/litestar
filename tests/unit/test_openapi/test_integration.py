@@ -21,15 +21,16 @@ CREATE_EXAMPLES_VALUES = (True, False)
 
 
 @pytest.mark.parametrize("create_examples", CREATE_EXAMPLES_VALUES)
-def test_openapi_yaml(
-    person_controller: type[Controller], pet_controller: type[Controller], create_examples: bool
+@pytest.mark.parametrize("schema_path", ["/schema/openapi.yaml", "/schema/openapi.yml"])
+def test_openapi(
+    person_controller: type[Controller], pet_controller: type[Controller], create_examples: bool, schema_path: str
 ) -> None:
     openapi_config = OpenAPIConfig("Example API", "1.0.0", create_examples=create_examples)
     with create_test_client([person_controller, pet_controller], openapi_config=openapi_config) as client:
         assert client.app.openapi_schema
         openapi_schema = client.app.openapi_schema
         assert openapi_schema.paths
-        response = client.get("/schema/openapi.yaml")
+        response = client.get(schema_path)
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"] == OpenAPIMediaType.OPENAPI_YAML.value
         assert client.app.openapi_schema
@@ -55,15 +56,20 @@ def test_openapi_json(
         assert response.content == encode_json(openapi_schema.to_schema(), serializer)
 
 
-def test_openapi_yaml_not_allowed(person_controller: type[Controller], pet_controller: type[Controller]) -> None:
+@pytest.mark.parametrize(
+    "endpoint, schema_path", [("openapi.yaml", "/schema/openapi.yaml"), ("openapi.yml", "/schema/openapi.yml")]
+)
+def test_openapi_yaml_not_allowed(
+    endpoint: str, schema_path: str, person_controller: type[Controller], pet_controller: type[Controller]
+) -> None:
     openapi_config = DEFAULT_OPENAPI_CONFIG
-    openapi_config.enabled_endpoints.discard("openapi.yaml")
+    openapi_config.enabled_endpoints.discard(endpoint)
 
     with create_test_client([person_controller, pet_controller], openapi_config=openapi_config) as client:
         assert client.app.openapi_schema
         openapi_schema = client.app.openapi_schema
         assert openapi_schema.paths
-        response = client.get("/schema/openapi.yaml")
+        response = client.get(schema_path)
         assert response.status_code == HTTP_404_NOT_FOUND
 
 

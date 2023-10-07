@@ -90,7 +90,7 @@ class OpenAPIConfig:
     root_schema_site: Literal["redoc", "swagger", "elements"] = "redoc"
     """The static schema generator to use for the "root" path of `/schema/`."""
     enabled_endpoints: set[str] = field(
-        default_factory=lambda: {"redoc", "swagger", "elements", "openapi.json", "openapi.yaml"}
+        default_factory=lambda: {"redoc", "swagger", "elements", "openapi.json", "openapi.yaml", "openapi.yml"}
     )
     """A set of the enabled documentation sites and schema download endpoints."""
     operation_id_creator: OperationIDCreator = default_operation_id_creator

@@ -133,7 +133,12 @@ class OpenAPIController(Controller):
             "elements": self.render_stoplight_elements,
         }
 
-    @get(path="/openapi.yaml", media_type=OpenAPIMediaType.OPENAPI_YAML, include_in_schema=False, sync_to_thread=False)
+    @get(
+        path=["/openapi.yaml", "openapi.yml"],
+        media_type=OpenAPIMediaType.OPENAPI_YAML,
+        include_in_schema=False,
+        sync_to_thread=False,
+    )
     def retrieve_schema_yaml(self, request: Request[Any, Any, Any]) -> ASGIResponse:
         """Return the OpenAPI schema as YAML with an ``application/vnd.oai.openapi`` Content-Type header.
 
