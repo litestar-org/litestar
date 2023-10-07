@@ -203,7 +203,7 @@ specify a different filename using the `--output` flag. For example:
 
 .. code-block:: shell
 
-   litestar schema openapi --output my-specs.yaml
+   litestar schema openapi --output my-specs.yml
 
 typescript
 ~~~~~~~~~~
@@ -274,12 +274,27 @@ entries should point to a :class:`click.Command` or :class:`click.Group`:
                },
            )
 
-    .. tab-item:: poetry
+    .. tab-item:: pdm
 
         .. code-block:: toml
+            :caption: Using `PDM <https://pdm.fming.dev/>`_
 
-           [tool.poetry.plugins."litestar.commands"]
-           my_command = "my_litestar_plugin.cli:main"
+            [project.scripts]
+            my_command = "my_litestar_plugin.cli:main"
+
+            # Or, as an entrypoint:
+
+            [project.entry-points."litestar.commands"]
+            my_command = "my_litestar_plugin.cli:main"
+
+    .. tab-item:: Poetry
+
+        .. code-block:: toml
+            :caption: Using `Poetry <https://python-poetry.org/>`_
+
+
+            [tool.poetry.plugins."litestar.commands"]
+            my_command = "my_litestar_plugin.cli:main"
 
 Using a plugin
 ^^^^^^^^^^^^^^

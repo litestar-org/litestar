@@ -7,46 +7,8 @@ services:
       - "5423:5432" # use a non-standard port here
     environment:
       POSTGRES_PASSWORD: super-secret
-  mysql:
-    image: mysql:latest
-    ports:
-      - "3360:3306" # use a non-standard port here
-    environment:
-      MYSQL_ROOT_PASSWORD: super-secret
-      MYSQL_PASSWORD: super-secret
-      MYSQL_USER: app
-      MYSQL_DATABASE: db
-      MYSQL_ROOT_HOST: "%"
-      LANG: C.UTF-8
-  oracle:
-    image: gvenzl/oracle-xe:18-slim-faststart
-    ports:
-      - "1512:1521" # use a non-standard port here
-    environment:
-      ORACLE_PASSWORD: super-secret
-      APP_USER_PASSWORD: super-secret
-      APP_USER: app
   redis:
     image: redis:latest
     restart: always
     ports:
       - "6397:6379" # use a non-standard port here
-  spanner:
-    image: gcr.io/cloud-spanner-emulator/emulator:latest
-    ports:
-      - "9010:9010"
-  # Init (Create Instance)
-  spanner_init:
-    image: gcr.io/google.com/cloudsdktool/cloud-sdk:332.0.0-slim
-    command: >
-      bash -c 'gcloud config configurations create emulator &&
-              gcloud config set auth/disable_credentials true &&
-              gcloud config set project $${PROJECT_ID} &&
-              gcloud config set auth/disable_credentials true &&
-              gcloud spanner instances create $${INSTANCE_NAME} --config=emulator-config --description=Emulator --nodes=1'
-    environment:
-      PROJECT_ID: emulator-test-project
-      INSTANCE_NAME: test-instance
-      DATABASE_NAME: test-database
-    depends_on:
-      - spanner

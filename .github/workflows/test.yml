@@ -1,0 +1,75 @@
+name: Test
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: true
+        type: string
+      pydantic-version:
+        required: true
+        type: string
+      coverage:
+        required: false
+        type: boolean
+        default: false
+      os:
+        required: false
+        type: string
+        default: "ubuntu-latest"
+
+jobs:
+  test:
+    runs-on: ${{ inputs.os }}
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up python ${{ inputs.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - uses: pdm-project/setup-pdm@v3
+        name: Set up PDM
+        with:
+          python-version: ${{ inputs.python-version }}
+          allow-python-prereleases: false
+          cache: true
+          cache-dependency-path: |
+            ./pdm.lock
+
+      - name: Install dependencies
+        run: pdm install -G:all
+
+      - if: ${{ inputs.pydantic-version == '1' }}
+        name: Prepare for pydantic v1
+        run: pdm add --no-sync "pydantic>=1.10.11,<2" "piccolo"
+
+      - if: ${{ inputs.pydantic-version == '2' }}
+        name: Prepare for pydantic v2
+        run: pdm add --no-sync "pydantic>=2.3.0" "pydantic-extra-types>=2.0.0"
+
+      - name: Sync dependencies
+        run: pdm sync
+
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+
+      - name: Test
+        if: ${{ !inputs.coverage }}
+        run: pdm run pytest docs/examples tests -n auto
+
+      - name: Test with coverage
+        if: inputs.coverage
+        run: pdm run pytest docs/examples tests --cov=litestar --cov-report=xml -n auto
+
+      - uses: actions/upload-artifact@v3
+        if: inputs.coverage
+        with:
+          name: coverage-xml
+          path: coverage.xml

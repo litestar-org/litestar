@@ -4,21 +4,25 @@ Contribution guide
 Setting up the environment
 --------------------------
 
-1. Install `poetry <https://python-poetry.org/>`_.
-2. Run ``poetry install --extras full`` to create a `virtual environment <https://docs.python.org/3/tutorial/venv.html>`_
-   and install the dependencies.
-3. If you're working on the documentation and need to build it locally, install the extra dependencies with
-   ``poetry install --with docs --extras full``.
-4. Install `pre-commit <https://pre-commit.com/>`_.
-5. Run ``pre-commit install && pre-commit install --hook-type commit-msg`` to install pre-commit hooks.
+.. tip:: We maintain a Makefile with several commands to help with common tasks.
+   You can run ``make help`` to see a list of available commands.
 
-.. tip::
-  Many modern IDEs like PyCharm or VS Code will enable the poetry-managed virtualenv that is created in step 2 for you automatically.
-  If your IDE / editor does not offer this functionality, then you will need to manually activate the virtualenv yourself. Otherwise you may encounter errors or unexpected behaviour when trying to run the commands referenced within this document.
+1. Install `Personal Doomsday Machine <https://pdm.fming.dev/latest/>`_
+2. Run ``pdm install`` or ``make install`` to create a
+   `virtual environment <https://docs.python.org/3/tutorial/venv.html>`_ and install the required development dependencies
+3. If you're working on the documentation and need to build it locally, install the extra dependencies
+   with ``pdm install -G:docs`` or ``make docs-install``
+4. Install `pre-commit <https://pre-commit.com/>`_
+5. Run ``pre-commit install --install-hooks`` or ``make install`` to install pre-commit hooks
 
-  The easiest way to activate this virtualenv manually is by running ``poetry shell``, as described at `Using your virtual environment <https://python-poetry.org/docs/basic-usage/#using-your-virtual-environment>`_ in poetry's documentation.
+.. tip:: Many modern IDEs like PyCharm or VS Code will enable the PDM-managed virtualenv that is created in step 2 for you automatically.
+   If your IDE / editor does not offer this functionality, then you will need to manually activate the virtualenv yourself. Otherwise you may encounter errors or unexpected behaviour when trying to run the commands referenced within this document.
 
-  The rest of this document will assume this environment is active wherever commands are referenced.
+   The easiest way to activate this virtualenv manually is by running ``pdm shell``, as described at
+   `Working with virtual environments <https://pdm.fming.dev/latest/usage/venv/#working-with-virtual-environments>`_
+   in PDM's documentation.
+
+   The rest of this document will assume this environment is active wherever commands are referenced.
 
 Code contributions
 ------------------
@@ -109,7 +113,7 @@ Running the docs locally
 
 To run or build the docs locally, you need to first install the required dependencies:
 
-``poetry install --with docs --extras full``
+``pdm install -G:docs``
 
 Then you can serve the documentation with ``make docs-serve``, or build them with ``make docs``
 
@@ -215,8 +219,9 @@ This is equivalent to:
 Creating a new release
 ----------------------
 
-1. Increment the version in ``pyproject.toml`` according to the
-   `versioning scheme <https://litestar.dev/about/litestar-releases#version-numbering>`_
+1. Increment the version in ``pyproject.toml`` according to the `versioning scheme <https://litestar.dev/about/litestar-releases#version-numbering>`_
+    .. note:: The version should follow `semantic versioning <https://semver.org/>`_ and `PEP 440 <https://www.python.org/dev/peps/pep-0440/>`_.
+2. Commit and push.
 2. `Draft a new release <https://github.com/litestar-org/litestar/releases/new>`_ on GitHub
 
    * Use ``vMAJOR.MINOR.PATCH`` (e.g. ``v1.2.3``) as both the tag and release title

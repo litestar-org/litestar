@@ -29,3 +29,8 @@ target/
 /docs/_build/
 coverage.*
 setup.py
+
+# pdm
+.pdm.toml
+.pdm-python
+.pdm-build/

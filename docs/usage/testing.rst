@@ -144,8 +144,37 @@ across requests, then you might want to inject or inspect session data outside a
     - The Session Middleware must be enabled in Litestar app provided to the TestClient to use sessions.
     - If you are using the
       :class:`ClientSideSessionBackend <litestar.middleware.session.client_side.ClientSideSessionBackend>` you need to
-      install the ``cryptography`` package. You can do so by installing litestar with e.g.
-      ``pip install litestar[cryptography]`` or ``poetry add litestar[cryptography]``
+      install the ``cryptography`` package. You can do so by installing ``litestar``:
+
+    .. tab-set::
+
+        .. tab-item:: pip
+
+            .. code-block:: bash
+                :caption: Using pip
+
+                python3 -m pip install litestar[cryptography]
+
+        .. tab-item:: pipx
+
+            .. code-block:: bash
+                :caption: Using `pipx <https://pypa.github.io/pipx/>`_
+
+                pipx install litestar[cryptography]
+
+        .. tab-item:: pdm
+
+            .. code-block:: bash
+                :caption: Using `PDM <https://pdm.fming.dev/>`_
+
+                pdm add litestar[cryptography]
+
+        .. tab-item:: Poetry
+
+            .. code-block:: bash
+                :caption: Using `Poetry <https://python-poetry.org/>`_
+
+                poetry add litestar[cryptography]
 
 .. tab-set::
 

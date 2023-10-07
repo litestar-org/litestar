@@ -425,13 +425,13 @@ it can be used to build a URL path for that handler:
        # do something with the handler index below, e.g. send a redirect response to the handler, or access
        # handler.opt and some values stored there etc.
 
-       return Redirect(url=handler_index[0])
+       return Redirect(path=handler_index[0])
 
 
    @get("/redirect/{param_value:int}", name="five")
    def handler_five(request: Request, param_value: int) -> Redirect:
        path = request.app.route_reverse("three", param=param_value)
-       return Redirect(url=path)
+       return Redirect(path=path)
 
 
    app = Litestar(route_handlers=[handler_one, handler_two, handler_three])
