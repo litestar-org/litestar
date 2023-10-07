@@ -85,7 +85,7 @@ prometheus = ["prometheus-client"]
 pydantic = ["pydantic[email]", "pydantic-extra-types"]
 redis = ["redis[hiredis]>=4.4.4"]
 sqlalchemy = ["advanced-alchemy==0.2.2"]
-standard = ["jinja2", "jsbeautifier", "uvicorn", "fast-query-parsers>=1.0.2"]
+standard = ["jinja2", "jsbeautifier", "uvicorn", "uvloop", "httptools", "fast-query-parsers>=1.0.2"]
 structlog = ["structlog"]
 
 [tool.pdm.dev-dependencies]
@@ -211,15 +211,6 @@ filterwarnings = [
 ]
 markers = [
   "sqlalchemy_integration: SQLAlchemy integration tests",
-  "sqlalchemy_asyncmy: SQLAlchemy MySQL (asyncmy) Tests",
-  "sqlalchemy_asyncpg: SQLAlchemy Postgres (asyncpg) Tests",
-  "sqlalchemy_psycopg_async: SQLAlchemy Postgres (psycopg async) Tests",
-  "sqlalchemy_aiosqlite: SQLAlchemy SQLite (aiosqlite) Tests",
-  "sqlalchemy_psycopg_sync: SQLAlchemy Postgres (psycopg sync) Tests",
-  "sqlalchemy_sqlite: SQLAlchemy SQLite (sqlite) Tests",
-  "sqlalchemy_oracledb: SQLAlchemy Oracle (oracledb) Tests",
-  "sqlalchemy_spanner: SQLAlchemy Google Cloud Spanner (sqlalchemy-spanner) Tests",
-  "sqlalchemy_duckdb: SQLAlchemy Duckdb (duckdb-engine) Tests",
 ]
 xfail_strict = true
 

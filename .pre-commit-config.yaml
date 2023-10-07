@@ -17,25 +17,21 @@ repos:
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: trailing-whitespace
-  - repo: https://github.com/pdm-project/pdm
-    rev: 2.9.2
-    hooks:
-      - id: pdm-lock-check
   - repo: https://github.com/provinzkraut/unasyncd
     rev: "v0.6.1"
     hooks:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.290"
+    rev: "v0.0.292"
     hooks:
       - id: ruff
         args: ["--fix"]
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.5
+    rev: v2.2.6
     hooks:
       - id: codespell
-        exclude: "tests/openapi/typescript_converter/test_converter"
+        exclude: "tests/openapi/typescript_converter/test_converter|README.md"
   - repo: https://github.com/psf/black
     rev: 23.9.1
     hooks:
@@ -72,69 +68,6 @@ repos:
             annotated_types,
             anyio,
             async_timeout,
-            asyncmy,
-            asyncpg,
-            asyncpg_stubs,
-            attrs,
-            beanie,
-            beautifulsoup4,
-            brotli,
-            click,
-            exceptiongroup,
-            fast-query-parsers>=1.0.2,
-            fsspec,
-            httpx==0.24.1,
-            httpx_sse,
-            hypothesis,
-            jsbeautifier,
-            mako,
-            mongomock_motor,
-            msgspec,
-            multidict,
-            opentelemetry-instrumentation-asgi,
-            opentelemetry-sdk,
-            oracledb,
-            piccolo,
-            picologging,
-            polyfactory,
-            prometheus_client,
-            psycopg,
-            pydantic-extra-types,
-            pydantic>=2,
-            pytest,
-            pytest-lazy-fixture,
-            pytest-mock,
-            pytest-timeout,
-            pytest_docker,
-            python-dotenv,
-            python-jose,
-            pyyaml,
-            redis,
-            rich,
-            rich-click,
-            sqlalchemy>=2.0.12,
-            starlette,
-            structlog,
-            advanced-alchemy==0.2.2,
-            time-machine,
-            types-beautifulsoup4,
-            types-python-jose,
-            types-pyyaml,
-            types-redis,
-            uvicorn,
-          ]
-  - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.328
-    hooks:
-      - id: pyright
-        exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures"
-        additional_dependencies:
-          [
-            aiosqlite,
-            annotated_types,
-            anyio,
-            async_timeout,
-            asyncmy,
             asyncpg,
             asyncpg_stubs,
             attrs,
@@ -156,12 +89,10 @@ repos:
             multidict,
             opentelemetry-instrumentation-asgi,
             opentelemetry-sdk,
-            oracledb,
             piccolo,
             picologging,
             polyfactory,
             prometheus_client,
-            psycopg,
             pydantic-extra-types,
             pydantic>=2,
             pytest,
@@ -185,6 +116,70 @@ repos:
             types-pyyaml,
             types-redis,
             uvicorn,
+            uvloop,
+            httptools,
+          ]
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.328
+    hooks:
+      - id: pyright
+        exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures"
+        additional_dependencies:
+          [
+            aiosqlite,
+            annotated_types,
+            anyio,
+            async_timeout,
+            asyncpg,
+            asyncpg_stubs,
+            attrs,
+            beanie,
+            beautifulsoup4,
+            brotli,
+            click,
+            exceptiongroup,
+            fast-query-parsers>=1.0.2,
+            fsspec,
+            httpx==0.24.1,
+            httpx_sse,
+            hypothesis,
+            jsbeautifier,
+            mako,
+            mongomock_motor,
+            minijinja,
+            msgspec,
+            multidict,
+            opentelemetry-instrumentation-asgi,
+            opentelemetry-sdk,
+            piccolo,
+            picologging,
+            polyfactory,
+            prometheus_client,
+            pydantic-extra-types,
+            pydantic>=2,
+            pytest,
+            pytest-lazy-fixture,
+            pytest-mock,
+            pytest-timeout,
+            pytest_docker,
+            python-dotenv,
+            python-jose,
+            pyyaml,
+            redis,
+            rich,
+            rich-click,
+            sqlalchemy>=2.0.12,
+            advanced-alchemy==0.2.2,
+            starlette,
+            structlog,
+            time-machine,
+            types-beautifulsoup4,
+            types-python-jose,
+            types-pyyaml,
+            types-redis,
+            uvicorn,
+            uvloop,
+            httptools,
           ]
   - repo: https://github.com/sphinx-contrib/sphinx-lint
     rev: "v0.6.8"
