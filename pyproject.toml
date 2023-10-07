@@ -98,6 +98,7 @@ dev = [
   "python-dotenv",
   "starlette",
   "trio",
+  "aiosqlite",
   "exceptiongroup; python_version < \"3.11\"",
 ]
 dev-contrib = ["opentelemetry-sdk", "httpx-sse"]
