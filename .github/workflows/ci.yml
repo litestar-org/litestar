@@ -36,7 +36,7 @@ jobs:
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
         pydantic-version: ["1", "2"]
-    uses: ./.github/workflows/test.yaml
+    uses: ./.github/workflows/test.yml
     with:
       coverage: ${{ matrix.python-version == '3.11' && matrix.pydantic-version == '2' }}
       pydantic-version: ${{ matrix.pydantic-version }}
@@ -48,7 +48,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["macos-latest", "windows-latest"]
-    uses: ./.github/workflows/test.yaml
+    uses: ./.github/workflows/test.yml
     with:
       python-version: "3.11"
       pydantic-version: "2"
