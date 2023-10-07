@@ -1,31 +1,22 @@
-[tool.poetry]
+[project]
 name = "litestar"
 version = "2.1.1"
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
+readme = "docs/PYPI_README.md"
 authors = [
-    "Cody Fincher <cody.fincher@gmail.com>",
-    "Jacob Coffee <jacob@z7x.org>",
-    "Janek Nouvertné <provinzkraut@posteo.de>",
-    "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
-    "Peter Schutt <peter.github@proton.me>",
+    { name = "Cody Fincher", email = "cody.fincher@gmail.com" },
+    { name = "Jacob Coffee", email = "jacob@z7x.org" },
+    { name = "Janek Nouvertné", email = "provinzkraut@posteo.de" },
+    { name = "Na'aman Hirschfeld", email = "nhirschfeld@gmail.com" },
+    { name = "Peter Schutt", email = "peter.github@proton.me" },
 ]
 maintainers = [
-    "Cody Fincher <cody.fincher@gmail.com>",
-    "Jacob Coffee <jacob@z7x.org>",
-    "Janek Nouvertné <provinzkraut@posteo.de>",
+    { name = "Cody Fincher", email = "cody.fincher@gmail.com" },
+    { name = "Jacob Coffee", email = "jacob@z7x.org" },
+    { name = "Janek Nouvertné", email = "provinzkraut@posteo.de" },
+    { name = "Peter Schutt", email = "peter.github@proton.me" },
 ]
-license = "MIT"
-readme = "docs/PYPI_README.md"
-homepage = "https://litestar.dev/"
-repository = "https://github.com/litestar-org/litestar"
-documentation = "https://docs.litestar.dev/"
-keywords = [
-    "api",
-    "rest",
-    "asgi",
-    "litestar",
-    "starlite",
-]
+keywords = ["api", "rest", "asgi", "litestar", "starlite"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
@@ -52,166 +43,134 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Application Frameworks",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-include = ["CHANGELOG.rst"]
-packages = [{ include = "litestar" }]
+license = { text = "MIT" }
+requires-python = ">=3.8,<4.0"
+dependencies = [
+    "anyio>=3",
+    "httpx>=0.22",
+    "importlib-metadata; python_version < \"3.10\"",
+    "importlib-resources>=5.12.0; python_version < \"3.9\"",
+    "msgspec>=0.18.2",
+    "multidict>=6.0.2",
+    "polyfactory>=2.6.3",
+    "pyyaml",
+    "typing-extensions",
+    "click",
+    "rich>=13.0.0",
+    "rich-click",
+]
 
-[tool.poetry.urls]
-"Issue Tracker" = "https://github.com/litestar-org/litestar/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc"
-"Changelog" = "https://github.com/litestar-org/litestar/releases/"
-"Twitter" = "https://twitter.com/LitestarAPI"
-"Reddit" = "https://www.reddit.com/r/litestarapi"
-"Discord" = "https://discord.gg/MmcwxztmQb"
-"Blog" = "https://blog.litestar.dev"
-
-[tool.poetry.dependencies]
-python = ">=3.8,<4.0"
-alembic = { version = "*", optional = true }
-annotated-types = { version = "*", optional = true }
-anyio = ">=3"
-attrs = { version = "*", optional = true }
-brotli = { version = "*", optional = true }
-click = "*"
-cryptography = { version = "*", optional = true }
-fast-query-parsers = {version = ">=1.0.2", optional = true }
-httpx = ">=0.22"
-importlib-metadata = { version = "*", python = "<3.10" }
-importlib-resources = { version = ">=5.12.0", python = "<3.9" }
-jinja2 = { version = ">=3.1.2", optional = true }
-jsbeautifier = { version = "*", optional = true }
-mako = { version = ">=1.2.4", optional = true }
-minijinja = {version =">=1.0.0", optional = true}
-msgspec = ">=0.18.2"
-multidict = ">=6.0.2"
-opentelemetry-instrumentation-asgi = { version = "*", optional = true }
-piccolo = { version = "*", optional = true }
-picologging = { version = "*", optional = true }
-polyfactory = ">=2.6.3"
-prometheus-client = { version = "*", optional = true }
-pydantic = { version = "*", optional = true, extras = ["email"] }
-pydantic-extra-types = { version = "*", optional = true }
-python-jose = { version = "*", optional = true }
-pyyaml = "*"
-redis = { version = ">=4.4.4", optional = true, extras = ["hiredis"] }
-rich = ">=13.0.0"
-rich-click = "*"
-sqlalchemy = { version = ">=2.0.12", optional = true }
-structlog = { version = "*", optional = true }
-advanced-alchemy = { version = ">=0.2.2", optional = true }
-typing-extensions = "*"
-uvicorn = { extras = ["standard"], version = ">=0.22.0", optional = true }
-
-[tool.poetry.group.dev.dependencies]
-aiosqlite = "*"
-asyncmy = "*"
-asyncpg = "*"
-beanie = ">=1.21.0"
-beautifulsoup4 = "*"
-duckdb-engine = "*"
-exceptiongroup = { version = "*", python = "<3.11" }
-fsspec = "*"
-greenlet = "*"
-httpx-sse = "*"
-hypothesis = "*"
-opentelemetry-sdk = "*"
-oracledb = "*"
-psycopg = "*"
-pytest = "*"
-pytest-asyncio = "*"
-pytest-cov = "*"
-pytest-lazy-fixture = "*"
-pytest-mock = "*"
-pytest-rerunfailures = "*"
-pytest-timeout = "*"
-pytest-xdist = "*"
-python-dotenv = "*"
-sourcery = "*"
-sqlalchemy-spanner = "*"
-starlette = "*"
-time-machine = "*"
-trio = "*"
-
-[tool.poetry.group.docs]
-optional = true
-
-[tool.poetry.group.docs.dependencies]
-auto-pytabs = { extras = ["sphinx"], version = "*" }
-black = "*"
-sphinx = ">=5.3.0,<=6"
-sphinx-autobuild = "*"
-sphinx-copybutton = ">=0.5.1"
-sphinx-design = ">=0.3.0,<1"
-sphinxcontrib-mermaid = ">=0.8.1,<1"
-litestar-sphinx-theme = { git = "https://github.com/litestar-org/litestar-sphinx-theme.git" }
-sphinx-click = ">=4.4.0"
-
-[tool.poetry.group.lint]
-optional = true
-
-[tool.poetry.group.lint.dependencies]
-asyncpg-stubs = "*"
-black = "*"
-blacken-docs = "*"
-mypy = "*"
-pre-commit = "*"
-pyright = "*"
-ruff = '*'
-slotscheck = "*"
-sourcery = "*"
-types-beautifulsoup4 = "*"
-types-python-jose = "*"
-types-pyyaml = "*"
-types-redis = "*"
-
-[tool.poetry.extras]
+[project.optional-dependencies]
 annotated-types = ["annotated-types"]
 attrs = ["attrs"]
 brotli = ["brotli"]
 cli = ["jsbeautifier", "uvicorn"]
 cryptography = ["cryptography"]
-jinja = ["jinja2"]
-jsbeautifier = ["jsbeautifier"]
+jinja = ["jinja2>=3.1.2"]
 jwt = ["python-jose", "cryptography"]
-mako = ["mako"]
-minijinja = ["minijinja"]
+mako = ["mako>=1.2.4"]
+minijinja = ["minijinja>=1.0.0"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 piccolo = ["piccolo"]
 picologging = ["picologging"]
 prometheus = ["prometheus-client"]
-pydantic = ["pydantic", "pydantic-extra-types"]
-redis = ["redis"]
-sqlalchemy = ["advanced-alchemy"]
-standard = ["jinja2", "jsbeautifier", "uvicorn", "fast-query-parsers"]
+pydantic = ["pydantic[email]", "pydantic-extra-types"]
+redis = ["redis[hiredis]>=4.4.4"]
+sqlalchemy = ["advanced-alchemy==0.2.2"]
+standard = ["jinja2", "jsbeautifier", "uvicorn", "fast-query-parsers>=1.0.2"]
 structlog = ["structlog"]
 
-full = [
-    "annotated-types",
-    "attrs",
-    "brotli",
-    "cryptography",
-    "jinja2",
-    "jsbeautifier",
-    "mako",
-    "minijinja",
-    "opentelemetry-instrumentation-asgi",
-    "piccolo",
-    "picologging",
-    "prometheus-client",
-    "pydantic",
-    "pydantic-extra-types",
-    "python-jose",
-    "redis",
-    "structlog",
-    "uvicorn",
-    "advanced-alchemy",
-    "fast-query-parsers",
+[project.group.dev.dependencies.exceptiongroup]
+version = "*"
+python = "<3.11"
+
+[project.scripts]
+litestar = "litestar.__main__:run_cli"
+
+[project.urls]
+"Issue Tracker" = "https://github.com/litestar-org/litestar/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc"
+Changelog = "https://github.com/litestar-org/litestar/releases/"
+Twitter = "https://twitter.com/LitestarAPI"
+Reddit = "https://www.reddit.com/r/LitestarAPI"
+Discord = "https://discord.gg/MmcwxztmQb"
+Blog = "https://blog.litestar.dev"
+homepage = "https://litestar.dev/"
+repository = "https://github.com/litestar-org/litestar"
+documentation = "https://docs.litestar.dev/"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.sdist]
+include = [
+    'docs/PYPI_README.md',
+    '/Makefile',
+    '/litestar',
+    '/tests',
+    '/CHANGELOG.rst',
 ]
 
-[tool.poetry.scripts]
-litestar = { callable = "litestar.__main__:run_cli" }
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[tool.pdm.scripts]
+lint = "pre-commit run --all-files"
+test = "pytest tests docs/examples"
+docs-serve = "sphinx-autobuild docs docs/_build/ -j auto --watch litestar --watch docs --watch tests --port 8002"
+ci = { composite = ["lint", "test"] }
+
+[tool.pdm.dev-dependencies]
+test = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "pytest-lazy-fixture",
+    "pytest-mock",
+    "pytest-rerunfailures",
+    "pytest-timeout",
+    "pytest-xdist",
+    "time-machine",
+]
+docs = [
+    "sphinx>=7.1.2",
+    "sphinx-autobuild>=2021.3.14",
+    "sphinx-copybutton>=0.5.2",
+    "sphinx-toolbox>=3.5.0",
+    "blacken-docs>=1.16.0",
+    "sphinx-design>=0.5.0",
+    "sphinx-click>=4.4.0",
+    "sphinxcontrib-mermaid>=0.9.2",
+    "auto-pytabs[sphinx]>=0.4.0",
+    "litestar-sphinx-theme @ git+https://github.com/litestar-org/litestar-sphinx-theme.git",
+]
+linting = [
+    "ruff",
+    "black",
+    "mypy",
+    "pre-commit",
+    "slotscheck",
+    "sourcery",
+    "pyright",
+    "blacken-docs",
+    "asyncpg-stubs",
+    "types-beautifulsoup4",
+    "types-python-jose",
+    "types-pyyaml",
+    "types-redis",
+]
+dev = [
+    "beanie>=1.21.0",
+    "beautifulsoup4",
+    "fsspec",
+    "greenlet",
+    "hypothesis",
+    "python-dotenv",
+    "starlette",
+    "trio",
+    "exceptiongroup",
+]
+dev-contrib = ["opentelemetry-sdk", "httpx-sse"]
 
 [tool.black]
 line-length = 120
@@ -219,7 +178,7 @@ include = '\.pyi?$'
 
 [tool.codespell]
 ignore-words-list = "selectin"
-skip = 'poetry.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
+skip = 'pdm.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
 omit = ["*/tests/*"]
@@ -320,59 +279,59 @@ strict-imports = false
 
 [tool.ruff]
 select = [
-    "A", # flake8-builtins
-    "B", # flake8-bugbear
+    "A",   # flake8-builtins
+    "B",   # flake8-bugbear
     "BLE", # flake8-blind-except
-    "C4", # flake8-comprehensions
+    "C4",  # flake8-comprehensions
     "C90", # mccabe
-    "D", # pydocstyle
-    "DJ", # flake8-django
+    "D",   # pydocstyle
+    "DJ",  # flake8-django
     "DTZ", # flake8-datetimez
-    "E", # pycodestyle errors
+    "E",   # pycodestyle errors
     "ERA", # eradicate
     "EXE", # flake8-executable
-    "F", # pyflakes
-    "G", # flake8-logging-format
-    "I", # isort
+    "F",   # pyflakes
+    "G",   # flake8-logging-format
+    "I",   # isort
     "ICN", # flake8-import-conventions
     "ISC", # flake8-implicit-str-concat
-    "N", # pep8-naming
+    "N",   # pep8-naming
     "PIE", # flake8-pie
     "PLC", # pylint - convention
     "PLE", # pylint - error
     "PLW", # pylint - warning
     "PTH", # flake8-use-pathlib
-    "Q", # flake8-quotes
+    "Q",   # flake8-quotes
     "RET", # flake8-return
     "RUF", # Ruff-specific rules
-    "S", # flake8-bandit
+    "S",   # flake8-bandit
     "SIM", # flake8-simplify
     "T10", # flake8-debugger
     "T20", # flake8-print
     "TCH", # flake8-type-checking
     "TID", # flake8-tidy-imports
-    "UP", # pyupgrade
-    "W", # pycodestyle - warning
+    "UP",  # pyupgrade
+    "W",   # pycodestyle - warning
     "YTT", # flake8-2020
 ]
 
 ignore = [
-    "A003", # flake8-builtins - class attribute {name} is shadowing a python builtin
-    "B010", # flake8-bugbear - do not call setattr with a constant attribute value
-    "D100", # pydocstyle - missing docstring in public module
-    "D101", # pydocstyle - missing docstring in public class
-    "D102", # pydocstyle - missing docstring in public method
-    "D103", # pydocstyle - missing docstring in public function
-    "D104", # pydocstyle - missing docstring in public package
-    "D105", # pydocstyle - missing docstring in magic method
-    "D106", # pydocstyle - missing docstring in public nested class
-    "D107", # pydocstyle - missing docstring in __init__
-    "D202", # pydocstyle - no blank lines allowed after function docstring
-    "D205", # pydocstyle - 1 blank line required between summary line and description
-    "D415", # pydocstyle - first line should end with a period, question mark, or exclamation point
-    "E501", # pycodestyle line too long, handled by black
+    "A003",    # flake8-builtins - class attribute {name} is shadowing a python builtin
+    "B010",    # flake8-bugbear - do not call setattr with a constant attribute value
+    "D100",    # pydocstyle - missing docstring in public module
+    "D101",    # pydocstyle - missing docstring in public class
+    "D102",    # pydocstyle - missing docstring in public method
+    "D103",    # pydocstyle - missing docstring in public function
+    "D104",    # pydocstyle - missing docstring in public package
+    "D105",    # pydocstyle - missing docstring in magic method
+    "D106",    # pydocstyle - missing docstring in public nested class
+    "D107",    # pydocstyle - missing docstring in __init__
+    "D202",    # pydocstyle - no blank lines allowed after function docstring
+    "D205",    # pydocstyle - 1 blank line required between summary line and description
+    "D415",    # pydocstyle - first line should end with a period, question mark, or exclamation point
+    "E501",    # pycodestyle line too long, handled by black
     "PLW2901", # pylint - for loop variable overwritten by assignment target
-    "RUF012", # Ruff-specific rule - annotated with classvar
+    "RUF012",  # Ruff-specific rule - annotated with classvar
 ]
 line-length = 120
 src = ["litestar", "tests", "docs/examples"]

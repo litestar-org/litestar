@@ -110,31 +110,25 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+      - uses: pdm-project/setup-pdm@v3
+        name: Set up PDM
         with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
+          python-version: "3.11"
+          allow-python-prereleases: false
+          cache: true
+          cache-dependency-path: |
+            ./pdm.lock
 
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: v1-venv-docs-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
-        run: poetry install --no-interaction --with docs --extras full
+        run: pdm install -G:docs
 
       - name: Build docs
-        env:
-          LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT: 1
-        run: poetry run make docs
+        run: pdm run make docs
 
       - name: Check docs links
         env:
           LITESTAR_DOCS_IGNORE_MISSING_EXAMPLE_OUTPUT: 1
-        run: poetry run make docs-linkcheck
+        run: pdm run make docs-linkcheck
 
       - name: Save PR number
         env:
