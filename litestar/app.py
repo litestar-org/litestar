@@ -479,7 +479,7 @@ class Litestar(Router):
                 plugins.append(PydanticPlugin())
             elif not pydantic_plugin_found and pydantic_init_plugin_found and not pydantic_schema_plugin_found:
                 plugins.append(PydanticSchemaPlugin())
-            elif not pydantic_plugin_found and not pydantic_init_plugin_found and pydantic_schema_plugin_found:
+            elif not pydantic_plugin_found and not pydantic_init_plugin_found:
                 plugins.append(PydanticInitPlugin())
         with suppress(MissingDependencyException):
             from litestar.contrib.attrs import AttrsSchemaPlugin
