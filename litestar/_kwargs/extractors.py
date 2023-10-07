@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, Callable, Coroutine, cast
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, NamedTuple, cast
 
 from litestar._multipart import parse_multipart_form
 from litestar._parsers import (
@@ -45,6 +45,35 @@ __all__ = (
 )
 
 
+class ParamMappings(NamedTuple):
+    alias_and_key_tuples: list[tuple[str, str]]
+    alias_defaults: dict[str, Any]
+    alias_to_param: dict[str, ParameterDefinition]
+
+
+def _create_param_mappings(expected_params: set[ParameterDefinition]) -> ParamMappings:
+    alias_and_key_tuples = []
+    alias_defaults = {}
+    alias_to_params: dict[str, ParameterDefinition] = {}
+    for param in expected_params:
+        alias = param.field_alias
+        if param.param_type == ParamType.HEADER:
+            alias = alias.lower()
+
+        alias_and_key_tuples.append((alias, param.field_name))
+
+        if not (param.is_required or param.default is Ellipsis):
+            alias_defaults[alias] = param.default
+
+        alias_to_params[alias] = param
+
+    return ParamMappings(
+        alias_and_key_tuples=alias_and_key_tuples,
+        alias_defaults=alias_defaults,
+        alias_to_param=alias_to_params,
+    )
+
+
 def create_connection_value_extractor(
     kwargs_model: KwargsModel,
     connection_key: str,
@@ -63,26 +92,21 @@ def create_connection_value_extractor(
         An extractor function.
     """
 
-    alias_and_key_tuple = tuple(
-        (p.field_alias.lower() if p.param_type == ParamType.HEADER else p.field_alias, p.field_name)
-        for p in expected_params
-    )
-    alias_defaults = {
-        p.field_alias.lower() if p.param_type == ParamType.HEADER else p.field_alias: p.default
-        for p in expected_params
-        if not (p.is_required or p.default is Ellipsis)
-    }
+    alias_and_key_tuples, alias_defaults, alias_to_params = _create_param_mappings(expected_params)
 
     def extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
         data = parser(connection, kwargs_model) if parser else getattr(connection, connection_key, {})
 
         try:
             connection_mapping: dict[str, Any] = {
-                key: data[alias] if alias in data else alias_defaults[alias] for alias, key in alias_and_key_tuple
+                key: data[alias] if alias in data else alias_defaults[alias] for alias, key in alias_and_key_tuples
             }
             values.update(connection_mapping)
         except KeyError as e:
-            raise ValidationException(f"Missing required parameter {e.args[0]} for url {connection.url}") from e
+            param = alias_to_params[e.args[0]]
+            raise ValidationException(
+                f"Missing required {param.param_type.value} parameter {param.field_alias!r} for url {connection.url}"
+            ) from e
 
     return extractor
 
