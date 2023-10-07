@@ -44,7 +44,7 @@ jobs:
             ./pdm.lock
 
       - name: Install dependencies
-        run: pdm install
+        run: pdm install -G:all
 
       - if: ${{ inputs.pydantic-version == '1' }}
         name: Prepare for pydantic v1

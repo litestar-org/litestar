@@ -9,13 +9,8 @@ import timeit
 from pathlib import Path
 from typing import Any, Awaitable, Callable, Generator
 
-import asyncmy
 import asyncpg
-import oracledb
 import pytest
-from google.auth.credentials import AnonymousCredentials
-from google.cloud import spanner
-from oracledb import DatabaseError, OperationalError
 from redis.asyncio import Redis as AsyncRedis
 from redis.exceptions import ConnectionError as RedisConnectionError
 
@@ -132,28 +127,6 @@ async def redis_service(docker_services: DockerServiceRegistry) -> None:
     await docker_services.start("redis", check=redis_responsive)
 
 
-async def mysql_responsive(host: str) -> bool:
-    try:
-        conn = await asyncmy.connect(
-            host=host,
-            port=3360,
-            user="app",
-            database="db",
-            password="super-secret",
-        )
-        async with conn.cursor() as cursor:
-            await cursor.execute("select 1 as is_available")
-            resp = await cursor.fetchone()
-        return resp[0] == 1  # type: ignore
-    except asyncmy.errors.OperationalError:
-        return False
-
-
-@pytest.fixture()
-async def mysql_service(docker_services: DockerServiceRegistry) -> None:
-    await docker_services.start("mysql", check=mysql_responsive)
-
-
 async def postgres_responsive(host: str) -> bool:
     try:
         conn = await asyncpg.connect(
@@ -166,58 +139,3 @@ async def postgres_responsive(host: str) -> bool:
         return (await conn.fetchrow("SELECT 1"))[0] == 1  # type: ignore
     finally:
         await conn.close()
-
-
-@pytest.fixture()
-async def postgres_service(docker_services: DockerServiceRegistry) -> None:
-    await docker_services.start("postgres", check=postgres_responsive)
-
-
-def oracle_responsive(host: str) -> bool:
-    try:
-        conn = oracledb.connect(
-            host=host,
-            port=1512,
-            user="app",
-            service_name="xepdb1",
-            password="super-secret",
-        )
-        with conn.cursor() as cursor:
-            cursor.execute("SELECT 1 FROM dual")
-            resp = cursor.fetchone()
-        return resp[0] == 1  # type: ignore
-    except (OperationalError, DatabaseError, Exception):
-        return False
-
-
-@pytest.fixture()
-async def oracle_service(docker_services: DockerServiceRegistry) -> None:
-    await docker_services.start("oracle", check=AsyncCallable(oracle_responsive), timeout=60)
-
-
-def spanner_responsive(host: str) -> bool:
-    try:
-        os.environ["SPANNER_EMULATOR_HOST"] = "localhost:9010"
-        os.environ["GOOGLE_CLOUD_PROJECT"] = "emulator-test-project"
-        spanner_client = spanner.Client(project="emulator-test-project", credentials=AnonymousCredentials())
-        instance = spanner_client.instance("test-instance")
-        try:
-            instance.create()
-        except Exception:
-            pass
-        database = instance.database("test-database")
-        try:
-            database.create()
-        except Exception:
-            pass
-        with database.snapshot() as snapshot:
-            resp = next(iter(snapshot.execute_sql("SELECT 1")))
-        return resp[0] == 1  # type: ignore
-    except Exception:
-        return False
-
-
-@pytest.fixture()
-async def spanner_service(docker_services: DockerServiceRegistry) -> None:
-    os.environ["SPANNER_EMULATOR_HOST"] = "localhost:9010"
-    await docker_services.start("spanner", timeout=60, check=AsyncCallable(spanner_responsive))
