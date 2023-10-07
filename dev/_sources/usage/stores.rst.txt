@@ -150,7 +150,7 @@ These come with the additional :meth:`with_namespace <.base.NamespacedStore.with
 new :class:`NamespacedStore <.base.NamespacedStore>` instance. Once a namespaced store is created, operations on it
 will only affect itself and its child namespaces.
 
-When using the :class:`RedisStore <.redis.RedisStore>`, this allows to re-use the same underlying
+When using the :class:`RedisStore <.redis.RedisStore>`, this allows to reuse the same underlying
 :class:`Redis <redis.asyncio.Redis>` instance and connection, while ensuring isolation.
 
 .. note::
@@ -237,7 +237,7 @@ This mechanism also allows to control the stores used by various integrations, s
 
 In this example, the registry is being set up with stores using the ``sessions`` and ``response_cache`` keys. These are
 not magic constants, but instead configuration values that can be changed. Those names just happen to be their default
-values. Adjusting those default values allows to easily re-use stores, without the need for a more complex setup:
+values. Adjusting those default values allows to easily reuse stores, without the need for a more complex setup:
 
 .. literalinclude:: /examples/stores/configure_integrations_set_names.py
     :language: python
