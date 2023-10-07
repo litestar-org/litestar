@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
-from litestar._parsers import parse_cookie_string, parse_headers, parse_query_string
+from litestar._parsers import parse_cookie_string, parse_query_string
 from litestar.datastructures.headers import Headers
 from litestar.datastructures.multi_dicts import MultiDict
 from litestar.datastructures.state import State
@@ -55,7 +55,7 @@ async def empty_send(_: Message) -> NoReturn:  # pragma: no cover
 class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
     """The base ASGI connection container."""
 
-    __slots__ = ("scope", "receive", "send", "_base_url", "_url", "_parsed_query", "_headers", "_cookies")
+    __slots__ = ("scope", "receive", "send", "_base_url", "_url", "_parsed_query", "_cookies")
 
     scope: Scope
     """The ASGI scope attached to the connection."""
@@ -79,7 +79,6 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         self._url: Any = scope.get("_url", Empty)
         self._parsed_query: Any = scope.get("_parsed_query", Empty)
         self._cookies: Any = scope.get("_cookies", Empty)
-        self._headers: Any = scope.get("_headers", Empty)
 
     @property
     def app(self) -> Litestar:
@@ -146,11 +145,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         Returns:
             A Headers instance with the request's scope["headers"] value.
         """
-        if self._headers is Empty:
-            self.scope.setdefault("headers", [])
-            self._headers = self.scope["_headers"] = parse_headers(tuple(self.scope["headers"]))  # type: ignore[typeddict-unknown-key]
-
-        return Headers(self._headers)
+        return Headers.from_scope(self.scope)
 
     @property
     def query_params(self) -> MultiDict[Any]:

@@ -24,7 +24,6 @@ from multidict import CIMultiDict, CIMultiDictProxy, MultiMapping
 from typing_extensions import get_type_hints
 
 from litestar._multipart import parse_content_header
-from litestar._parsers import parse_headers
 from litestar.datastructures.multi_dicts import MultiMixin
 from litestar.dto.base_dto import AbstractDTO
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
@@ -51,7 +50,7 @@ def _encode_headers(headers: Iterable[Tuple[str, str]]) -> "RawHeadersList":
 
 
 class Headers(CIMultiDictProxy[str], MultiMixin[str]):
-    """An immutable, case-insensitive for HTTP headers."""
+    """An immutable, case-insensitive multi dict for HTTP headers."""
 
     def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeaders", MultiMapping]] = None) -> None:
         """Initialize ``Headers``.
@@ -85,9 +84,10 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
         Raises:
             ValueError: If the message does not have a ``headers`` key
         """
-        if "_headers" not in scope:
-            scope["_headers"] = parse_headers(tuple(scope["headers"]))  # type: ignore
-        return cls(scope["_headers"])  # type: ignore
+        if (headers := scope.get("_headers")) is None:
+            headers = scope["_headers"] = cls(scope["headers"])  # type: ignore[typeddict-unknown-key]
+
+        return cast("Headers", headers)
 
     def to_header_list(self) -> "RawHeadersList":
         """Raw header value.

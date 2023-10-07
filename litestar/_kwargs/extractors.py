@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from collections import defaultdict
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, Callable, Coroutine, NamedTuple, cast
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, Mapping, NamedTuple, cast
 
 from litestar._multipart import parse_multipart_form
 from litestar._parsers import (
-    parse_headers,
     parse_query_string,
     parse_url_encoded_form_data,
 )
+from litestar.datastructures import Headers
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ValidationException
@@ -78,7 +78,7 @@ def create_connection_value_extractor(
     kwargs_model: KwargsModel,
     connection_key: str,
     expected_params: set[ParameterDefinition],
-    parser: Callable[[ASGIConnection, KwargsModel], dict[str, Any]] | None = None,
+    parser: Callable[[ASGIConnection, KwargsModel], Mapping[str, Any]] | None = None,
 ) -> Callable[[dict[str, Any], ASGIConnection], None]:
     """Create a kwargs extractor function.
 
@@ -155,7 +155,7 @@ def parse_connection_query_params(connection: ASGIConnection, kwargs_model: Kwar
     )
 
 
-def parse_connection_headers(connection: ASGIConnection, _: KwargsModel) -> dict[str, Any]:
+def parse_connection_headers(connection: ASGIConnection, _: KwargsModel) -> Headers:
     """Parse header parameters and cache the result in scope.
 
     Args:
@@ -163,12 +163,9 @@ def parse_connection_headers(connection: ASGIConnection, _: KwargsModel) -> dict
         _: The KwargsModel instance.
 
     Returns:
-        A dictionary of parsed values
+        A Headers instance
     """
-    parsed_headers = connection.scope["_headers"] = (  # type: ignore
-        connection._headers if connection._headers is not Empty else parse_headers(tuple(connection.scope["headers"]))
-    )
-    return cast("dict[str, Any]", parsed_headers)
+    return Headers.from_scope(connection.scope)
 
 
 def state_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
@@ -194,7 +191,9 @@ def headers_extractor(values: dict[str, Any], connection: ASGIConnection) -> Non
     Returns:
         None
     """
-    values["headers"] = connection.headers
+    # TODO: This should be removed in 3.0 and instead Headers should be injected
+    # directly. We are only keeping this one around to not break things
+    values["headers"] = dict(connection.headers.items())
 
 
 def cookies_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
