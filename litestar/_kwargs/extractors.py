@@ -46,13 +46,13 @@ __all__ = (
 
 
 class ParamMappings(NamedTuple):
-    alias_and_key_tuples: tuple[tuple[str, str], ...]
+    alias_and_key_tuples: list[tuple[str, str]]
     alias_defaults: dict[str, Any]
     alias_to_param: dict[str, ParameterDefinition]
 
 
 def _create_param_mappings(expected_params: set[ParameterDefinition]) -> ParamMappings:
-    alias_and_key_tuple = []
+    alias_and_key_tuples = []
     alias_defaults = {}
     alias_to_params: dict[str, ParameterDefinition] = {}
     for param in expected_params:
@@ -60,7 +60,7 @@ def _create_param_mappings(expected_params: set[ParameterDefinition]) -> ParamMa
         if param.param_type == ParamType.HEADER:
             alias = alias.lower()
 
-        alias_and_key_tuple.append((alias, param.field_name))
+        alias_and_key_tuples.append((alias, param.field_name))
 
         if not (param.is_required or param.default is Ellipsis):
             alias_defaults[alias] = param.default
@@ -68,7 +68,7 @@ def _create_param_mappings(expected_params: set[ParameterDefinition]) -> ParamMa
         alias_to_params[alias] = param
 
     return ParamMappings(
-        alias_and_key_tuples=tuple(alias_and_key_tuple),
+        alias_and_key_tuples=alias_and_key_tuples,
         alias_defaults=alias_defaults,
         alias_to_param=alias_to_params,
     )
