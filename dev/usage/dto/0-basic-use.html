@@ -1342,6 +1342,96 @@ the <code class="docutils literal notranslate"><span class="pre">delete()</span>
 <p>DTOs can similarly be defined on <a class="reference internal" href="../../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Routers</span></code></a> and
 <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">The</span> <span class="pre">application</span></code></a> itself.</p>
 </section>
+<section id="improving-performance-with-the-codegen-backend">
+<h2>Improving performance with the codegen backend<a class="headerlink" href="#improving-performance-with-the-codegen-backend" title="Permalink to this heading">#</a></h2>
+<div class="danger admonition">
+<p class="admonition-title">Experimental feature</p>
+<p>This is an experimental feature and should be approached with caution. It may
+behave unexpectedly, contain bugs and may disappear again in a future version.</p>
+</div>
+<p>The DTO backend is the part that does the heavy lifting for all the DTO features. It
+is responsible for the transforming, parsing, validation and parsing. Because of this,
+it is also the part with the most significant performance impact. To reduce the overhead
+introduced by the DTOs, the DTO codegen backend was introduced; A DTO backend that
+increases efficiency by generating optimized Python code at runtime to perform all the
+necessary operations.</p>
+<section id="enabling-the-backend">
+<h3>Enabling the backend<a class="headerlink" href="#enabling-the-backend" title="Permalink to this heading">#</a></h3>
+<p>You can enable this backend globally for all DTOs by passing the appropriate feature
+flag to your Litestar application:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.config.app</span> <span class="kn">import</span> <span class="n">ExperimentalFeatures</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">experimental_features</span><span class="o">=</span><span class="p">[</span><span class="n">ExperimentalFeatures</span><span class="o">.</span><span class="n">DTO_CODEGEN</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>or selectively for individual DTOs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="k">class</span> <span class="nc">FooDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Foo</span><span class="p">]):</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">experimental_codegen_backend</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The same flag can be used to disable the backend selectively:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="k">class</span> <span class="nc">FooDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Foo</span><span class="p">]):</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">experimental_codegen_backend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="performance-improvements">
+<h3>Performance improvements<a class="headerlink" href="#performance-improvements" title="Permalink to this heading">#</a></h3>
+<p>These are some preliminary numbers showing the performance increase for certain
+operations:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>operation</p></th>
+<th class="head"><p>improvement</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>JSON to Python</p></td>
+<td><p>~2.5x</p></td>
+</tr>
+<tr class="row-odd"><td><p>JSON to Python (collection)</p></td>
+<td><p>~3.5x</p></td>
+</tr>
+<tr class="row-even"><td><p>Python to Python</p></td>
+<td><p>~2.5x</p></td>
+</tr>
+<tr class="row-odd"><td><p>Python to Python (collection)</p></td>
+<td><p>~5x</p></td>
+</tr>
+<tr class="row-even"><td><p>Python to JSON</p></td>
+<td><p>~5.3x</p></td>
+</tr>
+<tr class="row-odd"><td><p>Python to JSON (collection)</p></td>
+<td><p>~5.4x</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>If you are interested in technical details, check out
+<a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2388">litestar-org/litestar#2388</a></p>
+</div>
+</section>
+</section>
 </section>
 
 
@@ -1395,6 +1485,11 @@ the <code class="docutils literal notranslate"><span class="pre">delete()</span>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-dtos-on-layers">Defining DTOs on layers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#improving-performance-with-the-codegen-backend">Improving performance with the codegen backend</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#enabling-the-backend">Enabling the backend</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-improvements">Performance improvements</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

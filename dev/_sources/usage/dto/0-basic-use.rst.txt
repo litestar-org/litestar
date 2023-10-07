@@ -73,3 +73,90 @@ the ``delete()`` route, which has the ``return_dto`` disabled).
 
 DTOs can similarly be defined on :class:`Routers <litestar.router.Router>` and
 :class:`The application <litestar.app.Litestar>` itself.
+
+
+Improving performance with the codegen backend
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. admonition:: Experimental feature
+    :class: danger
+
+    This is an experimental feature and should be approached with caution. It may
+    behave unexpectedly, contain bugs and may disappear again in a future version.
+
+
+The DTO backend is the part that does the heavy lifting for all the DTO features. It
+is responsible for the transforming, parsing, validation and parsing. Because of this,
+it is also the part with the most significant performance impact. To reduce the overhead
+introduced by the DTOs, the DTO codegen backend was introduced; A DTO backend that
+increases efficiency by generating optimized Python code at runtime to perform all the
+necessary operations.
+
+Enabling the backend
+--------------------
+
+You can enable this backend globally for all DTOs by passing the appropriate feature
+flag to your Litestar application:
+
+.. code-block:: python
+
+    from litestar import Litestar
+    from litestar.config.app import ExperimentalFeatures
+
+    app = Litestar(experimental_features=[ExperimentalFeatures.DTO_CODEGEN])
+
+
+or selectively for individual DTOs:
+
+.. code-block:: python
+
+    from dataclasses import dataclass
+    from litestar.dto import DTOConfig, DataclassDTO
+
+
+    @dataclass
+    class Foo:
+        name: str
+
+
+    class FooDTO(DataclassDTO[Foo]):
+        config = DTOConfig(experimental_codegen_backend=True)
+
+The same flag can be used to disable the backend selectively:
+
+.. code-block:: python
+
+    from dataclasses import dataclass
+    from litestar.dto import DTOConfig, DataclassDTO
+
+
+    @dataclass
+    class Foo:
+        name: str
+
+
+    class FooDTO(DataclassDTO[Foo]):
+        config = DTOConfig(experimental_codegen_backend=False)
+
+
+Performance improvements
+------------------------
+
+These are some preliminary numbers showing the performance increase for certain
+operations:
+
+=================================== ===========
+operation                           improvement
+=================================== ===========
+JSON to Python                      ~2.5x
+JSON to Python (collection)         ~3.5x
+Python to Python                    ~2.5x
+Python to Python (collection)       ~5x
+Python to JSON                      ~5.3x
+Python to JSON (collection)         ~5.4x
+=================================== ===========
+
+
+.. seealso::
+    If you are interested in technical details, check out
+    https://github.com/litestar-org/litestar/pull/2388
