@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, Callable, Coroutine, NamedTuple, Mapping, cast
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, Mapping, NamedTuple, cast
 
 from litestar._multipart import parse_multipart_form
 from litestar._parsers import (
