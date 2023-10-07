@@ -61,8 +61,18 @@ def test_layered_parameters_injected_correctly() -> None:
         assert response.status_code == HTTP_200_OK
 
 
-@pytest.mark.parametrize("parameter", ["controller1", "controller3", "router1", "router3", "app4", "app2"])
-def test_layered_parameters_validation(parameter: str) -> None:
+@pytest.mark.parametrize(
+    "parameter,param_type",
+    [
+        ("controller1", "query"),
+        ("controller3", "query"),
+        ("router1", "query"),
+        ("router3", "header"),
+        ("app4", "cookie"),
+        ("app2", "query"),
+    ],
+)
+def test_layered_parameters_validation(parameter: str, param_type: str) -> None:
     class MyController(Controller):
         path = "/controller"
         parameters = {"controller1": Parameter(int, lt=100), "controller2": Parameter(str, query="controller3")}
@@ -105,7 +115,7 @@ def test_layered_parameters_validation(parameter: str) -> None:
         response = client.get("/router/controller/1", params=query, headers=headers)
 
         assert response.status_code == HTTP_400_BAD_REQUEST
-        assert f"Missing required parameter {parameter}" in response.json()["detail"]
+        assert response.json()["detail"].startswith(f"Missing required {param_type} parameter '{parameter}' for url")
 
 
 def test_layered_parameters_defaults_and_overrides() -> None:
