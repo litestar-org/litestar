@@ -1578,13 +1578,13 @@ it can be used to build a URL path for that handler:</p>
     <span class="c1"># do something with the handler index below, e.g. send a redirect response to the handler, or access</span>
     <span class="c1"># handler.opt and some values stored there etc.</span>
 
-    <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">handler_index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">handler_index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/redirect/{param_value:int}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;five&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">handler_five</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">param_value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="s2">&quot;three&quot;</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="n">param_value</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler_one</span><span class="p">,</span> <span class="n">handler_two</span><span class="p">,</span> <span class="n">handler_three</span><span class="p">])</span>
