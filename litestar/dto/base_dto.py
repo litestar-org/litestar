@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Collection, Generic, TypeVar
 from typing_extensions import NotRequired, TypedDict, get_type_hints
 
 from litestar.dto._backend import DTOBackend
+from litestar.dto._codegen_backend import DTOCodegenBackend
 from litestar.dto.config import DTOConfig
 from litestar.dto.data_structures import DTOData
 from litestar.dto.types import RenameStrategy
@@ -139,12 +140,18 @@ class AbstractDTO(Generic[T]):
         )
 
     @classmethod
-    def create_for_field_definition(cls, field_definition: FieldDefinition, handler_id: str) -> None:
+    def create_for_field_definition(
+        cls,
+        field_definition: FieldDefinition,
+        handler_id: str,
+        backend_cls: type[DTOBackend] | None = None,
+    ) -> None:
         """Creates a DTO subclass for a field definition.
 
         Args:
             field_definition: A :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance.
             handler_id: ID of the route handler for which to create a DTO instance.
+            backend_cls: Alternative DTO backend class to use
 
         Returns:
             None
@@ -170,7 +177,12 @@ class AbstractDTO(Generic[T]):
                         f"DTO narrowed with '{cls.model_type}', handler type is '{field_definition.annotation}'"
                     )
 
-            backend_context[key] = DTOBackend(  # type: ignore[literal-required]
+            if backend_cls is None:
+                backend_cls = DTOCodegenBackend if cls.config.experimental_codegen_backend else DTOBackend
+            elif backend_cls is DTOCodegenBackend and cls.config.experimental_codegen_backend is False:
+                backend_cls = DTOBackend
+
+            backend_context[key] = backend_cls(  # type: ignore[literal-required]
                 dto_factory=cls,
                 field_definition=field_definition,
                 model_type=model_type_field_definition.annotation,
