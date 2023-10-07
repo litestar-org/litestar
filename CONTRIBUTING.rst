@@ -220,12 +220,15 @@ Creating a new release
 ----------------------
 
 1. Increment the version in ``pyproject.toml`` according to the `versioning scheme <https://litestar.dev/about/litestar-releases#version-numbering>`_
-    .. note:: The version should follow `semantic versioning <https://semver.org/>`_ and `PEP 440 <https://www.python.org/dev/peps/pep-0440/>`_.
+    .. note::
+      The version should follow `semantic versioning <https://semver.org/>`_ and `PEP 440 <https://www.python.org/dev/peps/pep-0440/>`_.
+
 2. Commit and push.
 2. `Draft a new release <https://github.com/litestar-org/litestar/releases/new>`_ on GitHub
 
    * Use ``vMAJOR.MINOR.PATCH`` (e.g. ``v1.2.3``) as both the tag and release title
    * Fill in the release description. You can use the "Generate release notes" function to get a draft for this
+
 3. Commit your changes and push to ``main``
 4. Publish the release
 5. Go to `Actions <https://github.com/litestar-org/litestar/actions>`_ and approve the release workflow
