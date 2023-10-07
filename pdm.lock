@@ -6,7 +6,7 @@ groups = ["default", "pydantic", "mako", "jinja", "structlog", "minijinja", "sta
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:917a2c09edd60ba788342e5c786f5fa7afd5a31f830cac4bbf04b7228ec97819"
+content_hash = "sha256:28d7668a00ed3d9f73b55b5e979eb64c20d7747297a53f6dc8a5d8cdb50d09b6"
 
 [[package]]
 name = "accessible-pygments"
