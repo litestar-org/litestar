@@ -9,7 +9,7 @@ from litestar._parsers import (
     parse_query_string,
     parse_url_encoded_form_data,
 )
-from litestar.datastructures import Headers, MultiDict
+from litestar.datastructures import Headers
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ValidationException
@@ -155,7 +155,7 @@ def parse_connection_query_params(connection: ASGIConnection, kwargs_model: Kwar
     )
 
 
-def parse_connection_headers(connection: ASGIConnection, _: KwargsModel) -> MultiDict:
+def parse_connection_headers(connection: ASGIConnection, _: KwargsModel) -> Headers:
     """Parse header parameters and cache the result in scope.
 
     Args:
@@ -165,7 +165,7 @@ def parse_connection_headers(connection: ASGIConnection, _: KwargsModel) -> Mult
     Returns:
         A Headers instance
     """
-    return MultiDict(Headers.from_scope(connection.scope))
+    return Headers.from_scope(connection.scope)
 
 
 def state_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
@@ -191,7 +191,9 @@ def headers_extractor(values: dict[str, Any], connection: ASGIConnection) -> Non
     Returns:
         None
     """
-    values["headers"] = connection.headers
+    # TODO: This should be removed in 3.0 and instead Headers should be injected
+    # directly. We are only keeping this one around to not break things
+    values["headers"] = dict(connection.headers.items())
 
 
 def cookies_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
