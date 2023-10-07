@@ -203,7 +203,7 @@ specify a different filename using the `--output` flag. For example:
 
 .. code-block:: shell
 
-   litestar schema openapi --output my-specs.yaml
+   litestar schema openapi --output my-specs.yml
 
 typescript
 ~~~~~~~~~~

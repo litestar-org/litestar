@@ -181,7 +181,7 @@ def test_openapi_root_not_allowed(person_controller: Type[Controller], pet_contr
         openapi_config=OpenAPIConfig(
             title="Litestar API",
             version="1.0.0",
-            enabled_endpoints={"swagger", "elements", "openapi.json", "openapi.yaml"},
+            enabled_endpoints={"swagger", "elements", "openapi.json", "openapi.yaml", "openapi.yml"},
         ),
     ) as client:
         response = client.get("/schema")
@@ -195,7 +195,7 @@ def test_openapi_redoc_not_allowed(person_controller: Type[Controller], pet_cont
         openapi_config=OpenAPIConfig(
             title="Litestar API",
             version="1.0.0",
-            enabled_endpoints={"swagger", "elements", "openapi.json", "openapi.yaml"},
+            enabled_endpoints={"swagger", "elements", "openapi.json", "openapi.yaml", "openapi.yml"},
         ),
     ) as client:
         response = client.get("/schema/redoc")
@@ -209,7 +209,7 @@ def test_openapi_swagger_not_allowed(person_controller: Type[Controller], pet_co
         openapi_config=OpenAPIConfig(
             title="Litestar API",
             version="1.0.0",
-            enabled_endpoints={"redoc", "elements", "openapi.json", "openapi.yaml"},
+            enabled_endpoints={"redoc", "elements", "openapi.json", "openapi.yaml", "openapi.yml"},
         ),
     ) as client:
         response = client.get("/schema/swagger")
@@ -225,7 +225,7 @@ def test_openapi_stoplight_elements_not_allowed(
         openapi_config=OpenAPIConfig(
             title="Litestar API",
             version="1.0.0",
-            enabled_endpoints={"redoc", "swagger", "openapi.json", "openapi.yaml"},
+            enabled_endpoints={"redoc", "swagger", "openapi.json", "openapi.yaml", "openapi.yml"},
         ),
     ) as client:
         response = client.get("/schema/elements/")
