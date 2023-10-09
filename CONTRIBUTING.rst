@@ -7,7 +7,7 @@ Setting up the environment
 .. tip:: We maintain a Makefile with several commands to help with common tasks.
    You can run ``make help`` to see a list of available commands.
 
-1. Install `Personal Doomsday Machine <https://pdm.fming.dev/latest/>`_
+1. Install `PDM <https://pdm.fming.dev/latest/>`_
 2. Run ``pdm install`` or ``make install`` to create a
    `virtual environment <https://docs.python.org/3/tutorial/venv.html>`_ and install the required development dependencies
 3. If you're working on the documentation and need to build it locally, install the extra dependencies
