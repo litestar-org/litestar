@@ -266,9 +266,9 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
             await self.accept()
         event: WebSocketSendEvent = {"type": "websocket.send", "bytes": None, "text": None}
         if mode == "binary":
-            event["bytes"] = data if isinstance(data, bytes) else data.encode(encoding)
+            event["bytes"] = data if isinstance(data, bytes) else data.encode(encoding)  # pyright: ignore
         else:
-            event["text"] = data if isinstance(data, str) else data.decode(encoding)
+            event["text"] = data if isinstance(data, str) else data.decode(encoding)  # pyright: ignore
         await self.send(event)
 
     @overload

@@ -9,7 +9,7 @@ from tests.unit.test_cli.conftest import CreateAppFileFixture
 try:
     from rich_click import group
 except ImportError:
-    from click import group
+    from click import group  # type: ignore[no-redef]
 
 import litestar.cli._utils
 import litestar.cli.main

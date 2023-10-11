@@ -111,7 +111,7 @@ class ASGIStreamingResponse(ASGIResponse):
         async for chunk in self.iterator:
             stream_event: HTTPResponseBodyEvent = {
                 "type": "http.response.body",
-                "body": chunk if isinstance(chunk, bytes) else chunk.encode(self.encoding),
+                "body": chunk if isinstance(chunk, bytes) else chunk.encode(self.encoding),  # pyright: ignore
                 "more_body": True,
             }
             await send(stream_event)

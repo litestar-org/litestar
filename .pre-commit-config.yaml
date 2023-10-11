@@ -7,7 +7,7 @@ repos:
       - id: conventional-pre-commit
         stages: [commit-msg]
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       - id: check-ast
       - id: check-case-conflict
@@ -58,7 +58,7 @@ repos:
       - id: slotscheck
         exclude: "test_*|docs"
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.5.1"
+    rev: "v1.6.0"
     hooks:
       - id: mypy
         exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures|tests/unit/test_contrib/test_pydantic/test_beanie_integration"
@@ -120,7 +120,7 @@ repos:
             httptools,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.328
+    rev: v1.1.331
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures"

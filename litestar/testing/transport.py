@@ -74,7 +74,7 @@ class TestClientTransport(Generic[T]):
                     context["request_complete"] = True
             else:
                 context["request_complete"] = True
-                request_event["body"] = body if isinstance(body, bytes) else body.encode("utf-8")
+                request_event["body"] = body if isinstance(body, bytes) else body.encode("utf-8")  # pyright: ignore
             return request_event
 
         return receive
