@@ -180,6 +180,11 @@ class AppConfig:
     """
     signature_namespace: dict[str, Any] = field(default_factory=dict)
     """A mapping of names to types for use in forward reference resolution during signature modelling."""
+    signature_types: list[Any] = field(default_factory=list)
+    """A sequence of types for use in forward reference resolution during signature modelling.
+
+    These types will be added to the signature namespace using their ``__name__`` attribute.
+    """
     state: State = field(default_factory=State)
     """A :class:`State` <.datastructures.State>` instance holding application state."""
     static_files_config: list[StaticFilesConfig] = field(default_factory=list)

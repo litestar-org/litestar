@@ -12,12 +12,20 @@ from typing_extensions import Self, get_type_hints
 
 from litestar import connection, datastructures, types
 from litestar.enums import RequestEncodingType
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import BodyKwarg
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 
 if typing.TYPE_CHECKING:
     from litestar.types import AnyCallable
+
+__all__ = (
+    "add_types_to_signature_namespace",
+    "get_fn_type_hints",
+    "ParsedSignature",
+    "infer_request_encoding_from_field_definition",
+)
 
 _GLOBAL_NAMES = {
     namespace: export
@@ -31,12 +39,6 @@ _GLOBAL_NAMES = {
 
 This allows users to include these names within an `if TYPE_CHECKING:` block in their handler module.
 """
-
-__all__ = (
-    "get_fn_type_hints",
-    "ParsedSignature",
-    "infer_request_encoding_from_field_definition",
-)
 
 
 def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -157,3 +159,20 @@ def infer_request_encoding_from_field_definition(field_definition: FieldDefiniti
     if isinstance(field_definition.default, BodyKwarg):
         return field_definition.default.media_type
     return RequestEncodingType.JSON
+
+
+def add_types_to_signature_namespace(signature_types: list[Any], signature_namespace: dict[str, Any]) -> dict[str, Any]:
+    """Add types from a signature to a signature namespace.
+
+    Args:
+        signature_types: A list of types to add to the signature namespace.
+        signature_namespace: The signature namespace to add types to.
+
+    Returns:
+        The updated signature namespace.
+    """
+    for typ in signature_types or []:
+        if type.__name__ in signature_namespace:
+            raise ImproperlyConfiguredException(f"Type {typ.__name__} is already defined in the signature namespace")
+        signature_namespace[typ.__name__] = typ
+    return signature_namespace

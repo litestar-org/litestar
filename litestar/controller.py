@@ -13,6 +13,7 @@ from litestar.handlers.http_handlers import HTTPRouteHandler
 from litestar.handlers.websocket_handlers import WebsocketRouteHandler
 from litestar.types.empty import Empty
 from litestar.utils import AsyncCallable, normalize_path
+from litestar.utils.signature import add_types_to_signature_namespace
 
 __all__ = ("Controller",)
 
@@ -144,6 +145,11 @@ class Controller:
     """A sequence of dictionaries that to the schema of all route handlers under the controller."""
     signature_namespace: dict[str, Any]
     """A mapping of names to types for use in forward reference resolution during signature modelling."""
+    signature_types: list[Any] | None
+    """A sequence of types for use in forward reference resolution during signature modelling.
+
+    These types will be added to the signature namespace using their ``__name__`` attribute.
+    """
     type_encoders: TypeEncodersMap | None
     """A mapping of types to callables that transform them into types supported for serialization."""
     type_decoders: TypeDecodersSequence | None
@@ -179,7 +185,9 @@ class Controller:
 
         self.response_cookies = narrow_response_cookies(self.response_cookies)
         self.response_headers = narrow_response_headers(self.response_headers)
-        self.signature_namespace = self.signature_namespace or {}
+        self.signature_namespace = add_types_to_signature_namespace(
+            getattr(self, "signature_types", None) or [], self.signature_namespace or {}
+        )
 
         self.path = normalize_path(self.path or "/")
         self.owner = owner
