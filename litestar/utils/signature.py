@@ -162,7 +162,7 @@ def infer_request_encoding_from_field_definition(field_definition: FieldDefiniti
 
 
 def add_types_to_signature_namespace(signature_types: list[Any], signature_namespace: dict[str, Any]) -> dict[str, Any]:
-    """Add types from a signature to a signature namespace.
+    """Add types from the list to a signature namespace.
 
     Args:
         signature_types: A list of types to add to the signature namespace.
