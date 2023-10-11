@@ -32,7 +32,7 @@ class Mark(str, Enum):
     """To mark a field that can neither be read or updated by clients."""
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class DTOField:
     """For configuring DTO behavior on model fields."""
 
