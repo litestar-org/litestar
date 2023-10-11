@@ -66,8 +66,8 @@ def extract_dto_field(field_definition: FieldDefinition, field_info_mapping: Map
 
     Args:
         field_definition: A field definition.
-        field_info_mapping: A field metadata/info attribute mapping, e.g., SQLAlchemy's "info" attribute,
-          or dataclasses "metadata" attribute.
+        field_info_mapping: A field metadata/info attribute mapping, e.g., SQLAlchemy's ``info`` attribute,
+          or dataclasses ``metadata`` attribute.
 
     Returns:
         DTO field info, if any.
