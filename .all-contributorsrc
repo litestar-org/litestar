@@ -1300,6 +1300,15 @@
         "test",
         "doc"
       ]
+    },
+    {
+      "login": "Lancetnik",
+      "name": "Pastukhov Nikita",
+      "avatar_url": "https://avatars.githubusercontent.com/u/44573917?v=4",
+      "profile": "https://github.com/Lancetnik",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
