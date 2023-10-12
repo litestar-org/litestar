@@ -3,6 +3,163 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.2.0
+    :date: 2023/10/12
+
+    .. change:: Fix implicit conversion of objects to ``bool`` in debug response
+        :type: bugfix
+        :pr: 2384
+        :issue: 2381
+
+        The exception handler middleware would, when in debug mode, implicitly call an
+        object's :meth:`__bool__ <object.__bool__>`, which would lead to errors if that
+        object overloaded the operator, for example if the object in question was a
+        SQLAlchemy element.
+
+    .. change:: Correctly re-export filters and exceptions from ``advanced-alchemy``
+        :type: bugfix
+        :pr: 2360
+        :issue: 2358
+
+        Some re-exports of filter and exception types from ``advanced-alchemy`` were
+        missing, causing various issues when ``advanced-alchemy`` was installed, but
+        Litestar would still use its own version of these classes.
+
+    .. change:: Re-add ``create_engine`` method to SQLAlchemy configs
+        :type: bugfix
+        :pr: 2382
+
+        The ``create_engine`` method was removed in an ``advanced-alchemy`` releases.
+        This was addresses by re-adding it to the versions provided by Litestar.
+
+    .. change:: Fix ``before_request`` modifies route handler signature
+        :type: bugfix
+        :pr: 2391
+        :issue: 2368
+
+        The ``before_request`` would modify the return annotation of associated
+        route handlers to conform with its own return type annotation, which would cause
+        issues and unexpected behaviour when that annotation was not compatible with the
+        original one.
+
+        This was fixed by not having the ``before_request`` handler modify the
+        route handler's signature. Users are now expected to ensure that values returned
+        from a ``before_request`` handler conform to the return type annotation of the
+        route handler.
+
+    .. change:: Ensure compression is applied before caching when using compression middleware
+        :type: bugfix
+        :pr: 2393
+        :issue: 1301
+
+        A previous limitation was removed that would apply compression from the
+        :class:`~litestar.middleware.compression.CompressionMiddleware` only *after* a
+        response was restored from the cache, resulting in unnecessary repeated
+        computation and increased size of the stored response.
+
+        This was due to caching being handled on the response layer, where a response
+        object would be pickled, restored upon a cache hit and then re-sent, including
+        all middlewares.
+
+        The new implementation now instead applies caching on the ASGI level; Individual
+        messages sent to the ``send`` callable are cached, and later re-sent. This
+        process ensures that the compression middleware has been applied before, and
+        will be skipped when re-sending a cached response.
+
+        In addition, this increases performance and reduces storage size even in cases
+        where no compression is applied because the slow and inefficient pickle format
+        can be avoided.
+
+    .. change:: Fix implicit JSON parsing of URL encoded data
+        :type: bugfix
+        :pr: 2394
+
+        A process was removed where Litestar would implicitly attempt to parse parts of
+        URL encoded data as JSON. This was originally added to provide some performance
+        boosts when that data was in fact meant to be JSON, but turned out to be too
+        fragile.
+
+        Regular data conversion / validation is unaffected by this.
+
+    .. change:: CLI enabled by default
+        :type: feature
+        :pr: 2346
+        :issue: 2318
+
+        The CLI and all its dependencies are now included by default, to enable a better
+        and more consistent developer experience out of the box.
+
+        The previous ``litestar[cli]`` extra is still available for backwards
+        compatibility, but as of ``2.2.0`` it is without effect.
+
+    .. change:: Customization of Pydantic integration via ``PydanticPlugin``
+        :type: feature
+        :pr: 2404
+        :issue: 2373
+
+        A new :class:`~litestar.contrib.pydantic.PydanticPlugin` has been added, which
+        can be used to configure Pydantic behaviour. Currently it supports setting a
+        ``prefer_alias`` option, which will pass the ``by_alias=True`` flag to Pydantic
+        when exporting models, as well as generate schemas accordingly.
+
+    .. change:: Add ``/schema/openapi.yml`` to the available schema paths
+        :type: feature
+        :pr: 2411
+
+        The YAML version of the OpenAPI schema is now available under
+        ``/schema/openapi.yml`` in addition to ``/schema/openapi.yaml``.
+
+    .. change:: Add experimental DTO codegen backend
+        :type: feature
+        :pr: 2388
+
+        A new DTO backend was introduced which speeds up the transfer process by
+        generating optimized Python code ahead of time. Testing shows that the new
+        backend is between 2.5 and 5 times faster depending on the operation and data
+        provided.
+
+        The new backend can be enabled globally for all DTOs by passing the appropriate
+        feature flag to the Litestar application:
+
+        .. code-block:: python
+
+            from litestar import Litestar
+            from litestar.config.app import ExperimentalFeatures
+
+            app = Litestar(experimental_features=[ExperimentalFeatures.DTO_CODEGEN])
+
+        .. seealso::
+            For more information see
+            :ref:`usage/dto/0-basic-use:Improving performance with the codegen backend`
+
+
+    .. change:: Improved error messages for missing required parameters
+        :type: feature
+        :pr: 2418
+
+        Error messages for missing required parameters will now also contain the source
+        of the expected parameter:
+
+        Before:
+
+        .. code-block:: json
+
+            {
+              "status_code": 400,
+              "detail": "Missing required parameter foo for url http://testerver.local"
+            }
+
+
+        After:
+
+        .. code-block:: json
+
+            {
+              "status_code": 400,
+              "detail": "Missing required header parameter 'foo' for url http://testerver.local"
+            }
+
+
 .. changelog:: 2.1.1
     :date: 2023/09/24
 
