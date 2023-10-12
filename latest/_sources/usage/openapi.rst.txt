@@ -200,7 +200,7 @@ default controller in the :class:`OpenAPIConfig <.config.OpenAPIConfig>`.
 
 This controller exposes the following endpoints:
 
-``/schema/openapi.yaml``
+``/schema/openapi.yaml`` or ``/schema/openapi.yml``
     allowing for download of the OpenAPI schema as YAML.
 
 ``/schema/openapi.json``

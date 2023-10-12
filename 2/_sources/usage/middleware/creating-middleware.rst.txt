@@ -110,7 +110,7 @@ explore another example - redirecting the request to a different url from a midd
 
        async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
            if Request(scope).session is None:
-               response = Redirect(url="/login")
+               response = Redirect(path="/login")
                await response(scope, receive, send)
            else:
                await self.app(scope, receive, send)

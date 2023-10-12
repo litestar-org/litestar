@@ -585,7 +585,7 @@ In Litestar, a redirect response looks like this:
        # do some stuff here
        # ...
        # finally return redirect
-       return Redirect(url="/other-path")
+       return Redirect(path="/other-path")
 
 To return a redirect response you should do the following:
 
