@@ -449,10 +449,9 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
             def get_one(self) -> Item:
                 return item
 
-
-    with create_test_client(
-        route_handlers=get_item, dependencies={"service": Provide(lambda: MyService())}
-    ) as client:
-        response = client.get("/item")
-        assert response.status_code == HTTP_200_OK
-        assert response.json() == item.dict()
+        with create_test_client(
+            route_handlers=get_item, dependencies={"service": Provide(lambda: MyService())}
+        ) as client:
+            response = client.get("/item")
+            assert response.status_code == HTTP_200_OK
+            assert response.json() == item.dict()
