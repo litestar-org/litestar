@@ -100,7 +100,7 @@ if TYPE_CHECKING:
     from litestar.enums import ScopeType
     from litestar.types.empty import EmptyType
 
-    from .internal_types import LitestarType, RouteHandlerType
+    from .internal_types import RouteHandlerType
     from .serialization import DataContainerType
 
 Method: TypeAlias = Union[Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD", "TRACE", "OPTIONS"], HttpMethod]
@@ -123,7 +123,7 @@ class HeaderScope(TypedDict):
 class BaseScope(HeaderScope):
     """Base ASGI-scope."""
 
-    app: LitestarType
+    app: Litestar
     asgi: ASGIVersion
     auth: Any
     client: tuple[str, int] | None

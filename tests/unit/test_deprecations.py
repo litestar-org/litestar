@@ -95,3 +95,8 @@ import pytest
 def test_repository_deprecations(import_path: str, import_name: str) -> None:
     module = importlib.import_module(import_path)
     assert getattr(module, import_name)
+
+
+def test_litestar_type_deprecation() -> None:
+    with pytest.warns(DeprecationWarning):
+        from litestar.types.internal_types import LitestarType  # noqa: F401
