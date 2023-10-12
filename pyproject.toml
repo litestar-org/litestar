@@ -252,6 +252,7 @@ warn_required_dynamic_aliases = true
 warn_untyped_fields = true
 
 [tool.pyright]
+disableBytesTypePromotions = true
 exclude = [
   "examples/plugins/sqlalchemy_plugin",
   "litestar/openapi",
