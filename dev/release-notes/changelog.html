@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
-    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=3fb92501" />
+    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=db8d6e31" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
@@ -1166,6 +1166,142 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.2.0">
+<h2>2.2.0<a class="headerlink" href="#2.2.0" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2023/10/12<section id="2.2.0-feature">
+<h3>Features<a class="headerlink" href="#2.2.0-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>CLI enabled by default<a class="headerlink reference internal" href="#2.2.0-cli enabled by default" id="2.2.0-cli enabled by default">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The CLI and all its dependencies are now included by default, to enable a better
+and more consistent developer experience out of the box.</p>
+<p>The previous <code class="docutils literal notranslate"><span class="pre">litestar[cli]</span></code> extra is still available for backwards
+compatibility, but as of <code class="docutils literal notranslate"><span class="pre">2.2.0</span></code> it is without effect.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2318">litestar-org/litestar#2318</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2346">litestar-org/litestar#2346</a></span></p>
+</div>
+</dd>
+<dt>Customization of Pydantic integration via <code class="docutils literal notranslate"><span class="pre">PydanticPlugin</span></code><a class="headerlink reference internal" href="#2.2.0-customization of pydantic integration via" id="2.2.0-customization of pydantic integration via">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A new <a class="reference internal" href="../reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin" title="litestar.contrib.pydantic.PydanticPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">PydanticPlugin</span></code></a> has been added, which
+can be used to configure Pydantic behaviour. Currently it supports setting a
+<code class="docutils literal notranslate"><span class="pre">prefer_alias</span></code> option, which will pass the <code class="docutils literal notranslate"><span class="pre">by_alias=True</span></code> flag to Pydantic
+when exporting models, as well as generate schemas accordingly.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2373">litestar-org/litestar#2373</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2404">litestar-org/litestar#2404</a></span></p>
+</div>
+</dd>
+<dt>Add <code class="docutils literal notranslate"><span class="pre">/schema/openapi.yml</span></code> to the available schema paths<a class="headerlink reference internal" href="#2.2.0-add" id="2.2.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The YAML version of the OpenAPI schema is now available under
+<code class="docutils literal notranslate"><span class="pre">/schema/openapi.yml</span></code> in addition to <code class="docutils literal notranslate"><span class="pre">/schema/openapi.yaml</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2411">litestar-org/litestar#2411</a></span></p>
+</div>
+</dd>
+<dt>Add experimental DTO codegen backend<a class="headerlink reference internal" href="#2.2.0-add experimental dto codegen backend" id="2.2.0-add experimental dto codegen backend">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A new DTO backend was introduced which speeds up the transfer process by
+generating optimized Python code ahead of time. Testing shows that the new
+backend is between 2.5 and 5 times faster depending on the operation and data
+provided.</p>
+<p>The new backend can be enabled globally for all DTOs by passing the appropriate
+feature flag to the Litestar application:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.config.app</span> <span class="kn">import</span> <span class="n">ExperimentalFeatures</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">experimental_features</span><span class="o">=</span><span class="p">[</span><span class="n">ExperimentalFeatures</span><span class="o">.</span><span class="n">DTO_CODEGEN</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>For more information see
+<a class="reference internal" href="../usage/dto/0-basic-use.html#improving-performance-with-the-codegen-backend"><span class="std std-ref">Improving performance with the codegen backend</span></a></p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2388">litestar-org/litestar#2388</a></span></p>
+</div>
+</dd>
+<dt>Improved error messages for missing required parameters<a class="headerlink reference internal" href="#2.2.0-improved error messages for missing required parameters" id="2.2.0-improved error messages for missing required parameters">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Error messages for missing required parameters will now also contain the source
+of the expected parameter:</p>
+<p>Before:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;status_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Missing required parameter foo for url http://testerver.local&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>After:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;status_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Missing required header parameter &#39;foo&#39; for url http://testerver.local&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2418">litestar-org/litestar#2418</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.2.0-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.2.0-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix implicit conversion of objects to <code class="docutils literal notranslate"><span class="pre">bool</span></code> in debug response<a class="headerlink reference internal" href="#2.2.0-fix implicit conversion of objects to" id="2.2.0-fix implicit conversion of objects to">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The exception handler middleware would, when in debug mode, implicitly call an
+object’s <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__bool__" title="(in Python v3.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__bool__</span></code></a>, which would lead to errors if that
+object overloaded the operator, for example if the object in question was a
+SQLAlchemy element.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2381">litestar-org/litestar#2381</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2384">litestar-org/litestar#2384</a></span></p>
+</div>
+</dd>
+<dt>Correctly re-export filters and exceptions from <code class="docutils literal notranslate"><span class="pre">advanced-alchemy</span></code><a class="headerlink reference internal" href="#2.2.0-correctly re-export filters and exceptions from" id="2.2.0-correctly re-export filters and exceptions from">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Some re-exports of filter and exception types from <code class="docutils literal notranslate"><span class="pre">advanced-alchemy</span></code> were
+missing, causing various issues when <code class="docutils literal notranslate"><span class="pre">advanced-alchemy</span></code> was installed, but
+Litestar would still use its own version of these classes.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2358">litestar-org/litestar#2358</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2360">litestar-org/litestar#2360</a></span></p>
+</div>
+</dd>
+<dt>Re-add <code class="docutils literal notranslate"><span class="pre">create_engine</span></code> method to SQLAlchemy configs<a class="headerlink reference internal" href="#2.2.0-re-add" id="2.2.0-re-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The <code class="docutils literal notranslate"><span class="pre">create_engine</span></code> method was removed in an <code class="docutils literal notranslate"><span class="pre">advanced-alchemy</span></code> releases.
+This was addresses by re-adding it to the versions provided by Litestar.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2382">litestar-org/litestar#2382</a></span></p>
+</div>
+</dd>
+<dt>Fix <code class="docutils literal notranslate"><span class="pre">before_request</span></code> modifies route handler signature<a class="headerlink reference internal" href="#2.2.0-fix" id="2.2.0-fix">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The <code class="docutils literal notranslate"><span class="pre">before_request</span></code> would modify the return annotation of associated
+route handlers to conform with its own return type annotation, which would cause
+issues and unexpected behaviour when that annotation was not compatible with the
+original one.</p>
+<p>This was fixed by not having the <code class="docutils literal notranslate"><span class="pre">before_request</span></code> handler modify the
+route handler’s signature. Users are now expected to ensure that values returned
+from a <code class="docutils literal notranslate"><span class="pre">before_request</span></code> handler conform to the return type annotation of the
+route handler.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2368">litestar-org/litestar#2368</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2391">litestar-org/litestar#2391</a></span></p>
+</div>
+</dd>
+<dt>Ensure compression is applied before caching when using compression middleware<a class="headerlink reference internal" href="#2.2.0-ensure compression is applied before caching when using compression middleware" id="2.2.0-ensure compression is applied before caching when using compression middleware">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A previous limitation was removed that would apply compression from the
+<a class="reference internal" href="../reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware" title="litestar.middleware.compression.CompressionMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompressionMiddleware</span></code></a> only <em>after</em> a
+response was restored from the cache, resulting in unnecessary repeated
+computation and increased size of the stored response.</p>
+<p>This was due to caching being handled on the response layer, where a response
+object would be pickled, restored upon a cache hit and then re-sent, including
+all middlewares.</p>
+<p>The new implementation now instead applies caching on the ASGI level; Individual
+messages sent to the <code class="docutils literal notranslate"><span class="pre">send</span></code> callable are cached, and later re-sent. This
+process ensures that the compression middleware has been applied before, and
+will be skipped when re-sending a cached response.</p>
+<p>In addition, this increases performance and reduces storage size even in cases
+where no compression is applied because the slow and inefficient pickle format
+can be avoided.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1301">litestar-org/litestar#1301</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2393">litestar-org/litestar#2393</a></span></p>
+</div>
+</dd>
+<dt>Fix implicit JSON parsing of URL encoded data<a class="headerlink reference internal" href="#2.2.0-fix implicit json parsing of url encoded data" id="2.2.0-fix implicit json parsing of url encoded data">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A process was removed where Litestar would implicitly attempt to parse parts of
+URL encoded data as JSON. This was originally added to provide some performance
+boosts when that data was in fact meant to be JSON, but turned out to be too
+fragile.</p>
+<p>Regular data conversion / validation is unaffected by this.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2394">litestar-org/litestar#2394</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.1.1">
 <h2>2.1.1<a class="headerlink" href="#2.1.1" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2023/09/24<section id="2.1.1-bugfix">
@@ -3619,6 +3755,11 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.2.0">2.2.0</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.2.0-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.2.0-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.1.1">2.1.1</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.1.1-bugfix">Bugfixes</a></li>
 </ul>
