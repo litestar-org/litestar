@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 from uuid import UUID
 
 from msgspec import ValidationError
+from typing_extensions import Buffer
 
 from litestar._signature.types import ExtendedMsgSpecValidationError
 from litestar.exceptions import MissingDependencyException
@@ -40,7 +41,8 @@ def _dec_pydantic_uuid(
     if isinstance(value, str):
         value = uuid_type(value)
 
-    elif isinstance(value, (bytes, bytearray)):
+    elif isinstance(value, Buffer):
+        value = bytes(value)
         try:
             value = uuid_type(value.decode())
         except ValueError:
