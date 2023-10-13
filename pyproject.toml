@@ -88,7 +88,7 @@ sqlalchemy = ["advanced-alchemy==0.2.2"]
 standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "fast-query-parsers>=1.0.2"]
 structlog = ["structlog"]
 full = [
-  "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog]",
+    "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog]",
 ]
 
 [tool.pdm.dev-dependencies]

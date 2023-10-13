@@ -2,7 +2,7 @@
 # It is not intended for manual editing.
 
 [metadata]
-groups = ["default", "annotated-types", "attrs", "brotli", "cli", "cryptography", "dev", "dev-contrib", "docs", "jinja", "jwt", "linting", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "test"]
+groups = ["default", "annotated-types", "attrs", "brotli", "cli", "cryptography", "dev", "dev-contrib", "docs", "jinja", "jwt", "linting", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "test", "full"]
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
