@@ -8,7 +8,7 @@ import msgspec
 import pydantic
 import pytest
 from pydantic import BaseModel, Field
-from typing_extensions import Annotated
+from typing_extensions import Annotated, TypeAlias
 
 from litestar import Controller, MediaType, get
 from litestar._openapi.schema_generation.schema import (
@@ -116,10 +116,11 @@ def test_get_schema_for_annotation_enum() -> None:
     assert schema.enum == ["opt1", "opt2"]
 
 
-def test_handling_of_literals() -> None:
-    ValueType = Literal["a", "b", "c"]
-    ConstType = Literal[1]
+ValueType: TypeAlias = Literal["a", "b", "c"]
+ConstType: TypeAlias = Literal[1]
 
+
+def test_handling_of_literals() -> None:
     @dataclass
     class DataclassWithLiteral:
         value: ValueType
@@ -266,7 +267,9 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
 def test_create_schema_for_pydantic_field() -> None:
     class Model(BaseModel):
         if pydantic.VERSION.startswith("1"):
-            value: str = Field(title="title", description="description", example="example", max_length=16)
+            value: str = Field(
+                title="title", description="description", example="example", max_length=16  # pyright: ignore
+            )
         else:
             value: str = Field(  # type: ignore[no-redef]
                 title="title", description="description", max_length=16, json_schema_extra={"example": "example"}

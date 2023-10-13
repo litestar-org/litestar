@@ -123,7 +123,6 @@ repos:
     rev: v1.1.331
     hooks:
       - id: pyright
-        exclude: "test_apps|tools|docs|_openapi|tests/examples|tests/docker_service_fixtures"
         additional_dependencies:
           [
             aiosqlite,

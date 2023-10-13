@@ -89,7 +89,7 @@ def test_upload_file_request_body_generation() -> None:
 def test_request_body_generation_with_dto() -> None:
     mock_dto = MagicMock(spec=AbstractDTO)
 
-    @post(path="/form-upload", dto=mock_dto)
+    @post(path="/form-upload", dto=mock_dto)  # pyright: ignore
     async def handler(data: Dict[str, Any]) -> None:
         return None
 

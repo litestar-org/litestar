@@ -51,3 +51,16 @@ def maybe_async_cm(obj: ContextManager[T] | AsyncContextManager[T]) -> AsyncCont
     if isinstance(obj, AbstractContextManager):
         return cast(AsyncContextManager[T], _AsyncContextManagerWrapper(obj))
     return obj
+
+
+def get_exception_group() -> type[BaseException]:
+    """Get the exception group class with version compatibility."""
+    try:
+        return globals()["__builtins__"]["ExceptionGroup"]  # type:ignore[no-any-return]
+    except KeyError:
+        # In CI, we run pyright on recent versions of python where the `exceptiongroup` package is not installed.
+        # If you run pyright in an environment running < Python 3.11, the error will instead originate from the
+        # above, `_ExceptionGroup = ExceptionGroup` line.
+        from exceptiongroup import ExceptionGroup  # pyright: ignore[reportMissingImports]
+
+        return ExceptionGroup

@@ -79,17 +79,15 @@ def test_create_error_responses() -> None:
     class AlternativePetException(HTTPException):
         status_code = ValidationException.status_code
 
-    pet_exc_response, permission_denied_exc_response, validation_exc_response = tuple(
-        create_error_responses(
-            exceptions=[
-                PetException,
-                PermissionDeniedException,
-                AlternativePetException,
-                ValidationException,
-            ]
-        )
+    pet_exc_response, permission_denied_exc_response, validation_exc_response = create_error_responses(
+        exceptions=[
+            PetException,
+            PermissionDeniedException,
+            AlternativePetException,
+            ValidationException,
+        ]
     )
-    assert pet_exc_response
+
     assert pet_exc_response[0] == str(PetException.status_code)
     assert pet_exc_response[1].description == HTTPStatus(PetException.status_code).description
     assert pet_exc_response[1].content
@@ -119,10 +117,8 @@ def test_create_error_responses() -> None:
     assert schema.type
     assert not schema.one_of
 
-    assert validation_exc_response
     assert validation_exc_response[0] == str(ValidationException.status_code)
     assert validation_exc_response[1].description == HTTPStatus(ValidationException.status_code).description
-
     assert validation_exc_response[1].content
     assert validation_exc_response[1].content[MediaType.JSON]
 
@@ -145,11 +141,8 @@ def test_create_error_responses_with_non_http_status_code() -> None:
         status_code: int = 420
         detail: str = "House not found."
 
-    house_not_found_exc_response, _ = tuple(
-        create_error_responses(exceptions=[HouseNotFoundError, ValidationException])
-    )
+    house_not_found_exc_response = next(create_error_responses(exceptions=[HouseNotFoundError]))
 
-    assert house_not_found_exc_response
     assert house_not_found_exc_response[0] == str(HouseNotFoundError.status_code)
     assert house_not_found_exc_response[1].description == HouseNotFoundError.detail
 
@@ -462,7 +455,7 @@ def test_response_generation_with_dto() -> None:
     mock_dto = MagicMock(spec=AbstractDTO)
     mock_dto.create_openapi_schema.return_value = Schema()
 
-    @post(path="/form-upload", return_dto=mock_dto)
+    @post(path="/form-upload", return_dto=mock_dto)  # pyright: ignore
     async def handler(data: Dict[str, Any]) -> Dict[str, Any]:
         return data
 

@@ -258,11 +258,13 @@ warn_untyped_fields = true
 [tool.pyright]
 disableBytesTypePromotions = true
 exclude = [
-  "examples/plugins/sqlalchemy_plugin",
-  "litestar/openapi",
-  "tests/unit/test_contrib/test_sqlalchemy/test_dto.py",
+  "test_apps",
+  "tools",
+  "docs",
+  "tests/examples",
+  "tests/docker_service_fixtures.py"
 ]
-include = ["litestar", "tests", "examples"]
+include = ["litestar", "tests"]
 
 [tool.slotscheck]
 strict-imports = false
