@@ -55,7 +55,7 @@ maintainers = [
 name = "litestar"
 readme = "README.md"
 requires-python = ">=3.8,<4.0"
-version = "2.2.0"
+version = "2.2.1"
 
 [project.urls]
 Blog = "https://blog.litestar.dev"
@@ -64,9 +64,9 @@ Discord = "https://discord.gg/MmcwxztmQb"
 "Issue Tracker" = "https://github.com/litestar-org/litestar/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc"
 Reddit = "https://www.reddit.com/r/LitestarAPI"
 Twitter = "https://twitter.com/LitestarAPI"
-documentation = "https://docs.litestar.dev/"
-homepage = "https://litestar.dev/"
-repository = "https://github.com/litestar-org/litestar"
+Documentation = "https://docs.litestar.dev/"
+Homepage = "https://litestar.dev/"
+Repository = "https://github.com/litestar-org/litestar"
 
 [project.optional-dependencies]
 annotated-types = ["annotated-types"]
@@ -87,6 +87,9 @@ redis = ["redis[hiredis]>=4.4.4"]
 sqlalchemy = ["advanced-alchemy==0.2.2"]
 standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "fast-query-parsers>=1.0.2"]
 structlog = ["structlog"]
+full = [
+    "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog]",
+]
 
 [tool.pdm.dev-dependencies]
 dev = [

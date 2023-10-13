@@ -48,7 +48,7 @@ class PathParameterDefinition(NamedTuple):
 def __getattr__(name: str) -> Any:
     if name == "LitestarType":
         warn_deprecation(
-            "2.3.0",
+            "2.2.1",
             "LitestarType",
             "import",
             removal_in="3.0.0",

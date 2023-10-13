@@ -24,7 +24,6 @@ target/
 *.iml
 .DS_Store
 .coverage
-.python-version
 .ruff_cache
 /docs/_build/
 coverage.*
@@ -34,3 +33,9 @@ setup.py
 .pdm.toml
 .pdm-python
 .pdm-build/
+# pdm - PEP 582
+__pypackages__/
+
+# pyenv / rtx / asdf
+.tool-versions
+.python-version
