@@ -34,3 +34,6 @@ setup.py
 .pdm.toml
 .pdm-python
 .pdm-build/
+
+# pyenv / rtx / asdf
+.tool-versions
