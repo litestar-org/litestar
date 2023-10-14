@@ -1,10 +1,9 @@
 from datetime import date
-from typing import Any, Pattern, Union
+from typing import Any, Pattern, Union, cast
 
 import pydantic
 import pytest
 from pydantic import conlist, conset
-from pydantic.types import ConstrainedDecimal, ConstrainedFloat, ConstrainedInt
 
 from litestar._openapi.schema_generation.constrained_fields import (
     create_date_constrained_field_schema,
@@ -105,9 +104,11 @@ def test_create_string_constrained_field_schema_pydantic_v2(annotation: Any) -> 
 
 @pytest.mark.skipif(pydantic.version.VERSION.startswith("2"), reason="pydantic 1 specific logic")
 @pytest.mark.parametrize("annotation", constrained_numbers)
-def test_create_numerical_constrained_field_schema_pydantic_v1(
-    annotation: Union[ConstrainedInt, ConstrainedFloat, ConstrainedDecimal]
-) -> None:
+def test_create_numerical_constrained_field_schema_pydantic_v1(annotation: Any) -> None:
+    from pydantic.types import ConstrainedDecimal, ConstrainedFloat, ConstrainedInt
+
+    annotation = cast(Union[ConstrainedInt, ConstrainedFloat, ConstrainedDecimal], annotation)
+
     field_definition = FieldDefinition.from_annotation(annotation)
 
     assert isinstance(field_definition.kwarg_definition, KwargDefinition)

@@ -30,7 +30,7 @@ class Gender(str, Enum):
 
 
 constr_kws: "list[dict[str, Any]]" = [
-    {"regex": "^[a-zA-Z]$"},
+    {"pattern": "^[a-zA-Z]$"},
     {"to_upper": True, "min_length": 1, "pattern": "^[a-zA-Z]$"},
     {"to_lower": True, "min_length": 1, "pattern": "^[a-zA-Z]$"},
     {"to_lower": True, "min_length": 10, "pattern": "^[a-zA-Z]$"},
