@@ -122,7 +122,7 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
         user = await self.retrieve_user_handler(connection.session, connection)
 
         if not user:
-            connection.scope[SCOPE_SESSION_KEY] = Empty
+            connection.clear_session()
             raise NotAuthorizedException("no user correlating to session found")
 
         return AuthenticationResult(user=user, auth=connection.session)
