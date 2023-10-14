@@ -19,7 +19,7 @@ NoneType: type[None] = type(None)
 try:
     from types import UnionType  # pyright: ignore
 except ImportError:
-    UnionType: TypeAlias = Union  # type:ignore[no-redef]
+    UnionType: TypeAlias = Union  # type: ignore[no-redef]
 
 UnionTypes = {UnionType, Union}
 TypedDictClass: TypeAlias = Type[_TypedDictMeta]
