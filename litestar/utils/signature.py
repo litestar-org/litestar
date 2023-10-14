@@ -172,7 +172,7 @@ def add_types_to_signature_namespace(signature_types: list[Any], signature_names
         The updated signature namespace.
     """
     for typ in signature_types or []:
-        if type.__name__ in signature_namespace:
+        if typ.__name__ in signature_namespace:
             raise ImproperlyConfiguredException(f"Type {typ.__name__} is already defined in the signature namespace")
         signature_namespace[typ.__name__] = typ
     return signature_namespace
