@@ -247,7 +247,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             **kwargs,
         )
 
-        self.after_request = AsyncCallable(after_request) if after_request else None  # pyright: ignore
+        self.after_request = AsyncCallable(after_request) if after_request else None  # type: ignore[arg-type]
         self.after_response = AsyncCallable(after_response) if after_response else None
         self.background = background
         self.before_request = AsyncCallable(before_request) if before_request else None

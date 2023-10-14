@@ -154,7 +154,7 @@ class Router:
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
         """
 
-        self.after_request = AsyncCallable(after_request) if after_request else None  # pyright: ignore
+        self.after_request = AsyncCallable(after_request) if after_request else None  # type: ignore[arg-type]
         self.after_response = AsyncCallable(after_response) if after_response else None
         self.before_request = AsyncCallable(before_request) if before_request else None
         self.cache_control = cache_control

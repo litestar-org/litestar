@@ -1,4 +1,3 @@
-import contextlib
 from dataclasses import MISSING
 from inspect import Signature
 from typing import Final
@@ -27,7 +26,7 @@ UNDEFINED_SENTINELS: Final = {Signature.empty, Empty, Ellipsis, MISSING, UnsetTy
 WEBSOCKET_CLOSE: Final = "websocket.close"
 WEBSOCKET_DISCONNECT: Final = "websocket.disconnect"
 
-with contextlib.suppress(ImportError):
+try:
     import pydantic
 
     if pydantic.VERSION.startswith("2"):
@@ -36,3 +35,6 @@ with contextlib.suppress(ImportError):
         from pydantic.fields import Undefined as PydanticUndefined  # type: ignore
 
     UNDEFINED_SENTINELS.add(PydanticUndefined)
+
+except ImportError:  # pragma: no cover
+    pass

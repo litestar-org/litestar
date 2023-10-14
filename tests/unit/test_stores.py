@@ -50,7 +50,7 @@ async def test_set(store: Store) -> None:
 
     for key, value in values.items():
         stored_value = await store.get(key)
-        assert stored_value == value if isinstance(value, bytes) else value.encode("utf-8")  # pyright: ignore
+        assert stored_value == value if isinstance(value, bytes) else value.encode("utf-8")
 
 
 @pytest.mark.parametrize("key", [*list(string.punctuation), "foo\xc3\xbc", ".."])

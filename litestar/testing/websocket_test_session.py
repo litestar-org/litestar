@@ -109,7 +109,7 @@ class WebSocketTestSession:
             text_event: WebSocketReceiveMessage = {"type": "websocket.receive", "text": data}  # type: ignore[assignment]
             self.receive_queue.put(text_event)
         else:
-            data = data if isinstance(data, bytes) else data.encode(encoding)  # pyright: ignore
+            data = data if isinstance(data, bytes) else data.encode(encoding)
             binary_event: WebSocketReceiveMessage = {"type": "websocket.receive", "bytes": data}  # type: ignore[assignment]
             self.receive_queue.put(binary_event)
 
