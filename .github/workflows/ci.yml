@@ -31,6 +31,7 @@ jobs:
         run: pre-commit run --show-diff-on-failure --color=always --all-files
 
   test:
+    name: "test (${{ matrix.python-version }}, pydantic@${{ matrix.pydantic-version }})"
     strategy:
       fail-fast: true
       matrix:
