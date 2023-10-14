@@ -156,7 +156,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             auth=auth,
             follow_redirects=follow_redirects,
             timeout=timeout,
-            extensions=extensions,
+            extensions=None if extensions is None else dict(extensions),
         )
 
     async def get(  # type: ignore [override]
@@ -195,7 +195,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             auth=auth,
             follow_redirects=follow_redirects,
             timeout=timeout,
-            extensions=extensions,
+            extensions=None if extensions is None else dict(extensions),
         )
 
     async def options(
@@ -234,7 +234,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             auth=auth,
             follow_redirects=follow_redirects,
             timeout=timeout,
-            extensions=extensions,
+            extensions=None if extensions is None else dict(extensions),
         )
 
     async def head(
@@ -273,7 +273,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             auth=auth,
             follow_redirects=follow_redirects,
             timeout=timeout,
-            extensions=extensions,
+            extensions=None if extensions is None else dict(extensions),
         )
 
     async def post(
@@ -324,7 +324,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             auth=auth,
             follow_redirects=follow_redirects,
             timeout=timeout,
-            extensions=extensions,
+            extensions=None if extensions is None else dict(extensions),
         )
 
     async def put(
@@ -375,7 +375,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             auth=auth,
             follow_redirects=follow_redirects,
             timeout=timeout,
-            extensions=extensions,
+            extensions=None if extensions is None else dict(extensions),
         )
 
     async def patch(
@@ -426,7 +426,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             auth=auth,
             follow_redirects=follow_redirects,
             timeout=timeout,
-            extensions=extensions,
+            extensions=None if extensions is None else dict(extensions),
         )
 
     async def delete(
@@ -465,7 +465,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             auth=auth,
             follow_redirects=follow_redirects,
             timeout=timeout,
-            extensions=extensions,
+            extensions=None if extensions is None else dict(extensions),
         )
 
     async def get_session_data(self) -> dict[str, Any]:

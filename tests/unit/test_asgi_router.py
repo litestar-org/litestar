@@ -11,18 +11,14 @@ from litestar import Litestar, asgi
 from litestar._asgi.asgi_router import ASGIRouter
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.testing import TestClient, create_test_client
+from tests.helpers import get_exception_group
 
 if TYPE_CHECKING:
     from contextlib import AbstractAsyncContextManager
 
     from litestar.types import Receive, Scope, Send
 
-try:
-    _ExceptionGroup = ExceptionGroup
-except NameError:
-    from exceptiongroup import ExceptionGroup
-
-    _ExceptionGroup = ExceptionGroup  # type: ignore
+_ExceptionGroup = get_exception_group()
 
 
 def test_add_mount_route_disallow_path_parameter() -> None:
