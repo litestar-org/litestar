@@ -3,15 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 from litestar._parsers import parse_cookie_string, parse_query_string
+from litestar.constants import SCOPE_SESSION_KEY
 from litestar.datastructures.headers import Headers
 from litestar.datastructures.multi_dicts import MultiDict
 from litestar.datastructures.state import State
 from litestar.datastructures.url import URL, Address, make_absolute_url
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.empty import Empty
-
-__all__ = ("ASGIConnection", "empty_receive", "empty_send")
-
 
 if TYPE_CHECKING:
     from typing import NoReturn
@@ -20,6 +18,8 @@ if TYPE_CHECKING:
     from litestar.types import DataContainerType, EmptyType
     from litestar.types.asgi_types import Message, Receive, Scope, Send
     from litestar.types.protocols import Logger
+
+__all__ = ("ASGIConnection", "empty_receive", "empty_send")
 
 UserT = TypeVar("UserT")
 AuthT = TypeVar("AuthT")
@@ -234,12 +234,12 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         Raises:
             ImproperlyConfiguredException: if session is not set in scope.
         """
-        if "session" not in self.scope:
+        if SCOPE_SESSION_KEY not in self.scope or self.scope[SCOPE_SESSION_KEY] is Empty:
             raise ImproperlyConfiguredException(
                 "'session' is not defined in scope, install a SessionMiddleware to set it"
             )
 
-        return cast("dict[str, Any]", self.scope["session"])
+        return cast("dict[str, Any]", self.scope[SCOPE_SESSION_KEY])
 
     @property
     def logger(self) -> Logger:
@@ -265,7 +265,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         Returns:
             None.
         """
-        self.scope["session"] = value
+        self.scope[SCOPE_SESSION_KEY] = value
 
     def clear_session(self) -> None:
         """Remove the session from the connection's ``Scope``.
@@ -276,7 +276,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         Returns:
             None.
         """
-        self.scope["session"] = Empty
+        self.scope[SCOPE_SESSION_KEY] = Empty
 
     def url_for(self, name: str, **path_parameters: Any) -> str:
         """Return the url for a given route handler name.

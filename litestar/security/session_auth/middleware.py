@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Sequence
 
+from litestar.constants import SCOPE_SESSION_KEY
 from litestar.exceptions import NotAuthorizedException
 from litestar.middleware.authentication import (
     AbstractAuthenticationMiddleware,
@@ -113,15 +114,15 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
         Returns:
             :class:`AuthenticationResult <.middleware.authentication.AuthenticationResult>`
         """
-        if not connection.session or connection.scope["session"] is Empty:
+        if not connection.session or connection.scope[SCOPE_SESSION_KEY] is Empty:
             # the assignment of 'Empty' forces the session middleware to clear session data.
-            connection.scope["session"] = Empty
+            connection.clear_session()
             raise NotAuthorizedException("no session data found")
 
         user = await self.retrieve_user_handler(connection.session, connection)
 
         if not user:
-            connection.scope["session"] = Empty
+            connection.scope[SCOPE_SESSION_KEY] = Empty
             raise NotAuthorizedException("no user correlating to session found")
 
         return AuthenticationResult(user=user, auth=connection.session)
