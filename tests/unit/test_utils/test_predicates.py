@@ -68,7 +68,7 @@ class Sub(C):
         ((C(), C), False),
     ),
 )
-def test_is_class_and_subclass(args: tuple, expected: bool) -> None:
+def test_is_class_and_subclass(args: Tuple[Any, Any], expected: bool) -> None:
     assert is_class_and_subclass(*args) is expected
 
 

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections import deque
 from sys import version_info
 from typing import Any, Deque, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
@@ -11,6 +10,10 @@ from litestar.utils.typing import annotation_is_iterable_of_type, get_origin_or_
 from tests import PydanticPerson, PydanticPet
 
 if version_info >= (3, 10):
+    from collections import deque
+
+    # Pyright will report an error for these types if you are running on python 3.8, we run on >= 3.9 in CI
+    # so we can safely ignore that error.
     py_310_plus_annotation = [
         (tuple[PydanticPerson, ...], True),
         (list[PydanticPerson], True),

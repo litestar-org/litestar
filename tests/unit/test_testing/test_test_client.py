@@ -25,14 +25,9 @@ import pytest
 from litestar import Litestar, Request, get, post
 from litestar.stores.base import Store
 from litestar.testing import TestClient
-from tests.helpers import maybe_async, maybe_async_cm
+from tests.helpers import get_exception_group, maybe_async, maybe_async_cm
 
-try:
-    _ExceptionGroup = ExceptionGroup
-except NameError:
-    from exceptiongroup import ExceptionGroup
-
-    _ExceptionGroup = ExceptionGroup  # type: ignore
+_ExceptionGroup = get_exception_group()
 
 AnyTestClient = Union[TestClient, AsyncTestClient]
 
