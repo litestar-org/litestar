@@ -75,7 +75,7 @@ brotli = ["brotli"]
 cli = ["jsbeautifier", "uvicorn[standard]"]
 cryptography = ["cryptography"]
 full = [
-  "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog]",
+  "litestar[annotated-types,cryptography,jinja,jwt,pydantic,redis,sqlalchemy,standard]",
 ]
 jinja = ["jinja2>=3.1.2"]
 jwt = ["python-jose", "cryptography"]
@@ -262,7 +262,7 @@ exclude = [
   "tools",
   "docs",
   "tests/examples",
-  "tests/docker_service_fixtures.py"
+  "tests/docker_service_fixtures.py",
 ]
 include = ["litestar", "tests"]
 
