@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable, Literal, NamedTuple
 
+from litestar.utils.deprecation import warn_deprecation
+
 __all__ = (
     "ControllerRouterHandler",
-    "LitestarType",
     "PathParameterDefinition",
     "PathParameterDefinition",
     "ReservedKwargs",
@@ -12,7 +13,6 @@ __all__ = (
     "RouteHandlerMapItem",
     "RouteHandlerType",
 )
-
 
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
@@ -27,11 +27,13 @@ if TYPE_CHECKING:
     from litestar.types import Method
 
 ReservedKwargs: TypeAlias = Literal["request", "socket", "headers", "query", "cookies", "state", "data"]
-LitestarType: TypeAlias = "Litestar"
 RouteHandlerType: TypeAlias = "HTTPRouteHandler | WebsocketRouteHandler | ASGIRouteHandler"
 ResponseType: TypeAlias = "type[Response]"
 ControllerRouterHandler: TypeAlias = "type[Controller] | RouteHandlerType | Router | Callable[..., Any]"
 RouteHandlerMapItem: TypeAlias = 'dict[Method | Literal["websocket", "asgi"], RouteHandlerType]'
+
+# deprecated
+_LitestarType: TypeAlias = "Litestar"
 
 
 class PathParameterDefinition(NamedTuple):
@@ -41,3 +43,16 @@ class PathParameterDefinition(NamedTuple):
     full: str
     type: type
     parser: Callable[[str], Any] | None
+
+
+def __getattr__(name: str) -> Any:
+    if name == "LitestarType":
+        warn_deprecation(
+            "2.2.1",
+            "LitestarType",
+            "import",
+            removal_in="3.0.0",
+            alternative="Litestar",
+        )
+        return _LitestarType
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

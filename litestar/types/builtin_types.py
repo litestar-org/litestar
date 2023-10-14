@@ -14,11 +14,12 @@ __all__ = (
     "TypedDictClass",
 )
 
+NoneType: type[None] = type(None)
+
 try:
-    from types import NoneType, UnionType  # pyright: ignore
+    from types import UnionType  # pyright: ignore
 except ImportError:
-    NoneType: TypeAlias = type(None)  # type: ignore
-    UnionType: TypeAlias = Union  # type: ignore
+    UnionType: TypeAlias = Union  # type: ignore[no-redef]
 
 UnionTypes = {UnionType, Union}
 TypedDictClass: TypeAlias = Type[_TypedDictMeta]

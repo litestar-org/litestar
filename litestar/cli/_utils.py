@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Sequence, 
 
 from rich import get_console
 from rich.table import Table
-from typing_extensions import Concatenate, ParamSpec, get_type_hints
+from typing_extensions import ParamSpec, get_type_hints
 
 from litestar import Litestar, __version__
 from litestar.middleware import DefineMiddleware
@@ -251,7 +251,7 @@ class LitestarExtensionGroup(LitestarGroup):
         return super().list_commands(ctx)
 
 
-def _inject_args(func: Callable[P, T]) -> Callable[Concatenate[Context, P], T]:
+def _inject_args(func: Callable[P, T]) -> Callable[P, T]:
     """Inject the app instance into a ``Command``"""
     params = inspect.signature(func).parameters
 
@@ -275,7 +275,7 @@ def _inject_args(func: Callable[P, T]) -> Callable[Concatenate[Context, P], T]:
 
         return func(*args, **kwargs)
 
-    return pass_context(wrapped)  # type: ignore[arg-type]
+    return pass_context(wrapped)
 
 
 def _wrap_commands(commands: Iterable[Command]) -> None:

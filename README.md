@@ -79,7 +79,7 @@ app = Litestar(route_handlers=[hello_world])
 
 ## Example Applications
 
-- [starlite-pg-redis-docker](https://github.com/litestar-org/starlite-pg-redis-docker): In addition to Litestar, this
+- [litestar-pg-redis-docker](https://github.com/litestar-org/litestar-pg-redis-docker): In addition to Litestar, this
   demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
   Litestar projects, this application is open to contributions, big and small.
 - [litestar-fullstack](https://github.com/litestar-org/litestar-fullstack): A reference application that contains most of the boilerplate required for a web application.
@@ -439,6 +439,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/syshenyu"><img src="https://avatars.githubusercontent.com/u/92897003?v=4?s=100" width="100px;" alt="DICE_Lab"/><br /><sub><b>DICE_Lab</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=syshenyu" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/lsanpablo"><img src="https://avatars.githubusercontent.com/u/7145688?v=4?s=100" width="100px;" alt="Luis San Pablo"/><br /><sub><b>Luis San Pablo</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=lsanpablo" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=lsanpablo" title="Tests">⚠️</a> <a href="https://github.com/litestar-org/litestar/commits?author=lsanpablo" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Lancetnik"><img src="https://avatars.githubusercontent.com/u/44573917?v=4?s=100" width="100px;" alt="Pastukhov Nikita"/><br /><sub><b>Pastukhov Nikita</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=Lancetnik" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>

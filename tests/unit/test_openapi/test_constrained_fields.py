@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Any, Pattern, Union
+from typing import Any, Pattern, Union, cast
 
 import pydantic
 import pytest
@@ -105,11 +105,17 @@ def test_create_string_constrained_field_schema_pydantic_v2(annotation: Any) -> 
 @pytest.mark.skipif(pydantic.version.VERSION.startswith("2"), reason="pydantic 1 specific logic")
 @pytest.mark.parametrize("annotation", constrained_numbers)
 def test_create_numerical_constrained_field_schema_pydantic_v1(annotation: Any) -> None:
+    from pydantic.types import ConstrainedDecimal, ConstrainedFloat, ConstrainedInt
+
+    annotation = cast(Union[ConstrainedInt, ConstrainedFloat, ConstrainedDecimal], annotation)
+
     field_definition = FieldDefinition.from_annotation(annotation)
 
     assert isinstance(field_definition.kwarg_definition, KwargDefinition)
     schema = create_numerical_constrained_field_schema(field_definition.annotation, field_definition.kwarg_definition)
-    assert schema.type == OpenAPIType.INTEGER if is_class_and_subclass(annotation, int) else OpenAPIType.NUMBER
+    assert (
+        schema.type == OpenAPIType.INTEGER if is_class_and_subclass(annotation, ConstrainedInt) else OpenAPIType.NUMBER
+    )
     assert schema.exclusive_minimum == annotation.gt
     assert schema.minimum == annotation.ge
     assert schema.exclusive_maximum == annotation.lt
