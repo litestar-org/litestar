@@ -571,7 +571,7 @@ the module scope at runtime. We can address this on a case-by-case basis by sile
     # Choose the appropriate noqa directive according to your linter
     from domain import Model  # noqa: TCH002
 
-However, this approach can get tedious, so as an alternative, Litestar accepts a ``signature_namespace`` mapping at
+However, this approach can get tedious, so as an alternative, Litestar accepts a ``signature_types`` sequence at
 every :ref:`layer <layered-architecture>` of the application. The following is a demonstration of how to use this
 pattern.
 
