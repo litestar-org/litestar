@@ -1386,7 +1386,7 @@ files = [
 [[package]]
 name = "litestar-sphinx-theme"
 version = "0.2.0"
-requires_python = "<4.0,>=3.8"
+requires_python = ">=3.8,<4.0"
 git = "https://github.com/litestar-org/litestar-sphinx-theme.git"
 revision = "24043401a78a4e4bd9cadc7d26dda867c7ad51aa"
 summary = "A Sphinx theme for the Litestar organization"
@@ -1995,7 +1995,7 @@ files = [
 
 [[package]]
 name = "pre-commit"
-version = "3.4.0"
+version = "3.5.0"
 requires_python = ">=3.8"
 summary = "A framework for managing and maintaining multi-language pre-commit hooks."
 dependencies = [
@@ -2006,8 +2006,8 @@ dependencies = [
     "virtualenv>=20.10.0",
 ]
 files = [
-    {file = "pre_commit-3.4.0-py2.py3-none-any.whl", hash = "sha256:96d529a951f8b677f730a7212442027e8ba53f9b04d217c4c67dc56c393ad945"},
-    {file = "pre_commit-3.4.0.tar.gz", hash = "sha256:6bbd5129a64cad4c0dfaeeb12cd8f7ea7e15b77028d985341478c8af3c759522"},
+    {file = "pre_commit-3.5.0-py2.py3-none-any.whl", hash = "sha256:841dc9aef25daba9a0238cd27984041fa0467b4199fc4852e27950664919f660"},
+    {file = "pre_commit-3.5.0.tar.gz", hash = "sha256:5804465c675b659b0862f07907f96295d490822a450c4c40e747d0b1c6ebcb32"},
 ]
 
 [[package]]
@@ -2162,15 +2162,15 @@ files = [
 
 [[package]]
 name = "pydantic-extra-types"
-version = "0.0.1"
+version = "2.1.0"
 requires_python = ">=3.7"
 summary = "Extra Pydantic types."
 dependencies = [
-    "pydantic",
+    "pydantic>=2.0.3",
 ]
 files = [
-    {file = "pydantic_extra_types-0.0.1-py3-none-any.whl", hash = "sha256:5dc2a3ea91dd5bdfd77bc6a9ae2b6cd5fe6f0adfc22583fbd9d721a8eadcd7dd"},
-    {file = "pydantic_extra_types-0.0.1.tar.gz", hash = "sha256:28ec44e70a804b6fd37517bf8f605734703f6b94adec298f38131d9333ea8447"},
+    {file = "pydantic_extra_types-2.1.0-py3-none-any.whl", hash = "sha256:1b8aa83a2986b0bc6a7179834fdb423c5e0bcef6b2b4cd9261bf753ad7dcc483"},
+    {file = "pydantic_extra_types-2.1.0.tar.gz", hash = "sha256:d07b869e733d33712b07d6b8cd7b0223077c23ae5a1e23bd0699a00401259ec7"},
 ]
 
 [[package]]
