@@ -39,7 +39,7 @@ jobs:
         pydantic-version: ["1", "2"]
     uses: ./.github/workflows/test.yml
     with:
-      coverage: ${{ matrix.python-version == '3.11' && matrix.pydantic-version == '2' }}
+      coverage: ${{ matrix.python-version == '3.12' && matrix.pydantic-version == '2' }}
       pydantic-version: ${{ matrix.pydantic-version }}
       python-version: ${{ matrix.python-version }}
 
@@ -115,7 +115,7 @@ jobs:
       - uses: pdm-project/setup-pdm@v3
         name: Set up PDM
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           allow-python-prereleases: false
           cache: true
           cache-dependency-path: |

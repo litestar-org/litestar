@@ -16,6 +16,7 @@ classifiers = [
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Programming Language :: Python",
   "Topic :: Internet :: WWW/HTTP",
   "Topic :: Software Development :: Libraries",
@@ -72,7 +73,7 @@ Repository = "https://github.com/litestar-org/litestar"
 annotated-types = ["annotated-types"]
 attrs = ["attrs"]
 brotli = ["brotli"]
-cli = ["jsbeautifier", "uvicorn[standard]"]
+cli = ["jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0"]
 cryptography = ["cryptography"]
 jinja = ["jinja2>=3.1.2"]
 jwt = ["python-jose", "cryptography"]
@@ -85,7 +86,7 @@ prometheus = ["prometheus-client"]
 pydantic = ["pydantic[email]", "pydantic-extra-types"]
 redis = ["redis[hiredis]>=4.4.4"]
 sqlalchemy = ["advanced-alchemy==0.2.2"]
-standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "fast-query-parsers>=1.0.2"]
+standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0", "fast-query-parsers>=1.0.2"]
 structlog = ["structlog"]
 full = [
     "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog]",
