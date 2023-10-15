@@ -40,6 +40,7 @@ default_handlers: dict[str, dict[str, Any]] = {
         "class": "litestar.logging.standard.QueueListenerHandler",
         "level": "DEBUG",
         "formatter": "standard",
+        "handlers": ["console"],
     },
 }
 
