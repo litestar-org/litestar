@@ -13,6 +13,7 @@ __all__ = ("QueueListenerHandler",)
 
 
 if sys.version_info < (3, 12):
+
     class QueueListenerHandler(QueueHandler):
         """Configure queue listener and handler to support non-blocking logging configuration."""
 
@@ -28,5 +29,6 @@ if sys.version_info < (3, 12):
             self.listener.start()
 
             atexit.register(self.listener.stop)
+
 else:
     QueueListenerHandler = QueueHandler
