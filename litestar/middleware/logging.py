@@ -106,7 +106,7 @@ class LoggingMiddleware(AbstractMiddleware):
         """
         if not hasattr(self, "logger"):
             self.logger = scope["app"].get_logger(self.config.logger_name)
-            self.is_struct_logger = structlog_installed and isinstance(self.logger, BindableLogger)
+            self.is_struct_logger = structlog_installed and repr(self.logger).startswith("<BoundLoggerLazyProxy")
 
         if self.config.response_log_fields:
             send = self.create_send_wrapper(scope=scope, send=send)
