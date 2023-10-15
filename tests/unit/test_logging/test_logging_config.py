@@ -1,4 +1,5 @@
 import logging
+import sys
 from typing import TYPE_CHECKING, Any, Dict
 from unittest.mock import Mock, patch
 
@@ -141,6 +142,7 @@ def test_root_logger(handlers: Any, listener: Any) -> None:
     isinstance(root_logger.handlers[0], listener)  # type: ignore
 
 
+@pytest.mark.xfail(condition=sys.version_info >= (3, 12), reason="change to QueueHandler/QueueListener config in 3.12")
 @pytest.mark.parametrize(
     "handlers, listener",
     [
