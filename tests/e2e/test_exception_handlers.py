@@ -67,3 +67,20 @@ def test_exception_handling(exc_to_raise: HTTPException, expected_layer: str) ->
         response = client.get("/base/test/")
         assert response.status_code == exc_to_raise.status_code, response.json()
         assert caller["name"] == expected_layer
+
+
+def test_exception_handler_with_custom_request_class() -> None:
+    class CustomRequest(Request):
+        ...
+
+    def handler(req: Request, exc: Exception) -> Response:
+        assert isinstance(req, CustomRequest)
+
+        return Response(content={})
+
+    @get()
+    async def index() -> None:
+        _ = 1 / 0
+
+    with create_test_client([index], exception_handlers={Exception: handler}, request_class=CustomRequest) as client:
+        client.get("/")

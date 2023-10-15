@@ -160,7 +160,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
             auth=auth,
             follow_redirects=follow_redirects,
             timeout=timeout,
-            extensions=extensions,
+            extensions=None if extensions is None else dict(extensions),
         )
 
     def get(
@@ -199,7 +199,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
             auth=auth,
             follow_redirects=follow_redirects,
             timeout=timeout,
-            extensions=extensions,
+            extensions=None if extensions is None else dict(extensions),
         )
 
     def options(
@@ -238,7 +238,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
             auth=auth,
             follow_redirects=follow_redirects,
             timeout=timeout,
-            extensions=extensions,
+            extensions=None if extensions is None else dict(extensions),
         )
 
     def head(
@@ -277,7 +277,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
             auth=auth,
             follow_redirects=follow_redirects,
             timeout=timeout,
-            extensions=extensions,
+            extensions=None if extensions is None else dict(extensions),
         )
 
     def post(
@@ -328,7 +328,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
             auth=auth,
             follow_redirects=follow_redirects,
             timeout=timeout,
-            extensions=extensions,
+            extensions=None if extensions is None else dict(extensions),
         )
 
     def put(
@@ -379,7 +379,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
             auth=auth,
             follow_redirects=follow_redirects,
             timeout=timeout,
-            extensions=extensions,
+            extensions=None if extensions is None else dict(extensions),
         )
 
     def patch(
@@ -430,7 +430,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
             auth=auth,
             follow_redirects=follow_redirects,
             timeout=timeout,
-            extensions=extensions,
+            extensions=None if extensions is None else dict(extensions),
         )
 
     def delete(
@@ -469,7 +469,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
             auth=auth,
             follow_redirects=follow_redirects,
             timeout=timeout,
-            extensions=extensions,
+            extensions=None if extensions is None else dict(extensions),
         )
 
     def websocket_connect(
@@ -518,7 +518,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
                 auth=auth,
                 follow_redirects=follow_redirects,
                 timeout=timeout,
-                extensions=extensions,
+                extensions=None if extensions is None else dict(extensions),
             )
         except ConnectionUpgradeExceptionError as exc:
             return exc.session

@@ -189,7 +189,7 @@ def test_pydantic_schema_generation(create_examples: bool) -> None:
                     min_length=12,
                     max_length=16,
                     description="A unique identifier",
-                    example="e4eaaaf2-d142-11e1-b3e4-080027620cdd",
+                    example="e4eaaaf2-d142-11e1-b3e4-080027620cdd",  # pyright: ignore
                 ),
             ]
         else:
