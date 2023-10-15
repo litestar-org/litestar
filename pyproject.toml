@@ -88,7 +88,7 @@ picologging = ["picologging"]
 prometheus = ["prometheus-client"]
 pydantic = ["pydantic[email]", "pydantic-extra-types"]
 redis = ["redis[hiredis]>=4.4.4"]
-sqlalchemy = ["advanced-alchemy==0.2.2"]
+sqlalchemy = ["advanced-alchemy>=0.2.2,<0.4.0"]
 standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0", "fast-query-parsers>=1.0.2"]
 structlog = ["structlog"]
 
