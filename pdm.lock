@@ -6,8 +6,7 @@ groups = ["default", "annotated-types", "attrs", "brotli", "cli", "cryptography"
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:e2649eb5938b6214e8412ded8642678006e9baef9a999afe1bfe7bc51505c0c4"
-
+content_hash = "sha256:105738a0948d2a54c82cf60edcc5a41ae512c1e79c1c4f2be3f4b3fddc2619a5"
 
 [[package]]
 name = "accessible-pygments"
