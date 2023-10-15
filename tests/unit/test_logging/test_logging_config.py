@@ -148,8 +148,8 @@ def test_root_logger(handlers: Any, listener: Any) -> None:
         [default_picologging_handlers, PicologgingQueueListenerHandler],
     ],
 )
-def test_customizing_handler(handlers: Any, listener: Any) -> None:
-    handlers["queue_listener"]["handlers"] = ["cfg://handlers.console"]
+def test_customizing_handler(handlers: Any, listener: Any, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setitem(handlers["queue_listener"], "handlers", ["cfg://handlers.console"])
 
     logging_config = LoggingConfig(handlers=handlers)
     get_logger = logging_config.configure()
