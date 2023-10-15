@@ -24,6 +24,7 @@ from pydantic import (
     conlist,
     conset,
     constr,
+    parse_obj_as,
 )
 
 from litestar.contrib.pydantic import _model_dump, _model_dump_json
@@ -127,7 +128,7 @@ serializer = partial(default_serializer, type_encoders=PydanticInitPlugin.encode
 def model() -> Model:
     return Model(
         path=Path("example"),
-        email_str="info@example.org",
+        email_str=parse_obj_as(EmailStr, "info@example.org"),
         name_email=NameEmail("info", "info@example.org"),
         color=Color("rgb(255, 255, 255)"),
         bytesize=ByteSize(100),
