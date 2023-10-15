@@ -328,7 +328,6 @@ class StructLoggingConfig(BaseLoggingConfig):
 
         from structlog import configure, get_logger
 
-        # we now configure structlog
         configure(
             **{
                 k: v
