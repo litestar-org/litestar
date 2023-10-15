@@ -291,8 +291,8 @@ class Litestar(Router):
             security: A sequence of dicts that will be added to the schema of all route handlers in the application.
                 See
                 :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
-            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
-            signature_types: A sequence of types for use in forward reference resolution during signature modelling.
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modeling.
+            signature_types: A sequence of types for use in forward reference resolution during signature modeling.
                 These types will be added to the signature namespace using their ``__name__`` attribute.
             state: An optional :class:`State <.datastructures.State>` for application state.
             static_files_config: A sequence of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`
