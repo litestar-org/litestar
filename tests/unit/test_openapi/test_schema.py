@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum, auto
-from typing import TYPE_CHECKING, Dict, List, Literal
+from typing import TYPE_CHECKING, Any, Dict, Generic, List, Literal, Optional, TypedDict, TypeVar
 
 import annotated_types
 import msgspec
 import pydantic
 import pytest
+from msgspec import Struct
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated, TypeAlias
 
@@ -32,6 +33,8 @@ from tests import PydanticPerson, PydanticPet
 if TYPE_CHECKING:
     from types import ModuleType
     from typing import Callable
+
+T = TypeVar("T")
 
 
 def test_process_schema_result() -> None:
@@ -268,7 +271,10 @@ def test_create_schema_for_pydantic_field() -> None:
     class Model(BaseModel):
         if pydantic.VERSION.startswith("1"):
             value: str = Field(
-                title="title", description="description", example="example", max_length=16  # pyright: ignore
+                title="title",
+                description="description",
+                example="example",  # pyright: ignore
+                max_length=16,
             )
         else:
             value: str = Field(  # type: ignore[no-redef]
@@ -331,3 +337,43 @@ def test_literal_enums() -> None:
         FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass)
     )
     assert schemas["MyDataclass"].properties["bar"].items.const == 1  # type: ignore
+
+
+# TODO(guacs): unions don't work with generics right now
+# both of these will fail: T | str, TypeVar("T", int, str)
+
+
+@dataclass
+class DataclassGeneric(Generic[T]):
+    foo: T
+    optional_foo: Optional[T]
+    annotated_foo: Annotated[T, object()]
+
+
+class TypedDictGeneric(TypedDict, Generic[T]):
+    foo: T
+    optional_foo: Optional[T]
+    annotated_foo: Annotated[T, object()]
+
+
+class MsgspecGeneric(Struct, Generic[T]):
+    foo: T
+    optional_foo: Optional[T]
+    annotated_foo: Annotated[T, object()]
+
+
+@pytest.mark.parametrize("cls", (DataclassGeneric[int], TypedDictGeneric[int], MsgspecGeneric[int]))
+def test_schema_generation_with_generic_classes(cls: Any) -> None:
+    field_definition = FieldDefinition.from_kwarg(name=cls.__name__, annotation=cls)
+
+    schemas: Dict[str, Schema] = {}
+    SchemaCreator(schemas=schemas).for_field_definition(field_definition)
+
+    properties = schemas[cls.__name__].properties
+    expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
+    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.NULL), Schema(type=OpenAPIType.INTEGER)])
+
+    assert properties
+    assert properties["foo"] == expected_foo_schema
+    assert properties["annotated_foo"] == expected_foo_schema
+    assert properties["optional_foo"] == expected_optional_foo_schema

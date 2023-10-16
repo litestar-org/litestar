@@ -33,16 +33,18 @@ from typing import (
 )
 from uuid import UUID
 
-from msgspec.structs import FieldInfo
 from msgspec.structs import fields as msgspec_struct_fields
-from typing_extensions import NotRequired, Required, get_args, get_type_hints
+from typing_extensions import NotRequired, Required, get_args
 
 from litestar._openapi.schema_generation.constrained_fields import (
     create_date_constrained_field_schema,
     create_numerical_constrained_field_schema,
     create_string_constrained_field_schema,
 )
-from litestar._openapi.schema_generation.utils import sort_schemas_and_references
+from litestar._openapi.schema_generation.utils import (
+    get_unwrapped_annotation_and_type_hints,
+    sort_schemas_and_references,
+)
 from litestar.datastructures import UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Reference
@@ -62,10 +64,14 @@ from litestar.utils.predicates import (
     is_typed_dict,
     is_undefined_sentinel,
 )
-from litestar.utils.typing import get_origin_or_inner_type, make_non_optional_union
+from litestar.utils.typing import (
+    get_origin_or_inner_type,
+    make_non_optional_union,
+)
 
 if TYPE_CHECKING:
     from msgspec import Struct
+    from msgspec.structs import FieldInfo
 
     from litestar.plugins import OpenAPISchemaPluginProtocol
 
@@ -260,6 +266,7 @@ class SchemaCreator:
             A schema instance.
         """
         result: Schema | Reference
+
         if field_definition.is_optional:
             result = self.for_optional_field(field_definition)
         elif field_definition.is_union:
@@ -452,17 +459,22 @@ class SchemaCreator:
         def _is_field_required(field: FieldInfo) -> bool:
             return field.required or field.default_factory is Empty
 
+        unwrapped_annotation, type_hints = get_unwrapped_annotation_and_type_hints(annotation)
+        fields = msgspec_struct_fields(unwrapped_annotation)
+
         return Schema(
             required=sorted(
                 [
                     field.encode_name
-                    for field in msgspec_struct_fields(annotation)
-                    if _is_field_required(field=field) and not is_optional_union(field.type)
+                    for field in fields
+                    if _is_field_required(field=field) and not is_optional_union(type_hints[field.name])
                 ]
             ),
             properties={
-                field.encode_name: self.for_field_definition(FieldDefinition.from_kwarg(field.type, field.encode_name))
-                for field in msgspec_struct_fields(annotation)
+                field.encode_name: self.for_field_definition(
+                    FieldDefinition.from_kwarg(type_hints[field.name], field.encode_name)
+                )
+                for field in fields
             },
             type=OpenAPIType.OBJECT,
             title=_get_type_schema_name(annotation),
@@ -478,22 +490,21 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        annotation_hints = get_type_hints(annotation, include_extras=True)
+
+        unwrapped_annotation, type_hints = get_unwrapped_annotation_and_type_hints(annotation)
         return Schema(
             required=sorted(
                 [
                     field.name
-                    for field in fields(annotation)
+                    for field in fields(unwrapped_annotation)
                     if (
                         field.default is MISSING
                         and field.default_factory is MISSING
-                        and not is_optional_union(annotation_hints[field.name])
+                        and not is_optional_union(type_hints[field.name])
                     )
                 ]
             ),
-            properties={
-                k: self.for_field_definition(FieldDefinition.from_kwarg(v, k)) for k, v in annotation_hints.items()
-            },
+            properties={k: self.for_field_definition(FieldDefinition.from_kwarg(v, k)) for k, v in type_hints.items()},
             type=OpenAPIType.OBJECT,
             title=_get_type_schema_name(annotation),
         )
@@ -508,13 +519,14 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
+
+        _, type_hints = get_unwrapped_annotation_and_type_hints(annotation)
         return Schema(
             required=sorted(getattr(annotation, "__required_keys__", [])),
             properties={
                 k: self.for_field_definition(FieldDefinition.from_kwarg(v, k))
                 for k, v in {
-                    k: get_args(v)[0] if get_origin(v) in (Required, NotRequired) else v
-                    for k, v in get_type_hints(annotation, include_extras=True).items()
+                    k: get_args(v)[0] if get_origin(v) in (Required, NotRequired) else v for k, v in type_hints.items()
                 }.items()
             },
             type=OpenAPIType.OBJECT,
