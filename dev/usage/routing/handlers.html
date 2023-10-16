@@ -1705,7 +1705,7 @@ the module scope at runtime. We can address this on a case-by-case basis by sile
 <span class="kn">from</span> <span class="nn">domain</span> <span class="kn">import</span> <span class="n">Model</span>  <span class="c1"># noqa: TCH002</span>
 </pre></div>
 </div>
-<p>However, this approach can get tedious, so as an alternative, Litestar accepts a <code class="docutils literal notranslate"><span class="pre">signature_namespace</span></code> mapping at
+<p>However, this approach can get tedious, so as an alternative, Litestar accepts a <code class="docutils literal notranslate"><span class="pre">signature_types</span></code> sequence at
 every <a class="reference internal" href="../applications.html#layered-architecture"><span class="std std-ref">layer</span></a> of the application. The following is a demonstration of how to use this
 pattern.</p>
 <p>This module defines our domain type in some central place.</p>
@@ -1747,8 +1747,14 @@ should reference our domain <code class="docutils literal notranslate"><span cla
 <span class="kn">from</span> <span class="nn">.controller</span> <span class="kn">import</span> <span class="n">MyController</span>
 <span class="kn">from</span> <span class="nn">.domain</span> <span class="kn">import</span> <span class="n">Model</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">],</span> <span class="n">signature_namespace</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Model&quot;</span><span class="p">:</span> <span class="n">Model</span><span class="p">})</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">],</span> <span class="n">signature_types</span><span class="o">=</span><span class="p">[</span><span class="n">Model</span><span class="p">])</span>
 </pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you want to map your type to a name that is different from its <code class="docutils literal notranslate"><span class="pre">__name__</span></code> attribute, you can use the
+<code class="docutils literal notranslate"><span class="pre">signature_namespace</span></code> parameter, e.g. <code class="docutils literal notranslate"><span class="pre">app</span> <span class="pre">=</span> <span class="pre">Litestar(signature_namespace={&quot;FooModel&quot;:</span> <span class="pre">Model})</span></code>.</p>
+<p>This enables import patterns like <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">domain.foo</span> <span class="pre">import</span> <span class="pre">Model</span> <span class="pre">as</span> <span class="pre">FooModel</span></code> inside <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">TYPE_CHECKING</span></code> blocks.</p>
 </div>
 <section id="default-signature-namespace">
 <h3>Default signature namespace<a class="headerlink" href="#default-signature-namespace" title="Permalink to this heading">#</a></h3>
