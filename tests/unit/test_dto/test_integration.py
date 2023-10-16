@@ -25,7 +25,7 @@ def experimental_features(use_experimental_dto_backend: bool) -> list[Experiment
 def test_dto_defined_on_handler(
     ModelDataDTO: type[AbstractDTO], experimental_features: list[ExperimentalFeatures]
 ) -> None:
-    @post(dto=ModelDataDTO, signature_namespace={"Model": Model})
+    @post(dto=ModelDataDTO, signature_types=[Model])
     def handler(data: Model) -> Model:
         assert data == Model(a=1, b="2")
         return data
@@ -123,7 +123,7 @@ def test_dto_and_return_dto(
 
 
 def test_enable_experimental_backend(ModelDataDTO: type[AbstractDTO], use_experimental_dto_backend: bool) -> None:
-    @post(dto=ModelDataDTO, signature_namespace={"Model": Model})
+    @post(dto=ModelDataDTO, signature_types=[Model])
     def handler(data: Model) -> Model:
         return data
 
@@ -142,7 +142,7 @@ def test_enable_experimental_backend(ModelDataDTO: type[AbstractDTO], use_experi
 def test_enable_experimental_backend_override_in_dto_config(ModelDataDTO: type[AbstractDTO]) -> None:
     ModelDataDTO.config = DTOConfig(experimental_codegen_backend=False)
 
-    @post(dto=ModelDataDTO, signature_namespace={"Model": Model})
+    @post(dto=ModelDataDTO, signature_types=[Model])
     def handler(data: Model) -> Model:
         return data
 

@@ -73,7 +73,7 @@ async def test_custom_request_class() -> None:
             super().__init__(*args, **kwargs)
             self.scope["called"] = True  # type: ignore
 
-    @websocket("/", signature_namespace={"MyWebSocket": MyWebSocket})
+    @websocket("/", signature_types=[MyWebSocket])
     async def handler(socket: MyWebSocket) -> None:
         value["called"] = socket.scope.get("called")
         await socket.accept()
