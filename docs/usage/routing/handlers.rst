@@ -592,6 +592,13 @@ should reference our domain ``Model`` type.
 .. literalinclude:: /examples/signature_namespace/app.py
     :language: python
 
+.. tip::
+
+    If you want to map your type to a name that is different from its ``__name__`` attribute, you can use the
+    ``signature_namespace`` parameter, e.g. ``app = Litestar(signature_namespace={"FooModel": Model})``.
+
+    This enables import patterns like ``from domain.foo import Model as FooModel`` inside ``if TYPE_CHECKING`` blocks.
+
 Default signature namespace
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

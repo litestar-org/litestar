@@ -145,7 +145,7 @@ class Controller:
     """A sequence of dictionaries that to the schema of all route handlers under the controller."""
     signature_namespace: dict[str, Any]
     """A mapping of names to types for use in forward reference resolution during signature modeling."""
-    signature_types: list[Any] | None
+    signature_types: Sequence[Any]
     """A sequence of types for use in forward reference resolution during signature modeling.
 
     These types will be added to the signature namespace using their ``__name__`` attribute.
@@ -179,16 +179,16 @@ class Controller:
         if not hasattr(self, "include_in_schema"):
             self.include_in_schema = Empty
 
+        self.signature_namespace = add_types_to_signature_namespace(
+            getattr(self, "signature_types", []), getattr(self, "signature_namespace", {})
+        )
+
         for key in self.__slots__:
             if not hasattr(self, key):
                 setattr(self, key, None)
 
         self.response_cookies = narrow_response_cookies(self.response_cookies)
         self.response_headers = narrow_response_headers(self.response_headers)
-        self.signature_namespace = add_types_to_signature_namespace(
-            getattr(self, "signature_types", None) or [], self.signature_namespace or {}
-        )
-
         self.path = normalize_path(self.path or "/")
         self.owner = owner
 
