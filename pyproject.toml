@@ -241,8 +241,8 @@ module = ["tests.examples.*", "tests.docker_service_fixtures"]
 ignore_errors = true
 
 [[tool.mypy.overrides]]
-disallow_untyped_decorators = false
 module = ["tests.unit.test_kwargs.test_reserved_kwargs_injection"]
+disallow_untyped_decorators = false
 
 [[tool.mypy.overrides]]
 ignore_missing_imports = true

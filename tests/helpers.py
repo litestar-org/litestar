@@ -56,10 +56,8 @@ def maybe_async_cm(obj: ContextManager[T] | AsyncContextManager[T]) -> AsyncCont
 def get_exception_group() -> type[BaseException]:
     """Get the exception group class with version compatibility."""
     try:
-        eg = globals()["__builtins__"]["ExceptionGroup"]
-    except KeyError:
-        from exceptiongroup import ExceptionGroup  # type: ignore[import-not-found]
+        return ExceptionGroup
+    except NameError:
+        from exceptiongroup import ExceptionGroup as _ExceptionGroup  # type: ignore[import-not-found]
 
-        eg = ExceptionGroup
-
-    return cast("type[BaseException]", eg)
+        return cast("type[BaseException]", _ExceptionGroup)
