@@ -61,7 +61,6 @@ repos:
     rev: "v1.6.0"
     hooks:
       - id: mypy
-        exclude: "test_apps|tools|docs|tests/examples|tests/docker_service_fixtures|tests/unit/test_contrib/test_pydantic/test_beanie_integration"
         additional_dependencies:
           [
             aiosqlite,
@@ -112,6 +111,7 @@ repos:
             structlog,
             time-machine,
             types-beautifulsoup4,
+            types-pytest-lazy-fixture,
             types-python-jose,
             types-pyyaml,
             types-redis,
