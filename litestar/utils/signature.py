@@ -18,6 +18,8 @@ from litestar.types import Empty
 from litestar.typing import FieldDefinition
 
 if typing.TYPE_CHECKING:
+    from typing import Sequence
+
     from litestar.types import AnyCallable
 
 __all__ = (
@@ -161,18 +163,26 @@ def infer_request_encoding_from_field_definition(field_definition: FieldDefiniti
     return RequestEncodingType.JSON
 
 
-def add_types_to_signature_namespace(signature_types: list[Any], signature_namespace: dict[str, Any]) -> dict[str, Any]:
-    """Add types from the list to a signature namespace.
+def add_types_to_signature_namespace(
+    signature_types: Sequence[Any], signature_namespace: dict[str, Any]
+) -> dict[str, Any]:
+    """Add types to ith signature namespace mapping.
+
+    Types are added mapped to their `__name__` attribute.
 
     Args:
         signature_types: A list of types to add to the signature namespace.
         signature_namespace: The signature namespace to add types to.
 
+    Raises:
+        ImproperlyConfiguredException: If a type is already defined in the signature namespace.
+        AttributeError: If a type does not have a `__name__` attribute.
+
     Returns:
         The updated signature namespace.
     """
-    for typ in signature_types or []:
-        if typ.__name__ in signature_namespace:
-            raise ImproperlyConfiguredException(f"Type {typ.__name__} is already defined in the signature namespace")
-        signature_namespace[typ.__name__] = typ
+    for typ in signature_types:
+        if (name := typ.__name__) in signature_namespace:
+            raise ImproperlyConfiguredException(f"Type '{name}' is already defined in the signature namespace")
+        signature_namespace[name] = typ
     return signature_namespace

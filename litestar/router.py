@@ -180,7 +180,7 @@ class Router:
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
         self.security = list(security or [])
         self.signature_namespace = add_types_to_signature_namespace(
-            list(signature_types or []), dict(signature_namespace or {})
+            signature_types or [], dict(signature_namespace or {})
         )
         self.tags = list(tags or [])
         self.registered_route_handler_ids: set[int] = set()

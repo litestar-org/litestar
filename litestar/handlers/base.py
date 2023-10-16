@@ -142,7 +142,7 @@ class BaseRouteHandler:
         self.owner: Controller | Router | None = None
         self.return_dto = return_dto
         self.signature_namespace = add_types_to_signature_namespace(
-            list(signature_types or []), dict(signature_namespace or {})
+            signature_types or [], dict(signature_namespace or {})
         )
         self.type_decoders = type_decoders
         self.type_encoders = type_encoders
