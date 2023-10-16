@@ -6,7 +6,7 @@ groups = ["default", "annotated-types", "attrs", "brotli", "cli", "cryptography"
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:e78b81cfa3a3e25672b3eb5d9efce0ff01e41f4e3b51a427ad4c752bc9220ef7"
+content_hash = "sha256:86b11a6ce153d4449c231960623ea25b315431bc76352628d7ecf72b02af30b6"
 
 [[package]]
 name = "accessible-pygments"
@@ -274,7 +274,7 @@ files = [
 
 [[package]]
 name = "beanie"
-version = "1.22.6"
+version = "1.23.0"
 requires_python = ">=3.7,<4.0"
 summary = "Asynchronous Python ODM for MongoDB"
 dependencies = [
@@ -286,8 +286,8 @@ dependencies = [
     "typing-extensions>=4.7; python_version < \"3.11\"",
 ]
 files = [
-    {file = "beanie-1.22.6-py3-none-any.whl", hash = "sha256:9721e3b0dc435e5a42b64e58d4f88bb9a447eb94c489de7ceb75854f45ec2a19"},
-    {file = "beanie-1.22.6.tar.gz", hash = "sha256:2b03cfe43ff383526d8ec67a88d8f0e60e251f2631af180c30fb4ac1fb9d900b"},
+    {file = "beanie-1.23.0-py3-none-any.whl", hash = "sha256:6670849bffc1902a33e62ad5b5dc536a68ead6bafa2823e99a803d12a600b379"},
+    {file = "beanie-1.23.0.tar.gz", hash = "sha256:537e0c59c84644d78afaf7cf83821093c2a37f7a9c7f51e05191caf8b8142b92"},
 ]
 
 [[package]]
@@ -1256,7 +1256,7 @@ files = [
 
 [[package]]
 name = "hypothesis"
-version = "6.87.4"
+version = "6.88.0"
 requires_python = ">=3.8"
 summary = "A library for property-based testing"
 dependencies = [
@@ -1265,8 +1265,8 @@ dependencies = [
     "sortedcontainers<3.0.0,>=2.1.0",
 ]
 files = [
-    {file = "hypothesis-6.87.4-py3-none-any.whl", hash = "sha256:0526d5bb45fd82b3ddc7d16ab04897652725cea938b62fff78bfd945dfc9775f"},
-    {file = "hypothesis-6.87.4.tar.gz", hash = "sha256:c508779be66e266c45dbf9c1b2713e560dfd89abb044d92eafe91e8b2728af01"},
+    {file = "hypothesis-6.88.0-py3-none-any.whl", hash = "sha256:b52b5b5a5065340875fb8a1a45e45391c277d9c5765374560edc1c5e5c3e2d48"},
+    {file = "hypothesis-6.88.0.tar.gz", hash = "sha256:c9096ccd5a78bbf75221a2b4a6149e00e254acb17637c94abab98c529b2f61e5"},
 ]
 
 [[package]]
