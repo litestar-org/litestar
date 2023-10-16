@@ -56,7 +56,6 @@ class Template(Response[bytes]):
             media_type: A string or member of the :class:`MediaType <.enums.MediaType>` enum. If not set, try to infer
                 the media type based on the template name. If this fails, fall back to ``text/plain``.
             status_code: A value for the response HTTP status code.
-            template_engine: The template engine class to use to render the response.
         """
         super().__init__(
             background=background,
