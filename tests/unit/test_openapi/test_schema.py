@@ -340,10 +340,6 @@ def test_literal_enums() -> None:
     assert schemas["MyDataclass"].properties["bar"].items.const == 1  # type: ignore
 
 
-# TODO(guacs): unions don't work with generics right now
-# both of these will fail: T | str, TypeVar("T", int, str)
-
-
 @dataclass
 class DataclassGeneric(Generic[T]):
     foo: T
