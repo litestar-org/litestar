@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from typing_extensions import get_type_hints
-
 from litestar._openapi.schema_generation.schema import _get_type_schema_name
+from litestar._openapi.schema_generation.utils import get_unwrapped_annotation_and_type_hints
 from litestar.exceptions import MissingDependencyException
 from litestar.openapi.spec import OpenAPIType, Schema
 from litestar.plugins import OpenAPISchemaPluginProtocol
@@ -37,12 +36,13 @@ class AttrsSchemaPlugin(OpenAPISchemaPluginProtocol):
             An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
         """
 
-        annotation_hints = get_type_hints(field_definition.annotation, include_extras=True)
+        unwrapped_annotation, annotation_hints = get_unwrapped_annotation_and_type_hints(field_definition.annotation)
+
         return Schema(
             required=sorted(
                 [
                     field_name
-                    for field_name, attribute in attr.fields_dict(field_definition.annotation).items()
+                    for field_name, attribute in attr.fields_dict(unwrapped_annotation).items()
                     if attribute.default is attrs.NOTHING and not is_optional_union(annotation_hints[field_name])
                 ]
             ),
