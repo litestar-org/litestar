@@ -1,12 +1,17 @@
 from __future__ import annotations
 
 from sys import version_info
-from typing import Any, Deque, Dict, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Any, Deque, Dict, Generic, Iterable, List, Optional, Sequence, Tuple, TypeVar, Union
 
 import pytest
 from typing_extensions import Annotated
 
-from litestar.utils.typing import annotation_is_iterable_of_type, get_origin_or_inner_type, make_non_optional_union
+from litestar.utils.typing import (
+    annotation_is_iterable_of_type,
+    get_origin_or_inner_type,
+    get_type_hints_with_generics_resolved,
+    make_non_optional_union,
+)
 from tests import PydanticPerson, PydanticPet
 
 if version_info >= (3, 10):
@@ -60,3 +65,41 @@ def test_get_origin_or_inner_type() -> None:
     assert get_origin_or_inner_type(List[PydanticPerson]) == list
     assert get_origin_or_inner_type(Annotated[List[PydanticPerson], "foo"]) == list
     assert get_origin_or_inner_type(Annotated[Dict[str, List[PydanticPerson]], "foo"]) == dict
+
+
+T = TypeVar("T")
+V = TypeVar("V", int, str)
+U = TypeVar("U", bound=int)
+
+ANNOTATION = object()
+
+
+class Foo(Generic[T]):
+    foo: T
+
+
+class BoundFoo(Generic[U]):
+    bound_foo: U
+
+
+class ConstrainedFoo(Generic[V]):
+    constrained_foo: V
+
+
+class AnnotatedFoo(Generic[T]):
+    annotated_foo: Annotated[T, ANNOTATION]
+
+
+@pytest.mark.parametrize(
+    ("annotation", "expected_type_hints"),
+    (
+        (Foo[int], {"foo": int}),
+        (BoundFoo, {"bound_foo": int}),
+        (BoundFoo[int], {"bound_foo": int}),
+        (ConstrainedFoo[int], {"constrained_foo": int}),
+        (ConstrainedFoo, {"constrained_foo": Union[int, str]}),
+        (AnnotatedFoo[int], {"annotated_foo": Annotated[int, ANNOTATION]}),
+    ),
+)
+def test_get_type_hints_with_generics(annotation: Any, expected_type_hints: dict[str, Any]) -> None:
+    assert get_type_hints_with_generics_resolved(annotation, include_extras=True) == expected_type_hints
