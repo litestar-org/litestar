@@ -124,6 +124,9 @@ def is_dataclass_class(annotation: Any) -> TypeGuard[type[DataclassProtocol]]:
         ``True`` if instance or type of ``dataclass``.
     """
     try:
+        origin = get_origin_or_inner_type(annotation)
+        annotation = origin or annotation
+
         return isclass(annotation) and is_dataclass(annotation)
     except TypeError:  # pragma: no cover
         return False
@@ -282,6 +285,10 @@ def is_typed_dict(annotation: Any) -> TypeGuard[TypedDictClass]:
     Returns:
         ``True`` if instance or type of ``TypedDict``.
     """
+
+    origin = get_origin_or_inner_type(annotation)
+    annotation = origin or annotation
+
     return is_typeddict(annotation)
 
 
