@@ -15,6 +15,7 @@ from litestar import Controller, MediaType, get
 from litestar._openapi.schema_generation.schema import (
     KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     SchemaCreator,
+    _get_type_schema_name,
     create_schema_for_annotation,
 )
 from litestar.app import DEFAULT_OPENAPI_CONFIG
@@ -369,7 +370,8 @@ def test_schema_generation_with_generic_classes(cls: Any) -> None:
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas).for_field_definition(field_definition)
 
-    properties = schemas[cls.__name__].properties
+    name = _get_type_schema_name(cls)
+    properties = schemas[name].properties
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
     expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.NULL), Schema(type=OpenAPIType.INTEGER)])
 

@@ -154,7 +154,19 @@ def _get_type_schema_name(value: Any) -> str:
     Returns:
         A string
     """
-    return cast("str", getattr(value, "__schema_name__", value.__name__))
+
+    if name := getattr(value, "__schema_name__", None):
+        return cast("str", name)
+
+    name = value.__name__
+    if args := getattr(value, "__args__", None):
+        name_parts = [name, "["]
+        name_parts.extend(_get_type_schema_name(a) for a in args)
+        name_parts.append("]")
+
+        return "".join(name_parts)
+
+    return cast("str", name)
 
 
 def create_enum_schema(annotation: EnumMeta) -> Schema:
@@ -267,10 +279,18 @@ class SchemaCreator:
         """
         result: Schema | Reference
 
+        # NOTE: The check for whether the field_definition.annotation is a Pagination type
+        # has to come before the `is_dataclass_check` since the the Pagination classes are dataclasses
+        # but we want to handle them differently from how dataclasses are normally handled.
         if field_definition.is_optional:
             result = self.for_optional_field(field_definition)
         elif field_definition.is_union:
             result = self.for_union_field(field_definition)
+        elif field_definition.is_generic and (
+            get_origin_or_inner_type(field_definition.annotation)
+            in (ClassicPagination, CursorPagination, OffsetPagination)
+        ):
+            result = self.for_builtin_generics(field_definition)
         elif is_struct_class(field_definition.annotation):
             result = self.for_struct_class(field_definition.annotation)
         elif is_dataclass_class(field_definition.annotation):
@@ -288,11 +308,6 @@ class SchemaCreator:
             result = self.for_constrained_field(field_definition)
         elif field_definition.inner_types and not field_definition.is_generic:
             result = self.for_object_type(field_definition)
-        elif field_definition.is_generic and (
-            get_origin_or_inner_type(field_definition.annotation)
-            in (ClassicPagination, CursorPagination, OffsetPagination)
-        ):
-            result = self.for_builtin_generics(field_definition)
         else:
             result = create_schema_for_annotation(field_definition.annotation)
 
