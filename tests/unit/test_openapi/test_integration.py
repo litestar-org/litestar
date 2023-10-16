@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Optional
+from dataclasses import dataclass
+from typing import Generic, Optional, TypeVar
 
 import msgspec
 import pydantic
@@ -247,3 +248,60 @@ def test_schema_for_optional_path_parameter() -> None:
         assert parameter
         assert parameter["in"] == ParamType.PATH
         assert parameter["name"] == "test_message"
+
+
+T = TypeVar("T")
+
+
+@dataclass
+class Foo(Generic[T]):
+    foo: T
+
+
+def test_with_generic_class() -> None:
+    @get("/", sync_to_thread=False)
+    def handler() -> Foo[str]:
+        return Foo("")
+
+    with create_test_client(
+        route_handlers=[handler],
+        openapi_config=OpenAPIConfig(
+            title="Example API",
+            version="1.0.0",
+        ),
+    ) as client:
+        response = client.get("/schema/openapi.json")
+
+        assert response.status_code == HTTP_200_OK
+
+        assert response.json() == {
+            "info": {"title": "Example API", "version": "1.0.0"},
+            "openapi": "3.1.0",
+            "servers": [{"url": "/"}],
+            "paths": {
+                "/": {
+                    "get": {
+                        "summary": "Handler",
+                        "operationId": "Handler",
+                        "responses": {
+                            "200": {
+                                "description": "Request fulfilled, document follows",
+                                "headers": {},
+                                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo"}}},
+                            }
+                        },
+                        "deprecated": False,
+                    }
+                }
+            },
+            "components": {
+                "schemas": {
+                    "Foo": {
+                        "properties": {"foo": {"type": "string"}},
+                        "type": "object",
+                        "required": ["foo"],
+                        "title": "Foo",
+                    }
+                }
+            },
+        }
