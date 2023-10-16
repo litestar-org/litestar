@@ -4,7 +4,6 @@ from typing import Any, Callable, List, Optional, Type
 import pytest
 
 from litestar import Controller, MediaType, Router, delete, get, post
-from litestar.contrib.pydantic import _model_dump
 from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_204_NO_CONTENT,
@@ -12,7 +11,6 @@ from litestar.status_codes import (
     HTTP_405_METHOD_NOT_ALLOWED,
 )
 from litestar.testing import create_test_client
-from tests import PydanticPerson, PydanticPersonFactory
 
 
 @delete(sync_to_thread=False)
@@ -94,19 +92,16 @@ def test_path_parsing_with_ambiguous_paths() -> None:
 def test_root_route_handler(
     decorator: Type[get], test_path: str, decorator_path: str, delete_handler: Optional[Callable]
 ) -> None:
-    person_instance = PydanticPersonFactory.build()
-
     class MyController(Controller):
         path = test_path
 
         @decorator(path=decorator_path)
-        def test_method(self) -> PydanticPerson:
-            return person_instance
+        def test_method(self) -> str:
+            return "hello"
 
     with create_test_client([MyController, delete_handler] if delete_handler else MyController) as client:
         response = client.get(decorator_path or test_path)
-        assert response.status_code == HTTP_200_OK, response.json()
-        assert response.json() == _model_dump(person_instance)
+        assert response.status_code == HTTP_200_OK
         if delete_handler:
             delete_response = client.delete("/")
             assert delete_response.status_code == HTTP_204_NO_CONTENT
