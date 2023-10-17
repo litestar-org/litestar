@@ -58,6 +58,6 @@ def get_exception_group() -> type[BaseException]:
     try:
         return ExceptionGroup
     except NameError:
-        from exceptiongroup import ExceptionGroup as _ExceptionGroup  # pyright: ignore[reportMissingImports]
+        from exceptiongroup import ExceptionGroup as _ExceptionGroup  # type: ignore[import-not-found]
 
         return cast("type[BaseException]", _ExceptionGroup)
