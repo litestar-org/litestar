@@ -48,7 +48,7 @@ def test_delete_session(
 
     result = runner.invoke(cli_command, ["sessions", "delete", "foo"])
 
-    assert mock_confirm_ask.called_once_with("[red]Delete session 'foo'?")
+    mock_confirm_ask.assert_called_once_with("Delete session 'foo'?")
     assert not result.exception
     mock_delete.assert_called_once_with("foo")
 
@@ -78,6 +78,6 @@ def test_clear_sessions(
 
     result = runner.invoke(cli_command, ["sessions", "clear"])
 
-    assert mock_confirm_ask.called_once_with("[red]Delete all sessions?")
+    mock_confirm_ask.assert_called_once_with("[red]Delete all sessions?")
     assert not result.exception
     mock_delete.assert_called_once()

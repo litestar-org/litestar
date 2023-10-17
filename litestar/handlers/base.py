@@ -22,7 +22,7 @@ from litestar.types import (
 from litestar.typing import FieldDefinition
 from litestar.utils import AsyncCallable, Ref, get_name, normalize_path
 from litestar.utils.helpers import unwrap_partial
-from litestar.utils.signature import ParsedSignature
+from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -88,6 +88,7 @@ class BaseRouteHandler:
         opt: Mapping[str, Any] | None = None,
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
+        signature_types: Sequence[Any] | None = None,
         type_encoders: TypeEncodersMap | None = None,
         type_decoders: TypeDecodersSequence | None = None,
         **kwargs: Any,
@@ -111,6 +112,8 @@ class BaseRouteHandler:
                 outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature
                 modelling.
+            signature_types: A sequence of types for use in forward reference resolution during signature modeling.
+                These types will be added to the signature namespace using their ``__name__`` attribute.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
@@ -138,7 +141,9 @@ class BaseRouteHandler:
         self.opt.update(**kwargs)
         self.owner: Controller | Router | None = None
         self.return_dto = return_dto
-        self.signature_namespace = signature_namespace or {}
+        self.signature_namespace = add_types_to_signature_namespace(
+            signature_types or [], dict(signature_namespace or {})
+        )
         self.type_decoders = type_decoders
         self.type_encoders = type_encoders
 

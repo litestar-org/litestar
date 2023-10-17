@@ -7,7 +7,6 @@ from sys import exc_info
 from traceback import format_exception
 from typing import TYPE_CHECKING, Any, Type, cast
 
-from litestar.connection import Request
 from litestar.datastructures import Headers
 from litestar.enums import MediaType, ScopeType
 from litestar.exceptions import WebSocketException
@@ -23,6 +22,7 @@ __all__ = ("ExceptionHandlerMiddleware", "ExceptionResponseContent", "create_exc
 if TYPE_CHECKING:
     from litestar import Response
     from litestar.app import Litestar
+    from litestar.connection import Request
     from litestar.logging import BaseLoggingConfig
     from litestar.types import (
         ASGIApp,
@@ -230,7 +230,7 @@ class ExceptionHandlerMiddleware:
             send = cors_middleware.send_wrapper(send=send, origin=origin, has_cookie="cookie" in headers)
 
         exception_handler = get_exception_handler(self.exception_handlers, exc) or self.default_http_exception_handler
-        request = Request[Any, Any, Any](scope=scope, receive=receive, send=send)
+        request: Request[Any, Any, Any] = litestar_app.request_class(scope=scope, receive=receive, send=send)
         response = exception_handler(request, exc)
         await response.to_asgi_response(app=None, request=request)(scope=scope, receive=receive, send=send)
 

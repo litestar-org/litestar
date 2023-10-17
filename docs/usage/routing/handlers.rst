@@ -571,7 +571,7 @@ the module scope at runtime. We can address this on a case-by-case basis by sile
     # Choose the appropriate noqa directive according to your linter
     from domain import Model  # noqa: TCH002
 
-However, this approach can get tedious, so as an alternative, Litestar accepts a ``signature_namespace`` mapping at
+However, this approach can get tedious, so as an alternative, Litestar accepts a ``signature_types`` sequence at
 every :ref:`layer <layered-architecture>` of the application. The following is a demonstration of how to use this
 pattern.
 
@@ -591,6 +591,13 @@ should reference our domain ``Model`` type.
 
 .. literalinclude:: /examples/signature_namespace/app.py
     :language: python
+
+.. tip::
+
+    If you want to map your type to a name that is different from its ``__name__`` attribute, you can use the
+    ``signature_namespace`` parameter, e.g. ``app = Litestar(signature_namespace={"FooModel": Model})``.
+
+    This enables import patterns like ``from domain.foo import Model as FooModel`` inside ``if TYPE_CHECKING`` blocks.
 
 Default signature namespace
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
