@@ -66,14 +66,14 @@ def test_request_factory_build_headers() -> None:
 
 @pytest.mark.parametrize("data_cls", [PydanticPerson, DataclassPerson, AttrsPerson, MsgSpecStructPerson])
 async def test_request_factory_create_with_data(data_cls: DataContainerType) -> None:
-    person = msgspec.to_builtins(DataclassPersonFactory.build())
+    person = DataclassPersonFactory.build()
     request = RequestFactory()._create_request_with_data(
         HttpMethod.POST,
         "/",
-        data=data_cls(**person),  # type: ignore
+        data=data_cls(**msgspec.to_builtins(person)),  # type: ignore
     )
     body = await request.body()
-    assert json.loads(body.decode()) == person
+    assert json.loads(body) == json.loads(msgspec.json.encode(person))
 
 
 @pytest.mark.parametrize(
