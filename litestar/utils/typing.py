@@ -136,10 +136,7 @@ wrapper_type_set = {Annotated, Required, NotRequired}
 """Types that always contain a wrapped type annotation as their first arg."""
 
 # `strict` was only introduced in 3.10
-if sys.version_info >= (3, 10):
-    _zip = partial(zip, strict=True)
-else:
-    _zip = zip
+_zip = partial(zip, strict=True) if sys.version_info >= (3, 10) else zip
 
 
 def normalize_type_annotation(annotation: Any) -> Any:
