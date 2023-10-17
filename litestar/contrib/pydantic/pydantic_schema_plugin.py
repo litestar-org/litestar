@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from typing_extensions import Annotated, get_type_hints
+from typing_extensions import Annotated
 
 from litestar._openapi.schema_generation.schema import SchemaCreator, _get_type_schema_name
+from litestar.contrib.pydantic.utils import pydantic_get_unwrapped_annotation_and_type_hints
 from litestar.exceptions import MissingDependencyException
 from litestar.openapi.spec import Example, OpenAPIFormat, OpenAPIType, Schema
 from litestar.plugins import OpenAPISchemaPluginProtocol
@@ -171,11 +172,14 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
             A schema instance.
         """
 
-        annotation_hints = get_type_hints(annotation, include_extras=True)
+        unwrapped_annotation, annotation_hints = pydantic_get_unwrapped_annotation_and_type_hints(annotation)
         model_config = getattr(annotation, "__config__", getattr(annotation, "model_config", Empty))
+
         model_fields: dict[str, pydantic.fields.FieldInfo] = {
             k: getattr(f, "field_info", f)
-            for k, f in getattr(annotation, "__fields__", getattr(annotation, "model_fields", {})).items()
+            for k, f in getattr(
+                unwrapped_annotation, "__fields__", getattr(unwrapped_annotation, "model_fields", {})
+            ).items()
         }
 
         # pydantic v2 logic
