@@ -55,6 +55,7 @@ jobs:
       python-version: "3.12"
       pydantic-version: "2"
       os: ${{ matrix.os }}
+      timeout: 15
 
   sonar:
     needs:
