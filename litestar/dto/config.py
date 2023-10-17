@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import ImproperlyConfiguredException
 
@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from typing import AbstractSet
 
     from litestar.dto.types import RenameStrategy
+    from litestar.dto.base_dto import AbstractDTO
 
 __all__ = ("DTOConfig",)
 
@@ -58,6 +59,8 @@ class DTOConfig:
     """Fields starting with an underscore are considered private and excluded from data transfer."""
     experimental_codegen_backend: bool | None = None
     """Use the experimental codegen backend"""
+    custom_dto_factories: dict[Any, type[AbstractDTO]] = field(default_factory=dict)
+    """Use custom dto factories for specific models."""
 
     def __post_init__(self) -> None:
         if self.include and self.exclude:

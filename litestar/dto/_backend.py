@@ -108,14 +108,15 @@ class DTOBackend:
         """
         defined_fields = []
         generic_field_definitons = list(FieldDefinition.from_annotation(model_type).generic_types or ())
-        for field_definition in self.dto_factory.generate_field_definitions(model_type):
+        dto_factory = self._dto_factory(model_type)
+        for field_definition in dto_factory.generate_field_definitions(model_type):
             if field_definition.is_type_var:
                 base_arg_field = generic_field_definitons.pop()
                 field_definition = replace(
                     field_definition, annotation=base_arg_field.annotation, raw=base_arg_field.raw
                 )
 
-            if _should_mark_private(field_definition, self.dto_factory.config.underscore_fields_private):
+            if _should_mark_private(field_definition, dto_factory.config.underscore_fields_private):
                 field_definition.dto_field.mark = Mark.PRIVATE
 
             try:
@@ -130,11 +131,11 @@ class DTOBackend:
             except RecursionError:
                 continue
 
-            if rename := self.dto_factory.config.rename_fields.get(field_definition.name):
+            if rename := dto_factory.config.rename_fields.get(field_definition.name):
                 serialization_name = rename
-            elif self.dto_factory.config.rename_strategy:
+            elif dto_factory.config.rename_strategy:
                 serialization_name = _rename_field(
-                    name=field_definition.name, strategy=self.dto_factory.config.rename_strategy
+                    name=field_definition.name, strategy=dto_factory.config.rename_strategy
                 )
             else:
                 serialization_name = field_definition.name
@@ -377,7 +378,7 @@ class DTOBackend:
 
         transfer_model: NestedFieldInfo | None = None
 
-        if self.dto_factory.detect_nested_field(field_definition):
+        if self._dto_factory(field_definition.annotation).detect_nested_field(field_definition):
             if nested_depth == self.dto_factory.config.max_nested_depth:
                 raise RecursionError
 
@@ -494,6 +495,9 @@ class DTOBackend:
             inner_types=inner_types,
             has_nested=any(t.has_nested for t in inner_types),
         )
+
+    def _dto_factory(self, model: type) -> type[AbstractDTO]:
+        return self.dto_factory.config.custom_dto_factories.get(model, self.dto_factory)
 
 
 def _camelize(value: str, capitalize_first_letter: bool) -> str:
