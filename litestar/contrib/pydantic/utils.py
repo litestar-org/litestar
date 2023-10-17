@@ -35,11 +35,12 @@ if PYDANTIC_VERSION.startswith("2"):
         origin = pydantic_unwrap_and_get_origin(annotation)
         if origin is None:
             type_hints = get_type_hints(annotation, globalns=globalns, localns=localns, include_extras=include_extras)
-            typevar_map = {p: p for p in annotation.__parameters__}
+            typevar_map = {p: p for p in annotation.__pydantic_generic_metadata__["parameters"]}
         else:
             type_hints = get_type_hints(origin, globalns=globalns, localns=localns, include_extras=include_extras)
             args = annotation.__pydantic_generic_metadata__["args"]
-            typevar_map = dict(_zip(origin.__parameters__, args))  # type: ignore[operator]
+            parameters = origin.__pydantic_generic_metadata__["parameters"]
+            typevar_map = dict(_zip(parameters, args))  # type: ignore[operator]
 
         return {n: _substitute_typevars(type_, typevar_map) for n, type_ in type_hints.items()}
 
