@@ -56,8 +56,8 @@ def maybe_async_cm(obj: ContextManager[T] | AsyncContextManager[T]) -> AsyncCont
 def get_exception_group() -> type[BaseException]:
     """Get the exception group class with version compatibility."""
     try:
-        return cast("type[BaseException]", globals()["__builtins__"]["ExceptionGroup"])
-    except KeyError:
-        from exceptiongroup import ExceptionGroup  # pyright: ignore[reportMissingImports]
-
         return ExceptionGroup
+    except NameError:
+        from exceptiongroup import ExceptionGroup as _ExceptionGroup  # pyright: ignore[reportMissingImports]
+
+        return cast("type[BaseException]", _ExceptionGroup)
