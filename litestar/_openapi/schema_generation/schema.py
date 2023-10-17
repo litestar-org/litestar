@@ -27,6 +27,7 @@ from typing import (
     Sequence,
     Set,
     Tuple,
+    TypeVar,
     Union,
     cast,
     get_origin,
@@ -291,6 +292,8 @@ class SchemaCreator:
             in (ClassicPagination, CursorPagination, OffsetPagination)
         ):
             result = self.for_builtin_generics(field_definition)
+        elif isinstance(field_definition.annotation, TypeVar):
+            result = self.for_typevar()
         elif is_struct_class(field_definition.annotation):
             result = self.for_struct_class(field_definition.annotation)
         elif is_dataclass_class(field_definition.annotation):
@@ -312,6 +315,15 @@ class SchemaCreator:
             result = create_schema_for_annotation(field_definition.annotation)
 
         return self.process_schema_result(field_definition, result) if isinstance(result, Schema) else result
+
+    def for_typevar(self) -> Schema:
+        """Create a schema for a TypeVar.
+
+        Returns:
+            A schema instance.
+        """
+
+        return Schema(type=OpenAPIType.OBJECT)
 
     def for_optional_field(self, field_definition: FieldDefinition) -> Schema:
         """Create a Schema for an optional FieldDefinition.
