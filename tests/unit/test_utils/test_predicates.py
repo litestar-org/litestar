@@ -306,22 +306,18 @@ def test_is_dataclass_class(cls: Any, expected: bool) -> None:
     assert is_dataclass_class(cls) is expected
 
 
-class NonGenericTypedDict(TypedDict):
-    foo: int
-
-
-class GenericTypedDict(TypedDict, Generic[T]):
-    foo: T
-
-
-class NonTypedDict:
-    ...
-
-
 @pytest.mark.skipif(sys.version_info < (3, 11), reason="generic TypedDict only supported for 3.11+")
-@pytest.mark.parametrize(
-    ("cls", "expected"),
-    ((NonGenericTypedDict, True), (GenericTypedDict, True), (GenericTypedDict[int], True), (NonTypedDict, False)),
-)
-def test_is_typed_dict(cls: Any, expected: bool) -> None:
-    assert is_typed_dict(cls) == expected
+def test_is_typed_dict() -> None:
+    class NonGenericTypedDict(TypedDict):
+        foo: int
+
+    class GenericTypedDict(TypedDict, Generic[T]):
+        foo: T
+
+    class NonTypedDict:
+        ...
+
+    assert is_typed_dict(GenericTypedDict) is True
+    assert is_typed_dict(GenericTypedDict[int]) is True
+    assert is_typed_dict(NonGenericTypedDict) is False
+    assert is_typed_dict(NonTypedDict) is False
