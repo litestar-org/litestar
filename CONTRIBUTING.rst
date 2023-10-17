@@ -18,8 +18,8 @@ Setting up the environment
 .. tip:: Many modern IDEs like PyCharm or VS Code will enable the PDM-managed virtualenv that is created in step 2 for you automatically.
    If your IDE / editor does not offer this functionality, then you will need to manually activate the virtualenv yourself. Otherwise you may encounter errors or unexpected behaviour when trying to run the commands referenced within this document.
 
-   To activate the virtualenv manually, please consult PDM's documentation here
-   `Working with virtual environments <https://pdm.fming.dev/latest/usage/venv/#working-with-virtual-environments>`_. A simpler alternative is using the PDM plugin `pdm-shell <https://github.com/abersheeran/pdm-shell>`_.
+   To activate the virtualenv manually, please consult PDM's documentation on
+   `working with virtual environments <https://pdm.fming.dev/latest/usage/venv/#working-with-virtual-environments>`_. A simpler alternative is using the PDM plugin `pdm-shell <https://github.com/abersheeran/pdm-shell>`_.
 
    The rest of this document will assume this environment is active wherever commands are referenced.
 
