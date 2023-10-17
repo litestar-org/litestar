@@ -91,9 +91,9 @@ class AnnotatedFoo(Generic[T]):
 
 
 class UnionFoo(Generic[T, V, U]):
-    union_foo: T | bool
-    constrained_union_foo: V | bool
-    bound_union_foo: U | bool
+    union_foo: Union[T, bool]  # noqa: UP007
+    constrained_union_foo: Union[V, bool]  # noqa: UP007
+    bound_union_foo: Union[U, bool]  # noqa: UP007
 
 
 @pytest.mark.parametrize(

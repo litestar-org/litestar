@@ -1,6 +1,7 @@
-from typing import Annotated, Dict, Generic, Optional, TypeVar
+from typing import Dict, Generic, Optional
 
 from attrs import define
+from typing_extensions import Annotated, TypeVar
 
 from litestar._openapi.schema_generation.schema import (
     SchemaCreator,

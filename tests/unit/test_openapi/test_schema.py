@@ -2,7 +2,7 @@ import sys
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum, auto
-from typing import TYPE_CHECKING, Any, Dict, Generic, List, Literal, Optional, TypedDict, TypeVar
+from typing import TYPE_CHECKING, Any, Dict, Generic, List, Literal, Optional, TypedDict, TypeVar, Union
 
 import annotated_types
 import msgspec
@@ -360,7 +360,7 @@ class MsgspecGeneric(Struct, Generic[T]):
     annotated_foo: Annotated[T, object()]
 
 
-annotations: list[type] = [DataclassGeneric[int], MsgspecGeneric[int]]
+annotations: List[type] = [DataclassGeneric[int], MsgspecGeneric[int]]
 
 # Generic TypedDict was only supported from 3.11 onwards
 if sys.version_info >= (3, 11):
@@ -393,9 +393,9 @@ C = TypeVar("C", int, str)
 class ConstrainedGenericDataclass(Generic[T, B, C]):
     bound: B
     constrained: C
-    union: T | bool
-    union_constrained: C | bool
-    union_bound: B | bool
+    union: Union[T, bool]
+    union_constrained: Union[C, bool]
+    union_bound: Union[B, bool]
 
 
 def test_schema_generation_with_generic_classes_constrained() -> None:
