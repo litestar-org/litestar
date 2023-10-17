@@ -30,6 +30,7 @@ from litestar.openapi.spec.schema import Schema
 from litestar.params import BodyKwarg, Parameter, ParameterKwarg
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
+from litestar.utils.helpers import get_name
 from tests import PydanticPerson, PydanticPet
 
 if TYPE_CHECKING:
@@ -348,12 +349,6 @@ class DataclassGeneric(Generic[T]):
     annotated_foo: Annotated[T, object()]
 
 
-class TypedDictGeneric(TypedDict, Generic[T]):
-    foo: T
-    optional_foo: Optional[T]
-    annotated_foo: Annotated[T, object()]
-
-
 class MsgspecGeneric(Struct, Generic[T]):
     foo: T
     optional_foo: Optional[T]
@@ -364,12 +359,18 @@ annotations: List[type] = [DataclassGeneric[int], MsgspecGeneric[int]]
 
 # Generic TypedDict was only supported from 3.11 onwards
 if sys.version_info >= (3, 11):
+
+    class TypedDictGeneric(TypedDict, Generic[T]):
+        foo: T
+        optional_foo: Optional[T]
+        annotated_foo: Annotated[T, object()]
+
     annotations.append(TypedDictGeneric[int])
 
 
 @pytest.mark.parametrize("cls", annotations)
 def test_schema_generation_with_generic_classes(cls: Any) -> None:
-    field_definition = FieldDefinition.from_kwarg(name=cls.__name__, annotation=cls)
+    field_definition = FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
 
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas).for_field_definition(field_definition)

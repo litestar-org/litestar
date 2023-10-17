@@ -11,6 +11,7 @@ from litestar.contrib.attrs.attrs_schema_plugin import AttrsSchemaPlugin
 from litestar.openapi.spec import OpenAPIType
 from litestar.openapi.spec.schema import Schema
 from litestar.typing import FieldDefinition
+from litestar.utils.helpers import get_name
 
 T = TypeVar("T")
 
@@ -24,7 +25,7 @@ class AttrsGeneric(Generic[T]):
 
 def test_schema_generation_with_generic_classes() -> None:
     cls = AttrsGeneric[int]
-    field_definition = FieldDefinition.from_kwarg(name=cls.__name__, annotation=cls)
+    field_definition = FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
 
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas, plugins=[AttrsSchemaPlugin()]).for_field_definition(field_definition)

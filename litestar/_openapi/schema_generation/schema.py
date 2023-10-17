@@ -56,6 +56,7 @@ from litestar.params import BodyKwarg, ParameterKwarg
 from litestar.serialization import encode_json
 from litestar.types import DataclassProtocol, Empty, TypedDictClass
 from litestar.typing import FieldDefinition
+from litestar.utils.helpers import get_name
 from litestar.utils.predicates import (
     is_class_and_subclass,
     is_dataclass_class,
@@ -159,7 +160,7 @@ def _get_type_schema_name(value: Any) -> str:
     if name := getattr(value, "__schema_name__", None):
         return cast("str", name)
 
-    name = value.__name__
+    name = get_name(value)
     if args := getattr(value, "__args__", None):
         name_parts = [name, "["]
         name_parts.extend(_get_type_schema_name(a) for a in args)
@@ -167,7 +168,7 @@ def _get_type_schema_name(value: Any) -> str:
 
         return "".join(name_parts)
 
-    return cast("str", name)
+    return name
 
 
 def create_enum_schema(annotation: EnumMeta) -> Schema:
