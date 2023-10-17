@@ -161,7 +161,7 @@ def _get_type_schema_name(value: Any) -> str:
         return cast("str", name)
 
     name = get_name(value)
-    if args := getattr(value, "__args__", None):
+    if args := get_args(value):
         inner_parts = ", ".join(_get_type_schema_name(a) for a in args)
         return f"{name}[{inner_parts}]"
 

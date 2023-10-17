@@ -307,11 +307,9 @@ def get_type_hints_with_generics_resolved(
         type_hints = get_type_hints(annotation, globalns=globalns, localns=localns, include_extras=include_extras)
         typevar_map = {p: p for p in annotation.__parameters__}
     else:
-        # the __parameters__ is only available on the origin itself and not the annotation
         type_hints = get_type_hints(origin, globalns=globalns, localns=localns, include_extras=include_extras)
-        parameters = origin.__parameters__
-        args = annotation.__args__
-        typevar_map = dict(_zip(parameters, args))  # type: ignore[arg-type]
+        # the __parameters__ is only available on the origin itself and not the annotation
+        typevar_map = dict(_zip(origin.__parameters__, get_args(annotation)))  # type: ignore[arg-type]
 
     return {n: _substitute_typevars(type_, typevar_map) for n, type_ in type_hints.items()}
 
