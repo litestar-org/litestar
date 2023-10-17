@@ -320,7 +320,7 @@ def test_create_additional_responses() -> None:
     class ServerError:
         message: str
 
-    class AuthenticationError(BaseModel):
+    class AuthenticationError(TypedDict):
         message: str
 
     class UnknownError(TypedDict):
