@@ -52,7 +52,7 @@ async def test_controller_http_method(
     class MyController(Controller):
         path = test_path
 
-        @decorator()
+        @decorator()  # type: ignore[misc]
         def test_method(self) -> return_annotation:
             return return_value
 
