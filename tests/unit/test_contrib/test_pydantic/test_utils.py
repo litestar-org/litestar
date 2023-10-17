@@ -1,4 +1,4 @@
-from typing import Generic
+from typing import Dict, Generic
 
 import pytest
 from pydantic import BaseModel
@@ -25,5 +25,5 @@ class NonGenericPydanticModel(BaseModel):
         (GenericPydanticModel[int], {"foo": int}),
     ),
 )
-def test_get_pydantic_type_hints(annotation: Any, expected_type_hints: dict[str, Any]) -> None:
+def test_get_pydantic_type_hints(annotation: Any, expected_type_hints: Dict[str, Any]) -> None:
     assert pydantic_get_type_hints_with_generics_resolved(annotation) == expected_type_hints
