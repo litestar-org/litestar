@@ -319,5 +319,5 @@ def test_is_typed_dict() -> None:
 
     assert is_typed_dict(GenericTypedDict) is True
     assert is_typed_dict(GenericTypedDict[int]) is True
-    assert is_typed_dict(NonGenericTypedDict) is False
+    assert is_typed_dict(NonGenericTypedDict) is True
     assert is_typed_dict(NonTypedDict) is False
