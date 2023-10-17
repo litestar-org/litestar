@@ -1,5 +1,5 @@
 import json
-from typing import Callable, Dict
+from typing import Any, Callable, Dict
 
 import msgspec
 import pytest
@@ -64,16 +64,20 @@ def test_request_factory_build_headers() -> None:
         assert headers[decoded_key] == decoded_value
 
 
+def _json_roundtrip(obj: Any) -> Any:
+    return
+
+
 @pytest.mark.parametrize("data_cls", [PydanticPerson, DataclassPerson, AttrsPerson, MsgSpecStructPerson])
 async def test_request_factory_create_with_data(data_cls: DataContainerType) -> None:
-    person = DataclassPersonFactory.build()
+    person_data = msgspec.json.decode(msgspec.json.encode(DataclassPersonFactory.build()))
     request = RequestFactory()._create_request_with_data(
         HttpMethod.POST,
         "/",
-        data=data_cls(**msgspec.to_builtins(person)),  # type: ignore
+        data=data_cls(**person_data),  # type: ignore
     )
     body = await request.body()
-    assert json.loads(body) == json.loads(msgspec.json.encode(person))
+    assert json.loads(body) == person_data
 
 
 @pytest.mark.parametrize(

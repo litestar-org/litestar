@@ -8,7 +8,7 @@ from pydantic import SecretStr
 from pytest import FixtureRequest
 
 from litestar import MediaType, Response
-from litestar.contrib.pydantic import PydanticInitPlugin, _model_dump
+from litestar.contrib.pydantic import PydanticInitPlugin
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import get_serializer
 from tests.models import (
@@ -46,7 +46,7 @@ def test_pydantic(media_type: MediaType, decode_media_type: DecodeMediaType) -> 
     encoded = Response(None).render(
         content, media_type=media_type, enc_hook=get_serializer(type_encoders=PydanticInitPlugin.encoders())
     )
-    assert decode_media_type(encoded) == _model_dump(content)
+    assert PydanticPerson.parse_obj(decode_media_type(encoded)) == content
 
 
 def test_dataclass(media_type: MediaType, decode_media_type: DecodeMediaType) -> None:
