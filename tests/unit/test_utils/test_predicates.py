@@ -1,3 +1,4 @@
+import sys
 from collections import defaultdict, deque
 from dataclasses import MISSING, dataclass
 from functools import partial
@@ -317,6 +318,7 @@ class NonTypedDict:
     ...
 
 
+@pytest.mark.skipif(sys.version_info < (3, 11), reason="generic TypedDict only supported for 3.11+")
 @pytest.mark.parametrize(
     ("cls", "expected"),
     ((NonGenericTypedDict, True), (GenericTypedDict, True), (GenericTypedDict[int], True), (NonTypedDict, False)),

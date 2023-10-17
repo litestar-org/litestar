@@ -1,3 +1,4 @@
+import sys
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum, auto
@@ -359,7 +360,14 @@ class MsgspecGeneric(Struct, Generic[T]):
     annotated_foo: Annotated[T, object()]
 
 
-@pytest.mark.parametrize("cls", (DataclassGeneric[int], TypedDictGeneric[int], MsgspecGeneric[int]))
+annotations: list[type] = [DataclassGeneric[int], MsgspecGeneric[int]]
+
+# Generic TypedDict was only supported from 3.11 onwards
+if sys.version_info >= (3, 11):
+    annotations.append(TypedDictGeneric[int])
+
+
+@pytest.mark.parametrize("cls", annotations)
 def test_schema_generation_with_generic_classes(cls: Any) -> None:
     field_definition = FieldDefinition.from_kwarg(name=cls.__name__, annotation=cls)
 
