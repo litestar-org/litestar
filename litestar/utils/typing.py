@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import re
+import sys
 from collections import abc, defaultdict, deque
+from functools import partial
 from typing import (
     AbstractSet,
     Any,
@@ -132,6 +134,12 @@ This is necessary because occasionally we want to rebuild a generic outer type w
 
 wrapper_type_set = {Annotated, Required, NotRequired}
 """Types that always contain a wrapped type annotation as their first arg."""
+
+# `strict` was only introduced in 3.10
+if sys.version_info >= (3, 10):
+    _zip = partial(zip, strict=True)
+else:
+    _zip = zip
 
 
 def normalize_type_annotation(annotation: Any) -> Any:
@@ -303,7 +311,7 @@ def get_type_hints_with_generics_resolved(
         type_hints = get_type_hints(origin, globalns=globalns, localns=localns, include_extras=include_extras)
         parameters = origin.__parameters__
         args = annotation.__args__
-        typevar_map = dict(zip(parameters, args, strict=True))
+        typevar_map = dict(_zip(parameters, args))  # type: ignore[arg-type]
 
     return {n: _substitute_typevars(type_, typevar_map) for n, type_ in type_hints.items()}
 
