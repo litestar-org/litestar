@@ -90,6 +90,12 @@ class AnnotatedFoo(Generic[T]):
     annotated_foo: Annotated[T, ANNOTATION]
 
 
+class UnionFoo(Generic[T, V, U]):
+    union_foo: T | bool
+    constrained_union_foo: V | bool
+    bound_union_foo: U | bool
+
+
 @pytest.mark.parametrize(
     ("annotation", "expected_type_hints"),
     (
@@ -99,6 +105,22 @@ class AnnotatedFoo(Generic[T]):
         (ConstrainedFoo[int], {"constrained_foo": int}),
         (ConstrainedFoo, {"constrained_foo": Union[int, str]}),
         (AnnotatedFoo[int], {"annotated_foo": Annotated[int, ANNOTATION]}),
+        (
+            UnionFoo[T, V, U],  # type: ignore[valid-type]
+            {
+                "union_foo": Union[T, bool],  # pyright: ignore[reportGeneralTypeIssues]
+                "constrained_union_foo": Union[int, str, bool],
+                "bound_union_foo": Union[int, bool],
+            },
+        ),
+        (
+            UnionFoo,
+            {
+                "union_foo": Union[T, bool],  # pyright: ignore[reportGeneralTypeIssues]
+                "constrained_union_foo": Union[int, str, bool],
+                "bound_union_foo": Union[int, bool],
+            },
+        ),
     ),
 )
 def test_get_type_hints_with_generics(annotation: Any, expected_type_hints: dict[str, Any]) -> None:

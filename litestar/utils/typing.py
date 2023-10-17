@@ -292,7 +292,6 @@ def get_type_hints_with_generics_resolved(
         localns: The local namespace.
         include_extras: A flag indicating whether to include the ``Annotated[T, ...]`` or not.
     """
-
     origin = get_origin(annotation)
 
     if origin is None:
@@ -313,7 +312,7 @@ def _substitute_typevars(obj: Any, typevar_map: Mapping[Any, Any]) -> Any:
     params = getattr(obj, "__parameters__", None)
 
     if params is not None:
-        args = tuple(typevar_map.get(p) for p in params)
+        args = tuple(_substitute_typevars(typevar_map.get(p), typevar_map) for p in params)
         return obj[args]
 
     if isinstance(obj, TypeVar):
