@@ -375,3 +375,40 @@ def test_schema_generation_with_generic_classes(cls: Any) -> None:
     assert properties["foo"] == expected_foo_schema
     assert properties["annotated_foo"] == expected_foo_schema
     assert properties["optional_foo"] == expected_optional_foo_schema
+
+
+B = TypeVar("B", bound=int)
+C = TypeVar("C", int, str)
+
+
+@dataclass
+class ConstrainedGenericDataclass(Generic[T, B, C]):
+    bound: B
+    constrained: C
+    union: T | bool
+    union_constrained: C | bool
+    union_bound: B | bool
+
+
+def test_schema_generation_with_generic_classes_constrained() -> None:
+    cls = ConstrainedGenericDataclass
+    field_definition = FieldDefinition.from_kwarg(name=cls.__name__, annotation=cls)
+
+    schemas: Dict[str, Schema] = {}
+    SchemaCreator(schemas=schemas).for_field_definition(field_definition)
+
+    name = _get_type_schema_name(cls)
+    properties = schemas[name].properties
+
+    assert properties
+    assert properties["bound"] == Schema(type=OpenAPIType.INTEGER)
+    assert properties["constrained"] == Schema(
+        one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)]
+    )
+    assert properties["union"] == Schema(one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.OBJECT)])
+    assert properties["union_constrained"] == Schema(
+        one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)]
+    )
+    assert properties["union_bound"] == Schema(
+        one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.INTEGER)]
+    )
