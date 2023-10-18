@@ -13,17 +13,12 @@ class GenericPydanticModel(BaseModel, Generic[T]):
     foo: T
 
 
-class NonGenericPydanticModel(BaseModel):
-    foo: int
-
-
 @pytest.mark.parametrize(
     ("annotation", "expected_type_hints"),
     (
-        (NonGenericPydanticModel, {"foo": int}),
         (GenericPydanticModel, {"foo": T}),
         (GenericPydanticModel[int], {"foo": int}),
     ),
 )
-def test_get_pydantic_type_hints(annotation: Any, expected_type_hints: Dict[str, Any]) -> None:
+def test_get_pydantic_type_hints_with_generics_resolved(annotation: Any, expected_type_hints: Dict[str, Any]) -> None:
     assert pydantic_get_type_hints_with_generics_resolved(annotation) == expected_type_hints

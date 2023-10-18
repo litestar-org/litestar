@@ -45,17 +45,7 @@ if PYDANTIC_VERSION.startswith("2"):
 
 else:
     pydantic_unwrap_and_get_origin = get_origin_or_inner_type
-
-    def pydantic_get_type_hints_with_generics_resolved(
-        annotation: Any,
-        globalns: dict[str, Any] | None = None,
-        localns: dict[str, Any] | None = None,
-        include_extras: bool = False,
-    ) -> dict[str, Any]:
-        if not is_generic(annotation):
-            return get_type_hints(annotation, globalns=globalns, localns=localns, include_extras=include_extras)
-
-        return get_type_hints_with_generics_resolved(annotation, globalns, localns, include_extras)
+    pydantic_get_type_hints_with_generics_resolved = get_type_hints_with_generics_resolved
 
 
 def pydantic_get_unwrapped_annotation_and_type_hints(annotation: Any) -> tuple[Any, dict[str, Any]]:
