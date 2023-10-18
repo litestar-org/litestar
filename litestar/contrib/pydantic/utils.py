@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from pydantic import VERSION as PYDANTIC_VERSION
-from typing_extensions import Any, get_type_hints
+from typing_extensions import get_type_hints
 
 from litestar.utils.predicates import is_generic
 from litestar.utils.typing import (
@@ -13,7 +15,15 @@ from litestar.utils.typing import (
     wrapper_type_set,
 )
 
-if PYDANTIC_VERSION.startswith("2"):
+if TYPE_CHECKING:
+    from typing import Final
+
+    from typing_extensions import Any
+
+PYDANTIC_V2: Final[bool] = PYDANTIC_VERSION.startswith("2")
+"""A boolean indicating whether the installed pydantic is v2 or not."""
+
+if PYDANTIC_V2:
     # These utility functions are the same as the ones in litestar.utils.typing but this has to be
     # done due to this issue: https://github.com/pydantic/pydantic/issues/7837. This is only for
     # v2.
