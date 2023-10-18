@@ -6,7 +6,6 @@ from typing_extensions import Any, get_type_hints
 from litestar.utils.predicates import is_generic
 from litestar.utils.typing import (
     _substitute_typevars,
-    _zip,
     get_origin_or_inner_type,
     get_type_hints_with_generics_resolved,
     instantiable_type_mapping,
@@ -40,7 +39,7 @@ if PYDANTIC_VERSION.startswith("2"):
             type_hints = get_type_hints(origin, globalns=globalns, localns=localns, include_extras=include_extras)
             args = annotation.__pydantic_generic_metadata__["args"]
             parameters = origin.__pydantic_generic_metadata__["parameters"]
-            typevar_map = dict(_zip(parameters, args))  # type: ignore[operator]
+            typevar_map = dict(zip(parameters, args))
 
         return {n: _substitute_typevars(type_, typevar_map) for n, type_ in type_hints.items()}
 
