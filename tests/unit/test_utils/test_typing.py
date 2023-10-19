@@ -1,3 +1,5 @@
+# ruff: noqa: UP007, UP006
+
 from __future__ import annotations
 
 from sys import version_info
@@ -91,9 +93,22 @@ class AnnotatedFoo(Generic[T]):
 
 
 class UnionFoo(Generic[T, V, U]):
-    union_foo: Union[T, bool]  # noqa: UP007
-    constrained_union_foo: Union[V, bool]  # noqa: UP007
-    bound_union_foo: Union[U, bool]  # noqa: UP007
+    union_foo: Union[T, bool]
+    constrained_union_foo: Union[V, bool]
+    bound_union_foo: Union[U, bool]
+
+
+class MixedFoo(Generic[T]):
+    foo: T
+    list_foo: List[T]
+    normal_foo: str
+    normal_list_foo: List[str]
+
+
+class NestedFoo(Generic[T]):
+    bound_foo: BoundFoo
+    constrained_foo: ConstrainedFoo
+    constrained_foo_with_t: ConstrainedFoo[int]
 
 
 @pytest.mark.parametrize(
@@ -119,6 +134,23 @@ class UnionFoo(Generic[T, V, U]):
                 "union_foo": Union[T, bool],  # pyright: ignore[reportGeneralTypeIssues]
                 "constrained_union_foo": Union[int, str, bool],
                 "bound_union_foo": Union[int, bool],
+            },
+        ),
+        (
+            MixedFoo[int],
+            {
+                "foo": int,
+                "list_foo": List[int],
+                "normal_foo": str,
+                "normal_list_foo": List[str],
+            },
+        ),
+        (
+            NestedFoo[int],
+            {
+                "bound_foo": BoundFoo[int],
+                "constrained_foo": ConstrainedFoo[Union[int, str]],  # type: ignore[type-var]
+                "constrained_foo_with_t": ConstrainedFoo[int],
             },
         ),
     ),

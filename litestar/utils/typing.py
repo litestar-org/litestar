@@ -309,8 +309,8 @@ def get_type_hints_with_generics_resolved(
 def _substitute_typevars(obj: Any, typevar_map: Mapping[Any, Any]) -> Any:
     params = getattr(obj, "__parameters__", None)
 
-    if params is not None:
-        args = tuple(_substitute_typevars(typevar_map.get(p), typevar_map) for p in params)
+    if params:
+        args = tuple(_substitute_typevars(typevar_map.get(p, p), typevar_map) for p in params)
         return obj[args]
 
     if isinstance(obj, TypeVar):
