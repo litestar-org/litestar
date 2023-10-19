@@ -86,6 +86,9 @@ pyright:                                            ## Run pyright
 	@$(ENV_PREFIX)pyright
 	@echo "=> pyright complete"
 
+.PHONY: type-check
+type-check: mypy pyright                            ## Run all type checking
+
 .PHONY: pre-commit
 pre-commit: 										## Runs pre-commit hooks; includes ruff linting, codespell, black
 	@echo "=> Running pre-commit process"
@@ -93,7 +96,7 @@ pre-commit: 										## Runs pre-commit hooks; includes ruff linting, codespell
 	@echo "=> Pre-commit complete"
 
 .PHONY: lint
-lint: pre-commit mypy pyright 						## Run all linting
+lint: pre-commit type-check 						## Run all linting
 
 .PHONY: coverage
 coverage:  											## Run the tests and generate coverage report
