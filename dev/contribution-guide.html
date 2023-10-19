@@ -1258,6 +1258,18 @@ or <code class="docutils literal notranslate"><span class="pre">make</span> <spa
 straightforward. For debugging, it’s recommended to run the tests individually with
 <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">&lt;test</span> <span class="pre">name&gt;</span></code> or via an IDE, which will skip pytest-xdist.</p>
 </section>
+<section id="running-type-checkers">
+<h3>Running type checkers<a class="headerlink" href="#running-type-checkers" title="Permalink to this heading">#</a></h3>
+<p>We use <a class="reference external" href="https://mypy.readthedocs.io/en/stable/">mypy</a> and <a class="reference external" href="https://microsoft.github.io/pyright/#/">pyright</a> to
+enforce type safety. You can run them with:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">mypy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">pyright</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">typecheck</span></code> to run both</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">lint</span></code> to run pre-commit hooks and type checkers.</p></li>
+</ul>
+<p>Our type checkers are run on Python 3.12 in CI, so you should make sure to run them on the same version locally as well.</p>
+</section>
 </section>
 <section id="project-documentation">
 <h2>Project documentation<a class="headerlink" href="#project-documentation" title="Permalink to this heading">#</a></h2>
@@ -1403,6 +1415,7 @@ specified path can just be a path relative to the app.</p>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#guidelines-for-writing-code">Guidelines for writing code</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-and-running-tests">Writing and running tests</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#running-type-checkers">Running type checkers</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-documentation">Project documentation</a><ul class="visible nav section-nav flex-column">
