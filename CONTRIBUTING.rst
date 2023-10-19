@@ -18,9 +18,8 @@ Setting up the environment
 .. tip:: Many modern IDEs like PyCharm or VS Code will enable the PDM-managed virtualenv that is created in step 2 for you automatically.
    If your IDE / editor does not offer this functionality, then you will need to manually activate the virtualenv yourself. Otherwise you may encounter errors or unexpected behaviour when trying to run the commands referenced within this document.
 
-   The easiest way to activate this virtualenv manually is by running ``pdm shell``, as described at
-   `Working with virtual environments <https://pdm.fming.dev/latest/usage/venv/#working-with-virtual-environments>`_
-   in PDM's documentation.
+   To activate the virtualenv manually, please consult PDM's documentation on
+   `working with virtual environments <https://pdm.fming.dev/latest/usage/venv/#working-with-virtual-environments>`_. A simpler alternative is using the PDM plugin `pdm-shell <https://github.com/abersheeran/pdm-shell>`_.
 
    The rest of this document will assume this environment is active wherever commands are referenced.
 
@@ -92,6 +91,18 @@ or ``make coverage``. Due to the nature of pytest-xdist, attaching a debugger is
 straightforward. For debugging, it's recommended to run the tests individually with
 ``pytest <test name>`` or via an IDE, which will skip pytest-xdist.
 
+Running type checkers
++++++++++++++++++++++
+
+We use `mypy <https://mypy.readthedocs.io/en/stable/>`_ and `pyright <https://microsoft.github.io/pyright/#/>`_ to
+enforce type safety. You can run them with:
+
+- ``make mypy``
+- ``make pyright``
+- ``make typecheck`` to run both
+- ``make lint`` to run pre-commit hooks and type checkers.
+
+Our type checkers are run on Python 3.12 in CI, so you should make sure to run them on the same version locally as well.
 
 Project documentation
 ---------------------
