@@ -1,11 +1,10 @@
-import sys
-from typing import Dict, Generic
+from typing import Dict, Generic, Tuple
 
 import pytest
 from pydantic import BaseModel
 from typing_extensions import Any, TypeVar
 
-from litestar.contrib.pydantic.utils import PYDANTIC_V2, pydantic_get_type_hints_with_generics_resolved
+from litestar.contrib.pydantic.utils import pydantic_get_type_hints_with_generics_resolved
 
 T = TypeVar("T")
 
@@ -14,7 +13,6 @@ class GenericPydanticModel(BaseModel, Generic[T]):
     foo: T
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 12) and not PYDANTIC_V2, reason="Refer issue #2463.")
 @pytest.mark.parametrize(
     ("annotation", "expected_type_hints"),
     (
@@ -23,4 +21,11 @@ class GenericPydanticModel(BaseModel, Generic[T]):
     ),
 )
 def test_get_pydantic_type_hints_with_generics_resolved(annotation: Any, expected_type_hints: Dict[str, Any]) -> None:
-    assert pydantic_get_type_hints_with_generics_resolved(annotation) == expected_type_hints
+    type_hints = pydantic_get_type_hints_with_generics_resolved(annotation)
+
+    # In Python 3.12 and Pydantic V1, `__slots__` is returned in `get_type_hints`.
+    slots_type = type_hints.pop("__slots__", None)
+    if slots_type is not None:
+        assert slots_type == Tuple[str, ...]
+
+    assert type_hints == expected_type_hints

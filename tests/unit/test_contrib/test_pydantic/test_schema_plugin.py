@@ -1,7 +1,5 @@
-import sys
 from typing import Dict, Generic, Optional
 
-import pytest
 from pydantic import BaseModel
 from typing_extensions import Annotated, TypeVar
 
@@ -10,7 +8,6 @@ from litestar._openapi.schema_generation.schema import (
     _get_type_schema_name,
 )
 from litestar.contrib.pydantic.pydantic_schema_plugin import PydanticSchemaPlugin
-from litestar.contrib.pydantic.utils import PYDANTIC_V2
 from litestar.openapi.spec import OpenAPIType
 from litestar.openapi.spec.schema import Schema
 from litestar.typing import FieldDefinition
@@ -25,10 +22,6 @@ class PydanticGeneric(BaseModel, Generic[T]):
     annotated_foo: Annotated[T, object()]
 
 
-@pytest.mark.skipif(
-    sys.version_info >= (3, 12) and not PYDANTIC_V2,
-    reason="`get_type_hints_with_generics_resolved` does not work. Refer issue #2463.",
-)
 def test_schema_generation_with_generic_classes() -> None:
     cls = PydanticGeneric[int]
     field_definition = FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
