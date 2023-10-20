@@ -6,15 +6,17 @@ from typing import TYPE_CHECKING, Collection, Generic, TypeVar
 from typing_extensions import TypeAlias, override
 
 from litestar.contrib.pydantic.utils import is_pydantic_undefined
+from litestar.contrib.pydantic.pydantic_schema_plugin import PYDANTIC_TYPE_MAP
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField
 from litestar.exceptions import MissingDependencyException, ValidationException
+from litestar.openapi.spec.enums import OpenAPIType
 from litestar.types.empty import Empty
+from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
     from typing import Any, Generator
-
     from litestar.typing import FieldDefinition
 
 try:
@@ -45,6 +47,12 @@ T = TypeVar("T", bound="ModelType | Collection[ModelType]")
 
 
 __all__ = ("PydanticDTO",)
+
+DOWNTYPE_MAP: dict[OpenAPIType, type[Any]] = {
+    OpenAPIType.STRING: str,
+    OpenAPIType.INTEGER: int,
+    OpenAPIType.BOOLEAN: bool,
+}
 
 
 class PydanticDTO(AbstractDTO[T], Generic[T]):
@@ -81,6 +89,15 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
 
         for field_name, field_info in model_fields.items():
             field_definition = model_field_definitions[field_name]
+
+            # downtype pydantic types for validation in msgspec
+            if field_definition.annotation in PYDANTIC_TYPE_MAP:
+                open_api_type = PYDANTIC_TYPE_MAP[field_definition.annotation].type
+                if isinstance(open_api_type, OpenAPIType):
+                    field_definition = FieldDefinition.from_kwarg(
+                        annotation=DOWNTYPE_MAP[open_api_type], name=field_name
+                    )
+
             dto_field = (field_definition.extra or {}).pop(DTO_FIELD_META_KEY, DTOField())
 
             if not is_pydantic_undefined(field_info.default):
