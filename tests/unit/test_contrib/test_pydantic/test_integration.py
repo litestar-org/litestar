@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from pydantic import VERSION, BaseModel, Field
@@ -13,7 +15,7 @@ def test_pydantic_validation_error_raises_400() -> None:
 
     ModelDTO = PydanticDTO[Model]
 
-    @post(dto=ModelDTO)
+    @post(dto=ModelDTO, signature_types=[Model])
     def handler(data: Model) -> Model:
         return data
 

@@ -15,7 +15,7 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.12"
+          python-version: "3.8"
           allow-prereleases: true
 
       - name: Install Pre-Commit
@@ -38,13 +38,13 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.12"
+          python-version: "3.8"
           allow-prereleases: true
 
       - uses: pdm-project/setup-pdm@v3
         name: Set up PDM
         with:
-          python-version: "3.12"
+          python-version: "3.8"
           allow-python-prereleases: false
           cache: true
           cache-dependency-path: |
@@ -63,13 +63,13 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.12"
+          python-version: "3.8"
           allow-prereleases: true
 
       - uses: pdm-project/setup-pdm@v3
         name: Set up PDM
         with:
-          python-version: "3.12"
+          python-version: "3.8"
           allow-python-prereleases: false
           cache: true
           cache-dependency-path: |

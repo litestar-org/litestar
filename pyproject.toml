@@ -39,7 +39,7 @@ dependencies = [
   "multidict>=6.0.2",
   "polyfactory>=2.6.3",
   "pyyaml",
-  "typing-extensions",
+  "typing-extensions>=4.6.0",
   "click",
   "rich>=13.0.0",
   "rich-click",

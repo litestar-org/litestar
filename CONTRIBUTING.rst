@@ -4,6 +4,13 @@ Contribution guide
 Setting up the environment
 --------------------------
 
+.. tip:: We strongly encourage setting up your environment to use the lowest version of Python that is supported by
+   Litestar. This will ensure that the changes you made are backward compatible and will not fail in CI. This will also
+   ensure that when you run type checkers locally, you will get the same results as CI. Doing this will save you time!
+
+   The lowest currently supported version is Python 3.8. You can use `pyenv <https://github.com/pyenv/pyenv>`_ to manage
+   multiple Python versions on your system.
+
 .. tip:: We maintain a Makefile with several commands to help with common tasks.
    You can run ``make help`` to see a list of available commands.
 
@@ -102,7 +109,7 @@ enforce type safety. You can run them with:
 - ``make typecheck`` to run both
 - ``make lint`` to run pre-commit hooks and type checkers.
 
-Our type checkers are run on Python 3.12 in CI, so you should make sure to run them on the same version locally as well.
+Our type checkers are run on Python 3.8 in CI, so you should make sure to run them on the same version locally as well.
 
 Project documentation
 ---------------------

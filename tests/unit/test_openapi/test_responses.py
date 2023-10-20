@@ -1,8 +1,11 @@
+# ruff: noqa: UP006
+from __future__ import annotations
+
 from dataclasses import dataclass
 from http import HTTPStatus
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Callable, Dict, Type, TypedDict
+from typing import Any, Callable, Dict, TypedDict
 from unittest.mock import MagicMock
 
 import pytest
@@ -43,12 +46,12 @@ from tests import PydanticPerson, PydanticPersonFactory
 from .utils import PetException
 
 
-def get_registered_route_handler(handler: "HTTPRouteHandler | type[Controller]", name: str) -> HTTPRouteHandler:
+def get_registered_route_handler(handler: HTTPRouteHandler | type[Controller], name: str) -> HTTPRouteHandler:
     app = Litestar(route_handlers=[handler])
     return app.asgi_router.route_handler_index[name]  # type: ignore[return-value]
 
 
-def test_create_responses(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
+def test_create_responses(person_controller: type[Controller], pet_controller: type[Controller]) -> None:
     for route in Litestar(route_handlers=[person_controller]).routes:
         assert isinstance(route, HTTPRoute)
         for route_handler, _ in route.route_handler_map.values():
@@ -217,7 +220,7 @@ def test_create_success_response_with_response_class() -> None:
         return Response(content=PydanticPersonFactory.build())
 
     handler = get_registered_route_handler(handler, "test")
-    schemas: Dict[str, Schema] = {}
+    schemas: dict[str, Schema] = {}
     response = create_success_response(
         handler, SchemaCreator(generate_examples=True, schemas=schemas, plugins=[PydanticSchemaPlugin()])
     )
@@ -336,7 +339,7 @@ def test_create_additional_responses() -> None:
     def handler() -> PydanticPerson:
         return PydanticPersonFactory.build()
 
-    schemas: Dict[str, Schema] = {}
+    schemas: dict[str, Schema] = {}
     responses = create_additional_responses(handler, SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]))
 
     first_response = next(responses)
@@ -417,13 +420,13 @@ def test_create_response_for_response_subclass() -> None:
     class CustomResponse(Response[T]):
         pass
 
-    @get(path="/test", name="test")
+    @get(path="/test", name="test", signature_types=[CustomResponse])
     def handler() -> CustomResponse[PydanticPerson]:
         return CustomResponse(content=PydanticPersonFactory.build())
 
     handler = get_registered_route_handler(handler, "test")
 
-    schemas: Dict[str, Schema] = {}
+    schemas: dict[str, Schema] = {}
     response = create_success_response(
         handler, SchemaCreator(generate_examples=True, schemas=schemas, plugins=[PydanticSchemaPlugin()])
     )
