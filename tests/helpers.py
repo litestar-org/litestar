@@ -16,7 +16,7 @@ RANDOM = random.Random(b"bA\xcd\x00\xa9$\xa7\x17\x1c\x10")
 if sys.version_info < (3, 9):
 
     def randbytes(n: int) -> bytes:
-        return bytes(bytearray(RANDOM.getrandbits(8) for _ in range(n)))
+        return RANDOM.getrandbits(8 * n).to_bytes(n, "little")
 
 else:
     randbytes = RANDOM.randbytes
