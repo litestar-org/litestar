@@ -4,7 +4,9 @@ Contribution guide
 Setting up the environment
 --------------------------
 
-.. tip:: We strongly encourage setting up your environment to use the lowest version of Python that is supported by
+.. tip:: Choosing your Python version.
+
+   We strongly encourage setting up your environment to use the lowest version of Python that is supported by
    Litestar. This will ensure that the changes you made are backward compatible and will not fail in CI. This will also
    ensure that when you run type checkers locally, you will get the same results as CI. Doing this will save you time!
 
