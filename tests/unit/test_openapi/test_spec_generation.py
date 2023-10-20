@@ -4,12 +4,14 @@ import pytest
 from msgspec import Struct
 
 from litestar import post
+from litestar._openapi.schema_generation.utils import normalize_type_name
 from litestar.testing import create_test_client
 from tests import (
     AttrsPerson,
     MsgSpecStructPerson,
     PydanticDataClassPerson,
     PydanticPerson,
+    PydanticPet,
     TypedDictPerson,
     VanillaDataClassPerson,
 )
@@ -34,8 +36,10 @@ def test_spec_generation(cls: Any) -> None:
     with create_test_client(handler) as client:
         schema = client.app.openapi_schema
         assert schema
+        schema_key = normalize_type_name(str(cls))
 
-        assert schema.to_schema()["components"]["schemas"][cls.__name__] == {
+        pet_schema_key = normalize_type_name(str(PydanticPet))
+        assert schema.to_schema()["components"]["schemas"][schema_key] == {
             "properties": {
                 "first_name": {"type": "string"},
                 "last_name": {"type": "string"},
@@ -51,7 +55,7 @@ def test_spec_generation(cls: Any) -> None:
                 "pets": {
                     "oneOf": [
                         {"type": "null"},
-                        {"items": {"$ref": "#/components/schemas/PydanticPet"}, "type": "array"},
+                        {"items": {"$ref": f"#/components/schemas/{pet_schema_key}"}, "type": "array"},
                     ]
                 },
             },
@@ -70,11 +74,13 @@ def test_msgspec_schema() -> None:
     def handler(data: CamelizedStruct) -> CamelizedStruct:
         return data
 
+    schema_key = normalize_type_name(str(CamelizedStruct))
+
     with create_test_client(handler) as client:
         schema = client.app.openapi_schema
         assert schema
 
-        assert schema.to_schema()["components"]["schemas"][CamelizedStruct.__name__] == {
+        assert schema.to_schema()["components"]["schemas"][schema_key] == {
             "properties": {"fieldOne": {"type": "integer"}, "fieldTwo": {"type": "number"}},
             "required": ["fieldOne", "fieldTwo"],
             "title": "CamelizedStruct",

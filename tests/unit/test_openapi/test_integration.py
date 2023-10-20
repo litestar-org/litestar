@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 from typing_extensions import Annotated
 
 from litestar import Controller, get, post
+from litestar._openapi.schema_generation.utils import normalize_type_name
 from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.enums import MediaType, OpenAPIMediaType, ParamType
 from litestar.openapi import OpenAPIConfig, OpenAPIController
@@ -168,9 +169,10 @@ def test_msgspec_schema_generation(create_examples: bool) -> None:
         ),
         signature_types=[Lookup],
     ) as client:
+        schema_key = normalize_type_name(str(Lookup))
         response = client.get("/schema/openapi.json")
         assert response.status_code == HTTP_200_OK
-        assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
+        assert response.json()["components"]["schemas"][schema_key]["properties"]["id"] == {
             "description": "A unique identifier",
             "examples": [{"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}],
             "maxLength": 16,
@@ -217,8 +219,10 @@ def test_pydantic_schema_generation(create_examples: bool) -> None:
         signature_namespace={"Lookup": Lookup},
     ) as client:
         response = client.get("/schema/openapi.json")
+        schema_key = normalize_type_name(str(Lookup))
+
         assert response.status_code == HTTP_200_OK
-        assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
+        assert response.json()["components"]["schemas"][schema_key]["properties"]["id"] == {
             "description": "A unique identifier",
             "examples": [{"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}],
             "maxLength": 16,

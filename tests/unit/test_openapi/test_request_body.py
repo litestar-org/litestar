@@ -6,6 +6,7 @@ from pydantic import BaseConfig, BaseModel
 from litestar import Controller, Litestar, post
 from litestar._openapi.request_body import create_request_body
 from litestar._openapi.schema_generation import SchemaCreator
+from litestar._openapi.schema_generation.utils import normalize_type_name
 from litestar.datastructures.upload_file import UploadFile
 from litestar.dto import AbstractDTO
 from litestar.enums import RequestEncodingType
@@ -65,9 +66,11 @@ def test_upload_file_request_body_generation() -> None:
         "items": {"type": "string", "contentMediaType": "application/octet-stream"},
         "type": "array",
     }
+
+    schema_key = normalize_type_name(str(FormData))
     assert components == {
         "schemas": {
-            "FormData": {
+            schema_key: {
                 "properties": {
                     "cv": {
                         "type": "string",
