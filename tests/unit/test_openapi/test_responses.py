@@ -19,7 +19,6 @@ from litestar._openapi.responses import (
     create_success_response,
 )
 from litestar._openapi.schema_generation import SchemaCreator
-from litestar.contrib.pydantic import PydanticSchemaPlugin
 from litestar.datastructures import Cookie, ResponseHeader
 from litestar.dto import AbstractDTO
 from litestar.exceptions import (
@@ -41,7 +40,7 @@ from litestar.status_codes import (
     HTTP_406_NOT_ACCEPTABLE,
 )
 from litestar.typing import FieldDefinition
-from tests import PydanticPerson, PydanticPersonFactory
+from tests.models import DataclassPerson, DataclassPersonFactory
 
 from .utils import PetException
 
@@ -70,7 +69,7 @@ def test_create_responses(person_controller: type[Controller], pet_controller: t
     responses = create_responses(
         handler,
         raises_validation_error=False,
-        schema_creator=SchemaCreator(generate_examples=True, plugins=[PydanticSchemaPlugin()]),
+        schema_creator=SchemaCreator(generate_examples=True),
     )
     assert responses
     assert str(HTTP_400_BAD_REQUEST) not in responses
@@ -216,14 +215,12 @@ def test_create_success_response_with_cookies() -> None:
 
 def test_create_success_response_with_response_class() -> None:
     @get(path="/test", name="test")
-    def handler() -> Response[PydanticPerson]:
-        return Response(content=PydanticPersonFactory.build())
+    def handler() -> Response[DataclassPerson]:
+        return Response(content=DataclassPersonFactory.build())
 
     handler = get_registered_route_handler(handler, "test")
     schemas: dict[str, Schema] = {}
-    response = create_success_response(
-        handler, SchemaCreator(generate_examples=True, schemas=schemas, plugins=[PydanticSchemaPlugin()])
-    )
+    response = create_success_response(handler, SchemaCreator(generate_examples=True, schemas=schemas))
 
     assert response.content
     reference = response.content["application/json"].schema
@@ -231,7 +228,7 @@ def test_create_success_response_with_response_class() -> None:
     assert isinstance(reference, Reference)
     key = reference.ref.split("/")[-1]
     assert isinstance(schemas[key], Schema)
-    assert key == PydanticPerson.__name__
+    assert key == DataclassPerson.__name__
 
 
 def test_create_success_response_with_stream() -> None:
@@ -323,7 +320,7 @@ def test_create_additional_responses() -> None:
     class ServerError:
         message: str
 
-    class AuthenticationError(BaseModel):
+    class AuthenticationError(TypedDict):
         message: str
 
     class UnknownError(TypedDict):
@@ -336,11 +333,11 @@ def test_create_additional_responses() -> None:
             505: ResponseSpec(data_container=UnknownError),
         }
     )
-    def handler() -> PydanticPerson:
-        return PydanticPersonFactory.build()
+    def handler() -> DataclassPerson:
+        return DataclassPersonFactory.build()
 
     schemas: dict[str, Schema] = {}
-    responses = create_additional_responses(handler, SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]))
+    responses = create_additional_responses(handler, SchemaCreator(schemas=schemas))
 
     first_response = next(responses)
     assert first_response[0] == "401"
@@ -380,8 +377,8 @@ def test_additional_responses_overlap_with_other_responses() -> None:
         message: str
 
     @get(responses={200: ResponseSpec(data_container=OkResponse, description="Overwritten response")}, name="test")
-    def handler() -> PydanticPerson:
-        return PydanticPersonFactory.build()
+    def handler() -> DataclassPerson:
+        return DataclassPersonFactory.build()
 
     handler = get_registered_route_handler(handler, "test")
     responses = create_responses(
@@ -402,7 +399,7 @@ def test_additional_responses_overlap_with_raises() -> None:
         responses={400: ResponseSpec(data_container=ErrorResponse, description="Overwritten response")},
         name="test",
     )
-    def handler() -> PydanticPerson:
+    def handler() -> DataclassPerson:
         raise ValidationException()
 
     handler = get_registered_route_handler(handler, "test")
@@ -421,21 +418,19 @@ def test_create_response_for_response_subclass() -> None:
         pass
 
     @get(path="/test", name="test", signature_types=[CustomResponse])
-    def handler() -> CustomResponse[PydanticPerson]:
-        return CustomResponse(content=PydanticPersonFactory.build())
+    def handler() -> CustomResponse[DataclassPerson]:
+        return CustomResponse(content=DataclassPersonFactory.build())
 
     handler = get_registered_route_handler(handler, "test")
 
     schemas: dict[str, Schema] = {}
-    response = create_success_response(
-        handler, SchemaCreator(generate_examples=True, schemas=schemas, plugins=[PydanticSchemaPlugin()])
-    )
+    response = create_success_response(handler, SchemaCreator(generate_examples=True, schemas=schemas))
     assert response.content
     assert isinstance(response.content["application/json"], OpenAPIMediaType)
     reference = response.content["application/json"].schema
     assert isinstance(reference, Reference)
     schema = schemas[reference.value]
-    assert schema.title == "PydanticPerson"
+    assert schema.title == "DataclassPerson"
 
 
 def test_success_response_with_future_annotations(create_module: Callable[[str], ModuleType]) -> None:

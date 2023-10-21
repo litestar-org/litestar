@@ -5,13 +5,13 @@ from msgspec import Struct
 
 from litestar import post
 from litestar.testing import create_test_client
-from tests import (
+from tests.models import (
     AttrsPerson,
+    DataclassPerson,
     MsgSpecStructPerson,
-    PydanticDataClassPerson,
+    PydanticDataclassPerson,
     PydanticPerson,
     TypedDictPerson,
-    VanillaDataClassPerson,
 )
 
 
@@ -19,8 +19,8 @@ from tests import (
     "cls",
     (
         PydanticPerson,
-        VanillaDataClassPerson,
-        PydanticDataClassPerson,
+        DataclassPerson,
+        PydanticDataclassPerson,
         TypedDictPerson,
         MsgSpecStructPerson,
         AttrsPerson,
@@ -51,7 +51,7 @@ def test_spec_generation(cls: Any) -> None:
                 "pets": {
                     "oneOf": [
                         {"type": "null"},
-                        {"items": {"$ref": "#/components/schemas/PydanticPet"}, "type": "array"},
+                        {"items": {"$ref": "#/components/schemas/DataclassPet"}, "type": "array"},
                     ]
                 },
             },

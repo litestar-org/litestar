@@ -27,7 +27,7 @@ from litestar.openapi.spec.schema import Schema
 from litestar.params import BodyKwarg, Parameter, ParameterKwarg
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
-from tests import PydanticPerson, PydanticPet
+from tests.models import DataclassPerson, DataclassPet
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -166,16 +166,16 @@ def test_title_validation() -> None:
     schemas: Dict[str, Schema] = {}
     schema_creator = SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()])
 
-    schema_creator.for_field_definition(FieldDefinition.from_kwarg(name="Person", annotation=PydanticPerson))
-    assert schemas.get("PydanticPerson")
+    schema_creator.for_field_definition(FieldDefinition.from_kwarg(name="Person", annotation=DataclassPerson))
+    assert schemas.get("DataclassPerson")
 
-    schema_creator.for_field_definition(FieldDefinition.from_kwarg(name="Pet", annotation=PydanticPet))
-    assert schemas.get("PydanticPet")
+    schema_creator.for_field_definition(FieldDefinition.from_kwarg(name="Pet", annotation=DataclassPet))
+    assert schemas.get("DataclassPet")
 
     with pytest.raises(ImproperlyConfiguredException):
         schema_creator.for_field_definition(
             FieldDefinition.from_kwarg(
-                name="PydanticPerson", annotation=PydanticPet, kwarg_definition=BodyKwarg(title="PydanticPerson")
+                name="DataclassPerson", annotation=DataclassPet, kwarg_definition=BodyKwarg(title="DataclassPerson")
             )
         )
 
