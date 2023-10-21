@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import date, timedelta
 from decimal import Decimal
 from enum import Enum
@@ -29,7 +31,7 @@ class Gender(str, Enum):
     ANY = "A"
 
 
-constr_kws: "list[dict[str, Any]]" = [
+constr_kws: list[dict[str, Any]] = [
     {"pattern": "^[a-zA-Z]$"},
     {"to_upper": True, "min_length": 1, "pattern": "^[a-zA-Z]$"},
     {"to_lower": True, "min_length": 1, "pattern": "^[a-zA-Z]$"},
@@ -40,7 +42,7 @@ constr_kws: "list[dict[str, Any]]" = [
     {"min_length": 10, "max_length": 100},
 ]
 
-conlist_kws: "list[dict[str, Any]]" = [
+conlist_kws: list[dict[str, Any]] = [
     {"min_length": 1},
     {"min_length": 1, "max_length": 10},
 ]

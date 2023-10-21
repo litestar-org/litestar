@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from dataclasses import asdict
 from typing import TYPE_CHECKING, Any, cast
 from urllib.parse import urlencode
@@ -288,9 +289,7 @@ class RequestFactory:
 
                 data = attrs_as_dict(data)  # type: ignore[arg-type]
             elif is_pydantic_model_instance(data):
-                from litestar.contrib.pydantic import _model_dump
-
-                data = _model_dump(data)
+                data = data.model_dump(mode="json") if hasattr(data, "model_dump") else json.loads(data.json())
 
             if request_media_type == RequestEncodingType.JSON:
                 encoding_headers, stream = httpx_encode_json(data)

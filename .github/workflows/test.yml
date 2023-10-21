@@ -17,11 +17,15 @@ on:
         required: false
         type: string
         default: "ubuntu-latest"
+      timeout:
+        required: false
+        type: number
+        default: 10
 
 jobs:
   test:
     runs-on: ${{ inputs.os }}
-    timeout-minutes: 10
+    timeout-minutes: ${{ inputs.timeout }}
     defaults:
       run:
         shell: bash

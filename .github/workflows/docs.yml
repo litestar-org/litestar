@@ -17,13 +17,13 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - uses: pdm-project/setup-pdm@v3
         name: Set up PDM
         with:
           python-version: "3.11"
-          allowpython-prereleases: false
+          allow-python-prereleases: false
           cache: true
           cache-dependency-path: |
             ./pdm.lock

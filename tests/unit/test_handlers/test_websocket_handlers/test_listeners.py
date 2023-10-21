@@ -115,9 +115,7 @@ def test_listener_receive_with_dto(receive_mode: WebSocketMode) -> None:
     user_dto = DataclassDTO[User]
     value: Any = None
 
-    @websocket_listener(
-        "/", receive_mode=receive_mode, dto=user_dto, return_dto=None, signature_namespace={"User": User}
-    )
+    @websocket_listener("/", receive_mode=receive_mode, dto=user_dto, return_dto=None)
     def handler(data: User) -> None:
         nonlocal value
         value = data
