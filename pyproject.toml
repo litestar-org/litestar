@@ -99,7 +99,6 @@ dev = [
   "fsspec",
   "greenlet",
   "hypothesis",
-  "pydantic[email]>2",
   "python-dotenv",
   "starlette",
   "trio",
