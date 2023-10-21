@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from litestar import HttpMethod, Litestar, get
 from litestar.datastructures import Cookie, MultiDict
 from litestar.enums import ParamType, RequestEncodingType
+from litestar.serialization import encode_json
 from litestar.testing import RequestFactory
 from litestar.types import DataContainerType
 from tests.models import (
@@ -70,7 +71,7 @@ def _json_roundtrip(obj: Any) -> Any:
 
 @pytest.mark.parametrize("data_cls", [PydanticPerson, DataclassPerson, AttrsPerson, MsgSpecStructPerson])
 async def test_request_factory_create_with_data(data_cls: DataContainerType) -> None:
-    person_data = msgspec.json.decode(msgspec.json.encode(DataclassPersonFactory.build()))
+    person_data = msgspec.json.decode(encode_json(DataclassPersonFactory.build()))
     request = RequestFactory()._create_request_with_data(
         HttpMethod.POST,
         "/",
