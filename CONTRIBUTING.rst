@@ -4,14 +4,13 @@ Contribution guide
 Setting up the environment
 --------------------------
 
-.. tip:: Choosing your Python version.
-
-   We strongly encourage setting up your environment to use the lowest version of Python that is supported by
-   Litestar. This will ensure that the changes you made are backward compatible and will not fail in CI. This will also
-   ensure that when you run type checkers locally, you will get the same results as CI. Doing this will save you time!
+.. tip:: Supported Python versions.
 
    The lowest currently supported version is Python 3.8. You can use `pyenv <https://github.com/pyenv/pyenv>`_ to manage
    multiple Python versions on your system.
+
+   We also use the lowest supported version in our type-checking CI,
+   this ensures that the changes you made are backward compatible.
 
 .. tip:: We maintain a Makefile with several commands to help with common tasks.
    You can run ``make help`` to see a list of available commands.
