@@ -77,7 +77,7 @@ lock:                                             ## Rebuild lockfiles from scra
 .PHONY: mypy
 mypy:                                               ## Run mypy
 	@echo "=> Running mypy"
-	@$(ENV_PREFIX)mypy
+	@$(ENV_PREFIX)dmypy run
 	@echo "=> mypy complete"
 
 .PHONY: pyright
