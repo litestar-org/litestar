@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any, Dict, Optional
 from uuid import uuid4
 
+import msgspec
 import pytest
 from hypothesis import given, settings
 from hypothesis.strategies import dictionaries, integers, none, one_of, sampled_from, text, timedeltas
@@ -14,7 +15,7 @@ from litestar.contrib.pydantic import _model_dump
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from litestar.stores.memory import MemoryStore
 from litestar.testing import create_test_client
-from tests import User, UserFactory
+from tests.models import User, UserFactory
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
@@ -75,7 +76,7 @@ async def test_jwt_auth(
     @get("/my-endpoint", middleware=[jwt_auth.middleware])
     def my_handler(request: Request["User", Token, Any]) -> None:
         assert request.user
-        assert _model_dump(request.user) == _model_dump(user)
+        assert msgspec.to_builtins(request.user) == msgspec.to_builtins(user)
         assert request.auth.sub == str(user.id)
 
     @get("/login")
@@ -183,7 +184,7 @@ async def test_jwt_cookie_auth(
     @get("/my-endpoint", middleware=[jwt_auth.middleware])
     def my_handler(request: Request["User", Token, Any]) -> None:
         assert request.user
-        assert _model_dump(request.user) == _model_dump(user)
+        assert msgspec.to_builtins(request.user) == msgspec.to_builtins(user)
         assert request.auth.sub == str(user.id)
 
     @get("/login")

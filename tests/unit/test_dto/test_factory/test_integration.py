@@ -38,7 +38,7 @@ def test_url_encoded_form_data(use_experimental_dto_backend: bool) -> None:
     class UserDTO(DataclassDTO[User]):
         config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
-    @post(dto=UserDTO, signature_namespace={"User": User})
+    @post(dto=UserDTO, signature_types=[User])
     def handler(data: User = Body(media_type=RequestEncodingType.URL_ENCODED)) -> User:
         return data
 
@@ -63,7 +63,7 @@ async def test_multipart_encoded_form_data(use_experimental_dto_backend: bool) -
     class PayloadDTO(DataclassDTO[Payload]):
         config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
-    @post(dto=PayloadDTO, return_dto=None, signature_namespace={"Payload": Payload}, media_type=MediaType.TEXT)
+    @post(dto=PayloadDTO, return_dto=None, signature_types=[Payload], media_type=MediaType.TEXT)
     async def handler(data: Payload = Body(media_type=RequestEncodingType.MULTI_PART)) -> bytes:
         return await data.forbidden.read()
 
@@ -83,7 +83,7 @@ def test_renamed_field(use_experimental_dto_backend: bool) -> None:
     config = DTOConfig(rename_fields={"bar": "baz"}, experimental_codegen_backend=use_experimental_dto_backend)
     dto = DataclassDTO[Annotated[Foo, config]]
 
-    @post(dto=dto, signature_namespace={"Foo": Foo})
+    @post(dto=dto, signature_types=[Foo])
     def handler(data: Foo) -> Foo:
         assert data.bar == "hello"
         return data
@@ -128,7 +128,7 @@ def test_fields_alias_generator(
     config = DTOConfig(rename_strategy=rename_strategy, experimental_codegen_backend=use_experimental_dto_backend)
     dto = DataclassDTO[Annotated[Fzop, config]]
 
-    @post(dto=dto, signature_namespace={"Foo": Fzop})
+    @post(dto=dto)
     def handler(data: Fzop) -> Fzop:
         assert data.bar == instance.bar
         assert data.SPAM == instance.SPAM
@@ -147,7 +147,7 @@ def test_dto_data_injection(use_experimental_dto_backend: bool) -> None:
 
     config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
-    @post(dto=DataclassDTO[Annotated[Foo, config]], return_dto=None, signature_namespace={"Foo": Foo})
+    @post(dto=DataclassDTO[Annotated[Foo, config]], return_dto=None, signature_types=[Foo])
     def handler(data: DTOData[Foo]) -> Foo:
         assert isinstance(data, DTOData)
         assert data.as_builtins() == {"bar": "hello"}
@@ -183,9 +183,7 @@ def test_dto_data_injection_with_nested_model(use_experimental_dto_backend: bool
         assert isinstance(data, DTOData)
         return cast("dict[str, Any]", data.as_builtins())
 
-    with create_test_client(
-        route_handlers=[handler], signature_namespace={"Foo": NestedFoo, "NestingBar": NestingBar}
-    ) as client:
+    with create_test_client(route_handlers=[handler]) as client:
         resp = client.post("/", json={"foo": {"bar": "hello"}})
         assert resp.status_code == 201
         assert resp.json() == {"foo": {"bar": "hello"}}
@@ -206,9 +204,7 @@ def test_dto_data_create_instance_nested_kwargs(use_experimental_dto_backend: bo
         assert result.foo.baz == "world"
         return result
 
-    with create_test_client(
-        route_handlers=[handler], signature_namespace={"NestedFoo": NestedFoo, "NestingBar": NestingBar}
-    ) as client:
+    with create_test_client(route_handlers=[handler]) as client:
         response = client.post("/", json={"foo": {"bar": "hello"}})
         assert response.status_code == 201
         assert response.json() == {"foo": {"bar": "hello", "baz": "world"}}
@@ -224,7 +220,7 @@ class User:
 def test_dto_data_with_url_encoded_form_data(use_experimental_dto_backend: bool) -> None:
     config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
-    @post(dto=DataclassDTO[Annotated[User, config]], signature_namespace={"User": User})
+    @post(dto=DataclassDTO[Annotated[User, config]])
     def handler(data: DTOData[User] = Body(media_type=RequestEncodingType.URL_ENCODED)) -> User:
         return data.create_instance()
 
@@ -283,9 +279,7 @@ def test_dto_data_create_instance_renamed_fields(use_experimental_dto_backend: b
         assert result.spam_bar.best_greeting == "hello world"
         return result
 
-    with create_test_client(
-        route_handlers=[handler], signature_namespace={"NestedFoo": NestedFoo, "NestingBar": NestingBar}
-    ) as client:
+    with create_test_client(route_handlers=[handler]) as client:
         response = client.post("/", json={"bar": "hello", "spamBar": {"bestGreeting": "hello world"}})
         assert response.status_code == 201
         assert response.json() == {"bar": "hello", "fooFoo": "world", "spamBar": {"bestGreeting": "hello world"}}
@@ -295,7 +289,7 @@ def test_dto_data_with_patch_request(use_experimental_dto_backend: bool) -> None
     class PatchDTO(DataclassDTO[Annotated[User, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]]):
         config = DTOConfig(partial=True)
 
-    @patch(dto=PatchDTO, return_dto=None, signature_namespace={"User": User})
+    @patch(dto=PatchDTO, return_dto=None)
     def handler(data: DTOData[User]) -> User:
         return data.update_instance(User(name="John", age=42))
 
@@ -343,14 +337,14 @@ def test_dto_openapi_without_unique_handler_names(use_experimental_dto_backend: 
     ]
     read_dto = DataclassDTO[SharedModelName]
 
-    @post(dto=write_dto, return_dto=read_dto, signature_namespace={"UniqueModelName": SharedModelName})
+    @post(dto=write_dto, return_dto=read_dto)
     def handler(data: SharedModelName) -> SharedModelName:
         return data
 
     class MyController(Controller):
         path = "/sub-path"
 
-        @post(dto=write_dto, return_dto=read_dto, signature_namespace={"SharedModelName": SharedModelName})
+        @post(dto=write_dto, return_dto=read_dto)
         def handler(self, data: SharedModelName) -> SharedModelName:
             return data
 
@@ -381,7 +375,7 @@ def test_url_encoded_form_data_patch_request(use_experimental_dto_backend: bool)
         Annotated[User, DTOConfig(partial=True, experimental_codegen_backend=use_experimental_dto_backend)]
     ]
 
-    @post(dto=dto, return_dto=None, signature_namespace={"User": User, "dict": Dict})
+    @post(dto=dto, return_dto=None, signature_types=[User])
     def handler(data: DTOData[User] = Body(media_type=RequestEncodingType.URL_ENCODED)) -> Dict[str, Any]:
         return data.as_builtins()  # type:ignore[no-any-return]
 
@@ -402,7 +396,7 @@ def test_dto_with_generic_sequence_annotations(use_experimental_dto_backend: boo
 
     @post(
         dto=DataclassDTO[Annotated[User, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]],
-        signature_namespace={"User": User},
+        signature_types=[User],
     )
     def handler(data: Sequence[User]) -> Sequence[User]:
         return data
@@ -422,7 +416,7 @@ def test_dto_private_fields(use_experimental_dto_backend: bool) -> None:
 
     @post(
         dto=DataclassDTO[Annotated[Foo, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]],
-        signature_namespace={"Foo": Foo},
+        signature_types=[Foo],
     )
     def handler(data: DTOData[Foo]) -> Foo:
         mock.received_data = data.as_builtins()
@@ -449,7 +443,7 @@ def test_dto_private_fields_disabled(use_experimental_dto_backend: bool) -> None
                 DTOConfig(underscore_fields_private=False, experimental_codegen_backend=use_experimental_dto_backend),
             ]
         ],
-        signature_namespace={"Foo": Foo},
+        signature_types=[Foo],
     )
     def handler(data: Foo) -> Foo:
         return data
@@ -473,7 +467,7 @@ def test_dto_concrete_builtin_collection_types(use_experimental_dto_backend: boo
                 DTOConfig(underscore_fields_private=False, experimental_codegen_backend=use_experimental_dto_backend),
             ]
         ],
-        signature_namespace={"Foo": Foo},
+        signature_types=[Foo],
     )
     def handler(data: Foo) -> Foo:
         return data
@@ -506,7 +500,7 @@ def test_dto_classic_pagination(use_experimental_dto_backend: bool) -> None:
             total_pages=20,
         )
 
-    with create_test_client(handler, signature_namespace={"PaginatedUser": PaginatedUser}) as client:
+    with create_test_client(handler) as client:
         response = client.get("/")
         assert response.json() == {
             "items": [{"name": "John"}, {"name": "Jane"}],
@@ -533,7 +527,7 @@ def test_dto_cursor_pagination(use_experimental_dto_backend: bool) -> None:
             cursor=uuid,
         )
 
-    with create_test_client(handler, signature_namespace={"PaginatedUser": PaginatedUser}) as client:
+    with create_test_client(handler) as client:
         response = client.get("/")
         assert response.json() == {
             "items": [{"name": "John"}, {"name": "Jane"}],
@@ -558,7 +552,7 @@ def test_dto_offset_pagination(use_experimental_dto_backend: bool) -> None:
             total=20,
         )
 
-    with create_test_client(handler, signature_namespace={"PaginatedUser": PaginatedUser}) as client:
+    with create_test_client(handler) as client:
         response = client.get("/")
         assert response.json() == {
             "items": [{"name": "John"}, {"name": "Jane"}],
@@ -587,9 +581,7 @@ def test_dto_generic_dataclass_wrapped_list_response(use_experimental_dto_backen
             other=2,
         )
 
-    with create_test_client(
-        handler, signature_namespace={"PaginatedUser": PaginatedUser, "Wrapped": Wrapped}
-    ) as client:
+    with create_test_client(handler) as client:
         response = client.get("/")
         assert response.json() == {"data": [{"name": "John"}, {"name": "Jane"}], "other": 2}
 
@@ -635,7 +627,7 @@ def test_dto_generic_dataclass_wrapped_scalar_response_with_additional_mapping_d
             other={"a": 1, "b": 2},
         )
 
-    with create_test_client(handler, signature_namespace={"WrappedWithDict": WrappedWithDict}) as client:
+    with create_test_client(handler) as client:
         response = client.get("/")
         assert response.json() == {"data": {"name": "John"}, "other": {"a": 1, "b": 2}}
 
@@ -680,7 +672,7 @@ def test_schema_required_fields_with_msgspec_dto(use_experimental_dto_backend: b
     class UserDTO(MsgspecDTO[MsgspecUser]):
         config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
-    @post(dto=UserDTO, return_dto=None, signature_namespace={"MsgspecUser": MsgspecUser})
+    @post(dto=UserDTO, return_dto=None, signature_types=[MsgspecUser])
     def handler(data: MsgspecUser, request: Request) -> dict:
         schema = request.app.openapi_schema
         return schema.to_schema()
@@ -705,7 +697,7 @@ def test_schema_required_fields_with_pydantic_dto(use_experimental_dto_backend: 
     class UserDTO(PydanticDTO[PydanticUser]):
         config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
-    @post(dto=UserDTO, return_dto=None, signature_namespace={"PydanticUser": PydanticUser})
+    @post(dto=UserDTO, return_dto=None, signature_types=[PydanticUser])
     def handler(data: PydanticUser, request: Request) -> dict:
         schema = request.app.openapi_schema
         return schema.to_schema()
@@ -731,7 +723,7 @@ def test_schema_required_fields_with_dataclass_dto(use_experimental_dto_backend:
     class UserDTO(DataclassDTO[DataclassUser]):
         config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
-    @post(dto=UserDTO, return_dto=None, signature_namespace={"DataclassUser": DataclassUser})
+    @post(dto=UserDTO, return_dto=None, signature_types=[DataclassUser])
     def handler(data: DataclassUser, request: Request) -> dict:
         schema = request.app.openapi_schema
         return schema.to_schema()
@@ -756,7 +748,7 @@ def test_schema_required_fields_with_msgspec_dto_and_default_fields(use_experime
     class UserDTO(MsgspecDTO[MsgspecUser]):
         config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
-    @post(dto=UserDTO, return_dto=None, signature_namespace={"MsgspecUser": MsgspecUser})
+    @post(dto=UserDTO, return_dto=None, signature_types=[MsgspecUser])
     def handler(data: MsgspecUser, request: Request) -> dict:
         schema = request.app.openapi_schema
         return schema.to_schema()
@@ -795,10 +787,7 @@ def test_dto_with_msgspec_with_bound_generic_and_inherited_models(use_experiment
     def handler(data: Superuser) -> Superuser:
         return data
 
-    with create_test_client(
-        handler,
-        signature_namespace={"Superuser": Superuser, "BoundUser": BoundUser, "ClassicNameStyle": ClassicNameStyle},
-    ) as client:
+    with create_test_client(handler) as client:
         data = Superuser(data=ClassicNameStyle(first_name="A", surname="B"), age=10)
         received = client.post(
             "/",

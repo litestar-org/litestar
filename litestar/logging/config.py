@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field
 from importlib.util import find_spec
@@ -42,6 +43,10 @@ default_handlers: dict[str, dict[str, Any]] = {
         "formatter": "standard",
     },
 }
+
+if sys.version_info >= (3, 12, 0):
+    default_handlers["queue_listener"]["handlers"] = ["console"]
+
 
 default_picologging_handlers: dict[str, dict[str, Any]] = {
     "console": {
@@ -327,7 +332,6 @@ class StructLoggingConfig(BaseLoggingConfig):
 
         from structlog import configure, get_logger
 
-        # we now configure structlog
         configure(
             **{
                 k: v

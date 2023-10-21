@@ -205,6 +205,7 @@ class Litestar(Router):
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         security: Sequence[SecurityRequirement] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
+        signature_types: Sequence[Any] | None = None,
         state: State | None = None,
         static_files_config: Sequence[StaticFilesConfig] | None = None,
         stores: StoreRegistry | dict[str, Store] | None = None,
@@ -290,7 +291,9 @@ class Litestar(Router):
             security: A sequence of dicts that will be added to the schema of all route handlers in the application.
                 See
                 :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
-            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modeling.
+            signature_types: A sequence of types for use in forward reference resolution during signature modeling.
+                These types will be added to the signature namespace using their ``__name__`` attribute.
             state: An optional :class:`State <.datastructures.State>` for application state.
             static_files_config: A sequence of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`
             stores: Central registry of :class:`Store <.stores.base.Store>` that will be available throughout the
@@ -356,6 +359,7 @@ class Litestar(Router):
             route_handlers=list(route_handlers) if route_handlers is not None else [],
             security=list(security or []),
             signature_namespace=dict(signature_namespace or {}),
+            signature_types=list(signature_types or []),
             state=state or State(),
             static_files_config=list(static_files_config or []),
             stores=stores,
@@ -432,6 +436,7 @@ class Litestar(Router):
             route_handlers=[],
             security=config.security,
             signature_namespace=config.signature_namespace,
+            signature_types=config.signature_types,
             tags=config.tags,
             type_encoders=config.type_encoders,
             type_decoders=config.type_decoders,

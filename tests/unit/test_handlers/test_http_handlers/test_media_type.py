@@ -5,7 +5,7 @@ import pytest
 from pydantic.types import PaymentCardBrand
 
 from litestar import Litestar, MediaType, get
-from tests import PydanticPerson
+from tests.models import DataclassPerson
 
 
 class MyEnum(Enum):
@@ -26,7 +26,7 @@ class MyBytes(bytes):
         (PaymentCardBrand, MediaType.TEXT),
         (MyEnum, MediaType.JSON),
         (dict, MediaType.JSON),
-        (PydanticPerson, MediaType.JSON),
+        (DataclassPerson, MediaType.JSON),
     ),
 )
 def test_media_type_inference(annotation: Any, expected_media_type: MediaType) -> None:

@@ -13,8 +13,8 @@ from litestar.testing import create_test_client
 def test_structlog_config_default(capsys: CaptureFixture) -> None:
     with create_test_client([], logging_config=StructLoggingConfig()) as client:
         assert client.app.logger
-        assert isinstance(client.app.logger, BindableLogger)
-        client.app.logger.info("message", key="value")  # type: ignore [attr-defined]
+        assert isinstance(client.app.logger.bind(), BindableLogger)
+        client.app.logger.info("message", key="value")
 
         log_messages = [decode_json(value=x) for x in capsys.readouterr().out.splitlines()]
         assert len(log_messages) == 1
@@ -29,11 +29,11 @@ def test_structlog_config_specify_processors(capsys: CaptureFixture) -> None:
 
     with create_test_client([], logging_config=logging_config) as client:
         assert client.app.logger
-        assert isinstance(client.app.logger, BindableLogger)
+        assert isinstance(client.app.logger.bind(), BindableLogger)
 
-        client.app.logger.info("message1", key="value1")  # type: ignore [attr-defined]
+        client.app.logger.info("message1", key="value1")
         # Log twice to make sure issue #882 doesn't appear again
-        client.app.logger.info("message2", key="value2")  # type: ignore [attr-defined]
+        client.app.logger.info("message2", key="value2")
 
         log_messages = [decode_json(value=x) for x in capsys.readouterr().out.splitlines()]
 

@@ -20,6 +20,7 @@ from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.signature import (
     ParsedSignature,
+    add_types_to_signature_namespace,
     get_fn_type_hints,
     infer_request_encoding_from_field_definition,
 )
@@ -150,3 +151,21 @@ def xtest_infer_request_encoding_type_from_parameter(
         )
         == expected
     )
+
+
+def test_add_types_to_signature_namespace() -> None:
+    """Test add_types_to_signature_namespace."""
+    ns = add_types_to_signature_namespace([int, str], {})
+    assert ns == {"int": int, "str": str}
+
+
+def test_add_types_to_signature_namespace_with_existing_types() -> None:
+    """Test add_types_to_signature_namespace with existing types."""
+    ns = add_types_to_signature_namespace([str], {"int": int})
+    assert ns == {"int": int, "str": str}
+
+
+def test_add_types_to_signature_namespace_with_existing_types_raises() -> None:
+    """Test add_types_to_signature_namespace with existing types raises."""
+    with pytest.raises(ImproperlyConfiguredException):
+        add_types_to_signature_namespace([int], {"int": int})

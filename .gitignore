@@ -39,3 +39,4 @@ __pypackages__/
 # pyenv / rtx / asdf
 .tool-versions
 .python-version
+/.dmypy.json

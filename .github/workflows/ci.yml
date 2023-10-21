@@ -15,7 +15,8 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: "3.12"
+          allow-prereleases: true
 
       - name: Install Pre-Commit
         run: python -m pip install pre-commit && pre-commit install
@@ -30,16 +31,66 @@ jobs:
       - name: Execute Pre-Commit
         run: pre-commit run --show-diff-on-failure --color=always --all-files
 
+  mypy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+          allow-prereleases: true
+
+      - uses: pdm-project/setup-pdm@v3
+        name: Set up PDM
+        with:
+          python-version: "3.8"
+          allow-python-prereleases: false
+          cache: true
+          cache-dependency-path: |
+            ./pdm.lock
+
+      - name: Install dependencies
+        run: pdm install -G:all
+
+      - name: Run mypy
+        run: pdm run mypy
+
+  pyright:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+          allow-prereleases: true
+
+      - uses: pdm-project/setup-pdm@v3
+        name: Set up PDM
+        with:
+          python-version: "3.8"
+          allow-python-prereleases: false
+          cache: true
+          cache-dependency-path: |
+            ./pdm.lock
+
+      - name: Install dependencies
+        run: pdm install -G:all
+
+      - name: Run pyright
+        run: pdm run pyright
+
   test:
     name: "test (${{ matrix.python-version }}, pydantic@${{ matrix.pydantic-version }})"
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         pydantic-version: ["1", "2"]
     uses: ./.github/workflows/test.yml
     with:
-      coverage: ${{ matrix.python-version == '3.11' && matrix.pydantic-version == '2' }}
+      coverage: ${{ matrix.python-version == '3.12' && matrix.pydantic-version == '2' }}
       pydantic-version: ${{ matrix.pydantic-version }}
       python-version: ${{ matrix.python-version }}
 
@@ -51,9 +102,10 @@ jobs:
         os: ["macos-latest", "windows-latest"]
     uses: ./.github/workflows/test.yml
     with:
-      python-version: "3.11"
+      python-version: "3.12"
       pydantic-version: "2"
       os: ${{ matrix.os }}
+      timeout: 15
 
   sonar:
     needs:
@@ -109,12 +161,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: "3.12"
+          allow-prereleases: true
 
       - uses: pdm-project/setup-pdm@v3
         name: Set up PDM
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           allow-python-prereleases: false
           cache: true
           cache-dependency-path: |
