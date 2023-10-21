@@ -3088,7 +3088,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
+<input checked="checked" id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-19">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id20">
@@ -3130,54 +3130,6 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="c1"># we will pass to the paginator.</span>
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/people&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">people_handler</span><span class="p">(</span><span class="n">cursor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">results_per_page</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CursorPagination</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Person</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="n">paginator</span><span class="p">(</span><span class="n">cursor</span><span class="o">=</span><span class="n">cursor</span><span class="p">,</span> <span class="n">results_per_page</span><span class="o">=</span><span class="n">results_per_page</span><span class="p">)</span>
-
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">people_handler</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-</div>
-<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-9" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-20">
-Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id21">
-<div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id21" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic_factory</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
-
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.pagination</span> <span class="kn">import</span> <span class="n">AbstractSyncCursorPaginator</span><span class="p">,</span> <span class="n">CursorPagination</span>
-
-
-<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-
-
-<span class="k">class</span> <span class="nc">PersonFactory</span><span class="p">(</span><span class="n">ModelFactory</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
-    <span class="n">__model__</span> <span class="o">=</span> <span class="n">Person</span>
-
-
-<span class="c1"># we will implement a paginator - the paginator must implement the method &#39;get_items&#39;.</span>
-
-
-<span class="k">class</span> <span class="nc">PersonCursorPaginator</span><span class="p">(</span><span class="n">AbstractSyncCursorPaginator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Person</span><span class="p">]):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">PersonFactory</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">get_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">results_per_page</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Person</span><span class="p">],</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:</span><span class="n">results_per_page</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">results</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
-
-
-<span class="n">paginator</span> <span class="o">=</span> <span class="n">PersonCursorPaginator</span><span class="p">()</span>
-
-
-<span class="c1"># we now create a regular handler. The handler will receive a single query parameter - &#39;cursor&#39;, which</span>
-<span class="c1"># we will pass to the paginator.</span>
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/people&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">people_handler</span><span class="p">(</span><span class="n">cursor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">results_per_page</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CursorPagination</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Person</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">paginator</span><span class="p">(</span><span class="n">cursor</span><span class="o">=</span><span class="n">cursor</span><span class="p">,</span> <span class="n">results_per_page</span><span class="o">=</span><span class="n">results_per_page</span><span class="p">)</span>
 
 

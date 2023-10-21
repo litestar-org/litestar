@@ -1206,7 +1206,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id2">
@@ -1232,37 +1232,13 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-2">
-Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
-<span class="linenos"> 4</span>    <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="s2">&quot;done&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
-<span class="linenos"> 5</span>    <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="s2">&quot;done&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
-<span class="linenos"> 6</span>    <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="s2">&quot;done&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
-<span class="linenos"> 7</span><span class="p">]</span>
-<span class="linenos"> 8</span>
-<span class="linenos"> 9</span>
-<span class="linenos">10</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="linenos">11</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_list</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">]]:</span>
-<span class="linenos">12</span>    <span class="k">return</span> <span class="n">TODO_LIST</span>
-<span class="linenos">13</span>
-<span class="linenos">14</span>
-<span class="linenos">15</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-</div>
 </div>
 <p>If you run the app and visit <a class="reference external" href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a> in your browser you’ll see the
 following output:</p>
-<figure class="align-default" id="id4">
+<figure class="align-default" id="id3">
 <img alt="../../_images/get_todo_list.png" src="../../_images/get_todo_list.png" />
 <figcaption>
-<p><span class="caption-text">Suddenly, JSON</span><a class="headerlink" href="#id4" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">Suddenly, JSON</span><a class="headerlink" href="#id3" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 <p>Because the <code class="docutils literal notranslate"><span class="pre">get_list</span></code> function has been annotated  with
@@ -1280,11 +1256,11 @@ from it to be serialized as JSON:</p>
 article: <a class="reference external" href="https://realpython.com/python-data-classes/">Data Classes in Python 3.7+</a></p>
 </div>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-3">
+<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 <span class="linenos"> 3</span>
@@ -1314,11 +1290,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-4">
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -1371,11 +1347,11 @@ and infer that it’s going to be used as a query parameter. When a request is b
 the query parameter will be extracted from the URL, and passed to the function parameter
 of the same name.</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-5">
+<input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 <span class="linenos"> 3</span>
@@ -1407,11 +1383,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-6">
+<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-5">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -1443,17 +1419,17 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<figure class="align-default" id="id9">
+<figure class="align-default" id="id8">
 <img alt="../../_images/todos-done.png" src="../../_images/todos-done.png" />
 <figcaption>
 <p><span class="caption-text">Visiting <a class="reference external" href="http://127.0.0.1:8000?done=1">http://127.0.0.1:8000?done=1</a> will give you all the TODOs that have been
-marked as <em>done</em></span><a class="headerlink" href="#id9" title="Permalink to this image">#</a></p>
+marked as <em>done</em></span><a class="headerlink" href="#id8" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<figure class="align-default" id="id10">
+<figure class="align-default" id="id9">
 <img alt="../../_images/todos-not-done.png" src="../../_images/todos-not-done.png" />
 <figcaption>
-<p><span class="caption-text">while <a class="reference external" href="http://127.0.0.1:8000?done=0">http://127.0.0.1:8000?done=0</a> will return only those not yet done</span><a class="headerlink" href="#id10" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">while <a class="reference external" href="http://127.0.0.1:8000?done=0">http://127.0.0.1:8000?done=0</a> will return only those not yet done</span><a class="headerlink" href="#id9" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 <p>At first glance this seems to work just fine, but you might be able to spot a problem:
@@ -1463,11 +1439,11 @@ as done. For example, <code class="docutils literal notranslate"><span class="pr
 <code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">0</span></code>, and return a response with an HTTP status code that indicates an
 error if it’s something else:</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-7">
+<input id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-6">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 <span class="linenos"> 3</span>
@@ -1502,11 +1478,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-8">
+<input checked="checked" id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-7">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -1542,16 +1518,16 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <p>If the query parameter equals <code class="docutils literal notranslate"><span class="pre">1</span></code>, return all items that have <code class="docutils literal notranslate"><span class="pre">done=True</span></code>:</p>
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">23</span><span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
 <span class="linenos">24</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 <p>If the query parameter equals <code class="docutils literal notranslate"><span class="pre">0</span></code>, return all items that have <code class="docutils literal notranslate"><span class="pre">done=False</span></code>:</p>
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">25</span><span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span><span class="p">:</span>
 <span class="linenos">26</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
 </pre></div>
@@ -1561,16 +1537,16 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 Raising an <code class="docutils literal notranslate"><span class="pre">HTTPException</span></code> tells Litestar that something went wrong, and instead of
 returning a normal response, it will send a response with the HTTP status code given
 (<code class="docutils literal notranslate"><span class="pre">400</span></code> in this case) and the error message supplied.</p>
-<div class="literal-block-wrapper docutils container" id="id15">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id15" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">27</span><span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid query parameter value: </span><span class="si">{</span><span class="n">done</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<figure class="align-default" id="id16">
+<figure class="align-default" id="id15">
 <img alt="../../_images/done-john.png" src="../../_images/done-john.png" />
 <figcaption>
-<p><span class="caption-text">Try to access <a class="reference external" href="http://127.0.0.1?done=john">http://127.0.0.1?done=john</a> now and you will get this error message</span><a class="headerlink" href="#id16" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">Try to access <a class="reference external" href="http://127.0.0.1?done=john">http://127.0.0.1?done=john</a> now and you will get this error message</span><a class="headerlink" href="#id15" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 <p>Now we’ve got that out of the way, but your code has grown to be quite complex for such
@@ -1586,11 +1562,11 @@ Litestar to convert the query parameter to a boolean value, matching the values 
 <code class="docutils literal notranslate"><span class="pre">TodoItem.done</span></code> attribute, and in the same step validate it, returning error responses
 for you should the supplied value not be a valid boolean.</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-9">
+<input id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-8">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id17">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id17" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id16">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id16" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 <span class="linenos"> 3</span>
@@ -1620,11 +1596,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-10" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-10">
+<input checked="checked" id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-9">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id18">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id18" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id17">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id17" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -1654,11 +1630,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<figure class="align-default" id="id19">
+<figure class="align-default" id="id18">
 <img alt="../../_images/done-john-2.png" src="../../_images/done-john-2.png" />
 <figcaption>
 <p><span class="caption-text">Browse to <a class="reference external" href="http://127.0.0.1:8000?done=john">http://127.0.0.1:8000?done=john</a> from our earlier example, and you will see it now
-results in this descriptive error message</span><a class="headerlink" href="#id19" title="Permalink to this image">#</a></p>
+results in this descriptive error message</span><a class="headerlink" href="#id18" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 <p><strong>What’s happening here?</strong></p>
@@ -1666,8 +1642,8 @@ results in this descriptive error message</span><a class="headerlink" href="#id1
 Litestar will try to convert the value into a <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> first. Since <code class="docutils literal notranslate"><span class="pre">john</span></code>
 (arguably) is not a representation of a boolean value, it will return an error response
 instead.</p>
-<div class="literal-block-wrapper docutils container" id="id20">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id20" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id19">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id19" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">21</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
 </pre></div>
 </div>
@@ -1683,8 +1659,8 @@ and <code class="docutils literal notranslate"><span class="pre">0</span></code>
 </div>
 <p>If the conversion is successful however, <code class="docutils literal notranslate"><span class="pre">done</span></code> is now a <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>, which can then
 be compared against the <code class="docutils literal notranslate"><span class="pre">TodoItem.done</span></code> attribute:</p>
-<div class="literal-block-wrapper docutils container" id="id21">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id21" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id20">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id20" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">22</span><span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span> <span class="o">==</span> <span class="n">done</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -1700,10 +1676,10 @@ be compared against the <code class="docutils literal notranslate"><span class="
 <h3>Making the query parameter optional<a class="headerlink" href="#making-the-query-parameter-optional" title="Permalink to this heading">#</a></h3>
 <p>There is one problem left to solve though, and that is, what happens when you want to
 get <strong>all</strong> items, done or not, and omit the query parameter?</p>
-<figure class="align-default" id="id22">
+<figure class="align-default" id="id21">
 <img alt="../../_images/missing-query.png" src="../../_images/missing-query.png" />
 <figcaption>
-<p><span class="caption-text">Omitting the <code class="docutils literal notranslate"><span class="pre">?done</span></code> query parameter will result in an error</span><a class="headerlink" href="#id22" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">Omitting the <code class="docutils literal notranslate"><span class="pre">?done</span></code> query parameter will result in an error</span><a class="headerlink" href="#id21" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 <p>Because the query parameter has been defined as <code class="docutils literal notranslate"><span class="pre">done:</span> <span class="pre">bool</span></code> without giving it a
@@ -1711,11 +1687,11 @@ default value, it will be treated as a required parameter - just like a regular 
 parameter. If instead you want this to be optional, a default value needs to be
 supplied.</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-11">
+<input id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-10">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id23">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id23" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id22">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id22" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="linenos"> 3</span>
@@ -1747,11 +1723,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-12" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-12">
+<input checked="checked" id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-11">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id24">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id24" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id23">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id23" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 <span class="linenos"> 3</span>
@@ -1783,47 +1759,12 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-13" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-13">
-Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id25">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id25" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="linenos"> 4</span>
-<span class="linenos"> 5</span>
-<span class="linenos"> 6</span><span class="nd">@dataclass</span>
-<span class="linenos"> 7</span><span class="k">class</span> <span class="nc">TodoItem</span><span class="p">:</span>
-<span class="linenos"> 8</span>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
-<span class="linenos"> 9</span>    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="linenos">10</span>
-<span class="linenos">11</span>
-<span class="linenos">12</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-<span class="linenos">13</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-<span class="linenos">14</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">15</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">16</span><span class="p">]</span>
-<span class="linenos">17</span>
-<span class="linenos">18</span>
-<span class="linenos">19</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="linenos">20</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-<span class="linenos">21</span>    <span class="k">if</span> <span class="n">done</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">22</span>        <span class="k">return</span> <span class="n">TODO_LIST</span>
-<span class="linenos">23</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span> <span class="o">==</span> <span class="n">done</span><span class="p">]</span>
-<span class="linenos">24</span>
-<span class="linenos">25</span>
-<span class="linenos">26</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
-</pre></div>
 </div>
-</div>
-</div>
-</div>
-<figure class="align-default" id="id26">
+<figure class="align-default" id="id24">
 <img alt="../../_images/get_todo_list.png" src="../../_images/get_todo_list.png" />
 <figcaption>
 <p><span class="caption-text">Browsing to <a class="reference external" href="http://localhost:8000">http://localhost:8000</a> once more, you will now see it does not return an error if the
-query parameter is omitted</span><a class="headerlink" href="#id26" title="Permalink to this image">#</a></p>
+query parameter is omitted</span><a class="headerlink" href="#id24" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 <div class="admonition tip">
@@ -1846,18 +1787,18 @@ display not-done items by default, you could set the value to <a class="referenc
 another way: Litestar comes with interactive API documentation, which is generated for
 you automatically. All you need to do is run your app (<code class="docutils literal notranslate"><span class="pre">litestar</span> <span class="pre">run</span></code>) and visit
 <a class="reference external" href="http://127.0.0.1:8000/schema/swagger">http://127.0.0.1:8000/schema/swagger</a></p>
-<figure class="align-default" id="id27">
+<figure class="align-default" id="id25">
 <img alt="../../_images/swagger-get.png" src="../../_images/swagger-get.png" />
 <figcaption>
-<p><span class="caption-text">The route handler set up earlier will show up in the interactive documentation</span><a class="headerlink" href="#id27" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">The route handler set up earlier will show up in the interactive documentation</span><a class="headerlink" href="#id25" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 <p>This documentation not only gives an overview of the API you have constructed, but also
 allows you to send requests to it.</p>
-<figure class="align-default" id="id28">
+<figure class="align-default" id="id26">
 <img alt="../../_images/swagger-get-example-request.png" src="../../_images/swagger-get-example-request.png" />
 <figcaption>
-<p><span class="caption-text">Executing the same requests we did earlier</span><a class="headerlink" href="#id28" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">Executing the same requests we did earlier</span><a class="headerlink" href="#id26" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 <div class="admonition note">
