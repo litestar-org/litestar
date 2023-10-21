@@ -272,6 +272,7 @@ exclude = [
   "tests/docker_service_fixtures.py"
 ]
 include = ["litestar", "tests"]
+pythonVersion = "3.8"
 
 [tool.slotscheck]
 strict-imports = false
