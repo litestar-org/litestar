@@ -4,6 +4,14 @@ Contribution guide
 Setting up the environment
 --------------------------
 
+.. tip:: Supported Python versions.
+
+   The lowest currently supported version is Python 3.8. You can use `pyenv <https://github.com/pyenv/pyenv>`_ to manage
+   multiple Python versions on your system.
+
+   We also use the lowest supported version in our type-checking CI,
+   this ensures that the changes you made are backward compatible.
+
 .. tip:: We maintain a Makefile with several commands to help with common tasks.
    You can run ``make help`` to see a list of available commands.
 
@@ -102,7 +110,7 @@ enforce type safety. You can run them with:
 - ``make typecheck`` to run both
 - ``make lint`` to run pre-commit hooks and type checkers.
 
-Our type checkers are run on Python 3.12 in CI, so you should make sure to run them on the same version locally as well.
+Our type checkers are run on Python 3.8 in CI, so you should make sure to run them on the same version locally as well.
 
 Project documentation
 ---------------------

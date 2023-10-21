@@ -10,17 +10,18 @@ from litestar.utils.typing import annotation_is_iterable_of_type, get_origin_or_
 from tests import PydanticPerson, PydanticPet
 
 if version_info >= (3, 10):
-    from collections import deque
+    from collections import deque  # noqa: F401
 
-    # Pyright will report an error for these types if you are running on python 3.8, we run on >= 3.9 in CI
-    # so we can safely ignore that error.
     py_310_plus_annotation = [
-        (tuple[PydanticPerson, ...], True),
-        (list[PydanticPerson], True),
-        (deque[PydanticPerson], True),
-        (tuple[PydanticPet, ...], False),
-        (list[PydanticPet], False),
-        (deque[PydanticPet], False),
+        (eval(tp), exp)
+        for tp, exp in [
+            ("tuple[PydanticPerson, ...]", True),
+            ("list[PydanticPerson]", True),
+            ("deque[PydanticPerson]", True),
+            ("tuple[PydanticPet, ...]", False),
+            ("list[PydanticPet]", False),
+            ("deque[PydanticPet]", False),
+        ]
     ]
 else:
     py_310_plus_annotation = []

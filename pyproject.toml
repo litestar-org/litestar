@@ -224,6 +224,7 @@ xfail_strict = true
 [tool.mypy]
 packages = ["litestar", "tests"]
 plugins = ["pydantic.mypy"]
+python_version = "3.8"
 
 disallow_any_generics = false
 disallow_untyped_decorators = true
@@ -271,6 +272,7 @@ exclude = [
   "tests/docker_service_fixtures.py"
 ]
 include = ["litestar", "tests"]
+pythonVersion = "3.8"
 
 [tool.slotscheck]
 strict-imports = false
