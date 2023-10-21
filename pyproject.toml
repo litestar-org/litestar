@@ -86,7 +86,7 @@ opentelemetry = ["opentelemetry-instrumentation-asgi"]
 piccolo = ["piccolo"]
 picologging = ["picologging"]
 prometheus = ["prometheus-client"]
-pydantic = ["pydantic[email]", "pydantic-extra-types"]
+pydantic = ["pydantic", "email-validator", "pydantic-extra-types"]
 redis = ["redis[hiredis]>=4.4.4"]
 sqlalchemy = ["advanced-alchemy>=0.2.2,<0.4.0"]
 standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
@@ -99,7 +99,6 @@ dev = [
   "fsspec",
   "greenlet",
   "hypothesis",
-  "pydantic[email]>2",
   "python-dotenv",
   "starlette",
   "trio",
@@ -130,6 +129,7 @@ linting = [
   "blacken-docs",
   "asyncpg-stubs",
   "types-beautifulsoup4",
+  "types-pytest-lazy-fixture",
   "types-python-jose",
   "types-pyyaml",
   "types-redis",
@@ -221,7 +221,9 @@ markers = [
 xfail_strict = true
 
 [tool.mypy]
+packages = ["litestar", "tests"]
 plugins = ["pydantic.mypy"]
+python_version = "3.8"
 
 disallow_any_generics = false
 disallow_untyped_decorators = true
@@ -235,20 +237,23 @@ warn_unused_configs = true
 warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
-disable_error_code = "attr-defined"
-module = ["tests.*.test_sqlalchemy", "tests.*.test_sqlalchemy"]
+module = ["tests.examples.*", "tests.docker_service_fixtures"]
+ignore_errors = true
 
 [[tool.mypy.overrides]]
-disable_error_code = ["arg-type", "misc", "valid-type", "var-annotated"]
-module = "tests.unit.test_contrib.test_sqlalchemy.test_dto"
-
-[[tool.mypy.overrides]]
+module = ["tests.unit.test_kwargs.test_reserved_kwargs_injection"]
 disallow_untyped_decorators = false
-module = "tests.*"
 
 [[tool.mypy.overrides]]
 ignore_missing_imports = true
-module = ["mako.*", "pytimeparse.*", "brotli.*", "jsbeautifier.*"]
+module = [
+  "brotli.*",
+  "fsspec.*",
+  "jsbeautifier.*",
+  "mako.*",
+  "minijinja.*",
+  "pytimeparse.*",
+]
 
 [tool.pydantic-mypy]
 init_forbid_extra = true
@@ -266,6 +271,7 @@ exclude = [
   "tests/docker_service_fixtures.py",
 ]
 include = ["litestar", "tests"]
+pythonVersion = "3.8"
 
 [tool.slotscheck]
 strict-imports = false

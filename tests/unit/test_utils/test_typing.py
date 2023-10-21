@@ -7,20 +7,21 @@ import pytest
 from typing_extensions import Annotated
 
 from litestar.utils.typing import annotation_is_iterable_of_type, get_origin_or_inner_type, make_non_optional_union
-from tests import PydanticPerson, PydanticPet
+from tests.models import DataclassPerson, DataclassPet
 
 if version_info >= (3, 10):
-    from collections import deque
+    from collections import deque  # noqa: F401
 
-    # Pyright will report an error for these types if you are running on python 3.8, we run on >= 3.9 in CI
-    # so we can safely ignore that error.
     py_310_plus_annotation = [
-        (tuple[PydanticPerson, ...], True),
-        (list[PydanticPerson], True),
-        (deque[PydanticPerson], True),
-        (tuple[PydanticPet, ...], False),
-        (list[PydanticPet], False),
-        (deque[PydanticPet], False),
+        (eval(tp), exp)
+        for tp, exp in [
+            ("tuple[DataclassPerson, ...]", True),
+            ("list[DataclassPerson]", True),
+            ("deque[DataclassPerson]", True),
+            ("tuple[DataclassPet, ...]", False),
+            ("list[DataclassPet]", False),
+            ("deque[DataclassPet]", False),
+        ]
     ]
 else:
     py_310_plus_annotation = []
@@ -29,16 +30,16 @@ else:
 @pytest.mark.parametrize(
     "annotation, expected",
     (
-        (List[PydanticPerson], True),
-        (Sequence[PydanticPerson], True),
-        (Iterable[PydanticPerson], True),
-        (Tuple[PydanticPerson, ...], True),
-        (Deque[PydanticPerson], True),
-        (List[PydanticPet], False),
-        (Sequence[PydanticPet], False),
-        (Iterable[PydanticPet], False),
-        (Tuple[PydanticPet, ...], False),
-        (Deque[PydanticPet], False),
+        (List[DataclassPerson], True),
+        (Sequence[DataclassPerson], True),
+        (Iterable[DataclassPerson], True),
+        (Tuple[DataclassPerson, ...], True),
+        (Deque[DataclassPerson], True),
+        (List[DataclassPet], False),
+        (Sequence[DataclassPet], False),
+        (Iterable[DataclassPet], False),
+        (Tuple[DataclassPet, ...], False),
+        (Deque[DataclassPet], False),
         *py_310_plus_annotation,
         (int, False),
         (str, False),
@@ -46,7 +47,7 @@ else:
     ),
 )
 def test_annotation_is_iterable_of_type(annotation: Any, expected: bool) -> None:
-    assert annotation_is_iterable_of_type(annotation=annotation, type_value=PydanticPerson) is expected
+    assert annotation_is_iterable_of_type(annotation=annotation, type_value=DataclassPerson) is expected
 
 
 @pytest.mark.parametrize(
@@ -57,6 +58,6 @@ def test_make_non_optional_union(annotation: Any, expected: Any) -> None:
 
 
 def test_get_origin_or_inner_type() -> None:
-    assert get_origin_or_inner_type(List[PydanticPerson]) == list
-    assert get_origin_or_inner_type(Annotated[List[PydanticPerson], "foo"]) == list
-    assert get_origin_or_inner_type(Annotated[Dict[str, List[PydanticPerson]], "foo"]) == dict
+    assert get_origin_or_inner_type(List[DataclassPerson]) == list
+    assert get_origin_or_inner_type(Annotated[List[DataclassPerson], "foo"]) == list
+    assert get_origin_or_inner_type(Annotated[Dict[str, List[DataclassPerson]], "foo"]) == dict
