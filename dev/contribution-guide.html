@@ -1170,6 +1170,14 @@ document.write(`
 <h2>Setting up the environment<a class="headerlink" href="#setting-up-the-environment" title="Permalink to this heading">#</a></h2>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
+<p>Supported Python versions.</p>
+<p>The lowest currently supported version is Python 3.8. You can use <a class="reference external" href="https://github.com/pyenv/pyenv">pyenv</a> to manage
+multiple Python versions on your system.</p>
+<p>We also use the lowest supported version in our type-checking CI,
+this ensures that the changes you made are backward compatible.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
 <p>We maintain a Makefile with several commands to help with common tasks.
 You can run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">help</span></code> to see a list of available commands.</p>
 </div>
@@ -1268,7 +1276,7 @@ enforce type safety. You can run them with:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">typecheck</span></code> to run both</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">lint</span></code> to run pre-commit hooks and type checkers.</p></li>
 </ul>
-<p>Our type checkers are run on Python 3.12 in CI, so you should make sure to run them on the same version locally as well.</p>
+<p>Our type checkers are run on Python 3.8 in CI, so you should make sure to run them on the same version locally as well.</p>
 </section>
 </section>
 <section id="project-documentation">
