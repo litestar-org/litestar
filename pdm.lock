@@ -6,7 +6,7 @@ groups = ["default", "annotated-types", "attrs", "brotli", "cli", "cryptography"
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:666c5a40d35c26f8507dd369d102a06943688aaf47c21147447610156880efc9"
+content_hash = "sha256:f8e51fbadfbd0174ddf606eac933ae170ddbefe48ac2743fcd65565f36642eb5"
 
 [[package]]
 name = "accessible-pygments"
@@ -909,6 +909,20 @@ summary = "EditorConfig File Locator and Interpreter for Python"
 files = [
     {file = "EditorConfig-0.12.3-py3-none-any.whl", hash = "sha256:6b0851425aa875b08b16789ee0eeadbd4ab59666e9ebe728e526314c4a2e52c1"},
     {file = "EditorConfig-0.12.3.tar.gz", hash = "sha256:57f8ce78afcba15c8b18d46b5170848c88d56fd38f05c2ec60dbbfcb8996e89e"},
+]
+
+[[package]]
+name = "email-validator"
+version = "2.0.0.post2"
+requires_python = ">=3.7"
+summary = "A robust email address syntax and deliverability validation library."
+dependencies = [
+    "dnspython>=2.0.0",
+    "idna>=2.0.0",
+]
+files = [
+    {file = "email_validator-2.0.0.post2-py3-none-any.whl", hash = "sha256:2466ba57cda361fb7309fd3d5a225723c788ca4bbad32a0ebd5373b99730285c"},
+    {file = "email_validator-2.0.0.post2.tar.gz", hash = "sha256:1ff6e86044200c56ae23595695c54e9614f4a9551e0e393614f764860b3d7900"},
 ]
 
 [[package]]
