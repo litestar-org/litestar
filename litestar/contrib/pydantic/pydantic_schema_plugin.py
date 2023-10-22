@@ -221,7 +221,9 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
 
     @classmethod
     def for_pydantic_model(
-        cls, annotation: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel], schema_creator: SchemaCreator
+        cls,
+        annotation: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel],  # pyright: ignore
+        schema_creator: SchemaCreator,
     ) -> Schema:  # pyright: ignore
         """Create a schema object for a given pydantic model class.
 
@@ -236,7 +238,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
         is_v2_model = hasattr(annotation, "model_fields")
         annotation_hints = get_type_hints(annotation, include_extras=True)
         model_config = getattr(annotation, "__config__", getattr(annotation, "model_config", Empty))
-        model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo] = {
+        model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo] = {  # pyright: ignore
             k: getattr(f, "field_info", f)  # type: ignore[arg-type, misc]
             for k, f in (annotation.model_fields if is_v2_model else annotation.__fields__).items()  # type: ignore[union-attr]
         }

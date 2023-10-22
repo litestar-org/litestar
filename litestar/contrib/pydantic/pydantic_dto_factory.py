@@ -34,12 +34,12 @@ except ImportError:
     ValidationErrorV2 = ValidationErrorV1  # type: ignore[assignment, misc]
 
 
-except ImportError as e:  # noqa: B025
+except ImportError as e:  # noqa: B025  # pyright: ignore
     raise MissingDependencyException("pydantic") from e
 # isort: on
 
 if pydantic_v2 is not Empty:  # type: ignore[comparison-overlap]
-    ModelType: TypeAlias = "pydantic_v1.BaseModel | pydantic_v2.BaseModel"
+    ModelType: TypeAlias = "pydantic_v1.BaseModel | pydantic_v2.BaseModel"  # pyright: ignore
 else:
     ModelType = "pydantic_v1.BaseModel"  # type: ignore[misc]
 
@@ -68,11 +68,11 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
 
     @classmethod
     def generate_field_definitions(
-        cls, model_type: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel]
+        cls, model_type: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel]  # pyright: ignore
     ) -> Generator[DTOFieldDefinition, None, None]:
         model_field_definitions = cls.get_model_type_hints(model_type)
 
-        model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo]
+        model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo]  # pyright: ignore
         try:
             model_fields = dict(model_type.model_fields)  # type: ignore[union-attr]
         except AttributeError:

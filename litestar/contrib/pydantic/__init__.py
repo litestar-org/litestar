@@ -19,7 +19,7 @@ __all__ = ("PydanticDTO", "PydanticInitPlugin", "PydanticSchemaPlugin", "Pydanti
 
 def _model_dump(model: BaseModel | BaseModelV1, *, by_alias: bool = False) -> dict[str, Any]:
     return (
-        model.model_dump(mode="json", by_alias=by_alias)
+        model.model_dump(mode="json", by_alias=by_alias)  # pyright: ignore
         if hasattr(model, "model_dump")
         else {k: v.decode() if isinstance(v, bytes) else v for k, v in model.dict(by_alias=by_alias).items()}
     )
@@ -27,7 +27,9 @@ def _model_dump(model: BaseModel | BaseModelV1, *, by_alias: bool = False) -> di
 
 def _model_dump_json(model: BaseModel | BaseModelV1, by_alias: bool = False) -> str:
     return (
-        model.model_dump_json(by_alias=by_alias) if hasattr(model, "model_dump_json") else model.json(by_alias=by_alias)
+        model.model_dump_json(by_alias=by_alias)  # pyright: ignore
+        if hasattr(model, "model_dump_json")
+        else model.json(by_alias=by_alias)  # pyright: ignore
     )
 
 

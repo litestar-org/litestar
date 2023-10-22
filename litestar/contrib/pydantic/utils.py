@@ -15,7 +15,7 @@ except ImportError:
 
     pydantic_v2 = Empty  # type: ignore[assignment]
 
-except ImportError:  # noqa: B025
+except ImportError:  # noqa: B025  # pyright: ignore
     pydantic_v1 = Empty  # type: ignore[assignment]
     pydantic_v2 = Empty  # type: ignore[assignment]
 # isort: on
@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 PYDANTIC_UNDEFINED_SENTINELS = set()
 
 if pydantic_v1 is not Empty:  # type: ignore[comparison-overlap]
-    PYDANTIC_UNDEFINED_SENTINELS.add(pydantic_v1.fields.Undefined)
+    PYDANTIC_UNDEFINED_SENTINELS.add(pydantic_v1.fields.Undefined)  # pyright: ignore
     if pydantic_v2 is not Empty:  # type: ignore[comparison-overlap]
         PYDANTIC_UNDEFINED_SENTINELS.add(pydantic_v2.fields.PydanticUndefined)  # type: ignore[attr-defined]
 
@@ -83,7 +83,7 @@ def is_pydantic_constrained_field(annotation: Any) -> Any:
         return False
 
     return any(
-        is_class_and_subclass(annotation, constrained_type)
+        is_class_and_subclass(annotation, constrained_type)  # pyright: ignore
         for constrained_type in (
             pydantic_v1.ConstrainedBytes,
             pydantic_v1.ConstrainedDate,
@@ -98,7 +98,9 @@ def is_pydantic_constrained_field(annotation: Any) -> Any:
     )
 
 
-def is_pydantic_field_info(obj: Any) -> TypeGuard[pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo]:
+def is_pydantic_field_info(
+    obj: Any,
+) -> TypeGuard[pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo]:  # pyright: ignore
     if pydantic_v1 is Empty:  # type: ignore[comparison-overlap]
         return False
     if pydantic_v2 is not Empty:  # type: ignore[comparison-overlap]

@@ -68,7 +68,7 @@ def _dec_pydantic_uuid(
     if not isinstance(value, uuid_type):
         raise ValidationError(f"Invalid UUID: {value!r}")
 
-    if value._required_version != value.version:  # pyright: ignore
+    if value._required_version != value.version:
         raise ValidationError(f"Invalid UUID version: {value!r}")
 
     return cast(
@@ -142,7 +142,7 @@ class PydanticInitPlugin(InitPluginProtocol):
             },
             pydantic_v1.SecretField: str,
             pydantic_v1.StrictBool: int,
-            pydantic_v1.color.Color: str,  # pyright: ignore
+            pydantic_v1.color.Color: str,
             pydantic_v1.ConstrainedBytes: lambda val: val.decode("utf-8"),
             pydantic_v1.ConstrainedDate: lambda val: val.isoformat(),
         }

@@ -21,7 +21,7 @@ def test_field_definition_generation_v1(
 ) -> None:
     class TestModel(pydantic_v1.BaseModel):
         a: int
-        b: Annotated[int, pydantic_v1.Field(**dto_field("read-only"))]
+        b: Annotated[int, pydantic_v1.Field(**dto_field("read-only"))]  # pyright: ignore
         c: Annotated[int, pydantic_v1.Field(gt=1)]
         d: int = pydantic_v1.Field(default=1)
         e: int = pydantic_v1.Field(default_factory=int_factory)
@@ -38,7 +38,7 @@ def test_field_definition_generation_v2(
 ) -> None:
     class TestModel(pydantic_v2.BaseModel):
         a: int
-        b: Annotated[int, pydantic_v2.Field(**dto_field("read-only"))]
+        b: Annotated[int, pydantic_v2.Field(**dto_field("read-only"))]  # pyright: ignore
         c: Annotated[int, pydantic_v2.Field(gt=1)]
         d: int = pydantic_v2.Field(default=1)
         e: int = pydantic_v2.Field(default_factory=int_factory)

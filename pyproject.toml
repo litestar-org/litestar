@@ -268,7 +268,9 @@ exclude = [
   "tools",
   "docs",
   "tests/examples",
-  "tests/docker_service_fixtures.py"
+  "tests/docker_service_fixtures.py",
+  "litestar/contrib/pydantic/pydantic_dto_factory.py",
+  "litestar/contrib/pydantic/pydantic_init_plugin.py"
 ]
 include = ["litestar", "tests"]
 pythonVersion = "3.8"
