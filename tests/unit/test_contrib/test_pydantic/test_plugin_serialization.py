@@ -119,9 +119,7 @@ serializer = partial(default_serializer, type_encoders=PydanticInitPlugin.encode
 
 @pytest.fixture()
 def model_type(pydantic_version: str) -> type[ModelV1 | ModelV2]:
-    if pydantic_version == "1":
-        return ModelV1
-    return ModelV2
+    return ModelV1 if pydantic_version == "1" else ModelV2
 
 
 @pytest.fixture()

@@ -13,6 +13,4 @@ def pydantic_version(request: FixtureRequest) -> str:
 
 @pytest.fixture()
 def base_model(pydantic_version: str) -> type[pydantic.BaseModel | pydantic_v1.BaseModel]:
-    if pydantic_version == "1":
-        return pydantic_v1.BaseModel
-    return pydantic.BaseModel
+    return pydantic_v1.BaseModel if pydantic_version == "1" else pydantic.BaseModel
