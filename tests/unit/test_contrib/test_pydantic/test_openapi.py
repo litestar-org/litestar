@@ -142,16 +142,12 @@ def test_create_collection_constrained_field_schema_pydantic_v2(annotation: Any)
 
 @pytest.fixture()
 def conset(pydantic_version: str) -> Any:
-    if pydantic_version == "1":
-        return pydantic_v1.conset
-    return pydantic_v2.conset
+    return pydantic_v1.conset if pydantic_version == "1" else pydantic_v2.conset
 
 
 @pytest.fixture()
 def conlist(pydantic_version: str) -> Any:
-    if pydantic_version == "1":
-        return pydantic_v1.conlist
-    return pydantic_v2.conlist
+    return pydantic_v1.conlist if pydantic_version == "1" else pydantic_v2.conlist
 
 
 def test_create_collection_constrained_field_schema_sub_fields(
