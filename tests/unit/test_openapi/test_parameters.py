@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, List, Optional, Type, cast
 
 import pytest
+from pydantic import BaseModel
 
 from litestar import Controller, Litestar, Router, get
 from litestar._openapi.parameters import create_parameter_for_handler
@@ -306,3 +307,18 @@ def test_layered_parameters() -> None:
     assert local.schema.type == OpenAPIType.INTEGER  # type: ignore
     assert local.required
     assert local.schema.examples  # type: ignore
+
+
+def test_type_single_parameter_query() -> None:
+    class FooBar(BaseModel):
+        foo: str
+        bar: int
+
+    @get()
+    def handler(query: FooBar) -> FooBar:
+        return FooBar
+
+    app = Litestar(route_handlers=[handler])
+    param_name_set = {p.name for p in cast("OpenAPI", app.openapi_schema).paths["/"].get.parameters}  # type: ignore
+    assert "foo" in param_name_set
+    assert "bar" in param_name_set
