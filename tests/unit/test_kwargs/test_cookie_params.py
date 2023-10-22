@@ -3,7 +3,7 @@ from typing import Optional, Type
 import pytest
 
 from litestar import get
-from litestar.params import Parameter
+from litestar.params import Parameter, ParameterKwarg
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 
@@ -23,7 +23,7 @@ from litestar.testing import create_test_client
         (Optional[int], {}, Parameter(cookie="special-cookie", ge=100, le=120, required=False), HTTP_200_OK),
     ],
 )
-def test_cookie_params(t_type: Type, param_dict: dict, param: Parameter, expected_code: int) -> None:
+def test_cookie_params(t_type: Type, param_dict: dict, param: ParameterKwarg, expected_code: int) -> None:
     test_path = "/test"
 
     @get(path=test_path)

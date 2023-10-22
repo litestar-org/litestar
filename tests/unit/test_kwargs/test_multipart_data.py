@@ -99,7 +99,7 @@ def test_request_body_multi_part(t_type: type) -> None:
 
 
 def test_request_body_multi_part_mixed_field_content_types() -> None:
-    @dataclass
+    @dataclass()
     class MultiPartFormWithMixedFields:
         image: UploadFile
         tags: List[int]

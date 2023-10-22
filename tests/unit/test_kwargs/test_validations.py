@@ -7,7 +7,7 @@ from litestar.constants import RESERVED_KWARGS
 from litestar.di import Provide
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import Body, Parameter
+from litestar.params import Body, BodyKwarg, Parameter
 
 
 async def my_dependency() -> int:
@@ -86,7 +86,7 @@ def json_dependency(data: Dict[str, Any] = Body()) -> Dict[str, Any]:
         (Body(media_type=RequestEncodingType.URL_ENCODED), url_encoded_dependency),
     ],
 )
-def test_dependency_data_kwarg_validation_success_scenarios(body: Body, dependency: Callable) -> None:
+def test_dependency_data_kwarg_validation_success_scenarios(body: BodyKwarg, dependency: Callable) -> None:
     @post("/", dependencies={"first": Provide(dependency)})
     def handler(first: Dict[str, Any], data: Any = body) -> None:
         pass

@@ -32,7 +32,7 @@ def create_person_controller() -> Type[Controller]:
             # required query parameters below
             page: int,
             name: Optional[Union[str, List[str]]],  # intentionally without default
-            service_id: int,  # type: ignore
+            service_id: int,
             page_size: int = Parameter(
                 query="pageSize",
                 description="Page Size Description",

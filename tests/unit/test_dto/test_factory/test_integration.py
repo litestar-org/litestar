@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
 
 def test_url_encoded_form_data(use_experimental_dto_backend: bool) -> None:
-    @dataclass
+    @dataclass()
     class User:
         name: str
         age: int
@@ -363,7 +363,7 @@ def test_dto_openapi_without_unique_handler_names(use_experimental_dto_backend: 
 
 
 def test_url_encoded_form_data_patch_request(use_experimental_dto_backend: bool) -> None:
-    @dataclass
+    @dataclass()
     class User:
         name: str
         age: int

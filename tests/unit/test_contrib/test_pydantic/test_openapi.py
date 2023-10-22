@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 from decimal import Decimal
 from types import ModuleType
-from typing import Any, Callable, Dict, Pattern, Union, cast
+from typing import Any, Callable, Dict, List, Pattern, Union, cast
 
 import pydantic
 import pytest
@@ -37,7 +37,7 @@ from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass
 from tests.unit.test_contrib.test_pydantic.models import PydanticDataclassPerson, PydanticPerson
 
-constr_kws: "list[dict[str, Any]] " = [
+constr_kws: List[Dict[str, Any]] = [
     {"pattern": "^[a-zA-Z]$"},
     {"to_upper": True, "min_length": 1, "pattern": "^[a-zA-Z]$"},
     {"to_lower": True, "min_length": 1, "pattern": "^[a-zA-Z]$"},
@@ -48,7 +48,7 @@ constr_kws: "list[dict[str, Any]] " = [
     {"min_length": 10, "max_length": 100},
 ]
 
-conlist_kws: "list[dict[str, Any]]" = [
+conlist_kws: List[Dict[str, Any]] = [
     {"min_length": 1},
     {"min_length": 1, "max_length": 10},
 ]

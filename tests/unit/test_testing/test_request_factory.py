@@ -83,7 +83,7 @@ async def test_request_factory_create_with_data_with_custom_encoder(mocker: Mock
     request = RequestFactory(app=Litestar(type_encoders={Foo: lambda f: {"bar": f.bar}}))._create_request_with_data(
         HttpMethod.POST,
         "/",
-        data=Foo(),
+        data=Foo(),  # type: ignore[arg-type]
     )
 
     body = await request.body()
