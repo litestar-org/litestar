@@ -201,6 +201,21 @@ def create_parameter_for_handler(
     dependency_providers = route_handler.resolve_dependencies()
     layered_parameters = route_handler.resolve_layered_parameters()
 
+    # if there's a single parameter 'query', surface its fields
+    if "query" in handler_fields and len(handler_fields) == 1:
+        for k in handler_fields["query"].annotation.model_fields:
+            t = handler_fields["query"].annotation.model_fields[k]
+            parameters.add(
+                create_parameter(
+                    field_definition=FieldDefinition.from_kwarg(name=k, annotation=t.annotation),
+                    parameter_name=k,
+                    path_parameters=path_parameters,
+                    schema_creator=schema_creator,
+                )
+            )
+
+        del handler_fields["query"]
+
     unique_handler_fields = tuple(
         (k, v) for k, v in handler_fields.items() if k not in RESERVED_KWARGS and k not in layered_parameters
     )
