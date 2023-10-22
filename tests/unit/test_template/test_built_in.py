@@ -9,7 +9,7 @@ from mako.lookup import TemplateLookup
 from litestar import get
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
-from litestar.contrib.minijnja import MiniJinjaTemplateEngine
+from litestar.contrib.minijinja import MiniJinjaTemplateEngine
 from litestar.response.template import Template
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client

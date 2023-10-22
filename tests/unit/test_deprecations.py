@@ -100,3 +100,8 @@ def test_repository_deprecations(import_path: str, import_name: str) -> None:
 def test_litestar_type_deprecation() -> None:
     with pytest.warns(DeprecationWarning):
         from litestar.types.internal_types import LitestarType  # noqa: F401
+
+
+def test_contrib_minijnja_deprecation() -> None:
+    with pytest.warns(DeprecationWarning):
+        from litestar.contrib.minijnja import MiniJinjaTemplateEngine  # noqa: F401
