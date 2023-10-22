@@ -5,22 +5,35 @@ from typing import Any
 from typing_extensions import Annotated, get_type_hints
 
 from litestar._openapi.schema_generation.schema import SchemaCreator, _get_type_schema_name
+from litestar.contrib.pydantic.utils import is_pydantic_model_class
 from litestar.exceptions import MissingDependencyException
 from litestar.openapi.spec import Example, OpenAPIFormat, OpenAPIType, Schema
 from litestar.plugins import OpenAPISchemaPluginProtocol
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils import is_class_and_subclass, is_pydantic_model_class, is_undefined_sentinel
+from litestar.utils import is_class_and_subclass, is_undefined_sentinel
 
 try:
-    import pydantic
+    import pydantic as _pydantic
+
+    PYDANTIC_VERSION = "1" if _pydantic.VERSION.startswith("1") else "2"
 except ImportError as e:
     raise MissingDependencyException("pydantic") from e
 
+
+try:
+    import pydantic as pydantic_v2
+    from pydantic import v1 as pydantic_v1
+except ImportError:
+    import pydantic as pydantic_v1  # type: ignore[no-redef]
+
+    pydantic_v2 = None  # type: ignore[assignment]
+
+
 PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
-    pydantic.ByteSize: Schema(type=OpenAPIType.INTEGER),
-    pydantic.EmailStr: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL),
-    pydantic.IPvAnyAddress: Schema(
+    pydantic_v1.ByteSize: Schema(type=OpenAPIType.INTEGER),
+    pydantic_v1.EmailStr: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL),
+    pydantic_v1.IPvAnyAddress: Schema(
         one_of=[
             Schema(
                 type=OpenAPIType.STRING,
@@ -34,7 +47,7 @@ PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
             ),
         ]
     ),
-    pydantic.IPvAnyInterface: Schema(
+    pydantic_v1.IPvAnyInterface: Schema(
         one_of=[
             Schema(
                 type=OpenAPIType.STRING,
@@ -48,7 +61,7 @@ PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
             ),
         ]
     ),
-    pydantic.IPvAnyNetwork: Schema(
+    pydantic_v1.IPvAnyNetwork: Schema(
         one_of=[
             Schema(
                 type=OpenAPIType.STRING,
@@ -62,73 +75,122 @@ PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
             ),
         ]
     ),
-    pydantic.Json: Schema(type=OpenAPIType.OBJECT, format=OpenAPIFormat.JSON_POINTER),
-    pydantic.NameEmail: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL, description="Name and email"),
+    pydantic_v1.Json: Schema(type=OpenAPIType.OBJECT, format=OpenAPIFormat.JSON_POINTER),
+    pydantic_v1.NameEmail: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL, description="Name and email"),
+    # removed in v2
+    pydantic_v1.PyObject: Schema(
+        type=OpenAPIType.STRING,
+        description="dot separated path identifying a python object, e.g. 'decimal.Decimal'",
+    ),
+    # annotated in v2
+    pydantic_v1.UUID1: Schema(
+        type=OpenAPIType.STRING,
+        format=OpenAPIFormat.UUID,
+        description="UUID1 string",
+    ),
+    pydantic_v1.UUID3: Schema(
+        type=OpenAPIType.STRING,
+        format=OpenAPIFormat.UUID,
+        description="UUID3 string",
+    ),
+    pydantic_v1.UUID4: Schema(
+        type=OpenAPIType.STRING,
+        format=OpenAPIFormat.UUID,
+        description="UUID4 string",
+    ),
+    pydantic_v1.UUID5: Schema(
+        type=OpenAPIType.STRING,
+        format=OpenAPIFormat.UUID,
+        description="UUID5 string",
+    ),
+    pydantic_v1.DirectoryPath: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI_REFERENCE),
+    pydantic_v1.AnyUrl: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URL),
+    pydantic_v1.AnyHttpUrl: Schema(
+        type=OpenAPIType.STRING, format=OpenAPIFormat.URL, description="must be a valid HTTP based URL"
+    ),
+    pydantic_v1.FilePath: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI_REFERENCE),
+    pydantic_v1.HttpUrl: Schema(
+        type=OpenAPIType.STRING,
+        format=OpenAPIFormat.URL,
+        description="must be a valid HTTP based URL",
+        max_length=2083,
+    ),
+    pydantic_v1.RedisDsn: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI, description="redis DSN"),
+    pydantic_v1.PostgresDsn: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI, description="postgres DSN"),
+    pydantic_v1.SecretBytes: Schema(type=OpenAPIType.STRING),
+    pydantic_v1.SecretStr: Schema(type=OpenAPIType.STRING),
+    pydantic_v1.StrictBool: Schema(type=OpenAPIType.BOOLEAN),
+    pydantic_v1.StrictBytes: Schema(type=OpenAPIType.STRING),
+    pydantic_v1.StrictFloat: Schema(type=OpenAPIType.NUMBER),
+    pydantic_v1.StrictInt: Schema(type=OpenAPIType.INTEGER),
+    pydantic_v1.StrictStr: Schema(type=OpenAPIType.STRING),
+    pydantic_v1.NegativeFloat: Schema(type=OpenAPIType.NUMBER, exclusive_maximum=0.0),
+    pydantic_v1.NegativeInt: Schema(type=OpenAPIType.INTEGER, exclusive_maximum=0),
+    pydantic_v1.NonNegativeInt: Schema(type=OpenAPIType.INTEGER, minimum=0),
+    pydantic_v1.NonPositiveFloat: Schema(type=OpenAPIType.NUMBER, maximum=0.0),
+    pydantic_v1.PaymentCardNumber: Schema(type=OpenAPIType.STRING, min_length=12, max_length=19),
+    pydantic_v1.PositiveFloat: Schema(type=OpenAPIType.NUMBER, exclusive_minimum=0.0),
+    pydantic_v1.PositiveInt: Schema(type=OpenAPIType.INTEGER, exclusive_minimum=0),
 }
 
-if pydantic.VERSION.startswith("1"):  # pragma: no cover
-    # pydantic v1 values only - some are removed in v2, others are Annotated[] based and require a different
-    # logic
+if pydantic_v2 is not None:
     PYDANTIC_TYPE_MAP.update(
         {
-            # removed in v2
-            pydantic.PyObject: Schema(
-                type=OpenAPIType.STRING,
-                description="dot separated path identifying a python object, e.g. 'decimal.Decimal'",
+            pydantic_v1.ByteSize: Schema(type=OpenAPIType.INTEGER),
+            pydantic_v1.EmailStr: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL),
+            pydantic_v1.IPvAnyAddress: Schema(
+                one_of=[
+                    Schema(
+                        type=OpenAPIType.STRING,
+                        format=OpenAPIFormat.IPV4,
+                        description="IPv4 address",
+                    ),
+                    Schema(
+                        type=OpenAPIType.STRING,
+                        format=OpenAPIFormat.IPV6,
+                        description="IPv6 address",
+                    ),
+                ]
             ),
-            # annotated in v2
-            pydantic.UUID1: Schema(
-                type=OpenAPIType.STRING,
-                format=OpenAPIFormat.UUID,
-                description="UUID1 string",
+            pydantic_v1.IPvAnyInterface: Schema(
+                one_of=[
+                    Schema(
+                        type=OpenAPIType.STRING,
+                        format=OpenAPIFormat.IPV4,
+                        description="IPv4 interface",
+                    ),
+                    Schema(
+                        type=OpenAPIType.STRING,
+                        format=OpenAPIFormat.IPV6,
+                        description="IPv6 interface",
+                    ),
+                ]
             ),
-            pydantic.UUID3: Schema(
-                type=OpenAPIType.STRING,
-                format=OpenAPIFormat.UUID,
-                description="UUID3 string",
+            pydantic_v1.IPvAnyNetwork: Schema(
+                one_of=[
+                    Schema(
+                        type=OpenAPIType.STRING,
+                        format=OpenAPIFormat.IPV4,
+                        description="IPv4 network",
+                    ),
+                    Schema(
+                        type=OpenAPIType.STRING,
+                        format=OpenAPIFormat.IPV6,
+                        description="IPv6 network",
+                    ),
+                ]
             ),
-            pydantic.UUID4: Schema(
-                type=OpenAPIType.STRING,
-                format=OpenAPIFormat.UUID,
-                description="UUID4 string",
+            pydantic_v1.Json: Schema(type=OpenAPIType.OBJECT, format=OpenAPIFormat.JSON_POINTER),
+            pydantic_v1.NameEmail: Schema(
+                type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL, description="Name and email"
             ),
-            pydantic.UUID5: Schema(
-                type=OpenAPIType.STRING,
-                format=OpenAPIFormat.UUID,
-                description="UUID5 string",
-            ),
-            pydantic.DirectoryPath: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI_REFERENCE),
-            pydantic.AnyUrl: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URL),
-            pydantic.AnyHttpUrl: Schema(
-                type=OpenAPIType.STRING, format=OpenAPIFormat.URL, description="must be a valid HTTP based URL"
-            ),
-            pydantic.FilePath: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI_REFERENCE),
-            pydantic.HttpUrl: Schema(
-                type=OpenAPIType.STRING,
-                format=OpenAPIFormat.URL,
-                description="must be a valid HTTP based URL",
-                max_length=2083,
-            ),
-            pydantic.RedisDsn: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI, description="redis DSN"),
-            pydantic.PostgresDsn: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI, description="postgres DSN"),
-            pydantic.SecretBytes: Schema(type=OpenAPIType.STRING),
-            pydantic.SecretStr: Schema(type=OpenAPIType.STRING),
-            pydantic.StrictBool: Schema(type=OpenAPIType.BOOLEAN),
-            pydantic.StrictBytes: Schema(type=OpenAPIType.STRING),
-            pydantic.StrictFloat: Schema(type=OpenAPIType.NUMBER),
-            pydantic.StrictInt: Schema(type=OpenAPIType.INTEGER),
-            pydantic.StrictStr: Schema(type=OpenAPIType.STRING),
-            pydantic.NegativeFloat: Schema(type=OpenAPIType.NUMBER, exclusive_maximum=0.0),
-            pydantic.NegativeInt: Schema(type=OpenAPIType.INTEGER, exclusive_maximum=0),
-            pydantic.NonNegativeInt: Schema(type=OpenAPIType.INTEGER, minimum=0),
-            pydantic.NonPositiveFloat: Schema(type=OpenAPIType.NUMBER, maximum=0.0),
-            pydantic.PaymentCardNumber: Schema(type=OpenAPIType.STRING, min_length=12, max_length=19),
-            pydantic.PositiveFloat: Schema(type=OpenAPIType.NUMBER, exclusive_minimum=0.0),
-            pydantic.PositiveInt: Schema(type=OpenAPIType.INTEGER, exclusive_minimum=0),
         }
     )
 
-_supported_types = (pydantic.BaseModel, *list(PYDANTIC_TYPE_MAP.keys()))
+
+_supported_types = (pydantic_v1.BaseModel, *list(PYDANTIC_TYPE_MAP.keys()))
+if pydantic_v2 is not None:
+    _supported_types = (pydantic_v2.BaseModel, *_supported_types)
 
 
 class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
@@ -159,7 +221,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
 
     @classmethod
     def for_pydantic_model(
-        cls, annotation: type[pydantic.BaseModel], schema_creator: SchemaCreator
+        cls, annotation: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel], schema_creator: SchemaCreator
     ) -> Schema:  # pyright: ignore
         """Create a schema object for a given pydantic model class.
 
@@ -171,11 +233,12 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
             A schema instance.
         """
 
+        is_v2_model = hasattr(annotation, "model_fields")
         annotation_hints = get_type_hints(annotation, include_extras=True)
         model_config = getattr(annotation, "__config__", getattr(annotation, "model_config", Empty))
-        model_fields: dict[str, pydantic.fields.FieldInfo] = {
-            k: getattr(f, "field_info", f)
-            for k, f in getattr(annotation, "__fields__", getattr(annotation, "model_fields", {})).items()
+        model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo] = {
+            k: getattr(f, "field_info", f)  # type: ignore[arg-type, misc]
+            for k, f in (annotation.model_fields if is_v2_model else annotation.__fields__).items()  # type: ignore[union-attr]
         }
 
         # pydantic v2 logic
@@ -190,8 +253,8 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
             f.alias
             if f.alias and schema_creator.prefer_alias
             else k: FieldDefinition.from_kwarg(
-                annotation=Annotated[annotation_hints[k], f, f.metadata]  # pyright: ignore
-                if pydantic.VERSION.startswith("2")
+                annotation=Annotated[annotation_hints[k], f, f.metadata]  # type: ignore[union-attr]
+                if is_v2_model
                 else Annotated[annotation_hints[k], f],  # pyright: ignore
                 name=f.alias if f.alias and schema_creator.prefer_alias else k,
                 default=Empty if is_undefined_sentinel(f.default) else f.default,

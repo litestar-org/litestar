@@ -31,7 +31,7 @@ from litestar._signature.utils import (
     _normalize_annotation,
     _validate_signature_dependencies,
 )
-from litestar.datastructures import ImmutableState
+from litestar.datastructures.state import ImmutableState
 from litestar.dto import AbstractDTO, DTOData
 from litestar.enums import ParamType, ScopeType
 from litestar.exceptions import InternalServerException, ValidationException

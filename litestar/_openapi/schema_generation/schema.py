@@ -43,7 +43,7 @@ from litestar._openapi.schema_generation.constrained_fields import (
     create_string_constrained_field_schema,
 )
 from litestar._openapi.schema_generation.utils import sort_schemas_and_references
-from litestar.datastructures import UploadFile
+from litestar.datastructures.upload_file import UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Reference
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
@@ -57,7 +57,6 @@ from litestar.utils.predicates import (
     is_class_and_subclass,
     is_dataclass_class,
     is_optional_union,
-    is_pydantic_constrained_field,
     is_struct_class,
     is_typed_dict,
     is_undefined_sentinel,
@@ -259,6 +258,8 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
+        from litestar.contrib.pydantic.utils import is_pydantic_constrained_field
+
         result: Schema | Reference
         if field_definition.is_optional:
             result = self.for_optional_field(field_definition)

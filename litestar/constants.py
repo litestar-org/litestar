@@ -25,16 +25,3 @@ SKIP_VALIDATION_NAMES: Final = {"request", "socket", "scope", "receive", "send"}
 UNDEFINED_SENTINELS: Final = {Signature.empty, Empty, Ellipsis, MISSING, UnsetType}
 WEBSOCKET_CLOSE: Final = "websocket.close"
 WEBSOCKET_DISCONNECT: Final = "websocket.disconnect"
-
-try:
-    import pydantic
-
-    if pydantic.VERSION.startswith("2"):
-        from pydantic_core import PydanticUndefined
-    else:  # pragma: no cover
-        from pydantic.fields import Undefined as PydanticUndefined  # type: ignore
-
-    UNDEFINED_SENTINELS.add(PydanticUndefined)
-
-except ImportError:  # pragma: no cover
-    pass
