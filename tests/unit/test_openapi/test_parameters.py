@@ -316,7 +316,7 @@ def test_type_single_parameter_query() -> None:
 
     @get()
     def handler(query: FooBar) -> FooBar:
-        return FooBar
+        return query
 
     app = Litestar(route_handlers=[handler])
     param_name_set = {p.name for p in cast("OpenAPI", app.openapi_schema).paths["/"].get.parameters}  # type: ignore
