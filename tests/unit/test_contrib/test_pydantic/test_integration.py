@@ -172,3 +172,18 @@ def test_signature_model_invalid_input(
                     "key": "other_child.val.1",
                 },
             ]
+
+
+def test_pydantic_v2_correct_emailstr_succeeds() -> None:
+    class EmailModel(pydantic_v2.BaseModel):
+        email: pydantic_v2.EmailStr
+
+    EmailDTO = PydanticDTO[EmailModel]
+
+    @post("/email", dto=EmailDTO)
+    def handler(data: EmailModel) -> EmailModel:
+        return data
+
+    with create_test_client(route_handlers=handler) as client:
+        response = client.post("/email", json={"email": "foo@bar.com"})
+        assert response.status_code == 201
