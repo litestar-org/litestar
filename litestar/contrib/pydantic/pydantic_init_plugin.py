@@ -36,11 +36,7 @@ def _dec_pydantic_v1(model_type: type[pydantic_v1.BaseModel], value: Any) -> pyd
 
 def _dec_pydantic_v2(model_type: type[pydantic_v2.BaseModel], value: Any) -> pydantic_v2.BaseModel:
     try:
-        return (
-            model_type.model_validate(value, strict=False)
-            if hasattr(model_type, "model_validate")
-            else model_type.parse_obj(value)
-        )
+        return model_type.model_validate(value, strict=False)
     except pydantic_v2.ValidationError as e:
         raise ExtendedMsgSpecValidationError(errors=cast("list[dict[str, Any]]", e.errors())) from e
 
@@ -78,10 +74,6 @@ def _dec_pydantic_uuid(
 
 def _is_pydantic_v1_uuid(value: Any) -> bool:  # pragma: no cover
     return is_class_and_subclass(value, (pydantic_v1.UUID1, pydantic_v1.UUID3, pydantic_v1.UUID4, pydantic_v1.UUID5))
-
-
-def _is_pydantic_v2_uuid(value: Any) -> bool:  # pragma: no cover
-    return is_class_and_subclass(value, (pydantic_v2.UUID1, pydantic_v2.UUID3, pydantic_v2.UUID4, pydantic_v2.UUID5))
 
 
 _base_encoders: dict[Any, Callable[[Any], Any]] = {

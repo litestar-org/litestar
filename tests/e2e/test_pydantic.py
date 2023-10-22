@@ -1,11 +1,9 @@
 import pydantic
-import pytest
 
 from litestar import get
 from litestar.testing import create_test_client
 
 
-@pytest.mark.skipif(pydantic.VERSION.startswith("1"), reason="Pydantic v2 only test")
 def test_app_with_v1_and_v2_models() -> None:
     class ModelV1(pydantic.v1.BaseModel):  # pyright: ignore
         foo: str
