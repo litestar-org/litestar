@@ -1,7 +1,6 @@
+from dataclasses import dataclass
 from typing import Any, Dict, Literal, Optional
 from uuid import UUID
-
-from pydantic import BaseModel, EmailStr, SecretStr
 
 from litestar import Request, get, post
 from litestar.connection import ASGIConnection
@@ -16,15 +15,17 @@ from litestar.stores.memory import MemoryStore
 from litestar.testing import create_test_client
 
 
-class User(BaseModel):
+@dataclass
+class User:
     id: UUID
     name: str
-    email: EmailStr
+    email: str
 
 
-class UserLoginPayload(BaseModel):
-    email: EmailStr
-    password: SecretStr
+@dataclass
+class UserLoginPayload:
+    email: str
+    password: str
 
 
 MOCK_DB: Dict[str, User] = {}

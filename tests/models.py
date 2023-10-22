@@ -3,11 +3,8 @@ from enum import Enum
 from typing import Dict, List, Optional
 from uuid import UUID
 
-import attrs
 import msgspec
 from polyfactory.factories import DataclassFactory
-from pydantic import BaseModel
-from pydantic.dataclasses import dataclass as pydantic_dataclass
 from typing_extensions import NotRequired, Required, TypedDict
 
 
@@ -35,16 +32,6 @@ class DataclassPerson:
     pets: Optional[List[DataclassPet]] = None
 
 
-@pydantic_dataclass
-class PydanticDataclassPerson:
-    first_name: str
-    last_name: str
-    id: str
-    optional: Optional[str]
-    complex: Dict[str, List[Dict[str, str]]]
-    pets: Optional[List[DataclassPet]] = None
-
-
 class TypedDictPerson(TypedDict):
     first_name: Required[str]
     last_name: Required[str]
@@ -52,25 +39,6 @@ class TypedDictPerson(TypedDict):
     optional: NotRequired[Optional[str]]
     complex: Required[Dict[str, List[Dict[str, str]]]]
     pets: NotRequired[Optional[List[DataclassPet]]]
-
-
-class PydanticPerson(BaseModel):
-    first_name: str
-    last_name: str
-    id: str
-    optional: Optional[str]
-    complex: Dict[str, List[Dict[str, str]]]
-    pets: Optional[List[DataclassPet]] = None
-
-
-@attrs.define
-class AttrsPerson:
-    first_name: str
-    last_name: str
-    id: str
-    optional: Optional[str]
-    complex: Dict[str, List[Dict[str, str]]]
-    pets: Optional[List[DataclassPet]]
 
 
 class MsgSpecStructPerson(msgspec.Struct):

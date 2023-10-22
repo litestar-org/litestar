@@ -5,9 +5,7 @@ from typing import TYPE_CHECKING, Dict, List, Literal
 
 import annotated_types
 import msgspec
-import pydantic
 import pytest
-from pydantic import BaseModel, Field
 from typing_extensions import Annotated, TypeAlias
 
 from litestar import Controller, MediaType, get
@@ -17,7 +15,6 @@ from litestar._openapi.schema_generation.schema import (
     create_schema_for_annotation,
 )
 from litestar.app import DEFAULT_OPENAPI_CONFIG
-from litestar.contrib.pydantic import PydanticSchemaPlugin
 from litestar.di import Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
@@ -108,7 +105,8 @@ def test_get_schema_for_annotation_enum() -> None:
         opt1 = "opt1"
         opt2 = "opt2"
 
-    class M(BaseModel):
+    @dataclass()
+    class M:
         opt: Opts
 
     schema = create_schema_for_annotation(annotation=M.__annotations__["opt"])
@@ -164,7 +162,7 @@ def test_schema_hashing() -> None:
 
 def test_title_validation() -> None:
     schemas: Dict[str, Schema] = {}
-    schema_creator = SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()])
+    schema_creator = SchemaCreator(schemas=schemas)
 
     schema_creator.for_field_definition(FieldDefinition.from_kwarg(name="Person", annotation=DataclassPerson))
     assert schemas.get("DataclassPerson")
@@ -178,29 +176,6 @@ def test_title_validation() -> None:
                 name="DataclassPerson", annotation=DataclassPet, kwarg_definition=BodyKwarg(title="DataclassPerson")
             )
         )
-
-
-@pytest.mark.parametrize("with_future_annotations", [True, False])
-def test_create_schema_for_pydantic_model_with_annotated_model_attribute(
-    with_future_annotations: bool, create_module: "Callable[[str], ModuleType]"
-) -> None:
-    """Test that a model with an annotated attribute is correctly handled."""
-    module = create_module(
-        f"""
-{'from __future__ import annotations' if with_future_annotations else ''}
-from typing_extensions import Annotated
-from pydantic import BaseModel
-
-class Foo(BaseModel):
-    foo: Annotated[int, "Foo description"]
-"""
-    )
-    schemas: Dict[str, Schema] = {}
-    SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(
-        FieldDefinition.from_annotation(module.Foo)
-    )
-    schema = schemas["Foo"]
-    assert schema.properties and "foo" in schema.properties
 
 
 @pytest.mark.parametrize("with_future_annotations", [True, False])
@@ -262,27 +237,6 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
     assert schema.properties["id"].title == "title"  # type: ignore
     assert schema.properties["id"].max_length == 16  # type: ignore
     assert schema.required == ["id"]
-
-
-def test_create_schema_for_pydantic_field() -> None:
-    class Model(BaseModel):
-        if pydantic.VERSION.startswith("1"):
-            value: str = Field(
-                title="title", description="description", example="example", max_length=16  # pyright: ignore
-            )
-        else:
-            value: str = Field(  # type: ignore[no-redef]
-                title="title", description="description", max_length=16, json_schema_extra={"example": "example"}
-            )
-
-    schemas: Dict[str, Schema] = {}
-    field_definition = FieldDefinition.from_kwarg(name="Model", annotation=Model)
-    SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(field_definition)
-    schema = schemas["Model"]
-
-    assert schema.properties["value"].description == "description"  # type: ignore
-    assert schema.properties["value"].title == "title"  # type: ignore
-    assert schema.properties["value"].examples == [Example(value="example")]  # type: ignore
 
 
 def test_annotated_types() -> None:

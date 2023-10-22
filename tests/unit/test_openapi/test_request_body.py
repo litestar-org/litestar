@@ -1,7 +1,6 @@
+from dataclasses import dataclass
 from typing import Any, Dict, List, Type
 from unittest.mock import MagicMock
-
-from pydantic import BaseConfig, BaseModel
 
 from litestar import Controller, Litestar, post
 from litestar._openapi.request_body import create_request_body
@@ -13,12 +12,10 @@ from litestar.params import Body
 from litestar.typing import FieldDefinition
 
 
-class FormData(BaseModel):
+@dataclass
+class FormData:
     cv: UploadFile
     image: UploadFile
-
-    class Config(BaseConfig):
-        arbitrary_types_allowed = True
 
 
 def test_create_request_body(person_controller: Type[Controller]) -> None:

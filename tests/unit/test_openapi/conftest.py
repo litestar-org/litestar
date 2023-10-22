@@ -2,9 +2,6 @@ from datetime import date, datetime
 from typing import Any, Dict, List, Optional, Type, Union
 
 import pytest
-from pydantic import (
-    conint,
-)
 
 from litestar import Controller, MediaType, delete, get, patch, post, put
 from litestar.datastructures import ResponseHeader, State
@@ -12,8 +9,7 @@ from litestar.dto import DataclassDTO, DTOConfig, DTOData
 from litestar.openapi.spec.example import Example
 from litestar.params import Parameter
 from tests.models import DataclassPerson, DataclassPersonFactory, DataclassPet
-
-from .utils import Gender, PetException
+from tests.unit.test_openapi.utils import Gender, PetException
 
 
 class PartialDataclassPersonDTO(DataclassDTO[DataclassPerson]):
@@ -36,6 +32,7 @@ def create_person_controller() -> Type[Controller]:
             # required query parameters below
             page: int,
             name: Optional[Union[str, List[str]]],  # intentionally without default
+            service_id: int,
             page_size: int = Parameter(
                 query="pageSize",
                 description="Page Size Description",
@@ -43,7 +40,6 @@ def create_person_controller() -> Type[Controller]:
                 examples=[Example(description="example value", value=1)],
             ),
             # path parameter
-            service_id: int = conint(gt=0),  # type: ignore
             # non-required query parameters below
             from_date: Optional[Union[int, datetime, date]] = None,
             to_date: Optional[Union[int, datetime, date]] = None,
