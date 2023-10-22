@@ -27,6 +27,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.schema import Schema
+from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.params import BodyKwarg, Parameter, ParameterKwarg
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
@@ -421,3 +422,28 @@ def test_schema_generation_with_generic_classes_constrained() -> None:
     assert properties["union_bound"] == Schema(
         one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.INTEGER)]
     )
+
+
+@pytest.mark.parametrize(
+    "annotation",
+    (
+        ClassicPagination[DataclassGeneric[int]],
+        OffsetPagination[DataclassGeneric[int]],
+        CursorPagination[int, DataclassGeneric[int]],
+    ),
+)
+def test_schema_generation_with_pagination(annotation: Any) -> None:
+    field_definition = FieldDefinition.from_annotation(annotation)
+    schemas: Dict[str, Schema] = {}
+    SchemaCreator(schemas=schemas).for_field_definition(field_definition)
+
+    name = _get_type_schema_name(DataclassGeneric[int])
+    properties = schemas[name].properties
+
+    expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
+    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.NULL), Schema(type=OpenAPIType.INTEGER)])
+
+    assert properties
+    assert properties["foo"] == expected_foo_schema
+    assert properties["annotated_foo"] == expected_foo_schema
+    assert properties["optional_foo"] == expected_optional_foo_schema
