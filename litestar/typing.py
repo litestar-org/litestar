@@ -394,13 +394,13 @@ class FieldDefinition:
         return tuple(args)
 
     @property
-    def is_dataclass(self) -> bool:
+    def is_dataclass_type(self) -> bool:
         """Whether the annotation is a dataclass type or not."""
 
         return is_dataclass(self.origin or self.annotation)
 
     @property
-    def is_typeddict(self) -> bool:
+    def is_typeddict_type(self) -> bool:
         """Whether the type is TypedDict or not."""
 
         return is_typeddict(self.origin or self.annotation)

@@ -286,9 +286,9 @@ class SchemaCreator:
             result = self.for_typevar()
         elif field_definition.is_subclass_of(Struct):
             result = self.for_struct_class(field_definition)
-        elif field_definition.is_dataclass:
+        elif field_definition.is_dataclass_type:
             result = self.for_dataclass(field_definition)
-        elif field_definition.is_typeddict:
+        elif field_definition.is_typeddict_type:
             result = self.for_typed_dict(field_definition)
         elif plugins_for_annotation := [
             plugin for plugin in self.plugins if plugin.is_plugin_supported_type(field_definition.annotation)
