@@ -4,7 +4,6 @@ from typing import Callable, Dict
 
 import msgspec
 import pytest
-from pytest_mock import MockerFixture
 
 from litestar import HttpMethod, Litestar, get
 from litestar.datastructures import Cookie, MultiDict
@@ -76,7 +75,7 @@ async def test_request_factory_create_with_data(data_cls: DataContainerType) -> 
     assert json.loads(body) == person_data
 
 
-async def test_request_factory_create_with_data_with_custom_encoder(mocker: MockerFixture) -> None:
+async def test_request_factory_create_with_data_with_custom_encoder() -> None:
     class Foo:
         bar: str = "baz"
 
