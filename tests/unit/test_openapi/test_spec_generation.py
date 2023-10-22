@@ -9,8 +9,6 @@ from tests.models import (
     AttrsPerson,
     DataclassPerson,
     MsgSpecStructPerson,
-    PydanticDataclassPerson,
-    PydanticPerson,
     TypedDictPerson,
 )
 
@@ -18,9 +16,7 @@ from tests.models import (
 @pytest.mark.parametrize(
     "cls",
     (
-        PydanticPerson,
         DataclassPerson,
-        PydanticDataclassPerson,
         TypedDictPerson,
         MsgSpecStructPerson,
         AttrsPerson,

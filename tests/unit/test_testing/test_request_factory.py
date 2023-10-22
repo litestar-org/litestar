@@ -1,9 +1,10 @@
 import json
-from typing import Any, Callable, Dict
+from dataclasses import dataclass
+from typing import Callable, Dict
 
 import msgspec
 import pytest
-from pydantic import BaseModel
+from pytest_mock import MockerFixture
 
 from litestar import HttpMethod, Litestar, get
 from litestar.datastructures import Cookie, MultiDict
@@ -12,12 +13,10 @@ from litestar.serialization import encode_json
 from litestar.testing import RequestFactory
 from litestar.types import DataContainerType
 from tests.models import (
-    AttrsPerson,
     DataclassPerson,
     DataclassPersonFactory,
     DataclassPetFactory,
     MsgSpecStructPerson,
-    PydanticPerson,
 )
 
 _DEFAULT_REQUEST_FACTORY_URL = "http://test.org:3000/"
@@ -65,11 +64,7 @@ def test_request_factory_build_headers() -> None:
         assert headers[decoded_key] == decoded_value
 
 
-def _json_roundtrip(obj: Any) -> Any:
-    return
-
-
-@pytest.mark.parametrize("data_cls", [PydanticPerson, DataclassPerson, AttrsPerson, MsgSpecStructPerson])
+@pytest.mark.parametrize("data_cls", [DataclassPerson, MsgSpecStructPerson])
 async def test_request_factory_create_with_data(data_cls: DataContainerType) -> None:
     person_data = msgspec.json.decode(encode_json(DataclassPersonFactory.build()))
     request = RequestFactory()._create_request_with_data(
@@ -79,6 +74,20 @@ async def test_request_factory_create_with_data(data_cls: DataContainerType) -> 
     )
     body = await request.body()
     assert json.loads(body) == person_data
+
+
+async def test_request_factory_create_with_data_with_custom_encoder(mocker: MockerFixture) -> None:
+    class Foo:
+        bar: str = "baz"
+
+    request = RequestFactory(app=Litestar(type_encoders={Foo: lambda f: {"bar": f.bar}}))._create_request_with_data(
+        HttpMethod.POST,
+        "/",
+        data=Foo(),
+    )
+
+    body = await request.body()
+    assert json.loads(body) == {"bar": "baz"}
 
 
 @pytest.mark.parametrize(
@@ -120,10 +129,12 @@ def test_request_factory_create_with_default_params() -> None:
 
 
 def test_request_factory_create_with_params() -> None:
-    class User(BaseModel):
+    @dataclass
+    class User:
         pass
 
-    class Auth(BaseModel):
+    @dataclass
+    class Auth:
         pass
 
     @get("/path")
