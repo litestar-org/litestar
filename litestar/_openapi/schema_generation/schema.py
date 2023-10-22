@@ -27,13 +27,13 @@ from typing import (
     Sequence,
     Set,
     Tuple,
-    TypeVar,
     Union,
     cast,
     get_origin,
 )
 from uuid import UUID
 
+from msgspec import Struct
 from msgspec.structs import fields as msgspec_struct_fields
 from typing_extensions import NotRequired, Required, get_args
 
@@ -59,11 +59,8 @@ from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
 from litestar.utils.predicates import (
     is_class_and_subclass,
-    is_dataclass_class,
     is_optional_union,
     is_pydantic_constrained_field,
-    is_struct_class,
-    is_typed_dict,
     is_undefined_sentinel,
 )
 from litestar.utils.typing import (
@@ -72,7 +69,6 @@ from litestar.utils.typing import (
 )
 
 if TYPE_CHECKING:
-    from msgspec import Struct
     from msgspec.structs import FieldInfo
 
     from litestar.plugins import OpenAPISchemaPluginProtocol
@@ -285,18 +281,15 @@ class SchemaCreator:
             result = self.for_optional_field(field_definition)
         elif field_definition.is_union:
             result = self.for_union_field(field_definition)
-        elif field_definition.is_generic and (
-            get_origin_or_inner_type(field_definition.annotation)
-            in (ClassicPagination, CursorPagination, OffsetPagination)
-        ):
+        elif field_definition.origin in (CursorPagination, OffsetPagination, ClassicPagination):
             result = self.for_builtin_generics(field_definition)
-        elif isinstance(field_definition.annotation, TypeVar):
+        elif field_definition.is_type_var:
             result = self.for_typevar()
-        elif is_struct_class(field_definition.annotation):
+        elif field_definition.is_subclass_of(Struct):
             result = self.for_struct_class(field_definition.annotation)
-        elif is_dataclass_class(field_definition.annotation):
+        elif field_definition.is_dataclass:
             result = self.for_dataclass(field_definition.annotation)
-        elif is_typed_dict(field_definition.annotation):
+        elif field_definition.is_typeddict:
             result = self.for_typed_dict(field_definition.annotation)
         elif plugins_for_annotation := [
             plugin for plugin in self.plugins if plugin.is_plugin_supported_type(field_definition.annotation)
