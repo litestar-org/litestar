@@ -11,6 +11,12 @@ from litestar.testing import create_test_client
 @pytest.mark.parametrize(
     "t_type,param_dict,param,expected_code",
     [
+        (
+            Optional[str],
+            {},
+            Parameter(cookie="special-cookie", min_length=1, max_length=2, required=False),
+            HTTP_200_OK,
+        ),
         (int, {"special-cookie": "123"}, Parameter(cookie="special-cookie", ge=100, le=201), HTTP_200_OK),
         (int, {"special-cookie": "123"}, Parameter(cookie="special-cookie", ge=100, le=120), HTTP_400_BAD_REQUEST),
         (int, {}, Parameter(cookie="special-cookie", ge=100, le=120), HTTP_400_BAD_REQUEST),
