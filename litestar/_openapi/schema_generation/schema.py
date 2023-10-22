@@ -54,7 +54,7 @@ from litestar.openapi.spec.schema import Schema, SchemaDataContainer
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.params import BodyKwarg, ParameterKwarg
 from litestar.serialization import encode_json
-from litestar.types import DataclassProtocol, Empty, TypedDictClass
+from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
 from litestar.utils.predicates import (
@@ -286,11 +286,11 @@ class SchemaCreator:
         elif field_definition.is_type_var:
             result = self.for_typevar()
         elif field_definition.is_subclass_of(Struct):
-            result = self.for_struct_class(field_definition.annotation)
+            result = self.for_struct_class(field_definition)
         elif field_definition.is_dataclass:
-            result = self.for_dataclass(field_definition.annotation)
+            result = self.for_dataclass(field_definition)
         elif field_definition.is_typeddict:
-            result = self.for_typed_dict(field_definition.annotation)
+            result = self.for_typed_dict(field_definition)
         elif plugins_for_annotation := [
             plugin for plugin in self.plugins if plugin.is_plugin_supported_type(field_definition.annotation)
         ]:
@@ -464,11 +464,11 @@ class SchemaCreator:
             )
         return schema  # pragma: no cover
 
-    def for_struct_class(self, annotation: type[Struct]) -> Schema:
-        """Create a schema object for a given msgspec.Struct class.
+    def for_struct_class(self, field_definition: FieldDefinition) -> Schema:
+        """Create a schema object for a msgspec.Struct class.
 
         Args:
-            annotation: A msgspec.Struct class.
+            field_definition: A field definition instance.
 
         Returns:
             A schema instance.
@@ -477,7 +477,7 @@ class SchemaCreator:
         def _is_field_required(field: FieldInfo) -> bool:
             return field.required or field.default_factory is Empty
 
-        unwrapped_annotation, type_hints = get_unwrapped_annotation_and_type_hints(annotation)
+        unwrapped_annotation, type_hints = get_unwrapped_annotation_and_type_hints(field_definition.annotation)
         fields = msgspec_struct_fields(unwrapped_annotation)
 
         return Schema(
@@ -495,21 +495,21 @@ class SchemaCreator:
                 for field in fields
             },
             type=OpenAPIType.OBJECT,
-            title=_get_type_schema_name(annotation),
+            title=_get_type_schema_name(field_definition.annotation),
         )
 
     # noinspection PyDataclass
-    def for_dataclass(self, annotation: type[DataclassProtocol]) -> Schema:
-        """Create a schema object for a given dataclass class.
+    def for_dataclass(self, field_definition: FieldDefinition) -> Schema:
+        """Create a schema object for a dataclass class.
 
         Args:
-            annotation: A dataclass class.
+            field_definition: A field definition instance.
 
         Returns:
             A schema instance.
         """
 
-        unwrapped_annotation, type_hints = get_unwrapped_annotation_and_type_hints(annotation)
+        unwrapped_annotation, type_hints = get_unwrapped_annotation_and_type_hints(field_definition.annotation)
         return Schema(
             required=sorted(
                 [
@@ -524,23 +524,23 @@ class SchemaCreator:
             ),
             properties={k: self.for_field_definition(FieldDefinition.from_kwarg(v, k)) for k, v in type_hints.items()},
             type=OpenAPIType.OBJECT,
-            title=_get_type_schema_name(annotation),
+            title=_get_type_schema_name(field_definition.annotation),
         )
 
     # noinspection PyTypedDict
-    def for_typed_dict(self, annotation: TypedDictClass) -> Schema:
-        """Create a schema object for a given typed dict.
+    def for_typed_dict(self, field_definition: FieldDefinition) -> Schema:
+        """Create a schema object for a typeddict.
 
         Args:
-            annotation: A typed-dict class.
+            field_definition: A field definition instance.
 
         Returns:
             A schema instance.
         """
 
-        _, type_hints = get_unwrapped_annotation_and_type_hints(annotation)
+        unwrapped_annotation, type_hints = get_unwrapped_annotation_and_type_hints(field_definition.annotation)
         return Schema(
-            required=sorted(getattr(annotation, "__required_keys__", [])),
+            required=sorted(getattr(unwrapped_annotation, "__required_keys__", [])),
             properties={
                 k: self.for_field_definition(FieldDefinition.from_kwarg(v, k))
                 for k, v in {
@@ -548,7 +548,7 @@ class SchemaCreator:
                 }.items()
             },
             type=OpenAPIType.OBJECT,
-            title=_get_type_schema_name(annotation),
+            title=_get_type_schema_name(field_definition.annotation),
         )
 
     def for_constrained_field(self, field: FieldDefinition) -> Schema:
