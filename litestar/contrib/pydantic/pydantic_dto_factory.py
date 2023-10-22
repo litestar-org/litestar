@@ -39,8 +39,7 @@ except ImportError as e:  # noqa: B025
 # isort: on
 
 if pydantic_v2 is not Empty:  # type: ignore[comparison-overlap]
-
-    ModelType: TypeAlias ="pydantic_v1.BaseModel | pydantic_v2.BaseModel"
+    ModelType: TypeAlias = "pydantic_v1.BaseModel | pydantic_v2.BaseModel"
 else:
     ModelType = "pydantic_v1.BaseModel"
 
