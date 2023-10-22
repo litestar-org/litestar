@@ -41,7 +41,7 @@ except ImportError as e:  # noqa: B025
 if pydantic_v2 is not Empty:  # type: ignore[comparison-overlap]
     ModelType: TypeAlias = "pydantic_v1.BaseModel | pydantic_v2.BaseModel"
 else:
-    ModelType = "pydantic_v1.BaseModel"
+    ModelType = "pydantic_v1.BaseModel"  # type: ignore[misc]
 
 T = TypeVar("T", bound="ModelType | Collection[ModelType]")
 
