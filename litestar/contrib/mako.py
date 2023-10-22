@@ -25,8 +25,9 @@ from mako.exceptions import TemplateLookupException as MakoTemplateNotFound
 from mako.lookup import TemplateLookup
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from mako.template import Template as _MakoTemplate
-    from pydantic import DirectoryPath
 
 
 class MakoTemplate(TemplateProtocol):
@@ -65,9 +66,7 @@ class MakoTemplate(TemplateProtocol):
 class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
     """Mako based TemplateEngine."""
 
-    def __init__(
-        self, directory: DirectoryPath | list[DirectoryPath] | None = None, engine_instance: Any | None = None
-    ) -> None:
+    def __init__(self, directory: Path | list[Path] | None = None, engine_instance: Any | None = None) -> None:
         """Initialize template engine.
 
         Args:
