@@ -1,21 +1,16 @@
 from typing import Generic, Optional, Type, TypeVar
 
-from pydantic import VERSION, BaseModel
+from msgspec import Struct
 
 from litestar import get
 from litestar.di import Provide
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
-if VERSION.startswith("1"):
-    from pydantic.generics import GenericModel
-else:
-    GenericModel = BaseModel
-
 T = TypeVar("T")
 
 
-class Store(GenericModel, Generic[T]):  # type: ignore[misc]
+class Store(Struct, Generic[T]):
     """Abstract store."""
 
     model: Type[T]
@@ -24,7 +19,7 @@ class Store(GenericModel, Generic[T]):  # type: ignore[misc]
         raise NotImplementedError
 
 
-class Item(BaseModel):
+class Item(Struct):
     name: str
 
 

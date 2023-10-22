@@ -8,7 +8,7 @@ from litestar import MediaType, get
 from litestar.config.csrf import CSRFConfig
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
-from litestar.contrib.minijnja import MiniJinjaTemplateEngine
+from litestar.contrib.minijinja import MiniJinjaTemplateEngine
 from litestar.middleware.csrf import generate_csrf_token
 from litestar.response.template import Template
 from litestar.template.config import TemplateConfig

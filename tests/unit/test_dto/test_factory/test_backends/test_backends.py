@@ -11,7 +11,6 @@ from msgspec import Struct, to_builtins
 
 from litestar import Litestar, Request, get, post
 from litestar._openapi.schema_generation import SchemaCreator
-from litestar.contrib.pydantic import PydanticInitPlugin
 from litestar.dto import DataclassDTO, DTOConfig, DTOField
 from litestar.dto._backend import DTOBackend
 from litestar.dto._types import CollectionType, SimpleType, TransferDTOFieldDefinition
@@ -69,7 +68,7 @@ def fx_backend_factory(use_experimental_dto_backend: bool) -> type[DataclassDTO]
 
 @pytest.fixture(name="asgi_connection")
 def fx_asgi_connection() -> Request[Any, Any, Any]:
-    @get("/", name="handler_id", media_type=MediaType.JSON, type_decoders=PydanticInitPlugin.decoders())
+    @get("/", name="handler_id", media_type=MediaType.JSON)
     def _handler() -> None:
         ...
 

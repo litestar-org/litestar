@@ -16,7 +16,7 @@ RANDOM = random.Random(b"bA\xcd\x00\xa9$\xa7\x17\x1c\x10")
 if sys.version_info < (3, 9):
 
     def randbytes(n: int) -> bytes:
-        return bytearray(RANDOM.getrandbits(8) for _ in range(n))
+        return RANDOM.getrandbits(8 * n).to_bytes(n, "little")
 
 else:
     randbytes = RANDOM.randbytes
@@ -56,8 +56,8 @@ def maybe_async_cm(obj: ContextManager[T] | AsyncContextManager[T]) -> AsyncCont
 def get_exception_group() -> type[BaseException]:
     """Get the exception group class with version compatibility."""
     try:
-        return ExceptionGroup
+        return cast("type[BaseException]", ExceptionGroup)  # type:ignore[name-defined]
     except NameError:
-        from exceptiongroup import ExceptionGroup as _ExceptionGroup  # type: ignore[import-not-found]
+        from exceptiongroup import ExceptionGroup as _ExceptionGroup
 
-        return cast("type[BaseException]", _ExceptionGroup)
+        return _ExceptionGroup

@@ -1,5 +1,8 @@
+# ruff: noqa: UP006, UP007
+from __future__ import annotations
+
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from os import path
 from os.path import dirname, join, realpath
 from pathlib import Path
@@ -7,13 +10,9 @@ from typing import Any, DefaultDict, Dict, List, Optional
 
 import msgspec
 import pytest
-from attr import define, field
-from attr.validators import ge, instance_of, lt
-from pydantic import BaseConfig, BaseModel, ConfigDict, Field
 from typing_extensions import Annotated
 
 from litestar import Request, post
-from litestar.contrib.pydantic import _model_dump
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
@@ -23,13 +22,11 @@ from litestar.testing import create_test_client
 from . import Form
 
 
-class FormData(BaseModel):
+@dataclass
+class FormData:
     name: UploadFile
     age: UploadFile
     programmer: UploadFile
-
-    class Config(BaseConfig):
-        arbitrary_types_allowed = True
 
 
 @post("/form")
@@ -52,7 +49,7 @@ async def form_handler(request: Request) -> Dict[str, Any]:
 @post("/form")
 async def form_multi_item_handler(request: Request) -> DefaultDict[str, list]:
     data = await request.form()
-    output: defaultdict[str, list] = defaultdict(list)
+    output = defaultdict(list)
     for key, value in data.multi_items():
         for v in value:
             if isinstance(v, UploadFile):
@@ -90,9 +87,9 @@ async def form_with_headers_handler(request: Request) -> Dict[str, Any]:
 @pytest.mark.parametrize("t_type", [FormData, Dict[str, UploadFile], List[UploadFile], UploadFile])
 def test_request_body_multi_part(t_type: type) -> None:
     test_path = "/test"
-    data = _model_dump(Form(name="Moishe Zuchmir", age=30, programmer=True, value="100"))
+    data = asdict(Form(name="Moishe Zuchmir", age=30, programmer=True, value="100"))
 
-    @post(path=test_path)
+    @post(path=test_path, signature_namespace={"t_type": t_type})
     def test_method(data: Annotated[t_type, Body(media_type=RequestEncodingType.MULTI_PART)]) -> None:  # type: ignore
         assert data
 
@@ -102,12 +99,12 @@ def test_request_body_multi_part(t_type: type) -> None:
 
 
 def test_request_body_multi_part_mixed_field_content_types() -> None:
-    @dataclass
+    @dataclass()
     class MultiPartFormWithMixedFields:
         image: UploadFile
         tags: List[int]
 
-    @post(path="/form")
+    @post(path="/form", signature_types=[MultiPartFormWithMixedFields])
     async def test_method(data: MultiPartFormWithMixedFields = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
         file_data = await data.image.read()
         assert file_data == b"data"
@@ -385,7 +382,7 @@ def test_postman_multipart_form_data() -> None:
 
 
 def test_image_upload() -> None:
-    @post("/")
+    @post("/", signature_types=[UploadFile])
     async def hello_world(data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
         await data.read()
 
@@ -398,7 +395,7 @@ def test_image_upload() -> None:
 
 
 def test_optional_formdata() -> None:
-    @post("/")
+    @post("/", signature_types=[UploadFile])
     async def hello_world(data: Optional[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
         if data is not None:
             await data.read()
@@ -410,7 +407,7 @@ def test_optional_formdata() -> None:
 
 @pytest.mark.parametrize("limit", (1000, 100, 10))
 def test_multipart_form_part_limit(limit: int) -> None:
-    @post("/")
+    @post("/", signature_types=[UploadFile])
     async def hello_world(data: List[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
         assert len(data) == limit
 
@@ -429,7 +426,7 @@ def test_multipart_form_part_limit_body_param_precedence() -> None:
     app_limit = 100
     route_limit = 10
 
-    @post("/")
+    @post("/", signature_types=[UploadFile])
     async def hello_world(
         data: List[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART, multipart_form_part_limit=route_limit)
     ) -> None:
@@ -455,7 +452,7 @@ class ProductForm:
 
 
 def test_multipart_handling_of_none_values() -> None:
-    @post("/")
+    @post("/", signature_types=[ProductForm])
     def handler(
         data: Annotated[ProductForm, Body(media_type=RequestEncodingType.MULTI_PART)],
     ) -> None:
@@ -490,33 +487,17 @@ def test_multipart_handling_of_none_values() -> None:
         assert response.status_code == HTTP_201_CREATED
 
 
-MAX_INT_POSTGRES = 10
-
-
-@define
-class AddProductFormAttrs:
-    name: str
-    amount: int = field(validator=[instance_of(int), ge(1), lt(MAX_INT_POSTGRES)])
-
-
-class AddProductFormPydantic(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-    name: str
-    amount: int = Field(ge=1, lt=MAX_INT_POSTGRES)
-
-
 class AddProductFormMsgspec(msgspec.Struct):
     name: str
-    amount: Annotated[int, msgspec.Meta(lt=MAX_INT_POSTGRES, ge=1)]
+    amount: Annotated[int, msgspec.Meta(lt=10, ge=1)]
 
 
-@pytest.mark.parametrize("form_object", [AddProductFormMsgspec, AddProductFormPydantic, AddProductFormAttrs])
 @pytest.mark.parametrize("form_type", [RequestEncodingType.URL_ENCODED, RequestEncodingType.MULTI_PART])
-def test_multipart_and_url_encoded_behave_the_same(form_object, form_type) -> None:  # type: ignore[no-untyped-def]
-    @post(path="/form")
-    async def form_(request: Request, data: Annotated[form_object, Body(media_type=form_type)]) -> int:
+def test_multipart_and_url_encoded_behave_the_same(form_type) -> None:  # type: ignore[no-untyped-def]
+    @post(path="/form", signature_namespace={"form_object": AddProductFormMsgspec, "form_type": form_type})
+    async def form_(request: Request, data: Annotated[AddProductFormMsgspec, Body(media_type=form_type)]) -> int:
         assert isinstance(data.name, str)
-        return data.amount  # type: ignore[no-any-return]
+        return data.amount
 
     with create_test_client(
         route_handlers=[

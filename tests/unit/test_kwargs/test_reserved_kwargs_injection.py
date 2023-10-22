@@ -1,9 +1,7 @@
 from typing import Any, List, Optional, Type, cast
 
-import pydantic
+import msgspec.json
 import pytest
-from polyfactory.factories.pydantic_factory import ModelFactory
-from pydantic import BaseModel, Field
 
 from litestar import (
     Controller,
@@ -17,7 +15,6 @@ from litestar import (
     post,
     put,
 )
-from litestar.contrib.pydantic import _model_dump
 from litestar.datastructures.state import ImmutableState, State
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.status_codes import (
@@ -28,7 +25,7 @@ from litestar.status_codes import (
 )
 from litestar.testing import create_test_client
 from litestar.types import Scope
-from tests import PydanticPerson, PydanticPersonFactory
+from tests.models import DataclassPerson, DataclassPersonFactory
 
 
 class CustomState(State):
@@ -66,19 +63,7 @@ def test_application_state_injection(state_typing: Type[State]) -> None:
         assert client.app.state.called
 
 
-class QueryParams(BaseModel):
-    first: str
-    second: List[str] = (
-        Field(min_items=3) if pydantic.VERSION.startswith("1") else Field(min_length=1)  # pyright: ignore
-    )
-    third: Optional[int]
-
-
-class QueryParamsFactory(ModelFactory):
-    __model__ = QueryParams
-
-
-person_instance = PydanticPersonFactory.build()
+person_instance = DataclassPersonFactory.build()
 
 
 @pytest.mark.parametrize(
@@ -97,11 +82,11 @@ def test_data_using_model(decorator: Any, http_method: Any, expected_status_code
         path = test_path
 
         @decorator()
-        def test_method(self, data: PydanticPerson) -> None:
+        def test_method(self, data: DataclassPerson) -> None:
             assert data == person_instance
 
     with create_test_client(MyController) as client:
-        response = client.request(http_method, test_path, json=_model_dump(person_instance))
+        response = client.request(http_method, test_path, json=msgspec.to_builtins(person_instance))
         assert response.status_code == expected_status_code
 
 
@@ -117,17 +102,17 @@ def test_data_using_model(decorator: Any, http_method: Any, expected_status_code
 def test_data_using_list_of_models(decorator: Any, http_method: Any, expected_status_code: Any) -> None:
     test_path = "/person"
 
-    people = PydanticPersonFactory.batch(size=5)
+    people = DataclassPersonFactory.batch(size=5)
 
     class MyController(Controller):
         path = test_path
 
         @decorator()
-        def test_method(self, data: List[PydanticPerson]) -> None:
+        def test_method(self, data: List[DataclassPerson]) -> None:
             assert data == people
 
     with create_test_client(MyController) as client:
-        response = client.request(http_method, test_path, json=[_model_dump(p) for p in people])
+        response = client.request(http_method, test_path, json=msgspec.to_builtins(people))
         assert response.status_code == expected_status_code
 
 
@@ -178,21 +163,15 @@ def test_path_params(decorator: Any, http_method: Any, expected_status_code: Any
     ],
 )
 def test_query_params(decorator: Any, http_method: Any, expected_status_code: Any) -> None:
-    test_path = "/person"
+    @decorator("/person")
+    def handler(first: str, second: List[str], third: int, fourth: Optional[str] = None) -> None:
+        assert first == "foo"
+        assert second == ["a", "b"]
+        assert third == 2
+        assert fourth is None
 
-    query_params_instance = QueryParamsFactory.build()
-
-    class MyController(Controller):
-        path = test_path
-
-        @decorator()
-        def test_method(self, first: str, second: List[str], third: Optional[int] = None) -> None:
-            assert first == query_params_instance.first
-            assert second == query_params_instance.second
-            assert third == query_params_instance.third
-
-    with create_test_client(MyController) as client:
-        response = client.request(http_method, test_path, params=query_params_instance.dict(exclude_none=True))
+    with create_test_client(handler) as client:
+        response = client.request(http_method, "/person", params={"first": "foo", "second": ["a", "b"], "third": "2"})
         assert response.status_code == expected_status_code
 
 

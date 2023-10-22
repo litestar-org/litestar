@@ -23,7 +23,7 @@ repos:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.292"
+    rev: "v0.1.1"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -33,7 +33,7 @@ repos:
       - id: codespell
         exclude: "tests/openapi/typescript_converter/test_converter|README.md"
   - repo: https://github.com/psf/black
-    rev: 23.9.1
+    rev: 23.10.0
     hooks:
       - id: black
         args: [--config=./pyproject.toml]
@@ -58,7 +58,7 @@ repos:
       - id: slotscheck
         exclude: "test_*|docs"
   - repo: https://github.com/sphinx-contrib/sphinx-lint
-    rev: "v0.6.8"
+    rev: "v0.8.1"
     hooks:
       - id: sphinx-lint
   - repo: local

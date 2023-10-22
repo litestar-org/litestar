@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 from litestar import Litestar, get
-from litestar.contrib.minijnja import MiniJinjaTemplateEngine, minijinja_from_state
+from litestar.contrib.minijinja import MiniJinjaTemplateEngine, minijinja_from_state
 from litestar.response import Template
 from litestar.template.config import TemplateConfig
 
