@@ -194,7 +194,7 @@ def _minijinja_from_state(func: Callable, state: StateProtocol, *args: Any, **kw
 
 
 def __getattr__(name: str) -> Any:
-    if name == "LitestarType":
+    if name == "minijinja_from_state":
         warn_deprecation(
             "2.3.0",
             "minijinja_from_state",

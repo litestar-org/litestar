@@ -162,7 +162,7 @@ class _TemplateContext(TypedDict):
 
 
 def __getattr__(name: str) -> Any:
-    if name == "LitestarType":
+    if name == "TemplateContext":
         warn_deprecation(
             "2.3.0",
             "TemplateContext",
