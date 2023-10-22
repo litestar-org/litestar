@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Optional, Type, Union
 
 import pytest
 from jinja2 import DictLoader, Environment
-from mako.lookup import TemplateLookup
+from mako.lookup import TemplateLookup  # type: ignore[import-untyped]
 
 from litestar import get
 from litestar.contrib.jinja import JinjaTemplateEngine

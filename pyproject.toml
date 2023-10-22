@@ -250,8 +250,6 @@ module = [
   "brotli.*",
   "fsspec.*",
   "jsbeautifier.*",
-  "mako.*",
-  "minijinja.*",
   "pytimeparse.*",
 ]
 
