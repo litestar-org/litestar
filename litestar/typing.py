@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from collections import abc, deque
 from copy import deepcopy
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, is_dataclass, replace
 from inspect import Parameter, Signature
 from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Sequence, TypeVar, cast
 
 from msgspec import UnsetType
-from typing_extensions import Annotated, NotRequired, Required, Self, get_args, get_origin
+from typing_extensions import Annotated, NotRequired, Required, Self, get_args, get_origin, is_typeddict
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Example
@@ -391,6 +391,18 @@ class FieldDefinition:
                 else:
                     args.append(field_definition)
         return tuple(args)
+
+    @property
+    def is_dataclass(self) -> bool:
+        """Whether the annotation is a dataclass type or not."""
+
+        return is_dataclass(self.origin or self.annotation)
+
+    @property
+    def is_typeddict(self) -> bool:
+        """Whether the type is TypedDict or not."""
+
+        return is_typeddict(self.origin or self.annotation)
 
     def is_subclass_of(self, cl: type[Any] | tuple[type[Any], ...]) -> bool:
         """Whether the annotation is a subclass of the given type.

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, ForwardRef, List, Optional, Tuple, Union
+import sys
+from dataclasses import dataclass
+from typing import Any, ForwardRef, Generic, List, Optional, Tuple, Union
 
 import pytest
-from typing_extensions import Annotated
+from typing_extensions import Annotated, TypedDict
 
 from litestar.typing import FieldDefinition
 
@@ -192,6 +194,49 @@ def test_field_definition_is_optional_predicate() -> None:
     assert FieldDefinition.from_annotation(Union[int, None]).is_optional is True
     assert FieldDefinition.from_annotation(Union[int, None, str]).is_optional is True
     assert FieldDefinition.from_annotation(Union[int, str]).is_optional is False
+
+
+def test_field_definition_is_dataclass_predicate() -> None:
+    """Test FieldDefinition.is_dataclass."""
+
+    class NormalClass:
+        ...
+
+    @dataclass
+    class NormalDataclass:
+        ...
+
+    @dataclass
+    class GenericDataclass(Generic[T]):
+        ...
+
+    assert FieldDefinition.from_annotation(NormalDataclass).is_dataclass is True
+    assert FieldDefinition.from_annotation(GenericDataclass).is_dataclass is True
+    assert FieldDefinition.from_annotation(GenericDataclass[int]).is_dataclass is True
+    assert FieldDefinition.from_annotation(GenericDataclass[T]).is_dataclass is True
+    assert FieldDefinition.from_annotation(NormalClass).is_dataclass is False
+
+
+def test_field_definition_is_typeddict_predicate() -> None:
+    """Test FieldDefinition.is_typeddict."""
+
+    class NormalClass:
+        ...
+
+    class TypedDictClass(TypedDict):
+        ...
+
+    assert FieldDefinition.from_annotation(NormalClass).is_typeddict is False
+    assert FieldDefinition.from_annotation(TypedDictClass).is_typeddict is True
+
+    if sys.version_info >= (3, 11):
+
+        class GenericTypedDictClass(TypedDict, Generic[T]):
+            ...
+
+        assert FieldDefinition.from_annotation(GenericTypedDictClass).is_typeddict is True
+        assert FieldDefinition.from_annotation(GenericTypedDictClass[int]).is_typeddict is True
+        assert FieldDefinition.from_annotation(GenericTypedDictClass[T]).is_typeddict is True
 
 
 def test_field_definition_is_subclass_of() -> None:
