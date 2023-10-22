@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-from typing import Any, List
+from typing import Any, Dict, List
 
 from pydantic import VERSION, BaseModel, Field
 
@@ -23,7 +21,7 @@ def test_pydantic_validation_error_raises_400() -> None:
         return data
 
     model_json = {"foo": "too long"}
-    expected_errors: list[dict[str, Any]]
+    expected_errors: List[Dict[str, Any]]
 
     if VERSION.startswith("1"):
         expected_errors = [
@@ -73,7 +71,7 @@ def test_default_handling_of_pydantic_errors() -> None:
 
 def test_signature_model_invalid_input() -> None:
     class OtherChild(BaseModel):
-        val: List[int]  # noqa: UP006
+        val: List[int]
 
     class Child(BaseModel):
         val: int

@@ -105,7 +105,7 @@ def test_dependency_data_kwarg_validation_success_scenarios(body: BodyKwarg, dep
         [Body(media_type=RequestEncodingType.MULTI_PART), url_encoded_dependency],
     ],
 )
-def test_dependency_data_kwarg_validation_failure_scenarios(body: Body, dependency: Callable) -> None:
+def test_dependency_data_kwarg_validation_failure_scenarios(body: BodyKwarg, dependency: Callable) -> None:
     @post("/", dependencies={"first": Provide(dependency, sync_to_thread=False)})
     def handler(first: Dict[str, Any], data: Any = body) -> None:
         assert first

@@ -497,7 +497,7 @@ def test_multipart_and_url_encoded_behave_the_same(form_type) -> None:  # type: 
     @post(path="/form", signature_namespace={"form_object": AddProductFormMsgspec, "form_type": form_type})
     async def form_(request: Request, data: Annotated[AddProductFormMsgspec, Body(media_type=form_type)]) -> int:
         assert isinstance(data.name, str)
-        return data.amount  # type: ignore[no-any-return]
+        return data.amount
 
     with create_test_client(
         route_handlers=[

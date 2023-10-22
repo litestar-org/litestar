@@ -10,7 +10,7 @@ from litestar.testing import create_test_client
 T = TypeVar("T")
 
 
-class Store(Struct, Generic[T]):  # type: ignore[misc]
+class Store(Struct, Generic[T]):
     """Abstract store."""
 
     model: Type[T]
