@@ -3,7 +3,6 @@ from enum import Enum
 from typing import Dict, List, Optional
 from uuid import UUID
 
-import attrs
 import msgspec
 from polyfactory.factories import DataclassFactory
 from typing_extensions import NotRequired, Required, TypedDict
@@ -40,16 +39,6 @@ class TypedDictPerson(TypedDict):
     optional: NotRequired[Optional[str]]
     complex: Required[Dict[str, List[Dict[str, str]]]]
     pets: NotRequired[Optional[List[DataclassPet]]]
-
-
-@attrs.define
-class AttrsPerson:
-    first_name: str
-    last_name: str
-    id: str
-    optional: Optional[str]
-    complex: Dict[str, List[Dict[str, str]]]
-    pets: Optional[List[DataclassPet]]
 
 
 class MsgSpecStructPerson(msgspec.Struct):

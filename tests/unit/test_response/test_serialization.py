@@ -9,10 +9,7 @@ from pytest import FixtureRequest
 from litestar import MediaType, Response
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import get_serializer
-from tests.models import (
-    DataclassPersonFactory,
-    MsgSpecStructPerson,
-)
+from tests.models import DataclassPersonFactory, MsgSpecStructPerson
 
 person = DataclassPersonFactory.build()
 
