@@ -6,20 +6,11 @@ from typing_extensions import Annotated, get_type_hints
 
 from litestar._openapi.schema_generation.schema import SchemaCreator, _get_type_schema_name
 from litestar.contrib.pydantic.utils import is_pydantic_model_class
-from litestar.exceptions import MissingDependencyException
 from litestar.openapi.spec import Example, OpenAPIFormat, OpenAPIType, Schema
 from litestar.plugins import OpenAPISchemaPluginProtocol
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass, is_undefined_sentinel
-
-try:
-    import pydantic as _pydantic
-
-    PYDANTIC_VERSION = "1" if _pydantic.VERSION.startswith("1") else "2"
-except ImportError as e:
-    raise MissingDependencyException("pydantic") from e
-
 
 try:
     import pydantic as pydantic_v2

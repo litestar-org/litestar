@@ -9,7 +9,7 @@ from litestar.contrib.pydantic.utils import PYDANTIC_UNDEFINED_SENTINELS
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField
-from litestar.exceptions import MissingDependencyException, ValidationException
+from litestar.exceptions import ValidationException
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
@@ -17,13 +17,14 @@ if TYPE_CHECKING:
 
     from litestar.typing import FieldDefinition
 
-# isort: off
-try:
-    from pydantic import v1 as pydantic_v1
-    import pydantic as pydantic_v2
-    from pydantic.v1 import ValidationError as ValidationErrorV1
-    from pydantic import ValidationError as ValidationErrorV2
 
+try:
+    import pydantic as pydantic_v2
+    from pydantic import ValidationError as ValidationErrorV2
+    from pydantic import v1 as pydantic_v1
+    from pydantic.v1 import ValidationError as ValidationErrorV1
+
+    ModelType: TypeAlias = "pydantic_v1.BaseModel | pydantic_v2.BaseModel"  # pyright: ignore
 
 except ImportError:
     import pydantic as pydantic_v1  # type: ignore[no-redef]
@@ -32,16 +33,8 @@ except ImportError:
     from pydantic import ValidationError as ValidationErrorV1  # type: ignore[assignment]
 
     ValidationErrorV2 = ValidationErrorV1  # type: ignore[assignment, misc]
-
-
-except ImportError as e:  # noqa: B025  # pyright: ignore
-    raise MissingDependencyException("pydantic") from e
-# isort: on
-
-if pydantic_v2 is not Empty:  # type: ignore[comparison-overlap]
-    ModelType: TypeAlias = "pydantic_v1.BaseModel | pydantic_v2.BaseModel"  # pyright: ignore
-else:
     ModelType = "pydantic_v1.BaseModel"  # type: ignore[misc]
+
 
 T = TypeVar("T", bound="ModelType | Collection[ModelType]")
 

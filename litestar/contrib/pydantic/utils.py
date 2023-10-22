@@ -11,13 +11,14 @@ try:
     from pydantic import v1 as pydantic_v1
     import pydantic as pydantic_v2
 except ImportError:
-    import pydantic as pydantic_v1  # type: ignore[no-redef]
+    try:
+        import pydantic as pydantic_v1  # type: ignore[no-redef]
 
-    pydantic_v2 = Empty  # type: ignore[assignment]
+        pydantic_v2 = Empty  # type: ignore[assignment]
 
-except ImportError:  # noqa: B025  # pyright: ignore
-    pydantic_v1 = Empty  # type: ignore[assignment]
-    pydantic_v2 = Empty  # type: ignore[assignment]
+    except ImportError:  # pyright: ignore
+        pydantic_v1 = Empty  # type: ignore[assignment]
+        pydantic_v2 = Empty  # type: ignore[assignment]
 # isort: on
 
 
@@ -45,11 +46,13 @@ def is_pydantic_model_class(
     Returns:
         A typeguard determining whether the type is :data:`BaseModel pydantic.BaseModel>`.
     """
-    if pydantic_v1 is not Empty:  # type: ignore[comparison-overlap]
-        if pydantic_v2 is not Empty:  # type: ignore[comparison-overlap]
-            return is_class_and_subclass(annotation, (pydantic_v1.BaseModel, pydantic_v2.BaseModel))
+    if pydantic_v1 is Empty:  # type: ignore[comparison-overlap]
+        return False
+
+    if pydantic_v2 is Empty:  # type: ignore[comparison-overlap]
         return is_class_and_subclass(annotation, pydantic_v1.BaseModel)
-    return False
+
+    return is_class_and_subclass(annotation, (pydantic_v1.BaseModel, pydantic_v2.BaseModel))
 
 
 def is_pydantic_model_instance(
@@ -63,11 +66,13 @@ def is_pydantic_model_instance(
     Returns:
         A typeguard determining whether the type is :data:`BaseModel pydantic.BaseModel>`.
     """
-    if pydantic_v1 is not Empty:  # type: ignore[comparison-overlap]
-        if pydantic_v2 is not Empty:  # type: ignore[comparison-overlap]
-            return isinstance(annotation, (pydantic_v1.BaseModel, pydantic_v2.BaseModel))
+    if pydantic_v1 is Empty:  # type: ignore[comparison-overlap]
+        return False
+
+    if pydantic_v2 is Empty:  # type: ignore[comparison-overlap]
         return isinstance(annotation, pydantic_v1.BaseModel)
-    return False
+
+    return isinstance(annotation, (pydantic_v1.BaseModel, pydantic_v2.BaseModel))
 
 
 def is_pydantic_constrained_field(annotation: Any) -> Any:
@@ -103,6 +108,8 @@ def is_pydantic_field_info(
 ) -> TypeGuard[pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo]:  # pyright: ignore
     if pydantic_v1 is Empty:  # type: ignore[comparison-overlap]
         return False
-    if pydantic_v2 is not Empty:  # type: ignore[comparison-overlap]
-        return isinstance(obj, (pydantic_v1.fields.FieldInfo, pydantic_v2.fields.FieldInfo))
-    return isinstance(obj, pydantic_v1.fields.FieldInfo)
+
+    if pydantic_v2 is Empty:  # type: ignore[comparison-overlap]
+        return isinstance(obj, pydantic_v1.fields.FieldInfo)
+
+    return isinstance(obj, (pydantic_v1.fields.FieldInfo, pydantic_v2.fields.FieldInfo))
