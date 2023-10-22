@@ -43,7 +43,6 @@ from litestar._openapi.schema_generation.constrained_fields import (
     create_string_constrained_field_schema,
 )
 from litestar._openapi.schema_generation.utils import (
-    get_unwrapped_annotation_and_type_hints,
     sort_schemas_and_references,
 )
 from litestar.datastructures import UploadFile
@@ -477,7 +476,8 @@ class SchemaCreator:
         def _is_field_required(field: FieldInfo) -> bool:
             return field.required or field.default_factory is Empty
 
-        unwrapped_annotation, type_hints = get_unwrapped_annotation_and_type_hints(field_definition.annotation)
+        unwrapped_annotation = field_definition.origin or field_definition.annotation
+        type_hints = field_definition.get_type_hints(include_extras=True, resolve_generics=True)
         fields = msgspec_struct_fields(unwrapped_annotation)
 
         return Schema(
@@ -509,7 +509,8 @@ class SchemaCreator:
             A schema instance.
         """
 
-        unwrapped_annotation, type_hints = get_unwrapped_annotation_and_type_hints(field_definition.annotation)
+        unwrapped_annotation = field_definition.origin or field_definition.annotation
+        type_hints = field_definition.get_type_hints(include_extras=True, resolve_generics=True)
         return Schema(
             required=sorted(
                 [
@@ -538,7 +539,9 @@ class SchemaCreator:
             A schema instance.
         """
 
-        unwrapped_annotation, type_hints = get_unwrapped_annotation_and_type_hints(field_definition.annotation)
+        unwrapped_annotation = field_definition.origin or field_definition.annotation
+        type_hints = field_definition.get_type_hints(include_extras=True, resolve_generics=True)
+
         return Schema(
             required=sorted(getattr(unwrapped_annotation, "__required_keys__", [])),
             properties={
