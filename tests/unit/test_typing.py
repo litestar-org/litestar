@@ -213,7 +213,7 @@ def test_field_definition_is_dataclass_predicate() -> None:
     assert FieldDefinition.from_annotation(NormalDataclass).is_dataclass is True
     assert FieldDefinition.from_annotation(GenericDataclass).is_dataclass is True
     assert FieldDefinition.from_annotation(GenericDataclass[int]).is_dataclass is True
-    assert FieldDefinition.from_annotation(GenericDataclass[T]).is_dataclass is True
+    assert FieldDefinition.from_annotation(GenericDataclass[T]).is_dataclass is True  # type: ignore[valid-type]
     assert FieldDefinition.from_annotation(NormalClass).is_dataclass is False
 
 
@@ -265,3 +265,24 @@ def test_field_definition_equality() -> None:
     assert FieldDefinition.from_annotation(List[int]) != FieldDefinition.from_annotation(List[str])
     assert FieldDefinition.from_annotation(List[str]) != FieldDefinition.from_annotation(Tuple[str])
     assert FieldDefinition.from_annotation(Optional[str]) == FieldDefinition.from_annotation(Union[str, None])
+
+
+@dataclass
+class GenericDataclass(Generic[T]):
+    foo: T
+
+
+@dataclass
+class NormalDataclass:
+    foo: int
+
+
+@pytest.mark.parametrize(
+    ("annotation", "expected_type_hints"),
+    ((GenericDataclass[str], {"foo": str}), (GenericDataclass, {"foo": T}), (NormalDataclass, {"foo": int})),
+)
+def test_field_definition_get_type_hints(annotation: Any, expected_type_hints: dict[str, Any]) -> None:
+    assert (
+        FieldDefinition.from_annotation(annotation).get_type_hints(include_extras=True, resolve_generics=True)
+        == expected_type_hints
+    )
