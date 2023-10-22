@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from litestar import Litestar, get
-from litestar.contrib.minijnja import MiniJinjaTemplateEngine, StateProtocol
+from litestar.contrib.minijinja import MiniJinjaTemplateEngine, StateProtocol
 from litestar.response import Template
 from litestar.template.config import TemplateConfig
 

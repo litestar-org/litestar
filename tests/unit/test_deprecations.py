@@ -102,6 +102,11 @@ def test_litestar_type_deprecation() -> None:
         from litestar.types.internal_types import LitestarType  # noqa: F401
 
 
+def test_contrib_minijnja_deprecation() -> None:
+    with pytest.warns(DeprecationWarning):
+        from litestar.contrib.minijnja import MiniJinjaTemplateEngine  # noqa: F401
+
+
 def test_litestar_templates_template_context_deprecation() -> None:
     with pytest.warns(DeprecationWarning):
         from litestar.template.base import TemplateContext  # noqa: F401
@@ -109,4 +114,4 @@ def test_litestar_templates_template_context_deprecation() -> None:
 
 def test_minijinja_from_state_deprecation() -> None:
     with pytest.warns(DeprecationWarning):
-        from litestar.contrib.minijnja import minijinja_from_state  # noqa: F401
+        from litestar.contrib.minijinja import minijinja_from_state  # noqa: F401

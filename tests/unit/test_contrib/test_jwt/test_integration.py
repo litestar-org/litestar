@@ -1,10 +1,9 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from os import environ
 from typing import Any
 from uuid import UUID
-
-from pydantic import BaseModel, EmailStr
 
 from litestar import Request, Response, get, post
 from litestar.connection import ASGIConnection
@@ -13,10 +12,11 @@ from litestar.status_codes import HTTP_204_NO_CONTENT
 from litestar.testing import create_test_client
 
 
-class User(BaseModel):
+@dataclass
+class User:
     id: UUID
     name: str
-    email: EmailStr
+    email: str
 
 
 MOCK_DB: dict[str, User] = {}

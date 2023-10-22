@@ -2,7 +2,6 @@ from typing import Any, Type, Union
 
 import msgspec
 import pytest
-from pydantic import BaseModel
 
 from litestar import (
     Controller,
@@ -59,7 +58,7 @@ async def test_controller_http_method(
     with create_test_client(MyController) as client:
         response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
-        if return_value and isinstance(return_value, BaseModel):
+        if return_value is not None and not isinstance(return_value, Response):
             assert response.json() == msgspec.to_builtins(return_value)
 
 

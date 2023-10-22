@@ -3,10 +3,8 @@ from __future__ import annotations
 from typing import Optional
 
 import msgspec
-import pydantic
 import pytest
 import yaml
-from pydantic import BaseModel, Field
 from typing_extensions import Annotated
 
 from litestar import Controller, get, post
@@ -167,54 +165,6 @@ def test_msgspec_schema_generation(create_examples: bool) -> None:
             create_examples=create_examples,
         ),
         signature_types=[Lookup],
-    ) as client:
-        response = client.get("/schema/openapi.json")
-        assert response.status_code == HTTP_200_OK
-        assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
-            "description": "A unique identifier",
-            "examples": [{"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}],
-            "maxLength": 16,
-            "minLength": 12,
-            "type": "string",
-        }
-
-
-@pytest.mark.parametrize("create_examples", CREATE_EXAMPLES_VALUES)
-def test_pydantic_schema_generation(create_examples: bool) -> None:
-    class Lookup(BaseModel):
-        if pydantic.VERSION.startswith("1"):
-            id: Annotated[
-                str,
-                Field(
-                    min_length=12,
-                    max_length=16,
-                    description="A unique identifier",
-                    example="e4eaaaf2-d142-11e1-b3e4-080027620cdd",  # pyright: ignore
-                ),
-            ]
-        else:
-            id: Annotated[  # type: ignore[no-redef]
-                str,
-                Field(
-                    min_length=12,
-                    max_length=16,
-                    description="A unique identifier",
-                    json_schema_extra={"example": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"},
-                ),
-            ]
-
-    @post("/example")
-    async def example_route() -> Lookup:
-        return Lookup(id="1234567812345678")
-
-    with create_test_client(
-        route_handlers=[example_route],
-        openapi_config=OpenAPIConfig(
-            title="Example API",
-            version="1.0.0",
-            create_examples=create_examples,
-        ),
-        signature_namespace={"Lookup": Lookup},
     ) as client:
         response = client.get("/schema/openapi.json")
         assert response.status_code == HTTP_200_OK
