@@ -50,5 +50,5 @@ class AttrsSchemaPlugin(OpenAPISchemaPluginProtocol):
                 k: schema_creator.for_field_definition(FieldDefinition.from_kwarg(v, k)) for k, v in type_hints.items()
             },
             type=OpenAPIType.OBJECT,
-            title=_get_type_schema_name(field_definition.annotation),
+            title=_get_type_schema_name(field_definition),
         )

@@ -155,23 +155,24 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
         if schema_creator.prefer_alias != self.prefer_alias:
             schema_creator.prefer_alias = True
         if is_pydantic_model_class(field_definition.annotation):
-            return self.for_pydantic_model(annotation=field_definition.annotation, schema_creator=schema_creator)
+            return self.for_pydantic_model(field_definition=field_definition, schema_creator=schema_creator)
         return PYDANTIC_TYPE_MAP[field_definition.annotation]  # pragma: no cover
 
     @classmethod
     def for_pydantic_model(
-        cls, annotation: type[pydantic.BaseModel], schema_creator: SchemaCreator
+        cls, field_definition: FieldDefinition, schema_creator: SchemaCreator
     ) -> Schema:  # pyright: ignore
         """Create a schema object for a given pydantic model class.
 
         Args:
-            annotation: A pydantic model class.
+            field_definition: FieldDefinition instance.
             schema_creator: An instance of the schema creator class
 
         Returns:
             A schema instance.
         """
 
+        annotation = field_definition.annotation
         unwrapped_annotation, annotation_hints = pydantic_get_unwrapped_annotation_and_type_hints(annotation)
         model_config = getattr(annotation, "__config__", getattr(annotation, "model_config", Empty))
 
@@ -207,6 +208,6 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
             required=sorted(f.name for f in field_definitions.values() if f.is_required),
             properties={k: schema_creator.for_field_definition(f) for k, f in field_definitions.items()},
             type=OpenAPIType.OBJECT,
-            title=title or _get_type_schema_name(annotation),
+            title=title or _get_type_schema_name(field_definition),
             examples=[Example(example)] if example else None,
         )

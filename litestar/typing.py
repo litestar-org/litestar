@@ -397,7 +397,7 @@ class FieldDefinition:
     def is_dataclass_type(self) -> bool:
         """Whether the annotation is a dataclass type or not."""
 
-        return is_dataclass(self.origin or self.annotation)
+        return is_dataclass(cast("type", self.origin or self.annotation))
 
     @property
     def is_typeddict_type(self) -> bool:
