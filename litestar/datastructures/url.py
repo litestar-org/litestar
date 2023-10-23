@@ -217,12 +217,13 @@ class URL:
         """
         if isinstance(query, MultiDict):
             query = urlencode(query=query)
+        query = (query if query is not Empty else self.query) or ""
 
         return URL.from_components(  # type: ignore[no-any-return]
             scheme=scheme or self.scheme,
             netloc=netloc or self.netloc,
             path=path or self.path,
-            query=(query if query is not Empty else self.query) or "",
+            query=query,
             fragment=fragment or self.fragment,
         )
 
