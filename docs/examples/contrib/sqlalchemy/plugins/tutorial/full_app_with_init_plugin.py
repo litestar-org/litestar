@@ -56,7 +56,7 @@ async def get_todo_list(done: Optional[bool], session: AsyncSession) -> List[Tod
 
 
 async def on_startup(app: Litestar) -> None:
-    async with app.state.engine.begin() as conn:
+    async with app.state.db_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
 
