@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from collections import abc, deque
 from copy import deepcopy
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, is_dataclass, replace
 from inspect import Parameter, Signature
 from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Sequence, TypeVar, cast
 
 from msgspec import UnsetType
-from typing_extensions import Annotated, NotRequired, Required, Self, get_args, get_origin
+from typing_extensions import Annotated, NotRequired, Required, Self, get_args, get_origin, get_type_hints, is_typeddict
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Example
@@ -26,6 +26,7 @@ from litestar.utils.predicates import (
 from litestar.utils.typing import (
     get_instantiable_origin,
     get_safe_generic_origin,
+    get_type_hints_with_generics_resolved,
     make_non_optional_union,
     unwrap_annotation,
 )
@@ -392,6 +393,18 @@ class FieldDefinition:
                     args.append(field_definition)
         return tuple(args)
 
+    @property
+    def is_dataclass_type(self) -> bool:
+        """Whether the annotation is a dataclass type or not."""
+
+        return is_dataclass(cast("type", self.origin or self.annotation))
+
+    @property
+    def is_typeddict_type(self) -> bool:
+        """Whether the type is TypedDict or not."""
+
+        return is_typeddict(self.origin or self.annotation)
+
     def is_subclass_of(self, cl: type[Any] | tuple[type[Any], ...]) -> bool:
         """Whether the annotation is a subclass of the given type.
 
@@ -425,6 +438,24 @@ class FieldDefinition:
             Whether any of the type's generic args are a subclass of the given type.
         """
         return any(t.is_subclass_of(cl) for t in self.inner_types)
+
+    def get_type_hints(self, *, include_extras: bool = False, resolve_generics: bool = False) -> dict[str, Any]:
+        """Get the type hints for the annotation.
+
+        Args:
+            include_extras: Flag to indicate whether to include ``Annotated[T, ...]`` or not.
+            resolve_generics: Flag to indicate whether to resolve the generic types in the type hints or not.
+
+        Returns:
+            The type hints.
+        """
+
+        if self.origin is not None or self.is_generic:
+            if resolve_generics:
+                return get_type_hints_with_generics_resolved(self.annotation, include_extras=include_extras)
+            return get_type_hints(self.origin or self.annotation, include_extras=include_extras)
+
+        return get_type_hints(self.annotation, include_extras=include_extras)
 
     @classmethod
     def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:
