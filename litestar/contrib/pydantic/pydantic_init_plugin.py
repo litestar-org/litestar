@@ -96,7 +96,7 @@ def is_pydantic_v1_model_class(annotation: Any) -> TypeGuard[type[pydantic_v1.Ba
     return is_class_and_subclass(annotation, pydantic_v1.BaseModel)
 
 
-def is_pydantic_v2_model_class(annotation: Any) -> TypeGuard[type[pydantic_v1.BaseModel]]:
+def is_pydantic_v2_model_class(annotation: Any) -> TypeGuard[type[pydantic_v2.BaseModel]]:
     return is_class_and_subclass(annotation, pydantic_v2.BaseModel)
 
 
