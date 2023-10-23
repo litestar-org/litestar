@@ -1831,31 +1831,22 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <input id="sd-tab-item-19" name="sd-tab-set-6" type="radio">
 </input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-19">
 Minijinja</label><div class="sd-tab-content docutils">
-<div class="sd-tab-set docutils">
-<input id="sd-tab-item-24" name="sd-tab-set-9" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-24">
-Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id12">
 <div class="code-block-caption"><span class="caption-text">template_functions.py</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.contrib.minijinja</span> <span class="kn">import</span> <span class="n">MiniJinjaTemplateEngine</span><span class="p">,</span> <span class="n">minijinja_from_state</span>
+<span class="kn">from</span> <span class="nn">litestar.contrib.minijinja</span> <span class="kn">import</span> <span class="n">MiniJinjaTemplateEngine</span><span class="p">,</span> <span class="n">StateProtocol</span>
 <span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">Template</span>
 <span class="kn">from</span> <span class="nn">litestar.template.config</span> <span class="kn">import</span> <span class="n">TemplateConfig</span>
 
 
-<span class="k">def</span> <span class="nf">my_template_function</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;my_context_key&quot;</span><span class="p">,</span> <span class="s2">&quot;nope&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_template_function</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">StateProtocol</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">ctx</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;my_context_key&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;nope&quot;</span>
 
 
 <span class="k">def</span> <span class="nf">register_template_callables</span><span class="p">(</span><span class="n">engine</span><span class="p">:</span> <span class="n">MiniJinjaTemplateEngine</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">engine</span><span class="o">.</span><span class="n">register_template_callable</span><span class="p">(</span>
-        <span class="n">key</span><span class="o">=</span><span class="s2">&quot;check_context_key&quot;</span><span class="p">,</span>
-        <span class="n">template_callable</span><span class="o">=</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">minijinja_from_state</span><span class="p">,</span> <span class="n">my_template_function</span><span class="p">),</span>
-    <span class="p">)</span>
+    <span class="n">engine</span><span class="o">.</span><span class="n">register_template_callable</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;check_context_key&quot;</span><span class="p">,</span> <span class="n">template_callable</span><span class="o">=</span><span class="n">my_template_function</span><span class="p">)</span>
 
 
 <span class="n">template_config</span> <span class="o">=</span> <span class="n">TemplateConfig</span><span class="p">(</span>
@@ -1874,53 +1865,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-</div>
-<input checked="checked" id="sd-tab-item-25" name="sd-tab-set-9" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-25">
-Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">template_functions.py</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.contrib.minijinja</span> <span class="kn">import</span> <span class="n">MiniJinjaTemplateEngine</span><span class="p">,</span> <span class="n">minijinja_from_state</span>
-<span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">Template</span>
-<span class="kn">from</span> <span class="nn">litestar.template.config</span> <span class="kn">import</span> <span class="n">TemplateConfig</span>
-
-
-<span class="k">def</span> <span class="nf">my_template_function</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;my_context_key&quot;</span><span class="p">,</span> <span class="s2">&quot;nope&quot;</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">register_template_callables</span><span class="p">(</span><span class="n">engine</span><span class="p">:</span> <span class="n">MiniJinjaTemplateEngine</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">engine</span><span class="o">.</span><span class="n">register_template_callable</span><span class="p">(</span>
-        <span class="n">key</span><span class="o">=</span><span class="s2">&quot;check_context_key&quot;</span><span class="p">,</span>
-        <span class="n">template_callable</span><span class="o">=</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">minijinja_from_state</span><span class="p">,</span> <span class="n">my_template_function</span><span class="p">),</span>
-    <span class="p">)</span>
-
-
-<span class="n">template_config</span> <span class="o">=</span> <span class="n">TemplateConfig</span><span class="p">(</span>
-    <span class="n">directory</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;templates&quot;</span><span class="p">,</span>
-    <span class="n">engine</span><span class="o">=</span><span class="n">MiniJinjaTemplateEngine</span><span class="p">,</span>
-    <span class="n">engine_callback</span><span class="o">=</span><span class="n">register_template_callables</span><span class="p">,</span>
-<span class="p">)</span>
-
-
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Template</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">Template</span><span class="p">(</span><span class="n">template_name</span><span class="o">=</span><span class="s2">&quot;index.html.minijinja&quot;</span><span class="p">)</span>
-
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">template_config</span><span class="o">=</span><span class="n">template_config</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">templates/index.html.minijinja</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">templates/index.html.minijinja</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">strong</span><span class="p">&gt;</span>check_context_key: <span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span>{{ check_context_key() }}
 </pre></div>
 </div>
