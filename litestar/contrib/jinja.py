@@ -22,8 +22,9 @@ from jinja2 import Environment, FileSystemLoader, pass_context
 from jinja2 import TemplateNotFound as JinjaTemplateNotFound
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from jinja2 import Template as JinjaTemplate
-    from pydantic import DirectoryPath
 
 
 class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
@@ -31,7 +32,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
 
     def __init__(
         self,
-        directory: DirectoryPath | list[DirectoryPath] | None = None,
+        directory: Path | list[Path] | None = None,
         engine_instance: Environment | None = None,
     ) -> None:
         """Jinja based TemplateEngine.
