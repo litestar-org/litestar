@@ -179,7 +179,7 @@ if pydantic_v2 is not None:
     )
 
 
-_supported_types = (pydantic_v1.BaseModel, *list(PYDANTIC_TYPE_MAP.keys()))
+_supported_types = (pydantic_v1.BaseModel, *(k for k in PYDANTIC_TYPE_MAP.keys()))
 if pydantic_v2 is not None:
     _supported_types = (pydantic_v2.BaseModel, *_supported_types)
 
