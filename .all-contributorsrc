@@ -1309,6 +1309,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "ddxv",
+      "name": "James O'Claire",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7601451?v=4",
+      "profile": "http://jamesoclaire.com",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
