@@ -37,12 +37,13 @@ Application and request level loggers can be configured using the :class:`~lites
 Standard Library Logging
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-`logging <https://docs.python.org/3/howto/logging.html>`_ is Python's builtin standard logging library.
+`logging <https://docs.python.org/3/howto/logging.html>`_ is Python's builtin standard logging library. Works with gunicorn and uvicorn as well.
 
 .. code-block:: python
 
     from litestar import Litestar, Request, get
     import logging
+
 
     def get_logger(module_name: str) -> logging.Logger:
         """Retun logger object."""
@@ -55,7 +56,9 @@ Standard Library Logging
         ch.setLevel(logging.INFO)
 
         # create formatter
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
 
         # add formatter to ch
         ch.setFormatter(formatter)
@@ -72,6 +75,7 @@ Standard Library Logging
     def my_router_handler(self, request: Request) -> None:
         logger.info("inside a request")
         return None
+
 
     app = Litestar(route_handlers=[my_router_handler])
 
