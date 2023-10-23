@@ -26,7 +26,6 @@ from minijinja import TemplateError as MiniJinjaTemplateNotFound
 
 if TYPE_CHECKING:
     from minijinja._lowlevel import State
-    from pydantic import DirectoryPath
 
 
 @pass_state  # type: ignore
@@ -63,9 +62,7 @@ class MiniJinjaTemplate(TemplateProtocol):
 class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate"]):
     """The engine instance."""
 
-    def __init__(
-        self, directory: DirectoryPath | list[DirectoryPath] | None = None, engine_instance: Environment | None = None
-    ) -> None:
+    def __init__(self, directory: Path | list[Path] | None = None, engine_instance: Environment | None = None) -> None:
         """Minijinja based TemplateEngine.
 
         Args:
