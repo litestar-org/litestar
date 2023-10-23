@@ -41,6 +41,23 @@ Complexity
 This code is undoubtedly more complex than the code we have seen so far - although a crude measure of complexity, we can
 see that there are more than double the lines of code to the previous example.
 
+Database creation on startup
+++++++++++++++++++++++++++++
+
+Before we can use the database we need to make sure it exists and is setup according to our ``TodoItem`` class.
+This is done by a call to ``create_all`` which is provided by ``Base.metdata`` and creates all tables that are stored
+inside the metadata. Since this is a synchronous call we need to invoke it through ``run_sync``
+provided by :class:`AsyncConnection <sqlalchemy.ext.asyncio.AsyncConnection>`.
+
+For this to be called during the application startup we add this function to the ``on_start`` argument of the
+application.
+
+.. literalinclude::
+    /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
+    :language: python
+    :linenos:
+    :lines: 67-70,103
+
 Lifespan context manager
 ++++++++++++++++++++++++
 
@@ -52,7 +69,7 @@ of it when we are done. This context manager is added to the application's ``lif
     /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
-    :lines: 29-39,98
+    :lines: 29-40,103
 
 Application state
 +++++++++++++++++
@@ -74,7 +91,7 @@ handlers.
     /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
-    :lines: 67-72
+    :lines: 72-77
     :emphasize-lines: 2,3
 
 Serialization
@@ -90,7 +107,7 @@ serializable by Litestar.
     /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
-    :lines: 2-3,14-16,45-48,89-98
+    :lines: 2-3,14-16,45-48,94-103
     :emphasize-lines: 3,4,6,7,11,16
 
 Behavior

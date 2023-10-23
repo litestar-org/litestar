@@ -10,7 +10,7 @@ handlers.
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
     :language: python
     :linenos:
-    :emphasize-lines: 46-55,81-82,86-88,93-94,102
+    :emphasize-lines: 46-55,86-88,91-93,98-99,107
 
 In the previous example, the database session is created within each HTTP route handler function. In this script we use
 dependency injection to decouple creation of the session from the route handlers.
@@ -28,7 +28,7 @@ That function is declared as a dependency to the Litestar application, using the
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
     :language: python
     :linenos:
-    :lines: 99-103
+    :lines: 104-108
     :emphasize-lines: 3
 
 In the route handlers, the database session is injected by declaring the ``transaction`` name as a function argument.
@@ -38,7 +38,7 @@ This is automatically provided by Litestar's dependency injection system at runt
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
     :language: python
     :linenos:
-    :lines: 79-83
+    :lines: 84-88
     :emphasize-lines: 2
 
 One final improvement in this script is exception handling. In the previous version, a
@@ -68,14 +68,14 @@ session object:
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
             :language: python
             :linenos:
-            :lines: 79-98
+            :lines: 84-103
 
    .. tab-item:: Before
 
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
             :language: python
             :linenos:
-            :lines: 67-98
+            :lines: 72-103
 
 Much better!
 
