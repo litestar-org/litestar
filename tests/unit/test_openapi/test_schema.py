@@ -327,7 +327,7 @@ def test_schema_generation_with_generic_classes(cls: Any) -> None:
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas).for_field_definition(field_definition)
 
-    name = _get_type_schema_name(cls)
+    name = _get_type_schema_name(field_definition)
     properties = schemas[name].properties
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
     expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.NULL), Schema(type=OpenAPIType.INTEGER)])
@@ -358,7 +358,7 @@ def test_schema_generation_with_generic_classes_constrained() -> None:
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas).for_field_definition(field_definition)
 
-    name = _get_type_schema_name(cls)
+    name = _get_type_schema_name(field_definition)
     properties = schemas[name].properties
 
     assert properties
@@ -387,8 +387,7 @@ def test_schema_generation_with_pagination(annotation: Any) -> None:
     field_definition = FieldDefinition.from_annotation(annotation)
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas).for_field_definition(field_definition)
-
-    name = _get_type_schema_name(DataclassGeneric[int])
+    name = _get_type_schema_name(field_definition.inner_types[-1])
     properties = schemas[name].properties
 
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)

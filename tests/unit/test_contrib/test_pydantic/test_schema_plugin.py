@@ -29,7 +29,7 @@ def test_schema_generation_with_generic_classes() -> None:
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(field_definition)
 
-    name = _get_type_schema_name(cls)
+    name = _get_type_schema_name(field_definition)
     properties = schemas[name].properties
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
     expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.NULL), Schema(type=OpenAPIType.INTEGER)])

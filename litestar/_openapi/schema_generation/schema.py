@@ -142,22 +142,22 @@ TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
 }
 
 
-def _get_type_schema_name(value: Any) -> str:
+def _get_type_schema_name(field_definition: FieldDefinition) -> str:
     """Extract the schema name from a data container.
 
     Args:
-        value: A data container
+        field_definition: A field definition instance.
 
     Returns:
         A string
     """
 
-    if name := getattr(value, "__schema_name__", None):
+    if name := getattr(field_definition.annotation, "__schema_name__", None):
         return cast("str", name)
 
-    name = get_name(value)
-    if args := get_args(value):
-        inner_parts = ", ".join(_get_type_schema_name(a) for a in args)
+    name = get_name(field_definition.annotation)
+    if field_definition.inner_types:
+        inner_parts = ", ".join(_get_type_schema_name(t) for t in field_definition.inner_types)
         return f"{name}[{inner_parts}]"
 
     return name
@@ -274,7 +274,7 @@ class SchemaCreator:
         result: Schema | Reference
 
         # NOTE: The check for whether the field_definition.annotation is a Pagination type
-        # has to come before the `is_dataclass_check` since the the Pagination classes are dataclasses
+        # has to come before the `is_dataclass_check` since the Pagination classes are dataclasses,
         # but we want to handle them differently from how dataclasses are normally handled.
         if field_definition.is_optional:
             result = self.for_optional_field(field_definition)
@@ -495,7 +495,7 @@ class SchemaCreator:
                 for field in fields
             },
             type=OpenAPIType.OBJECT,
-            title=_get_type_schema_name(field_definition.annotation),
+            title=_get_type_schema_name(field_definition),
         )
 
     # noinspection PyDataclass
@@ -525,7 +525,7 @@ class SchemaCreator:
             ),
             properties={k: self.for_field_definition(FieldDefinition.from_kwarg(v, k)) for k, v in type_hints.items()},
             type=OpenAPIType.OBJECT,
-            title=_get_type_schema_name(field_definition.annotation),
+            title=_get_type_schema_name(field_definition),
         )
 
     # noinspection PyTypedDict
@@ -551,7 +551,7 @@ class SchemaCreator:
                 }.items()
             },
             type=OpenAPIType.OBJECT,
-            title=_get_type_schema_name(field_definition.annotation),
+            title=_get_type_schema_name(field_definition),
         )
 
     def for_constrained_field(self, field: FieldDefinition) -> Schema:
