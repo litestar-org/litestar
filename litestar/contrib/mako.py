@@ -24,7 +24,7 @@ except ImportError as e:
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from mako.template import Template as _MakoTemplate
+    from mako.template import Template as _MakoTemplate  # type: ignore[import-untyped]
 
 __all__ = ("MakoTemplate", "MakoTemplateEngine")
 
