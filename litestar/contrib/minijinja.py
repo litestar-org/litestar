@@ -26,8 +26,6 @@ except ImportError as e:
 if TYPE_CHECKING:
     from typing import Callable
 
-    from pydantic import DirectoryPath
-
     C = TypeVar("C", bound="Callable")
 
     def pass_state(func: C) -> C:
@@ -99,9 +97,7 @@ class MiniJinjaTemplate(TemplateProtocol):
 class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateProtocol]):
     """The engine instance."""
 
-    def __init__(
-        self, directory: DirectoryPath | list[DirectoryPath] | None = None, engine_instance: Environment | None = None
-    ) -> None:
+    def __init__(self, directory: Path | list[Path] | None = None, engine_instance: Environment | None = None) -> None:
         """Minijinja based TemplateEngine.
 
         Args:

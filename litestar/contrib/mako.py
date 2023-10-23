@@ -22,8 +22,9 @@ except ImportError as e:
     raise MissingDependencyException("mako") from e
 
 if TYPE_CHECKING:
-    from mako.template import Template as _MakoTemplate  # type: ignore[import-untyped]
-    from pydantic import DirectoryPath
+    from pathlib import Path
+
+    from mako.template import Template as _MakoTemplate
 
 __all__ = ("MakoTemplate", "MakoTemplateEngine")
 
@@ -65,9 +66,7 @@ class MakoTemplate(TemplateProtocol):
 class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate, Mapping[str, Any]]):
     """Mako based TemplateEngine."""
 
-    def __init__(
-        self, directory: DirectoryPath | list[DirectoryPath] | None = None, engine_instance: Any | None = None
-    ) -> None:
+    def __init__(self, directory: Path | list[Path] | None = None, engine_instance: Any | None = None) -> None:
         """Initialize template engine.
 
         Args:

@@ -20,8 +20,9 @@ except ImportError as e:
     raise MissingDependencyException("jinja2") from e
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from jinja2 import Template as JinjaTemplate
-    from pydantic import DirectoryPath
 
 __all__ = ("JinjaTemplateEngine",)
 
@@ -34,7 +35,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate", Mapping[str, A
 
     def __init__(
         self,
-        directory: DirectoryPath | list[DirectoryPath] | None = None,
+        directory: Path | list[Path] | None = None,
         engine_instance: Environment | None = None,
     ) -> None:
         """Jinja based TemplateEngine.
