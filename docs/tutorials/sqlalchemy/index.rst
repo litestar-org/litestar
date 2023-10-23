@@ -14,7 +14,7 @@ Install SQLAlchemy
 ==================
 
 To follow this tutorial, you will need SQLAlchemy installed. You can install it with ``pip install sqlalchemy``, or let
-Litestar install it for you by installing the ``sqlalchemy`` extra (e.g., ``pip install litestar[standard,sqlalchemy]``).
+Litestar install it for you by installing the ``sqlalchemy`` extra (e.g., ``pip install 'litestar[standard,sqlalchemy]'``).
 
 What's in this tutorial?
 ========================
