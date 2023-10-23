@@ -46,7 +46,7 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
 
     parameters = _create_parameters(app=Litestar(route_handlers=[person_controller]), path="/{service_id}/person")
     assert len(parameters) == 9
-    page, name, page_size, service_id, from_date, to_date, gender, secret_header, cookie_value = tuple(parameters)
+    page, name, service_id, page_size, from_date, to_date, gender, secret_header, cookie_value = tuple(parameters)
 
     assert service_id.name == "service_id"
     assert service_id.param_in == ParamType.PATH

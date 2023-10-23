@@ -1,8 +1,8 @@
 import logging
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, List, cast
 
 import pytest
-from pydantic import BaseModel
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
@@ -95,13 +95,13 @@ def test_custom_middleware_processing(middleware: Any) -> None:
             assert middleware_instance.arg == 1
 
 
-class JSONRequest(BaseModel):
-    name: str
-    age: int
-    programmer: bool
-
-
 def test_request_body_logging_middleware(caplog: "LogCaptureFixture") -> None:
+    @dataclass
+    class JSONRequest:
+        name: str
+        age: int
+        programmer: bool
+
     @post(path="/")
     def post_handler(data: JSONRequest) -> JSONRequest:
         return data

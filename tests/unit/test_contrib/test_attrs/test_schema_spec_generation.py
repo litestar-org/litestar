@@ -1,24 +1,31 @@
-from typing import Any
+from typing import Dict, List, Optional
 
-import pytest
-from msgspec import Struct
+import attrs
 
 from litestar import post
 from litestar.testing import create_test_client
-from tests.models import DataclassPerson, MsgSpecStructPerson, TypedDictPerson
+from tests.models import DataclassPet
 
 
-@pytest.mark.parametrize("cls", (DataclassPerson, TypedDictPerson, MsgSpecStructPerson))
-def test_spec_generation(cls: Any) -> None:
+def test_spec_generation() -> None:
+    @attrs.define
+    class Person:
+        first_name: str
+        last_name: str
+        id: str
+        optional: Optional[str]
+        complex: Dict[str, List[Dict[str, str]]]
+        pets: Optional[List[DataclassPet]]
+
     @post("/")
-    def handler(data: cls) -> cls:
+    def handler(data: Person) -> Person:
         return data
 
     with create_test_client(handler) as client:
         schema = client.app.openapi_schema
         assert schema
 
-        assert schema.to_schema()["components"]["schemas"][cls.__name__] == {
+        assert schema.to_schema()["components"]["schemas"]["Person"] == {
             "properties": {
                 "first_name": {"type": "string"},
                 "last_name": {"type": "string"},
@@ -40,26 +47,5 @@ def test_spec_generation(cls: Any) -> None:
             },
             "type": "object",
             "required": ["complex", "first_name", "id", "last_name"],
-            "title": f"{cls.__name__}",
-        }
-
-
-def test_msgspec_schema() -> None:
-    class CamelizedStruct(Struct, rename="camel"):
-        field_one: int
-        field_two: float
-
-    @post("/")
-    def handler(data: CamelizedStruct) -> CamelizedStruct:
-        return data
-
-    with create_test_client(handler) as client:
-        schema = client.app.openapi_schema
-        assert schema
-
-        assert schema.to_schema()["components"]["schemas"][CamelizedStruct.__name__] == {
-            "properties": {"fieldOne": {"type": "integer"}, "fieldTwo": {"type": "number"}},
-            "required": ["fieldOne", "fieldTwo"],
-            "title": "CamelizedStruct",
-            "type": "object",
+            "title": "Person",
         }

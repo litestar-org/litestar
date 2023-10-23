@@ -1,7 +1,8 @@
-from pydantic import BaseModel
+from dataclasses import dataclass
 
 
-class Form(BaseModel):
+@dataclass
+class Form:
     name: str
     age: int
     programmer: bool

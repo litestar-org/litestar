@@ -1,37 +1,41 @@
+import sys
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum, auto
-from typing import TYPE_CHECKING, Dict, List, Literal
+from typing import TYPE_CHECKING, Any, Dict, Generic, List, Literal, Optional, TypedDict, TypeVar, Union
 
 import annotated_types
 import msgspec
-import pydantic
 import pytest
-from pydantic import BaseModel, Field
+from msgspec import Struct
 from typing_extensions import Annotated, TypeAlias
 
 from litestar import Controller, MediaType, get
 from litestar._openapi.schema_generation.schema import (
     KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     SchemaCreator,
+    _get_type_schema_name,
     create_schema_for_annotation,
 )
 from litestar.app import DEFAULT_OPENAPI_CONFIG
-from litestar.contrib.pydantic import PydanticSchemaPlugin
 from litestar.di import Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.schema import Schema
+from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.params import BodyKwarg, Parameter, ParameterKwarg
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
+from litestar.utils.helpers import get_name
 from tests.models import DataclassPerson, DataclassPet
 
 if TYPE_CHECKING:
     from types import ModuleType
     from typing import Callable
+
+T = TypeVar("T")
 
 
 def test_process_schema_result() -> None:
@@ -108,7 +112,8 @@ def test_get_schema_for_annotation_enum() -> None:
         opt1 = "opt1"
         opt2 = "opt2"
 
-    class M(BaseModel):
+    @dataclass()
+    class M:
         opt: Opts
 
     schema = create_schema_for_annotation(annotation=M.__annotations__["opt"])
@@ -164,7 +169,7 @@ def test_schema_hashing() -> None:
 
 def test_title_validation() -> None:
     schemas: Dict[str, Schema] = {}
-    schema_creator = SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()])
+    schema_creator = SchemaCreator(schemas=schemas)
 
     schema_creator.for_field_definition(FieldDefinition.from_kwarg(name="Person", annotation=DataclassPerson))
     assert schemas.get("DataclassPerson")
@@ -178,29 +183,6 @@ def test_title_validation() -> None:
                 name="DataclassPerson", annotation=DataclassPet, kwarg_definition=BodyKwarg(title="DataclassPerson")
             )
         )
-
-
-@pytest.mark.parametrize("with_future_annotations", [True, False])
-def test_create_schema_for_pydantic_model_with_annotated_model_attribute(
-    with_future_annotations: bool, create_module: "Callable[[str], ModuleType]"
-) -> None:
-    """Test that a model with an annotated attribute is correctly handled."""
-    module = create_module(
-        f"""
-{'from __future__ import annotations' if with_future_annotations else ''}
-from typing_extensions import Annotated
-from pydantic import BaseModel
-
-class Foo(BaseModel):
-    foo: Annotated[int, "Foo description"]
-"""
-    )
-    schemas: Dict[str, Schema] = {}
-    SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(
-        FieldDefinition.from_annotation(module.Foo)
-    )
-    schema = schemas["Foo"]
-    assert schema.properties and "foo" in schema.properties
 
 
 @pytest.mark.parametrize("with_future_annotations", [True, False])
@@ -264,27 +246,6 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
     assert schema.required == ["id"]
 
 
-def test_create_schema_for_pydantic_field() -> None:
-    class Model(BaseModel):
-        if pydantic.VERSION.startswith("1"):
-            value: str = Field(
-                title="title", description="description", example="example", max_length=16  # pyright: ignore
-            )
-        else:
-            value: str = Field(  # type: ignore[no-redef]
-                title="title", description="description", max_length=16, json_schema_extra={"example": "example"}
-            )
-
-    schemas: Dict[str, Schema] = {}
-    field_definition = FieldDefinition.from_kwarg(name="Model", annotation=Model)
-    SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(field_definition)
-    schema = schemas["Model"]
-
-    assert schema.properties["value"].description == "description"  # type: ignore
-    assert schema.properties["value"].title == "title"  # type: ignore
-    assert schema.properties["value"].examples == [Example(value="example")]  # type: ignore
-
-
 def test_annotated_types() -> None:
     historical_date = date(year=1980, day=1, month=1)
     today = date.today()
@@ -331,3 +292,108 @@ def test_literal_enums() -> None:
         FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass)
     )
     assert schemas["MyDataclass"].properties["bar"].items.const == 1  # type: ignore
+
+
+@dataclass
+class DataclassGeneric(Generic[T]):
+    foo: T
+    optional_foo: Optional[T]
+    annotated_foo: Annotated[T, object()]
+
+
+class MsgspecGeneric(Struct, Generic[T]):
+    foo: T
+    optional_foo: Optional[T]
+    annotated_foo: Annotated[T, object()]
+
+
+annotations: List[type] = [DataclassGeneric[int], MsgspecGeneric[int]]
+
+# Generic TypedDict was only supported from 3.11 onwards
+if sys.version_info >= (3, 11):
+
+    class TypedDictGeneric(TypedDict, Generic[T]):
+        foo: T
+        optional_foo: Optional[T]
+        annotated_foo: Annotated[T, object()]
+
+    annotations.append(TypedDictGeneric[int])
+
+
+@pytest.mark.parametrize("cls", annotations)
+def test_schema_generation_with_generic_classes(cls: Any) -> None:
+    field_definition = FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
+
+    schemas: Dict[str, Schema] = {}
+    SchemaCreator(schemas=schemas).for_field_definition(field_definition)
+
+    name = _get_type_schema_name(field_definition)
+    properties = schemas[name].properties
+    expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
+    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.NULL), Schema(type=OpenAPIType.INTEGER)])
+
+    assert properties
+    assert properties["foo"] == expected_foo_schema
+    assert properties["annotated_foo"] == expected_foo_schema
+    assert properties["optional_foo"] == expected_optional_foo_schema
+
+
+B = TypeVar("B", bound=int)
+C = TypeVar("C", int, str)
+
+
+@dataclass
+class ConstrainedGenericDataclass(Generic[T, B, C]):
+    bound: B
+    constrained: C
+    union: Union[T, bool]
+    union_constrained: Union[C, bool]
+    union_bound: Union[B, bool]
+
+
+def test_schema_generation_with_generic_classes_constrained() -> None:
+    cls = ConstrainedGenericDataclass
+    field_definition = FieldDefinition.from_kwarg(name=cls.__name__, annotation=cls)
+
+    schemas: Dict[str, Schema] = {}
+    SchemaCreator(schemas=schemas).for_field_definition(field_definition)
+
+    name = _get_type_schema_name(field_definition)
+    properties = schemas[name].properties
+
+    assert properties
+    assert properties["bound"] == Schema(type=OpenAPIType.INTEGER)
+    assert properties["constrained"] == Schema(
+        one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)]
+    )
+    assert properties["union"] == Schema(one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.OBJECT)])
+    assert properties["union_constrained"] == Schema(
+        one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)]
+    )
+    assert properties["union_bound"] == Schema(
+        one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.INTEGER)]
+    )
+
+
+@pytest.mark.parametrize(
+    "annotation",
+    (
+        ClassicPagination[DataclassGeneric[int]],
+        OffsetPagination[DataclassGeneric[int]],
+        CursorPagination[int, DataclassGeneric[int]],
+    ),
+)
+def test_schema_generation_with_pagination(annotation: Any) -> None:
+    field_definition = FieldDefinition.from_annotation(annotation)
+    schemas: Dict[str, Schema] = {}
+    SchemaCreator(schemas=schemas).for_field_definition(field_definition)
+    name = _get_type_schema_name(field_definition.inner_types[-1])
+    properties = schemas[name].properties
+
+    expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
+    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.NULL), Schema(type=OpenAPIType.INTEGER)])
+
+    assert properties
+    assert properties["foo"] == expected_foo_schema
+    assert properties["annotated_foo"] == expected_foo_schema
+    assert properties["optional_foo"] == expected_optional_foo_schema

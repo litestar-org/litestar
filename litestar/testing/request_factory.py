@@ -1,23 +1,22 @@
 from __future__ import annotations
 
 import json
-from dataclasses import asdict
+from functools import partial
 from typing import TYPE_CHECKING, Any, cast
 from urllib.parse import urlencode
 
 from httpx._content import encode_json as httpx_encode_json
 from httpx._content import encode_multipart_data, encode_urlencoded_data
-from msgspec import Struct, to_builtins
 
 from litestar import delete, patch, post, put
 from litestar.app import Litestar
 from litestar.connection import Request
 from litestar.enums import HttpMethod, ParamType, RequestEncodingType, ScopeType
 from litestar.handlers.http_handlers import get
-from litestar.serialization import decode_json, encode_json
+from litestar.serialization import decode_json, default_serializer, encode_json
 from litestar.types import DataContainerType, HTTPScope, RouteHandlerType
 from litestar.types.asgi_types import ASGIVersion
-from litestar.utils import is_attrs_class, is_dataclass_instance, is_pydantic_model_instance
+from litestar.utils import get_serializer_from_scope
 
 if TYPE_CHECKING:
     from httpx._types import FileTypes
@@ -34,13 +33,17 @@ _decorator_http_method_map: dict[HttpMethod, type[HTTPRouteHandler]] = {
 }
 
 
-def _create_default_route_handler(http_method: HttpMethod, handler_kwargs: dict[str, Any] | None) -> HTTPRouteHandler:
+def _create_default_route_handler(
+    http_method: HttpMethod, handler_kwargs: dict[str, Any] | None, app: Litestar
+) -> HTTPRouteHandler:
     handler_decorator = _decorator_http_method_map[http_method]
 
     def _default_route_handler() -> None:
         ...
 
-    return handler_decorator("/", sync_to_thread=False, **(handler_kwargs or {}))(_default_route_handler)
+    handler = handler_decorator("/", sync_to_thread=False, **(handler_kwargs or {}))(_default_route_handler)
+    handler.owner = app
+    return handler
 
 
 def _create_default_app() -> Litestar:
@@ -57,6 +60,7 @@ class RequestFactory:
         "root_path",
         "scheme",
         "handler_kwargs",
+        "serializer",
     )
 
     def __init__(
@@ -121,6 +125,7 @@ class RequestFactory:
         self.root_path = root_path
         self.scheme = scheme
         self.handler_kwargs = handler_kwargs
+        self.serializer = partial(default_serializer, type_encoders=self.app.type_encoders)
 
     def _create_scope(
         self,
@@ -180,7 +185,8 @@ class RequestFactory:
             asgi=ASGIVersion(spec_version="3.0", version="3.0"),
             http_version=http_version or "1.1",
             raw_path=path.encode("ascii"),
-            route_handler=route_handler or _create_default_route_handler(http_method, self.handler_kwargs),
+            route_handler=route_handler
+            or _create_default_route_handler(http_method, self.handler_kwargs, app=self.app),
             extensions={},
         )
 
@@ -280,16 +286,7 @@ class RequestFactory:
 
         headers = headers or {}
         if data:
-            if isinstance(data, Struct):
-                data = to_builtins(data)
-            elif is_dataclass_instance(data):
-                data = asdict(data)
-            elif is_attrs_class(type(data)):
-                from attr import asdict as attrs_as_dict
-
-                data = attrs_as_dict(data)  # type: ignore[arg-type]
-            elif is_pydantic_model_instance(data):
-                data = data.model_dump(mode="json") if hasattr(data, "model_dump") else json.loads(data.json())
+            data = json.loads(encode_json(data, serializer=get_serializer_from_scope(scope)))
 
             if request_media_type == RequestEncodingType.JSON:
                 encoding_headers, stream = httpx_encode_json(data)
