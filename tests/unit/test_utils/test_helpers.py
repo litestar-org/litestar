@@ -1,6 +1,35 @@
 from functools import partial
+from typing import Any, Generic
 
-from litestar.utils.helpers import unique_name_for_scope, unwrap_partial
+import pytest
+from typing_extensions import TypeVar
+
+from litestar.utils.helpers import get_name, unique_name_for_scope, unwrap_partial
+
+T = TypeVar("T")
+
+
+class GenericFoo(Generic[T]):
+    ...
+
+
+class Foo:
+    ...
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    (
+        (Foo, "Foo"),
+        (Foo(), "Foo"),
+        (GenericFoo, "GenericFoo"),
+        (GenericFoo[int], "GenericFoo"),
+        (GenericFoo[T], "GenericFoo"),  # type: ignore[valid-type]
+        (GenericFoo(), "GenericFoo"),
+    ),
+)
+def test_get_name(value: Any, expected: str) -> None:
+    assert get_name(value) == expected
 
 
 def test_unwrap_partial() -> None:

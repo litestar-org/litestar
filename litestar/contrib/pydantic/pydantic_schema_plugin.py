@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from typing_extensions import Annotated, get_type_hints
+from typing_extensions import Annotated
 
 from litestar._openapi.schema_generation.schema import SchemaCreator, _get_type_schema_name
-from litestar.contrib.pydantic.utils import is_pydantic_model_class
+from litestar.contrib.pydantic.utils import is_pydantic_model_class, pydantic_get_unwrapped_annotation_and_type_hints
 from litestar.openapi.spec import Example, OpenAPIFormat, OpenAPIType, Schema
 from litestar.plugins import OpenAPISchemaPluginProtocol
 from litestar.types import Empty
@@ -179,7 +179,7 @@ if pydantic_v2 is not None:
     )
 
 
-_supported_types = (pydantic_v1.BaseModel, *(k for k in PYDANTIC_TYPE_MAP.keys()))
+_supported_types = (pydantic_v1.BaseModel, *PYDANTIC_TYPE_MAP.keys())
 if pydantic_v2 is not None:
     _supported_types = (pydantic_v2.BaseModel, *_supported_types)
 
@@ -207,12 +207,15 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
         if schema_creator.prefer_alias != self.prefer_alias:
             schema_creator.prefer_alias = True
         if is_pydantic_model_class(field_definition.annotation):
-            return self.for_pydantic_model(annotation=field_definition.annotation, schema_creator=schema_creator)
+            return self.for_pydantic_model(
+                field_definition=field_definition, annotation=field_definition.annotation, schema_creator=schema_creator
+            )
         return PYDANTIC_TYPE_MAP[field_definition.annotation]  # pragma: no cover
 
     @classmethod
     def for_pydantic_model(
         cls,
+        field_definition: FieldDefinition,
         annotation: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel],  # pyright: ignore
         schema_creator: SchemaCreator,
     ) -> Schema:  # pyright: ignore
@@ -220,6 +223,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
 
         Args:
             annotation: A pydantic model class.
+            field_definition: FieldDefinition instance.
             schema_creator: An instance of the schema creator class
 
         Returns:
@@ -227,18 +231,19 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
         """
 
         is_v2_model = hasattr(annotation, "model_fields")
-        annotation_hints = get_type_hints(annotation, include_extras=True)
-        model_config = getattr(annotation, "__config__", getattr(annotation, "model_config", Empty))
+        annotation = field_definition.annotation
+        unwrapped_annotation, annotation_hints = pydantic_get_unwrapped_annotation_and_type_hints(annotation)
+        model_config = annotation.model_config if is_v2_model else annotation.__config__
+        model_fields = unwrapped_annotation.model_fields if is_v2_model else unwrapped_annotation.__fields__
+
         model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo] = {  # pyright: ignore
-            k: getattr(f, "field_info", f)  # type: ignore[arg-type, misc]
-            for k, f in (annotation.model_fields if is_v2_model else annotation.__fields__).items()  # type: ignore[union-attr]
+            k: getattr(f, "field_info", f) for k, f in model_fields.items()
         }
 
-        # pydantic v2 logic
-        if isinstance(model_config, dict):
+        if is_v2_model:
             title = model_config.get("title")
             example = model_config.get("example")
-        else:  # pragma: no cover
+        else:
             title = getattr(model_config, "title", None)
             example = getattr(model_config, "example", None)
 
@@ -259,6 +264,6 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
             required=sorted(f.name for f in field_definitions.values() if f.is_required),
             properties={k: schema_creator.for_field_definition(f) for k, f in field_definitions.items()},
             type=OpenAPIType.OBJECT,
-            title=title or _get_type_schema_name(annotation),
+            title=title or _get_type_schema_name(field_definition),
             examples=[Example(example)] if example else None,
         )
