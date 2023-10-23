@@ -46,7 +46,7 @@ Standard Library Logging
 
 
     def get_logger(module_name: str) -> logging.Logger:
-        """Retun logger object."""
+        """Return logger object."""
         # create logger
         logger = logging.getLogger(module_name)
         logger.setLevel(logging.INFO)
