@@ -32,6 +32,51 @@ Application and request level loggers can be configured using the :class:`~lites
     is keyed as ``queue_listener`` in the logging configuration. The above example is using this handler,
     which is optimal for async applications. Make sure to use it in your own loggers as in the above example.
 
+
+
+Standard Library Logging
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+`logging <https://docs.python.org/3/howto/logging.html>`_ is Python's builtin standard logging library.
+
+.. code-block:: python
+
+    from litestar import Litestar, Request, get
+    import logging
+
+    def get_logger(module_name: str) -> logging.Logger:
+        """Retun logger object."""
+        # create logger
+        logger = logging.getLogger(module_name)
+        logger.setLevel(logging.INFO)
+
+        # create console handler and set level to debug
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.INFO)
+
+        # create formatter
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+        # add formatter to ch
+        ch.setFormatter(formatter)
+
+        # add ch to logger
+        logger.addHandler(ch)
+        return logger
+
+
+    logger = get_logger(__name__)
+
+
+    @get("/")
+    def my_router_handler(self, request: Request) -> None:
+        logger.info("inside a request")
+        return None
+
+    app = Litestar(route_handlers=[my_router_handler])
+
+
+
 Using Picologging
 ^^^^^^^^^^^^^^^^^
 
