@@ -13,6 +13,7 @@ from sqlalchemy.orm import Mapped, declarative_mixin, mapped_column
 from sqlalchemy.types import String
 
 from litestar import Litestar, get, post
+from litestar.di import Provide
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase
 from litestar.contrib.sqlalchemy.plugins import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
 from litestar.contrib.sqlalchemy.repository import (
@@ -171,7 +172,7 @@ async def create_blog(
     data: BlogPostCreate,
 ) -> BlogPostDTO:
     """Create a new blog post."""
-    _data = data.dict(exclude_unset=True, by_alias=False, exclude_none=True)
+    _data = data.model_dump(exclude_unset=True, by_alias=False, exclude_none=True)
     _data["slug"] = await blog_post_repo.get_available_slug(_data["title"])
     obj = await blog_post_repo.add(BlogPost(**_data))
     await blog_post_repo.session.commit()
@@ -180,6 +181,7 @@ async def create_blog(
 
 app = Litestar(
     route_handlers=[create_blog, get_blogs, get_blog_details],
+    dependencies={"blog_post_repo": Provide(provide_blog_post_repo, sync_to_thread=True)},
     on_startup=[on_startup],
     plugins=[SQLAlchemyInitPlugin(config=sqlalchemy_config)],
 )
