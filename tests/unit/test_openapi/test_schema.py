@@ -1,17 +1,20 @@
+import sys
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum, auto
-from typing import TYPE_CHECKING, Dict, List, Literal
+from typing import TYPE_CHECKING, Any, Dict, Generic, List, Literal, Optional, TypedDict, TypeVar, Union
 
 import annotated_types
 import msgspec
 import pytest
+from msgspec import Struct
 from typing_extensions import Annotated, TypeAlias
 
 from litestar import Controller, MediaType, get
 from litestar._openapi.schema_generation.schema import (
     KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     SchemaCreator,
+    _get_type_schema_name,
     create_schema_for_annotation,
 )
 from litestar.app import DEFAULT_OPENAPI_CONFIG
@@ -21,14 +24,18 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.schema import Schema
+from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.params import BodyKwarg, Parameter, ParameterKwarg
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
+from litestar.utils.helpers import get_name
 from tests.models import DataclassPerson, DataclassPet
 
 if TYPE_CHECKING:
     from types import ModuleType
     from typing import Callable
+
+T = TypeVar("T")
 
 
 def test_process_schema_result() -> None:
@@ -285,3 +292,108 @@ def test_literal_enums() -> None:
         FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass)
     )
     assert schemas["MyDataclass"].properties["bar"].items.const == 1  # type: ignore
+
+
+@dataclass
+class DataclassGeneric(Generic[T]):
+    foo: T
+    optional_foo: Optional[T]
+    annotated_foo: Annotated[T, object()]
+
+
+class MsgspecGeneric(Struct, Generic[T]):
+    foo: T
+    optional_foo: Optional[T]
+    annotated_foo: Annotated[T, object()]
+
+
+annotations: List[type] = [DataclassGeneric[int], MsgspecGeneric[int]]
+
+# Generic TypedDict was only supported from 3.11 onwards
+if sys.version_info >= (3, 11):
+
+    class TypedDictGeneric(TypedDict, Generic[T]):
+        foo: T
+        optional_foo: Optional[T]
+        annotated_foo: Annotated[T, object()]
+
+    annotations.append(TypedDictGeneric[int])
+
+
+@pytest.mark.parametrize("cls", annotations)
+def test_schema_generation_with_generic_classes(cls: Any) -> None:
+    field_definition = FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
+
+    schemas: Dict[str, Schema] = {}
+    SchemaCreator(schemas=schemas).for_field_definition(field_definition)
+
+    name = _get_type_schema_name(field_definition)
+    properties = schemas[name].properties
+    expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
+    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.NULL), Schema(type=OpenAPIType.INTEGER)])
+
+    assert properties
+    assert properties["foo"] == expected_foo_schema
+    assert properties["annotated_foo"] == expected_foo_schema
+    assert properties["optional_foo"] == expected_optional_foo_schema
+
+
+B = TypeVar("B", bound=int)
+C = TypeVar("C", int, str)
+
+
+@dataclass
+class ConstrainedGenericDataclass(Generic[T, B, C]):
+    bound: B
+    constrained: C
+    union: Union[T, bool]
+    union_constrained: Union[C, bool]
+    union_bound: Union[B, bool]
+
+
+def test_schema_generation_with_generic_classes_constrained() -> None:
+    cls = ConstrainedGenericDataclass
+    field_definition = FieldDefinition.from_kwarg(name=cls.__name__, annotation=cls)
+
+    schemas: Dict[str, Schema] = {}
+    SchemaCreator(schemas=schemas).for_field_definition(field_definition)
+
+    name = _get_type_schema_name(field_definition)
+    properties = schemas[name].properties
+
+    assert properties
+    assert properties["bound"] == Schema(type=OpenAPIType.INTEGER)
+    assert properties["constrained"] == Schema(
+        one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)]
+    )
+    assert properties["union"] == Schema(one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.OBJECT)])
+    assert properties["union_constrained"] == Schema(
+        one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)]
+    )
+    assert properties["union_bound"] == Schema(
+        one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.INTEGER)]
+    )
+
+
+@pytest.mark.parametrize(
+    "annotation",
+    (
+        ClassicPagination[DataclassGeneric[int]],
+        OffsetPagination[DataclassGeneric[int]],
+        CursorPagination[int, DataclassGeneric[int]],
+    ),
+)
+def test_schema_generation_with_pagination(annotation: Any) -> None:
+    field_definition = FieldDefinition.from_annotation(annotation)
+    schemas: Dict[str, Schema] = {}
+    SchemaCreator(schemas=schemas).for_field_definition(field_definition)
+    name = _get_type_schema_name(field_definition.inner_types[-1])
+    properties = schemas[name].properties
+
+    expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
+    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.NULL), Schema(type=OpenAPIType.INTEGER)])
+
+    assert properties
+    assert properties["foo"] == expected_foo_schema
+    assert properties["annotated_foo"] == expected_foo_schema
+    assert properties["optional_foo"] == expected_optional_foo_schema
