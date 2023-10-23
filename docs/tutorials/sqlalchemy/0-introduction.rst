@@ -45,7 +45,7 @@ Database creation on startup
 ++++++++++++++++++++++++++++
 
 Before we can use the database we need to make sure it exists and is setup according to our ``TodoItem`` class.
-This is done by a call to ``create_all`` which is provided by ``Base.metdata`` and creates all tables that are stored
+This is done by a call to ``create_all`` which is provided by ``Base.metadata`` and creates all tables that are stored
 inside the metadata. Since this is a synchronous call we need to invoke it through ``run_sync``
 provided by :class:`AsyncConnection <sqlalchemy.ext.asyncio.AsyncConnection>`.
 
