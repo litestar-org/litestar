@@ -13,7 +13,7 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    from pydantic import DirectoryPath
+    from pathlib import Path
 
     from litestar.connection import Request
 
@@ -101,7 +101,7 @@ T_co = TypeVar("T_co", bound=TemplateProtocol, covariant=True)
 class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
     """Protocol for template engines."""
 
-    def __init__(self, directory: DirectoryPath | list[DirectoryPath] | None, engine_instance: Any | None) -> None:
+    def __init__(self, directory: Path | list[Path] | None, engine_instance: Any | None) -> None:
         """Initialize the template engine with a directory.
 
         Args:
