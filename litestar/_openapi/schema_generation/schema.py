@@ -396,8 +396,7 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        origin = get_origin_or_inner_type(field_definition.annotation)
-        if origin is ClassicPagination:
+        if field_definition.origin is ClassicPagination:
             return Schema(
                 type=OpenAPIType.OBJECT,
                 properties={
@@ -411,7 +410,7 @@ class SchemaCreator:
                 },
             )
 
-        if origin is OffsetPagination:
+        if field_definition.origin is OffsetPagination:
             return Schema(
                 type=OpenAPIType.OBJECT,
                 properties={
