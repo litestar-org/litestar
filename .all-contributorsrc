@@ -1309,6 +1309,23 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "ddxv",
+      "name": "James O'Claire",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7601451?v=4",
+      "profile": "http://jamesoclaire.com",
+      "contributions": [
+        "doc"
+      ]
+    }, {
+      "login": "pbaletkeman",
+      "name": "Pete",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22402240?v=4",
+      "profile": "https://github.com/pbaletkeman",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
