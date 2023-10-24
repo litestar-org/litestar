@@ -5,6 +5,8 @@ Application and request level loggers can be configured using the :class:`~lites
 
 .. code-block:: python
 
+   import logging
+
    from litestar import Litestar, Request, get
    from litestar.logging import LoggingConfig
 
@@ -17,10 +19,11 @@ Application and request level loggers can be configured using the :class:`~lites
 
    logging_config = LoggingConfig(
        loggers={
+           "root": {"level": logging.getLevelName(logging.INFO), "handlers": ["console"]},
            "my_app": {
                "level": "INFO",
                "handlers": ["queue_listener"],
-           }
+           },
        }
    )
 
