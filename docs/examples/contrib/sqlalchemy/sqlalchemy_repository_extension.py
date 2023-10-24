@@ -181,7 +181,7 @@ async def create_blog(
 
 app = Litestar(
     route_handlers=[create_blog, get_blogs, get_blog_details],
-    dependencies={"blog_post_repo": Provide(provide_blog_post_repo, sync_to_thread=True)},
+    dependencies={"blog_post_repo": Provide(provide_blog_post_repo, sync_to_thread=False)},
     on_startup=[on_startup],
     plugins=[SQLAlchemyInitPlugin(config=sqlalchemy_config)],
 )
