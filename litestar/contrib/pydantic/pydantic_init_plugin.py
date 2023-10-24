@@ -8,16 +8,22 @@ from msgspec import ValidationError
 from typing_extensions import Buffer, TypeGuard
 
 from litestar._signature.types import ExtendedMsgSpecValidationError
+from litestar.exceptions import MissingDependencyException
 from litestar.plugins import InitPluginProtocol
 from litestar.utils import is_class_and_subclass
 
 try:
+    # check if we have pydantic v2 installed, and try to import both versions
     import pydantic as pydantic_v2
     from pydantic import v1 as pydantic_v1
 except ImportError:
-    import pydantic as pydantic_v1  # type: ignore[no-redef]
+    # check if pydantic 1 is installed and import it
+    try:
+        import pydantic as pydantic_v1  # type: ignore[no-redef]
 
-    pydantic_v2 = None  # type: ignore[assignment]
+        pydantic_v2 = None  # type: ignore[assignment]
+    except ImportError as e:
+        raise MissingDependencyException("pydantic") from e
 
 
 if TYPE_CHECKING:

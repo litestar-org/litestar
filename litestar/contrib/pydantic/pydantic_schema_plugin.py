@@ -6,6 +6,7 @@ from typing_extensions import Annotated
 
 from litestar._openapi.schema_generation.schema import SchemaCreator, _get_type_schema_name
 from litestar.contrib.pydantic.utils import is_pydantic_model_class, pydantic_get_unwrapped_annotation_and_type_hints
+from litestar.exceptions import MissingDependencyException
 from litestar.openapi.spec import Example, OpenAPIFormat, OpenAPIType, Schema
 from litestar.plugins import OpenAPISchemaPluginProtocol
 from litestar.types import Empty
@@ -13,12 +14,17 @@ from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass, is_undefined_sentinel
 
 try:
+    # check if we have pydantic v2 installed, and try to import both versions
     import pydantic as pydantic_v2
     from pydantic import v1 as pydantic_v1
 except ImportError:
-    import pydantic as pydantic_v1  # type: ignore[no-redef]
+    # check if pydantic 1 is installed and import it
+    try:
+        import pydantic as pydantic_v1  # type: ignore[no-redef]
 
-    pydantic_v2 = None  # type: ignore[assignment]
+        pydantic_v2 = None  # type: ignore[assignment]
+    except ImportError as e:
+        raise MissingDependencyException("pydantic") from e
 
 
 PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
@@ -127,9 +133,9 @@ PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
 if pydantic_v2 is not None:
     PYDANTIC_TYPE_MAP.update(
         {
-            pydantic_v1.ByteSize: Schema(type=OpenAPIType.INTEGER),
-            pydantic_v1.EmailStr: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL),
-            pydantic_v1.IPvAnyAddress: Schema(
+            pydantic_v2.ByteSize: Schema(type=OpenAPIType.INTEGER),
+            pydantic_v2.EmailStr: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL),
+            pydantic_v2.IPvAnyAddress: Schema(
                 one_of=[
                     Schema(
                         type=OpenAPIType.STRING,
@@ -143,7 +149,7 @@ if pydantic_v2 is not None:
                     ),
                 ]
             ),
-            pydantic_v1.IPvAnyInterface: Schema(
+            pydantic_v2.IPvAnyInterface: Schema(
                 one_of=[
                     Schema(
                         type=OpenAPIType.STRING,
@@ -157,7 +163,7 @@ if pydantic_v2 is not None:
                     ),
                 ]
             ),
-            pydantic_v1.IPvAnyNetwork: Schema(
+            pydantic_v2.IPvAnyNetwork: Schema(
                 one_of=[
                     Schema(
                         type=OpenAPIType.STRING,
@@ -171,8 +177,8 @@ if pydantic_v2 is not None:
                     ),
                 ]
             ),
-            pydantic_v1.Json: Schema(type=OpenAPIType.OBJECT, format=OpenAPIFormat.JSON_POINTER),
-            pydantic_v1.NameEmail: Schema(
+            pydantic_v2.Json: Schema(type=OpenAPIType.OBJECT, format=OpenAPIFormat.JSON_POINTER),
+            pydantic_v2.NameEmail: Schema(
                 type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL, description="Name and email"
             ),
         }

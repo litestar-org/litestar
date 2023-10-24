@@ -5,17 +5,22 @@ from typing import TYPE_CHECKING, Collection, Generic, TypeVar
 
 from typing_extensions import TypeAlias, override
 
-from litestar.contrib.pydantic.utils import PYDANTIC_UNDEFINED_SENTINELS
+from litestar.constants import PYDANTIC_UNDEFINED_SENTINELS
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField
-from litestar.exceptions import ValidationException
+from litestar.exceptions import MissingDependencyException, ValidationException
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
     from typing import Any, Generator
 
     from litestar.typing import FieldDefinition
+
+try:
+    import pydantic as _  # noqa: F401
+except ImportError as e:
+    raise MissingDependencyException("pydantic") from e
 
 
 try:
@@ -24,7 +29,7 @@ try:
     from pydantic import v1 as pydantic_v1
     from pydantic.v1 import ValidationError as ValidationErrorV1
 
-    ModelType: TypeAlias = "pydantic_v1.BaseModel | pydantic_v2.BaseModel"  # pyright: ignore
+    ModelType: TypeAlias = "pydantic_v1.BaseModel | pydantic_v2.BaseModel"
 
 except ImportError:
     import pydantic as pydantic_v1  # type: ignore[no-redef]
@@ -61,11 +66,11 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
 
     @classmethod
     def generate_field_definitions(
-        cls, model_type: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel]  # pyright: ignore
+        cls, model_type: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel]
     ) -> Generator[DTOFieldDefinition, None, None]:
         model_field_definitions = cls.get_model_type_hints(model_type)
 
-        model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo]  # pyright: ignore
+        model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo]
         try:
             model_fields = dict(model_type.model_fields)  # type: ignore[union-attr]
         except AttributeError:

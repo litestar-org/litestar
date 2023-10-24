@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any
 
 from typing_extensions import get_type_hints
 
-from litestar.constants import UNDEFINED_SENTINELS
 from litestar.types import Empty
 from litestar.utils import is_class_and_subclass
 from litestar.utils.predicates import is_generic
@@ -35,15 +34,6 @@ except ImportError:
 
 if TYPE_CHECKING:
     from typing_extensions import TypeGuard
-
-PYDANTIC_UNDEFINED_SENTINELS = set()
-
-if pydantic_v1 is not Empty:  # type: ignore[comparison-overlap]
-    PYDANTIC_UNDEFINED_SENTINELS.add(pydantic_v1.fields.Undefined)  # pyright: ignore
-    if pydantic_v2 is not Empty:  # type: ignore[comparison-overlap]
-        PYDANTIC_UNDEFINED_SENTINELS.add(pydantic_v2.fields.PydanticUndefined)  # type: ignore[attr-defined]
-
-UNDEFINED_SENTINELS.update(PYDANTIC_UNDEFINED_SENTINELS)
 
 
 def is_pydantic_model_class(

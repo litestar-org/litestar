@@ -2,13 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from litestar.exceptions import MissingDependencyException
 from litestar.plugins import InitPluginProtocol
-
-try:
-    import pydantic as _  # noqa: F401
-except ImportError as e:
-    raise MissingDependencyException("pydantic") from e
 
 from .pydantic_dto_factory import PydanticDTO
 from .pydantic_init_plugin import PydanticInitPlugin
