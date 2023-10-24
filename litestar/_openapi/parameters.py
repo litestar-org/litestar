@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
     from litestar.di import Provide
     from litestar.handlers.base import BaseRouteHandler
-    from litestar.openapi.spec import Reference
+    from litestar.openapi.spec import Example, Reference
     from litestar.types.internal_types import PathParameterDefinition
 
 
@@ -109,12 +109,17 @@ def create_parameter(
 
     schema = result if isinstance(result, Schema) else schema_creator.schemas[result.value]
 
+    examples: dict[str, Example | Reference] = {}
+    for i, example in enumerate(kwarg_definition.examples or [] if kwarg_definition else []):
+        examples[f"{field_definition.name}-example-{i}"] = example
+
     return Parameter(
         description=schema.description,
         name=parameter_name,
         param_in=param_in,
         required=is_required,
         schema=result,
+        examples=examples or None,
     )
 
 
