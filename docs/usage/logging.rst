@@ -37,36 +37,56 @@ Application and request level loggers can be configured using the :class:`~lites
 
 
 
-Standard Library Logging
-^^^^^^^^^^^^^^^^^^^^^^^^
+Standard Library Logging (Manual Configuration)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-`logging <https://docs.python.org/3/howto/logging.html>`_ is Python's builtin standard logging library. Works with gunicorn and uvicorn as well.
+`logging <https://docs.python.org/3/howto/logging.html>`_ is Python's builtin standard logging library and can be integrated with `LoggingConfig` as the `root` logging.
 
 .. code-block:: python
 
-    from litestar import Litestar, Request, get
     import logging
 
+    from litestar import Litestar, Request, get
+    from litestar.logging.config import LoggingConfig
 
-    def get_logger(module_name: str) -> logging.Logger:
+    log_config = LoggingConfig(
+        root={"level": logging.getLevelName(logging.INFO), "handlers": ["console"]},
+        formatters={
+            "standard": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
+        },
+    )
+
+    logger = log_config.configure()()
+
+
+    @get("/")
+    def my_router_handler(request: Request) -> None:
+        request.logger.info("inside a request")
+        logger.info("here too")
+
+
+    app = Litestar(
+        route_handlers=[my_router_handler],
+        logging_config=log_config,
+    )
+
+The above example is the same as using logging without the litestar LoggingConfig.
+
+.. code-block:: python
+    import logging
+
+    from litestar import Litestar, Request, get
+    from litestar.logging.config import LoggingConfig
+
+
+    def get_logger(mod_name: str) -> logging.Logger:
         """Return logger object."""
-        # create logger
-        logger = logging.getLogger(module_name)
-        logger.setLevel(logging.INFO)
-
-        # create console handler and set level to debug
+        format = "%(asctime)s: %(name)s: %(levelname)s: %(message)s"
+        logger = logging.getLogger(mod_name)
+        # Writes to stdout
         ch = logging.StreamHandler()
         ch.setLevel(logging.INFO)
-
-        # create formatter
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
-
-        # add formatter to ch
-        ch.setFormatter(formatter)
-
-        # add ch to logger
+        ch.setFormatter(logging.Formatter(format))
         logger.addHandler(ch)
         return logger
 
@@ -75,13 +95,13 @@ Standard Library Logging
 
 
     @get("/")
-    def my_router_handler(self, request: Request) -> None:
-        logger.info("inside a request")
-        return None
+    def my_router_handler(request: Request) -> None:
+        logger.info("logger inside a request")
 
 
-    app = Litestar(route_handlers=[my_router_handler])
-
+    app = Litestar(
+        route_handlers=[my_router_handler],
+    )
 
 
 Using Picologging
