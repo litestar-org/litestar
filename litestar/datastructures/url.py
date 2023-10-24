@@ -200,7 +200,7 @@ class URL:
         scheme: str = "",
         netloc: str = "",
         path: str = "",
-        query: str | MultiDict | None = None,
+        query: str | MultiDict | None | EmptyType = Empty,
         fragment: str = "",
     ) -> URL:
         """Create a new URL, replacing the given components.
@@ -217,12 +217,13 @@ class URL:
         """
         if isinstance(query, MultiDict):
             query = urlencode(query=query)
+        query = (query if query is not Empty else self.query) or ""
 
         return URL.from_components(  # type: ignore[no-any-return]
             scheme=scheme or self.scheme,
             netloc=netloc or self.netloc,
             path=path or self.path,
-            query=query or self.query,
+            query=query,
             fragment=fragment or self.fragment,
         )
 
