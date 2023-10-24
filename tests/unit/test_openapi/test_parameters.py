@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, List, Optional, Type, cast
 
 import pytest
+from typing_extensions import Annotated
 
 from litestar import Controller, Litestar, Router, get
 from litestar._openapi.parameters import create_parameter_for_handler
@@ -11,9 +12,11 @@ from litestar._signature import SignatureModel
 from litestar.di import Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.openapi.spec import OpenAPI
+from litestar.openapi import OpenAPIConfig
+from litestar.openapi.spec import Example, OpenAPI
 from litestar.openapi.spec.enums import OpenAPIType
 from litestar.params import Dependency, Parameter
+from litestar.testing import create_test_client
 from litestar.utils import find_index
 
 if TYPE_CHECKING:
@@ -46,7 +49,7 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
 
     parameters = _create_parameters(app=Litestar(route_handlers=[person_controller]), path="/{service_id}/person")
     assert len(parameters) == 9
-    page, name, page_size, service_id, from_date, to_date, gender, secret_header, cookie_value = tuple(parameters)
+    page, name, service_id, page_size, from_date, to_date, gender, secret_header, cookie_value = tuple(parameters)
 
     assert service_id.name == "service_id"
     assert service_id.param_in == ParamType.PATH
@@ -306,3 +309,19 @@ def test_layered_parameters() -> None:
     assert local.schema.type == OpenAPIType.INTEGER  # type: ignore
     assert local.required
     assert local.schema.examples  # type: ignore
+
+
+def test_parameter_examples() -> None:
+    @get(path="/")
+    async def index(
+        text: Annotated[str, Parameter(examples=[Example(value="example value", summary="example summary")])]
+    ) -> str:
+        return text
+
+    with create_test_client(
+        route_handlers=[index], openapi_config=OpenAPIConfig(title="Test API", version="1.0.0")
+    ) as client:
+        response = client.get("/schema/openapi.json")
+        assert response.json()["paths"]["/"]["get"]["parameters"][0]["examples"] == {
+            "text-example-0": {"summary": "example summary", "value": "example value"}
+        }

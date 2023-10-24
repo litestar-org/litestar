@@ -2,18 +2,18 @@ from datetime import date, datetime
 from typing import Any, Dict, List, Optional, Type, Union
 
 import pytest
-from pydantic import (
-    conint,
-)
 
 from litestar import Controller, MediaType, delete, get, patch, post, put
 from litestar.datastructures import ResponseHeader, State
-from litestar.dto import DTOData
+from litestar.dto import DataclassDTO, DTOConfig, DTOData
 from litestar.openapi.spec.example import Example
 from litestar.params import Parameter
-from tests import PartialPersonDTO, PydanticPerson, PydanticPersonFactory, PydanticPet, VanillaDataClassPerson
+from tests.models import DataclassPerson, DataclassPersonFactory, DataclassPet
+from tests.unit.test_openapi.utils import Gender, PetException
 
-from .utils import Gender, PetException
+
+class PartialDataclassPersonDTO(DataclassDTO[DataclassPerson]):
+    config = DTOConfig(partial=True)
 
 
 def create_person_controller() -> Type[Controller]:
@@ -32,6 +32,7 @@ def create_person_controller() -> Type[Controller]:
             # required query parameters below
             page: int,
             name: Optional[Union[str, List[str]]],  # intentionally without default
+            service_id: int,
             page_size: int = Parameter(
                 query="pageSize",
                 description="Page Size Description",
@@ -39,7 +40,6 @@ def create_person_controller() -> Type[Controller]:
                 examples=[Example(description="example value", value=1)],
             ),
             # path parameter
-            service_id: int = conint(gt=0),  # type: ignore
             # non-required query parameters below
             from_date: Optional[Union[int, datetime, date]] = None,
             to_date: Optional[Union[int, datetime, date]] = None,
@@ -50,45 +50,45 @@ def create_person_controller() -> Type[Controller]:
             secret_header: str = Parameter(header="secret"),
             # cookie parameter
             cookie_value: int = Parameter(cookie="value"),
-        ) -> List[PydanticPerson]:
+        ) -> List[DataclassPerson]:
             return []
 
         @post(media_type=MediaType.TEXT)
         def create_person(
-            self, data: PydanticPerson, secret_header: str = Parameter(header="secret")
-        ) -> PydanticPerson:
+            self, data: DataclassPerson, secret_header: str = Parameter(header="secret")
+        ) -> DataclassPerson:
             return data
 
-        @post(path="/bulk", dto=PartialPersonDTO)
+        @post(path="/bulk", dto=PartialDataclassPersonDTO)
         def bulk_create_person(
-            self, data: List[DTOData[PydanticPerson]], secret_header: str = Parameter(header="secret")
-        ) -> List[PydanticPerson]:
+            self, data: List[DTOData[DataclassPerson]], secret_header: str = Parameter(header="secret")
+        ) -> List[DataclassPerson]:
             return []
 
         @put(path="/bulk")
         def bulk_update_person(
-            self, data: List[PydanticPerson], secret_header: str = Parameter(header="secret")
-        ) -> List[PydanticPerson]:
+            self, data: List[DataclassPerson], secret_header: str = Parameter(header="secret")
+        ) -> List[DataclassPerson]:
             return []
 
-        @patch(path="/bulk", dto=PartialPersonDTO)
+        @patch(path="/bulk", dto=PartialDataclassPersonDTO)
         def bulk_partial_update_person(
-            self, data: List[DTOData[PydanticPerson]], secret_header: str = Parameter(header="secret")
-        ) -> List[PydanticPerson]:
+            self, data: List[DTOData[DataclassPerson]], secret_header: str = Parameter(header="secret")
+        ) -> List[DataclassPerson]:
             return []
 
         @get(path="/{person_id:str}")
-        def get_person_by_id(self, person_id: str) -> PydanticPerson:
+        def get_person_by_id(self, person_id: str) -> DataclassPerson:
             """Description in docstring."""
-            return PydanticPersonFactory.build(id=person_id)
+            return DataclassPersonFactory.build(id=person_id)
 
-        @patch(path="/{person_id:str}", description="Description in decorator", dto=PartialPersonDTO)
-        def partial_update_person(self, person_id: str, data: DTOData[PydanticPerson]) -> PydanticPerson:
+        @patch(path="/{person_id:str}", description="Description in decorator", dto=PartialDataclassPersonDTO)
+        def partial_update_person(self, person_id: str, data: DTOData[DataclassPerson]) -> DataclassPerson:
             """Description in docstring."""
-            return PydanticPersonFactory.build(id=person_id)
+            return DataclassPersonFactory.build(id=person_id)
 
         @put(path="/{person_id:str}")
-        def update_person(self, person_id: str, data: PydanticPerson) -> PydanticPerson:
+        def update_person(self, person_id: str, data: DataclassPerson) -> DataclassPerson:
             """Multiline docstring example.
 
             Line 3.
@@ -100,8 +100,8 @@ def create_person_controller() -> Type[Controller]:
             return None
 
         @get(path="/dataclass")
-        def get_person_dataclass(self) -> VanillaDataClassPerson:
-            return VanillaDataClassPerson(
+        def get_person_dataclass(self) -> DataclassPerson:
+            return DataclassPerson(
                 first_name="Moishe", last_name="zuchmir", id="1", optional=None, complex={}, pets=None
             )
 
@@ -113,13 +113,13 @@ def create_pet_controller() -> Type[Controller]:
         path = "/pet"
 
         @get()
-        def pets(self) -> List[PydanticPet]:
+        def pets(self) -> List[DataclassPet]:
             return []
 
         @get(
             path="/owner-or-pet", response_headers=[ResponseHeader(name="x-my-tag", value="123")], raises=[PetException]
         )
-        def get_pets_or_owners(self) -> List[Union[PydanticPerson, PydanticPet]]:
+        def get_pets_or_owners(self) -> List[Union[DataclassPerson, DataclassPet]]:
             return []
 
     return PetController

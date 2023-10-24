@@ -4,12 +4,12 @@ from typing import TYPE_CHECKING, Any, Optional, Type, Union
 
 import pytest
 from jinja2 import DictLoader, Environment
-from mako.lookup import TemplateLookup
+from mako.lookup import TemplateLookup  # type: ignore[import-untyped]
 
 from litestar import get
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
-from litestar.contrib.minijnja import MiniJinjaTemplateEngine
+from litestar.contrib.minijinja import MiniJinjaTemplateEngine
 from litestar.response.template import Template
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client

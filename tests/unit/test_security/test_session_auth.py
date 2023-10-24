@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any, Dict, Optional
 from uuid import uuid4
 
+import msgspec
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -9,14 +10,13 @@ from starlette.status import (
 )
 
 from litestar import Litestar, Request, delete, get, post
-from litestar.contrib.pydantic import _model_dump
 from litestar.middleware.session.server_side import (
     ServerSideSessionBackend,
     ServerSideSessionConfig,
 )
 from litestar.security.session_auth import SessionAuth
 from litestar.testing import create_test_client
-from tests import User, UserFactory
+from tests.models import User, UserFactory
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
@@ -39,7 +39,7 @@ def test_authentication(session_backend_config_memory: ServerSideSessionConfig) 
 
     @post("/login")
     def login_handler(request: "Request[Any, Any, Any]", data: User) -> None:
-        request.set_session(_model_dump(data))
+        request.set_session(msgspec.to_builtins(data))
 
     @delete("/user/{user_id:str}")
     def delete_user_handler(request: "Request[User, Any, Any]") -> None:

@@ -1,9 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Protocol, TypedDict, TypeVar, runtime_checkable
+from typing import TYPE_CHECKING, Any, Callable, Mapping, Protocol, TypedDict, TypeVar, cast, runtime_checkable
+
+from typing_extensions import Concatenate, ParamSpec, TypeAlias
+
+from litestar.utils.deprecation import warn_deprecation
 
 __all__ = (
-    "TemplateContext",
+    "TemplateCallableType",
     "TemplateEngineProtocol",
     "TemplateProtocol",
     "csrf_token",
@@ -13,19 +17,24 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    from pydantic import DirectoryPath
+    from pathlib import Path
 
     from litestar.connection import Request
 
 
-class TemplateContext(TypedDict):
-    """Dictionary representing a template context."""
+def _get_request_from_context(context: Mapping[str, Any]) -> Request:
+    """Get the request from the template context.
 
-    request: Request[Any, Any, Any]
-    csrf_input: str
+    Args:
+        context: The template context.
+
+    Returns:
+        The request object.
+    """
+    return cast("Request", context["request"])
 
 
-def url_for(context: TemplateContext, route_name: str, **path_parameters: Any) -> str:
+def url_for(context: Mapping[str, Any], /, route_name: str, **path_parameters: Any) -> str:
     """Wrap :func:`route_reverse <litestar.app.route_reverse>` to be used in templates.
 
     Args:
@@ -34,15 +43,16 @@ def url_for(context: TemplateContext, route_name: str, **path_parameters: Any) -
         **path_parameters: Actual values for path parameters in the route.
 
     Raises:
-        NoRouteMatchFoundException: If ``route_name`` does not exist, path parameters are missing in **path_parameters or have wrong type.
+        NoRouteMatchFoundException: If ``route_name`` does not exist, path parameters are missing in **path_parameters
+        or have wrong type.
 
     Returns:
         A fully formatted url path.
     """
-    return context["request"].app.route_reverse(route_name, **path_parameters)
+    return _get_request_from_context(context).app.route_reverse(route_name, **path_parameters)
 
 
-def csrf_token(context: TemplateContext) -> str:
+def csrf_token(context: Mapping[str, Any], /) -> str:
     """Set a CSRF token on the template.
 
     Notes:
@@ -55,10 +65,10 @@ def csrf_token(context: TemplateContext) -> str:
     Returns:
         A CSRF token if the app level ``csrf_config`` is set, otherwise an empty string.
     """
-    return context["request"].scope.get("_csrf_token", "")  # type: ignore
+    return _get_request_from_context(context).scope.get("_csrf_token", "")  # type: ignore[return-value]
 
 
-def url_for_static_asset(context: TemplateContext, name: str, file_path: str) -> str:
+def url_for_static_asset(context: Mapping[str, Any], /, name: str, file_path: str) -> str:
     """Wrap :meth:`url_for_static_asset <litestar.app.url_for_static_asset>` to be used in templates.
 
     Args:
@@ -72,7 +82,7 @@ def url_for_static_asset(context: TemplateContext, name: str, file_path: str) ->
     Returns:
         A url path to the asset.
     """
-    return context["request"].app.url_for_static_asset(name, file_path)
+    return _get_request_from_context(context).app.url_for_static_asset(name, file_path)
 
 
 class TemplateProtocol(Protocol):  # pragma: no cover
@@ -94,23 +104,29 @@ class TemplateProtocol(Protocol):  # pragma: no cover
         ...
 
 
-T_co = TypeVar("T_co", bound=TemplateProtocol, covariant=True)
+P = ParamSpec("P")
+R = TypeVar("R")
+ContextType = TypeVar("ContextType")
+ContextType_co = TypeVar("ContextType_co", covariant=True)
+TemplateType_co = TypeVar("TemplateType_co", bound=TemplateProtocol, covariant=True)
+TemplateCallableType: TypeAlias = Callable[Concatenate[ContextType, P], R]
 
 
 @runtime_checkable
-class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
+class TemplateEngineProtocol(Protocol[TemplateType_co, ContextType_co]):  # pragma: no cover
     """Protocol for template engines."""
 
-    def __init__(self, directory: DirectoryPath | list[DirectoryPath] | None, engine_instance: Any | None) -> None:
+    def __init__(self, directory: Path | list[Path] | None, engine_instance: Any | None) -> None:
         """Initialize the template engine with a directory.
 
         Args:
-            directory: Direct path or list of directory paths from which to serve templates, if provided the implementation has to create the engine instance.
+            directory: Direct path or list of directory paths from which to serve templates, if provided the
+                implementation has to create the engine instance.
             engine_instance: A template engine object, if provided the implementation has to use it.
         """
         ...
 
-    def get_template(self, template_name: str) -> T_co:
+    def get_template(self, template_name: str) -> TemplateType_co:
         """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
 
         Args:
@@ -124,7 +140,9 @@ class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
         """
         ...
 
-    def register_template_callable(self, key: str, template_callable: Callable[[dict[str, Any]], Any]) -> None:
+    def register_template_callable(
+        self, key: str, template_callable: TemplateCallableType[ContextType_co, P, R]
+    ) -> None:
         """Register a callable on the template engine.
 
         Args:
@@ -134,3 +152,23 @@ class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
         Returns:
             None
         """
+
+
+class _TemplateContext(TypedDict):
+    """Dictionary representing a template context."""
+
+    request: Request[Any, Any, Any]
+    csrf_input: str
+
+
+def __getattr__(name: str) -> Any:
+    if name == "TemplateContext":
+        warn_deprecation(
+            "2.3.0",
+            "TemplateContext",
+            "import",
+            removal_in="3.0.0",
+            alternative="Mapping",
+        )
+        return _TemplateContext
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

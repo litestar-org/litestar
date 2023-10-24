@@ -1,7 +1,7 @@
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Dict
 
 import pytest
-from pydantic import BaseModel
 
 from litestar import Litestar, get, websocket
 from litestar.connection import Request, WebSocket
@@ -27,12 +27,14 @@ async def dummy_app(scope: Any, receive: Any, send: Any) -> None:
     return None
 
 
-class User(BaseModel):
+@dataclass
+class User:
     name: str
     id: int
 
 
-class Auth(BaseModel):
+@dataclass
+class Auth:
     props: str
 
 

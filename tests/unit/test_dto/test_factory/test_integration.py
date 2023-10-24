@@ -9,12 +9,10 @@ from uuid import UUID
 import msgspec
 import pytest
 from msgspec import Struct
-from pydantic import BaseModel
 from typing_extensions import Annotated
 
 from litestar import Controller, Response, get, patch, post
 from litestar.connection.request import Request
-from litestar.contrib.pydantic import PydanticDTO, _model_dump_json
 from litestar.datastructures import UploadFile
 from litestar.dto import DataclassDTO, DTOConfig, DTOData, MsgspecDTO, dto_field
 from litestar.dto.types import RenameStrategy
@@ -29,7 +27,7 @@ if TYPE_CHECKING:
 
 
 def test_url_encoded_form_data(use_experimental_dto_backend: bool) -> None:
-    @dataclass
+    @dataclass()
     class User:
         name: str
         age: int
@@ -365,7 +363,7 @@ def test_dto_openapi_without_unique_handler_names(use_experimental_dto_backend: 
 
 
 def test_url_encoded_form_data_patch_request(use_experimental_dto_backend: bool) -> None:
-    @dataclass
+    @dataclass()
     class User:
         name: str
         age: int
@@ -683,31 +681,6 @@ def test_schema_required_fields_with_msgspec_dto(use_experimental_dto_backend: b
         received = client.post(
             "/",
             content=msgspec.json.encode(data),
-            headers=headers,
-        )
-        required = next(iter(received.json()["components"]["schemas"].values()))["required"]
-        assert len(required) == 2
-
-
-def test_schema_required_fields_with_pydantic_dto(use_experimental_dto_backend: bool) -> None:
-    class PydanticUser(BaseModel):
-        age: int
-        name: str
-
-    class UserDTO(PydanticDTO[PydanticUser]):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
-
-    @post(dto=UserDTO, return_dto=None, signature_types=[PydanticUser])
-    def handler(data: PydanticUser, request: Request) -> dict:
-        schema = request.app.openapi_schema
-        return schema.to_schema()
-
-    with create_test_client(handler) as client:
-        data = PydanticUser(name="A", age=10)
-        headers = {"Content-Type": "application/json; charset=utf-8"}
-        received = client.post(
-            "/",
-            content=_model_dump_json(data),
             headers=headers,
         )
         required = next(iter(received.json()["components"]["schemas"].values()))["required"]
