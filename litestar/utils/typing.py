@@ -9,6 +9,7 @@ from typing import (
     AsyncIterable,
     AsyncIterator,
     Awaitable,
+    ClassVar,
     Collection,
     Container,
     Coroutine,
@@ -130,7 +131,12 @@ This is necessary because occasionally we want to rebuild a generic outer type w
 ``collections.abc.Mapping``, are not valid generic types in Python 3.8.
 """
 
-wrapper_type_set = {Annotated, Required, NotRequired}
+wrapper_type_set = {
+    Annotated,
+    ClassVar,
+    NotRequired,
+    Required,
+}
 """Types that always contain a wrapped type annotation as their first arg."""
 
 

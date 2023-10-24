@@ -39,7 +39,7 @@ from typing_extensions import (
 from litestar.constants import UNDEFINED_SENTINELS
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType, UnionTypes
-from litestar.utils.typing import get_origin_or_inner_type
+from litestar.utils.typing import get_origin_or_inner_type, unwrap_annotation
 
 if TYPE_CHECKING:
     from litestar.types.builtin_types import TypedDictClass
@@ -397,8 +397,8 @@ def is_class_var(annotation: Any) -> bool:
     Returns:
         A boolean.
     """
-    annotation = get_origin_or_inner_type(annotation) or annotation
-    return annotation is ClassVar
+    _, _, wrappers = unwrap_annotation(annotation)
+    return ClassVar in wrappers
 
 
 def is_sync_or_async_generator(obj: Any) -> TypeGuard[AnyGenerator]:

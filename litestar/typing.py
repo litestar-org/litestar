@@ -4,7 +4,7 @@ from collections import abc, deque
 from copy import deepcopy
 from dataclasses import dataclass, is_dataclass, replace
 from inspect import Parameter, Signature
-from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Sequence, TypeVar, cast
+from typing import Any, AnyStr, Callable, ClassVar, Collection, ForwardRef, Literal, Mapping, Sequence, TypeVar, cast
 
 from msgspec import UnsetType
 from typing_extensions import Annotated, NotRequired, Required, Self, get_args, get_origin, get_type_hints, is_typeddict
@@ -17,7 +17,6 @@ from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.predicates import (
     is_annotated_type,
     is_any,
-    is_class_and_subclass,
     is_generic,
     is_non_string_iterable,
     is_non_string_sequence,
@@ -325,6 +324,11 @@ class FieldDefinition:
         return Annotated in self.type_wrappers  # type: ignore[comparison-overlap]
 
     @property
+    def is_class_var(self) -> bool:
+        """Check if the field type is ClassVar."""
+        return ClassVar in self.type_wrappers  # type: ignore[comparison-overlap]
+
+    @property
     def is_literal(self) -> bool:
         """Check if the field type is Literal."""
         return get_origin(self.annotation) is Literal
@@ -418,15 +422,18 @@ class FieldDefinition:
             Whether the annotation is a subtype of the given type(s).
         """
         if self.origin:
+            if self.origin is Literal:
+                return False
+
             if self.origin in UnionTypes:
                 return all(t.is_subclass_of(cl) for t in self.inner_types)
 
-            return self.origin not in UnionTypes and is_class_and_subclass(self.origin, cl)
+            return self.origin not in UnionTypes and issubclass(self.origin, cl)
 
         if self.annotation is AnyStr:
-            return is_class_and_subclass(str, cl) or is_class_and_subclass(bytes, cl)
+            return issubclass(str, cl) or issubclass(bytes, cl)
 
-        return self.annotation is not Any and not self.is_type_var and is_class_and_subclass(self.annotation, cl)
+        return self.annotation is not Any and not self.is_type_var and issubclass(self.annotation, cl)
 
     def has_inner_subclass_of(self, cl: type[Any] | tuple[type[Any], ...]) -> bool:
         """Whether any generic args are a subclass of the given type.
