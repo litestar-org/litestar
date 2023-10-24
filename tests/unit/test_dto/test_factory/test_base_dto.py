@@ -2,7 +2,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Tuple, TypeVar, Union
+from typing import TYPE_CHECKING, Generic, Tuple, TypeVar, Union
+
 
 import pytest
 from typing_extensions import Annotated
@@ -19,7 +20,8 @@ if TYPE_CHECKING:
 
     from litestar.dto._backend import DTOBackend
 
-T = TypeVar("T", bound=Model)
+T = TypeVar("T")
+ModelT = TypeVar("ModelT", bound=Model)
 
 
 def get_backend(dto_type: type[DataclassDTO[Any]]) -> DTOBackend:
@@ -77,7 +79,7 @@ def test_extra_annotated_metadata_ignored() -> None:
 
 def test_overwrite_config() -> None:
     first = DTOConfig(exclude={"a"})
-    generic_dto = DataclassDTO[Annotated[T, first]]  # pyright: ignore
+    generic_dto = DataclassDTO[Annotated[ModelT, first]]  # pyright: ignore
     second = DTOConfig(exclude={"b"})
     dto = generic_dto[Annotated[Model, second]]  # pyright: ignore
     assert dto.config is second
@@ -86,13 +88,13 @@ def test_overwrite_config() -> None:
 def test_existing_config_not_overwritten() -> None:
     assert getattr(DataclassDTO, "_config", None) is None
     first = DTOConfig(exclude={"a"})
-    generic_dto = DataclassDTO[Annotated[T, first]]  # pyright: ignore
+    generic_dto = DataclassDTO[Annotated[ModelT, first]]  # pyright: ignore
     dto = generic_dto[Model]  # pyright: ignore
     assert dto.config is first
 
 
 def test_config_assigned_via_subclassing() -> None:
-    class CustomGenericDTO(DataclassDTO[T]):
+    class CustomGenericDTO(DataclassDTO[ModelT]):
         config = DTOConfig(exclude={"a"})
 
     concrete_dto = CustomGenericDTO[Model]
@@ -161,3 +163,13 @@ def test_sub_types_supported() -> None:
     assert (
         dto_type._dto_backends["handler_id"]["data_backend"].parsed_field_definitions[-1].name == "c"  # pyright: ignore
     )
+
+
+def test_dto_for_generic_type() -> None:
+    @dataclass
+    class Foo(Generic[T]):
+        foo: T
+
+    FooDTO = DataclassDTO[Foo[int]]
+
+    FooDTO.create_for_field_definition(FieldDefinition.from_annotation(Foo[int]), handler_id="handler_id")
