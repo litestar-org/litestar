@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, ForwardRef, List, Optional, Tuple, Union
+import sys
+from dataclasses import dataclass
+from typing import Any, ForwardRef, Generic, List, Optional, Tuple, Union
 
 import pytest
-from typing_extensions import Annotated
+from typing_extensions import Annotated, TypedDict
 
 from litestar.typing import FieldDefinition
 
@@ -194,6 +196,49 @@ def test_field_definition_is_optional_predicate() -> None:
     assert FieldDefinition.from_annotation(Union[int, str]).is_optional is False
 
 
+def test_field_definition_is_dataclass_predicate() -> None:
+    """Test FieldDefinition.is_dataclass."""
+
+    class NormalClass:
+        ...
+
+    @dataclass
+    class NormalDataclass:
+        ...
+
+    @dataclass
+    class GenericDataclass(Generic[T]):
+        ...
+
+    assert FieldDefinition.from_annotation(NormalDataclass).is_dataclass_type is True
+    assert FieldDefinition.from_annotation(GenericDataclass).is_dataclass_type is True
+    assert FieldDefinition.from_annotation(GenericDataclass[int]).is_dataclass_type is True
+    assert FieldDefinition.from_annotation(GenericDataclass[T]).is_dataclass_type is True  # type: ignore[valid-type]
+    assert FieldDefinition.from_annotation(NormalClass).is_dataclass_type is False
+
+
+def test_field_definition_is_typeddict_predicate() -> None:
+    """Test FieldDefinition.is_typeddict."""
+
+    class NormalClass:
+        ...
+
+    class TypedDictClass(TypedDict):
+        ...
+
+    assert FieldDefinition.from_annotation(NormalClass).is_typeddict_type is False
+    assert FieldDefinition.from_annotation(TypedDictClass).is_typeddict_type is True
+
+    if sys.version_info >= (3, 11):
+
+        class GenericTypedDictClass(TypedDict, Generic[T]):
+            ...
+
+        assert FieldDefinition.from_annotation(GenericTypedDictClass).is_typeddict_type is True
+        assert FieldDefinition.from_annotation(GenericTypedDictClass[int]).is_typeddict_type is True
+        assert FieldDefinition.from_annotation(GenericTypedDictClass[T]).is_typeddict_type is True
+
+
 def test_field_definition_is_subclass_of() -> None:
     """Test FieldDefinition.is_type_of."""
     assert FieldDefinition.from_annotation(bool).is_subclass_of(int) is True
@@ -220,3 +265,24 @@ def test_field_definition_equality() -> None:
     assert FieldDefinition.from_annotation(List[int]) != FieldDefinition.from_annotation(List[str])
     assert FieldDefinition.from_annotation(List[str]) != FieldDefinition.from_annotation(Tuple[str])
     assert FieldDefinition.from_annotation(Optional[str]) == FieldDefinition.from_annotation(Union[str, None])
+
+
+@dataclass
+class GenericDataclass(Generic[T]):
+    foo: T
+
+
+@dataclass
+class NormalDataclass:
+    foo: int
+
+
+@pytest.mark.parametrize(
+    ("annotation", "expected_type_hints"),
+    ((GenericDataclass[str], {"foo": str}), (GenericDataclass, {"foo": T}), (NormalDataclass, {"foo": int})),
+)
+def test_field_definition_get_type_hints(annotation: Any, expected_type_hints: dict[str, Any]) -> None:
+    assert (
+        FieldDefinition.from_annotation(annotation).get_type_hints(include_extras=True, resolve_generics=True)
+        == expected_type_hints
+    )

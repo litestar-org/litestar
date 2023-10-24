@@ -61,11 +61,11 @@ def test_signature_model_resolves_forward_ref_annotations(create_module: Callabl
         """
 from __future__ import annotations
 
-from pydantic import BaseModel
+from msgspec import Struct
 from litestar import Litestar, get
 from litestar.di import Provide
 
-class Test(BaseModel):
+class Test(Struct):
     hello: str
 
 async def get_dep() -> Test:

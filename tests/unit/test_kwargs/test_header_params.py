@@ -1,8 +1,6 @@
 from typing import Dict, Optional, Union
-from uuid import uuid4
 
 import pytest
-from pydantic import UUID4
 
 from litestar import get
 from litestar.params import Parameter, ParameterKwarg
@@ -39,19 +37,3 @@ def test_header_params(
             assert response.status_code == HTTP_400_BAD_REQUEST, response.json()
         else:
             assert response.status_code == HTTP_200_OK, response.json()
-
-
-def test_header_param_example() -> None:
-    test_token = "123abc"
-
-    @get(path="/users/{user_id:uuid}/")
-    async def my_method(
-        user_id: UUID4,
-        token: str = Parameter(header="X-API-KEY"),
-    ) -> None:
-        assert user_id
-        assert token == test_token
-
-    with create_test_client(my_method) as client:
-        response = client.get(f"/users/{uuid4()}/", headers={"X-API-KEY": test_token})
-        assert response.status_code == HTTP_200_OK

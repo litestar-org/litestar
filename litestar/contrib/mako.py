@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Mapping, TypeVar
+
+from typing_extensions import ParamSpec
 
 from litestar.exceptions import ImproperlyConfiguredException, MissingDependencyException, TemplateNotFoundException
 from litestar.template.base import (
+    TemplateCallableType,
     TemplateEngineProtocol,
     TemplateProtocol,
     csrf_token,
@@ -12,29 +15,27 @@ from litestar.template.base import (
     url_for_static_asset,
 )
 
-__all__ = ("MakoTemplate", "MakoTemplateEngine")
-
-
 try:
-    import mako  # noqa: F401
+    from mako.exceptions import TemplateLookupException as MakoTemplateNotFound  # type: ignore[import-untyped]
+    from mako.lookup import TemplateLookup  # type: ignore[import-untyped]
 except ImportError as e:
     raise MissingDependencyException("mako") from e
 
-
-from mako.exceptions import TemplateLookupException as MakoTemplateNotFound
-from mako.lookup import TemplateLookup
-
 if TYPE_CHECKING:
-    from mako.template import Template as _MakoTemplate
-    from pydantic import DirectoryPath
+    from pathlib import Path
+
+    from mako.template import Template as _MakoTemplate  # type: ignore[import-untyped]
+
+__all__ = ("MakoTemplate", "MakoTemplateEngine")
+
+P = ParamSpec("P")
+T = TypeVar("T")
 
 
 class MakoTemplate(TemplateProtocol):
     """Mako template, implementing ``TemplateProtocol``"""
 
-    def __init__(
-        self, template: _MakoTemplate, template_callables: list[tuple[str, Callable[[dict[str, Any]], Any]]]
-    ) -> None:
+    def __init__(self, template: _MakoTemplate, template_callables: list[tuple[str, TemplateCallableType]]) -> None:
         """Initialize a template.
 
         Args:
@@ -62,12 +63,10 @@ class MakoTemplate(TemplateProtocol):
         return str(self.template.render(*args, **kwargs))
 
 
-class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
+class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate, Mapping[str, Any]]):
     """Mako based TemplateEngine."""
 
-    def __init__(
-        self, directory: DirectoryPath | list[DirectoryPath] | None = None, engine_instance: Any | None = None
-    ) -> None:
+    def __init__(self, directory: Path | list[Path] | None = None, engine_instance: Any | None = None) -> None:
         """Initialize template engine.
 
         Args:
@@ -84,10 +83,10 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
         elif engine_instance:
             self.engine = engine_instance
 
-        self._template_callables: list[tuple[str, Callable[[dict[str, Any]], Any]]] = []
-        self.register_template_callable(key="url_for_static_asset", template_callable=url_for_static_asset)  # type: ignore
-        self.register_template_callable(key="csrf_token", template_callable=csrf_token)  # type: ignore
-        self.register_template_callable(key="url_for", template_callable=url_for)  # type: ignore
+        self._template_callables: list[tuple[str, TemplateCallableType]] = []
+        self.register_template_callable(key="url_for_static_asset", template_callable=url_for_static_asset)
+        self.register_template_callable(key="csrf_token", template_callable=csrf_token)
+        self.register_template_callable(key="url_for", template_callable=url_for)
 
     def get_template(self, template_name: str) -> MakoTemplate:
         """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
@@ -108,7 +107,9 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
         except MakoTemplateNotFound as exc:
             raise TemplateNotFoundException(template_name=template_name) from exc
 
-    def register_template_callable(self, key: str, template_callable: Callable[[dict[str, Any]], Any]) -> None:
+    def register_template_callable(
+        self, key: str, template_callable: TemplateCallableType[Mapping[str, Any], P, T]
+    ) -> None:
         """Register a callable on the template engine.
 
         Args:
