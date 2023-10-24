@@ -8,12 +8,12 @@ from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField
 from litestar.params import DependencyKwarg, KwargDefinition
 from litestar.types.empty import Empty
+from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
     from typing import Collection, Generator
 
     from litestar.types.protocols import DataclassProtocol
-    from litestar.typing import FieldDefinition
 
 
 __all__ = ("DataclassDTO", "T")
@@ -29,8 +29,11 @@ class DataclassDTO(AbstractDTO[T], Generic[T]):
     def generate_field_definitions(
         cls, model_type: type[DataclassProtocol]
     ) -> Generator[DTOFieldDefinition, None, None]:
+        type_hints = cls.get_model_type_hints(model_type)
+        field_def = FieldDefinition.from_annotation(model_type)
+        model_type = field_def.origin if field_def.is_generic_alias else model_type
         dc_fields = {f.name: f for f in fields(model_type)}
-        for key, field_definition in cls.get_model_type_hints(model_type).items():
+        for key, field_definition in type_hints.items():
             if not (dc_field := dc_fields.get(key)):
                 continue
 

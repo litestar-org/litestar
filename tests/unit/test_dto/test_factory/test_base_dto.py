@@ -4,7 +4,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, Tuple, TypeVar, Union
 
-
 import pytest
 from typing_extensions import Annotated
 
@@ -165,11 +164,15 @@ def test_sub_types_supported() -> None:
     )
 
 
-def test_dto_for_generic_type() -> None:
+def test_dto_for_generic_type(asgi_connection: Request[Any, Any, Any]) -> None:
     @dataclass
     class Foo(Generic[T]):
         foo: T
 
-    FooDTO = DataclassDTO[Foo[int]]
+    dto_type = DataclassDTO[Foo]
 
-    FooDTO.create_for_field_definition(FieldDefinition.from_annotation(Foo[int]), handler_id="handler_id")
+    dto_type.create_for_field_definition(
+        FieldDefinition.from_kwarg(Foo[int], "data"), handler_id=asgi_connection.route_handler.handler_id
+    )
+    decoded = dto_type(asgi_connection).decode_bytes(b'{"foo":1}')
+    print(f"{decoded = }")

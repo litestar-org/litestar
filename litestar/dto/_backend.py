@@ -82,10 +82,14 @@ class DTOBackend:
         self.wrapper_attribute_name: Final[str | None] = wrapper_attribute_name
 
         self.parsed_field_definitions = self.parse_model(
-            model_type=model_type, exclude=self.dto_factory.config.exclude, include=self.dto_factory.config.include
+            model_type=self.model_type, exclude=self.dto_factory.config.exclude, include=self.dto_factory.config.include
+        )
+        model_type_field_def = FieldDefinition.from_annotation(self.model_type)
+        name = (
+            model_type_field_def.origin.__name__ if model_type_field_def.is_generic_alias else self.model_type.__name__
         )
         self.transfer_model_type = self.create_transfer_model_type(
-            model_name=model_type.__name__, field_definitions=self.parsed_field_definitions
+            model_name=name, field_definitions=self.parsed_field_definitions
         )
         self.dto_data_type: type[DTOData] | None = None
 
@@ -96,7 +100,10 @@ class DTOBackend:
         else:
             annotation = field_definition.annotation
 
-        self.annotation = _maybe_wrap_in_generic_annotation(annotation, self.transfer_model_type)
+        if field_definition.is_generic:
+            self.annotation = annotation
+        else:
+            self.annotation = _maybe_wrap_in_generic_annotation(annotation, self.transfer_model_type)
 
     def parse_model(
         self, model_type: Any, exclude: AbstractSet[str], include: AbstractSet[str], nested_depth: int = 0

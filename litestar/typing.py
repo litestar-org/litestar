@@ -4,7 +4,20 @@ from collections import abc, deque
 from copy import deepcopy
 from dataclasses import dataclass, is_dataclass, replace
 from inspect import Parameter, Signature
-from typing import Any, AnyStr, Callable, ClassVar, Collection, ForwardRef, Literal, Mapping, Sequence, TypeVar, cast
+from typing import (
+    Any,
+    AnyStr,
+    Callable,
+    ClassVar,
+    Collection,
+    ForwardRef,
+    Literal,
+    Mapping,
+    Sequence,
+    TypeVar,
+    _GenericAlias,  # type: ignore[attr-defined]
+    cast,
+)
 
 from msgspec import UnsetType
 from typing_extensions import Annotated, NotRequired, Required, Self, get_args, get_origin, get_type_hints, is_typeddict
@@ -288,6 +301,11 @@ class FieldDefinition:
         return is_generic(self.annotation)
 
     @property
+    def is_generic_alias(self) -> bool:
+        """Check if the field type is a generic alias."""
+        return isinstance(self.annotation, _GenericAlias)
+
+    @property
     def is_simple_type(self) -> bool:
         """Check if the field type is a singleton value (e.g. int, str etc.)."""
         return not (
@@ -427,8 +445,7 @@ class FieldDefinition:
 
             if self.origin in UnionTypes:
                 return all(t.is_subclass_of(cl) for t in self.inner_types)
-
-            return self.origin not in UnionTypes and issubclass(self.origin, cl)
+            return issubclass(self.origin, cl)
 
         if self.annotation is AnyStr:
             return issubclass(str, cl) or issubclass(bytes, cl)
@@ -446,12 +463,23 @@ class FieldDefinition:
         """
         return any(t.is_subclass_of(cl) for t in self.inner_types)
 
-    def get_type_hints(self, *, include_extras: bool = False, resolve_generics: bool = False) -> dict[str, Any]:
+    def get_type_hints(
+        self,
+        *,
+        globalns: dict[str, Any] | None = None,
+        localns: dict[str, Any] | None = None,
+        include_extras: bool = False,
+        resolve_generics: bool = False,
+        as_field_definitions: bool = False,
+    ) -> dict[str, FieldDefinition]:
         """Get the type hints for the annotation.
 
         Args:
+            globalns: Global namespace to use for resolving forward references.
+            localns: Local namespace to use for resolving forward references.
             include_extras: Flag to indicate whether to include ``Annotated[T, ...]`` or not.
             resolve_generics: Flag to indicate whether to resolve the generic types in the type hints or not.
+            as_field_definitions: Flag to indicate whether to return the type hints as ``FieldDefinition`` instances
 
         Returns:
             The type hints.
@@ -459,10 +487,17 @@ class FieldDefinition:
 
         if self.origin is not None or self.is_generic:
             if resolve_generics:
-                return get_type_hints_with_generics_resolved(self.annotation, include_extras=include_extras)
-            return get_type_hints(self.origin or self.annotation, include_extras=include_extras)
+                hints = get_type_hints_with_generics_resolved(
+                    self.annotation, localns=localns, globalns=globalns, include_extras=include_extras
+                )
+            else:
+                hints = get_type_hints(
+                    self.origin or self.annotation, localns=localns, globalns=globalns, include_extras=include_extras
+                )
+        else:
+            hints = get_type_hints(self.annotation, localns=localns, globalns=globalns, include_extras=include_extras)
 
-        return get_type_hints(self.annotation, include_extras=include_extras)
+        return {k: FieldDefinition.from_annotation(v) for k, v in hints.items()} if as_field_definitions else hints
 
     @classmethod
     def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:

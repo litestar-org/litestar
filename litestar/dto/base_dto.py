@@ -33,6 +33,16 @@ __all__ = ("AbstractDTO",)
 
 T = TypeVar("T")
 
+_TYPE_HINT_NAMESPACE = {
+    **vars(typing),
+    **{  # noqa: PIE800
+        "TypeEncodersMap": TypeEncodersMap,
+        "DTOConfig": DTOConfig,
+        "RenameStrategy": RenameStrategy,
+        "RequestEncodingType": RequestEncodingType,
+    },
+}
+
 
 class _BackendDict(TypedDict):
     data_backend: NotRequired[DTOBackend]
@@ -47,9 +57,10 @@ class AbstractDTO(Generic[T]):
     config: ClassVar[DTOConfig]
     """Config objects to define properties of the DTO."""
     model_type: type[T]
-    """If ``annotation`` is an iterable, this is the inner type, otherwise will be the same as ``annotation``."""
+    """The type used to specialize the DTO."""
 
     _dto_backends: ClassVar[dict[str, _BackendDict]] = {}
+    _model_type_hints: ClassVar[dict[str, dict[str, Any]]] = {}
 
     def __init__(self, asgi_connection: ASGIConnection) -> None:
         """Create an AbstractDTOFactory type.
@@ -78,9 +89,10 @@ class AbstractDTO(Generic[T]):
                 return cls
             config = cls.config if hasattr(cls, "config") else DTOConfig()
 
-        cls_dict: dict[str, Any] = {"config": config, "_type_backend_map": {}, "_handler_backend_map": {}}
+        cls_dict: dict[str, Any] = {"config": config}
         if not field_definition.is_type_var:
-            cls_dict.update(model_type=field_definition.annotation)
+            model_type = field_definition.origin if field_definition.is_generic_alias else field_definition.annotation
+            cls_dict.update(model_type=model_type)
 
         return type(f"{cls.__name__}[{annotation}]", (cls,), cls_dict)
 
@@ -156,11 +168,8 @@ class AbstractDTO(Generic[T]):
         Returns:
             None
         """
+        backend_context = cls._dto_backends.setdefault(handler_id, {})
 
-        if handler_id not in cls._dto_backends:
-            cls._dto_backends[handler_id] = {}
-
-        backend_context = cls._dto_backends[handler_id]
         key = "data_backend" if field_definition.name == "data" else "return_backend"
 
         if key not in backend_context:
@@ -181,6 +190,14 @@ class AbstractDTO(Generic[T]):
                 backend_cls = DTOCodegenBackend if cls.config.experimental_codegen_backend else DTOBackend
             elif backend_cls is DTOCodegenBackend and cls.config.experimental_codegen_backend is False:
                 backend_cls = DTOBackend
+
+            if model_type_field_definition.annotation not in cls._model_type_hints:
+                namespace = {**_TYPE_HINT_NAMESPACE, **vars(getmodule(model_type_field_definition.annotation))}
+                cls._model_type_hints[
+                    model_type_field_definition.annotation
+                ] = model_type_field_definition.get_type_hints(
+                    localns=namespace, include_extras=True, resolve_generics=True, as_field_definitions=True
+                )
 
             backend_context[key] = backend_cls(  # type: ignore[literal-required]
                 dto_factory=cls,
@@ -238,9 +255,9 @@ class AbstractDTO(Generic[T]):
                     return model_field_definition, inner_field, attr
         return None
 
-    @staticmethod
+    @classmethod
     def get_model_type_hints(
-        model_type: type[Any], namespace: dict[str, Any] | None = None
+        cls, model_type: Any, namespace: dict[str, Any] | None = None
     ) -> dict[str, FieldDefinition]:
         """Retrieve type annotations for ``model_type``.
 
@@ -251,19 +268,11 @@ class AbstractDTO(Generic[T]):
         Returns:
             Parsed type hints for ``model_type`` resolved within the scope of its module.
         """
-        namespace = namespace or {}
-        namespace.update(vars(typing))
-        namespace.update(
-            {
-                "TypeEncodersMap": TypeEncodersMap,
-                "DTOConfig": DTOConfig,
-                "RenameStrategy": RenameStrategy,
-                "RequestEncodingType": RequestEncodingType,
-            }
-        )
+        if model_type in cls._model_type_hints:
+            return cls._model_type_hints[model_type]
 
         if model_module := getmodule(model_type):
-            namespace.update(vars(model_module))
+            namespace = {**_TYPE_HINT_NAMESPACE, **vars(model_module)}
 
         return {
             k: FieldDefinition.from_kwarg(annotation=v, name=k)
