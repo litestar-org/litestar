@@ -231,7 +231,7 @@ def optional_no_default_client_fixture() -> Generator[TestClient, None, None]:
     def handle_optional_annotated(param: Annotated[Optional[str], Parameter(query="key")]) -> Dict[str, Optional[str]]:
         return {"key": param}
 
-    with create_test_client(route_handlers=[handle_optional, handle_optional_annotated]) as client:
+    with create_test_client(route_handlers=[handle_optional, handle_optional_annotated], openapi_config=None) as client:
         yield client
 
 
@@ -270,7 +270,7 @@ def optional_default_client_fixture() -> Generator[TestClient, None, None]:
     ) -> Dict[str, Optional[str]]:
         return {"key": param}
 
-    with create_test_client(route_handlers=[handle_default, handle_default_annotated]) as client:
+    with create_test_client(route_handlers=[handle_default, handle_default_annotated], openapi_config=None) as client:
         yield client
 
 
