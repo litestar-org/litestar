@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, get_type_hints
 
 from typing_extensions import Annotated
 
@@ -141,6 +141,48 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
         return isinstance(value, _supported_types) or is_class_and_subclass(value, _supported_types)  # type: ignore
+    
+    def get_field_name(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> str:
+        model_fields: dict[str, pydantic.fields.FieldInfo] = {
+            k: getattr(f, "field_info", f)
+            for k, f in getattr(field_definition.annotation, "__fields__", getattr(field_definition.annotation, "model_fields", {})).items()
+        }
+
+        annotation_hints = get_type_hints(field_definition.annotation, include_extras=True)
+        return {
+            f.alias
+            if f.alias and schema_creator.prefer_alias
+            else k: FieldDefinition.from_kwarg(
+                annotation=Annotated[annotation_hints[k], f, f.metadata]  # pyright: ignore
+                if pydantic.VERSION.startswith("2")
+                else Annotated[annotation_hints[k], f],  # pyright: ignore
+                name=f.alias if f.alias and schema_creator.prefer_alias else k,
+                default=Empty if is_undefined_sentinel(f.default) else f.default,
+            )
+            for k, f in model_fields.items()
+        }
+    
+    def get_field_definitions(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> list[FieldDefinition]:
+        model_fields: dict[str, pydantic.fields.FieldInfo] = {
+            k: getattr(f, "field_info", f)
+            for k, f in getattr(field_definition.annotation, "__fields__", getattr(field_definition.annotation, "model_fields", {})).items()
+        }
+
+        annotation_hints = get_type_hints(field_definition.annotation, include_extras=True)
+
+        return {
+            f.alias
+            if f.alias and schema_creator.prefer_alias
+            else k: FieldDefinition.from_kwarg(
+                annotation=Annotated[annotation_hints[k], f, f.metadata]  # pyright: ignore
+                if pydantic.VERSION.startswith("2")
+                else Annotated[annotation_hints[k], f],  # pyright: ignore
+                name=f.alias if f.alias and schema_creator.prefer_alias else k,
+                default=Empty if is_undefined_sentinel(f.default) else f.default,
+            )
+            for k, f in model_fields.items()
+        }
+
 
     def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
         """Given a type annotation, transform it into an OpenAPI schema class.
@@ -206,7 +248,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
 
         return Schema(
             required=sorted(f.name for f in field_definitions.values() if f.is_required),
-            properties={k: schema_creator.for_field_definition(f) for k, f in field_definitions.items()},
+            properties={k: schema_creator.for_field_definition(f, field_definitions) for k, f in field_definitions.items()},
             type=OpenAPIType.OBJECT,
             title=title or _get_type_schema_name(field_definition),
             examples=[Example(example)] if example else None,

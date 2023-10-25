@@ -138,6 +138,11 @@ class OpenAPISchemaPluginProtocol(Protocol):
         """
         raise NotImplementedError()
 
+    def get_field_definitions(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> list[FieldDefinition]:
+        """TODO
+        """
+        raise NotImplementedError()
+    
     def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
         """Given a type annotation, transform it into an OpenAPI schema class.
 
