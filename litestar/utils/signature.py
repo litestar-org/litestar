@@ -27,8 +27,8 @@ if sys.version_info < (3, 11):
     from typing import _get_defaults  # type: ignore[attr-defined]
 else:
 
-    def _get_defaults(_: Any) -> dict[str, Any]:
-        return {}
+    def _get_defaults(_: Any) -> Any:
+        ...
 
 
 __all__ = (
@@ -97,7 +97,6 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
         Mapping of names to types.
     """
     fn_to_inspect: Any = fn
-    defaults = _get_defaults(fn_to_inspect)
 
     module_name = fn_to_inspect.__module__
 
@@ -121,8 +120,12 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
         **(namespace or {}),
     }
     hints = get_type_hints(fn_to_inspect, globalns=namespace, include_extras=True)
-    if defaults:
+
+    if sys.version_info < (3, 11):
+        # see https://github.com/litestar-org/litestar/pull/2516
+        defaults = _get_defaults(fn_to_inspect)
         hints = _unwrap_implicit_optional_hints(defaults, hints)
+
     return hints
 
 
