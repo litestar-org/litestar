@@ -22,7 +22,7 @@ files = [
 
 [[package]]
 name = "advanced-alchemy"
-version = "0.3.4"
+version = "0.4.0"
 requires_python = ">=3.8"
 summary = "Ready-to-go SQLAlchemy concoctions."
 dependencies = [
@@ -31,8 +31,8 @@ dependencies = [
     "typing-extensions",
 ]
 files = [
-    {file = "advanced_alchemy-0.3.4-py3-none-any.whl", hash = "sha256:dc3bd184b72f8bec6ec333c699bf3b61afd2d8a6e2a6567ced39a03705a9dbbb"},
-    {file = "advanced_alchemy-0.3.4.tar.gz", hash = "sha256:89ba6262d087b916fa77c806a34d92e23522a26b91852f1116efcaff1c7b9a6a"},
+    {file = "advanced_alchemy-0.4.0-py3-none-any.whl", hash = "sha256:9dc4d03c48762952de18c8ffdbb644fe3578b1f0f4e16aa7800b509c60949bc6"},
+    {file = "advanced_alchemy-0.4.0.tar.gz", hash = "sha256:f19a73a615c298e1c332814b4ed0adb56e29b3d22294407b470acfb7e1b46667"},
 ]
 
 [[package]]
