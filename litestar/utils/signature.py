@@ -68,8 +68,25 @@ def _unwrap_implicit_optional_hints(
         Mapping of names to types.
     """
 
-    def _is_optional(origin: Any, args: Any) -> bool:
+    def _is_two_arg_optional(origin: Any, args: Any) -> bool:
+        """Check if a type is a two-argument optional type.
+
+        If the type has been wrapped in `Optional` by `get_type_hints()` it will always be a union of a type and
+        `NoneType`.
+
+        See: https://github.com/litestar-org/litestar/pull/2516
+        """
         return origin is Union and len(args) == 2 and args[1] is type(None)
+
+    def _is_any_optional(origin: Any, args: Any) -> bool:
+        """Detect if a type is a union with `NoneType`.
+
+        After detecting that a type is a two-argument optional type, this function can be used to detect if the
+        inner type is a union with `NoneType` at all.
+
+        We only want to perform the unwrapping of the optional union if the inner type is optional as well.
+        """
+        return origin is Union and any(arg is type(None) for arg in args)
 
     for name, default in defaults.items():
         if default is not None:
@@ -79,9 +96,9 @@ def _unwrap_implicit_optional_hints(
         origin = get_origin(hint)
         args = get_args(hint)
 
-        if _is_optional(origin, args):
+        if _is_two_arg_optional(origin, args):
             unwrapped_inner, _, _ = unwrap_annotation(args[0])
-            if not _is_optional(get_origin(unwrapped_inner), get_args(unwrapped_inner)):
+            if not _is_any_optional(get_origin(unwrapped_inner), get_args(unwrapped_inner)):
                 continue
 
             hints[name] = args[0]
