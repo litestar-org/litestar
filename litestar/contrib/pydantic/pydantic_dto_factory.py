@@ -104,7 +104,11 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
                 field_definition.annotation,
             )
             if annotation in PYDANTIC_TYPE_MAP:
-                open_api_type = PYDANTIC_TYPE_MAP[annotation].type
+                open_api_type = (
+                    PYDANTIC_TYPE_MAP[annotation].one_of[0].type
+                    if PYDANTIC_TYPE_MAP[annotation].one_of
+                    else PYDANTIC_TYPE_MAP[annotation].type
+                )
                 if isinstance(open_api_type, OpenAPIType):
                     field_definition = FieldDefinition.from_kwarg(
                         annotation=_DOWNTYPE_MAP[open_api_type], name=field_name
