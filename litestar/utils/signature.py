@@ -57,8 +57,8 @@ def _unwrap_implicit_optional_hints(
 ) -> dict[str, Any]:  # pragma: no cover
     """Unwrap implicit optional hints.
 
-    On python <3.11, if a function param annotation has a `None` default, it is unconditionally wrapped in an
-    `Optional` type. This function reverses that process.
+    On Python<3.11, if a function parameter annotation has a ``None`` default, it is unconditionally wrapped in an
+    ``Optional`` type. This function reverses that process.
 
     Args:
         defaults: Mapping of names to default values.
