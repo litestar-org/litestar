@@ -48,7 +48,7 @@ T = TypeVar("T", bound="ModelType | Collection[ModelType]")
 
 __all__ = ("PydanticDTO",)
 
-DOWNTYPE_MAP: dict[OpenAPIType, type[Any]] = {
+_DOWNTYPE_MAP: dict[OpenAPIType, type[Any]] = {
     OpenAPIType.STRING: str,
     OpenAPIType.INTEGER: int,
     OpenAPIType.BOOLEAN: bool,
@@ -107,7 +107,7 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
                 open_api_type = PYDANTIC_TYPE_MAP[annotation].type
                 if isinstance(open_api_type, OpenAPIType):
                     field_definition = FieldDefinition.from_kwarg(
-                        annotation=DOWNTYPE_MAP[open_api_type], name=field_name
+                        annotation=_DOWNTYPE_MAP[open_api_type], name=field_name
                     )
 
             dto_field = (field_definition.extra or {}).pop(DTO_FIELD_META_KEY, DTOField())
