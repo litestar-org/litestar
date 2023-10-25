@@ -65,6 +65,27 @@ def test_get_fn_type_hints_class_no_init() -> None:
     assert get_fn_type_hints(C) == {}
 
 
+def test_get_fn_type_hints_with_none_default() -> None:
+    def fn(
+        a: Annotated[Optional[str], ...] = None,
+        b: Optional[str] = None,
+        c: Union[str, None] = None,
+        d: Union[str, int, None] = None,
+        e: Optional[Union[str, int]] = None,
+    ) -> None:
+        ...
+
+    hints = get_fn_type_hints(fn)
+    assert hints == {
+        "a": Annotated[Union[str, NoneType], ...],
+        "b": Union[str, NoneType],
+        "c": Union[str, NoneType],
+        "d": Union[str, int, NoneType],
+        "e": Union[str, int, NoneType],
+        "return": NoneType,
+    }
+
+
 class _TD(TypedDict):
     req_int: Required[int]
     req_list_int: Required[List[int]]

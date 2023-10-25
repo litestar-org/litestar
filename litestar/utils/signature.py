@@ -6,9 +6,9 @@ from copy import deepcopy
 from dataclasses import dataclass, replace
 from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain
-from typing import Any
+from typing import Any, Union
 
-from typing_extensions import Self, get_type_hints
+from typing_extensions import Self, get_args, get_origin, get_type_hints
 
 from litestar import connection, datastructures, types
 from litestar.enums import RequestEncodingType
@@ -16,11 +16,20 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import BodyKwarg
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
+from litestar.utils.typing import unwrap_annotation
 
 if typing.TYPE_CHECKING:
     from typing import Sequence
 
     from litestar.types import AnyCallable
+
+if sys.version_info < (3, 11):
+    from typing import _get_defaults  # type: ignore[attr-defined]
+else:
+
+    def _get_defaults(_: Any) -> dict[str, Any]:
+        return {}
+
 
 __all__ = (
     "add_types_to_signature_namespace",
@@ -43,6 +52,40 @@ This allows users to include these names within an `if TYPE_CHECKING:` block in 
 """
 
 
+def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, Any]) -> dict[str, Any]:
+    """Unwrap implicit optional hints.
+
+    On python <3.11, if a function param annotation has a `None` default, it is unconditionally wrapped in an
+    `Optional` type. This function reverses that process.
+
+    Args:
+        defaults: Mapping of names to default values.
+        hints: Mapping of names to types.
+
+    Returns:
+        Mapping of names to types.
+    """
+
+    def _is_optional(origin: Any, args: Any) -> bool:
+        return origin is Union and len(args) == 2 and args[1] is type(None)
+
+    for name, default in defaults.items():
+        if default is not None:
+            continue
+
+        hint = hints[name]
+        origin = get_origin(hint)
+        args = get_args(hint)
+
+        if _is_optional(origin, args):
+            unwrapped_inner, _, _ = unwrap_annotation(args[0])
+            if not _is_optional(get_origin(unwrapped_inner), get_args(unwrapped_inner)):
+                continue
+
+            hints[name] = args[0]
+    return hints
+
+
 def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[str, Any]:
     """Resolve type hints for ``fn``.
 
@@ -54,6 +97,7 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
         Mapping of names to types.
     """
     fn_to_inspect: Any = fn
+    defaults = _get_defaults(fn_to_inspect)
 
     module_name = fn_to_inspect.__module__
 
@@ -76,7 +120,10 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
         **vars(sys.modules[module_name]),
         **(namespace or {}),
     }
-    return get_type_hints(fn_to_inspect, globalns=namespace, include_extras=True)
+    hints = get_type_hints(fn_to_inspect, globalns=namespace, include_extras=True)
+    if defaults:
+        hints = _unwrap_implicit_optional_hints(defaults, hints)
+    return hints
 
 
 @dataclass(frozen=True)
