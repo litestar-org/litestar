@@ -33,6 +33,9 @@ async def db_connection(app: Litestar) -> AsyncGenerator[None, None]:
         engine = create_async_engine("sqlite+aiosqlite:///todo.sqlite", echo=True)
         app.state.engine = engine
 
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
     try:
         yield
     finally:
@@ -62,11 +65,6 @@ async def get_todo_list(done: Optional[bool], session: AsyncSession) -> List[Tod
 
     result = await session.execute(query)
     return result.scalars().all()
-
-
-async def on_startup(app: Litestar) -> None:
-    async with app.state.engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
 
 
 @get("/")
@@ -100,4 +98,4 @@ async def update_item(item_title: str, data: TodoType, state: State) -> TodoType
     return serialize_todo(todo_item)
 
 
-app = Litestar([get_list, add_item, update_item], on_startup=[on_startup], lifespan=[db_connection])
+app = Litestar([get_list, add_item, update_item], lifespan=[db_connection])

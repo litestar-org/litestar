@@ -41,23 +41,6 @@ Complexity
 This code is undoubtedly more complex than the code we have seen so far - although a crude measure of complexity, we can
 see that there are more than double the lines of code to the previous example.
 
-Database creation on startup
-++++++++++++++++++++++++++++
-
-Before we can use the database we need to make sure it exists and is setup according to our ``TodoItem`` class.
-This is done by a call to ``create_all`` which is provided by ``Base.metadata`` and creates all tables that are stored
-inside the metadata. Since this is a synchronous call we need to invoke it through ``run_sync``
-provided by :class:`AsyncConnection <sqlalchemy.ext.asyncio.AsyncConnection>`.
-
-For this to be called during the application startup we add this function to the ``on_start`` argument of the
-application.
-
-.. literalinclude::
-    /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
-    :language: python
-    :linenos:
-    :lines: 67-70,103
-
 Lifespan context manager
 ++++++++++++++++++++++++
 
@@ -69,7 +52,20 @@ of it when we are done. This context manager is added to the application's ``lif
     /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
-    :lines: 29-40,103
+    :lines: 29-43,101
+
+Database creation
++++++++++++++++++
+Before we can use the database we need to make sure it exists and the tables are created as defined by the ``TodoItem``
+class. This can be done by a synchronous call to ``Base.metadata.create_all`` which is invoked by ``run_sync``. If the
+tables are already setup according to the model, the call does nothing.
+
+.. literalinclude::
+    /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
+    :language: python
+    :linenos:
+    :lines: 29-43
+    :emphasize-lines: 8-9
 
 Application state
 +++++++++++++++++
@@ -81,7 +77,7 @@ where we use the ``app.state`` object to store the engine.
     /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
-    :lines: 29-41
+    :lines: 29-43
     :emphasize-lines: 3,6
 
 The second is by using the ``state`` keyword argument in our handler functions, so that we can access the engine in our
@@ -91,7 +87,7 @@ handlers.
     /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
-    :lines: 72-77
+    :lines: 70-74
     :emphasize-lines: 2,3
 
 Serialization
@@ -107,7 +103,7 @@ serializable by Litestar.
     /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
-    :lines: 2-3,14-16,45-48,94-103
+    :lines: 2-3,14-16,45-48,94-101
     :emphasize-lines: 3,4,6,7,11,16
 
 Behavior
