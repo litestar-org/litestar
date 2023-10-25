@@ -13,7 +13,7 @@ Here is our final application:
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_plugin.py
     :language: python
     :linenos:
-    :emphasize-lines: 9,84
+    :emphasize-lines: 9,78
 
 Recap
 =====
@@ -45,19 +45,12 @@ We also define a couple of utility functions, that help us to retrieve our TODO 
     :linenos:
     :lines: 35-52
 
-We then define the startup handler to create the database if it hasn't been created:
-
-.. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_plugin.py
-    :language: python
-    :linenos:
-    :lines: 54-57
-
 We define our route handlers, which are the interface through which TODO items can be created, retrieved and updated:
 
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_plugin.py
     :language: python
     :linenos:
-    :lines: 59-75
+    :lines: 54-70
 
 Finally, we define our application, using the
 :class:`SQLAlchemyPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin>` to configure SQLAlchemy and manage the
@@ -66,7 +59,7 @@ engine and session lifecycle, and register our ``transaction`` dependency.
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_plugin.py
     :language: python
     :linenos:
-    :lines: 80-85
+    :lines: 75-79
 
 .. seealso::
 

@@ -51,11 +51,6 @@ async def get_todo_list(done: Optional[bool], session: AsyncSession) -> List[Tod
     return result.scalars().all()
 
 
-async def on_startup(app: Litestar) -> None:
-    async with app.state.db_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-
 @get("/")
 async def get_list(transaction: AsyncSession, done: Optional[bool] = None) -> List[TodoItem]:
     return await get_todo_list(done, transaction)
@@ -75,11 +70,10 @@ async def update_item(item_title: str, data: TodoItem, transaction: AsyncSession
     return todo_item
 
 
-db_config = SQLAlchemyAsyncConfig(connection_string="sqlite+aiosqlite:///todo.sqlite")
+db_config = SQLAlchemyAsyncConfig(connection_string="sqlite+aiosqlite:///todo.sqlite", create_all=True)
 
 app = Litestar(
     [get_list, add_item, update_item],
-    on_startup=[on_startup],
     dependencies={"transaction": provide_transaction},
     plugins=[SQLAlchemyPlugin(db_config)],
 )
