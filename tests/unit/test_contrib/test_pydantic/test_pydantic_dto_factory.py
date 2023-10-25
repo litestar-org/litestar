@@ -2,8 +2,22 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+<<<<<<< HEAD
 import pydantic as pydantic_v2
 from pydantic import v1 as pydantic_v1
+=======
+from pydantic import (
+    BaseModel,
+    ByteSize,
+    EmailStr,
+    Field,
+    IPvAnyAddress,
+    IPvAnyInterface,
+    IPvAnyNetwork,
+    Json,
+    NameEmail,
+)
+>>>>>>> 9edcb26b (add unit tests for downtyping with PydanticDTO.generate_field_definitions())
 from typing_extensions import Annotated
 
 from litestar.contrib.pydantic import PydanticDTO
@@ -58,3 +72,29 @@ def test_detect_nested_field(base_model: type[pydantic_v1.BaseModel | pydantic_v
 
     assert PydanticDTO.detect_nested_field(FieldDefinition.from_annotation(TestModel)) is True
     assert PydanticDTO.detect_nested_field(FieldDefinition.from_annotation(NotModel)) is False
+
+
+_specialized_generics: list[tuple[type, type]] = [
+    (EmailStr, str),
+    (ByteSize, int),
+    (IPvAnyAddress, str),
+    (IPvAnyInterface, str),
+    (IPvAnyNetwork, str),
+    (Json, str),
+    (NameEmail, str),
+]
+
+
+def test_field_definition_generation_with_downtyping() -> None:
+    class TestModel(BaseModel):
+        a: _specialized_generics[0][0]
+        b: _specialized_generics[1][0]
+        c: _specialized_generics[2][0]
+        d: _specialized_generics[3][0]
+        e: _specialized_generics[4][0]
+        f: _specialized_generics[5][0]
+        g: _specialized_generics[6][0]
+
+    field_defs = list(PydanticDTO.generate_field_definitions(TestModel))
+    for i in range(len(field_defs)):
+        assert field_defs[i].annotation == _specialized_generics[i][1]
