@@ -36,6 +36,8 @@ class OpenAPIController(Controller):
     """SwaggerUI version to download from the CDN."""
     stoplight_elements_version: str = "7.7.18"
     """StopLight Elements version to download from the CDN."""
+    rapidoc_version: str = "9.3.4"
+    """RapiDoc version to download from the CDN."""
     favicon_url: str = ""
     """URL to download a favicon from."""
     redoc_google_fonts: bool = True
@@ -63,6 +65,8 @@ class OpenAPIController(Controller):
         f"https://unpkg.com/@stoplight/elements@{stoplight_elements_version}/web-components.min.js"
     )
     """Download url for the Stoplight Elements JS bundle."""
+    rapidoc_js_url: str = f"https://unpkg.com/rapidoc@{rapidoc_version}/dist/rapidoc-min.js"
+    """Download url for the RapiDoc JS bundle."""
 
     # internal
     _dumped_json_schema: str = ""
@@ -121,7 +125,9 @@ class OpenAPIController(Controller):
         return f"<link rel='icon' type='image/x-icon' href='{self.favicon_url}'>" if self.favicon_url else "<meta/>"
 
     @cached_property
-    def render_methods_map(self) -> dict[Literal["redoc", "swagger", "elements"], Callable[[Request], bytes]]:
+    def render_methods_map(
+        self,
+    ) -> dict[Literal["redoc", "swagger", "elements", "rapidoc"], Callable[[Request], bytes]]:
         """Map render method names to render methods.
 
         Returns:
@@ -131,6 +137,7 @@ class OpenAPIController(Controller):
             "redoc": self.render_redoc,
             "swagger": self.render_swagger_ui,
             "elements": self.render_stoplight_elements,
+            "rapidoc": self.render_rapidoc,
         }
 
     @get(
@@ -247,6 +254,12 @@ class OpenAPIController(Controller):
             return ASGIResponse(body=self.render_redoc(request), media_type=MediaType.HTML)
         return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
+    @get(path="/rapidoc", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
+    def rapidoc(self, request: Request[Any, Any, Any]) -> ASGIResponse:
+        if self.should_serve_endpoint(request):
+            return ASGIResponse(body=self.render_rapidoc(request), media_type=MediaType.HTML)
+        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+
     def render_swagger_ui(self, request: Request[Any, Any, Any]) -> bytes:
         """Render an HTML page for Swagger-UI.
 
@@ -335,6 +348,34 @@ class OpenAPIController(Controller):
                 router="hash"
                 layout="sidebar"
             />
+          </body>
+        """
+
+        return f"""
+        <!DOCTYPE html>
+            <html>
+                {head}
+                {body}
+            </html>
+        """.encode()
+
+    def render_rapidoc(self, request: Request[Any, Any, Any]) -> bytes:  # pragma: no cover
+        schema = self.get_schema_from_request(request)
+
+        head = f"""
+          <head>
+            <title>{schema.info.title}</title>
+            {self.favicon}
+            <meta charset="utf-8"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <script src="{self.rapidoc_js_url}" crossorigin></script>
+            <style>{self.style}</style>
+          </head>
+        """
+
+        body = f"""
+          <body>
+            <rapi-doc spec-url="{self.path}/openapi.json" />
           </body>
         """
 
