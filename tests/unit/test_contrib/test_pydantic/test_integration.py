@@ -178,7 +178,7 @@ def test_pydantic_v2_down_typing() -> None:
     class EmailModel(pydantic_v2.BaseModel):
         email: pydantic_v2.EmailStr
         data_any: pydantic_v2.Json
-        data_obj: pydantic_v2.Json[Dict[str, Any]]
+        data_obj: pydantic_v2.Json[Dict[str, int]]
         data_arr: pydantic_v2.Json[List[str]]
         path: pydantic_v2.DirectoryPath
     EmailDTO = PydanticDTO[EmailModel]
