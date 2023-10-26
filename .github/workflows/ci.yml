@@ -90,7 +90,7 @@ jobs:
         pydantic-version: ["1", "2"]
     uses: ./.github/workflows/test.yml
     with:
-      coverage: ${{ matrix.python-version == '3.12' && matrix.pydantic-version == '2' }}
+      coverage: ${{ (matrix.python-version == '3.12' || matrix.python-version == '3.8') && matrix.pydantic-version == '2' }}
       pydantic-version: ${{ matrix.pydantic-version }}
       python-version: ${{ matrix.python-version }}
 
@@ -117,10 +117,21 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
-          name: coverage-xml
+          name: coverage-data
+
+      - name: Combine coverage files
+        run: |
+          python -Im pip install coverage
+          python -Im coverage combine
+          python -Im coverage xml -i
+
       - name: Fix coverage file for sonarcloud
         run: sed -i "s/home\/runner\/work\/litestar\/litestar/github\/workspace/g" coverage.xml
 
