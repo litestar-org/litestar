@@ -98,6 +98,7 @@ class OpenAPIConfig:
             "openapi.json",
             "openapi.yaml",
             "openapi.yml",
+            "oauth2-redirect.html",
         }
     )
     """A set of the enabled documentation sites and schema download endpoints."""
