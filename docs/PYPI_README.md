@@ -66,6 +66,7 @@ app = Litestar(route_handlers=[hello_world])
   [msgspec](https://github.com/jcrist/msgspec) and [attrs](https://www.attrs.org/en/stable/)
 - Layered parameter declaration
 - [Automatic API documentation with](#redoc-swagger-ui-and-stoplight-elements-api-documentation):
+  - [RapiDoc](https://github.com/rapi-doc/RapiDoc)
   - [Redoc](https://github.com/Redocly/redoc)
   - [Stoplight Elements](https://github.com/stoplightio/elements)
   - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
