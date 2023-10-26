@@ -445,6 +445,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="http://www.hera.cc"><img src="https://avatars.githubusercontent.com/u/534840?v=4?s=100" width="100px;" alt="Alexandre Richonnier"/><br /><sub><b>Alexandre Richonnier</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=heralight" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/betaboon"><img src="https://avatars.githubusercontent.com/u/7346933?v=4?s=100" width="100px;" alt="betaboon"/><br /><sub><b>betaboon</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=betaboon" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/brakhane"><img src="https://avatars.githubusercontent.com/u/541637?v=4?s=100" width="100px;" alt="Dennis Brakhane"/><br /><sub><b>Dennis Brakhane</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=brakhane" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/issues?q=author%3Abrakhane" title="Bug reports">🐛</a></td>
+    </tr>
   </tbody>
 </table>
 
