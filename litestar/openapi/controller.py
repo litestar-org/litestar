@@ -60,8 +60,8 @@ class OpenAPIController(Controller):
     swagger_ui_init_oauth: str | bytes = {}
     """
     JSON to initialize Swagger UI OAuth2 by calling the `initOAuth` method.
-    
-    Refer to the following URL for details: 
+
+    Refer to the following URL for details:
     `Swagger-UI <https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/>`_.
     """
     stoplight_elements_css_url: str = (
