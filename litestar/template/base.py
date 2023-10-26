@@ -101,6 +101,7 @@ class TemplateProtocol(Protocol):
         Returns:
             The rendered template string
         """
+        raise NotImplementedError
 
 
 P = ParamSpec("P")
@@ -136,6 +137,7 @@ class TemplateEngineProtocol(Protocol[TemplateType_co, ContextType_co]):
         Raises:
             TemplateNotFoundException: if no template is found.
         """
+        raise NotImplementedError
 
     def register_template_callable(
         self, key: str, template_callable: TemplateCallableType[ContextType_co, P, R]
