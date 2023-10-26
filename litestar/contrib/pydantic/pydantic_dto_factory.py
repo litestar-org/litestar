@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
-from typing import TYPE_CHECKING, Collection, Generic, TypeVar
+from typing import TYPE_CHECKING, Collection, Generic, Sequence, TypeVar, cast
 
 from typing_extensions import TypeAlias, override
 
@@ -104,11 +104,13 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
                 field_definition.annotation,
             )
             if annotation in PYDANTIC_TYPE_MAP:
-                open_api_type = (
-                    PYDANTIC_TYPE_MAP[annotation].one_of[0].type
-                    if PYDANTIC_TYPE_MAP[annotation].one_of
-                    else PYDANTIC_TYPE_MAP[annotation].type
-                )
+                open_api_type = PYDANTIC_TYPE_MAP[annotation].type
+                if PYDANTIC_TYPE_MAP[annotation].one_of is not None and isinstance(
+                    PYDANTIC_TYPE_MAP[annotation].one_of, Sequence
+                ):
+                    schema_list = cast(Sequence, PYDANTIC_TYPE_MAP[annotation].one_of)
+                    if len(schema_list) > 0:
+                        open_api_type = schema_list[0].type
                 if isinstance(open_api_type, OpenAPIType):
                     field_definition = FieldDefinition.from_kwarg(
                         annotation=_DOWNTYPE_MAP[open_api_type], name=field_name

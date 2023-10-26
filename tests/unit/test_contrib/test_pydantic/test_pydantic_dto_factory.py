@@ -87,13 +87,13 @@ _specialized_generics: list[tuple[type, type]] = [
 
 def test_field_definition_generation_with_downtyping() -> None:
     class TestModel(BaseModel):
-        a: _specialized_generics[0][0]
-        b: _specialized_generics[1][0]
-        c: _specialized_generics[2][0]
-        d: _specialized_generics[3][0]
-        e: _specialized_generics[4][0]
-        f: _specialized_generics[5][0]
-        g: _specialized_generics[6][0]
+        a: _specialized_generics[0][0]  # type: ignore[valid-type]
+        b: _specialized_generics[1][0]  # type: ignore[valid-type]
+        c: _specialized_generics[2][0]  # type: ignore[valid-type]
+        d: _specialized_generics[3][0]  # type: ignore[valid-type]
+        e: _specialized_generics[4][0]  # type: ignore[valid-type]
+        f: _specialized_generics[5][0]  # type: ignore[valid-type]
+        g: _specialized_generics[6][0]  # type: ignore[valid-type]
 
     field_defs = list(PydanticDTO.generate_field_definitions(TestModel))
     for i in range(len(field_defs)):
