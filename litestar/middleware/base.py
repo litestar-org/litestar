@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 @runtime_checkable
-class MiddlewareProtocol(Protocol):  # pragma: no cover
+class MiddlewareProtocol(Protocol):
     """Abstract middleware protocol."""
 
     __slots__ = ("app",)
