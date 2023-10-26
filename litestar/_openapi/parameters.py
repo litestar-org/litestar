@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import pydantic
+
 from litestar.constants import RESERVED_KWARGS
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
@@ -203,8 +205,12 @@ def create_parameter_for_handler(
 
     # if there's a single parameter 'query', surface its fields
     if "query" in handler_fields and len(handler_fields) == 1:
-        for k in handler_fields["query"].annotation.model_fields:
-            t = handler_fields["query"].annotation.model_fields[k]
+        if pydantic.VERSION.startswith("1"):  # pragma: no cover
+            model_fields: dict[str, pydantic.fields.FieldInfo] = {k: model_field.field_info for k, model_field in handler_fields["query"].annotation.__fields__.items()}  # type: ignore
+        else:
+            model_fields = dict(handler_fields["query"].annotation.model_fields)
+        for k in model_fields:
+            t = model_fields[k]
             parameters.add(
                 create_parameter(
                     field_definition=FieldDefinition.from_kwarg(name=k, annotation=t.annotation),
