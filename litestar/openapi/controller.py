@@ -288,7 +288,7 @@ class OpenAPIController(Controller):
         Returns:
             A rendered html string.
         """
-        return r"""<!doctype html>
+        return rb"""<!doctype html>
         <html lang="en-US">
         <head>
             <title>Swagger UI: OAuth2 Redirect</title>
@@ -366,7 +366,7 @@ class OpenAPIController(Controller):
             }
         </script>
         </body>
-        </html>""".encode()
+        </html>"""
 
     def render_swagger_ui(self, request: Request[Any, Any, Any]) -> bytes:
         """Render an HTML page for Swagger-UI.
