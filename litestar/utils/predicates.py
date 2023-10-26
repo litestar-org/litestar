@@ -48,12 +48,12 @@ if TYPE_CHECKING:
 
 try:
     import pydantic
-except ImportError:  # pragma: no cover
+except ImportError:
     pydantic = Empty  # type: ignore
 
 try:
     import attrs
-except ImportError:  # pragma: no cover
+except ImportError:
     attrs = Empty  # type: ignore
 
 __all__ = (
