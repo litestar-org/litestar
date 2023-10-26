@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Sequence
+from dataclasses import asdict, dataclass, field
+from typing import TYPE_CHECKING, Any, Hashable, Sequence
 
 from litestar.enums import RequestEncodingType
 from litestar.types import Empty
@@ -152,6 +152,14 @@ class ParameterKwarg(KwargDefinition):
     If set to False, None values will be allowed. Defaults to True.
     """
 
+    def __hash__(self) -> int:  # pragma: no cover
+        """Hash the dataclass in a safe way.
+
+        Returns:
+            A hash
+        """
+        return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
+
 
 def Parameter(
     annotation: Any = Empty,
@@ -254,6 +262,14 @@ class BodyKwarg(KwargDefinition):
     multipart_form_part_limit: int | None = field(default=None)
     """The maximal number of allowed parts in a multipart/formdata request. This limit is intended to protect from DoS attacks."""
 
+    def __hash__(self) -> int:  # pragma: no cover
+        """Hash the dataclass in a safe way.
+
+        Returns:
+            A hash
+        """
+        return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
+
 
 def Body(
     *,
@@ -345,6 +361,14 @@ class DependencyKwarg:
     """A default value."""
     skip_validation: bool = field(default=False)
     """Flag dictating whether to skip validation."""
+
+    def __hash__(self) -> int:
+        """Hash the dataclass in a safe way.
+
+        Returns:
+            A hash
+        """
+        return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
 
 
 def Dependency(*, default: Any = Empty, skip_validation: bool = False) -> Any:
