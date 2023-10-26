@@ -52,9 +52,7 @@ This allows users to include these names within an `if TYPE_CHECKING:` block in 
 """
 
 
-def _unwrap_implicit_optional_hints(
-    defaults: dict[str, Any], hints: dict[str, Any]
-) -> dict[str, Any]:
+def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, Any]) -> dict[str, Any]:
     """Unwrap implicit optional hints.
 
     On Python<3.11, if a function parameter annotation has a ``None`` default, it is unconditionally wrapped in an
