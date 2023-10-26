@@ -57,6 +57,13 @@ class OpenAPIController(Controller):
         f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui-standalone-preset.js"
     )
     """Download url for the Swagger Standalone Preset JS bundle."""
+    swagger_ui_init_oauth: str | bytes = {}
+    """
+    JSON to initialize Swagger UI OAuth2 by calling the `initOAuth` method.
+    
+    Refer to the following URL for details: 
+    `Swagger-UI <https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/>`_.
+    """
     stoplight_elements_css_url: str = (
         f"https://unpkg.com/@stoplight/elements@{stoplight_elements_version}/styles.min.css"
     )
@@ -411,6 +418,7 @@ class OpenAPIController(Controller):
                     SwaggerUIBundle.SwaggerUIStandalonePreset
                 ],
             }})
+            ui.initOAuth({encode_json(self.swagger_ui_init_oauth).decode('utf-8')})
             </script>
           </body>
         """
