@@ -262,14 +262,14 @@ class OpenAPIController(Controller):
 
     @get(path="/oauth2-redirect.html", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
     def swagger_ui_oauth2_redirect(self, request: Request[Any, Any, Any]) -> ASGIResponse:  # pragma: no cover
-        """Route handler responsible for rendering Redoc.
+        """Route handler responsible for rendering oauth2-redirect.html page for Swagger-UI.
 
         Args:
             request:
                 A :class:`Request <.connection.Request>` instance.
 
         Returns:
-            A response with a rendered redoc documentation site
+            A response with a rendered oauth2-redirect.html page for Swagger-UI.
         """
         if self.should_serve_endpoint(request):
             return ASGIResponse(body=self.render_swagger_ui_oauth2_redirect(request), media_type=MediaType.HTML)
