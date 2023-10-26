@@ -75,10 +75,14 @@ jobs:
 
       - name: Test with coverage
         if: inputs.coverage
-        run: pdm run pytest docs/examples tests --cov=litestar --cov-report=xml -n auto
+        run: pdm run pytest docs/examples tests --cov=litestar -n auto
+
+      - name: Rename coverage file
+        if: inputs.coverage
+        run: mv .coverage .coverage.${{ inputs.python-version }}
 
       - uses: actions/upload-artifact@v3
         if: inputs.coverage
         with:
-          name: coverage-xml
-          path: coverage.xml
+          name: coverage-data
+          path: .coverage.${{ inputs.python-version }}
