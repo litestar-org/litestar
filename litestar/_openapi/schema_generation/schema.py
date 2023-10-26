@@ -231,7 +231,7 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
 
 
 class SchemaCreator:
-    __slots__ = ("generate_examples", "plugins", "schemas", "prefer_alias", "dto_for")
+    __slots__ = ("generate_examples", "plugins", "schemas", "prefer_alias", "dto_for", "processing_map", "pending_map")
 
     def __init__(
         self,
@@ -252,6 +252,8 @@ class SchemaCreator:
         self.plugins = plugins if plugins is not None else []
         self.schemas = schemas if schemas is not None else {}
         self.prefer_alias = prefer_alias
+        self.processing_map = {}
+        self.pending_map = {}
 
     @property
     def not_generating_examples(self) -> SchemaCreator:
@@ -262,7 +264,7 @@ class SchemaCreator:
         new.generate_examples = False
         return new
 
-    def for_field_definition(self, field_definition: FieldDefinition) -> Schema | Reference:
+    def for_field_definition(self, field_definition: FieldDefinition, parentField=None) -> Schema | Reference:
         """Create a Schema for a given FieldDefinition.
 
         Args:
@@ -449,7 +451,31 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
+
+        tmp_definitions = plugin.get_field_definitions(field_definition=field_definition, schema_creator=self)
+
+        pendinglist = []
+        for tmp_def in tmp_definitions:
+            if tmp_def in self.processing_map:
+                # we detected circular dependency
+                # mark as pending and delete field
+                pendinglist.append(tmp_def)
+                field_definition.annotation.model_fields.__delitem__(tmp_def)
+            else:
+                self.processing_map[tmp_def] = True
+
         schema = plugin.to_openapi_schema(field_definition=field_definition, schema_creator=self)
+        # update circular dependencies
+        name = schema.title.lower()
+        if name in self.pending_map:
+            for tmpschema in self.pending_map[name]:
+                tmpschema.properties[name] = schema
+        # set pending for other
+        for pending in pendinglist:
+            if pending not in self.pending_map:
+                self.pending_map[pending] = []
+            self.pending_map[pending].append(schema)
+
         if isinstance(schema, SchemaDataContainer):
             return self.for_field_definition(
                 FieldDefinition.from_kwarg(
