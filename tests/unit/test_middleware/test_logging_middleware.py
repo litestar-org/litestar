@@ -3,20 +3,25 @@ from typing import TYPE_CHECKING, Dict
 
 import pytest
 from structlog.testing import capture_logs
+from typing_extensions import Annotated
 
 from litestar import Response, get, post
 from litestar.config.compression import CompressionConfig
 from litestar.connection import Request
-from litestar.datastructures import Cookie
+from litestar.datastructures import Cookie, UploadFile
+from litestar.enums import RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import HTTPRouteHandler
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
+from litestar.middleware import logging as middleware_logging
 from litestar.middleware.logging import LoggingMiddlewareConfig
+from litestar.params import Body
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
+    from pytest import MonkeyPatch
 
     from litestar.middleware.session.server_side import ServerSideSessionConfig
     from litestar.types.callable_types import GetLogger
@@ -189,6 +194,25 @@ def test_logging_middleware_post_body() -> None:
         res = client.post("/", json={"foo": "bar"})
         assert res.status_code == 201
         assert res.json() == {"foo": "bar"}
+
+
+async def test_logging_middleware_post_binary_file_without_structlog(monkeypatch: "MonkeyPatch") -> None:
+    # https://github.com/litestar-org/litestar/issues/2529
+
+    @post("/")
+    async def post_handler(data: Annotated[UploadFile, Body(media_type=RequestEncodingType.MULTI_PART)]) -> str:
+        content = await data.read()
+        return f"{len(content)} bytes"
+
+    # force LoggingConfig to not parse body data
+    monkeypatch.setattr(middleware_logging, "structlog_installed", False)
+
+    with create_test_client(
+        route_handlers=[post_handler], middleware=[LoggingMiddlewareConfig().middleware], logging_config=LoggingConfig()
+    ) as client:
+        res = client.post("/", files={"foo": b"\xfa\xfb"})
+        assert res.status_code == 201
+        assert res.text == "2 bytes"
 
 
 @pytest.mark.parametrize("logger_name", ("litestar", "other"))
