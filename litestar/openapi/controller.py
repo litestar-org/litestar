@@ -57,7 +57,7 @@ class OpenAPIController(Controller):
         f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui-standalone-preset.js"
     )
     """Download url for the Swagger Standalone Preset JS bundle."""
-    swagger_ui_init_oauth: str | bytes = {}
+    swagger_ui_init_oauth: dict[Any, Any] | bytes = {}
     """
     JSON to initialize Swagger UI OAuth2 by calling the `initOAuth` method.
 
