@@ -58,7 +58,7 @@ __all__ = (
 if sys.version_info >= (3, 10):
     from importlib.metadata import entry_points
 else:
-    from importlib_metadata import entry_points  # pragma: no cover
+    from importlib_metadata import entry_points
 
 
 if TYPE_CHECKING:

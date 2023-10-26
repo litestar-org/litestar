@@ -188,10 +188,9 @@ parallel = true
 exclude_lines = [
   'pragma: no cover',
   'if TYPE_CHECKING:',
-  'except ImportError as e:',
-  'except ImportError:',
+  'except ImportError.*',
   '\.\.\.',
-  'raise NotImplementedError',
+  'raise NotImplementedError.*',
   'if VERSION.startswith("1"):',
   'if pydantic.VERSION.startswith("1"):',
 ]

@@ -52,9 +52,7 @@ This allows users to include these names within an `if TYPE_CHECKING:` block in 
 """
 
 
-def _unwrap_implicit_optional_hints(
-    defaults: dict[str, Any], hints: dict[str, Any]
-) -> dict[str, Any]:  # pragma: no cover
+def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, Any]) -> dict[str, Any]:
     """Unwrap implicit optional hints.
 
     On Python<3.11, if a function parameter annotation has a ``None`` default, it is unconditionally wrapped in an
@@ -140,7 +138,7 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
     }
     hints = get_type_hints(fn_to_inspect, globalns=namespace, include_extras=True)
 
-    if sys.version_info < (3, 11):  # pragma: no cover
+    if sys.version_info < (3, 11):
         # see https://github.com/litestar-org/litestar/pull/2516
         defaults = _get_defaults(fn_to_inspect)
         hints = _unwrap_implicit_optional_hints(defaults, hints)

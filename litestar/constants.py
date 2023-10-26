@@ -36,5 +36,5 @@ try:
 
     UNDEFINED_SENTINELS.add(PydanticUndefined)
 
-except ImportError:  # pragma: no cover
+except ImportError:
     pass
