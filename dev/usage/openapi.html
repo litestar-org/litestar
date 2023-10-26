@@ -1349,6 +1349,8 @@ default controller in the <a class="reference internal" href="../reference/opena
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">/schema/elements</span></code></dt><dd><p>Serves the docs using <a class="reference external" href="https://github.com/stoplightio/elements">Stoplight Elements</a>.</p>
 </dd>
+<dt><code class="docutils literal notranslate"><span class="pre">/schema/rapidoc</span></code></dt><dd><p>Serves the docs using <a class="reference external" href="https://github.com/rapi-doc/RapiDoc">RapiDoc</a>.</p>
+</dd>
 </dl>
 <p>Additionally, the root <code class="docutils literal notranslate"><span class="pre">/schema/</span></code> path is accessible, serving the site that is configured as the default in
 the <a class="reference internal" href="../reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig" title="litestar.openapi.OpenAPIConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPIConfig</span></code></a>.</p>
@@ -1396,6 +1398,7 @@ the controller to use in the <a class="reference internal" href="../reference/op
     <span class="n">stoplight_elements_js_url</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;https://offline_location/spotlight-web-components.min.js&quot;</span>
     <span class="p">)</span>
+    <span class="n">rapidoc_js_url</span> <span class="o">=</span> <span class="s2">&quot;https://offline_location/rapidock-min.js&quot;</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
