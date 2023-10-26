@@ -1175,7 +1175,7 @@ document.write(`
 <h2>Callable types<a class="headerlink" href="#callable-types" title="Permalink to this heading">#</a></h2>
 <dl class="py data">
 <dt class="sig sig-object py" id="litestar.types.AfterExceptionHookHandler">
-<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">AfterExceptionHookHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Callable[[Exception,</span> <span class="pre">Scope],</span> <span class="pre">SyncOrAsyncUnion[None]]'</span></em><a class="headerlink" href="#litestar.types.AfterExceptionHookHandler" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">AfterExceptionHookHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Callable[[ExceptionT,</span> <span class="pre">Scope],</span> <span class="pre">SyncOrAsyncUnion[None]]'</span></em><a class="headerlink" href="#litestar.types.AfterExceptionHookHandler" title="Permalink to this definition">#</a></dt>
 <dd><p>str(object=’’) -&gt; str
 str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
 <p>Create a new string object from the given object. If encoding or
@@ -1271,7 +1271,7 @@ errors defaults to ‘strict’.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="litestar.types.ExceptionHandler">
-<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">ExceptionHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Callable[[Request,</span> <span class="pre">Exception],</span> <span class="pre">Response]'</span></em><a class="headerlink" href="#litestar.types.ExceptionHandler" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">litestar.types.</span></span><span class="sig-name descname"><span class="pre">ExceptionHandler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Callable[[Request,</span> <span class="pre">ExceptionT],</span> <span class="pre">Response]'</span></em><a class="headerlink" href="#litestar.types.ExceptionHandler" title="Permalink to this definition">#</a></dt>
 <dd><p>str(object=’’) -&gt; str
 str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
 <p>Create a new string object from the given object. If encoding or
