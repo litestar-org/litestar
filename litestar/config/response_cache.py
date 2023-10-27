@@ -41,19 +41,16 @@ def default_cache_key_builder(request: Request[Any, Any, Any]) -> str:
     return request.url.path + urlencode(query_params, doseq=True)
 
 
-def default_do_cache_predicate(scope: HTTPScope, status_code: int) -> bool:
+def default_do_cache_predicate(_: HTTPScope, status_code: int) -> bool:
     """Given a status code, returns a boolean indicating whether the response should be cached.
 
     Args:
-        scope: ASGI scope.
+        _: ASGI scope.
         status_code: status code of the response.
 
     Returns:
         A boolean indicating whether the response should be cached.
     """
-    if scope["method"] != "GET":
-        return False
-
     return HTTP_200_OK <= status_code < HTTP_300_MULTIPLE_CHOICES or status_code in (
         HTTP_301_MOVED_PERMANENTLY,
         HTTP_308_PERMANENT_REDIRECT,
