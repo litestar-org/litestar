@@ -21,7 +21,7 @@ class TodoItem(Base):
     done: Mapped[bool]
 
 
-@post("/", sync_to_thread=True)
+@post("/", sync_to_thread=False)
 def add_item(data: TodoItem) -> List[TodoItem]:
     return [data]
 
