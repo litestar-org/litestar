@@ -32,7 +32,7 @@ class PydanticV2Generic(pydantic_v2.BaseModel, Generic[T]):
 
 @pytest.mark.parametrize("model", [PydanticV1Generic, PydanticV2Generic])
 def test_schema_generation_with_generic_classes(model: Type[Union[PydanticV1Generic, PydanticV2Generic]]) -> None:
-    cls = model[int]
+    cls = model[int]  # type: ignore[index]
     field_definition = FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
 
     schemas: Dict[str, Schema] = {}

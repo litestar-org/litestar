@@ -165,5 +165,7 @@ def pydantic_get_unwrapped_annotation_and_type_hints(annotation: Any) -> tuple[A
     return annotation, get_type_hints(annotation, include_extras=True)
 
 
-def is_pydantic_2_model(obj: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel]) -> TypeGuard[pydantic_v2.BaseModel]:
-    return issubclass(obj, pydantic_v2.BaseModel)
+def is_pydantic_2_model(
+    obj: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel],  # pyright: ignore
+) -> TypeGuard[pydantic_v2.BaseModel]:  # pyright: ignore
+    return issubclass(obj, pydantic_v2.BaseModel)  # pyright: ignore
