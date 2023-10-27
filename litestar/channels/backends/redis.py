@@ -60,6 +60,7 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
         )
         self.__pub_sub: PubSub | None = None
         self._publish_script = self._redis.register_script(_PUBSUB_PUBLISH_SCRIPT)
+        self._has_subscribed = asyncio.Event()
 
     @property
     def _pub_sub(self) -> PubSub:
@@ -77,10 +78,14 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
     async def subscribe(self, channels: Iterable[str]) -> None:
         """Subscribe to ``channels``, and enable publishing to them"""
         await self._pub_sub.subscribe(*channels)
+        if not self._has_subscribed.is_set():
+            self._has_subscribed.set()
 
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         """Stop listening for events on ``channels``"""
         await self._pub_sub.unsubscribe(*channels)
+        if not self._pub_sub.subscribed:
+            self._has_subscribed.clear()
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
         """Publish ``data`` to ``channels``
@@ -98,6 +103,7 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
         """
 
         while True:
+            await self._has_subscribed.wait()
             message = await self._pub_sub.get_message(
                 ignore_subscribe_messages=True, timeout=self._stream_sleep_no_subscriptions
             )
@@ -199,7 +205,7 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
         stream_ids: dict[str, bytes] = {}
         while True:
             # We wait for subscribed channels, because we can't pass an empty dict to
-            # xread and block for susbcribers
+            # xread and block for subscribers
             stream_keys = [self._make_key(c) for c in await self._get_subscribed_channels()]
             if not stream_keys:
                 continue
