@@ -21,6 +21,7 @@ SCOPE_STATE_CSRF_TOKEN_KEY = "csrf_token"  # noqa: S105  # possible hardcoded pa
 SCOPE_STATE_DEPENDENCY_CACHE: Final = "dependency_cache"
 SCOPE_STATE_NAMESPACE: Final = "__litestar__"
 SCOPE_STATE_RESPONSE_COMPRESSED: Final = "response_compressed"
+SCOPE_STATE_DO_CACHE: Final = "do_cache"
 SCOPE_STATE_IS_CACHED: Final = "is_cached"
 SKIP_VALIDATION_NAMES: Final = {"request", "socket", "scope", "receive", "send"}
 UNDEFINED_SENTINELS: Final = {Signature.empty, Empty, Ellipsis, MISSING, UnsetType}
