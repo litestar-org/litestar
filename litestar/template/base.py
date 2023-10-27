@@ -4,7 +4,14 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping, Protocol, TypedDict, T
 
 from typing_extensions import Concatenate, ParamSpec, TypeAlias
 
+from litestar.constants import SCOPE_STATE_CSRF_TOKEN_KEY
+from litestar.utils import get_litestar_scope_state
 from litestar.utils.deprecation import warn_deprecation
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from litestar.connection import Request
 
 __all__ = (
     "TemplateCallableType",
@@ -14,12 +21,6 @@ __all__ = (
     "url_for",
     "url_for_static_asset",
 )
-
-
-if TYPE_CHECKING:
-    from pathlib import Path
-
-    from litestar.connection import Request
 
 
 def _get_request_from_context(context: Mapping[str, Any]) -> Request:
@@ -65,7 +66,8 @@ def csrf_token(context: Mapping[str, Any], /) -> str:
     Returns:
         A CSRF token if the app level ``csrf_config`` is set, otherwise an empty string.
     """
-    return _get_request_from_context(context).scope.get("_csrf_token", "")  # type: ignore[return-value]
+    scope = _get_request_from_context(context).scope
+    return cast("str", get_litestar_scope_state(scope=scope, key=SCOPE_STATE_CSRF_TOKEN_KEY, default=""))
 
 
 def url_for_static_asset(context: Mapping[str, Any], /, name: str, file_path: str) -> str:
