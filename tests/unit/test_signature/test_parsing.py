@@ -38,7 +38,7 @@ def test_create_function_signature_model_parameter_parsing() -> None:
     assert fields["d"].default == b"123"
     assert fields["e"].annotation == Optional[dict]
     assert fields["e"].is_optional
-    assert fields["e"].default is Empty
+    assert fields["e"].default is None
 
 
 def test_create_function_signature_model_ignore_return_annotation() -> None:
