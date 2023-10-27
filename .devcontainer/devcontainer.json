@@ -29,12 +29,11 @@
         "mhutchie.git-graph",
         "eamodio.gitlens",
         "github.vscode-github-actions",
-        "ms-python.black-formatter",
         "ms-python.mypy-type-checker",
         "charliermarsh.ruff"
       ],
       "settings": {
-        "python.editor.defaultFormatter": "ms-python.black-formatter",
+        "python.editor.defaultFormatter": "charliemarsh.ruff",
         "python.defaultInterpreterPath": "${workspaceFolder}/.venv",
         "python.terminal.activateEnvInCurrentTerminal": true,
         "python.testing.unittestEnabled": false,
