@@ -134,7 +134,7 @@ PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     pydantic_v1.PositiveInt: Schema(type=OpenAPIType.INTEGER, exclusive_minimum=0),
 }
 
-if pydantic_v2 is not None:
+if pydantic_v2 is not None:  # pragma: no cover
     PYDANTIC_TYPE_MAP.update(
         {
             pydantic_v2.ByteSize: Schema(type=OpenAPIType.INTEGER),
@@ -190,7 +190,7 @@ if pydantic_v2 is not None:
 
 
 _supported_types = (pydantic_v1.BaseModel, *PYDANTIC_TYPE_MAP.keys())
-if pydantic_v2 is not None:
+if pydantic_v2 is not None:  # pragma: no cover
     _supported_types = (pydantic_v2.BaseModel, *_supported_types)
 
 
