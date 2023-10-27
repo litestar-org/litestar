@@ -45,7 +45,7 @@ from litestar._openapi.schema_generation.constrained_fields import (
 from litestar._openapi.schema_generation.utils import (
     sort_schemas_and_references,
 )
-from litestar.datastructures import UploadFile
+from litestar.datastructures.upload_file import UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Reference
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
@@ -59,7 +59,6 @@ from litestar.utils.helpers import get_name
 from litestar.utils.predicates import (
     is_class_and_subclass,
     is_optional_union,
-    is_pydantic_constrained_field,
     is_undefined_sentinel,
 )
 from litestar.utils.typing import (
@@ -271,6 +270,8 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
+        from litestar.contrib.pydantic.utils import is_pydantic_constrained_field
+
         result: Schema | Reference
 
         # NOTE: The check for whether the field_definition.annotation is a Pagination type

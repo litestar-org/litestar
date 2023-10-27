@@ -1,22 +1,11 @@
 from datetime import date, timedelta
 from decimal import Decimal
 from types import ModuleType
-from typing import Any, Callable, Dict, List, Pattern, Union, cast
+from typing import Any, Callable, Dict, Pattern, Type, Union, cast
 
-import pydantic
+import pydantic as pydantic_v2
 import pytest
-from pydantic import (
-    BaseModel,
-    Field,
-    conbytes,
-    condate,
-    condecimal,
-    confloat,
-    conint,
-    conlist,
-    conset,
-    constr,
-)
+from pydantic import v1 as pydantic_v1
 from typing_extensions import Annotated
 
 from litestar import Litestar, post
@@ -35,73 +24,104 @@ from litestar.status_codes import HTTP_200_OK
 from litestar.testing import TestClient, create_test_client
 from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass
-from tests.unit.test_contrib.test_pydantic.models import PydanticDataclassPerson, PydanticPerson
+from tests.unit.test_contrib.test_pydantic.models import (
+    PydanticDataclassPerson,
+    PydanticPerson,
+    PydanticV1DataclassPerson,
+    PydanticV1Person,
+)
 
-constr_kws: List[Dict[str, Any]] = [
-    {"pattern": "^[a-zA-Z]$"},
-    {"to_upper": True, "min_length": 1, "pattern": "^[a-zA-Z]$"},
-    {"to_lower": True, "min_length": 1, "pattern": "^[a-zA-Z]$"},
-    {"to_lower": True, "min_length": 10, "pattern": "^[a-zA-Z]$"},
-    {"to_lower": True, "min_length": 10, "max_length": 100, "pattern": "^[a-zA-Z]$"},
-    {"min_length": 1},
-    {"min_length": 10},
-    {"min_length": 10, "max_length": 100},
+AnyBaseModelType = Type[Union[pydantic_v1.BaseModel, pydantic_v2.BaseModel]]
+
+
+constrained_string_v1 = [
+    pydantic_v1.constr(regex="^[a-zA-Z]$"),
+    pydantic_v1.constr(to_upper=True, min_length=1, regex="^[a-zA-Z]$"),
+    pydantic_v1.constr(to_lower=True, min_length=1, regex="^[a-zA-Z]$"),
+    pydantic_v1.constr(to_lower=True, min_length=10, regex="^[a-zA-Z]$"),
+    pydantic_v1.constr(to_lower=True, min_length=10, max_length=100, regex="^[a-zA-Z]$"),
+    pydantic_v1.constr(min_length=1),
+    pydantic_v1.constr(min_length=10),
+    pydantic_v1.constr(min_length=10, max_length=100),
+    pydantic_v1.conbytes(min_length=1),
+    pydantic_v1.conbytes(min_length=10),
+    pydantic_v1.conbytes(min_length=10, max_length=100),
 ]
 
-conlist_kws: List[Dict[str, Any]] = [
-    {"min_length": 1},
-    {"min_length": 1, "max_length": 10},
-]
-
-if pydantic.VERSION.startswith("1"):
-    for kw in constr_kws:
-        if "pattern" in kw:
-            kw["regex"] = kw.pop("pattern")
-
-    for kw in conlist_kws:
-        if "max_length" in kw:
-            kw["max_items"] = kw.pop("max_length")
-        if "min_length" in kw:
-            kw["min_items"] = kw.pop("min_length")
-
-constrained_string = [
-    *(constr(**kw) for kw in constr_kws),
-    *[
-        conbytes(min_length=1),
-        conbytes(min_length=10),
-        conbytes(min_length=10, max_length=100),
-    ],
-]
-
-constrained_collection = [
-    *(conlist(int, **kw) for kw in conlist_kws),
-    *(conset(int, **kw) for kw in conlist_kws),
-]
-
-constrained_numbers = [
-    conint(gt=10, lt=100),
-    conint(ge=10, le=100),
-    conint(ge=10, le=100, multiple_of=7),
-    confloat(gt=10, lt=100),
-    confloat(ge=10, le=100),
-    confloat(ge=10, le=100, multiple_of=4.2),
-    confloat(gt=10, lt=100, multiple_of=10),
-    condecimal(gt=Decimal("10"), lt=Decimal("100")),
-    condecimal(ge=Decimal("10"), le=Decimal("100")),
-    condecimal(gt=Decimal("10"), lt=Decimal("100"), multiple_of=Decimal("5")),
-    condecimal(ge=Decimal("10"), le=Decimal("100"), multiple_of=Decimal("2")),
-]
-
-constrained_dates = [
-    condate(gt=date.today() - timedelta(days=10), lt=date.today() + timedelta(days=100)),
-    condate(ge=date.today() - timedelta(days=10), le=date.today() + timedelta(days=100)),
-    condate(gt=date.today() - timedelta(days=10), lt=date.today() + timedelta(days=100)),
-    condate(ge=date.today() - timedelta(days=10), le=date.today() + timedelta(days=100)),
+constrained_string_v2 = [
+    pydantic_v2.constr(pattern="^[a-zA-Z]$"),
+    pydantic_v2.constr(to_upper=True, min_length=1, pattern="^[a-zA-Z]$"),
+    pydantic_v2.constr(to_lower=True, min_length=1, pattern="^[a-zA-Z]$"),
+    pydantic_v2.constr(to_lower=True, min_length=10, pattern="^[a-zA-Z]$"),
+    pydantic_v2.constr(to_lower=True, min_length=10, max_length=100, pattern="^[a-zA-Z]$"),
+    pydantic_v2.constr(min_length=1),
+    pydantic_v2.constr(min_length=10),
+    pydantic_v2.constr(min_length=10, max_length=100),
+    pydantic_v2.conbytes(min_length=1),
+    pydantic_v2.conbytes(min_length=10),
+    pydantic_v2.conbytes(min_length=10, max_length=100),
 ]
 
 
-@pytest.mark.skipif(pydantic.VERSION.startswith("2"), reason="pydantic 1 specific logic")
-@pytest.mark.parametrize("annotation", constrained_collection)
+constrained_collection_v1 = [
+    pydantic_v1.conlist(int, min_items=1),
+    pydantic_v1.conlist(int, min_items=1, max_items=10),
+    pydantic_v1.conset(int, min_items=1),
+    pydantic_v1.conset(int, min_items=1, max_items=10),
+]
+
+constrained_collection_v2 = [
+    pydantic_v2.conlist(int, min_length=1),
+    pydantic_v2.conlist(int, min_length=1, max_length=10),
+    pydantic_v2.conset(int, min_length=1),
+    pydantic_v2.conset(int, min_length=1, max_length=10),
+]
+
+constrained_numbers_v1 = [
+    pydantic_v1.conint(gt=10, lt=100),
+    pydantic_v1.conint(ge=10, le=100),
+    pydantic_v1.conint(ge=10, le=100, multiple_of=7),
+    pydantic_v1.confloat(gt=10, lt=100),
+    pydantic_v1.confloat(ge=10, le=100),
+    pydantic_v1.confloat(ge=10, le=100, multiple_of=4.2),
+    pydantic_v1.confloat(gt=10, lt=100, multiple_of=10),
+    pydantic_v1.condecimal(gt=Decimal("10"), lt=Decimal("100")),
+    pydantic_v1.condecimal(ge=Decimal("10"), le=Decimal("100")),
+    pydantic_v1.condecimal(gt=Decimal("10"), lt=Decimal("100"), multiple_of=Decimal("5")),
+    pydantic_v1.condecimal(ge=Decimal("10"), le=Decimal("100"), multiple_of=Decimal("2")),
+]
+
+constrained_numbers_v2 = [
+    pydantic_v2.conint(gt=10, lt=100),
+    pydantic_v2.conint(ge=10, le=100),
+    pydantic_v2.conint(ge=10, le=100, multiple_of=7),
+    pydantic_v2.confloat(gt=10, lt=100),
+    pydantic_v2.confloat(ge=10, le=100),
+    pydantic_v2.confloat(ge=10, le=100, multiple_of=4.2),
+    pydantic_v2.confloat(gt=10, lt=100, multiple_of=10),
+    pydantic_v2.condecimal(gt=Decimal("10"), lt=Decimal("100")),
+    pydantic_v2.condecimal(ge=Decimal("10"), le=Decimal("100")),
+    pydantic_v2.condecimal(gt=Decimal("10"), lt=Decimal("100"), multiple_of=Decimal("5")),
+    pydantic_v2.condecimal(ge=Decimal("10"), le=Decimal("100"), multiple_of=Decimal("2")),
+]
+
+
+constrained_dates_v1 = [
+    pydantic_v1.condate(gt=date.today() - timedelta(days=10), lt=date.today() + timedelta(days=100)),
+    pydantic_v1.condate(ge=date.today() - timedelta(days=10), le=date.today() + timedelta(days=100)),
+    pydantic_v1.condate(gt=date.today() - timedelta(days=10), lt=date.today() + timedelta(days=100)),
+    pydantic_v1.condate(ge=date.today() - timedelta(days=10), le=date.today() + timedelta(days=100)),
+]
+
+constrained_dates_v2 = [
+    pydantic_v2.condate(gt=date.today() - timedelta(days=10), lt=date.today() + timedelta(days=100)),
+    pydantic_v2.condate(ge=date.today() - timedelta(days=10), le=date.today() + timedelta(days=100)),
+    pydantic_v2.condate(gt=date.today() - timedelta(days=10), lt=date.today() + timedelta(days=100)),
+    pydantic_v2.condate(ge=date.today() - timedelta(days=10), le=date.today() + timedelta(days=100)),
+]
+
+
+@pytest.mark.parametrize("annotation", constrained_collection_v1)
 def test_create_collection_constrained_field_schema_pydantic_v1(annotation: Any) -> None:
     schema = SchemaCreator().for_collection_constrained_field(FieldDefinition.from_annotation(annotation))
     assert schema.type == OpenAPIType.ARRAY
@@ -110,8 +130,7 @@ def test_create_collection_constrained_field_schema_pydantic_v1(annotation: Any)
     assert schema.max_items == annotation.max_items
 
 
-@pytest.mark.skipif(pydantic.VERSION.startswith("1"), reason="pydantic 2 specific logic")
-@pytest.mark.parametrize("annotation", constrained_collection)
+@pytest.mark.parametrize("annotation", constrained_collection_v2)
 def test_create_collection_constrained_field_schema_pydantic_v2(annotation: Any) -> None:
     field_definition = FieldDefinition.from_annotation(annotation)
     schema = SchemaCreator().for_collection_constrained_field(field_definition)
@@ -121,12 +140,24 @@ def test_create_collection_constrained_field_schema_pydantic_v2(annotation: Any)
     assert any(getattr(m, "max_length", None) == schema.max_items for m in field_definition.metadata if m)
 
 
-def test_create_collection_constrained_field_schema_sub_fields() -> None:
-    for pydantic_fn in (conlist, conset):
-        if pydantic.VERSION.startswith("1"):
-            annotation = pydantic_fn(Union[str, int], min_items=1, max_items=10)  # type: ignore
+@pytest.fixture()
+def conset(pydantic_version: str) -> Any:
+    return pydantic_v1.conset if pydantic_version == "1" else pydantic_v2.conset
+
+
+@pytest.fixture()
+def conlist(pydantic_version: str) -> Any:
+    return pydantic_v1.conlist if pydantic_version == "1" else pydantic_v2.conlist
+
+
+def test_create_collection_constrained_field_schema_sub_fields(
+    pydantic_version: str, conset: Any, conlist: Any
+) -> None:
+    for pydantic_fn in [conset, conlist]:
+        if pydantic_version == "1":
+            annotation = pydantic_fn(Union[str, int], min_items=1, max_items=10)
         else:
-            annotation = pydantic_fn(Union[str, int], min_length=1, max_length=10)  # type: ignore
+            annotation = pydantic_fn(Union[str, int], min_length=1, max_length=10)
         field_definition = FieldDefinition.from_annotation(annotation)
         schema = SchemaCreator().for_collection_constrained_field(field_definition)
         assert schema.type == OpenAPIType.ARRAY
@@ -136,15 +167,14 @@ def test_create_collection_constrained_field_schema_sub_fields() -> None:
             "minItems": 1,
             "type": "array",
         }
-        if pydantic_fn == conset:
+        if pydantic_fn is conset:
             # set should have uniqueItems always
             expected["uniqueItems"] = True
 
         assert schema.to_schema() == expected
 
 
-@pytest.mark.skipif(pydantic.version.VERSION.startswith("2"), reason="pydantic 1 specific logic")
-@pytest.mark.parametrize("annotation", constrained_string)
+@pytest.mark.parametrize("annotation", constrained_string_v1)
 def test_create_string_constrained_field_schema_pydantic_v1(annotation: Any) -> None:
     field_definition = FieldDefinition.from_annotation(annotation)
 
@@ -162,8 +192,7 @@ def test_create_string_constrained_field_schema_pydantic_v1(annotation: Any) -> 
         assert schema.description
 
 
-@pytest.mark.skipif(pydantic.version.VERSION.startswith("1"), reason="pydantic 2 specific logic")
-@pytest.mark.parametrize("annotation", constrained_string)
+@pytest.mark.parametrize("annotation", constrained_string_v2)
 def test_create_string_constrained_field_schema_pydantic_v2(annotation: Any) -> None:
     field_definition = FieldDefinition.from_annotation(annotation)
 
@@ -179,10 +208,9 @@ def test_create_string_constrained_field_schema_pydantic_v2(annotation: Any) -> 
         assert schema.description
 
 
-@pytest.mark.skipif(pydantic.version.VERSION.startswith("2"), reason="pydantic 1 specific logic")
-@pytest.mark.parametrize("annotation", constrained_numbers)
+@pytest.mark.parametrize("annotation", constrained_numbers_v1)
 def test_create_numerical_constrained_field_schema_pydantic_v1(annotation: Any) -> None:
-    from pydantic.types import ConstrainedDecimal, ConstrainedFloat, ConstrainedInt
+    from pydantic.v1.types import ConstrainedDecimal, ConstrainedFloat, ConstrainedInt
 
     annotation = cast(Union[ConstrainedInt, ConstrainedFloat, ConstrainedDecimal], annotation)
 
@@ -200,8 +228,7 @@ def test_create_numerical_constrained_field_schema_pydantic_v1(annotation: Any) 
     assert schema.multiple_of == annotation.multiple_of
 
 
-@pytest.mark.skipif(pydantic.version.VERSION.startswith("1"), reason="pydantic 2 specific logic")
-@pytest.mark.parametrize("annotation", constrained_numbers)
+@pytest.mark.parametrize("annotation", constrained_numbers_v2)
 def test_create_numerical_constrained_field_schema_pydantic_v2(annotation: Any) -> None:
     field_definition = FieldDefinition.from_annotation(annotation)
 
@@ -215,8 +242,7 @@ def test_create_numerical_constrained_field_schema_pydantic_v2(annotation: Any) 
     assert any(getattr(m, "multiple_of", None) == schema.multiple_of for m in field_definition.metadata if m)
 
 
-@pytest.mark.skipif(pydantic.version.VERSION.startswith("2"), reason="pydantic 1 specific logic")
-@pytest.mark.parametrize("annotation", constrained_dates)
+@pytest.mark.parametrize("annotation", constrained_dates_v1)
 def test_create_date_constrained_field_schema_pydantic_v1(annotation: Any) -> None:
     field_definition = FieldDefinition.from_annotation(annotation)
 
@@ -230,8 +256,7 @@ def test_create_date_constrained_field_schema_pydantic_v1(annotation: Any) -> No
     assert (date.fromtimestamp(schema.maximum) if schema.maximum else None) == annotation.le
 
 
-@pytest.mark.skipif(pydantic.version.VERSION.startswith("1"), reason="pydantic 2 specific logic")
-@pytest.mark.parametrize("annotation", constrained_dates)
+@pytest.mark.parametrize("annotation", constrained_dates_v2)
 def test_create_date_constrained_field_schema_pydantic_v2(annotation: Any) -> None:
     field_definition = FieldDefinition.from_annotation(annotation)
 
@@ -262,14 +287,24 @@ def test_create_date_constrained_field_schema_pydantic_v2(annotation: Any) -> No
 
 
 @pytest.mark.parametrize(
-    "annotation", [*constrained_numbers, *constrained_collection, *constrained_string, *constrained_dates]
+    "annotation",
+    [
+        *constrained_numbers_v1,
+        *constrained_collection_v1,
+        *constrained_string_v1,
+        *constrained_dates_v1,
+        *constrained_numbers_v2,
+        *constrained_collection_v2,
+        *constrained_string_v2,
+        *constrained_dates_v2,
+    ],
 )
 def test_create_constrained_field_schema(annotation: Any) -> None:
     schema = SchemaCreator().for_constrained_field(FieldDefinition.from_annotation(annotation))
     assert schema
 
 
-@pytest.mark.parametrize("cls", (PydanticPerson, PydanticDataclassPerson))
+@pytest.mark.parametrize("cls", (PydanticPerson, PydanticDataclassPerson, PydanticV1Person, PydanticV1DataclassPerson))
 def test_spec_generation(cls: Any) -> None:
     @post("/")
     def handler(data: cls) -> cls:
@@ -306,28 +341,17 @@ def test_spec_generation(cls: Any) -> None:
 
 
 @pytest.mark.parametrize("create_examples", (True, False))
-def test_schema_generation(create_examples: bool) -> None:
-    class Lookup(BaseModel):
-        if pydantic.VERSION.startswith("1"):
-            id: Annotated[
-                str,
-                Field(
-                    min_length=12,
-                    max_length=16,
-                    description="A unique identifier",
-                    example="e4eaaaf2-d142-11e1-b3e4-080027620cdd",  # pyright: ignore
-                ),
-            ]
-        else:
-            id: Annotated[  # type: ignore[no-redef]
-                str,
-                Field(
-                    min_length=12,
-                    max_length=16,
-                    description="A unique identifier",
-                    json_schema_extra={"example": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"},
-                ),
-            ]
+def test_schema_generation_v1(create_examples: bool) -> None:
+    class Lookup(pydantic_v1.BaseModel):
+        id: Annotated[
+            str,
+            pydantic_v1.Field(
+                min_length=12,
+                max_length=16,
+                description="A unique identifier",
+                example="e4eaaaf2-d142-11e1-b3e4-080027620cdd",  # pyright: ignore
+            ),
+        ]
 
     @post("/example")
     async def example_route() -> Lookup:
@@ -353,12 +377,49 @@ def test_schema_generation(create_examples: bool) -> None:
         }
 
 
-def test_schema_by_alias() -> None:
-    class RequestWithAlias(BaseModel):
-        first: str = Field(alias="second")
+@pytest.mark.parametrize("create_examples", (True, False))
+def test_schema_generation_v2(create_examples: bool) -> None:
+    class Lookup(pydantic_v2.BaseModel):
+        id: Annotated[
+            str,
+            pydantic_v2.Field(
+                min_length=12,
+                max_length=16,
+                description="A unique identifier",
+                json_schema_extra={"example": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"},
+            ),
+        ]
 
-    class ResponseWithAlias(BaseModel):
-        first: str = Field(alias="second")
+    @post("/example")
+    async def example_route() -> Lookup:
+        return Lookup(id="1234567812345678")
+
+    with create_test_client(
+        route_handlers=[example_route],
+        openapi_config=OpenAPIConfig(
+            title="Example API",
+            version="1.0.0",
+            create_examples=create_examples,
+        ),
+        signature_namespace={"Lookup": Lookup},
+    ) as client:
+        response = client.get("/schema/openapi.json")
+        assert response.status_code == HTTP_200_OK
+        assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
+            "description": "A unique identifier",
+            "examples": [{"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}],
+            "maxLength": 16,
+            "minLength": 12,
+            "type": "string",
+        }
+
+
+def test_schema_by_alias(base_model: AnyBaseModelType, pydantic_version: str) -> None:
+    class RequestWithAlias(base_model):  # type: ignore[misc, valid-type]
+        first: str = (pydantic_v1.Field if pydantic_version == "1" else pydantic_v2.Field)(alias="second")  # type: ignore[operator]
+
+    class ResponseWithAlias(base_model):  # type: ignore[misc, valid-type]
+        first: str = (pydantic_v1.Field if pydantic_version == "1" else pydantic_v2.Field)(alias="second")  # type: ignore[operator]
 
     @post("/", signature_types=[RequestWithAlias, ResponseWithAlias])
     def handler(data: RequestWithAlias) -> ResponseWithAlias:
@@ -388,12 +449,12 @@ def test_schema_by_alias() -> None:
         assert response.json() == {response_key: "foo"}
 
 
-def test_schema_by_alias_plugin_override() -> None:
-    class RequestWithAlias(BaseModel):
-        first: str = Field(alias="second")
+def test_schema_by_alias_plugin_override(base_model: AnyBaseModelType, pydantic_version: str) -> None:
+    class RequestWithAlias(base_model):  # type: ignore[misc, valid-type]
+        first: str = (pydantic_v1.Field if pydantic_version == "1" else pydantic_v2.Field)(alias="second")  # type: ignore[operator]
 
-    class ResponseWithAlias(BaseModel):
-        first: str = Field(alias="second")
+    class ResponseWithAlias(base_model):  # type: ignore[misc, valid-type]
+        first: str = (pydantic_v1.Field if pydantic_version == "1" else pydantic_v2.Field)(alias="second")  # type: ignore[operator]
 
     @post("/", signature_types=[RequestWithAlias, ResponseWithAlias])
     def handler(data: RequestWithAlias) -> ResponseWithAlias:
@@ -427,16 +488,27 @@ def test_schema_by_alias_plugin_override() -> None:
         assert response.json() == {response_key: "foo"}
 
 
-def test_create_schema_for_field() -> None:
-    class Model(BaseModel):
-        if pydantic.VERSION.startswith("1"):
-            value: str = Field(
-                title="title", description="description", example="example", max_length=16  # pyright: ignore
-            )
-        else:
-            value: str = Field(  # type: ignore[no-redef]
-                title="title", description="description", max_length=16, json_schema_extra={"example": "example"}
-            )
+def test_create_schema_for_field_v1() -> None:
+    class Model(pydantic_v1.BaseModel):
+        value: str = pydantic_v1.Field(
+            title="title", description="description", example="example", max_length=16  # pyright: ignore
+        )
+
+    schemas: Dict[str, Schema] = {}
+    field_definition = FieldDefinition.from_kwarg(name="Model", annotation=Model)
+    SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(field_definition)
+    schema = schemas["Model"]
+
+    assert schema.properties["value"].description == "description"  # type: ignore
+    assert schema.properties["value"].title == "title"  # type: ignore
+    assert schema.properties["value"].examples == [Example(value="example")]  # type: ignore
+
+
+def test_create_schema_for_field_v2() -> None:
+    class Model(pydantic_v2.BaseModel):
+        value: str = pydantic_v2.Field(
+            title="title", description="description", max_length=16, json_schema_extra={"example": "example"}
+        )
 
     schemas: Dict[str, Schema] = {}
     field_definition = FieldDefinition.from_kwarg(name="Model", annotation=Model)
@@ -450,14 +522,14 @@ def test_create_schema_for_field() -> None:
 
 @pytest.mark.parametrize("with_future_annotations", [True, False])
 def test_create_schema_for_pydantic_model_with_annotated_model_attribute(
-    with_future_annotations: bool, create_module: "Callable[[str], ModuleType]"
+    with_future_annotations: bool, create_module: "Callable[[str], ModuleType]", pydantic_version: str
 ) -> None:
     """Test that a model with an annotated attribute is correctly handled."""
     module = create_module(
         f"""
 {'from __future__ import annotations' if with_future_annotations else ''}
 from typing_extensions import Annotated
-from pydantic import BaseModel
+{'from pydantic import BaseModel' if pydantic_version == '1' else 'from pydantic.v1 import BaseModel'}
 
 class Foo(BaseModel):
     foo: Annotated[int, "Foo description"]

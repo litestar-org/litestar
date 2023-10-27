@@ -1,15 +1,20 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
+from typing import TYPE_CHECKING
 
 from litestar import Request, post
 from litestar.contrib.pydantic import PydanticDTO, _model_dump_json
 from litestar.dto import DTOConfig
 from litestar.testing import create_test_client
 
+if TYPE_CHECKING:
+    from pydantic import BaseModel
 
-def test_schema_required_fields_with_pydantic_dto(use_experimental_dto_backend: bool) -> None:
-    class PydanticUser(BaseModel):
+
+def test_schema_required_fields_with_pydantic_dto(
+    use_experimental_dto_backend: bool, base_model: type[BaseModel]
+) -> None:
+    class PydanticUser(base_model):  # type: ignore[misc, valid-type]
         age: int
         name: str
 

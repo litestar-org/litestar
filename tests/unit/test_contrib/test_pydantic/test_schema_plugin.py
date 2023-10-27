@@ -1,7 +1,9 @@
-from typing import Dict, Generic, Optional
+from typing import Dict, Generic, Optional, Type, TypeVar, Union
 
-from pydantic import BaseModel
-from typing_extensions import Annotated, TypeVar
+import pydantic as pydantic_v2
+import pytest
+from pydantic.v1.generics import GenericModel
+from typing_extensions import Annotated
 
 from litestar._openapi.schema_generation.schema import (
     SchemaCreator,
@@ -16,14 +18,21 @@ from litestar.utils.helpers import get_name
 T = TypeVar("T")
 
 
-class PydanticGeneric(BaseModel, Generic[T]):
+class PydanticV1Generic(GenericModel, Generic[T]):
     foo: T
     optional_foo: Optional[T]
     annotated_foo: Annotated[T, object()]
 
 
-def test_schema_generation_with_generic_classes() -> None:
-    cls = PydanticGeneric[int]
+class PydanticV2Generic(pydantic_v2.BaseModel, Generic[T]):
+    foo: T
+    optional_foo: Optional[T]
+    annotated_foo: Annotated[T, object()]
+
+
+@pytest.mark.parametrize("model", [PydanticV1Generic, PydanticV2Generic])
+def test_schema_generation_with_generic_classes(model: Type[Union[PydanticV1Generic, PydanticV2Generic]]) -> None:
+    cls = model[int]  # type: ignore[index]
     field_definition = FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
 
     schemas: Dict[str, Schema] = {}
