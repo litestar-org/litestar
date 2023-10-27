@@ -1257,13 +1257,15 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos">70</span>    <span class="k">return</span> <span class="n">todo_item</span>
 <span class="linenos">71</span>
 <span class="linenos">72</span>
-<span class="linenos">73</span><span class="n">db_config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///todo.sqlite&quot;</span><span class="p">)</span>
-<span class="linenos">74</span>
-<span class="linenos">75</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-<span class="linenos">76</span>    <span class="p">[</span><span class="n">get_list</span><span class="p">,</span> <span class="n">add_item</span><span class="p">,</span> <span class="n">update_item</span><span class="p">],</span>
-<span class="linenos">77</span>    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;transaction&quot;</span><span class="p">:</span> <span class="n">provide_transaction</span><span class="p">},</span>
-<span class="hll"><span class="linenos">78</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">db_config</span><span class="p">)],</span>
-</span><span class="linenos">79</span><span class="p">)</span>
+<span class="linenos">73</span><span class="n">db_config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
+<span class="linenos">74</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///todo.sqlite&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span>
+<span class="linenos">75</span><span class="p">)</span>
+<span class="linenos">76</span>
+<span class="linenos">77</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+<span class="linenos">78</span>    <span class="p">[</span><span class="n">get_list</span><span class="p">,</span> <span class="n">add_item</span><span class="p">,</span> <span class="n">update_item</span><span class="p">],</span>
+<span class="linenos">79</span>    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;transaction&quot;</span><span class="p">:</span> <span class="n">provide_transaction</span><span class="p">},</span>
+<span class="hll"><span class="linenos">80</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">db_config</span><span class="p">)],</span>
+</span><span class="linenos">81</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1343,13 +1345,15 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos">71</span>    <span class="k">return</span> <span class="n">todo_item</span>
 <span class="linenos">72</span>
 <span class="linenos">73</span>
-<span class="linenos">74</span><span class="n">db_config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///todo.sqlite&quot;</span><span class="p">)</span>
-<span class="linenos">75</span>
-<span class="linenos">76</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-<span class="linenos">77</span>    <span class="p">[</span><span class="n">get_list</span><span class="p">,</span> <span class="n">add_item</span><span class="p">,</span> <span class="n">update_item</span><span class="p">],</span>
-<span class="hll"><span class="linenos">78</span>    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;transaction&quot;</span><span class="p">:</span> <span class="n">provide_transaction</span><span class="p">},</span>
-</span><span class="linenos">79</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">db_config</span><span class="p">)],</span>
-<span class="linenos">80</span><span class="p">)</span>
+<span class="linenos">74</span><span class="n">db_config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
+<span class="linenos">75</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///todo.sqlite&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span>
+<span class="linenos">76</span><span class="p">)</span>
+<span class="linenos">77</span>
+<span class="linenos">78</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+<span class="linenos">79</span>    <span class="p">[</span><span class="n">get_list</span><span class="p">,</span> <span class="n">add_item</span><span class="p">,</span> <span class="n">update_item</span><span class="p">],</span>
+<span class="hll"><span class="linenos">80</span>    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;transaction&quot;</span><span class="p">:</span> <span class="n">provide_transaction</span><span class="p">},</span>
+</span><span class="linenos">81</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">db_config</span><span class="p">)],</span>
+<span class="linenos">82</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
