@@ -23,6 +23,28 @@ _FLUSHALL_STREAMS_SCRIPT = (_resource_path / "_redis_flushall_streams.lua").read
 _XADD_EXPIRE_SCRIPT = (_resource_path / "_redis_xadd_expire.lua").read_text()
 
 
+class _LazyEvent:
+    """A lazy proxy to asyncio.Event that only creates the event once it's accessed"""
+
+    def __init__(self) -> None:
+        self.__event: asyncio.Event | None = None
+
+    @property
+    def _event(self) -> asyncio.Event:
+        if self.__event is None:
+            self.__event = asyncio.Event()
+        return self.__event
+
+    def set(self) -> None:
+        self._event.set()
+
+    def clear(self) -> None:
+        self._event.clear()
+
+    async def wait(self) -> None:
+        await self._event.wait()
+
+
 class RedisChannelsBackend(ChannelsBackend, ABC):
     def __init__(self, *, redis: Redis, key_prefix: str, stream_sleep_no_subscriptions: int) -> None:
         """Base redis channels backend.
@@ -60,7 +82,7 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
         )
         self.__pub_sub: PubSub | None = None
         self._publish_script = self._redis.register_script(_PUBSUB_PUBLISH_SCRIPT)
-        self._has_subscribed = asyncio.Event()
+        self._has_subscribed = _LazyEvent()
 
     @property
     def _pub_sub(self) -> PubSub:
@@ -78,8 +100,7 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
     async def subscribe(self, channels: Iterable[str]) -> None:
         """Subscribe to ``channels``, and enable publishing to them"""
         await self._pub_sub.subscribe(*channels)
-        if not self._has_subscribed.is_set():
-            self._has_subscribed.set()
+        self._has_subscribed.set()
 
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         """Stop listening for events on ``channels``"""
@@ -153,7 +174,7 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
         self._stream_ttl = stream_ttl if isinstance(stream_ttl, int) else int(stream_ttl.total_seconds() * 1000)
         self._flush_all_streams_script = self._redis.register_script(_FLUSHALL_STREAMS_SCRIPT)
         self._publish_script = self._redis.register_script(_XADD_EXPIRE_SCRIPT)
-        self._has_subscribed_channels = asyncio.Event()
+        self._has_subscribed_channels = _LazyEvent()
 
     async def on_startup(self) -> None:
         """Called on application startup"""
@@ -164,8 +185,7 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
     async def subscribe(self, channels: Iterable[str]) -> None:
         """Subscribe to ``channels``"""
         self._subscribed_channels.update(channels)
-        if not self._has_subscribed_channels.is_set():
-            self._has_subscribed_channels.set()
+        self._has_subscribed_channels.set()
 
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         """Unsubscribe from ``channels``"""
