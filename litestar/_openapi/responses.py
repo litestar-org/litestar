@@ -226,9 +226,12 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
             with contextlib.suppress(Exception):
                 group_description = HTTPStatus(status_code).description
 
-        yield str(status_code), OpenAPIResponse(
-            description=group_description,
-            content={MediaType.JSON: OpenAPIMediaType(schema=schema)},
+        yield (
+            str(status_code),
+            OpenAPIResponse(
+                description=group_description,
+                content={MediaType.JSON: OpenAPIMediaType(schema=schema)},
+            ),
         )
 
 
@@ -245,9 +248,12 @@ def create_additional_responses(
         schema = schema_creator.for_field_definition(
             FieldDefinition.from_annotation(additional_response.data_container)
         )
-        yield str(status_code), OpenAPIResponse(
-            description=additional_response.description,
-            content={additional_response.media_type: OpenAPIMediaType(schema=schema)},
+        yield (
+            str(status_code),
+            OpenAPIResponse(
+                description=additional_response.description,
+                content={additional_response.media_type: OpenAPIMediaType(schema=schema)},
+            ),
         )
 
 

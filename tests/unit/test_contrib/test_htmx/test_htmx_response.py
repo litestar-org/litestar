@@ -185,7 +185,10 @@ async def test_trigger_event_response_invalid_after() -> None:
     @get("/")
     def handler() -> TriggerEvent:
         return TriggerEvent(
-            content="Success!", name="alert", after="invalid", params={"warning": "Confirm your choice!"}  # type: ignore
+            content="Success!",
+            name="alert",
+            after="invalid",
+            params={"warning": "Confirm your choice!"},  # type: ignore
         )
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
