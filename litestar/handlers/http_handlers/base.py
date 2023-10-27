@@ -367,9 +367,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if self._resolved_before_request is Empty:
             before_request_handlers: list[AsyncCallable] = [
-                layer.before_request
+                layer.before_request  # type: ignore[misc]
                 for layer in self.ownership_layers
-                if layer.before_request  # type: ignore[misc]
+                if layer.before_request
             ]
             self._resolved_before_request = before_request_handlers[-1] if before_request_handlers else None
         return cast("AsyncCallable | None", self._resolved_before_request)
@@ -385,9 +385,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if self._resolved_after_response is Empty:
             after_response_handlers: list[AsyncCallable] = [
-                layer.after_response
+                layer.after_response  # type: ignore[misc]
                 for layer in self.ownership_layers
-                if layer.after_response  # type: ignore[misc]
+                if layer.after_response
             ]
             self._resolved_after_response = after_response_handlers[-1] if after_response_handlers else None
 

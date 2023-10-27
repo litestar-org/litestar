@@ -82,9 +82,9 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             A tuple with the parsed value and a dictionary containing any options send in it.
         """
         if self._content_type is Empty:
-            self._content_type = self.scope["_content_type"] = parse_content_header(
+            self._content_type = self.scope["_content_type"] = parse_content_header(  # type: ignore[typeddict-unknown-key]
                 self.headers.get("Content-Type", "")
-            )  # type: ignore[typeddict-unknown-key]
+            )
         return cast("tuple[str, dict[str, str]]", self._content_type)
 
     @property
@@ -106,9 +106,9 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         """
         if self._json is Empty:
             body = await self.body()
-            self._json = self.scope["_json"] = decode_json(
+            self._json = self.scope["_json"] = decode_json(  # type: ignore[typeddict-unknown-key]
                 body or b"null", type_decoders=self.route_handler.resolve_type_decoders()
-            )  # type: ignore[typeddict-unknown-key]
+            )
         return self._json
 
     async def msgpack(self) -> Any:
