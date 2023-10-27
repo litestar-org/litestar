@@ -38,7 +38,7 @@ class ResponseCacheMiddleware(AbstractMiddleware):
         async def wrapped_send(message: Message) -> None:
             if not get_litestar_scope_state(scope, SCOPE_STATE_IS_CACHED):
                 if message["type"] == HTTP_RESPONSE_START:
-                    do_cache = self.config.do_cache_predicate(cast("HTTPScope", scope), message["status"])
+                    do_cache = self.config.cache_response_filter(cast("HTTPScope", scope), message["status"])
                     set_litestar_scope_state(scope, SCOPE_STATE_DO_CACHE, do_cache)
                     if do_cache:
                         messages.append(message)

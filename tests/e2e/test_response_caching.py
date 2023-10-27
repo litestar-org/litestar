@@ -281,7 +281,7 @@ def test_custom_do_response_cache_predicate(mock: MagicMock) -> None:
         return "OK"
 
     with create_test_client(
-        [handler], response_cache_config=ResponseCacheConfig(do_cache_predicate=lambda *_: False)
+        [handler], response_cache_config=ResponseCacheConfig(cache_response_filter=lambda *_: False)
     ) as client:
         client.get("/")
         client.get("/")

@@ -71,7 +71,7 @@ class ResponseCacheConfig:
     """:class:`CacheKeyBuilder <.types.CacheKeyBuilder>`. Defaults to :func:`default_cache_key_builder`."""
     store: str = "response_cache"
     """Name of the :class:`Store <.stores.base.Store>` to use."""
-    do_cache_predicate: Callable[[HTTPScope, int], bool] = field(default=default_do_cache_predicate)
+    cache_response_filter: Callable[[HTTPScope, int], bool] = field(default=default_do_cache_predicate)
     """A callable that receives connection scope and a status code, and returns a boolean indicating whether the
     response should be cached."""
 
