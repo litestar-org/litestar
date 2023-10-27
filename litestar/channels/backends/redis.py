@@ -35,7 +35,7 @@ class RedisChannelsBackend(ChannelsBackend, ABC):
         """
         self._redis = redis
         self._key_prefix = key_prefix
-        self._stream_sleep_no_subscriptions = stream_sleep_no_subscriptions / 1000
+        self._stream_sleep_no_subscriptions = stream_sleep_no_subscriptions
 
     def _make_key(self, channel: str) -> str:
         return f"{self._key_prefix}_{channel.upper()}"
@@ -98,11 +98,7 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
         """
 
         while True:
-            if not self._pub_sub.subscribed:
-                await asyncio.sleep(self._stream_sleep_no_subscriptions)  # no subscriptions found so we sleep a bit
-                continue
-
-            message = await self._pub_sub.get_message(ignore_subscribe_messages=True, timeout=None)  # type: ignore[arg-type]
+            message = await self._pub_sub.get_message(ignore_subscribe_messages=True, timeout=self._stream_sleep_no_subscriptions)
             if message is None:
                 continue
 
@@ -149,6 +145,7 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
         self._stream_ttl = stream_ttl if isinstance(stream_ttl, int) else int(stream_ttl.total_seconds() * 1000)
         self._flush_all_streams_script = self._redis.register_script(_FLUSHALL_STREAMS_SCRIPT)
         self._publish_script = self._redis.register_script(_XADD_EXPIRE_SCRIPT)
+        self._has_subscribed_channels = asyncio.Event()
 
     async def on_startup(self) -> None:
         """Called on application startup"""
@@ -159,10 +156,14 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
     async def subscribe(self, channels: Iterable[str]) -> None:
         """Subscribe to ``channels``"""
         self._subscribed_channels.update(channels)
+        if not self._has_subscribed_channels.is_set():
+            self._has_subscribed_channels.set()
 
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         """Unsubscribe from ``channels``"""
         self._subscribed_channels -= set(channels)
+        if not len(self._subscribed_channels):
+            self._has_subscribed_channels.clear()
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
         """Publish ``data`` to ``channels``.
@@ -182,6 +183,10 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
             ],
         )
 
+    async def _get_stream_keys(self) -> set[str]:
+        await self._has_subscribed_channels.wait()
+        return self._subscribed_channels
+
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         """Return a generator, iterating over events of subscribed channels as they become available.
 
@@ -190,13 +195,12 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
         """
         stream_ids: dict[str, bytes] = {}
         while True:
-            stream_keys = [self._make_key(c) for c in self._subscribed_channels]
+            stream_keys = [self._make_key(c) for c in await self._get_stream_keys()]
             if not stream_keys:
-                await asyncio.sleep(self._stream_sleep_no_subscriptions)  # no subscriptions found so we sleep a bit
                 continue
 
             data: list[tuple[bytes, list[tuple[bytes, dict[bytes, bytes]]]]] = await self._redis.xread(
-                {key: stream_ids.get(key, 0) for key in stream_keys}, block=1
+                {key: stream_ids.get(key, 0) for key in stream_keys}, block=self._stream_sleep_no_subscriptions
             )
 
             if not data:
