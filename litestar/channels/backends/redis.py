@@ -98,7 +98,9 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
         """
 
         while True:
-            message = await self._pub_sub.get_message(ignore_subscribe_messages=True, timeout=self._stream_sleep_no_subscriptions)
+            message = await self._pub_sub.get_message(
+                ignore_subscribe_messages=True, timeout=self._stream_sleep_no_subscriptions
+            )
             if message is None:
                 continue
 

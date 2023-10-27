@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from asyncio import Queue
 from collections import defaultdict, deque
 from typing import Any, AsyncGenerator, Iterable
