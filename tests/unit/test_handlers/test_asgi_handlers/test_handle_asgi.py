@@ -40,7 +40,10 @@ def test_asgi_signature_namespace() -> None:
 
         @asgi(signature_namespace={"c": Send})
         async def root_asgi_handler(
-            self, scope: "a", receive: "b", send: "c"  # type:ignore[name-defined]  # noqa: F821
+            self,
+            scope: "a",  # noqa: F821
+            receive: "b",  # noqa: F821
+            send: "c",  # type:ignore[name-defined]  # noqa: F821
         ) -> None:
             await ASGIResponse(body=scope["path"].encode(), media_type=MediaType.TEXT)(scope, receive, send)
 

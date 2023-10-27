@@ -431,7 +431,10 @@ def test_create_schema_for_field() -> None:
     class Model(BaseModel):
         if pydantic.VERSION.startswith("1"):
             value: str = Field(
-                title="title", description="description", example="example", max_length=16  # pyright: ignore
+                title="title",
+                description="description",
+                example="example",
+                max_length=16,  # pyright: ignore
             )
         else:
             value: str = Field(  # type: ignore[no-redef]

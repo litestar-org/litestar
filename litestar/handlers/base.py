@@ -148,9 +148,7 @@ class BaseRouteHandler:
         self.type_encoders = type_encoders
 
         self.paths = (
-            {normalize_path(p) for p in path}
-            if path and isinstance(path, list)
-            else {normalize_path(path or "/")}  # type: ignore
+            {normalize_path(p) for p in path} if path and isinstance(path, list) else {normalize_path(path or "/")}  # type: ignore
         )
 
     def __call__(self, fn: AsyncAnyCallable) -> Self:
