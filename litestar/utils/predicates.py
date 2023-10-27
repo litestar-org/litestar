@@ -47,11 +47,6 @@ if TYPE_CHECKING:
     from litestar.types.protocols import DataclassProtocol
 
 try:
-    import pydantic
-except ImportError:
-    pydantic = Empty  # type: ignore
-
-try:
     import attrs
 except ImportError:
     attrs = Empty  # type: ignore
@@ -70,9 +65,6 @@ __all__ = (
     "is_non_string_iterable",
     "is_non_string_sequence",
     "is_optional_union",
-    "is_pydantic_constrained_field",
-    "is_pydantic_model_class",
-    "is_pydantic_model_instance",
     "is_struct_class",
     "is_sync_or_async_generator",
     "is_typed_dict",
@@ -292,34 +284,6 @@ def is_typed_dict(annotation: Any) -> TypeGuard[TypedDictClass]:
     return is_typeddict(annotation)
 
 
-def is_pydantic_model_class(annotation: Any) -> TypeGuard[type[pydantic.BaseModel]]:  # pyright: ignore
-    """Given a type annotation determine if the annotation is a subclass of pydantic's BaseModel.
-
-    Args:
-        annotation: A type.
-
-    Returns:
-        A typeguard determining whether the type is :data:`BaseModel pydantic.BaseModel>`.
-    """
-    if pydantic is not Empty:  # type: ignore[comparison-overlap]
-        return is_class_and_subclass(annotation, pydantic.BaseModel)  # pyright: ignore
-    return False  # pragma: no cover
-
-
-def is_pydantic_model_instance(annotation: Any) -> TypeGuard[pydantic.BaseModel]:  # pyright: ignore
-    """Given a type annotation determine if the annotation is an instance of pydantic's BaseModel.
-
-    Args:
-        annotation: A type.
-
-    Returns:
-        A typeguard determining whether the type is :data:`BaseModel pydantic.BaseModel>`.
-    """
-    if pydantic is not Empty:  # type: ignore[comparison-overlap]
-        return isinstance(annotation, pydantic.BaseModel)  # pyright: ignore
-    return False  # pragma: no cover
-
-
 def is_attrs_class(annotation: Any) -> TypeGuard[type[attrs.AttrsInstance]]:  # pyright: ignore
     """Given a type annotation determine if the annotation is a class that includes an attrs attribute.
 
@@ -330,50 +294,6 @@ def is_attrs_class(annotation: Any) -> TypeGuard[type[attrs.AttrsInstance]]:  # 
         A typeguard determining whether the type is an attrs class.
     """
     return attrs.has(annotation) if attrs is not Empty else False  # type: ignore[comparison-overlap]
-
-
-def is_pydantic_constrained_field(
-    annotation: Any,
-) -> Any:
-    """Check if the given annotation is a constrained pydantic type.
-
-    Args:
-        annotation: A type annotation
-
-    Returns:
-        True if pydantic is installed and the type is a constrained type, otherwise False.
-    """
-    try:
-        # removed in pydantic v2
-        # so this will raise an ImportError - which is expected.
-        from pydantic import (
-            ConstrainedBytes,
-            ConstrainedDate,
-            ConstrainedDecimal,
-            ConstrainedFloat,
-            ConstrainedFrozenSet,
-            ConstrainedInt,
-            ConstrainedList,
-            ConstrainedSet,
-            ConstrainedStr,
-        )
-
-        return any(
-            is_class_and_subclass(annotation, constrained_type)  # type: ignore[arg-type]
-            for constrained_type in (
-                ConstrainedBytes,
-                ConstrainedDate,
-                ConstrainedDecimal,
-                ConstrainedFloat,
-                ConstrainedFrozenSet,
-                ConstrainedInt,
-                ConstrainedList,
-                ConstrainedSet,
-                ConstrainedStr,
-            )
-        )
-    except ImportError:
-        return False
 
 
 def is_struct_class(annotation: Any) -> TypeGuard[type[Struct]]:

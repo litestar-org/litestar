@@ -21,7 +21,6 @@ from litestar.utils.predicates import (
     is_generic,
     is_non_string_iterable,
     is_non_string_sequence,
-    is_pydantic_constrained_field,
 )
 from litestar.utils.typing import (
     get_instantiable_origin,
@@ -30,11 +29,6 @@ from litestar.utils.typing import (
     make_non_optional_union,
     unwrap_annotation,
 )
-
-try:
-    from pydantic.fields import FieldInfo
-except ImportError:
-    FieldInfo = Empty  # type: ignore
 
 __all__ = ("FieldDefinition",)
 
@@ -226,10 +220,12 @@ class FieldDefinition:
     def _extract_metadata(
         cls, annotation: Any, name: str | None, default: Any, metadata: tuple[Any, ...], extra: dict[str, Any] | None
     ) -> tuple[KwargDefinition | None, dict[str, Any]]:
+        from litestar.contrib.pydantic.utils import is_pydantic_constrained_field, is_pydantic_field_info
         from litestar.dto.base_dto import AbstractDTO
 
         model = BodyKwarg if name == "data" else ParameterKwarg
-        if isinstance(default, FieldInfo):
+
+        if is_pydantic_field_info(default):
             return _create_metadata_from_type(metadata=[default], model=model, annotation=annotation, extra=extra)
 
         if is_pydantic_constrained_field(annotation) or isinstance(annotation, AbstractDTO):

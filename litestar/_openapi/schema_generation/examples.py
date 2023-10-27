@@ -14,9 +14,9 @@ from polyfactory.utils.helpers import unwrap_annotation
 from polyfactory.utils.predicates import is_union
 from typing_extensions import get_args
 
+from litestar.contrib.pydantic.utils import is_pydantic_model_instance
 from litestar.openapi.spec import Example
 from litestar.types import Empty
-from litestar.utils import is_pydantic_model_instance
 
 if TYPE_CHECKING:
     from litestar.typing import FieldDefinition
