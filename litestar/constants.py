@@ -28,7 +28,7 @@ WEBSOCKET_DISCONNECT: Final = "websocket.disconnect"
 
 
 try:
-    from pydantic.fields import PydanticUndefined as Pydantic2Undefined
+    from pydantic.fields import PydanticUndefined as Pydantic2Undefined  # type: ignore[attr-defined]
     from pydantic.v1.fields import Undefined as Pydantic1Undefined
 
     PYDANTIC_UNDEFINED_SENTINELS = {Pydantic1Undefined, Pydantic2Undefined}
@@ -39,7 +39,7 @@ except ImportError:
         PYDANTIC_UNDEFINED_SENTINELS = {Pydantic1Undefined}
 
     except ImportError:  # pyright: ignore
-        PYDANTIC_UNDEFINED_SENTINELS = {}
+        PYDANTIC_UNDEFINED_SENTINELS = set()
 
 
 UNDEFINED_SENTINELS.update(PYDANTIC_UNDEFINED_SENTINELS)

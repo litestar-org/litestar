@@ -5,7 +5,11 @@ from typing import Any
 from typing_extensions import Annotated
 
 from litestar._openapi.schema_generation.schema import SchemaCreator, _get_type_schema_name
-from litestar.contrib.pydantic.utils import is_pydantic_model_class, pydantic_get_unwrapped_annotation_and_type_hints
+from litestar.contrib.pydantic.utils import (
+    is_pydantic_2_model,
+    is_pydantic_model_class,
+    pydantic_get_unwrapped_annotation_and_type_hints,
+)
 from litestar.exceptions import MissingDependencyException
 from litestar.openapi.spec import Example, OpenAPIFormat, OpenAPIType, Schema
 from litestar.plugins import OpenAPISchemaPluginProtocol
@@ -236,22 +240,25 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
             A schema instance.
         """
 
-        is_v2_model = hasattr(annotation, "model_fields")
         annotation = field_definition.annotation
         unwrapped_annotation, annotation_hints = pydantic_get_unwrapped_annotation_and_type_hints(annotation)
-        model_config = annotation.model_config if is_v2_model else annotation.__config__
-        model_fields = unwrapped_annotation.model_fields if is_v2_model else unwrapped_annotation.__fields__
 
-        model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo] = {  # pyright: ignore
-            k: getattr(f, "field_info", f) for k, f in model_fields.items()
-        }
-
-        if is_v2_model:
+        if is_pydantic_2_model(annotation):
+            model_config = annotation.model_config
+            model_field_info = unwrapped_annotation.model_fields
             title = model_config.get("title")
             example = model_config.get("example")
+            is_v2_model = True
         else:
+            model_config = annotation.__config__  # type: ignore[union-attr, assignment]
+            model_field_info = unwrapped_annotation.__fields__
             title = getattr(model_config, "title", None)
             example = getattr(model_config, "example", None)
+            is_v2_model = False
+
+        model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo] = {  # pyright: ignore
+            k: getattr(f, "field_info", f) for k, f in model_field_info.items()
+        }
 
         field_definitions = {
             f.alias
@@ -271,5 +278,5 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
             properties={k: schema_creator.for_field_definition(f) for k, f in field_definitions.items()},
             type=OpenAPIType.OBJECT,
             title=title or _get_type_schema_name(field_definition),
-            examples=[Example(example)] if example else None,
+            examples=[Example(example)] if example else None,  # type: ignore[arg-type]
         )

@@ -117,7 +117,7 @@ def is_pydantic_field_info(
 
 
 def pydantic_unwrap_and_get_origin(annotation: Any) -> Any | None:
-    if pydantic_v2 is Empty or is_class_and_subclass(annotation, pydantic_v1.BaseModel):
+    if pydantic_v2 is Empty or is_class_and_subclass(annotation, pydantic_v1.BaseModel):  # type: ignore[comparison-overlap]
         return get_origin_or_inner_type(annotation)
 
     origin = annotation.__pydantic_generic_metadata__["origin"]
@@ -133,7 +133,7 @@ def pydantic_get_type_hints_with_generics_resolved(
     localns: dict[str, Any] | None = None,
     include_extras: bool = False,
 ) -> dict[str, Any]:
-    if pydantic_v2 is Empty or is_class_and_subclass(annotation, pydantic_v1.BaseModel):
+    if pydantic_v2 is Empty or is_class_and_subclass(annotation, pydantic_v1.BaseModel):  # type: ignore[comparison-overlap]
         return get_type_hints_with_generics_resolved(annotation)
 
     origin = pydantic_unwrap_and_get_origin(annotation)
@@ -163,3 +163,7 @@ def pydantic_get_unwrapped_annotation_and_type_hints(annotation: Any) -> tuple[A
         origin = pydantic_unwrap_and_get_origin(annotation)
         return origin or annotation, pydantic_get_type_hints_with_generics_resolved(annotation, include_extras=True)
     return annotation, get_type_hints(annotation, include_extras=True)
+
+
+def is_pydantic_2_model(obj: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel]) -> TypeGuard[pydantic_v2.BaseModel]:
+    return issubclass(obj, pydantic_v2.BaseModel)
