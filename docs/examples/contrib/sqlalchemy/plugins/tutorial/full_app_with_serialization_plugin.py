@@ -31,6 +31,9 @@ async def db_connection(app: Litestar) -> AsyncGenerator[None, None]:
         engine = create_async_engine("sqlite+aiosqlite:///todo.sqlite", echo=True)
         app.state.engine = engine
 
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
     try:
         yield
     finally:

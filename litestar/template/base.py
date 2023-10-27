@@ -4,7 +4,14 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping, Protocol, TypedDict, T
 
 from typing_extensions import Concatenate, ParamSpec, TypeAlias
 
+from litestar.constants import SCOPE_STATE_CSRF_TOKEN_KEY
+from litestar.utils import get_litestar_scope_state
 from litestar.utils.deprecation import warn_deprecation
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from litestar.connection import Request
 
 __all__ = (
     "TemplateCallableType",
@@ -14,12 +21,6 @@ __all__ = (
     "url_for",
     "url_for_static_asset",
 )
-
-
-if TYPE_CHECKING:
-    from pathlib import Path
-
-    from litestar.connection import Request
 
 
 def _get_request_from_context(context: Mapping[str, Any]) -> Request:
@@ -65,7 +66,8 @@ def csrf_token(context: Mapping[str, Any], /) -> str:
     Returns:
         A CSRF token if the app level ``csrf_config`` is set, otherwise an empty string.
     """
-    return _get_request_from_context(context).scope.get("_csrf_token", "")  # type: ignore[return-value]
+    scope = _get_request_from_context(context).scope
+    return cast("str", get_litestar_scope_state(scope=scope, key=SCOPE_STATE_CSRF_TOKEN_KEY, default=""))
 
 
 def url_for_static_asset(context: Mapping[str, Any], /, name: str, file_path: str) -> str:
@@ -85,7 +87,7 @@ def url_for_static_asset(context: Mapping[str, Any], /, name: str, file_path: st
     return _get_request_from_context(context).app.url_for_static_asset(name, file_path)
 
 
-class TemplateProtocol(Protocol):  # pragma: no cover
+class TemplateProtocol(Protocol):
     """Protocol Defining a ``Template``.
 
     Template is a class that has a render method which renders the template into a string.
@@ -101,7 +103,7 @@ class TemplateProtocol(Protocol):  # pragma: no cover
         Returns:
             The rendered template string
         """
-        ...
+        raise NotImplementedError
 
 
 P = ParamSpec("P")
@@ -113,7 +115,7 @@ TemplateCallableType: TypeAlias = Callable[Concatenate[ContextType, P], R]
 
 
 @runtime_checkable
-class TemplateEngineProtocol(Protocol[TemplateType_co, ContextType_co]):  # pragma: no cover
+class TemplateEngineProtocol(Protocol[TemplateType_co, ContextType_co]):
     """Protocol for template engines."""
 
     def __init__(self, directory: Path | list[Path] | None, engine_instance: Any | None) -> None:
@@ -124,7 +126,6 @@ class TemplateEngineProtocol(Protocol[TemplateType_co, ContextType_co]):  # prag
                 implementation has to create the engine instance.
             engine_instance: A template engine object, if provided the implementation has to use it.
         """
-        ...
 
     def get_template(self, template_name: str) -> TemplateType_co:
         """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
@@ -138,7 +139,7 @@ class TemplateEngineProtocol(Protocol[TemplateType_co, ContextType_co]):  # prag
         Raises:
             TemplateNotFoundException: if no template is found.
         """
-        ...
+        raise NotImplementedError
 
     def register_template_callable(
         self, key: str, template_callable: TemplateCallableType[ContextType_co, P, R]

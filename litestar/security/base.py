@@ -150,7 +150,7 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
 
     @property
     @abstractmethod
-    def openapi_components(self) -> Components:  # pragma: no cover
+    def openapi_components(self) -> Components:
         """Create OpenAPI documentation for the JWT auth schema used.
 
         Returns:
@@ -160,7 +160,7 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
 
     @property
     @abstractmethod
-    def security_requirement(self) -> SecurityRequirement:  # pragma: no cover
+    def security_requirement(self) -> SecurityRequirement:
         """Return OpenAPI 3.1.
 
         :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for the auth
@@ -173,7 +173,7 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
 
     @property
     @abstractmethod
-    def middleware(self) -> DefineMiddleware:  # pragma: no cover
+    def middleware(self) -> DefineMiddleware:
         """Create an instance of the config's ``authentication_middleware_class`` attribute and any required kwargs,
         wrapping it in Litestar's ``DefineMiddleware``.
 

@@ -215,6 +215,9 @@ This controller exposes the following endpoints:
 ``/schema/elements``
     Serves the docs using `Stoplight Elements <https://github.com/stoplightio/elements>`_.
 
+``/schema/rapidoc``
+    Serves the docs using `RapiDoc <https://github.com/rapi-doc/RapiDoc>`_.
+
 Additionally, the root ``/schema/`` path is accessible, serving the site that is configured as the default in
 the :class:`OpenAPIConfig <.openapi.OpenAPIConfig>`.
 
@@ -270,6 +273,7 @@ You can change the default download paths for JS and CSS bundles as well as goog
        stoplight_elements_js_url = (
            "https://offline_location/spotlight-web-components.min.js"
        )
+       rapidoc_js_url = "https://offline_location/rapidock-min.js"
 
 
    app = Litestar(

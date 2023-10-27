@@ -1318,13 +1318,42 @@
       "contributions": [
         "doc"
       ]
-    }, {
+    },
+    {
       "login": "pbaletkeman",
       "name": "Pete",
       "avatar_url": "https://avatars.githubusercontent.com/u/22402240?v=4",
       "profile": "https://github.com/pbaletkeman",
       "contributions": [
         "doc"
+      ]
+    },
+    {
+      "login": "heralight",
+      "name": "Alexandre Richonnier",
+      "avatar_url": "https://avatars.githubusercontent.com/u/534840?v=4",
+      "profile": "http://www.hera.cc",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "betaboon",
+      "name": "betaboon",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7346933?v=4",
+      "profile": "https://github.com/betaboon",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "brakhane",
+      "name": "Dennis Brakhane",
+      "avatar_url": "https://avatars.githubusercontent.com/u/541637?v=4",
+      "profile": "https://github.com/brakhane",
+      "contributions": [
+        "code",
+        "bug"
       ]
     }
   ],

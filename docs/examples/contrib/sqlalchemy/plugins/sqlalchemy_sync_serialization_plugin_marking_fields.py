@@ -23,7 +23,7 @@ class TodoItem(Base):
     super_secret_value: Mapped[str] = mapped_column(info=dto_field("private"))
 
 
-@post("/", sync_to_thread=True)
+@post("/", sync_to_thread=False)
 def add_item(data: TodoItem) -> List[TodoItem]:
     data.super_secret_value = "This is a secret"
     return [data]
