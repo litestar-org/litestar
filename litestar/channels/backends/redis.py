@@ -24,7 +24,14 @@ _XADD_EXPIRE_SCRIPT = (_resource_path / "_redis_xadd_expire.lua").read_text()
 
 
 class _LazyEvent:
-    """A lazy proxy to asyncio.Event that only creates the event once it's accessed"""
+    """A lazy proxy to asyncio.Event that only creates the event once it's accessed.
+
+    It ensures that the Event is created within a running event loop. If it's not, there can be an issue where a future
+    within the event itself is attached to a different loop.
+
+    This happens in our tests and could also happen when a user creates an instance of the backend outside an event loop
+    in their application.
+    """
 
     def __init__(self) -> None:
         self.__event: asyncio.Event | None = None
