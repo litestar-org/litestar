@@ -185,7 +185,8 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
             ],
         )
 
-    async def _get_stream_keys(self) -> set[str]:
+    async def _get_subscribed_channels(self) -> set[str]:
+        """Get subscribed channels. If no channels are currently subscribed, wait"""
         await self._has_subscribed_channels.wait()
         return self._subscribed_channels
 
@@ -197,7 +198,9 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
         """
         stream_ids: dict[str, bytes] = {}
         while True:
-            stream_keys = [self._make_key(c) for c in await self._get_stream_keys()]
+            # We wait for subscribed channels, because we can't pass an empty dict to
+            # xread and block for susbcribers
+            stream_keys = [self._make_key(c) for c in await self._get_subscribed_channels()]
             if not stream_keys:
                 continue
 
