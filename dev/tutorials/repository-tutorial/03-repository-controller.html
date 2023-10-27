@@ -1976,7 +1976,7 @@ Here’s a corresponding synchronous version of the previous example:</p>
 <span class="linenos">117</span><span class="k">class</span> <span class="nc">AuthorController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
 <span class="linenos">118</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author CRUD&quot;&quot;&quot;</span>
 <span class="linenos">119</span>
-<span class="linenos">120</span>    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_authors_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)}</span>
+<span class="linenos">120</span>    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_authors_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)}</span>
 <span class="linenos">121</span>
 <span class="linenos">122</span>    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
 <span class="linenos">123</span>    <span class="k">def</span> <span class="nf">list_authors</span><span class="p">(</span>
@@ -2010,7 +2010,7 @@ Here’s a corresponding synchronous version of the previous example:</p>
 <span class="linenos">151</span>    <span class="c1"># we override the authors_repo to use the version that joins the Books in</span>
 <span class="linenos">152</span>    <span class="nd">@get</span><span class="p">(</span>
 <span class="linenos">153</span>        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span>
-<span class="linenos">154</span>        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)},</span>
+<span class="linenos">154</span>        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)},</span>
 <span class="linenos">155</span>    <span class="p">)</span>
 <span class="linenos">156</span>    <span class="k">def</span> <span class="nf">get_author</span><span class="p">(</span>
 <span class="linenos">157</span>        <span class="bp">self</span><span class="p">,</span>
@@ -2026,7 +2026,7 @@ Here’s a corresponding synchronous version of the previous example:</p>
 <span class="linenos">167</span>
 <span class="linenos">168</span>    <span class="nd">@patch</span><span class="p">(</span>
 <span class="linenos">169</span>        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span>
-<span class="linenos">170</span>        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)},</span>
+<span class="linenos">170</span>        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)},</span>
 <span class="linenos">171</span>    <span class="p">)</span>
 <span class="linenos">172</span>    <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span>
 <span class="linenos">173</span>        <span class="bp">self</span><span class="p">,</span>

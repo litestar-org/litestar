@@ -1250,7 +1250,7 @@ Sync</label><div class="sd-tab-content docutils">
 <span class="linenos">21</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
 <span class="linenos">22</span>
 <span class="linenos">23</span>
-<span class="linenos">24</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">24</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="linenos">25</span><span class="k">def</span> <span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
 <span class="linenos">26</span>    <span class="k">return</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
 <span class="linenos">27</span>
@@ -1420,7 +1420,7 @@ Sync</label><div class="sd-tab-content docutils">
 <span class="hll"><span class="linenos">23</span>    <span class="n">super_secret_value</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="n">dto_field</span><span class="p">(</span><span class="s2">&quot;private&quot;</span><span class="p">))</span>
 </span><span class="linenos">24</span>
 <span class="linenos">25</span>
-<span class="linenos">26</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">26</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="linenos">27</span><span class="k">def</span> <span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
 <span class="hll"><span class="linenos">28</span>    <span class="n">data</span><span class="o">.</span><span class="n">super_secret_value</span> <span class="o">=</span> <span class="s2">&quot;This is a secret&quot;</span>
 </span><span class="linenos">29</span>    <span class="k">return</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>

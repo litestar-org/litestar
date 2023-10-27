@@ -1641,7 +1641,7 @@ your controllers and function based routes.</p>
 <span class="k">class</span> <span class="nc">AuthorController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Author CRUD&quot;&quot;&quot;</span>
 
-    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_authors_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)}</span>
+    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_authors_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)}</span>
 
     <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">list_authors</span><span class="p">(</span>
@@ -1675,7 +1675,7 @@ your controllers and function based routes.</p>
     <span class="c1"># we override the authors_repo to use the version that joins the Books in</span>
     <span class="nd">@get</span><span class="p">(</span>
         <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span>
-        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)},</span>
+        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)},</span>
     <span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_author</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1691,7 +1691,7 @@ your controllers and function based routes.</p>
 
     <span class="nd">@patch</span><span class="p">(</span>
         <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span>
-        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)},</span>
+        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)},</span>
     <span class="p">)</span>
     <span class="k">def</span> <span class="nf">update_author</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
