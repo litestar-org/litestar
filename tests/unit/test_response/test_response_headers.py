@@ -30,7 +30,7 @@ def test_response_headers() -> None:
 
     first_router = Router(path="/users", response_headers=[router_first, router_second], route_handlers=[MyController])
     second_router = Router(
-        path="/external", response_headers=[ResponseHeader(name="external", value="nope")], route_handlers=[]
+        path="/external", response_headers=[ResponseHeader(name="external", value="nope")], route_handlers=[],
     )
     app = Litestar(
         openapi_config=None,
@@ -88,7 +88,7 @@ def test_response_headers_rendering() -> None:
 
 
 @pytest.mark.parametrize(
-    "config_kwarg,app_header,controller_header,handler_header",
+    ("config_kwarg", "app_header", "controller_header", "handler_header"),
     [
         (
             "etag",
@@ -105,7 +105,7 @@ def test_response_headers_rendering() -> None:
     ],
 )
 def test_explicit_response_headers(
-    config_kwarg: str, app_header: Header, controller_header: Header, handler_header: Header
+    config_kwarg: str, app_header: Header, controller_header: Header, handler_header: Header,
 ) -> None:
     class MyController(Controller):
         @get(
@@ -141,7 +141,7 @@ def test_explicit_response_headers(
 
 
 @pytest.mark.parametrize(
-    "config_kwarg,header",
+    ("config_kwarg", "header"),
     [
         ("cache_control", CacheControlHeader(no_cache=True, documentation_only=True)),
         ("etag", ETag(value="1", documentation_only=True)),
@@ -161,7 +161,7 @@ def test_explicit_headers_documentation_only(config_kwarg: str, header: Header) 
 
 
 @pytest.mark.parametrize(
-    "config_kwarg,response_header,header",
+    ("config_kwarg", "response_header", "header"),
     [
         (
             "cache_control",
@@ -172,7 +172,7 @@ def test_explicit_headers_documentation_only(config_kwarg: str, header: Header) 
     ],
 )
 def test_explicit_headers_override_response_headers(
-    config_kwarg: str, response_header: ResponseHeader, header: Header
+    config_kwarg: str, response_header: ResponseHeader, header: Header,
 ) -> None:
     @get(
         path="/test",

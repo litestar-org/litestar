@@ -85,11 +85,12 @@ def default_serializer(value: Any, type_encoders: Mapping[Any, Callable[[Any], A
         except KeyError:
             continue
 
-    raise TypeError(f"Unsupported type: {type(value)!r}")
+    msg = f"Unsupported type: {type(value)!r}"
+    raise TypeError(msg)
 
 
 def default_deserializer(
-    target_type: Any, value: Any, type_decoders: TypeDecodersSequence | None = None
+    target_type: Any, value: Any, type_decoders: TypeDecodersSequence | None = None,
 ) -> Any:  # pragma: no cover
     """Transform values non-natively supported by ``msgspec``
 
@@ -115,7 +116,8 @@ def default_deserializer(
     if issubclass(target_type, (Path, PurePath, ImmutableState, UUID)):
         return target_type(value)
 
-    raise TypeError(f"Unsupported type: {type(value)!r}")
+    msg = f"Unsupported type: {type(value)!r}"
+    raise TypeError(msg)
 
 
 _msgspec_json_encoder = msgspec.json.Encoder(enc_hook=default_serializer)
@@ -185,7 +187,7 @@ def decode_json(  # type: ignore
         if target_type is Empty:
             return _msgspec_json_decoder.decode(value)
         return msgspec.json.decode(
-            value, dec_hook=partial(default_deserializer, type_decoders=type_decoders), type=target_type
+            value, dec_hook=partial(default_deserializer, type_decoders=type_decoders), type=target_type,
         )
     except msgspec.DecodeError as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error
@@ -233,7 +235,7 @@ def decode_msgpack(value: bytes, target_type: type[T], type_decoders: TypeDecode
 
 
 def decode_msgpack(
-    value: bytes, target_type: type[T] | EmptyType = Empty, type_decoders: TypeDecodersSequence | None = None
+    value: bytes, target_type: type[T] | EmptyType = Empty, type_decoders: TypeDecodersSequence | None = None,
 ) -> Any:  # type: ignore[misc]
     """Decode a MessagePack string/bytes into an object.
 
@@ -252,7 +254,7 @@ def decode_msgpack(
         if target_type is Empty:
             return _msgspec_msgpack_decoder.decode(value)
         return msgspec.msgpack.decode(
-            value, dec_hook=partial(default_deserializer, type_decoders=type_decoders), type=target_type
+            value, dec_hook=partial(default_deserializer, type_decoders=type_decoders), type=target_type,
         )
     except msgspec.DecodeError as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error

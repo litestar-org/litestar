@@ -19,13 +19,13 @@ def test_schema_generation() -> None:
                                 "description": "Request fulfilled, document follows",
                                 "headers": {},
                                 "content": {
-                                    "application/json": {"schema": {"$ref": "#/components/schemas/IdContainer"}}
+                                    "application/json": {"schema": {"$ref": "#/components/schemas/IdContainer"}},
                                 },
-                            }
+                            },
                         },
                         "deprecated": False,
-                    }
-                }
+                    },
+                },
             },
             "components": {
                 "schemas": {
@@ -34,7 +34,7 @@ def test_schema_generation() -> None:
                         "type": "object",
                         "required": ["id"],
                         "title": "IdContainer",
-                    }
-                }
+                    },
+                },
             },
         }

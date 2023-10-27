@@ -7,17 +7,17 @@ from litestar._kwargs.cleanup import DependencyCleanupGroup
 from litestar.utils.compat import async_next
 
 
-@pytest.fixture
+@pytest.fixture()
 def cleanup_mock() -> MagicMock:
     return MagicMock()
 
 
-@pytest.fixture
+@pytest.fixture()
 def async_cleanup_mock() -> MagicMock:
     return MagicMock()
 
 
-@pytest.fixture
+@pytest.fixture()
 def generator(cleanup_mock: MagicMock) -> Generator[str, None, None]:
     def func() -> Generator[str, None, None]:
         yield "hello"
@@ -26,7 +26,7 @@ def generator(cleanup_mock: MagicMock) -> Generator[str, None, None]:
     return func()
 
 
-@pytest.fixture
+@pytest.fixture()
 def async_generator(async_cleanup_mock: MagicMock) -> AsyncGenerator[str, None]:
     async def func() -> AsyncGenerator[str, None]:
         yield "world"
@@ -80,7 +80,7 @@ async def test_cleanup_on_closed_raises(generator: Generator[str, None, None]) -
 
 
 async def test_add_on_closed_raises(
-    generator: Generator[str, None, None], async_generator: AsyncGenerator[str, None]
+    generator: Generator[str, None, None], async_generator: AsyncGenerator[str, None],
 ) -> None:
     next(generator)
     group = DependencyCleanupGroup([generator])

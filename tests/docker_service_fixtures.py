@@ -130,7 +130,7 @@ async def redis_service(docker_services: DockerServiceRegistry) -> None:
 async def postgres_responsive(host: str) -> bool:
     try:
         conn = await asyncpg.connect(
-            host=host, port=5423, user="postgres", database="postgres", password="super-secret"
+            host=host, port=5423, user="postgres", database="postgres", password="super-secret",
         )
     except (ConnectionError, asyncpg.CannotConnectNowError):
         return False

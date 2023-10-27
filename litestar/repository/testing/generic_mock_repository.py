@@ -41,7 +41,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
     _model_has_updated_at: bool
 
     def __init__(
-        self, id_factory: Callable[[], Any] = uuid4, tz: tzinfo = timezone.utc, allow_ids_on_add: bool = False, **_: Any
+        self, id_factory: Callable[[], Any] = uuid4, tz: tzinfo = timezone.utc, allow_ids_on_add: bool = False, **_: Any,
     ) -> None:
         super().__init__()
         self._id_factory = id_factory
@@ -93,7 +93,8 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
             The added instance.
         """
         if self.allow_ids_on_add is False and self.get_id_attribute_value(data) is not None:
-            raise ConflictError("`add()` received identified item.")
+            msg = "`add()` received identified item."
+            raise ConflictError(msg)
         self._update_audit_attributes(data, do_created=True)
         if self.allow_ids_on_add is False:
             id_ = self._id_factory()
@@ -113,7 +114,8 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
         now = self._now()
         for data_row in data:
             if self.allow_ids_on_add is False and self.get_id_attribute_value(data_row) is not None:
-                raise ConflictError("`add()` received identified item.")
+                msg = "`add()` received identified item."
+                raise ConflictError(msg)
 
             self._update_audit_attributes(data_row, do_created=True, now=now)
             if self.allow_ids_on_add is False:
@@ -369,7 +371,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
         return list(self.filter_collection_by_kwargs(self.collection, **kwargs).values())
 
     def filter_collection_by_kwargs(  # type:ignore[override]
-        self, collection: MutableMapping[Hashable, ModelT], /, **kwargs: Any
+        self, collection: MutableMapping[Hashable, ModelT], /, **kwargs: Any,
     ) -> MutableMapping[Hashable, ModelT]:
         """Filter the collection by kwargs.
 
@@ -473,7 +475,8 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
             The added instance.
         """
         if self.allow_ids_on_add is False and self.get_id_attribute_value(data) is not None:
-            raise ConflictError("`add()` received identified item.")
+            msg = "`add()` received identified item."
+            raise ConflictError(msg)
         self._update_audit_attributes(data, do_created=True)
         if self.allow_ids_on_add is False:
             id_ = self._id_factory()
@@ -493,7 +496,8 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         now = self._now()
         for data_row in data:
             if self.allow_ids_on_add is False and self.get_id_attribute_value(data_row) is not None:
-                raise ConflictError("`add()` received identified item.")
+                msg = "`add()` received identified item."
+                raise ConflictError(msg)
 
             self._update_audit_attributes(data_row, do_created=True, now=now)
             if self.allow_ids_on_add is False:
@@ -745,7 +749,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         return list(self.filter_collection_by_kwargs(self.collection, **kwargs).values())
 
     def filter_collection_by_kwargs(  # type:ignore[override]
-        self, collection: MutableMapping[Hashable, ModelT], /, **kwargs: Any
+        self, collection: MutableMapping[Hashable, ModelT], /, **kwargs: Any,
     ) -> MutableMapping[Hashable, ModelT]:
         """Filter the collection by kwargs.
 

@@ -107,15 +107,15 @@ class CORSConfig:
             headers["Access-Control-Allow-Credentials"] = str(self.allow_credentials).lower()
         if not self.is_allow_all_headers:
             headers["Access-Control-Allow-Headers"] = ", ".join(
-                sorted(set(self.allow_headers) | DEFAULT_ALLOWED_CORS_HEADERS)  # pyright: ignore
+                sorted(set(self.allow_headers) | DEFAULT_ALLOWED_CORS_HEADERS),  # pyright: ignore
             )
         if self.allow_methods:
             headers["Access-Control-Allow-Methods"] = ", ".join(
                 sorted(
                     {"DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"}
                     if self.is_allow_all_methods
-                    else set(self.allow_methods)
-                )
+                    else set(self.allow_methods),
+                ),
             )
         return headers
 

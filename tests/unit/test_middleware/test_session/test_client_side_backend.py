@@ -23,7 +23,7 @@ from tests.helpers import randbytes
 
 
 @pytest.mark.parametrize(
-    "secret, should_raise",
+    ("secret", "should_raise"),
     [
         [randbytes(16), False],
         [randbytes(24), False],
@@ -43,7 +43,7 @@ def test_secret_validation(secret: bytes, should_raise: bool) -> None:
 
 
 @pytest.mark.parametrize(
-    "key, should_raise",
+    ("key", "should_raise"),
     [
         ["", True],
         ["a", False],
@@ -60,7 +60,7 @@ def test_key_validation(key: str, should_raise: bool) -> None:
 
 
 @pytest.mark.parametrize(
-    "max_age, should_raise",
+    ("max_age", "should_raise"),
     [
         [0, True],
         [-1, True],
@@ -94,7 +94,7 @@ def test_dump_and_load_data(session: dict, cookie_session_backend: ClientSideSes
 
 @mock.patch("time.time", return_value=round(time.time()))
 def test_load_data_should_return_empty_if_session_expired(
-    time_mock: mock.MagicMock, cookie_session_backend: ClientSideSessionBackend
+    time_mock: mock.MagicMock, cookie_session_backend: ClientSideSessionBackend,
 ) -> None:
     """Should return empty dict if session is expired."""
     ciphertext = cookie_session_backend.dump_data(create_session())
@@ -148,7 +148,7 @@ def test_session_cookie_name_matching(cookie_session_backend_config: "CookieBack
 
 @pytest.mark.parametrize("mutate", [False, True])
 def test_load_session_cookies_and_expire_previous(
-    mutate: bool, cookie_session_middleware: SessionMiddleware[ClientSideSessionBackend]
+    mutate: bool, cookie_session_middleware: SessionMiddleware[ClientSideSessionBackend],
 ) -> None:
     """Should load session cookies into session from request and overwrite the previously set cookies with the upcoming
     response.
@@ -197,7 +197,7 @@ def test_load_data_should_raise_invalid_tag_if_tampered_aad(cookie_session_backe
     # The attacker will tamper with the AAD to increase the expiry time of the cookie.
     attacker_chosen_time = 300  # In seconds
     fraudulent_associated_data = encode_json(
-        {"expires_at": round(time.time()) + cookie_session_backend.config.max_age + attacker_chosen_time}
+        {"expires_at": round(time.time()) + cookie_session_backend.config.max_age + attacker_chosen_time},
     )
     decoded = b64decode(b"".join(encrypted_session))
     aad_starts_from = decoded.find(AAD)

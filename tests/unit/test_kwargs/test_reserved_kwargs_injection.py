@@ -67,7 +67,7 @@ person_instance = DataclassPersonFactory.build()
 
 
 @pytest.mark.parametrize(
-    "decorator, http_method, expected_status_code",
+    ("decorator", "http_method", "expected_status_code"),
     [
         (post, HttpMethod.POST, HTTP_201_CREATED),
         (put, HttpMethod.PUT, HTTP_200_OK),
@@ -91,7 +91,7 @@ def test_data_using_model(decorator: Any, http_method: Any, expected_status_code
 
 
 @pytest.mark.parametrize(
-    "decorator, http_method, expected_status_code",
+    ("decorator", "http_method", "expected_status_code"),
     [
         (post, HttpMethod.POST, HTTP_201_CREATED),
         (put, HttpMethod.PUT, HTTP_200_OK),
@@ -128,7 +128,7 @@ def test_request_with_invalid_data(media_type: MediaType) -> None:
 
 
 @pytest.mark.parametrize(
-    "decorator, http_method, expected_status_code",
+    ("decorator", "http_method", "expected_status_code"),
     [
         (get, HttpMethod.GET, HTTP_200_OK),
         (post, HttpMethod.POST, HTTP_201_CREATED),
@@ -153,7 +153,7 @@ def test_path_params(decorator: Any, http_method: Any, expected_status_code: Any
 
 
 @pytest.mark.parametrize(
-    "decorator, http_method, expected_status_code",
+    ("decorator", "http_method", "expected_status_code"),
     [
         (get, HttpMethod.GET, HTTP_200_OK),
         (post, HttpMethod.POST, HTTP_201_CREATED),
@@ -176,7 +176,7 @@ def test_query_params(decorator: Any, http_method: Any, expected_status_code: An
 
 
 @pytest.mark.parametrize(
-    "decorator, http_method, expected_status_code",
+    ("decorator", "http_method", "expected_status_code"),
     [
         (get, HttpMethod.GET, HTTP_200_OK),
         (post, HttpMethod.POST, HTTP_201_CREATED),
@@ -209,7 +209,7 @@ def test_header_params(decorator: Any, http_method: Any, expected_status_code: A
 
 
 @pytest.mark.parametrize(
-    "decorator, http_method, expected_status_code",
+    ("decorator", "http_method", "expected_status_code"),
     [
         (get, HttpMethod.GET, HTTP_200_OK),
         (post, HttpMethod.POST, HTTP_201_CREATED),
@@ -234,7 +234,7 @@ def test_request(decorator: Any, http_method: Any, expected_status_code: Any) ->
 
 
 @pytest.mark.parametrize(
-    "decorator, http_method, expected_status_code",
+    ("decorator", "http_method", "expected_status_code"),
     [
         (get, HttpMethod.GET, HTTP_200_OK),
         (post, HttpMethod.POST, HTTP_201_CREATED),
@@ -259,7 +259,7 @@ def test_scope(decorator: Any, http_method: Any, expected_status_code: Any) -> N
 
 
 @pytest.mark.parametrize(
-    "decorator, http_method, expected_status_code",
+    ("decorator", "http_method", "expected_status_code"),
     [
         (get, HttpMethod.GET, HTTP_200_OK),
         (post, HttpMethod.POST, HTTP_201_CREATED),

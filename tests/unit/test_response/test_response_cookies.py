@@ -92,7 +92,7 @@ def test_response_cookie_documentation_only_not_rendering() -> None:
                 key="my-cookie",
                 description="my-cookie documentations",
                 documentation_only=True,
-            )
+            ),
         ],
     )
     def test_method() -> None:
@@ -116,7 +116,7 @@ def test_response_cookie_documentation_only_not_producing_second_header() -> Non
                 key="my-cookie",
                 description="my-cookie documentations",
                 documentation_only=True,
-            )
+            ),
         ],
     )
     def test_method() -> None:
@@ -139,7 +139,7 @@ def test_response_cookie_is_always_set() -> None:
                     key="test",
                     value=str(uuid4()),
                     expires=10,
-                )
+                ),
             ],
         )
 

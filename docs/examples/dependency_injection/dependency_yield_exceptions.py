@@ -26,7 +26,7 @@ def index(name: str, message: str) -> Dict[str, str]:
     """If `name` is "John", return a message, otherwise raise an error."""
     if name == "John":
         return {name: message}
-    raise ValueError()
+    raise ValueError
 
 
 app = Litestar(route_handlers=[index])

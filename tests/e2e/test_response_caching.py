@@ -81,7 +81,7 @@ def test_default_expiration(mock: MagicMock, frozen_datetime: "Coordinates") -> 
         return mock()  # type: ignore[no-any-return]
 
     with create_test_client(
-        [handler], after_request=after_request_handler, response_cache_config=ResponseCacheConfig(default_expiration=1)
+        [handler], after_request=after_request_handler, response_cache_config=ResponseCacheConfig(default_expiration=1),
     ) as client:
         first_response = client.get("/cached-default")
         second_response = client.get("/cached-default")
@@ -94,9 +94,9 @@ def test_default_expiration(mock: MagicMock, frozen_datetime: "Coordinates") -> 
         assert mock.call_count == 2
 
 
-@pytest.mark.parametrize("expiration,expected_expiration", [(True, None), (10, 10)])
+@pytest.mark.parametrize(("expiration", "expected_expiration"), [(True, None), (10, 10)])
 def test_default_expiration_none(
-    memory_store: MemoryStore, expiration: int, expected_expiration: Optional[int]
+    memory_store: MemoryStore, expiration: int, expected_expiration: Optional[int],
 ) -> None:
     @get("/cached", cache=expiration)
     def handler() -> None:
@@ -202,7 +202,7 @@ def test_does_not_apply_to_non_cached_routes(mock: MagicMock) -> None:
 
 
 @pytest.mark.parametrize(
-    "cache,expect_applied",
+    ("cache", "expect_applied"),
     [
         (True, True),
         (False, False),
@@ -211,7 +211,7 @@ def test_does_not_apply_to_non_cached_routes(mock: MagicMock) -> None:
     ],
 )
 def test_middleware_not_applied_to_non_cached_routes(
-    cache: Union[bool, int, Type[CACHE_FOREVER]], expect_applied: bool
+    cache: Union[bool, int, Type[CACHE_FOREVER]], expect_applied: bool,
 ) -> None:
     @get(path="/", cache=cache)
     def handler() -> None:

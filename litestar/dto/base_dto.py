@@ -65,10 +65,12 @@ class AbstractDTO(Generic[T]):
         if (field_definition.is_optional and len(field_definition.args) > 2) or (
             field_definition.is_union and not field_definition.is_optional
         ):
-            raise InvalidAnnotationException("Unions are currently not supported as type argument to DTOs.")
+            msg = "Unions are currently not supported as type argument to DTOs."
+            raise InvalidAnnotationException(msg)
 
         if field_definition.is_forward_ref:
-            raise InvalidAnnotationException("Forward references are not supported as type argument to DTO")
+            msg = "Forward references are not supported as type argument to DTO"
+            raise InvalidAnnotationException(msg)
 
         # if a configuration is not provided, and the type narrowing is a type var, we don't want to create a subclass
         config = cls.get_dto_config_from_annotated_type(field_definition)
@@ -169,12 +171,13 @@ class AbstractDTO(Generic[T]):
 
             if not model_type_field_definition.is_subclass_of(cls.model_type):
                 if resolved_generic_result := cls.resolve_generic_wrapper_type(
-                    field_definition=model_type_field_definition
+                    field_definition=model_type_field_definition,
                 ):
                     model_type_field_definition, field_definition, wrapper_attribute_name = resolved_generic_result
                 else:
+                    msg = f"DTO narrowed with '{cls.model_type}', handler type is '{field_definition.annotation}'"
                     raise InvalidAnnotationException(
-                        f"DTO narrowed with '{cls.model_type}', handler type is '{field_definition.annotation}'"
+                        msg,
                     )
 
             if backend_cls is None:
@@ -193,7 +196,7 @@ class AbstractDTO(Generic[T]):
 
     @classmethod
     def create_openapi_schema(
-        cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
+        cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator,
     ) -> Reference | Schema:
         """Create an OpenAPI request body.
 
@@ -206,7 +209,7 @@ class AbstractDTO(Generic[T]):
 
     @classmethod
     def resolve_generic_wrapper_type(
-        cls, field_definition: FieldDefinition
+        cls, field_definition: FieldDefinition,
     ) -> tuple[FieldDefinition, FieldDefinition, str] | None:
         """Handle where DTO supported data is wrapped in a generic container type.
 
@@ -240,7 +243,7 @@ class AbstractDTO(Generic[T]):
 
     @staticmethod
     def get_model_type_hints(
-        model_type: type[Any], namespace: dict[str, Any] | None = None
+        model_type: type[Any], namespace: dict[str, Any] | None = None,
     ) -> dict[str, FieldDefinition]:
         """Retrieve type annotations for ``model_type``.
 
@@ -259,7 +262,7 @@ class AbstractDTO(Generic[T]):
                 "DTOConfig": DTOConfig,
                 "RenameStrategy": RenameStrategy,
                 "RequestEncodingType": RequestEncodingType,
-            }
+            },
         )
 
         if model_module := getmodule(model_type):
@@ -294,7 +297,7 @@ class AbstractDTO(Generic[T]):
         """
         if field_definition.is_optional:
             return cls.resolve_model_type(
-                next(t for t in field_definition.inner_types if not t.is_subclass_of(NoneType))
+                next(t for t in field_definition.inner_types if not t.is_subclass_of(NoneType)),
             )
 
         if field_definition.is_subclass_of(DTOData):

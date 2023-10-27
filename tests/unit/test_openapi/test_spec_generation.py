@@ -35,7 +35,7 @@ def test_spec_generation(cls: Any) -> None:
                     "oneOf": [
                         {"type": "null"},
                         {"items": {"$ref": "#/components/schemas/DataclassPet"}, "type": "array"},
-                    ]
+                    ],
                 },
             },
             "type": "object",

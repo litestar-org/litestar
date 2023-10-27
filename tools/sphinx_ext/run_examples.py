@@ -175,7 +175,7 @@ class LiteralInclude(LiteralIncludeOverride):
                     linenothreshold=sys.maxsize,
                 ),
                 literal_block("", result),
-            )
+            ),
         )
 
         return nodes

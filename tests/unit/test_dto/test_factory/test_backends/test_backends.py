@@ -76,7 +76,7 @@ def fx_asgi_connection() -> Request[Any, Any, Any]:
 
 
 def test_backend_parse_raw_json(
-    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend]
+    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend],
 ) -> None:
     assert (
         to_builtins(
@@ -87,7 +87,7 @@ def test_backend_parse_raw_json(
                 wrapper_attribute_name=None,
                 is_data_field=True,
                 handler_id="test",
-            ).parse_raw(b'{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}]}', asgi_connection)
+            ).parse_raw(b'{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}]}', asgi_connection),
         )
         == DESTRUCTURED
     )
@@ -99,7 +99,7 @@ def test_backend_parse_raw_msgpack(dto_factory: type[DataclassDTO], backend_cls:
         ...
 
     asgi_connection = RequestFactory().get(
-        path="/", route_handler=_handler, headers={"Content-Type": MediaType.MESSAGEPACK}
+        path="/", route_handler=_handler, headers={"Content-Type": MediaType.MESSAGEPACK},
     )
     assert (
         to_builtins(
@@ -113,14 +113,14 @@ def test_backend_parse_raw_msgpack(dto_factory: type[DataclassDTO], backend_cls:
             ).parse_raw(
                 b"\x83\xa1a\x01\xa6nested\x82\xa1a\x01\xa1b\xa3two\xabnested_list\x91\x82\xa1a\x01\xa1b\xa3two",
                 asgi_connection,
-            )
+            ),
         )
         == DESTRUCTURED
     )
 
 
 def test_backend_parse_unsupported_media_type(
-    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend]
+    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend],
 ) -> None:
     @get("/", name="handler_id", media_type="text/css")
     def _handler() -> None:
@@ -166,7 +166,7 @@ def test_backend_scalar_annotation(dto_factory: type[DataclassDTO], backend_cls:
 
 
 def test_backend_populate_data_from_builtins(
-    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend]
+    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend],
 ) -> None:
     backend = backend_cls(
         handler_id="test",
@@ -239,7 +239,7 @@ def test_backend_model_name_uniqueness(dto_factory: type[DataclassDTO], backend_
 
 
 def test_backend_populate_data_from_raw(
-    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend]
+    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend],
 ) -> None:
     backend = backend_cls(
         handler_id="test",
@@ -254,7 +254,7 @@ def test_backend_populate_data_from_raw(
 
 
 def test_backend_populate_collection_data_from_raw(
-    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend]
+    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend],
 ) -> None:
     backend = backend_cls(
         handler_id="test",
@@ -269,7 +269,7 @@ def test_backend_populate_collection_data_from_raw(
 
 
 def test_backend_encode_data(
-    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend]
+    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend],
 ) -> None:
     backend = backend_cls(
         handler_id="test",
@@ -284,7 +284,7 @@ def test_backend_encode_data(
 
 
 def test_backend_encode_collection_data(
-    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend]
+    dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend],
 ) -> None:
     backend = backend_cls(
         handler_id="test",
@@ -353,7 +353,7 @@ class Model:
     b: NestedModel
 
 dto_type = DataclassDTO[Model]
-    """
+    """,
     )
 
     class Factory(DataclassDTO):
@@ -409,7 +409,7 @@ class Model:
     b: NestedModel
 
 dto_type = DataclassDTO[Model]
-    """
+    """,
     )
 
     class Factory(DataclassDTO):

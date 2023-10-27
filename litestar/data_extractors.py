@@ -37,7 +37,7 @@ def _obfuscate(values: dict[str, Any], fields_to_obfuscate: set[str]) -> dict[st
 
 
 RequestExtractorField = Literal[
-    "path", "method", "content_type", "headers", "cookies", "query", "path_params", "body", "scheme", "client"
+    "path", "method", "content_type", "headers", "cookies", "query", "path_params", "body", "scheme", "client",
 ]
 
 ResponseExtractorField = Literal["status_code", "headers", "body", "cookies"]
@@ -317,7 +317,7 @@ class ResponseDataExtractor:
         self.obfuscate_headers = {h.lower() for h in (obfuscate_headers or set())}
         self.obfuscate_cookies = {c.lower() for c in (obfuscate_cookies or set())}
         self.extractors: dict[
-            ResponseExtractorField, Callable[[tuple[HTTPResponseStartEvent, HTTPResponseBodyEvent]], Any]
+            ResponseExtractorField, Callable[[tuple[HTTPResponseStartEvent, HTTPResponseBodyEvent]], Any],
         ] = {}
         if extract_body:
             self.extractors["body"] = self.extract_response_body
@@ -405,7 +405,7 @@ class ResponseDataExtractor:
             The Response's cookies dict.
         """
         if cookie_string := ";".join(
-            [x[1].decode("latin-1") for x in filter(lambda x: x[0].lower() == b"set-cookie", messages[0]["headers"])]
+            [x[1].decode("latin-1") for x in filter(lambda x: x[0].lower() == b"set-cookie", messages[0]["headers"])],
         ):
             parsed_cookies = parse_cookie_string(cookie_string)
             return _obfuscate(parsed_cookies, self.obfuscate_cookies) if self.obfuscate_cookies else parsed_cookies

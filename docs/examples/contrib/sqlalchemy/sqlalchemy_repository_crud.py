@@ -55,7 +55,7 @@ async def create_author() -> Author:
             Author(
                 name="F. Scott Fitzgerald",
                 dob=datetime.strptime("1896-09-24", "%Y-%m-%d").date(),
-            )
+            ),
         )
         console.print(f"Created Author record for {obj.name} with primary key {obj.id}.")
         return obj

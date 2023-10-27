@@ -121,7 +121,8 @@ class CSRFMiddleware(MiddlewareProtocol):
             scope["_csrf_token"] = existing_csrf_token  # type: ignore
             await self.app(scope, receive, send)
         else:
-            raise PermissionDeniedException("CSRF token verification failed")
+            msg = "CSRF token verification failed"
+            raise PermissionDeniedException(msg)
 
     def create_send_wrapper(self, send: Send, token: str, csrf_cookie: str | None) -> Send:
         """Wrap ``send`` to handle CSRF validation.

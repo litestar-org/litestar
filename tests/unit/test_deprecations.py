@@ -4,7 +4,7 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    "import_path, import_name",
+    ("import_path", "import_name"),
     (
         (
             "litestar.contrib.repository",

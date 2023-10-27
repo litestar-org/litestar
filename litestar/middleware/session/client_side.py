@@ -29,7 +29,8 @@ try:
     from cryptography.exceptions import InvalidTag
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 except ImportError as e:
-    raise MissingDependencyException("cryptography") from e
+    msg = "cryptography"
+    raise MissingDependencyException(msg) from e
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
@@ -115,7 +116,7 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
                     self.config,
                     exclude_none=True,
                     include={f for f in Cookie.__dict__ if f not in ("key", "secret")},
-                )
+                ),
             )
         return [
             Cookie(
@@ -152,7 +153,7 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
                     self.config,
                     exclude_none=True,
                     include={f for f in Cookie.__dict__ if f not in ("key", "secret")},
-                )
+                ),
             )
             for cookie in self._create_session_cookies(data, cookie_params):
                 headers.add("Set-Cookie", cookie.to_header(header=""))
@@ -170,7 +171,7 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
                     self.config,
                     exclude_none=True,
                     include={f for f in Cookie.__dict__ if f not in ("key", "secret", "max_age")},
-                )
+                ),
             )
             headers.add(
                 "Set-Cookie",
@@ -241,8 +242,11 @@ class CookieBackendConfig(BaseBackendConfig[ClientSideSessionBackend]):
 
     def __post_init__(self) -> None:
         if len(self.key) < 1 or len(self.key) > 256:
-            raise ImproperlyConfiguredException("key must be a string with a length between 1-256")
+            msg = "key must be a string with a length between 1-256"
+            raise ImproperlyConfiguredException(msg)
         if self.max_age < 1:
-            raise ImproperlyConfiguredException("max_age must be greater than 0")
+            msg = "max_age must be greater than 0"
+            raise ImproperlyConfiguredException(msg)
         if len(self.secret) not in {16, 24, 32}:
-            raise ImproperlyConfiguredException("secret length must be 16 (128 bit), 24 (192 bit) or 32 (256 bit)")
+            msg = "secret length must be 16 (128 bit), 24 (192 bit) or 32 (256 bit)"
+            raise ImproperlyConfiguredException(msg)

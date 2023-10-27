@@ -73,7 +73,7 @@ def test_request_data_7() -> None:
 def test_request_data_8() -> None:
     with TestClient(app=app_8) as client:
         response = client.post(
-            "/", files={"cv": ("cv.odf", b"very impressive"), "diploma": ("diploma.pdf", b"the best")}
+            "/", files={"cv": ("cv.odf", b"very impressive"), "diploma": ("diploma.pdf", b"the best")},
         )
         assert response.status_code == 201
         assert response.json() == {"cv": "very impressive", "diploma": "the best"}

@@ -53,7 +53,7 @@ if TYPE_CHECKING:
 pytest_plugins = ["tests.docker_service_fixtures"]
 
 
-@pytest.fixture
+@pytest.fixture()
 def mock() -> MagicMock:
     return MagicMock()
 
@@ -92,13 +92,13 @@ def file_store(tmp_path: Path) -> FileStore:
 
 
 @pytest.fixture(
-    params=[pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")), "memory_store", "file_store"]
+    params=[pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")), "memory_store", "file_store"],
 )
 def store(request: FixtureRequest) -> Store:
     return cast("Store", request.getfixturevalue(request.param))
 
 
-@pytest.fixture
+@pytest.fixture()
 def cookie_session_backend_config() -> CookieBackendConfig:
     return CookieBackendConfig(secret=urandom(16))
 
@@ -112,7 +112,7 @@ def cookie_session_backend(cookie_session_backend_config: CookieBackendConfig) -
     params=[
         pytest.param(lazy_fixture("cookie_session_backend_config"), id="cookie"),
         pytest.param(lazy_fixture("server_side_session_config"), id="server-side"),
-    ]
+    ],
 )
 def session_backend_config(request: pytest.FixtureRequest) -> ServerSideSessionConfig | CookieBackendConfig:
     return cast("Union[ServerSideSessionConfig, CookieBackendConfig]", request.param)
@@ -132,7 +132,7 @@ def server_side_session_backend(server_side_session_config: ServerSideSessionCon
     params=[
         pytest.param("cookie_session_backend", id="cookie"),
         pytest.param("server_side_session_backend", id="server-side"),
-    ]
+    ],
 )
 def session_backend(request: pytest.FixtureRequest) -> BaseSessionBackend:
     return cast("BaseSessionBackend", request.getfixturevalue(request.param))
@@ -143,24 +143,24 @@ def session_backend_config_memory(memory_store: MemoryStore) -> ServerSideSessio
     return ServerSideSessionConfig()
 
 
-@pytest.fixture
+@pytest.fixture()
 def session_middleware(session_backend: BaseSessionBackend, mock_asgi_app: ASGIApp) -> SessionMiddleware[Any]:
     return SessionMiddleware(app=mock_asgi_app, backend=session_backend)
 
 
-@pytest.fixture
+@pytest.fixture()
 def cookie_session_middleware(
-    cookie_session_backend: ClientSideSessionBackend, mock_asgi_app: ASGIApp
+    cookie_session_backend: ClientSideSessionBackend, mock_asgi_app: ASGIApp,
 ) -> SessionMiddleware[ClientSideSessionBackend]:
     return SessionMiddleware(app=mock_asgi_app, backend=cookie_session_backend)
 
 
-@pytest.fixture
+@pytest.fixture()
 def test_client_backend(anyio_backend_name: str) -> AnyIOBackend:
     return cast("AnyIOBackend", anyio_backend_name)
 
 
-@pytest.fixture
+@pytest.fixture()
 def create_scope() -> Callable[..., Scope]:
     def inner(
         *,
@@ -210,12 +210,12 @@ def create_scope() -> Callable[..., Scope]:
     return inner
 
 
-@pytest.fixture
+@pytest.fixture()
 def scope(create_scope: Callable[..., Scope]) -> Scope:
     return create_scope()
 
 
-@pytest.fixture
+@pytest.fixture()
 def create_module(tmp_path: Path, monkeypatch: MonkeyPatch) -> Callable[[str], ModuleType]:
     """Utility fixture for dynamic module creation."""
 
@@ -230,7 +230,7 @@ def create_module(tmp_path: Path, monkeypatch: MonkeyPatch) -> Callable[[str], M
         """
         T = TypeVar("T")
 
-        def not_none(val: T | T | None) -> T:
+        def not_none(val: T | None) -> T:
             assert val is not None
             return val
 
@@ -292,7 +292,7 @@ def enable_warn_implicit_sync_to_thread(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.setenv("LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD", "1")
 
 
-@pytest.fixture
+@pytest.fixture()
 def get_logger() -> GetLogger:
     # due to the limitations of caplog we have to place this call here.
     # we also have to allow propagation.

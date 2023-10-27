@@ -67,7 +67,7 @@ async def test_non_default_store(memory_store: Store) -> None:
         return None
 
     app = Litestar(
-        [handler], middleware=[RateLimitConfig(("second", 10)).middleware], stores={"rate_limit": memory_store}
+        [handler], middleware=[RateLimitConfig(("second", 10)).middleware], stores={"rate_limit": memory_store},
     )
 
     with TestClient(app) as client:
@@ -210,7 +210,7 @@ async def test_rate_limiting_works_with_mounted_apps(tmpdir: "Path") -> None:
     static_files_config = StaticFilesConfig(directories=[tmpdir], path="/src/static")  # pyright: ignore
     rate_limit_config = RateLimitConfig(rate_limit=("minute", 1), exclude=[r"^/src.*$"])
     with create_test_client(
-        [handler], static_files_config=[static_files_config], middleware=[rate_limit_config.middleware]
+        [handler], static_files_config=[static_files_config], middleware=[rate_limit_config.middleware],
     ) as client:
         response = client.get("/not-excluded")
         assert response.status_code == HTTP_200_OK

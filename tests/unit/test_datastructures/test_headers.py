@@ -21,12 +21,12 @@ if TYPE_CHECKING:
     from litestar.types.asgi_types import RawHeaders, RawHeadersList
 
 
-@pytest.fixture
+@pytest.fixture()
 def raw_headers() -> "RawHeadersList":
     return [(b"foo", b"bar")]
 
 
-@pytest.fixture
+@pytest.fixture()
 def raw_headers_tuple() -> "RawHeaders":
     return [(b"foo", b"bar")]
 
@@ -43,12 +43,12 @@ def test_header_container_requires_header_key_being_defined() -> None:
         TestHeader().to_header()
 
 
-@pytest.fixture
+@pytest.fixture()
 def mutable_headers(raw_headers: "RawHeadersList") -> MutableScopeHeaders:
     return MutableScopeHeaders({"headers": raw_headers})
 
 
-@pytest.fixture
+@pytest.fixture()
 def mutable_headers_from_tuple(raw_headers_tuple: "RawHeaders") -> MutableScopeHeaders:
     return MutableScopeHeaders({"headers": raw_headers_tuple})
 
@@ -76,7 +76,7 @@ def test_headers_from_raw_tuple() -> None:
 
 def test_headers_from_scope() -> None:
     headers = Headers.from_scope(
-        HTTPResponseStartEvent(type="http.response.start", status=200, headers=[(b"foo", b"bar"), (b"buzz", b"bup")])
+        HTTPResponseStartEvent(type="http.response.start", status=200, headers=[(b"foo", b"bar"), (b"buzz", b"bup")]),
     )
     assert headers["foo"] == "bar"
     assert headers["buzz"] == "bup"
@@ -102,12 +102,12 @@ def test_mutable_scope_headers_from_iterable() -> None:
 
 def test_mutable_scope_headers_from_message(raw_headers: "RawHeadersList", raw_headers_tuple: "RawHeaders") -> None:
     headers = MutableScopeHeaders.from_message(
-        HTTPResponseStartEvent(type="http.response.start", status=200, headers=raw_headers)
+        HTTPResponseStartEvent(type="http.response.start", status=200, headers=raw_headers),
     )
     assert headers.headers == raw_headers
 
     headers = MutableScopeHeaders.from_message(
-        HTTPResponseStartEvent(type="http.response.start", status=200, headers=raw_headers_tuple)
+        HTTPResponseStartEvent(type="http.response.start", status=200, headers=raw_headers_tuple),
     )
     assert headers.headers == list(raw_headers_tuple)
 
@@ -118,28 +118,28 @@ def test_mutable_scope_headers_from_message_invalid_type() -> None:
 
 
 def test_mutable_scope_headers_add(
-    raw_headers: "RawHeadersList", mutable_headers: MutableScopeHeaders, existing_headers_key: str
+    raw_headers: "RawHeadersList", mutable_headers: MutableScopeHeaders, existing_headers_key: str,
 ) -> None:
     mutable_headers.add(existing_headers_key, "baz")
     assert raw_headers == [(b"foo", b"bar"), (b"foo", b"baz")]
 
 
 def test_mutable_scope_headers_from_tuple_add(
-    raw_headers_tuple: "RawHeaders", mutable_headers_from_tuple: MutableScopeHeaders, existing_headers_key: str
+    raw_headers_tuple: "RawHeaders", mutable_headers_from_tuple: MutableScopeHeaders, existing_headers_key: str,
 ) -> None:
     mutable_headers_from_tuple.add(existing_headers_key, "baz")
     assert list(raw_headers_tuple) == [(b"foo", b"bar"), (b"foo", b"baz")]
 
 
 def test_mutable_scope_headers_getall_singular_value(
-    mutable_headers: MutableScopeHeaders, mutable_headers_from_tuple: MutableScopeHeaders, existing_headers_key: str
+    mutable_headers: MutableScopeHeaders, mutable_headers_from_tuple: MutableScopeHeaders, existing_headers_key: str,
 ) -> None:
     assert mutable_headers.getall(existing_headers_key) == ["bar"]
     assert mutable_headers_from_tuple.getall(existing_headers_key) == ["bar"]
 
 
 def test_mutable_scope_headers_getall_multi_value(
-    mutable_headers: MutableScopeHeaders, mutable_headers_from_tuple: MutableScopeHeaders, existing_headers_key: str
+    mutable_headers: MutableScopeHeaders, mutable_headers_from_tuple: MutableScopeHeaders, existing_headers_key: str,
 ) -> None:
     mutable_headers.add(existing_headers_key, "baz")
     assert mutable_headers.getall("foo") == ["bar", "baz"]
@@ -158,28 +158,28 @@ def test_mutable_scope_headers_getall_not_found_default(mutable_headers: Mutable
 
 
 def test_mutable_scope_headers_extend_header_value(
-    raw_headers: "RawHeadersList", mutable_headers: MutableScopeHeaders
+    raw_headers: "RawHeadersList", mutable_headers: MutableScopeHeaders,
 ) -> None:
     mutable_headers.extend_header_value("foo", "baz")
     assert raw_headers == [(b"foo", b"bar,baz")]
 
 
 def test_mutable_scope_headers_from_tuple_extend_header_value(
-    raw_headers_tuple: "RawHeaders", mutable_headers_from_tuple: MutableScopeHeaders
+    raw_headers_tuple: "RawHeaders", mutable_headers_from_tuple: MutableScopeHeaders,
 ) -> None:
     mutable_headers_from_tuple.extend_header_value("foo", "baz")
     assert list(raw_headers_tuple) == [(b"foo", b"bar,baz")]
 
 
 def test_mutable_scope_headers_extend_header_value_new_header(
-    raw_headers: "RawHeadersList", mutable_headers: MutableScopeHeaders
+    raw_headers: "RawHeadersList", mutable_headers: MutableScopeHeaders,
 ) -> None:
     mutable_headers.extend_header_value("bar", "baz")
     assert raw_headers == [(b"foo", b"bar"), (b"bar", b"baz")]
 
 
 def test_mutable_scope_headers_from_tuple_extend_header_value_new_header(
-    raw_headers_tuple: "RawHeaders", mutable_headers_from_tuple: MutableScopeHeaders
+    raw_headers_tuple: "RawHeaders", mutable_headers_from_tuple: MutableScopeHeaders,
 ) -> None:
     mutable_headers_from_tuple.extend_header_value("bar", "baz")
     assert list(raw_headers_tuple) == [(b"foo", b"bar"), (b"bar", b"baz")]
@@ -195,28 +195,28 @@ def test_mutable_scope_headers_getitem_not_found(mutable_headers: MutableScopeHe
 
 
 def test_mutable_scope_headers_setitem_existing_key(
-    raw_headers: "RawHeadersList", mutable_headers: MutableScopeHeaders, existing_headers_key: str
+    raw_headers: "RawHeadersList", mutable_headers: MutableScopeHeaders, existing_headers_key: str,
 ) -> None:
     mutable_headers[existing_headers_key] = "baz"
     assert raw_headers == [(b"foo", b"baz")]
 
 
 def test_mutable_scope_headers_from_tuple_setitem_existing_key(
-    raw_headers_tuple: "RawHeaders", mutable_headers_from_tuple: MutableScopeHeaders, existing_headers_key: str
+    raw_headers_tuple: "RawHeaders", mutable_headers_from_tuple: MutableScopeHeaders, existing_headers_key: str,
 ) -> None:
     mutable_headers_from_tuple[existing_headers_key] = "baz"
     assert list(raw_headers_tuple) == [(b"foo", b"baz")]
 
 
 def test_mutable_scope_headers_setitem_new_key(
-    raw_headers: "RawHeadersList", mutable_headers: MutableScopeHeaders
+    raw_headers: "RawHeadersList", mutable_headers: MutableScopeHeaders,
 ) -> None:
     mutable_headers["bar"] = "baz"
     assert raw_headers == [(b"foo", b"bar"), (b"bar", b"baz")]
 
 
 def test_mutable_scope_headers_setitem_delitem(
-    raw_headers: "RawHeadersList", mutable_headers: MutableScopeHeaders, existing_headers_key: str
+    raw_headers: "RawHeadersList", mutable_headers: MutableScopeHeaders, existing_headers_key: str,
 ) -> None:
     mutable_headers.add("foo", "baz")
     mutable_headers["bar"] = "baz"
@@ -355,11 +355,10 @@ def test_etag_to_header_weak() -> None:
 
 
 @pytest.mark.parametrize(
-    "accept_value,provided_types,best_match",
+    ("accept_value", "provided_types", "best_match"),
     (
         ("text/plain", ["text/plain"], "text/plain"),
         ("text/plain", [MediaType.TEXT], MediaType.TEXT),
-        ("text/plain", ["text/plain"], "text/plain"),
         ("text/plain", ["text/html"], None),
         ("text/*", ["text/html"], "text/html"),
         ("*/*", ["text/html"], "text/html"),

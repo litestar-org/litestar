@@ -105,4 +105,5 @@ class AbstractAuthenticationMiddleware(ABC):
         Returns:
             An instance of :class:`AuthenticationResult <litestar.middleware.authentication.AuthenticationResult>`.
         """
-        raise NotImplementedError("authenticate_request must be overridden by subclasses")
+        msg = "authenticate_request must be overridden by subclasses"
+        raise NotImplementedError(msg)

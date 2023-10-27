@@ -71,7 +71,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
     @overload
     def __init__(
         self,
-        path: str | None | list[str] | None = None,
+        path: str | None | list[str] = None,
         *,
         connection_lifespan: Callable[..., AbstractAsyncContextManager[Any]] | None = None,
         dependencies: Dependencies | None = None,
@@ -93,7 +93,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
     @overload
     def __init__(
         self,
-        path: str | None | list[str] | None = None,
+        path: str | None | list[str] = None,
         *,
         connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
         dependencies: Dependencies | None = None,
@@ -116,7 +116,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
 
     def __init__(
         self,
-        path: str | None | list[str] | None = None,
+        path: str | None | list[str] = None,
         *,
         connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
         connection_lifespan: Callable[..., AbstractAsyncContextManager[Any]] | None = None,
@@ -170,9 +170,9 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if connection_lifespan and any([on_accept, on_disconnect, connection_accept_handler is not WebSocket.accept]):
+            msg = "connection_lifespan can not be used with connection hooks (on_accept, on_disconnect, connection_accept_handler)"
             raise ImproperlyConfiguredException(
-                "connection_lifespan can not be used with connection hooks "
-                "(on_accept, on_disconnect, connection_accept_handler)",
+                msg,
             )
 
         self._receive_mode: WebSocketMode = receive_mode
@@ -189,7 +189,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         listener_dependencies = dict(dependencies or {})
 
         listener_dependencies["connection_lifespan_dependencies"] = create_stub_dependency(
-            connection_lifespan or self.default_connection_lifespan
+            connection_lifespan or self.default_connection_lifespan,
         )
 
         if self.on_accept:
@@ -216,11 +216,13 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         parsed_signature = ParsedSignature.from_fn(fn, self.resolve_signature_namespace())
 
         if "data" not in parsed_signature.parameters:
-            raise ImproperlyConfiguredException("Websocket listeners must accept a 'data' parameter")
+            msg = "Websocket listeners must accept a 'data' parameter"
+            raise ImproperlyConfiguredException(msg)
 
         for param in ("request", "body"):
             if param in parsed_signature.parameters:
-                raise ImproperlyConfiguredException(f"The {param} kwarg is not supported with websocket listeners")
+                msg = f"The {param} kwarg is not supported with websocket listeners"
+                raise ImproperlyConfiguredException(msg)
 
         # we are manipulating the signature of the decorated function below, so we must store the original values for
         # use elsewhere.
@@ -236,8 +238,8 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
 
         return super().__call__(
             ListenerHandler(
-                listener=self, fn=fn, parsed_signature=parsed_signature, namespace=self.resolve_signature_namespace()
-            )
+                listener=self, fn=fn, parsed_signature=parsed_signature, namespace=self.resolve_signature_namespace(),
+            ),
         )
 
     def _validate_handler_function(self) -> None:
@@ -309,7 +311,7 @@ websocket_listener = WebsocketListenerRouteHandler
 
 
 class WebsocketListener(ABC):
-    path: str | None | list[str] | None = None
+    path: str | None | list[str] = None
     """A path fragment for the route handler function or a sequence of path fragments. If not given defaults to ``/``"""
     dependencies: Dependencies | None = None
     """A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances."""

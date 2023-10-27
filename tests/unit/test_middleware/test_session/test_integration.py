@@ -33,7 +33,7 @@ memory_store = MemoryStore()
 
 
 async def retrieve_user_handler(
-    session: Dict[str, Any], connection: "ASGIConnection[Any, Any, Any, Any]"
+    session: Dict[str, Any], connection: "ASGIConnection[Any, Any, Any, Any]",
 ) -> Optional[User]:
     return MOCK_DB.get(user_id) if (user_id := session.get("user_id")) else None
 

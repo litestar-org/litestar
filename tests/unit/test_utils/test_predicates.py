@@ -65,7 +65,7 @@ class Sub(C):
 
 
 @pytest.mark.parametrize(
-    "args, expected",
+    ("args", "expected"),
     (
         ((Sub, C), True),
         ((Signature.from_callable(cast("Any", naive_handler.fn.value)).return_annotation, C), False),
@@ -79,7 +79,7 @@ def test_is_class_and_subclass(args: Tuple[Any, Any], expected: bool) -> None:
 
 
 @pytest.mark.parametrize(
-    "value, expected",
+    ("value", "expected"),
     (
         (
             (Tuple[int, ...], True),
@@ -109,7 +109,7 @@ def test_is_non_string_iterable(value: Any, expected: bool) -> None:
 
 
 @pytest.mark.parametrize(
-    "value, expected",
+    ("value", "expected"),
     (
         (
             (Tuple[int, ...], True),
@@ -139,16 +139,16 @@ def test_is_non_string_sequence(value: Any, expected: bool) -> None:
 
 
 @pytest.mark.parametrize(
-    "value, expected",
-    ((CursorPagination[str, str], True), (dict, False)),
+    ("value", "expected"),
+    [(CursorPagination[str, str], True), (dict, False)],
 )
 def test_is_generic(value: Any, expected: bool) -> None:
     assert is_generic(value) is expected
 
 
 @pytest.mark.parametrize(
-    "value, expected",
-    (
+    ("value", "expected"),
+    [
         (Dict, True),
         (dict, True),
         (defaultdict, True),
@@ -157,58 +157,58 @@ def test_is_generic(value: Any, expected: bool) -> None:
         (MutableMapping, True),
         (list, False),
         (Iterable, False),
-    ),
+    ],
 )
 def test_is_mapping(value: Any, expected: bool) -> None:
     assert is_mapping(value) is expected
 
 
 @pytest.mark.parametrize(
-    "value, expected",
-    ((Any, True), (Union[Any, str], True), (int, False), (dict, False), (Dict[str, Any], False), (None, False)),
+    ("value", "expected"),
+    [(Any, True), (Union[Any, str], True), (int, False), (dict, False), (Dict[str, Any], False), (None, False)],
 )
 def test_is_any(value: Any, expected: bool) -> None:
     assert is_any(value) is expected
 
 
 @pytest.mark.parametrize(
-    "value, expected",
-    (
+    ("value", "expected"),
+    [
         (Optional[int], True),
         (Optional[Union[int, str]], True),
         (Union[str, None], True),
         (None, False),
         (int, False),
         (Union[int, str], True),
-    ),
+    ],
 )
 def test_is_union(value: Any, expected: bool) -> None:
     assert is_union(value) is expected
 
 
 @pytest.mark.parametrize(
-    "value, expected",
-    (
+    ("value", "expected"),
+    [
         (Optional[int], True),
         (Optional[Union[int, str]], True),
         (Union[str, None], True),
         (None, False),
         (int, False),
         (Union[int, str], False),
-    ),
+    ],
 )
 def test_is_optional_union(value: Any, expected: bool) -> None:
     assert is_optional_union(value) is expected
 
 
 @pytest.mark.parametrize(
-    "value, expected",
-    (
+    ("value", "expected"),
+    [
         (ClassVar[int], True),
         (Annotated[ClassVar[int], "abc"], True),
         (Dict[str, int], False),
         (None, False),
-    ),
+    ],
 )
 def test_is_class_var(value: Any, expected: bool) -> None:
     assert is_class_var(value) is expected
@@ -247,7 +247,7 @@ sync_callable = SyncTestCallable()
 
 
 @pytest.mark.parametrize(
-    "c, exp",
+    ("c", "exp"),
     [
         (async_callable, True),
         (sync_callable, False),
@@ -300,7 +300,7 @@ class NonDataclass:
 
 @pytest.mark.parametrize(
     ("cls", "expected"),
-    ((NonGenericDataclass, True), (GenericDataclass, True), (GenericDataclass[int], True), (NonDataclass, False)),
+    [(NonGenericDataclass, True), (GenericDataclass, True), (GenericDataclass[int], True), (NonDataclass, False)],
 )
 def test_is_dataclass_class(cls: Any, expected: bool) -> None:
     assert is_dataclass_class(cls) is expected

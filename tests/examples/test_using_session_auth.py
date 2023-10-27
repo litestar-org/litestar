@@ -9,7 +9,7 @@ def test_using_session_auth_signup_flow() -> None:
         response = client.get("/user")
         assert response.status_code == HTTP_401_UNAUTHORIZED
         response = client.post(
-            "/signup", json={"name": "Moishe Zuchmir", "email": "moishe@zuchmir.com", "password": "abcd12345"}
+            "/signup", json={"name": "Moishe Zuchmir", "email": "moishe@zuchmir.com", "password": "abcd12345"},
         )
         assert response.status_code == HTTP_201_CREATED
         response = client.get("/user")
@@ -21,7 +21,7 @@ def test_using_session_auth_login_flow() -> None:
         response = client.post("/login", json={"email": "ludwig@zuchmir.com", "password": "abcd12345"})
         assert response.status_code == HTTP_401_UNAUTHORIZED
         response = client.post(
-            "/signup", json={"name": "ludwig Zuchmir", "email": "ludwig@zuchmir.com", "password": "abcd12345"}
+            "/signup", json={"name": "ludwig Zuchmir", "email": "ludwig@zuchmir.com", "password": "abcd12345"},
         )
         assert response.status_code == HTTP_201_CREATED
         response = client.post("/login", json={"email": "ludwig@zuchmir.com", "password": "abcd12345"})

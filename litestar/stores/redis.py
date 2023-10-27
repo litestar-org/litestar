@@ -45,7 +45,7 @@ class RedisStore(NamespacedStore):
         end
 
         return data
-        """
+        """,
         )
 
         # script to delete all keys in the namespace
@@ -60,7 +60,7 @@ class RedisStore(NamespacedStore):
             end
             cursor = tonumber(result[1])
         until cursor == 0
-        """
+        """,
         )
 
     @classmethod
@@ -160,7 +160,8 @@ class RedisStore(NamespacedStore):
             ImproperlyConfiguredException: If no namespace was configured
         """
         if not self.namespace:
-            raise ImproperlyConfiguredException("Cannot perform delete operation: No namespace configured")
+            msg = "Cannot perform delete operation: No namespace configured"
+            raise ImproperlyConfiguredException(msg)
 
         await self._delete_all_script(keys=[], args=[f"{self.namespace}*:*"])
 

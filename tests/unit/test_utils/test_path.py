@@ -4,7 +4,7 @@ from litestar.utils.path import join_paths, normalize_path
 
 
 @pytest.mark.parametrize(
-    "base,fragment, expected",
+    ("base", "fragment", "expected"),
     (
         ("/path/", "sub", "/path/sub"),
         ("/path/", "/sub/", "/path/sub"),
@@ -32,7 +32,7 @@ def test_join_single() -> None:
 
 
 @pytest.mark.parametrize(
-    "base,expected",
+    ("base", "expected"),
     [
         ("", "/"),
         ("/path", "/path"),

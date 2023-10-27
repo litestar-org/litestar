@@ -23,7 +23,7 @@ class CustomOperation(Operation):
                         title="Body",
                         type=OpenAPIType.STRING,
                         example="OK",
-                    )
+                    ),
                 ),
             },
             description="OK is the only accepted value",

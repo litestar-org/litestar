@@ -51,13 +51,17 @@ class CompressionConfig:
 
     def __post_init__(self) -> None:
         if self.minimum_size <= 0:
-            raise ImproperlyConfiguredException("minimum_size must be greater than 0")
+            msg = "minimum_size must be greater than 0"
+            raise ImproperlyConfiguredException(msg)
 
         if self.gzip_compress_level < 0 or self.gzip_compress_level > 9:
-            raise ImproperlyConfiguredException("gzip_compress_level must be a value between 0 and 9")
+            msg = "gzip_compress_level must be a value between 0 and 9"
+            raise ImproperlyConfiguredException(msg)
 
         if self.brotli_quality < 0 or self.brotli_quality > 11:
-            raise ImproperlyConfiguredException("brotli_quality must be a value between 0 and 11")
+            msg = "brotli_quality must be a value between 0 and 11"
+            raise ImproperlyConfiguredException(msg)
 
         if self.brotli_lgwin < 10 or self.brotli_lgwin > 24:
-            raise ImproperlyConfiguredException("brotli_lgwin must be a value between 10 and 24")
+            msg = "brotli_lgwin must be a value between 10 and 24"
+            raise ImproperlyConfiguredException(msg)

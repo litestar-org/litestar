@@ -18,7 +18,7 @@ from litestar import route as route_decorator
 from litestar.exceptions import ImproperlyConfiguredException
 
 
-@pytest.fixture
+@pytest.fixture()
 def controller() -> Type[Controller]:
     class MyController(Controller):
         path = "/test"

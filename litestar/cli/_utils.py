@@ -358,7 +358,8 @@ def _autodiscover_app(cwd: Path) -> LoadedApp:
                 console.print(f"Using Litestar factory [bright_blue]{app_string}")
                 return LoadedApp(app=value(), app_path=f"{app_string}", is_factory=True)
 
-    raise LitestarCLIException("Could not find a Litestar app or factory")
+    msg = "Could not find a Litestar app or factory"
+    raise LitestarCLIException(msg)
 
 
 def _format_is_enabled(value: Any) -> str:

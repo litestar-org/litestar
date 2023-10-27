@@ -10,7 +10,8 @@ __all__ = ("get_route_details_from_scope",)
 try:
     import opentelemetry  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("opentelemetry") from e
+    msg = "opentelemetry"
+    raise MissingDependencyException(msg) from e
 
 from opentelemetry.semconv.trace import SpanAttributes
 

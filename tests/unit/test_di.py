@@ -92,7 +92,7 @@ def test_provider_equality_check() -> None:
 
 
 @pytest.mark.parametrize(
-    "fn, exp",
+    ("fn", "exp"),
     [
         (C.async_class, 31),
         (C.sync_class, 31),

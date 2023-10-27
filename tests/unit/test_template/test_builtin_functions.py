@@ -32,7 +32,7 @@ def test_jinja_url_for(tmp_path: Path) -> None:
         pass
 
     with create_test_client(
-        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
+        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config,
     ) as client:
         Path(tmp_path / "tpl.html").write_text("{{ url_for('simple') }}")
 
@@ -41,7 +41,7 @@ def test_jinja_url_for(tmp_path: Path) -> None:
         assert response.text == "/simple"
 
     with create_test_client(
-        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
+        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config,
     ) as client:
         Path(tmp_path / "tpl.html").write_text("{{ url_for('complex', int_param=100, time_param='18:00') }}")
 
@@ -50,7 +50,7 @@ def test_jinja_url_for(tmp_path: Path) -> None:
         assert response.text == "/complex/100/18:00"
 
     with create_test_client(
-        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
+        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config,
     ) as client:
         # missing route params should cause 500 err
         Path(tmp_path / "tpl.html").write_text("{{ url_for('complex') }}")
@@ -58,7 +58,7 @@ def test_jinja_url_for(tmp_path: Path) -> None:
         assert response.status_code == 500
 
     with create_test_client(
-        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
+        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config,
     ) as client:
         # wrong param type should also cause 500 error
         Path(tmp_path / "tpl.html").write_text("{{ url_for('complex', int_param='100', time_param='18:00') }}")
@@ -67,7 +67,7 @@ def test_jinja_url_for(tmp_path: Path) -> None:
         assert response.status_code == 500
 
     with create_test_client(
-        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
+        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config,
     ) as client:
         Path(tmp_path / "tpl.html").write_text("{{ url_for('non-existent-route') }}")
 
@@ -117,7 +117,7 @@ def test_jinja_url_for_static_asset(tmp_path: Path) -> None:
 
 
 @pytest.mark.parametrize(
-    "builtin, expected_status, expected_text",
+    ("builtin", "expected_status", "expected_text"),
     (
         ("${url_for_static_asset('css', 'main/main.css')}", HTTP_200_OK, "/static/css/main/main.css"),
         ("${url_for_static_asset('non-existent', 'main.css')}", HTTP_500_INTERNAL_SERVER_ERROR, None),
@@ -125,7 +125,7 @@ def test_jinja_url_for_static_asset(tmp_path: Path) -> None:
     ),
 )
 def test_mako_url_for_static_asset(
-    tmp_path: Path, builtin: str, expected_status: int, expected_text: Optional[str]
+    tmp_path: Path, builtin: str, expected_status: int, expected_text: Optional[str],
 ) -> None:
     template_config = TemplateConfig(engine=MakoTemplateEngine, directory=tmp_path)
 
@@ -147,7 +147,7 @@ def test_mako_url_for_static_asset(
 
 
 @pytest.mark.parametrize(
-    "builtin, expected_status, expected_text",
+    ("builtin", "expected_status", "expected_text"),
     (
         ("${url_for('simple')}", HTTP_200_OK, "/simple"),
         ("${url_for('complex', int_param=100, time_param='18:00')}", HTTP_200_OK, None),
@@ -171,7 +171,7 @@ def test_mako_url_for(tmp_path: Path, builtin: str, expected_status: int, expect
         pass
 
     with create_test_client(
-        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
+        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config,
     ) as client:
         # missing route params should cause 500 err
         Path(tmp_path / "tpl.html").write_text(builtin)
@@ -198,7 +198,7 @@ def test_minijinja_url_for(tmp_path: Path) -> None:
         pass
 
     with create_test_client(
-        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
+        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config,
     ) as client:
         Path(tmp_path / "simple.html").write_text("{{ url_for('simple') }}")
 
@@ -207,10 +207,10 @@ def test_minijinja_url_for(tmp_path: Path) -> None:
         assert response.text == "&#x2f;simple"
 
     with create_test_client(
-        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
+        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config,
     ) as client:
         Path(tmp_path / "complex_args_kwargs.html").write_text(
-            "{{ url_for('complex', int_param=100, time_param='18:00') }}"
+            "{{ url_for('complex', int_param=100, time_param='18:00') }}",
         )
 
         response = client.get("/complex_args_kwargs.html")
@@ -218,7 +218,7 @@ def test_minijinja_url_for(tmp_path: Path) -> None:
         assert response.text == "&#x2f;complex&#x2f;100&#x2f;18:00"
 
     with create_test_client(
-        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
+        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config,
     ) as client:
         # missing route params should cause 500 err
         Path(tmp_path / "complex.html").write_text("{{ url_for('complex') }}")
@@ -226,18 +226,18 @@ def test_minijinja_url_for(tmp_path: Path) -> None:
         assert response.status_code == 500
 
     with create_test_client(
-        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
+        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config,
     ) as client:
         # wrong param type should also cause 500 error
         Path(tmp_path / "complex_wrong_type.html").write_text(
-            "{{ url_for('complex', int_param='100', time_param='18:00') }}"
+            "{{ url_for('complex', int_param='100', time_param='18:00') }}",
         )
 
         response = client.get("/complex_wrong_type.html")
         assert response.status_code == 500
 
     with create_test_client(
-        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config
+        route_handlers=[simple_handler, complex_handler, tpl_renderer], template_config=template_config,
     ) as client:
         Path(tmp_path / "non_existent.html").write_text("{{ url_for('non-existent-route') }}")
 

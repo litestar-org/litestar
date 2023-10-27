@@ -73,7 +73,7 @@ def test_exclude_by_pattern() -> None:
         await response(scope, receive, send)
 
     with create_test_client(
-        [first_handler, second_handler, handler], middleware=[DefineMiddleware(SubclassMiddleware)]
+        [first_handler, second_handler, handler], middleware=[DefineMiddleware(SubclassMiddleware)],
     ) as client:
         response = client.get("/123")
         assert "test" not in response.headers
@@ -111,7 +111,7 @@ def test_exclude_by_pattern_list() -> None:
         return {"hello": "world"}
 
     with create_test_client(
-        [first_handler, second_handler, third_handler], middleware=[DefineMiddleware(SubclassMiddleware)]
+        [first_handler, second_handler, third_handler], middleware=[DefineMiddleware(SubclassMiddleware)],
     ) as client:
         response = client.get("/123")
         assert "test" not in response.headers

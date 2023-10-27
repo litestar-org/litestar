@@ -120,7 +120,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
             serialised_data = self.serialize_data(scope_session, scope)
             await self.set(session_id=session_id, data=serialised_data, store=store)
             headers.add(
-                "Set-Cookie", Cookie(value=session_id, key=self.config.key, **cookie_params).to_header(header="")
+                "Set-Cookie", Cookie(value=session_id, key=self.config.key, **cookie_params).to_header(header=""),
             )
 
     async def load_from_connection(self, connection: ASGIConnection) -> dict[str, Any]:
@@ -192,9 +192,11 @@ class ServerSideSessionConfig(BaseBackendConfig[ServerSideSessionBackend]):
 
     def __post_init__(self) -> None:
         if len(self.key) < 1 or len(self.key) > 256:
-            raise ImproperlyConfiguredException("key must be a string with a length between 1-256")
+            msg = "key must be a string with a length between 1-256"
+            raise ImproperlyConfiguredException(msg)
         if self.max_age < 1:
-            raise ImproperlyConfiguredException("max_age must be greater than 0")
+            msg = "max_age must be greater than 0"
+            raise ImproperlyConfiguredException(msg)
 
     def get_store_from_app(self, app: Litestar) -> Store:
         """Get the store defined in :attr:`store` from an :class:`Litestar <.app.Litestar>` instance"""

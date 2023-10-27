@@ -14,7 +14,7 @@ test_path = "/test"
 
 
 @pytest.mark.parametrize(
-    "layer, expected",
+    ("layer", "expected"),
     [[0, handler_response], [1, controller_response], [2, router_response], [3, app_response], [None, Response]],
 )
 def test_response_class_resolution_of_layers(layer: Optional[int], expected: Response) -> None:

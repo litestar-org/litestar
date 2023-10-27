@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 def create_request_body(
-    route_handler: BaseRouteHandler, field_definition: FieldDefinition, schema_creator: SchemaCreator
+    route_handler: BaseRouteHandler, field_definition: FieldDefinition, schema_creator: SchemaCreator,
 ) -> RequestBody | None:
     """Create a RequestBody model for the given RouteHandler or return None."""
     media_type: RequestEncodingType | str = RequestEncodingType.JSON
@@ -26,7 +26,7 @@ def create_request_body(
 
     if dto := route_handler.resolve_data_dto():
         schema = dto.create_openapi_schema(
-            field_definition=field_definition, handler_id=route_handler.handler_id, schema_creator=schema_creator
+            field_definition=field_definition, handler_id=route_handler.handler_id, schema_creator=schema_creator,
         )
     else:
         schema = schema_creator.for_field_definition(field_definition)

@@ -58,7 +58,8 @@ class BaseEventEmitterBackend(AsyncContextManager["BaseEventEmitterBackend"], AB
         Returns:
             None
         """
-        raise NotImplementedError("not implemented")
+        msg = "not implemented"
+        raise NotImplementedError(msg)
 
 
 class SimpleEventEmitter(BaseEventEmitterBackend):
@@ -127,10 +128,12 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
             None
         """
         if not (self._send_stream and self._exit_stack):
-            raise RuntimeError("Emitter not initialized")
+            msg = "Emitter not initialized"
+            raise RuntimeError(msg)
 
         if listeners := self.listeners.get(event_id):
             for listener in listeners:
                 self._send_stream.send_nowait((listener.fn, args, kwargs))
             return
-        raise ImproperlyConfiguredException(f"no event listeners are registered for event ID: {event_id}")
+        msg = f"no event listeners are registered for event ID: {event_id}"
+        raise ImproperlyConfiguredException(msg)

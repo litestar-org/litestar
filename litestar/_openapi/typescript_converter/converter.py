@@ -93,7 +93,8 @@ def deref_container(open_api_container: T, components: Components) -> T:
 
     if isinstance(open_api_container, list):
         return cast("T", _deref_list(copy(open_api_container), components))
-    raise ValueError(f"unexpected container type {type(open_api_container).__name__}")  # pragma: no cover
+    msg = f"unexpected container type {type(open_api_container).__name__}"
+    raise ValueError(msg)  # pragma: no cover
 
 
 def resolve_ref(ref: Reference, components: Components) -> Schema:
@@ -111,8 +112,9 @@ def resolve_ref(ref: Reference, components: Components) -> Schema:
         current = current[path] if isinstance(current, dict) else getattr(current, path, None)
 
     if not isinstance(current, Schema):  # pragma: no cover
+        msg = f"unexpected value type, expected schema but received {type(current).__name__ if current is not None else 'None'}"
         raise ValueError(
-            f"unexpected value type, expected schema but received {type(current).__name__ if current is not None else 'None'}"
+            msg,
         )
 
     return current
@@ -263,9 +265,11 @@ def convert_openapi_to_typescript(openapi_schema: OpenAPI, namespace: str = "API
         A string representing the generated types.
     """
     if not openapi_schema.paths:  # pragma: no cover
-        raise ValueError("OpenAPI schema has no paths")
+        msg = "OpenAPI schema has no paths"
+        raise ValueError(msg)
     if not openapi_schema.components:  # pragma: no cover
-        raise ValueError("OpenAPI schema has no components")
+        msg = "OpenAPI schema has no components"
+        raise ValueError(msg)
 
     operations: list[TypeScriptNamespace] = []
 
@@ -302,7 +306,7 @@ def convert_openapi_to_typescript(openapi_schema: OpenAPI, namespace: str = "API
                     TypeScriptNamespace(
                         normalize_typescript_namespace(operation.operation_id, allow_quoted=False),
                         tuple(container for container in (*params, request_body, *responses) if container),
-                    )
+                    ),
                 )
 
     return TypeScriptNamespace(namespace, tuple(operations))

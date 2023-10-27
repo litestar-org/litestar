@@ -49,7 +49,7 @@ def test_schema_with_security_scheme_defined(public_route: "HTTPRouteHandler") -
                     "BearerToken": SecurityScheme(
                         type="http",
                         scheme="bearer",
-                    )
+                    ),
                 },
             ),
             security=[{"BearerToken": []}],
@@ -66,7 +66,7 @@ def test_schema_with_security_scheme_defined(public_route: "HTTPRouteHandler") -
         "BearerToken": {
             "type": "http",
             "scheme": "bearer",
-        }
+        },
     }
 
     assert schema_dict.get("security", []) == [{"BearerToken": []}]
@@ -83,7 +83,7 @@ def test_schema_with_route_security_overridden(protected_route: "HTTPRouteHandle
                     "BearerToken": SecurityScheme(
                         type="http",
                         scheme="bearer",
-                    )
+                    ),
                 },
             ),
         ),

@@ -52,7 +52,7 @@ def test_route_handler_property() -> None:
 
 
 @pytest.mark.parametrize(
-    "headers", [[(b"test", b"hello-world")], {"test": "hello-world"}, Headers(headers={"test": "hello-world"})]
+    "headers", [[(b"test", b"hello-world")], {"test": "hello-world"}, Headers(headers={"test": "hello-world"})],
 )
 async def test_accept_set_headers(headers: Any) -> None:
     @websocket("/")
@@ -232,7 +232,7 @@ async def consume_gen(generator: AsyncGenerator[Any, Any], count: int, timeout: 
         return await consumer()
 
 
-@pytest.mark.parametrize("mode,data", [("text", ["foo", "bar"]), ("binary", [b"foo", b"bar"])])
+@pytest.mark.parametrize(("mode", "data"), [("text", ["foo", "bar"]), ("binary", [b"foo", b"bar"])])
 def test_iter_data(mode: WebSocketMode, data: list[str | bytes]) -> None:
     values = []
 

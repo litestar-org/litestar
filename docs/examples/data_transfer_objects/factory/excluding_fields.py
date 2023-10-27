@@ -42,7 +42,7 @@ config = DTOConfig(
         "address.street",
         "pets.0.id",
         "pets.0.user_id",
-    }
+    },
 )
 ReadUserDTO = SQLAlchemyDTO[Annotated[User, config]]
 

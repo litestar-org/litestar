@@ -53,7 +53,8 @@ class CompressionFacade:
             try:
                 import brotli  # noqa: F401
             except ImportError as e:
-                raise MissingDependencyException("brotli") from e
+                msg = "brotli"
+                raise MissingDependencyException(msg) from e
 
             from brotli import MODE_FONT, MODE_GENERIC, MODE_TEXT, Compressor
 
@@ -113,7 +114,7 @@ class CompressionMiddleware(AbstractMiddleware):
             config: An instance of CompressionConfig.
         """
         super().__init__(
-            app=app, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key, scopes={ScopeType.HTTP}
+            app=app, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key, scopes={ScopeType.HTTP},
         )
         self.config = config
 
@@ -135,7 +136,7 @@ class CompressionMiddleware(AbstractMiddleware):
                 scope,
                 receive,
                 self.create_compression_send_wrapper(
-                    send=send, compression_encoding=CompressionEncoding.BROTLI, scope=scope
+                    send=send, compression_encoding=CompressionEncoding.BROTLI, scope=scope,
                 ),
             )
             return
@@ -147,7 +148,7 @@ class CompressionMiddleware(AbstractMiddleware):
                 scope,
                 receive,
                 self.create_compression_send_wrapper(
-                    send=send, compression_encoding=CompressionEncoding.GZIP, scope=scope
+                    send=send, compression_encoding=CompressionEncoding.GZIP, scope=scope,
                 ),
             )
             return

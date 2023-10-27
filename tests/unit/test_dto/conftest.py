@@ -19,7 +19,7 @@ from . import Model
 T = TypeVar("T", bound=Model)
 
 
-@pytest.fixture
+@pytest.fixture()
 def ModelDataDTO() -> type[AbstractDTO]:
     class DTOCls(AbstractDTO[Model]):
         def decode_builtins(self, value: Any) -> Model:
@@ -33,7 +33,7 @@ def ModelDataDTO() -> type[AbstractDTO]:
 
         @classmethod
         def create_openapi_schema(
-            cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
+            cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator,
         ) -> Reference | Schema:
             return Schema()
 
@@ -68,7 +68,7 @@ def ModelReturnDTO() -> type[AbstractDTO]:
 
         @classmethod
         def create_openapi_schema(
-            cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
+            cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator,
         ) -> Reference | Schema:
             return Schema()
 

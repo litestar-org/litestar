@@ -83,7 +83,7 @@ def test_media_type(media_type: Union[MediaType, str], tmp_path: Path) -> None:
         return Template(template_name="hello.tpl")
 
     with create_test_client(
-        [index], template_config=TemplateConfig(directory=tmp_path, engine=JinjaTemplateEngine)
+        [index], template_config=TemplateConfig(directory=tmp_path, engine=JinjaTemplateEngine),
     ) as client:
         res = client.get("/")
         assert res.status_code == 200
@@ -93,7 +93,7 @@ def test_media_type(media_type: Union[MediaType, str], tmp_path: Path) -> None:
 
 
 @pytest.mark.parametrize(
-    "extension,expected_type",
+    ("extension", "expected_type"),
     [
         (".json", MediaType.JSON),
         (".html", MediaType.HTML),
@@ -116,7 +116,7 @@ def test_media_type_inferred(extension: str, expected_type: MediaType, tmp_path:
         return Template(template_name=tpl_name)
 
     with create_test_client(
-        [index], template_config=TemplateConfig(directory=tmp_path, engine=JinjaTemplateEngine)
+        [index], template_config=TemplateConfig(directory=tmp_path, engine=JinjaTemplateEngine),
     ) as client:
         res = client.get("/")
         assert res.status_code == 200
@@ -134,7 +134,7 @@ def test_before_request_handler_content_type(tmp_path: Path) -> None:
         return Template(template_name="about.html")
 
     with create_test_client(
-        [index], template_config=TemplateConfig(directory=tmp_path, engine=JinjaTemplateEngine)
+        [index], template_config=TemplateConfig(directory=tmp_path, engine=JinjaTemplateEngine),
     ) as client:
         res = client.get("/")
         assert res.status_code == 200

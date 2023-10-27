@@ -47,13 +47,15 @@ def parse_version(raw_version: str) -> Version:
     elif len(parts) == 5:
         major, minor, patch, release_level, serial = parts  # type: ignore[assignment]
         if release_level not in _PRE_RELEASE_TAGS:
-            raise ValueError(f"Invalid release level: {release_level}")
+            msg = f"Invalid release level: {release_level}"
+            raise ValueError(msg)
         release_level = _PRE_RELEASE_TAGS_CONVERSIONS.get(release_level, release_level)
     else:
-        raise ValueError(f"Invalid version: {raw_version}")
+        msg = f"Invalid version: {raw_version}"
+        raise ValueError(msg)
 
     return Version(
-        major=int(major), minor=int(minor), patch=int(patch), release_level=release_level, serial=int(serial)
+        major=int(major), minor=int(minor), patch=int(patch), release_level=release_level, serial=int(serial),
     )
 
 

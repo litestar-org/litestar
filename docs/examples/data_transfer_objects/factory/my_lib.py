@@ -17,4 +17,5 @@ Base: _Base
 def __getattr__(name: str) -> Any:
     if name == "Base":
         return type("Base", (CommonTableAttributes, UUIDPrimaryKey, DeclarativeBase), {"registry": create_registry()})
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    msg = f"module {__name__!r} has no attribute {name!r}"
+    raise AttributeError(msg)

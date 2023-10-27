@@ -19,7 +19,7 @@ def test_staticfiles_is_html_mode(tmpdir: "Path", file_system: "FileSystemProtoc
     path = tmpdir / "index.html"
     path.write_text("content", "utf-8")
     static_files_config = StaticFilesConfig(
-        path="/static", directories=[tmpdir], html_mode=True, file_system=file_system
+        path="/static", directories=[tmpdir], html_mode=True, file_system=file_system,
     )
     with create_test_client([], static_files_config=[static_files_config]) as client:
         response = client.get("/static")
@@ -34,7 +34,7 @@ def test_staticfiles_is_html_mode_serves_404_when_present(tmpdir: "Path", file_s
     path = tmpdir / "404.html"
     path.write_text("not found", "utf-8")
     static_files_config = StaticFilesConfig(
-        path="/static", directories=[tmpdir], html_mode=True, file_system=file_system
+        path="/static", directories=[tmpdir], html_mode=True, file_system=file_system,
     )
     with create_test_client([], static_files_config=[static_files_config]) as client:
         response = client.get("/static")
@@ -45,10 +45,10 @@ def test_staticfiles_is_html_mode_serves_404_when_present(tmpdir: "Path", file_s
 
 @pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), LocalFileSystem()))
 def test_staticfiles_is_html_mode_raises_exception_when_no_404_html_is_present(
-    tmpdir: "Path", file_system: "FileSystemProtocol"
+    tmpdir: "Path", file_system: "FileSystemProtocol",
 ) -> None:
     static_files_config = StaticFilesConfig(
-        path="/static", directories=[tmpdir], html_mode=True, file_system=file_system
+        path="/static", directories=[tmpdir], html_mode=True, file_system=file_system,
     )
     with create_test_client([], static_files_config=[static_files_config]) as client:
         response = client.get("/static")

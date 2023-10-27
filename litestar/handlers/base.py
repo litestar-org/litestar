@@ -142,7 +142,7 @@ class BaseRouteHandler:
         self.owner: Controller | Router | None = None
         self.return_dto = return_dto
         self.signature_namespace = add_types_to_signature_namespace(
-            signature_types or [], dict(signature_namespace or {})
+            signature_types or [], dict(signature_namespace or {}),
         )
         self.type_decoders = type_decoders
         self.type_encoders = type_encoders
@@ -210,7 +210,8 @@ class BaseRouteHandler:
             Handler function
         """
         if not hasattr(self, "_fn"):
-            raise ImproperlyConfiguredException("No callable has been registered for this handler")
+            msg = "No callable has been registered for this handler"
+            raise ImproperlyConfiguredException(msg)
         return self._fn
 
     @property
@@ -224,7 +225,7 @@ class BaseRouteHandler:
         """
         if self._parsed_fn_signature is Empty:
             self._parsed_fn_signature = ParsedSignature.from_fn(
-                unwrap_partial(self.fn.value), self.resolve_signature_namespace()
+                unwrap_partial(self.fn.value), self.resolve_signature_namespace(),
             )
 
         return cast("ParsedSignature", self._parsed_fn_signature)
@@ -348,7 +349,7 @@ class BaseRouteHandler:
                         provider = Provide(provider)
 
                     self._validate_dependency_is_unique(
-                        dependencies=self._resolved_dependencies, key=key, provider=provider
+                        dependencies=self._resolved_dependencies, key=key, provider=provider,
                     )
 
                     if not getattr(provider, "signature_model", None):
@@ -356,7 +357,7 @@ class BaseRouteHandler:
                             dependency_name_set=self.dependency_name_set,
                             fn=provider.dependency.value,
                             parsed_signature=ParsedSignature.from_fn(
-                                unwrap_partial(provider.dependency.value), self.resolve_signature_namespace()
+                                unwrap_partial(provider.dependency.value), self.resolve_signature_namespace(),
                             ),
                             data_dto=self.resolve_data_dto(),
                             type_decoders=self.resolve_type_decoders(),
@@ -501,9 +502,9 @@ class BaseRouteHandler:
         """Validate that a given provider has not been already defined under a different key."""
         for dependency_key, value in dependencies.items():
             if provider == value:
+                msg = f"Provider for key {key} is already defined under the different key {dependency_key}. If you wish to override a provider, it must have the same key."
                 raise ImproperlyConfiguredException(
-                    f"Provider for key {key} is already defined under the different key {dependency_key}. "
-                    f"If you wish to override a provider, it must have the same key."
+                    msg,
                 )
 
     def on_registration(self, app: Litestar) -> None:

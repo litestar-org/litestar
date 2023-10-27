@@ -85,13 +85,13 @@ def fx_backend(
 
         @classmethod
         def generate_field_definitions(
-            cls, model_type: type[DataclassProtocol]
+            cls, model_type: type[DataclassProtocol],
         ) -> Generator[DTOFieldDefinition, None, None]:
             yield from field_definitions
 
     class _Backend(backend_cls):  # type: ignore[valid-type,misc]
         def create_transfer_model_type(
-            self, model_name: str, field_definitions: tuple[TransferDTOFieldDefinition, ...]
+            self, model_name: str, field_definitions: tuple[TransferDTOFieldDefinition, ...],
         ) -> type[Any]:
             """Create a model for data transfer.
 
@@ -148,7 +148,7 @@ def create_transfer_type(
     nested_depth: int = 0,
 ) -> TransferType:
     return backend._create_transfer_type(
-        field_definition, exclude or set(), include or set(), field_name, unique_name, nested_depth
+        field_definition, exclude or set(), include or set(), field_name, unique_name, nested_depth,
     )
 
 

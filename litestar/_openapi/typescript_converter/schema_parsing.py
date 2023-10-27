@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from typing_extensions import TypeGuard
 
 openapi_typescript_equivalent_types = Literal[
-    "string", "boolean", "number", "null", "Record<string, unknown>", "unknown[]"
+    "string", "boolean", "number", "null", "Record<string, unknown>", "unknown[]",
 ]
 
 openapi_to_typescript_type_map: dict[OpenAPIType, openapi_typescript_equivalent_types] = {
@@ -51,7 +51,8 @@ def normalize_typescript_namespace(value: str, allow_quoted: bool) -> str:
         A normalized value
     """
     if not allow_quoted and not value[0].isalpha() and value[0] not in {"_", "$"}:
-        raise ValueError(f"invalid typescript namespace {value}")
+        msg = f"invalid typescript namespace {value}"
+        raise ValueError(msg)
     if allow_quoted:
         return value if allowed_key_re.fullmatch(value) else f'"{value}"'
     return invalid_namespace_re.sub("", value)
@@ -80,7 +81,7 @@ def create_interface(properties: dict[str, Schema], required: set[str] | None, n
 
 
 def create_interface(
-    properties: dict[str, Schema], required: set[str] | None = None, name: str | None = None
+    properties: dict[str, Schema], required: set[str] | None = None, name: str | None = None,
 ) -> TypeScriptAnonymousInterface | TypeScriptInterface:
     """Create a typescript interface from the given schema.properties values.
 
@@ -122,11 +123,12 @@ def parse_type_schema(schema: Schema) -> TypeScriptPrimitive | TypeScriptLiteral
         return TypeScriptLiteral(value=schema.const)
     if isinstance(schema.type, list):
         return TypeScriptUnion(
-            tuple(TypeScriptPrimitive(openapi_to_typescript_type_map[s_type]) for s_type in schema.type)
+            tuple(TypeScriptPrimitive(openapi_to_typescript_type_map[s_type]) for s_type in schema.type),
         )
     if schema.type in openapi_to_typescript_type_map and isinstance(schema.type, OpenAPIType):
         return TypeScriptPrimitive(openapi_to_typescript_type_map[schema.type])
-    raise TypeError(f"received an unexpected openapi type: {schema.type}")  # pragma: no cover
+    msg = f"received an unexpected openapi type: {schema.type}"
+    raise TypeError(msg)  # pragma: no cover
 
 
 def parse_schema(schema: Schema) -> TypeScriptElement:

@@ -40,7 +40,8 @@ class FileStore(NamespacedStore):
     def with_namespace(self, namespace: str) -> FileStore:
         """Return a new instance of :class:`FileStore`, using  a sub-path of the current store's path."""
         if not namespace.isalnum():
-            raise ValueError(f"Invalid namespace: {namespace!r}")
+            msg = f"Invalid namespace: {namespace!r}"
+            raise ValueError(msg)
         return FileStore(self.path / namespace)
 
     def _path_from_key(self, key: str) -> Path:

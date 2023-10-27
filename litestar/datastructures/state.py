@@ -24,7 +24,7 @@ class ImmutableState(Mapping[str, Any]):
     _state: dict[str, Any]
 
     def __init__(
-        self, state: ImmutableState | Mapping[str, Any] | Iterable[tuple[str, Any]], deep_copy: bool = True
+        self, state: ImmutableState | Mapping[str, Any] | Iterable[tuple[str, Any]], deep_copy: bool = True,
     ) -> None:
         """Initialize an ``ImmutableState`` instance.
 

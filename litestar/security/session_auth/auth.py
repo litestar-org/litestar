@@ -47,7 +47,7 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
     exclude_opt_key: str = field(default="exclude_from_auth")
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
     exclude_http_methods: Sequence[Method] | None = field(
-        default_factory=lambda: cast("Sequence[Method]", ["OPTIONS", "HEAD"])
+        default_factory=lambda: cast("Sequence[Method]", ["OPTIONS", "HEAD"]),
     )
     """A sequence of http methods that do not require authentication. Defaults to ['OPTIONS', 'HEAD']"""
     scopes: Scopes | None = field(default=None)
@@ -121,8 +121,8 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
                     name=self.session_backend_config.key,
                     security_scheme_in="cookie",  # pyright: ignore
                     description="Session cookie authentication.",
-                )
-            }
+                ),
+            },
         )
 
     @property

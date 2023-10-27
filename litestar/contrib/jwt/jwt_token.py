@@ -52,7 +52,8 @@ class Token:
 
     def __post_init__(self) -> None:
         if len(self.sub) < 1:
-            raise ImproperlyConfiguredException("sub must be a string with a length greater than 0")
+            msg = "sub must be a string with a length greater than 0"
+            raise ImproperlyConfiguredException(msg)
 
         if isinstance(self.exp, datetime) and (
             (exp := _normalize_datetime(self.exp)).timestamp()
@@ -60,7 +61,8 @@ class Token:
         ):
             self.exp = exp
         else:
-            raise ImproperlyConfiguredException("exp value must be a datetime in the future")
+            msg = "exp value must be a datetime in the future"
+            raise ImproperlyConfiguredException(msg)
 
         if isinstance(self.iat, datetime) and (
             (iat := _normalize_datetime(self.iat)).timestamp()
@@ -68,7 +70,8 @@ class Token:
         ):
             self.iat = iat
         else:
-            raise ImproperlyConfiguredException("iat must be a current or past time")
+            msg = "iat must be a current or past time"
+            raise ImproperlyConfiguredException(msg)
 
     @classmethod
     def decode(cls, encoded_token: str, secret: str | dict[str, str], algorithm: str) -> Self:
@@ -96,7 +99,8 @@ class Token:
                 extras[key] = payload.pop(key)
             return cls(exp=exp, iat=iat, **payload, extras=extras)
         except (KeyError, JWTError, ImproperlyConfiguredException) as e:
-            raise NotAuthorizedException("Invalid token") from e
+            msg = "Invalid token"
+            raise NotAuthorizedException(msg) from e
 
     def encode(self, secret: str, algorithm: str) -> str:
         """Encode the token instance into a string.
@@ -113,7 +117,8 @@ class Token:
         """
         try:
             return jwt.encode(
-                claims={k: v for k, v in asdict(self).items() if v is not None}, key=secret, algorithm=algorithm
+                claims={k: v for k, v in asdict(self).items() if v is not None}, key=secret, algorithm=algorithm,
             )
         except (JWTError, JWSError) as e:
-            raise ImproperlyConfiguredException("Failed to encode token") from e
+            msg = "Failed to encode token"
+            raise ImproperlyConfiguredException(msg) from e

@@ -49,7 +49,7 @@ class AsyncCallable(Generic[P, T]):
         self.is_method = ismethod(fn) or (callable(fn) and ismethod(fn.__call__))  # type: ignore
         self.num_expected_args = len(getfullargspec(fn).args) - (1 if self.is_method else 0)
         self.ref = Ref[Callable[..., Awaitable[T]]](
-            fn if is_async_callable(fn) else async_partial(fn)  # pyright: ignore
+            fn if is_async_callable(fn) else async_partial(fn),  # pyright: ignore
         )
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
@@ -67,9 +67,9 @@ class AsyncCallable(Generic[P, T]):
     @property
     def parsed_signature(self) -> ParsedSignature:
         if self._parsed_signature is Empty:
+            msg = "Parsed signature is not set. Call `set_parsed_signature()` at an appropriate time during handlerregistration."
             raise ImproperlyConfiguredException(
-                "Parsed signature is not set. Call `set_parsed_signature()` at an appropriate time during handler"
-                "registration."
+                msg,
             )
         return cast("ParsedSignature", self._parsed_signature)
 

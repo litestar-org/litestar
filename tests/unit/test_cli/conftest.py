@@ -4,7 +4,7 @@ import importlib.util
 import sys
 from pathlib import Path
 from shutil import rmtree
-from typing import TYPE_CHECKING, Callable, Generator, Protocol, cast
+from typing import TYPE_CHECKING, Callable, Protocol, cast
 
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -35,7 +35,7 @@ def root_command() -> LitestarGroup:
     return cast("LitestarGroup", importlib.reload(litestar.cli.main).litestar_group)
 
 
-@pytest.fixture
+@pytest.fixture()
 def patch_autodiscovery_paths(request: FixtureRequest) -> Callable[[list[str]], None]:
     def patcher(paths: list[str]) -> None:
         from litestar.cli._utils import AUTODISCOVERY_FILE_NAMES
@@ -51,7 +51,7 @@ def patch_autodiscovery_paths(request: FixtureRequest) -> Callable[[list[str]], 
     return patcher
 
 
-@pytest.fixture
+@pytest.fixture()
 def tmp_project_dir(monkeypatch: MonkeyPatch, tmp_path: Path) -> Path:
     path = tmp_path / "project_dir"
     path.mkdir(exist_ok=True)
@@ -78,7 +78,7 @@ def _purge_module(module_names: list[str], path: str | Path) -> None:
     Path(importlib.util.cache_from_source(path)).unlink(missing_ok=True)  # type: ignore[arg-type]
 
 
-@pytest.fixture
+@pytest.fixture()
 def create_app_file(tmp_project_dir: Path, request: FixtureRequest) -> CreateAppFileFixture:
     def _create_app_file(
         file: str | Path,
@@ -102,7 +102,7 @@ def create_app_file(tmp_project_dir: Path, request: FixtureRequest) -> CreateApp
                 lambda: _purge_module(
                     [directory, _path_to_dotted_path(tmp_app_file.relative_to(Path.cwd()))],
                     tmp_app_file,  # type: ignore[list-item]
-                )
+                ),
             )
         else:
             request.addfinalizer(tmp_app_file.unlink)
@@ -112,17 +112,17 @@ def create_app_file(tmp_project_dir: Path, request: FixtureRequest) -> CreateApp
     return _create_app_file
 
 
-@pytest.fixture
+@pytest.fixture()
 def app_file(create_app_file: CreateAppFileFixture) -> Path:
     return create_app_file("app.py")
 
 
-@pytest.fixture
+@pytest.fixture()
 def runner() -> CliRunner:
     return CliRunner()
 
 
-@pytest.fixture
+@pytest.fixture()
 def mock_uvicorn_run(mocker: MockerFixture) -> MagicMock:
     return mocker.patch("uvicorn.run")
 
@@ -132,9 +132,9 @@ def mock_subprocess_run(mocker: MockerFixture) -> MagicMock:
     return mocker.patch("subprocess.run")
 
 
-@pytest.fixture
-def mock_confirm_ask(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
-    yield mocker.patch("rich.prompt.Confirm.ask", return_value=True)
+@pytest.fixture()
+def mock_confirm_ask(mocker: MockerFixture) -> MagicMock:
+    return mocker.patch("rich.prompt.Confirm.ask", return_value=True)
 
 
 @pytest.fixture(
@@ -144,17 +144,17 @@ def mock_confirm_ask(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
         pytest.param((GENERIC_APP_FACTORY_FILE_CONTENT, "any_name"), id="app_factory"),
         pytest.param((GENERIC_APP_FACTORY_FILE_CONTENT_STRING_ANNOTATION, "any_name"), id="app_factory_str_annot"),
         pytest.param((GENERIC_APP_FACTORY_FILE_CONTENT_FUTURE_ANNOTATIONS, "any_name"), id="app_factory_future_annot"),
-    ]
+    ],
 )
 def _app_file_content(request: FixtureRequest) -> tuple[str, str]:
     return cast("tuple[str, str]", request.param)
 
 
-@pytest.fixture
+@pytest.fixture()
 def app_file_content(_app_file_content: tuple[str, str]) -> str:
     return _app_file_content[0]
 
 
-@pytest.fixture
+@pytest.fixture()
 def app_file_app_name(_app_file_content: tuple[str, str]) -> str:
     return _app_file_content[1]

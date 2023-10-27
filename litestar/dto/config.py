@@ -61,6 +61,7 @@ class DTOConfig:
 
     def __post_init__(self) -> None:
         if self.include and self.exclude:
+            msg = "'include' and 'exclude' are mutually exclusive options, please use one of them"
             raise ImproperlyConfiguredException(
-                "'include' and 'exclude' are mutually exclusive options, please use one of them"
+                msg,
             )

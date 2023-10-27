@@ -38,6 +38,7 @@ class AllowedHostsConfig:
         """Ensure that the trusted hosts have correct domain wildcards."""
         for host in self.allowed_hosts:
             if host != "*" and "*" in host and not host.startswith("*."):
+                msg = "domain wildcards can only appear in the beginning of the domain, e.g. ``*.example.com``"
                 raise ImproperlyConfiguredException(
-                    "domain wildcards can only appear in the beginning of the domain, e.g. ``*.example.com``"
+                    msg,
                 )

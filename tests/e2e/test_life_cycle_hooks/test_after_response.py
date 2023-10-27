@@ -40,7 +40,7 @@ def test_after_response_resolution(layer: str) -> None:
                 return None
 
         router = Router(
-            path="/router", route_handlers=[MyController], after_response=handler if layer == "router" else None
+            path="/router", route_handlers=[MyController], after_response=handler if layer == "router" else None,
         )
 
         with create_test_client(route_handlers=[router], after_response=handler if layer == "app" else None) as client:

@@ -84,9 +84,9 @@ def parse_body(body: bytes, boundary: bytes, multipart_form_part_limit: int) -> 
     form_parts = body.split(boundary, multipart_form_part_limit + 3)[1:-1]
 
     if len(form_parts) > multipart_form_part_limit:
+        msg = f"number of multipart components exceeds the allowed limit of {multipart_form_part_limit}, this potentially indicates a DoS attack"
         raise ValidationException(
-            f"number of multipart components exceeds the allowed limit of {multipart_form_part_limit}, "
-            f"this potentially indicates a DoS attack"
+            msg,
         )
 
     return form_parts
@@ -151,7 +151,7 @@ def parse_multipart_form(
             post_data = form_part[line_index:-4].lstrip(b"\r\n")
             if file_name:
                 form_file = UploadFile(
-                    content_type=content_type, filename=file_name, file_data=post_data, headers=dict(headers)
+                    content_type=content_type, filename=file_name, file_data=post_data, headers=dict(headers),
                 )
                 fields[field_name].append(form_file)
             elif post_data:

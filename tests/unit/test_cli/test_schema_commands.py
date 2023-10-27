@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 @pytest.mark.parametrize("filename", ("", "custom.json", "custom.yaml", "custom.yml"))
 def test_openapi_schema_command(
-    runner: CliRunner, mocker: MockerFixture, monkeypatch: MonkeyPatch, filename: str
+    runner: CliRunner, mocker: MockerFixture, monkeypatch: MonkeyPatch, filename: str,
 ) -> None:
     monkeypatch.setenv("LITESTAR_APP", "test_apps.openapi_test_app.main:app")
     mock_path_write_text = mocker.patch("pathlib.Path.write_text")
@@ -39,10 +39,10 @@ def test_openapi_schema_command(
 
 
 @pytest.mark.parametrize(
-    "namespace, filename", (("Custom", ""), ("", "custom_specs.ts"), ("Custom", "custom_specs.ts"))
+    ("namespace", "filename"), (("Custom", ""), ("", "custom_specs.ts"), ("Custom", "custom_specs.ts")),
 )
 def test_openapi_typescript_command(
-    runner: CliRunner, mocker: MockerFixture, monkeypatch: MonkeyPatch, filename: str, namespace: str
+    runner: CliRunner, mocker: MockerFixture, monkeypatch: MonkeyPatch, filename: str, namespace: str,
 ) -> None:
     monkeypatch.setenv("LITESTAR_APP", "test_apps.openapi_test_app.main:app")
     mock_path_write_text = mocker.patch("pathlib.Path.write_text")
@@ -59,10 +59,10 @@ def test_openapi_typescript_command(
 
 
 @pytest.mark.parametrize(
-    "namespace, filename", (("Custom", ""), ("", "custom_specs.ts"), ("Custom", "custom_specs.ts"))
+    ("namespace", "filename"), (("Custom", ""), ("", "custom_specs.ts"), ("Custom", "custom_specs.ts")),
 )
 def test_openapi_typescript_command_without_jsbeautifier(
-    runner: CliRunner, mocker: MockerFixture, monkeypatch: MonkeyPatch, filename: str, namespace: str
+    runner: CliRunner, mocker: MockerFixture, monkeypatch: MonkeyPatch, filename: str, namespace: str,
 ) -> None:
     monkeypatch.setenv("LITESTAR_APP", "test_apps.openapi_test_app.main:app")
     mocker.patch("litestar.cli.commands.schema.JSBEAUTIFIER_INSTALLED", False)

@@ -90,18 +90,18 @@ async def test_request_factory_create_with_data_with_custom_encoder() -> None:
 
 
 @pytest.mark.parametrize(
-    "request_media_type, verify_data",
+    ("request_media_type", "verify_data"),
     [
-        [RequestEncodingType.JSON, lambda data: json.loads(data) == msgspec.to_builtins(pet)],
-        [RequestEncodingType.MULTI_PART, lambda data: "Content-Disposition" in data],
-        [
-            RequestEncodingType.URL_ENCODED,
-            lambda data: data == f"name={pet.name}&age={pet.age}&species={pet.species.value}",
-        ],
+        (RequestEncodingType.JSON, lambda data: json.loads(data) == msgspec.to_builtins(pet)),
+        (RequestEncodingType.MULTI_PART, lambda data: "Content-Disposition" in data),
+        (
+                RequestEncodingType.URL_ENCODED,
+                lambda data: data == f"name={pet.name}&age={pet.age}&species={pet.species.value}",
+        ),
     ],
 )
 async def test_request_factory_create_with_content_type(
-    request_media_type: RequestEncodingType, verify_data: Callable[[str], bool]
+    request_media_type: RequestEncodingType, verify_data: Callable[[str], bool],
 ) -> None:
     request = RequestFactory()._create_request_with_data(
         HttpMethod.POST,
@@ -197,7 +197,7 @@ def test_request_factory_delete() -> None:
 
 
 @pytest.mark.parametrize(
-    "factory, method",
+    ("factory", "method"),
     [
         (RequestFactory().post, HttpMethod.POST),
         (RequestFactory().put, HttpMethod.PUT),

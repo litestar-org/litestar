@@ -27,7 +27,7 @@ async def async_after_request_handler_with_hello_world(response: Response) -> Re
 
 
 @pytest.mark.parametrize(
-    "after_request, expected",
+    ("after_request", "expected"),
     [
         [None, {"hello": "world"}],
         [sync_after_request_handler, {"hello": "moon"}],
@@ -45,7 +45,7 @@ def test_after_request_handler_called(after_request: Optional[AfterRequestHookHa
 
 
 @pytest.mark.parametrize(
-    "app_after_request_handler, router_after_request_handler, controller_after_request_handler, method_after_request_handler, expected",
+    ("app_after_request_handler", "router_after_request_handler", "controller_after_request_handler", "method_after_request_handler", "expected"),
     [
         [None, None, None, None, {"hello": "world"}],
         [sync_after_request_handler, None, None, None, {"hello": "moon"}],

@@ -41,7 +41,7 @@ __all__ = (
 _GLOBAL_NAMES = {
     namespace: export
     for namespace, export in chain(
-        tuple(getmembers(types)), tuple(getmembers(connection)), tuple(getmembers(datastructures))
+        tuple(getmembers(types)), tuple(getmembers(connection)), tuple(getmembers(datastructures)),
     )
     if namespace[0].isupper() and namespace in chain(types.__all__, connection.__all__, datastructures.__all__)  # pyright: ignore
 }
@@ -230,7 +230,7 @@ def infer_request_encoding_from_field_definition(field_definition: FieldDefiniti
 
 
 def add_types_to_signature_namespace(
-    signature_types: Sequence[Any], signature_namespace: dict[str, Any]
+    signature_types: Sequence[Any], signature_namespace: dict[str, Any],
 ) -> dict[str, Any]:
     """Add types to ith signature namespace mapping.
 
@@ -249,6 +249,7 @@ def add_types_to_signature_namespace(
     """
     for typ in signature_types:
         if (name := typ.__name__) in signature_namespace:
-            raise ImproperlyConfiguredException(f"Type '{name}' is already defined in the signature namespace")
+            msg = f"Type '{name}' is already defined in the signature namespace"
+            raise ImproperlyConfiguredException(msg)
         signature_namespace[name] = typ
     return signature_namespace

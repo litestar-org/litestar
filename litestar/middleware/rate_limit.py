@@ -51,7 +51,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             config: An instance of RateLimitConfig.
         """
         super().__init__(
-            app=app, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key, scopes={ScopeType.HTTP}
+            app=app, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key, scopes={ScopeType.HTTP},
         )
         self.check_throttle_handler = cast("Callable[[Request], Awaitable[bool]] | None", config.check_throttle_handler)
         self.config = config
@@ -79,7 +79,7 @@ class RateLimitMiddleware(AbstractMiddleware):
                 raise TooManyRequestsException(
                     headers=self.create_response_headers(cache_object=cache_object)
                     if self.config.set_rate_limit_headers
-                    else None
+                    else None,
                 )
             await self.set_cached_history(key=key, cache_object=cache_object, store=store)
             if self.config.set_rate_limit_headers:
@@ -200,7 +200,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             A dict of http headers.
         """
         remaining_requests = str(
-            len(cache_object.history) - self.max_requests if len(cache_object.history) <= self.max_requests else 0
+            len(cache_object.history) - self.max_requests if len(cache_object.history) <= self.max_requests else 0,
         )
 
         return {

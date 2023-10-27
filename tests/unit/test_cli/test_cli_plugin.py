@@ -19,7 +19,7 @@ def test_basic_command(runner: CliRunner, create_app_file: CreateAppFileFixture,
                 print(f"App is loaded: {app is not None}")
 
     app = Litestar(plugins=[CLIPlugin()])
-    """
+    """,
     )
     app_file = create_app_file("command_test_app.py", content=app_file_content)
     result = runner.invoke(root_command, ["--app", f"{app_file.stem}:app", "foo"])

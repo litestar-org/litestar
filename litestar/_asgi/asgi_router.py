@@ -79,7 +79,7 @@ class ASGIRouter:
         scope.setdefault("path_params", {})
         normalized_path = normalize_path(scope["path"])
         asgi_app, scope["route_handler"], scope["path"], scope["path_params"] = self.handle_routing(
-            path=normalized_path, method=scope.get("method")
+            path=normalized_path, method=scope.get("method"),
         )
         await asgi_app(scope, receive, send)
 
@@ -115,8 +115,9 @@ class ASGIRouter:
 
         for handler in get_route_handlers(route):
             if handler.name in self.route_handler_index and str(self.route_handler_index[handler.name]) != str(handler):
+                msg = f"route handler names must be unique - {handler.name} is not unique."
                 raise ImproperlyConfiguredException(
-                    f"route handler names must be unique - {handler.name} is not unique."
+                    msg,
                 )
             identifier = handler.name or str(handler)
             self.route_mapping[identifier].append(route)
@@ -163,7 +164,7 @@ class ASGIRouter:
                 await send(startup_event)
                 message = await receive()
 
-        except BaseException as e:
+        except BaseException:
             formatted_exception = format_exc()
             failure_message: LifeSpanStartupFailedEvent | LifeSpanShutdownFailedEvent
 
@@ -174,6 +175,6 @@ class ASGIRouter:
 
             await send(failure_message)
 
-            raise e
+            raise
 
         await send(shutdown_event)

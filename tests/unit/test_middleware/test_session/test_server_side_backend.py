@@ -20,7 +20,7 @@ def generate_session_data() -> bytes:
     return encode_json({token_hex(): token_hex()})
 
 
-@pytest.fixture
+@pytest.fixture()
 def session_data() -> bytes:
     return generate_session_data()
 
@@ -58,7 +58,7 @@ async def test_set_store_name(memory_store: MemoryStore) -> None:
 
 
 async def test_get_set(
-    server_side_session_backend: "ServerSideSessionBackend", session_data: bytes, memory_store: MemoryStore
+    server_side_session_backend: "ServerSideSessionBackend", session_data: bytes, memory_store: MemoryStore,
 ) -> None:
     await server_side_session_backend.set("foo", session_data, memory_store)
     loaded = await server_side_session_backend.get("foo", memory_store)
@@ -86,7 +86,7 @@ async def test_get_renew_on_access(
 
 
 async def test_get_set_multiple_returns_correct_identity(
-    server_side_session_backend: "ServerSideSessionBackend", memory_store: MemoryStore
+    server_side_session_backend: "ServerSideSessionBackend", memory_store: MemoryStore,
 ) -> None:
     foo_data = generate_session_data()
     bar_data = generate_session_data()
@@ -109,7 +109,7 @@ async def test_delete(server_side_session_backend: "ServerSideSessionBackend", m
 
 
 async def test_delete_idempotence(
-    server_side_session_backend: "ServerSideSessionBackend", session_data: bytes, memory_store: MemoryStore
+    server_side_session_backend: "ServerSideSessionBackend", session_data: bytes, memory_store: MemoryStore,
 ) -> None:
     await server_side_session_backend.set("foo", session_data, memory_store)
 
@@ -132,7 +132,7 @@ async def test_max_age_expires(
 
 
 @pytest.mark.parametrize(
-    "key, should_raise",
+    ("key", "should_raise"),
     [
         ["", True],
         ["a", False],
@@ -149,7 +149,7 @@ def test_key_validation(server_side_session_backend: "ServerSideSessionBackend",
 
 
 @pytest.mark.parametrize(
-    "max_age, should_raise",
+    ("max_age", "should_raise"),
     [
         [0, True],
         [-1, True],
@@ -158,7 +158,7 @@ def test_key_validation(server_side_session_backend: "ServerSideSessionBackend",
     ],
 )
 def test_max_age_validation(
-    server_side_session_backend: "ServerSideSessionBackend", max_age: int, should_raise: bool
+    server_side_session_backend: "ServerSideSessionBackend", max_age: int, should_raise: bool,
 ) -> None:
     if should_raise:
         with pytest.raises(ImproperlyConfiguredException):

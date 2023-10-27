@@ -8,7 +8,7 @@ from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CON
 
 
 @pytest.mark.parametrize(
-    "http_method, expected_status_code",
+    ("http_method", "expected_status_code"),
     [
         (HttpMethod.POST, HTTP_201_CREATED),
         (HttpMethod.DELETE, HTTP_204_NO_CONTENT),

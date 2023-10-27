@@ -227,7 +227,8 @@ class HTTPRouteHandler(BaseRouteHandler):
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if not http_method:
-            raise ImproperlyConfiguredException("An http_method kwarg is required")
+            msg = "An http_method kwarg is required"
+            raise ImproperlyConfiguredException(msg)
 
         self.http_methods = normalize_http_method(http_methods=http_method)
         self.status_code = status_code or get_default_status_code(http_methods=self.http_methods)
@@ -323,7 +324,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                     # this can't happen unless you manually set response_headers on an instance, which would result in a
                     # type-checking error on everything but the controller. We cover this case nevertheless
                     resolved_response_headers.update(
-                        {name: ResponseHeader(name=name, value=value) for name, value in layer_response_headers.items()}
+                        {name: ResponseHeader(name=name, value=value) for name, value in layer_response_headers.items()},
                     )
                 else:
                     resolved_response_headers.update({h.name: h for h in layer_response_headers})
@@ -350,7 +351,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                     # this can't happen unless you manually set response_cookies on an instance, which would result in a
                     # type-checking error on everything but the controller. We cover this case nevertheless
                     response_cookies.update(
-                        {Cookie(key=key, value=value) for key, value in layer_response_cookies.items()}
+                        {Cookie(key=key, value=value) for key, value in layer_response_cookies.items()},
                     )
                 else:
                     response_cookies.update(cast("set[Cookie]", layer_response_cookies))
@@ -455,7 +456,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 self._response_handler_mapping["default_handler"] = response_type_handler
             elif is_async_callable(return_annotation) or return_annotation is ASGIApp:
                 self._response_handler_mapping["default_handler"] = create_generic_asgi_response_handler(
-                    after_request=after_request
+                    after_request=after_request,
                 )
             else:
                 self._response_handler_mapping["default_handler"] = create_data_handler(
@@ -512,17 +513,17 @@ class HTTPRouteHandler(BaseRouteHandler):
         return_type = self.parsed_fn_signature.return_type
 
         if return_type.annotation is Empty:
+            msg = "A return value of a route handler function should be type annotated.If your function doesn't return a value, annotate it as returning 'None'."
             raise ImproperlyConfiguredException(
-                "A return value of a route handler function should be type annotated."
-                "If your function doesn't return a value, annotate it as returning 'None'."
+                msg,
             )
 
         if (
             self.status_code < 200 or self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED}
         ) and not return_type.is_subclass_of(NoneType):
+            msg = "A status code 204, 304 or in the range below 200 does not support a response body.If the function should return a value, change the route handler status code to an appropriate value."
             raise ImproperlyConfiguredException(
-                "A status code 204, 304 or in the range below 200 does not support a response body."
-                "If the function should return a value, change the route handler status code to an appropriate value.",
+                msg,
             )
 
         if not self.media_type:
@@ -532,10 +533,12 @@ class HTTPRouteHandler(BaseRouteHandler):
                 self.media_type = MediaType.JSON
 
         if "socket" in self.parsed_fn_signature.parameters:
-            raise ImproperlyConfiguredException("The 'socket' kwarg is not supported with http handlers")
+            msg = "The 'socket' kwarg is not supported with http handlers"
+            raise ImproperlyConfiguredException(msg)
 
         if "data" in self.parsed_fn_signature.parameters and "GET" in self.http_methods:
-            raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
+            msg = "'data' kwarg is unsupported for 'GET' request handlers"
+            raise ImproperlyConfiguredException(msg)
 
 
 route = HTTPRouteHandler

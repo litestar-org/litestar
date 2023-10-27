@@ -38,7 +38,8 @@ class EventListener:
             An instance of EventListener
         """
         if not callable(fn):
-            raise ImproperlyConfiguredException("EventListener instance should be called as a decorator on a callable")
+            msg = "EventListener instance should be called as a decorator on a callable"
+            raise ImproperlyConfiguredException(msg)
 
         self.fn = AsyncCallable(fn)
 

@@ -25,7 +25,7 @@ from .util import get_from_stream
         pytest.param("redis_pub_sub_backend", id="redis:pubsub", marks=pytest.mark.xdist_group("redis")),
         pytest.param("redis_stream_backend", id="redis:stream", marks=pytest.mark.xdist_group("redis")),
         pytest.param("memory_backend", id="memory"),
-    ]
+    ],
 )
 def channels_backend(request: FixtureRequest) -> ChannelsBackend:
     return cast(ChannelsBackend, request.getfixturevalue(request.param))
@@ -102,7 +102,7 @@ async def test_pub_sub_run_in_background(channels_backend: ChannelsBackend, asyn
 @pytest.mark.parametrize("socket_send_mode", ["text", "binary"])
 @pytest.mark.parametrize("handler_base_path", [None, "/ws"])
 def test_create_ws_route_handlers(
-    channels_backend: ChannelsBackend, handler_base_path: str | None, socket_send_mode: WebSocketMode
+    channels_backend: ChannelsBackend, handler_base_path: str | None, socket_send_mode: WebSocketMode,
 ) -> None:
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,
@@ -196,7 +196,7 @@ async def test_start_subscription(
 @pytest.mark.parametrize("history", [1, 2])
 @pytest.mark.parametrize("channels", [["foo"], ["foo", "bar"]])
 async def test_subscribe_with_history(
-    async_mock: AsyncMock, memory_backend: MemoryChannelsBackend, channels: list[str], history: int
+    async_mock: AsyncMock, memory_backend: MemoryChannelsBackend, channels: list[str], history: int,
 ) -> None:
     async with ChannelsPlugin(backend=memory_backend, channels=channels) as plugin:
         expected_messages = set()
@@ -214,7 +214,7 @@ async def test_subscribe_with_history(
 @pytest.mark.parametrize("history", [1, 2])
 @pytest.mark.parametrize("channels", [["foo"], ["foo", "bar"]])
 async def test_start_subscription_with_history(
-    async_mock: AsyncMock, memory_backend: MemoryChannelsBackend, channels: list[str], history: int
+    async_mock: AsyncMock, memory_backend: MemoryChannelsBackend, channels: list[str], history: int,
 ) -> None:
     async with ChannelsPlugin(backend=memory_backend, channels=channels) as plugin:
         expected_messages = set()
@@ -237,7 +237,7 @@ async def test_subscribe_non_existent_channel_raises(memory_backend: MemoryChann
 @pytest.mark.parametrize("unsubscribe_all", [False, True])
 @pytest.mark.parametrize("channels", ["foo", ["foo", "bar"]])
 async def test_unsubscribe(
-    async_mock: AsyncMock, memory_backend: MemoryChannelsBackend, channels: str | list[str], unsubscribe_all: bool
+    async_mock: AsyncMock, memory_backend: MemoryChannelsBackend, channels: str | list[str], unsubscribe_all: bool,
 ) -> None:
     plugin = ChannelsPlugin(backend=memory_backend, channels=["foo", "bar"])
     memory_backend.unsubscribe = async_mock  # type: ignore[method-assign]
@@ -266,7 +266,7 @@ async def test_subscribe_after_unsubscribe(memory_backend: MemoryChannelsBackend
 
 
 async def test_unsubscribe_last_subscriber_unsubscribes_backend(
-    memory_backend: MemoryChannelsBackend, async_mock: AsyncMock
+    memory_backend: MemoryChannelsBackend, async_mock: AsyncMock,
 ) -> None:
     plugin = ChannelsPlugin(backend=memory_backend, channels=["foo"])
     memory_backend.unsubscribe = async_mock  # type: ignore[method-assign]
@@ -291,7 +291,7 @@ async def _populate_channels_backend(*, message_count: int, channel: str, backen
 
 
 @pytest.mark.parametrize(
-    "message_count,handler_send_history,expected_history_count",
+    ("message_count", "handler_send_history", "expected_history_count"),
     [
         (2, -1, 2),
         (2, 1, 1),
@@ -330,9 +330,9 @@ async def test_handler_sends_history(
         assert [call.kwargs.get("data") for call in mock_socket_send.call_args_list] == expected_messages
 
 
-@pytest.mark.parametrize("channels,expected_entry_count", [("foo", 1), (["foo", "bar"], 2)])
+@pytest.mark.parametrize(("channels", "expected_entry_count"), [("foo", 1), (["foo", "bar"], 2)])
 async def test_set_subscriber_history(
-    channels: str | list[str], memory_backend: MemoryChannelsBackend, expected_entry_count: int
+    channels: str | list[str], memory_backend: MemoryChannelsBackend, expected_entry_count: int,
 ) -> None:
     async with ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True) as plugin:
         subscriber = await plugin.subscribe(channels)
@@ -346,7 +346,7 @@ async def test_set_subscriber_history(
 
 @pytest.mark.parametrize("backlog_strategy", ["backoff", "dropleft"])
 async def test_backlog(
-    memory_backend: MemoryChannelsBackend, backlog_strategy: BacklogStrategy, async_mock: AsyncMock
+    memory_backend: MemoryChannelsBackend, backlog_strategy: BacklogStrategy, async_mock: AsyncMock,
 ) -> None:
     plugin = ChannelsPlugin(
         backend=memory_backend,

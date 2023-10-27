@@ -18,7 +18,7 @@ from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedExce
 @pytest.mark.parametrize("token_issuer", [None, "e3d7d10edbbc28bfebd8861d39ae7587acde1e1fcefe2cbbec686d235d68f475"])
 @pytest.mark.parametrize("token_audience", [None, "627224198b4245ed91cf8353e4ccdf1650728c7ee92748f55fe1e9a9c4d961df"])
 @pytest.mark.parametrize(
-    "token_unique_jwt_id", [None, "10f5c6967783ddd6bb0c4e8262d7097caeae64705e45f83275e3c32eee5d30f2"]
+    "token_unique_jwt_id", [None, "10f5c6967783ddd6bb0c4e8262d7097caeae64705e45f83275e3c32eee5d30f2"],
 )
 @pytest.mark.parametrize("token_extras", [None, {"email": "test@test.com"}])
 def test_token(
@@ -43,7 +43,7 @@ def test_token(
 
 
 @pytest.mark.parametrize(
-    "algorithm, secret",
+    ("algorithm", "secret"),
     [
         (
             "nope",

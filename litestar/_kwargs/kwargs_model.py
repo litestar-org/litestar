@@ -246,7 +246,7 @@ class KwargsModel:
                     ),
                     field_name=field_name,
                     path_parameters=path_parameters,
-                )
+                ),
             )
 
         return param_definitions, expected_dependencies
@@ -324,16 +324,16 @@ class KwargsModel:
                 layered_parameters=layered_parameters,
             )
             expected_path_parameters = merge_parameter_sets(
-                expected_path_parameters, dependency_kwargs_model.expected_path_params
+                expected_path_parameters, dependency_kwargs_model.expected_path_params,
             )
             expected_query_parameters = merge_parameter_sets(
-                expected_query_parameters, dependency_kwargs_model.expected_query_params
+                expected_query_parameters, dependency_kwargs_model.expected_query_params,
             )
             expected_cookie_parameters = merge_parameter_sets(
-                expected_cookie_parameters, dependency_kwargs_model.expected_cookie_params
+                expected_cookie_parameters, dependency_kwargs_model.expected_cookie_params,
             )
             expected_header_parameters = merge_parameter_sets(
-                expected_header_parameters, dependency_kwargs_model.expected_header_params
+                expected_header_parameters, dependency_kwargs_model.expected_header_params,
             )
 
             if "data" in expected_reserved_kwargs and "data" in dependency_kwargs_model.expected_reserved_kwargs:
@@ -416,15 +416,17 @@ class KwargsModel:
     ) -> None:
         """Validate that the 'data' kwarg is compatible across dependencies."""
         if bool(expected_form_data) != bool(dependency_kwargs_model.expected_form_data):
+            msg = "Dependencies have incompatible 'data' kwarg types: one expects JSON and the other expects form-data"
             raise ImproperlyConfiguredException(
-                "Dependencies have incompatible 'data' kwarg types: one expects JSON and the other expects form-data"
+                msg,
             )
         if expected_form_data and dependency_kwargs_model.expected_form_data:
             local_media_type = expected_form_data[0]
             dependency_media_type = dependency_kwargs_model.expected_form_data[0]
             if local_media_type != dependency_media_type:
+                msg = "Dependencies have incompatible form-data encoding: one expects url-encoded and the other expects multi-part"
                 raise ImproperlyConfiguredException(
-                    "Dependencies have incompatible form-data encoding: one expects url-encoded and the other expects multi-part"
+                    msg,
                 )
 
     @classmethod
@@ -456,9 +458,9 @@ class KwargsModel:
             or dependency_keys.intersection(parameter_names)
         ):
             if intersection:
+                msg = f"Kwarg resolution ambiguity detected for the following keys: {', '.join(intersection)}. Make sure to use distinct keys for your dependencies, path parameters and aliased parameters."
                 raise ImproperlyConfiguredException(
-                    f"Kwarg resolution ambiguity detected for the following keys: {', '.join(intersection)}. "
-                    f"Make sure to use distinct keys for your dependencies, path parameters and aliased parameters."
+                    msg,
                 )
 
         if used_reserved_kwargs := {
@@ -466,7 +468,7 @@ class KwargsModel:
             *path_parameters,
             *dependency_keys,
         }.intersection(RESERVED_KWARGS):
+            msg = f"Reserved kwargs ({', '.join(RESERVED_KWARGS)}) cannot be used for dependencies and parameter arguments. The following kwargs have been used: {', '.join(used_reserved_kwargs)}"
             raise ImproperlyConfiguredException(
-                f"Reserved kwargs ({', '.join(RESERVED_KWARGS)}) cannot be used for dependencies and parameter arguments. "
-                f"The following kwargs have been used: {', '.join(used_reserved_kwargs)}"
+                msg,
             )

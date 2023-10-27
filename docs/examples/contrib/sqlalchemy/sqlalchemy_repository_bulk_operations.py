@@ -52,7 +52,8 @@ def open_fixture(fixtures_path: Path, fixture_name: str) -> Any:
         with fixture.open(mode="r", encoding="utf-8") as f:
             f_data = f.read()
         return json.loads(f_data)
-    raise FileNotFoundError(f"Could not find the {fixture_name} fixture")
+    msg = f"Could not find the {fixture_name} fixture"
+    raise FileNotFoundError(msg)
 
 
 def run_script() -> None:

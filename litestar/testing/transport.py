@@ -142,7 +142,7 @@ class TestClientTransport(Generic[T]):
         scope = self.parse_request(request=request)
         if scope["type"] == "websocket":
             scope.update(
-                subprotocols=[value.strip() for value in request.headers.get("sec-websocket-protocol", "").split(",")]
+                subprotocols=[value.strip() for value in request.headers.get("sec-websocket-protocol", "").split(",")],
             )
             session = WebSocketTestSession(client=self.client, scope=cast("WebSocketScope", scope))  # type: ignore[arg-type]
             raise ConnectionUpgradeExceptionError(session)
@@ -168,18 +168,18 @@ class TestClientTransport(Generic[T]):
                     self.create_receive(request=request, context=context),
                     self.create_send(request=request, context=context),
                 )
-        except BaseException as exc:  # noqa: BLE001
+        except BaseException:  # noqa: BLE001
             if self.raise_server_exceptions:
-                raise exc
+                raise
             return Response(
-                status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
+                status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request,
             )
         else:
             if not context["response_started"]:  # pragma: no cover
                 if self.raise_server_exceptions:
                     assert context["response_started"], "TestClient did not receive any response."  # noqa: S101
                 return Response(
-                    status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
+                    status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request,
                 )
 
             stream = ByteStream(raw_kwargs.pop("stream", BytesIO()).read())

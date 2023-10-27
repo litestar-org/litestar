@@ -78,8 +78,8 @@ def test_upload_file_request_body_generation() -> None:
                 "type": "object",
                 "required": ["cv", "image"],
                 "title": "FormData",
-            }
-        }
+            },
+        },
     }
 
 
@@ -100,5 +100,5 @@ def test_request_body_generation_with_dto() -> None:
     )
 
     mock_dto.create_openapi_schema.assert_called_once_with(
-        field_definition=field_definition, handler_id=handler.handler_id, schema_creator=schema_creator
+        field_definition=field_definition, handler_id=handler.handler_id, schema_creator=schema_creator,
     )

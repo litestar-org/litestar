@@ -42,7 +42,8 @@ class TypeScriptElement(ABC):
         Returns:
             A typescript string
         """
-        raise NotImplementedError("")
+        msg = ""
+        raise NotImplementedError(msg)
 
 
 class TypeScriptContainer(TypeScriptElement):
@@ -57,7 +58,8 @@ class TypeScriptContainer(TypeScriptElement):
         Returns:
             A typescript string
         """
-        raise NotImplementedError("")
+        msg = ""
+        raise NotImplementedError(msg)
 
 
 @dataclass(unsafe_hash=True)
@@ -101,7 +103,7 @@ class TypeScriptPrimitive(TypeScriptElement):
     """A class representing a TypeScript primitive type."""
 
     type: Literal[
-        "string", "number", "boolean", "any", "null", "undefined", "symbol", "Record<string, unknown>", "unknown[]"
+        "string", "number", "boolean", "any", "null", "undefined", "symbol", "Record<string, unknown>", "unknown[]",
     ]
 
     def write(self) -> str:
@@ -243,7 +245,7 @@ class TypeScriptEnum(TypeScriptContainer):
             A typescript string
         """
         members = "\t" + "\n\t".join(
-            [f"{key} = {_as_string(value)}," for key, value in sorted(self.values, key=lambda member: member[0])]
+            [f"{key} = {_as_string(value)}," for key, value in sorted(self.values, key=lambda member: member[0])],
         )
         return f"export enum {self.name} {{\n{members}\n}};"
 

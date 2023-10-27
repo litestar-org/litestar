@@ -20,7 +20,7 @@ __all__ = (
 
 
 def create_numerical_constrained_field_schema(
-    field_type: type[int] | type[float] | type[Decimal],
+    field_type: type[int | float | Decimal],
     kwarg_definition: KwargDefinition,
 ) -> Schema:
     """Create Schema from Constrained Int/Float/Decimal field."""
@@ -39,12 +39,12 @@ def create_numerical_constrained_field_schema(
 
 
 def create_date_constrained_field_schema(
-    field_type: type[date] | type[datetime],
+    field_type: type[date | datetime],
     kwarg_definition: KwargDefinition,
 ) -> Schema:
     """Create Schema from Constrained Date Field."""
     schema = Schema(
-        type=OpenAPIType.STRING, format=OpenAPIFormat.DATE if issubclass(field_type, date) else OpenAPIFormat.DATE_TIME
+        type=OpenAPIType.STRING, format=OpenAPIFormat.DATE if issubclass(field_type, date) else OpenAPIFormat.DATE_TIME,
     )
     for kwarg_definition_attr, schema_attr in [
         ("le", "maximum"),
@@ -67,7 +67,7 @@ def create_date_constrained_field_schema(
 
 
 def create_string_constrained_field_schema(
-    field_type: type[str] | type[bytes],
+    field_type: type[str | bytes],
     kwarg_definition: KwargDefinition,
 ) -> Schema:
     """Create Schema from Constrained Str/Bytes field."""

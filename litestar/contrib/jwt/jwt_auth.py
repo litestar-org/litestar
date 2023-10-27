@@ -79,8 +79,8 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
                     name=self.auth_header,
                     bearer_format="JWT",
                     description=self.description,
-                )
-            }
+                ),
+            },
         )
 
     @property
@@ -247,7 +247,7 @@ class JWTAuth(Generic[UserType], BaseJWTAuth[UserType]):
     exclude_opt_key: str = field(default="exclude_from_auth")
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
     exclude_http_methods: Sequence[Method] | None = field(
-        default_factory=lambda: cast("Sequence[Method]", ["OPTIONS", "HEAD"])
+        default_factory=lambda: cast("Sequence[Method]", ["OPTIONS", "HEAD"]),
     )
     """A sequence of http methods that do not require authentication. Defaults to ['OPTIONS', 'HEAD']"""
     scopes: Scopes | None = field(default=None)
@@ -315,7 +315,7 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
     """ASGI scopes processed by the authentication middleware, if ``None``, both ``http`` and ``websocket`` will be
     processed."""
     exclude_http_methods: Sequence[Method] | None = field(
-        default_factory=lambda: cast("Sequence[Method]", ["OPTIONS", "HEAD"])
+        default_factory=lambda: cast("Sequence[Method]", ["OPTIONS", "HEAD"]),
     )
     """A sequence of http methods that do not require authentication. Defaults to ['OPTIONS', 'HEAD']"""
     route_handlers: Iterable[ControllerRouterHandler] | None = field(default=None)
@@ -353,7 +353,7 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
     description: str = field(default="JWT cookie-based authentication and authorization.")
     """Description for the OpenAPI security scheme."""
     authentication_middleware_class: type[JWTCookieAuthenticationMiddleware] = field(
-        default=JWTCookieAuthenticationMiddleware
+        default=JWTCookieAuthenticationMiddleware,
     )
     """The authentication middleware class to use. Must inherit from :class:`JWTCookieAuthenticationMiddleware`
     """
@@ -374,8 +374,8 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
                     security_scheme_in="cookie",
                     bearer_format="JWT",
                     description=self.description,
-                )
-            }
+                ),
+            },
         )
 
     @property
@@ -516,7 +516,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
     exclude_opt_key: str = field(default="exclude_from_auth")
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
     exclude_http_methods: Sequence[Method] | None = field(
-        default_factory=lambda: cast("Sequence[Method]", ["OPTIONS", "HEAD"])
+        default_factory=lambda: cast("Sequence[Method]", ["OPTIONS", "HEAD"]),
     )
     """A sequence of http methods that do not require authentication. Defaults to ['OPTIONS', 'HEAD']"""
     scopes: Scopes | None = field(default=None)
@@ -557,7 +557,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
     description: str = field(default="OAUTH2 password bearer authentication and authorization.")
     """Description for the OpenAPI security scheme."""
     authentication_middleware_class: type[JWTCookieAuthenticationMiddleware] = field(
-        default=JWTCookieAuthenticationMiddleware
+        default=JWTCookieAuthenticationMiddleware,
     )
     """The authentication middleware class to use.
 
@@ -614,8 +614,8 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
                     flows=OAuthFlows(password=self.oauth_flow),  # pyright: ignore[reportGeneralTypeIssues]
                     bearer_format="JWT",
                     description=self.description,
-                )
-            }
+                ),
+            },
         )
 
     def login(

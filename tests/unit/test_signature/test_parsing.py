@@ -76,7 +76,7 @@ def hello_world(test: Test) -> Test:
     return test
 
 app = Litestar(route_handlers=[hello_world], openapi_config=None)
-"""
+""",
     )
     with TestClient(app=module.app) as client:
         response = client.get("/")
@@ -128,7 +128,7 @@ def test_field_definition_is_non_string_sequence() -> None:
     assert model._fields["b"].is_non_string_sequence
 
 
-@pytest.mark.parametrize("query,expected", [("1", True), ("true", True), ("0", False), ("false", False)])
+@pytest.mark.parametrize(("query", "expected"), [("1", True), ("true", True), ("0", False), ("false", False)])
 def test_query_param_bool(query: str, expected: bool) -> None:
     mock = MagicMock()
 

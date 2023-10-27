@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 def test_field_definition_generation(
-    int_factory: Callable[[], int], expected_field_defs: list[DTOFieldDefinition]
+    int_factory: Callable[[], int], expected_field_defs: list[DTOFieldDefinition],
 ) -> None:
     class TestModel(BaseModel):
         a: int

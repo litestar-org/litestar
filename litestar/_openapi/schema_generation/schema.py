@@ -329,7 +329,7 @@ class SchemaCreator:
                 annotation=make_non_optional_union(field_definition.annotation),
                 name=field_definition.name,
                 default=field_definition.default,
-            )
+            ),
         )
         if isinstance(schema_or_reference, Schema) and isinstance(schema_or_reference.one_of, list):
             result = schema_or_reference.one_of
@@ -380,11 +380,9 @@ class SchemaCreator:
         if field_definition.is_literal:
             return create_literal_schema(field_definition.annotation)
 
+        msg = f"Parameter '{field_definition.name}' with type '{field_definition.annotation}' could not be mapped to an Open API type. This can occur if a user-defined generic type is resolved as a parameter. If '{field_definition.name}' should not be documented as a parameter, annotate it using the `Dependency` function, e.g., `{field_definition.name}: ... = Dependency(...)`."
         raise ImproperlyConfiguredException(
-            f"Parameter '{field_definition.name}' with type '{field_definition.annotation}' could not be mapped to an Open API type. "
-            f"This can occur if a user-defined generic type is resolved as a parameter. If '{field_definition.name}' should "
-            "not be documented as a parameter, annotate it using the `Dependency` function, e.g., "
-            f"`{field_definition.name}: ... = Dependency(...)`."
+            msg,
         )
 
     def for_builtin_generics(self, field_definition: FieldDefinition) -> Schema:
@@ -458,7 +456,7 @@ class SchemaCreator:
                     default=field_definition.default,
                     extra=field_definition.extra,
                     kwarg_definition=field_definition.kwarg_definition,
-                )
+                ),
             )
         return schema  # pragma: no cover
 
@@ -485,11 +483,11 @@ class SchemaCreator:
                     field.encode_name
                     for field in fields
                     if _is_field_required(field=field) and not is_optional_union(type_hints[field.name])
-                ]
+                ],
             ),
             properties={
                 field.encode_name: self.for_field_definition(
-                    FieldDefinition.from_kwarg(type_hints[field.name], field.encode_name)
+                    FieldDefinition.from_kwarg(type_hints[field.name], field.encode_name),
                 )
                 for field in fields
             },
@@ -520,7 +518,7 @@ class SchemaCreator:
                         and field.default_factory is MISSING
                         and not is_optional_union(type_hints[field.name])
                     )
-                ]
+                ],
             ),
             properties={k: self.for_field_definition(FieldDefinition.from_kwarg(v, k)) for k, v in type_hints.items()},
             type=OpenAPIType.OBJECT,
@@ -600,8 +598,8 @@ class SchemaCreator:
         else:
             schema.items = item_creator.for_field_definition(
                 FieldDefinition.from_kwarg(
-                    field_definition.annotation.item_type, f"{field_definition.annotation.__name__}Field"
-                )
+                    field_definition.annotation.item_type, f"{field_definition.annotation.__name__}Field",
+                ),
             )
         return schema
 
@@ -623,12 +621,9 @@ class SchemaCreator:
 
         if schema.title and schema.type in (OpenAPIType.OBJECT, OpenAPIType.ARRAY):
             if schema.title in self.schemas and hash(self.schemas[schema.title]) != hash(schema):
+                msg = f"Two different schemas with the title {schema.title} have been defined.\n\nfirst: {encode_json(self.schemas[schema.title].to_schema()).decode()}\nsecond: {encode_json(schema.to_schema()).decode()}\n\nTo fix this issue, either rename the base classes from which these titles are derived or manuallyset a 'title' kwarg in the route handler."
                 raise ImproperlyConfiguredException(
-                    f"Two different schemas with the title {schema.title} have been defined.\n\n"
-                    f"first: {encode_json(self.schemas[schema.title].to_schema()).decode()}\n"
-                    f"second: {encode_json(schema.to_schema()).decode()}\n\n"
-                    f"To fix this issue, either rename the base classes from which these titles are derived or manually"
-                    f"set a 'title' kwarg in the route handler."
+                    msg,
                 )
 
             self.schemas[schema.title] = schema

@@ -47,7 +47,7 @@ class MiddlewareWithArgsAndKwargs(BaseHTTPMiddleware):
         self.kwarg = kwarg
 
     async def dispatch(  # type: ignore
-        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
+        self, request: Request, call_next: Callable[[Request], Awaitable[Response]],
     ) -> Response:
         ...
 
@@ -108,7 +108,7 @@ def test_request_body_logging_middleware(caplog: "LogCaptureFixture") -> None:
 
     with caplog.at_level(logging.INFO):
         client = create_test_client(
-            route_handlers=[post_handler], middleware=[MiddlewareProtocolRequestLoggingMiddleware]
+            route_handlers=[post_handler], middleware=[MiddlewareProtocolRequestLoggingMiddleware],
         )
         response = client.post("/", json={"name": "moishe zuchmir", "age": 40, "programmer": True})
         assert response.status_code == 201
@@ -140,7 +140,7 @@ def test_middleware_call_order() -> None:
             return None
 
     router = Router(
-        path="/router", route_handlers=[MyController], middleware=[create_test_middleware(2), create_test_middleware(3)]
+        path="/router", route_handlers=[MyController], middleware=[create_test_middleware(2), create_test_middleware(3)],
     )
 
     with create_test_client(

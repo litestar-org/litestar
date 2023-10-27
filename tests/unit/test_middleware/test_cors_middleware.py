@@ -40,14 +40,14 @@ def test_setting_cors_middleware() -> None:
 @pytest.mark.parametrize("allow_credentials", [True, False])
 @pytest.mark.parametrize("expose_headers", ["X-First-Header", "SomeOtherHeader", "X-Second-Header"])
 def test_cors_simple_response(
-    origin: Optional[str], allow_origins: List[str], allow_credentials: bool, expose_headers: List[str]
+    origin: Optional[str], allow_origins: List[str], allow_credentials: bool, expose_headers: List[str],
 ) -> None:
     @get("/")
     def handler() -> Dict[str, str]:
         return {"hello": "world"}
 
     cors_config = CORSConfig(
-        allow_origins=allow_origins, allow_credentials=allow_credentials, expose_headers=expose_headers
+        allow_origins=allow_origins, allow_credentials=allow_credentials, expose_headers=expose_headers,
     )
 
     with create_test_client(handler, cors_config=cors_config) as client:
@@ -66,7 +66,7 @@ def test_cors_simple_response(
                 assert response.headers.get("Access-Control-Allow-Credentials") == "true"
             if cors_config.expose_headers:
                 assert response.headers.get("Access-Control-Expose-Headers") == ", ".join(
-                    sorted(set(cors_config.expose_headers))
+                    sorted(set(cors_config.expose_headers)),
                 )
         else:
             assert "Access-Control-Allow-Origin" not in response.headers
@@ -74,9 +74,9 @@ def test_cors_simple_response(
             assert "Access-Control-Expose-Headers" not in response.headers
 
 
-@pytest.mark.parametrize("origin, should_apply_cors", (("http://www.example.com", True), (None, False)))
+@pytest.mark.parametrize(("origin", "should_apply_cors"), (("http://www.example.com", True), (None, False)))
 def test_cors_applied_on_exception_response_if_origin_is_present(
-    origin: Optional[str], should_apply_cors: bool
+    origin: Optional[str], should_apply_cors: bool,
 ) -> None:
     @get("/")
     def handler() -> Dict[str, str]:

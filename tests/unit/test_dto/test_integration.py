@@ -23,7 +23,7 @@ def experimental_features(use_experimental_dto_backend: bool) -> list[Experiment
 
 
 def test_dto_defined_on_handler(
-    ModelDataDTO: type[AbstractDTO], experimental_features: list[ExperimentalFeatures]
+    ModelDataDTO: type[AbstractDTO], experimental_features: list[ExperimentalFeatures],
 ) -> None:
     @post(dto=ModelDataDTO, signature_types=[Model])
     def handler(data: Model) -> Model:
@@ -37,7 +37,7 @@ def test_dto_defined_on_handler(
 
 
 def test_dto_defined_on_controller(
-    ModelDataDTO: type[AbstractDTO], experimental_features: list[ExperimentalFeatures]
+    ModelDataDTO: type[AbstractDTO], experimental_features: list[ExperimentalFeatures],
 ) -> None:
     class MyController(Controller):
         dto = ModelDataDTO
@@ -54,7 +54,7 @@ def test_dto_defined_on_controller(
 
 
 def test_dto_defined_on_router(
-    ModelDataDTO: type[AbstractDTO], experimental_features: list[ExperimentalFeatures]
+    ModelDataDTO: type[AbstractDTO], experimental_features: list[ExperimentalFeatures],
 ) -> None:
     @post()
     def handler(data: Model) -> Model:
@@ -76,7 +76,7 @@ def test_dto_defined_on_app(ModelDataDTO: type[AbstractDTO], experimental_featur
         return data
 
     with create_test_client(
-        route_handlers=handler, dto=ModelDataDTO, experimental_features=experimental_features
+        route_handlers=handler, dto=ModelDataDTO, experimental_features=experimental_features,
     ) as client:
         response = client.post("/", json={"what": "ever"})
         assert response.status_code == 201
@@ -84,7 +84,7 @@ def test_dto_defined_on_app(ModelDataDTO: type[AbstractDTO], experimental_featur
 
 
 def test_set_dto_none_disables_inherited_dto(
-    ModelDataDTO: type[AbstractDTO], experimental_features: list[ExperimentalFeatures]
+    ModelDataDTO: type[AbstractDTO], experimental_features: list[ExperimentalFeatures],
 ) -> None:
     @post(dto=None, signature_namespace={"dict": Dict})
     def handler(data: dict[str, str]) -> dict[str, str]:
@@ -115,7 +115,7 @@ def test_dto_and_return_dto(
         return data
 
     with create_test_client(
-        route_handlers=handler, dto=ModelDataDTO, return_dto=ModelReturnDTO, experimental_features=experimental_features
+        route_handlers=handler, dto=ModelDataDTO, return_dto=ModelReturnDTO, experimental_features=experimental_features,
     ) as client:
         response = client.post("/", json={"what": "ever"})
         assert response.status_code == 201

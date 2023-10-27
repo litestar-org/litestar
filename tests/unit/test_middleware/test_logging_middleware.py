@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 pytestmark = pytest.mark.usefixtures("reset_httpx_logging")
 
 
-@pytest.fixture
+@pytest.fixture()
 def handler() -> HTTPRouteHandler:
     @get("/")
     def handler_fn() -> Response:
@@ -52,10 +52,10 @@ def test_logging_middleware_config_validation() -> None:
 
 
 def test_logging_middleware_regular_logger(
-    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler
+    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler,
 ) -> None:
     with create_test_client(
-        route_handlers=[handler], middleware=[LoggingMiddlewareConfig().middleware]
+        route_handlers=[handler], middleware=[LoggingMiddlewareConfig().middleware],
     ) as client, caplog.at_level(INFO):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.app.get_logger = get_logger
@@ -115,7 +115,7 @@ def test_logging_middleware_struct_logger(handler: HTTPRouteHandler) -> None:
 
 
 def test_logging_middleware_exclude_pattern(
-    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler
+    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler,
 ) -> None:
     @get("/exclude")
     def handler2() -> None:
@@ -123,7 +123,7 @@ def test_logging_middleware_exclude_pattern(
 
     config = LoggingMiddlewareConfig(exclude=["^/exclude"])
     with create_test_client(
-        route_handlers=[handler, handler2], middleware=[config.middleware]
+        route_handlers=[handler, handler2], middleware=[config.middleware],
     ) as client, caplog.at_level(INFO):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {"request-cookie": "abc"}  # type: ignore
@@ -139,7 +139,7 @@ def test_logging_middleware_exclude_pattern(
 
 
 def test_logging_middleware_exclude_opt_key(
-    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler
+    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler,
 ) -> None:
     @get("/exclude", skip_logging=True)
     def handler2() -> None:
@@ -147,7 +147,7 @@ def test_logging_middleware_exclude_opt_key(
 
     config = LoggingMiddlewareConfig(exclude_opt_key="skip_logging")
     with create_test_client(
-        route_handlers=[handler, handler2], middleware=[config.middleware]
+        route_handlers=[handler, handler2], middleware=[config.middleware],
     ) as client, caplog.at_level(INFO):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {"request-cookie": "abc"}  # type: ignore
@@ -164,7 +164,7 @@ def test_logging_middleware_exclude_opt_key(
 
 @pytest.mark.parametrize("include", [True, False])
 def test_logging_middleware_compressed_response_body(
-    get_logger: "GetLogger", include: bool, caplog: "LogCaptureFixture", handler: HTTPRouteHandler
+    get_logger: "GetLogger", include: bool, caplog: "LogCaptureFixture", handler: HTTPRouteHandler,
 ) -> None:
     with create_test_client(
         route_handlers=[handler],
@@ -189,7 +189,7 @@ def test_logging_middleware_post_body() -> None:
         return data
 
     with create_test_client(
-        route_handlers=[post_handler], middleware=[LoggingMiddlewareConfig().middleware], logging_config=LoggingConfig()
+        route_handlers=[post_handler], middleware=[LoggingMiddlewareConfig().middleware], logging_config=LoggingConfig(),
     ) as client:
         res = client.post("/", json={"foo": "bar"})
         assert res.status_code == 201
@@ -208,7 +208,7 @@ async def test_logging_middleware_post_binary_file_without_structlog(monkeypatch
     monkeypatch.setattr(middleware_logging, "structlog_installed", False)
 
     with create_test_client(
-        route_handlers=[post_handler], middleware=[LoggingMiddlewareConfig().middleware], logging_config=LoggingConfig()
+        route_handlers=[post_handler], middleware=[LoggingMiddlewareConfig().middleware], logging_config=LoggingConfig(),
     ) as client:
         res = client.post("/", files={"foo": b"\xfa\xfb"})
         assert res.status_code == 201
@@ -217,7 +217,7 @@ async def test_logging_middleware_post_binary_file_without_structlog(monkeypatch
 
 @pytest.mark.parametrize("logger_name", ("litestar", "other"))
 def test_logging_messages_are_not_doubled(
-    get_logger: "GetLogger", logger_name: str, caplog: "LogCaptureFixture"
+    get_logger: "GetLogger", logger_name: str, caplog: "LogCaptureFixture",
 ) -> None:
     # https://github.com/litestar-org/litestar/issues/896
 
@@ -239,12 +239,12 @@ def test_logging_messages_are_not_doubled(
 
 
 def test_logging_middleware_log_fields(
-    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler
+    get_logger: "GetLogger", caplog: "LogCaptureFixture", handler: HTTPRouteHandler,
 ) -> None:
     with create_test_client(
         route_handlers=[handler],
         middleware=[
-            LoggingMiddlewareConfig(response_log_fields=["status_code"], request_log_fields=["path"]).middleware
+            LoggingMiddlewareConfig(response_log_fields=["status_code"], request_log_fields=["path"]).middleware,
         ],
     ) as client, caplog.at_level(INFO):
         # Set cookies on the client to avoid warnings about per-request cookies.

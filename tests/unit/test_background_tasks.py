@@ -13,7 +13,7 @@ async def test_background_tasks_regular_execution() -> None:
         values.extend(values_to_extend)
 
     tasks = BackgroundTasks(
-        [BackgroundTask(extend_values, [1, 2, 3]), BackgroundTask(extend_values, values_to_extend=[4, 5, 6])]
+        [BackgroundTask(extend_values, [1, 2, 3]), BackgroundTask(extend_values, values_to_extend=[4, 5, 6])],
     )
 
     @get("/", background=tasks)

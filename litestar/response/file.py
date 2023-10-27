@@ -51,7 +51,7 @@ encodings_map[".br"] = "br"
 
 
 async def async_file_iterator(
-    file_path: PathType, chunk_size: int, adapter: FileSystemAdapter
+    file_path: PathType, chunk_size: int, adapter: FileSystemAdapter,
 ) -> AsyncGenerator[bytes, None]:
     """Return an async that asynchronously reads a file and yields its chunks.
 
@@ -206,13 +206,15 @@ class ASGIFileResponse(ASGIStreamingResponse):
         """
         try:
             fs_info = self.file_info = cast(
-                "FileInfo", (await self.file_info if iscoroutine(self.file_info) else self.file_info)
+                "FileInfo", (await self.file_info if iscoroutine(self.file_info) else self.file_info),
             )
         except FileNotFoundError as e:
-            raise ImproperlyConfiguredException(f"{self.file_path} does not exist") from e
+            msg = f"{self.file_path} does not exist"
+            raise ImproperlyConfiguredException(msg) from e
 
         if fs_info["type"] != "file":
-            raise ImproperlyConfiguredException(f"{self.file_path} is not a file")
+            msg = f"{self.file_path} is not a file"
+            raise ImproperlyConfiguredException(msg)
 
         self.content_length = fs_info["size"]
 
@@ -296,7 +298,8 @@ class File(Response):
         if file_system is not None and not (
             callable(getattr(file_system, "info", None)) and callable(getattr(file_system, "open", None))
         ):
-            raise ImproperlyConfiguredException("file_system must adhere to the FileSystemProtocol type")
+            msg = "file_system must adhere to the FileSystemProtocol type"
+            raise ImproperlyConfiguredException(msg)
 
         self.chunk_size = chunk_size
         self.content_disposition_type = content_disposition_type

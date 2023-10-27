@@ -59,7 +59,7 @@ async def form_multi_item_handler(request: Request) -> DefaultDict[str, list]:
                         "filename": v.filename,
                         "content": content.decode(),
                         "content_type": v.content_type,
-                    }
+                    },
                 )
             else:
                 output[key].append(v)
@@ -132,7 +132,7 @@ def test_multipart_request_files(tmpdir: Any) -> None:
                 "filename": "test.txt",
                 "content": "<file content>",
                 "content_type": "text/plain",
-            }
+            },
         }
 
 
@@ -147,7 +147,7 @@ def test_multipart_request_files_with_content_type(tmpdir: Any) -> None:
                 "filename": "test.txt",
                 "content": "<file content>",
                 "content_type": "text/plain",
-            }
+            },
         }
 
 
@@ -210,7 +210,7 @@ def test_multi_items(tmpdir: Any) -> None:
                 "abc",
                 {"filename": "test1.txt", "content": "<file1 content>", "content_type": "text/plain"},
                 {"filename": "test2.txt", "content": "<file2 content>", "content_type": "text/plain"},
-            ]
+            ],
         }
 
 
@@ -266,7 +266,7 @@ def test_multipart_request_with_charset_for_filename() -> None:
                 "filename": "文書.txt",
                 "content": "<file content>",
                 "content_type": "text/plain",
-            }
+            },
         }
 
 
@@ -289,7 +289,7 @@ def test_multipart_request_without_charset_for_filename() -> None:
                 "filename": "画像.jpg",
                 "content": "<file content>",
                 "content_type": "image/jpeg",
-            }
+            },
         }
 
 
@@ -308,7 +308,7 @@ def test_multipart_request_with_asterisks_filename() -> None:
             headers={"Content-Type": "multipart/form-data; boundary=a7f7ac8d4e2e437c877bb7b8d7cc549c"},
         )
         assert response.json() == {
-            "'file'": {"filename": "Naïve file.jpg", "content": "<file content>", "content_type": "image/jpeg"}
+            "'file'": {"filename": "Naïve file.jpg", "content": "<file content>", "content_type": "image/jpeg"},
         }
 
 
@@ -387,7 +387,7 @@ def test_image_upload() -> None:
         await data.read()
 
     with open(join(dirname(realpath(__file__)), "flower.jpeg"), "rb") as f, create_test_client(
-        route_handlers=[hello_world]
+        route_handlers=[hello_world],
     ) as client:
         data = f.read()
         response = client.post("/", files={"data": data})
@@ -428,7 +428,7 @@ def test_multipart_form_part_limit_body_param_precedence() -> None:
 
     @post("/", signature_types=[UploadFile])
     async def hello_world(
-        data: List[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART, multipart_form_part_limit=route_limit)
+        data: List[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART, multipart_form_part_limit=route_limit),
     ) -> None:
         assert len(data) == route_limit
 
@@ -502,7 +502,7 @@ def test_multipart_and_url_encoded_behave_the_same(form_type) -> None:  # type: 
     with create_test_client(
         route_handlers=[
             form_,
-        ]
+        ],
     ) as client:
         if form_type == RequestEncodingType.URL_ENCODED:
             response = client.post(

@@ -34,7 +34,7 @@ _decorator_http_method_map: dict[HttpMethod, type[HTTPRouteHandler]] = {
 
 
 def _create_default_route_handler(
-    http_method: HttpMethod, handler_kwargs: dict[str, Any] | None, app: Litestar
+    http_method: HttpMethod, handler_kwargs: dict[str, Any] | None, app: Litestar,
 ) -> HTTPRouteHandler:
     handler_decorator = _decorator_http_method_map[http_method]
 
@@ -292,7 +292,7 @@ class RequestFactory:
                 encoding_headers, stream = httpx_encode_json(data)
             elif request_media_type == RequestEncodingType.MULTI_PART:
                 encoding_headers, stream = encode_multipart_data(
-                    cast("dict[str, Any]", data), files=files or [], boundary=None
+                    cast("dict[str, Any]", data), files=files or [], boundary=None,
                 )  # type: ignore[assignment]
             else:
                 encoding_headers, stream = encode_urlencoded_data(decode_json(value=encode_json(data)))

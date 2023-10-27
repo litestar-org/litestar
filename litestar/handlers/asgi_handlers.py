@@ -77,14 +77,17 @@ class ASGIRouteHandler(BaseRouteHandler):
         super()._validate_handler_function()
 
         if not self.parsed_fn_signature.return_type.is_subclass_of(NoneType):
-            raise ImproperlyConfiguredException("ASGI handler functions should return 'None'")
+            msg = "ASGI handler functions should return 'None'"
+            raise ImproperlyConfiguredException(msg)
 
         if any(key not in self.parsed_fn_signature.parameters for key in ("scope", "send", "receive")):
+            msg = "ASGI handler functions should define 'scope', 'send' and 'receive' arguments"
             raise ImproperlyConfiguredException(
-                "ASGI handler functions should define 'scope', 'send' and 'receive' arguments"
+                msg,
             )
         if not is_async_callable(self.fn.value):
-            raise ImproperlyConfiguredException("Functions decorated with 'asgi' must be async functions")
+            msg = "Functions decorated with 'asgi' must be async functions"
+            raise ImproperlyConfiguredException(msg)
 
 
 asgi = ASGIRouteHandler

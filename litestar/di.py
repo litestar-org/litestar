@@ -51,7 +51,8 @@ class Provide:
             sync_to_thread: Run sync code in an async thread. Defaults to False.
         """
         if not callable(dependency):
-            raise ImproperlyConfiguredException("Provider dependency must a callable value")
+            msg = "Provider dependency must a callable value"
+            raise ImproperlyConfiguredException(msg)
 
         has_sync_callable = isclass(dependency) or not is_async_callable(dependency)
 
@@ -90,7 +91,7 @@ class Provide:
 
         return value
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         # check if memory address is identical, otherwise compare attributes
         return other is self or (
             isinstance(other, self.__class__)

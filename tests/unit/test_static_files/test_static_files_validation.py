@@ -63,12 +63,12 @@ def test_runtime_validation_of_static_path_and_path_parameter(tmpdir: "Path") ->
 
     with pytest.raises(ImproperlyConfiguredException):
         Litestar(
-            route_handlers=[handler], static_files_config=[StaticFilesConfig(path="/static", directories=[tmpdir])]
+            route_handlers=[handler], static_files_config=[StaticFilesConfig(path="/static", directories=[tmpdir])],
         )
 
 
 @pytest.mark.parametrize(
-    "method, expected",
+    ("method", "expected"),
     (
         (HttpMethod.GET, HTTP_200_OK),
         (HttpMethod.HEAD, HTTP_200_OK),
@@ -84,7 +84,7 @@ def test_runtime_validation_of_request_method(tmpdir: "Path", method: HttpMethod
     path.write_text("content", "utf-8")
 
     with create_test_client(
-        [], static_files_config=[StaticFilesConfig(path="/static", directories=[tmpdir])]
+        [], static_files_config=[StaticFilesConfig(path="/static", directories=[tmpdir])],
     ) as client:
         response = client.request(method, "/static/test.txt")
         assert response.status_code == expected

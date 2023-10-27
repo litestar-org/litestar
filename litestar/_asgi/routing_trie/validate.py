@@ -25,7 +25,8 @@ def validate_node(node: RouteTrieNode) -> None:
         None
     """
     if node.is_asgi and bool(set(node.asgi_handlers).difference({"asgi"})):
-        raise ImproperlyConfiguredException("ASGI handlers must have a unique path not shared by other route handlers.")
+        msg = "ASGI handlers must have a unique path not shared by other route handlers."
+        raise ImproperlyConfiguredException(msg)
 
     if (
         node.is_mount
@@ -36,10 +37,11 @@ def validate_node(node: RouteTrieNode) -> None:
                 if isinstance(child.path_parameters, dict)
                 else child.path_parameters
                 for child in node.children.values()
-            )
+            ),
         )
     ):
-        raise ImproperlyConfiguredException("Path parameters are not allowed under a static or mount route.")
+        msg = "Path parameters are not allowed under a static or mount route."
+        raise ImproperlyConfiguredException(msg)
 
     for child in node.children.values():
         validate_node(node=child)

@@ -222,7 +222,7 @@ class TransferFunctionFactory:
         return unique_name
 
     def _make_function(
-        self, source_value_name: str, return_value_name: str, fn_name: str = "func"
+        self, source_value_name: str, return_value_name: str, fn_name: str = "func",
     ) -> Callable[[Any], Any]:
         """Wrap the current body contents in a function definition and turn it into a callable object"""
         source = f"def {fn_name}({source_value_name}):\n{self._body} return {return_value_name}"
@@ -256,7 +256,7 @@ class TransferFunctionFactory:
 
     @contextmanager
     def _access_mapping_item(
-        self, source_name: str, field_name: str, expect_optional: bool
+        self, source_name: str, field_name: str, expect_optional: bool,
     ) -> Generator[str, None, None]:
         """Enter a context within which an item of a mapping can be accessed safely,
         i.e. only if it is contained within that mapping.
@@ -328,7 +328,7 @@ class TransferFunctionFactory:
         override_serialization_name: bool,
     ) -> Callable[[Any], Any]:
         factory = cls(
-            is_data_field=is_data_field, override_serialization_name=override_serialization_name, nested_as_dict=False
+            is_data_field=is_data_field, override_serialization_name=override_serialization_name, nested_as_dict=False,
         )
         tmp_return_type_name = factory._create_local_name("tmp_return_type")
         source_value_name = factory._create_local_name("source_value")
@@ -391,7 +391,7 @@ class TransferFunctionFactory:
         )
         transfer_func_name = self._add_to_fn_globals("transfer_data", transfer_func)
         self._add_stmt(
-            f"{assignment_target} = {origin_name}({transfer_func_name}(item) for item in {source_data_name})"
+            f"{assignment_target} = {origin_name}({transfer_func_name}(item) for item in {source_data_name})",
         )
 
     def _create_transfer_instance_data(
@@ -526,7 +526,7 @@ class TransferFunctionFactory:
                 )
                 transfer_type_data_name = self._add_to_fn_globals("transfer_type_data", transfer_type_data_fn)
                 self._add_stmt(
-                    f"{assignment_target} = {origin_name}({transfer_type_data_name}(item) for item in {source_value_name})"
+                    f"{assignment_target} = {origin_name}({transfer_type_data_name}(item) for item in {source_value_name})",
                 )
                 return
 

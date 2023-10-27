@@ -24,7 +24,7 @@ from tests.models import DataclassPerson, DataclassPersonFactory
 class TestSyncClassicPaginator(AbstractSyncClassicPaginator[DataclassPerson]):
     __test__ = False
 
-    def __init__(self, data: List[DataclassPerson]):
+    def __init__(self, data: List[DataclassPerson]) -> None:
         self.data = data
 
     def get_total(self, page_size: int) -> int:
@@ -37,7 +37,7 @@ class TestSyncClassicPaginator(AbstractSyncClassicPaginator[DataclassPerson]):
 class TestAsyncClassicPaginator(AbstractAsyncClassicPaginator[DataclassPerson]):
     __test__ = False
 
-    def __init__(self, data: List[DataclassPerson]):
+    def __init__(self, data: List[DataclassPerson]) -> None:
         self.data = data
 
     async def get_total(self, page_size: int) -> int:
@@ -50,7 +50,7 @@ class TestAsyncClassicPaginator(AbstractAsyncClassicPaginator[DataclassPerson]):
 class TestSyncOffsetPaginator(AbstractSyncOffsetPaginator[DataclassPerson]):
     __test__ = False
 
-    def __init__(self, data: List[DataclassPerson]):
+    def __init__(self, data: List[DataclassPerson]) -> None:
         self.data = data
 
     def get_total(self) -> int:
@@ -63,7 +63,7 @@ class TestSyncOffsetPaginator(AbstractSyncOffsetPaginator[DataclassPerson]):
 class TestAsyncOffsetPaginator(AbstractAsyncOffsetPaginator[DataclassPerson]):
     __test__ = False
 
-    def __init__(self, data: List[DataclassPerson]):
+    def __init__(self, data: List[DataclassPerson]) -> None:
         self.data = data
 
     async def get_total(self) -> int:
@@ -126,7 +126,7 @@ def test_classic_pagination_openapi_schema(paginator: Any) -> None:
                     "total_pages": {"type": "integer", "description": "Total number of pages."},
                 },
                 "type": "object",
-            }
+            },
         }
 
 
@@ -180,14 +180,14 @@ def test_limit_offset_pagination_openapi_schema(paginator: Any) -> None:
                     "total": {"type": "integer", "description": "Total number of items."},
                 },
                 "type": "object",
-            }
+            },
         }
 
 
 class TestSyncCursorPagination(AbstractSyncCursorPaginator[str, DataclassPerson]):
     __test__ = False
 
-    def __init__(self, data: List[DataclassPerson]):
+    def __init__(self, data: List[DataclassPerson]) -> None:
         self.data = data
 
     def get_items(self, cursor: Optional[str], results_per_page: int) -> "Tuple[List[DataclassPerson], Optional[str]]":
@@ -198,11 +198,11 @@ class TestSyncCursorPagination(AbstractSyncCursorPaginator[str, DataclassPerson]
 class TestAsyncCursorPagination(AbstractAsyncCursorPaginator[str, DataclassPerson]):
     __test__ = False
 
-    def __init__(self, data: List[DataclassPerson]):
+    def __init__(self, data: List[DataclassPerson]) -> None:
         self.data = data
 
     async def get_items(
-        self, cursor: Optional[str], results_per_page: int
+        self, cursor: Optional[str], results_per_page: int,
     ) -> "Tuple[List[DataclassPerson], Optional[str]]":
         results = self.data[:results_per_page]
         return results, results[-1].id
@@ -259,5 +259,5 @@ def test_cursor_pagination_openapi_schema(paginator: Any) -> None:
                     "results_per_page": {"type": "integer", "description": "Maximal number of items to send."},
                 },
                 "type": "object",
-            }
+            },
         }

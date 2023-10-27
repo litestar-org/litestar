@@ -21,7 +21,7 @@ class StoreRegistry:
     __slots__ = ("_stores", "_default_factory")
 
     def __init__(
-        self, stores: dict[str, Store] | None = None, default_factory: Callable[[str], Store] = default_default_factory
+        self, stores: dict[str, Store] | None = None, default_factory: Callable[[str], Store] = default_default_factory,
     ) -> None:
         """Initialize ``StoreRegistry``.
 
@@ -46,7 +46,8 @@ class StoreRegistry:
             ValueError: If a store is already registered under this name and ``override`` is not ``True``
         """
         if not allow_override and name in self._stores:
-            raise ValueError(f"Store with the name {name!r} already exists")
+            msg = f"Store with the name {name!r} already exists"
+            raise ValueError(msg)
         self._stores[name] = store
 
     def get(self, name: str) -> Store:

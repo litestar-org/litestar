@@ -34,14 +34,14 @@ def test_typescript_union() -> None:
 
 
 @pytest.mark.parametrize(
-    "value, expected", (("abc", '"abc"'), (123, "123"), (100.123, "100.123"), (True, "true"), (False, "false"))
+    ("value", "expected"), (("abc", '"abc"'), (123, "123"), (100.123, "100.123"), (True, "true"), (False, "false")),
 )
 def test_typescript_literal(value: Any, expected: str) -> None:
     assert TypeScriptLiteral(value).write() == expected
 
 
 @pytest.mark.parametrize(
-    "value, expected",
+    ("value", "expected"),
     (
         (TypeScriptPrimitive("string"), "string[]"),
         (TypeScriptUnion(types=(TypeScriptPrimitive("string"), TypeScriptPrimitive("number"))), "(number | string)[]"),
@@ -79,7 +79,7 @@ def test_typescript_enum() -> None:
 
 def test_typescript_type() -> None:
     ts_type = TypeScriptType(
-        name="MyUnion", value=TypeScriptUnion(types=(TypeScriptPrimitive("string"), TypeScriptPrimitive("number")))
+        name="MyUnion", value=TypeScriptUnion(types=(TypeScriptPrimitive("string"), TypeScriptPrimitive("number"))),
     )
     assert ts_type.write() == "export type MyUnion = number | string;"
 

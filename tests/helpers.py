@@ -37,7 +37,7 @@ async def maybe_async(obj: Awaitable[T] | T) -> T:
 
 
 class _AsyncContextManagerWrapper(AsyncContextManager):
-    def __init__(self, cm: AbstractContextManager):
+    def __init__(self, cm: AbstractContextManager) -> None:
         self.cm = cm
 
     async def __aenter__(self) -> Any:

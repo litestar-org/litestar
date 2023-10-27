@@ -64,7 +64,7 @@ class LoggingMiddleware(AbstractMiddleware):
             config: An instance of LoggingMiddlewareConfig.
         """
         super().__init__(
-            app=app, scopes={ScopeType.HTTP}, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key
+            app=app, scopes={ScopeType.HTTP}, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key,
         )
         self.is_struct_logger = structlog_installed
         self.config = config
@@ -281,7 +281,7 @@ class LoggingMiddlewareConfig:
             "query",
             "path_params",
             "body",
-        )
+        ),
     )
     """Fields to extract and log from the request.
 
@@ -296,7 +296,7 @@ class LoggingMiddlewareConfig:
             "cookies",
             "headers",
             "body",
-        )
+        ),
     )
     """Fields to extract and log from the response. The order of fields in the iterable determines the order of the log
     message logged out.
@@ -322,10 +322,12 @@ class LoggingMiddlewareConfig:
             The `value` argument cast as a tuple.
         """
         if not isinstance(self.response_log_fields, Iterable):
-            raise ImproperlyConfiguredException("response_log_fields must be a valid Iterable")
+            msg = "response_log_fields must be a valid Iterable"
+            raise ImproperlyConfiguredException(msg)
 
         if not isinstance(self.request_log_fields, Iterable):
-            raise ImproperlyConfiguredException("request_log_fields must be a valid Iterable")
+            msg = "request_log_fields must be a valid Iterable"
+            raise ImproperlyConfiguredException(msg)
 
         self.response_log_fields = tuple(self.response_log_fields)
         self.request_log_fields = tuple(self.request_log_fields)

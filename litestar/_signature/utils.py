@@ -16,7 +16,7 @@ __all__ = ("_validate_signature_dependencies", "_normalize_annotation", "_get_de
 
 
 def _validate_signature_dependencies(
-    dependency_name_set: set[str], fn_name: str, parsed_signature: ParsedSignature
+    dependency_name_set: set[str], fn_name: str, parsed_signature: ParsedSignature,
 ) -> set[str]:
     """Validate dependencies of ``parsed_signature``.
 
@@ -33,9 +33,9 @@ def _validate_signature_dependencies(
     for parameter in parsed_signature.parameters.values():
         if isinstance(parameter.kwarg_definition, DependencyKwarg) and parameter.name not in dependency_name_set:
             if not parameter.is_optional and parameter.default is Empty:
+                msg = f"Explicit dependency '{parameter.name}' for '{fn_name}' has no default value, or provided dependency."
                 raise ImproperlyConfiguredException(
-                    f"Explicit dependency '{parameter.name}' for '{fn_name}' has no default value, "
-                    f"or provided dependency."
+                    msg,
                 )
             dependency_names.add(parameter.name)
     return dependency_names

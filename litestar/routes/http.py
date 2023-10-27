@@ -79,7 +79,7 @@ class HTTPRoute(BaseRoute):
             await route_handler.authorize_connection(connection=request)
 
         response = await self._get_response_for_request(
-            scope=scope, request=request, route_handler=route_handler, parameter_model=parameter_model
+            scope=scope, request=request, route_handler=route_handler, parameter_model=parameter_model,
         )
 
         await response(scope, receive, send)
@@ -98,8 +98,9 @@ class HTTPRoute(BaseRoute):
             kwargs_model = self.create_handler_kwargs_model(route_handler=route_handler)
             for http_method in route_handler.http_methods:
                 if self.route_handler_map.get(http_method):
+                    msg = f"Handler already registered for path {self.path!r} and http method {http_method}"
                     raise ImproperlyConfiguredException(
-                        f"Handler already registered for path {self.path!r} and http method {http_method}"
+                        msg,
                     )
                 self.route_handler_map[http_method] = (route_handler, kwargs_model)
 
@@ -131,11 +132,11 @@ class HTTPRoute(BaseRoute):
             return response
 
         return await self._call_handler_function(
-            scope=scope, request=request, parameter_model=parameter_model, route_handler=route_handler
+            scope=scope, request=request, parameter_model=parameter_model, route_handler=route_handler,
         )
 
     async def _call_handler_function(
-        self, scope: Scope, request: Request, parameter_model: KwargsModel, route_handler: HTTPRouteHandler
+        self, scope: Scope, request: Request, parameter_model: KwargsModel, route_handler: HTTPRouteHandler,
     ) -> ASGIApp:
         """Call the before request handlers, retrieve any data required for the route handler, and call the route
         handler's ``to_response`` method.
@@ -151,7 +152,7 @@ class HTTPRoute(BaseRoute):
 
         if not response_data:
             response_data, cleanup_group = await self._get_response_data(
-                route_handler=route_handler, parameter_model=parameter_model, request=request
+                route_handler=route_handler, parameter_model=parameter_model, request=request,
             )
 
         response: ASGIApp = await route_handler.to_response(app=scope["app"], data=response_data, request=request)
@@ -163,7 +164,7 @@ class HTTPRoute(BaseRoute):
 
     @staticmethod
     async def _get_response_data(
-        route_handler: HTTPRouteHandler, parameter_model: KwargsModel, request: Request
+        route_handler: HTTPRouteHandler, parameter_model: KwargsModel, request: Request,
     ) -> tuple[Any, DependencyCleanupGroup | None]:
         """Determine what kwargs are required for the given route handler's ``fn`` and calls it."""
         parsed_kwargs: dict[str, Any] = {}
@@ -185,7 +186,7 @@ class HTTPRoute(BaseRoute):
                 cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
 
             parsed_kwargs = route_handler.signature_model.parse_values_from_connection_kwargs(
-                connection=request, **kwargs
+                connection=request, **kwargs,
             )
 
         if cleanup_group:
@@ -278,7 +279,7 @@ class HTTPRoute(BaseRoute):
                 if pre_flight_requested_headers:
                     if cors_config.is_allow_all_headers:
                         response_headers["Access-Control-Allow-Headers"] = ", ".join(
-                            sorted(set(pre_flight_requested_headers) | DEFAULT_ALLOWED_CORS_HEADERS)  # pyright: ignore
+                            sorted(set(pre_flight_requested_headers) | DEFAULT_ALLOWED_CORS_HEADERS),  # pyright: ignore
                         )
                     elif any(
                         header.lower() not in cors_config.allow_headers for header in pre_flight_requested_headers

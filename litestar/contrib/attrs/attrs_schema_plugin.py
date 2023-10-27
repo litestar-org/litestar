@@ -13,7 +13,8 @@ try:
     import attr
     import attrs
 except ImportError as e:
-    raise MissingDependencyException("attrs") from e
+    msg = "attrs"
+    raise MissingDependencyException(msg) from e
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
@@ -44,7 +45,7 @@ class AttrsSchemaPlugin(OpenAPISchemaPluginProtocol):
                     field_name
                     for field_name, attribute in attr.fields_dict(unwrapped_annotation).items()
                     if attribute.default is attrs.NOTHING and not is_optional_union(type_hints[field_name])
-                ]
+                ],
             ),
             properties={
                 k: schema_creator.for_field_definition(FieldDefinition.from_kwarg(v, k)) for k, v in type_hints.items()

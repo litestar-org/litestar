@@ -148,7 +148,7 @@ def model() -> Model:
 
 
 @pytest.mark.parametrize(
-    "attribute_name, expected",
+    ("attribute_name", "expected"),
     [
         ("path", "example"),
         ("email_str", "info@example.org"),

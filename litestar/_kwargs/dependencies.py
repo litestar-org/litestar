@@ -31,7 +31,7 @@ class Dependency:
         self.provide = provide
         self.dependencies = dependencies
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         # check if memory address is identical, otherwise compare attributes
         return other is self or (isinstance(other, self.__class__) and other.key == self.key)
 

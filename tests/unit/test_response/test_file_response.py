@@ -50,7 +50,7 @@ def test_file_response_infer_content_type(tmpdir: Path, content_disposition_type
         assert response.headers["content-disposition"] == f'{content_disposition_type}; filename="image.png"'
 
 
-@pytest.mark.parametrize("filename, expected", (("Jacky Chen", "Jacky%20Chen"), ("成龍", "%E6%88%90%E9%BE%8D")))
+@pytest.mark.parametrize(("filename", "expected"), (("Jacky Chen", "Jacky%20Chen"), ("成龍", "%E6%88%90%E9%BE%8D")))
 def test_filename(tmpdir: Path, filename: str, expected: str) -> None:
     path = Path(tmpdir / f"{filename}.txt")
     path.write_bytes(b"")
@@ -110,9 +110,9 @@ async def test_file_iterator(tmpdir: Path, chunk_size: int) -> None:
         [
             chunk
             async for chunk in async_file_iterator(
-                file_path=path, chunk_size=chunk_size, adapter=FileSystemAdapter(BaseLocalFileSystem())
+                file_path=path, chunk_size=chunk_size, adapter=FileSystemAdapter(BaseLocalFileSystem()),
             )
-        ]
+        ],
     )
     assert result == content
 

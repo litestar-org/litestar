@@ -76,7 +76,7 @@ def test_request_extraction_header_obfuscation(req: Request[Any, Any, Any]) -> N
 
 
 @pytest.mark.parametrize(
-    "req, key",
+    ("req", "key"),
     [
         (factory.get(cookies=[Cookie(key="special")]), "special"),
         (factory.get(cookies=[Cookie(key="Special")]), "Special"),

@@ -121,7 +121,7 @@ class AbstractSyncClassicPaginator(ABC, Generic[T]):
         items = self.get_items(page_size=page_size, current_page=current_page)
 
         return ClassicPagination[T](
-            items=items, total_pages=total_pages, page_size=page_size, current_page=current_page
+            items=items, total_pages=total_pages, page_size=page_size, current_page=current_page,
         )
 
 
@@ -171,7 +171,7 @@ class AbstractAsyncClassicPaginator(ABC, Generic[T]):
         items = await self.get_items(page_size=page_size, current_page=current_page)
 
         return ClassicPagination[T](
-            items=items, total_pages=total_pages, page_size=page_size, current_page=current_page
+            items=items, total_pages=total_pages, page_size=page_size, current_page=current_page,
         )
 
 

@@ -22,7 +22,7 @@ starlette_app = asgi(path="/some/sub-path", is_mount=True)(
             Route("/abc/", index),
             Route("/123/another/sub-path/", index),
         ],
-    )
+    ),
 )
 
 

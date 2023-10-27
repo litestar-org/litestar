@@ -94,7 +94,7 @@ def test_delete_cookie() -> None:
 
 
 @pytest.mark.parametrize(
-    "media_type, expected, should_have_content_length",
+    ("media_type", "expected", "should_have_content_length"),
     ((MediaType.TEXT, b"", False), (MediaType.HTML, b"", False), (MediaType.JSON, b"null", True)),
 )
 def test_empty_response(media_type: MediaType, expected: bytes, should_have_content_length: bool) -> None:
@@ -122,7 +122,7 @@ def test_response_without_payload(status_code: int) -> None:
 
 
 @pytest.mark.parametrize(
-    "status, body, should_raise",
+    ("status", "body", "should_raise"),
     (
         (HTTP_100_CONTINUE, None, False),
         (HTTP_101_SWITCHING_PROTOCOLS, None, False),
@@ -151,7 +151,7 @@ def test_statuses_without_body(status: int, body: Optional[str], should_raise: b
 
 
 @pytest.mark.parametrize(
-    "body, media_type, should_raise",
+    ("body", "media_type", "should_raise"),
     (
         ("", MediaType.TEXT, False),
         ("abc", MediaType.TEXT, False),

@@ -83,7 +83,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         """
         if self._content_type is Empty:
             self._content_type = self.scope["_content_type"] = parse_content_header(
-                self.headers.get("Content-Type", "")
+                self.headers.get("Content-Type", ""),
             )  # type: ignore[typeddict-unknown-key]
         return cast("tuple[str, dict[str, str]]", self._content_type)
 
@@ -107,7 +107,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         if self._json is Empty:
             body = await self.body()
             self._json = self.scope["_json"] = decode_json(
-                body or b"null", type_decoders=self.route_handler.resolve_type_decoders()
+                body or b"null", type_decoders=self.route_handler.resolve_type_decoders(),
             )  # type: ignore[typeddict-unknown-key]
         return self._json
 
@@ -120,7 +120,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         if self._msgpack is Empty:
             body = await self.body()
             self._msgpack = self.scope["_msgpack"] = decode_msgpack(
-                body or b"\xc0", type_decoders=self.route_handler.resolve_type_decoders()
+                body or b"\xc0", type_decoders=self.route_handler.resolve_type_decoders(),
             )  # type: ignore[typeddict-unknown-key]
         return self._msgpack
 
@@ -135,7 +135,8 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         """
         if self._body is Empty:
             if not self.is_connected:
-                raise InternalServerException("stream consumed")
+                msg = "stream consumed"
+                raise InternalServerException(msg)
             while event := await self.receive():
                 if event["type"] == "http.request":
                     if event["body"]:
@@ -145,7 +146,8 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
                         break
 
                 if event["type"] == "http.disconnect":
-                    raise InternalServerException("client disconnected prematurely")
+                    msg = "client disconnected prematurely"
+                    raise InternalServerException(msg)
 
             self.is_connected = False
             yield b""

@@ -15,7 +15,7 @@ from litestar.testing import create_test_client
 
 
 @pytest.mark.parametrize(
-    "params_dict,should_raise",
+    ("params_dict", "should_raise"),
     [
         (
             {
@@ -81,7 +81,7 @@ def test_path_params(params_dict: dict, should_raise: bool) -> None:
 
     with create_test_client(test_method) as client:
         response = client.get(
-            f"{params_dict['version']}/{params_dict['service_id']}/{params_dict['user_id']}/{params_dict['order_id']}"
+            f"{params_dict['version']}/{params_dict['service_id']}/{params_dict['user_id']}/{params_dict['order_id']}",
         )
         if should_raise:
             assert response.status_code == HTTP_400_BAD_REQUEST, response.json()
@@ -122,7 +122,7 @@ def test_duplicate_path_param_validation() -> None:
 
 
 @pytest.mark.parametrize(
-    "param_type_name, param_type_class, value, expected_value",
+    ("param_type_name", "param_type_class", "value", "expected_value"),
     [
         ["str", str, "abc", "abc"],
         ["int", int, "1", 1],
@@ -141,7 +141,7 @@ def test_duplicate_path_param_validation() -> None:
     ],
 )
 def test_path_param_type_resolution(
-    param_type_name: str, param_type_class: Any, value: str, expected_value: Any
+    param_type_name: str, param_type_class: Any, value: str, expected_value: Any,
 ) -> None:
     mock = MagicMock()
 

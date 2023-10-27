@@ -26,9 +26,11 @@ def get_session_backend(app: Litestar) -> ServerSideSessionBackend:
                 continue
             backend = middleware.kwargs["backend"]
             if not isinstance(backend, ServerSideSessionBackend):
-                raise LitestarCLIException("Only server-side backends are supported")
+                msg = "Only server-side backends are supported"
+                raise LitestarCLIException(msg)
             return backend
-    raise LitestarCLIException("Session middleware not installed")
+    msg = "Session middleware not installed"
+    raise LitestarCLIException(msg)
 
 
 @group(cls=LitestarGroup, name="sessions")
@@ -58,7 +60,8 @@ def clear_sessions_command(app: Litestar) -> None:
     backend = get_session_backend(app)
     store = backend.config.get_store_from_app(app)
     if not hasattr(store, "delete_all"):
-        raise LitestarCLIException(f"{type(store)} does not support clearing all sessions")
+        msg = f"{type(store)} does not support clearing all sessions"
+        raise LitestarCLIException(msg)
 
     if Confirm.ask("[red]Delete all sessions?"):
         anyio.run(store.delete_all)  # pyright: ignore

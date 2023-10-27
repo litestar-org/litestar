@@ -38,7 +38,7 @@ async def async_after_request_handler(response: Response) -> Response:
 
 
 @pytest.mark.parametrize(
-    "before_request, expected",
+    ("before_request", "expected"),
     (
         (None, {"hello": "world"}),
         (sync_before_request_handler_with_return_value, {"hello": "moon"}),
@@ -58,7 +58,7 @@ def test_before_request_handler_called(before_request: Optional[AnyCallable], ex
 
 
 @pytest.mark.parametrize(
-    "app_before_request_handler, router_before_request_handler, controller_before_request_handler, method_before_request_handler, expected",
+    ("app_before_request_handler", "router_before_request_handler", "controller_before_request_handler", "method_before_request_handler", "expected"),
     [
         [None, None, None, None, {"hello": "world"}],
         [sync_before_request_handler_with_return_value, None, None, None, {"hello": "moon"}],

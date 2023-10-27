@@ -9,7 +9,7 @@ from litestar.testing import create_test_client
 
 
 @pytest.mark.parametrize(
-    "t_type,param_dict,param,expected_code",
+    ("t_type", "param_dict", "param", "expected_code"),
     [
         (
             Optional[str],

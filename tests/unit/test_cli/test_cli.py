@@ -42,7 +42,7 @@ def test_info_command(mocker: "MockerFixture", runner: "CliRunner", app_file: "P
 
 
 def test_info_command_with_app_dir(
-    mocker: "MockerFixture", runner: "CliRunner", create_app_file: CreateAppFileFixture
+    mocker: "MockerFixture", runner: "CliRunner", create_app_file: CreateAppFileFixture,
 ) -> None:
     app_file = "main.py"
     app_file_without_extension = app_file.split(".")[0]

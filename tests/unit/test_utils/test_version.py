@@ -4,7 +4,7 @@ from litestar.utils.version import Version, parse_version
 
 
 @pytest.mark.parametrize(
-    "raw_version,expected",
+    ("raw_version", "expected"),
     [
         ("2.0.0alpha1", Version(2, 0, 0, "alpha", 1)),
         ("2.0.0a1", Version(2, 0, 0, "alpha", 1)),  # test importlib.metadata.version coercion
@@ -28,6 +28,6 @@ def test_parse_invalid_version(raw_version: str) -> None:
         parse_version(raw_version)
 
 
-@pytest.mark.parametrize("short,expected_output", [(True, "2.0.0"), (False, "2.0.0alpha1")])
+@pytest.mark.parametrize(("short", "expected_output"), [(True, "2.0.0"), (False, "2.0.0alpha1")])
 def test_formatted(short: bool, expected_output: str) -> None:
     assert parse_version("2.0.0alpha1").formatted(short=short) == expected_output

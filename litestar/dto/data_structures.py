@@ -33,7 +33,7 @@ class DTOData(Generic[T]):
         for k, v in kwargs.items():
             _set_nested_dict_value(data, k.split("__"), v)
         return self._backend.transfer_data_from_builtins(  # type:ignore[no-any-return]
-            data, override_serialization_name=True
+            data, override_serialization_name=True,
         )
 
     def update_instance(self, instance: T, **kwargs: Any) -> T:

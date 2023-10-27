@@ -143,7 +143,7 @@ def create_html_response_content(exc: Exception, request: Request, line_limit: i
         cause_error_description = f"<h3><span>{escape(str(cause))}</span></h3>"
         cause_error = f"<h4><span>{escape(cause.__class__.__name__)}</span></h4>"
         exception_data.append(
-            f'<div class="cause-wrapper">{cause_header}{cause_error}{cause_error_description}{cause_data}</div>'
+            f'<div class="cause-wrapper">{cause_header}{cause_error}{cause_error_description}{cause_data}</div>',
         )
         cause = cause.__cause__
 

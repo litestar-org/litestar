@@ -169,12 +169,12 @@ def test_parsed_signature() -> None:
     ],
 )
 def xtest_infer_request_encoding_type_from_parameter(
-    annotation: Any, default: Any, expected: RequestEncodingType
+    annotation: Any, default: Any, expected: RequestEncodingType,
 ) -> None:
     """Test infer_request_encoding_type_from_parameter."""
     assert (
         infer_request_encoding_from_field_definition(
-            FieldDefinition.from_kwarg(name="foo", default=default, annotation=annotation)
+            FieldDefinition.from_kwarg(name="foo", default=default, annotation=annotation),
         )
         == expected
     )

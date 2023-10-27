@@ -85,7 +85,7 @@ def test_static_files_config_with_multiple_directories(tmpdir: "Path", file_syst
     with create_test_client(
         [],
         static_files_config=[
-            StaticFilesConfig(path="/static", directories=[root1, root2], file_system=file_system)  # pyright: ignore
+            StaticFilesConfig(path="/static", directories=[root1, root2], file_system=file_system),  # pyright: ignore
         ],
     ) as client:
         response = client.get("/static/test1.txt")
@@ -128,7 +128,7 @@ def test_sub_path_under_static_path(tmpdir: "Path") -> None:
         return f
 
     with create_test_client(
-        handler, static_files_config=[StaticFilesConfig(path="/static", directories=[tmpdir])]
+        handler, static_files_config=[StaticFilesConfig(path="/static", directories=[tmpdir])],
     ) as client:
         response = client.get("/static/test.txt")
         assert response.status_code == HTTP_200_OK
@@ -183,7 +183,7 @@ def test_static_files_response_encoding(tmp_path: "Path", extension: str) -> Non
         assert response.headers["content-encoding"].startswith(expected_encoding_type)
 
 
-@pytest.mark.parametrize("send_as_attachment,disposition", [(True, "attachment"), (False, "inline")])
+@pytest.mark.parametrize(("send_as_attachment", "disposition"), [(True, "attachment"), (False, "inline")])
 def test_static_files_content_disposition(tmpdir: "Path", send_as_attachment: bool, disposition: str) -> None:
     path = tmpdir.mkdir("static_part").mkdir("static") / "test.txt"  # type: ignore
     path.write_text("content", "utf-8")

@@ -45,7 +45,7 @@ def local_method_second_dependency(path_param: str) -> str:
 test_path = "/test"
 
 
-@pytest.fixture
+@pytest.fixture()
 def first_controller() -> Type[Controller]:
     class FirstController(Controller):
         path = test_path

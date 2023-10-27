@@ -50,7 +50,7 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
     exclude_opt_key: str = "exclude_from_auth"
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
     exclude_http_methods: Sequence[Method] | None = field(
-        default_factory=lambda: cast("Sequence[Method]", ["OPTIONS", "HEAD"])
+        default_factory=lambda: cast("Sequence[Method]", ["OPTIONS", "HEAD"]),
     )
     """A sequence of http methods that do not require authentication. Defaults to ['OPTIONS', 'HEAD']"""
     scopes: Scopes | None = None

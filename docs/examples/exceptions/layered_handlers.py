@@ -23,7 +23,8 @@ def router_handler_exception_handler(request: Request, exc: ValidationException)
 
 @get("/")
 async def index() -> None:
-    raise HTTPException("something's gone wrong")
+    msg = "something's gone wrong"
+    raise HTTPException(msg)
 
 
 @get(

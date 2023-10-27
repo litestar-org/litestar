@@ -24,7 +24,7 @@ def greeter(name: str) -> Response[Dict[str, str]]:
             [
                 BackgroundTask(logging_task, name),
                 BackgroundTask(saving_task, name),
-            ]
+            ],
         ),
     )
 

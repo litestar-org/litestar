@@ -203,13 +203,13 @@ class ExceptionHandlerMiddleware:
 
             if scope["type"] == ScopeType.HTTP:
                 await self.handle_request_exception(
-                    litestar_app=litestar_app, scope=scope, receive=receive, send=send, exc=e
+                    litestar_app=litestar_app, scope=scope, receive=receive, send=send, exc=e,
                 )
             else:
                 await self.handle_websocket_exception(send=send, exc=e)
 
     async def handle_request_exception(
-        self, litestar_app: Litestar, scope: Scope, receive: Receive, send: Send, exc: Exception
+        self, litestar_app: Litestar, scope: Scope, receive: Receive, send: Send, exc: Exception,
     ) -> None:
         """Handle exception raised inside 'http' scope routes.
 

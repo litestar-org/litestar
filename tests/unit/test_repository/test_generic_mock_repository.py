@@ -46,7 +46,7 @@ def repository_type(request: FixtureRequest) -> type[GenericAsyncMockRepository]
 
 @pytest.fixture(name="author_repository_type", params=[GenericAsyncMockRepository, GenericSyncMockRepository])
 def fx_author_repository_type(
-    authors: list[UUIDAuthor], monkeypatch: pytest.MonkeyPatch, repository_type: type[GenericAsyncMockRepository]
+    authors: list[UUIDAuthor], monkeypatch: pytest.MonkeyPatch, repository_type: type[GenericAsyncMockRepository],
 ) -> AuthorRepositoryType:
     """Mock Author repository, pre-seeded with collection data."""
     repo = repository_type[UUIDAuthor]  # type: ignore[index]
@@ -81,7 +81,7 @@ def audit_model_type(create_audit_model_type: CreateAuditModelFixture) -> AuditM
 
 
 async def test_repo_raises_conflict_if_add_with_id(
-    authors: list[UUIDAuthor], author_repository: AuthorRepository
+    authors: list[UUIDAuthor], author_repository: AuthorRepository,
 ) -> None:
     """Test mock repo raises conflict if add identified entity."""
     with pytest.raises(ConflictError):
@@ -89,7 +89,7 @@ async def test_repo_raises_conflict_if_add_with_id(
 
 
 async def test_repo_raises_conflict_if_add_many_with_id(
-    authors: list[UUIDAuthor], author_repository: AuthorRepository
+    authors: list[UUIDAuthor], author_repository: AuthorRepository,
 ) -> None:
     """Test mock repo raises conflict if add identified entity."""
     with pytest.raises(ConflictError):
@@ -127,7 +127,7 @@ def test_generic_mock_repository_filter_collection_by_kwargs_and_semantics(autho
     """Test that filtering by kwargs has `AND` semantics when multiple kwargs,
     not `OR`."""
     collection = author_repository.filter_collection_by_kwargs(
-        author_repository.collection, name="Agatha Christie", dob="1828-09-09"
+        author_repository.collection, name="Agatha Christie", dob="1828-09-09",
     )
     assert len(collection) == 0
 
@@ -142,7 +142,7 @@ def test_generic_mock_repository_raises_repository_exception_if_named_attribute_
 
 
 async def test_sets_created_updated_on_add(
-    repository_type: type[GenericAsyncMockRepository], audit_model_type: AuditModelType
+    repository_type: type[GenericAsyncMockRepository], audit_model_type: AuditModelType,
 ) -> None:
     """Test that the repository updates the 'created_at' and 'updated_at' timestamps
     if necessary."""
@@ -167,7 +167,7 @@ async def test_sets_updated_on_update(author_repository: AuthorRepository) -> No
 
 
 async def test_does_not_set_created_updated(
-    repository_type: type[GenericAsyncMockRepository], model_type: ModelType
+    repository_type: type[GenericAsyncMockRepository], model_type: ModelType,
 ) -> None:
     """Test that the repository does not update the 'updated' timestamps when
     appropriate."""
@@ -206,7 +206,7 @@ async def test_add_many(repository_type: type[GenericAsyncMockRepository], model
 
 
 async def test_update(
-    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture,
 ) -> None:
     """Test that the repository update method works correctly."""
 
@@ -222,7 +222,7 @@ async def test_update(
 
 
 async def test_update_many(
-    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture,
 ) -> None:
     """Test that the repository add_many method works correctly."""
 
@@ -240,7 +240,7 @@ async def test_update_many(
 
 
 async def test_upsert(
-    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture,
 ) -> None:
     """Test that the repository upsert method works correctly."""
 
@@ -256,7 +256,7 @@ async def test_upsert(
 
 
 async def test_upsert_many(
-    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture,
 ) -> None:
     """Test that the repository upsert method works correctly."""
 
@@ -305,7 +305,7 @@ async def test_delete_many(repository_type: type[GenericAsyncMockRepository], au
 
 
 async def test_list_and_count(
-    repository_type: type[GenericAsyncMockRepository], audit_model_type: AuditModelType
+    repository_type: type[GenericAsyncMockRepository], audit_model_type: AuditModelType,
 ) -> None:
     """Test that the repository list_and_count returns records and the total record count."""
 
@@ -318,7 +318,7 @@ async def test_list_and_count(
 
 
 async def test_exists(
-    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture,
 ) -> None:
     """Test that the repository exists returns booleans."""
 
@@ -332,7 +332,7 @@ async def test_exists(
 
 
 async def test_exists_with_filter(
-    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture,
 ) -> None:
     """Test that the repository exists returns booleans. with filter argument"""
     limit_filter = LimitOffset(limit=1, offset=0)
@@ -357,7 +357,7 @@ async def test_count(repository_type: type[GenericAsyncMockRepository], audit_mo
 
 
 async def test_get(
-    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture,
 ) -> None:
     """Test that the repository get returns a model record correctly."""
 
@@ -372,7 +372,7 @@ async def test_get(
 
 
 async def test_get_one(
-    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture,
 ) -> None:
     """Test that the repository get_one returns a model record correctly."""
 
@@ -388,7 +388,7 @@ async def test_get_one(
 
 
 async def test_get_one_or_none(
-    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture,
 ) -> None:
     """Test that the repository get_one_or_none returns a model record correctly."""
 
@@ -404,12 +404,12 @@ async def test_get_one_or_none(
 
 
 async def test_get_or_create(
-    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture,
 ) -> None:
     """Test that the repository get_or_create returns a model record correctly."""
 
     Model = create_audit_model_type(
-        {"random_column": Mapped[str], "cool_attribute": mapped_column(String, nullable=True)}
+        {"random_column": Mapped[str], "cool_attribute": mapped_column(String, nullable=True)},
     )
 
     instances = [Model(random_column="value 1", cool_attribute="yep"), Model(random_column="value 2")]
@@ -425,19 +425,19 @@ async def test_get_or_create(
 
 
 async def test_get_or_create_match_fields(
-    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture,
 ) -> None:
     """Test that the repository get_or_create returns a model record correctly."""
 
     Model = create_audit_model_type(
-        {"random_column": Mapped[str], "cool_attribute": mapped_column(String, nullable=True)}
+        {"random_column": Mapped[str], "cool_attribute": mapped_column(String, nullable=True)},
     )
 
     instances = [Model(random_column="value 1", cool_attribute="yep"), Model(random_column="value 2")]
     mock_repo = repository_type[Model]()  # type: ignore[index]
     inserted_instances = await maybe_async(mock_repo.add_many(instances))
     fetched_instance, fetched_created = await maybe_async(
-        mock_repo.get_or_create(match_fields=["random_column"], random_column="value 1", cool_attribute="other thing")
+        mock_repo.get_or_create(match_fields=["random_column"], random_column="value 1", cool_attribute="other thing"),
     )
     assert await maybe_async(mock_repo.count()) == 2
     assert inserted_instances[0] == fetched_instance

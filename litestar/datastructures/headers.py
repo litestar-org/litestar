@@ -135,7 +135,8 @@ class MutableScopeHeaders(MutableMapping):
             ValueError: If the message does not have a ``headers`` key.
         """
         if "headers" not in message:
-            raise ValueError(f"Invalid message type: {message['type']!r}")
+            msg = f"Invalid message type: {message['type']!r}"
+            raise ValueError(msg)
 
         return cls(cast("HeaderScope", message))
 
@@ -265,7 +266,8 @@ class Header(ABC):
         """
 
         if not self.HEADER_NAME:
-            raise ImproperlyConfiguredException("Missing header name")
+            msg = "Missing header name"
+            raise ImproperlyConfiguredException(msg)
 
         return (f"{self.HEADER_NAME}: " if include_header_name else "") + self._get_header_value()
 
@@ -334,10 +336,12 @@ class CacheControlHeader(Header):
             elif len(key_value) == 2:
                 key, value = key_value
                 if key not in field_definitions:
-                    raise ImproperlyConfiguredException("Invalid cache-control header")
+                    msg = "Invalid cache-control header"
+                    raise ImproperlyConfiguredException(msg)
                 kwargs[key] = cls._convert_to_type(value, field_definition=field_definitions[key])
             else:
-                raise ImproperlyConfiguredException("Invalid cache-control header value")
+                msg = "Invalid cache-control header value"
+                raise ImproperlyConfiguredException(msg)
 
         try:
             return CacheControlHeader(**kwargs)
@@ -387,7 +391,8 @@ class CacheControlHeader(Header):
         # set with a value of True
         expected_type = field_definition.raw
         if expected_type is bool:
-            raise ImproperlyConfiguredException("Invalid cache-control header value")
+            msg = "Invalid cache-control header value"
+            raise ImproperlyConfiguredException(msg)
         return expected_type(value)
 
 
@@ -421,9 +426,11 @@ class ETag(Header):
 
     def __post_init__(self) -> None:
         if self.documentation_only is False and self.value is None:
-            raise ValidationException("value must be set if documentation_only is false")
+            msg = "value must be set if documentation_only is false"
+            raise ValidationException(msg)
         if self.value and not PRINTABLE_ASCII_RE.fullmatch(self.value):
-            raise ValidationException("value must only contain ASCII printable characters")
+            msg = "value must only contain ASCII printable characters"
+            raise ValidationException(msg)
 
 
 class MediaTypeHeader:
@@ -467,8 +474,8 @@ class MediaTypeHeader:
         return next(
             (False for key, value in self.params.items() if key != "q" and value != other.params.get(key)),
             False
-            if self.subtype != "*" and other.subtype != "*" and self.subtype != other.subtype
-            else self.maintype == "*" or other.maintype == "*" or self.maintype == other.maintype,
+            if self.subtype not in ("*", other.subtype)
+            else self.maintype in ("*", other.maintype),
         )
 
 

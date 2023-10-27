@@ -18,7 +18,8 @@ if TYPE_CHECKING:
 try:
     import pydantic
 except ImportError as e:
-    raise MissingDependencyException("pydantic") from e
+    msg = "pydantic"
+    raise MissingDependencyException(msg) from e
 
 T = TypeVar("T")
 
@@ -35,9 +36,9 @@ def _dec_pydantic(model_type: type[pydantic.BaseModel], value: Any) -> pydantic.
 
 
 def _dec_pydantic_uuid(
-    uuid_type: type[pydantic.UUID1] | type[pydantic.UUID3] | type[pydantic.UUID4] | type[pydantic.UUID5],
+    uuid_type: type[pydantic.UUID1 | pydantic.UUID3 | pydantic.UUID4 | pydantic.UUID5],
     value: Any,
-) -> type[pydantic.UUID1] | type[pydantic.UUID3] | type[pydantic.UUID4] | type[pydantic.UUID5]:  # pragma: no cover
+) -> type[pydantic.UUID1 | pydantic.UUID3 | pydantic.UUID4 | pydantic.UUID5]:  # pragma: no cover
     if isinstance(value, str):
         value = uuid_type(value)
 
@@ -53,12 +54,14 @@ def _dec_pydantic_uuid(
         value = uuid_type(str(value))
 
     if not isinstance(value, uuid_type):
-        raise ValidationError(f"Invalid UUID: {value!r}")
+        msg = f"Invalid UUID: {value!r}"
+        raise ValidationError(msg)
 
     if value._required_version != value.version:  # pyright: ignore
-        raise ValidationError(f"Invalid UUID version: {value!r}")
+        msg = f"Invalid UUID version: {value!r}"
+        raise ValidationError(msg)
 
-    return cast("type[pydantic.UUID1] | type[pydantic.UUID3] | type[pydantic.UUID4] | type[pydantic.UUID5]", value)
+    return cast("type[pydantic.UUID1 | pydantic.UUID3 | pydantic.UUID4 | pydantic.UUID5]", value)
 
 
 def _is_pydantic_uuid(value: Any) -> bool:  # pragma: no cover
@@ -87,7 +90,7 @@ class PydanticInitPlugin(InitPluginProtocol):
     @classmethod
     def decoders(cls) -> list[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]]:
         decoders: list[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]] = [
-            (is_pydantic_model_class, _dec_pydantic)
+            (is_pydantic_model_class, _dec_pydantic),
         ]
 
         if pydantic.VERSION.startswith("1"):  # pragma: no cover

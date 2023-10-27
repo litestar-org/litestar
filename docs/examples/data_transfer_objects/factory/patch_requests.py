@@ -22,8 +22,8 @@ class PatchDTO(DataclassDTO[Person]):
 
 database = {
     UUID("f32ff2ce-e32f-4537-9dc0-26e7599f1380"): Person(
-        id=UUID("f32ff2ce-e32f-4537-9dc0-26e7599f1380"), name="Peter", age=40
-    )
+        id=UUID("f32ff2ce-e32f-4537-9dc0-26e7599f1380"), name="Peter", age=40,
+    ),
 }
 
 

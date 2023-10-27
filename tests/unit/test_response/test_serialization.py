@@ -63,14 +63,14 @@ def test_path(media_type: MediaType, decode_media_type: DecodeMediaType, path: P
 
 
 @pytest.mark.parametrize(
-    "content, response_type, media_type", [["abcdefg", str, MediaType.TEXT], ["<div/>", str, MediaType.HTML]]
+    ("content", "response_type", "media_type"), [["abcdefg", str, MediaType.TEXT], ["<div/>", str, MediaType.HTML]],
 )
 def test_response_serialization_text_types(content: Any, response_type: Any, media_type: MediaType) -> None:
     assert Response(None).render(content, media_type=media_type, enc_hook=get_serializer({})) == content.encode("utf-8")
 
 
 @pytest.mark.parametrize(
-    "content, response_type, media_type, should_raise",
+    ("content", "response_type", "media_type", "should_raise"),
     [
         ["abcdefg", str, "text/custom", False],
         ["<xml/>", str, "application/unknown", False],
@@ -79,7 +79,7 @@ def test_response_serialization_text_types(content: Any, response_type: Any, med
     ],
 )
 def test_response_validation_of_unknown_media_types(
-    content: Any, response_type: Any, media_type: MediaType, should_raise: bool
+    content: Any, response_type: Any, media_type: MediaType, should_raise: bool,
 ) -> None:
     response = Response(None)
     if should_raise:

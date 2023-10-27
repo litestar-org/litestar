@@ -24,7 +24,7 @@ def test_state_immutable_mapping(state_class: type[ImmutableState]) -> None:
 
 
 @pytest.mark.parametrize(
-    "zero_object", (ImmutableState({"first": 1}), State({"first": 1}), {"first": 1}, [("first", 1)])
+    "zero_object", (ImmutableState({"first": 1}), State({"first": 1}), {"first": 1}, [("first", 1)]),
 )
 def test_state_init(zero_object: Any) -> None:
     state = ImmutableState(zero_object)

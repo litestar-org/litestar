@@ -76,7 +76,7 @@ def test_cors_options_request_with_wrong_origin_fails() -> None:
 
 
 @pytest.mark.parametrize(
-    "allowed_origins, allowed_origin_regex, origin",
+    ("allowed_origins", "allowed_origin_regex", "origin"),
     (
         (["http://testserver.local", "https://moishe.zuchmir"], None, "https://moishe.zuchmir"),
         (["http://testserver.local", "https://moishe.zuchmir"], None, "http://testserver.local"),
@@ -88,21 +88,21 @@ def test_cors_options_request_with_wrong_origin_fails() -> None:
     ),
 )
 def test_cors_options_request_with_different_domains_matches_regex(
-    allowed_origins: List[str], allowed_origin_regex: Optional[str], origin: str
+    allowed_origins: List[str], allowed_origin_regex: Optional[str], origin: str,
 ) -> None:
     @get("/")
     def handler() -> None:
         return None
 
     with create_test_client(
-        handler, cors_config=CORSConfig(allow_origins=allowed_origins, allow_origin_regex=allowed_origin_regex)
+        handler, cors_config=CORSConfig(allow_origins=allowed_origins, allow_origin_regex=allowed_origin_regex),
     ) as client:
         response = client.options("/", headers={"Origin": origin})
         assert response.status_code == HTTP_204_NO_CONTENT
 
 
 @pytest.mark.parametrize(
-    "origin, allow_credentials",
+    ("origin", "allow_credentials"),
     (("http://testserver.local", False), ("http://testserver.local", True), (None, False), (None, True)),
 )
 def test_cors_options_request_allow_credentials_header(origin: str, allow_credentials: bool) -> None:
@@ -111,7 +111,7 @@ def test_cors_options_request_allow_credentials_header(origin: str, allow_creden
         return None
 
     with create_test_client(
-        handler, cors_config=CORSConfig(allow_origins=["http://testserver.local"], allow_credentials=allow_credentials)
+        handler, cors_config=CORSConfig(allow_origins=["http://testserver.local"], allow_credentials=allow_credentials),
     ) as client:
         headers: Mapping[str, str] = {"Origin": origin} if origin else {}
         response = client.options("/", headers=headers)
@@ -145,7 +145,7 @@ def test_cors_options_request_with_correct_headers_passes() -> None:
         return None
 
     with create_test_client(
-        handler, cors_config=CORSConfig(allow_headers=["X-My-Header", "X-Another-Header"])
+        handler, cors_config=CORSConfig(allow_headers=["X-My-Header", "X-Another-Header"]),
     ) as client:
         response = client.options(
             "/",

@@ -38,7 +38,7 @@ async def people_handler(paginator: PersonOffsetPaginator, limit: int, offset: i
 
 
 sqlalchemy_config = SQLAlchemyAsyncConfig(
-    connection_string="sqlite+aiosqlite:///test.sqlite", session_dependency_key="async_session"
+    connection_string="sqlite+aiosqlite:///test.sqlite", session_dependency_key="async_session",
 )  # Create 'async_session' dependency.
 sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 

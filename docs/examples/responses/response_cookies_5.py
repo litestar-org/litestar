@@ -18,7 +18,7 @@ class Resource(BaseModel):
             key="Random-Cookie",
             description="a random number in the range 100 - 1000",
             documentation_only=True,
-        )
+        ),
     ],
     sync_to_thread=False,
 )
@@ -46,7 +46,7 @@ router = Router(
             key="Random-Cookie",
             description="a random number in the range 1 - 100",
             documentation_only=True,
-        )
+        ),
     ],
 )
 

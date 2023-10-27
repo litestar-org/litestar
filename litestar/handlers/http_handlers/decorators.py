@@ -52,7 +52,7 @@ class delete(HTTPRouteHandler):
 
     def __init__(
         self,
-        path: str | None | list[str] | None = None,
+        path: str | None | list[str] = None,
         *,
         after_request: AfterRequestHookHandler | None = None,
         after_response: AfterResponseHookHandler | None = None,
@@ -216,7 +216,7 @@ class get(HTTPRouteHandler):
 
     def __init__(
         self,
-        path: str | None | list[str] | None = None,
+        path: str | None | list[str] = None,
         *,
         after_request: AfterRequestHookHandler | None = None,
         after_response: AfterResponseHookHandler | None = None,
@@ -381,7 +381,7 @@ class head(HTTPRouteHandler):
 
     def __init__(
         self,
-        path: str | None | list[str] | None = None,
+        path: str | None | list[str] = None,
         *,
         after_request: AfterRequestHookHandler | None = None,
         after_response: AfterResponseHookHandler | None = None,
@@ -552,7 +552,8 @@ class head(HTTPRouteHandler):
             or is_class_and_subclass(return_annotation, File)
             or is_class_and_subclass(return_annotation, ASGIFileResponse)
         ):
-            raise ImproperlyConfiguredException("A response to a head request should not have a body")
+            msg = "A response to a head request should not have a body"
+            raise ImproperlyConfiguredException(msg)
 
 
 class patch(HTTPRouteHandler):
@@ -563,7 +564,7 @@ class patch(HTTPRouteHandler):
 
     def __init__(
         self,
-        path: str | None | list[str] | None = None,
+        path: str | None | list[str] = None,
         *,
         after_request: AfterRequestHookHandler | None = None,
         after_response: AfterResponseHookHandler | None = None,
@@ -727,7 +728,7 @@ class post(HTTPRouteHandler):
 
     def __init__(
         self,
-        path: str | None | list[str] | None = None,
+        path: str | None | list[str] = None,
         *,
         after_request: AfterRequestHookHandler | None = None,
         after_response: AfterResponseHookHandler | None = None,
@@ -891,7 +892,7 @@ class put(HTTPRouteHandler):
 
     def __init__(
         self,
-        path: str | None | list[str] | None = None,
+        path: str | None | list[str] = None,
         *,
         after_request: AfterRequestHookHandler | None = None,
         after_response: AfterResponseHookHandler | None = None,

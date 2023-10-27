@@ -55,4 +55,5 @@ def __getattr__(name: str) -> Any:
             alternative="Litestar",
         )
         return _LitestarType
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    msg = f"module {__name__!r} has no attribute {name!r}"
+    raise AttributeError(msg)

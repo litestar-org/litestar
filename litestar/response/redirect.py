@@ -51,17 +51,15 @@ class ASGIRedirectResponse(ASGIResponse):
         status_code = status_code or HTTP_302_FOUND
 
         if status_code not in REDIRECT_STATUS_CODES:
+            msg = f"{status_code} is not a valid for this response. Redirect responses should have one of the following status codes: {', '.join([str(s) for s in REDIRECT_STATUS_CODES])}"
             raise ImproperlyConfiguredException(
-                f"{status_code} is not a valid for this response. "
-                f"Redirect responses should have one of "
-                f"the following status codes: {', '.join([str(s) for s in REDIRECT_STATUS_CODES])}"
+                msg,
             )
 
         if media_type not in REDIRECT_ALLOWED_MEDIA_TYPES:
+            msg = f"{media_type} media type is not supported yet. Media type should be one of the following values: {', '.join([str(s) for s in REDIRECT_ALLOWED_MEDIA_TYPES])}"
             raise ImproperlyConfiguredException(
-                f"{media_type} media type is not supported yet. "
-                f"Media type should be one of "
-                f"the following values: {', '.join([str(s) for s in REDIRECT_ALLOWED_MEDIA_TYPES])}"
+                msg,
             )
 
         super().__init__(

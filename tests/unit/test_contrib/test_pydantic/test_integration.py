@@ -30,7 +30,7 @@ def test_pydantic_validation_error_raises_400() -> None:
                 "msg": "ensure this value has at most 2 characters",
                 "type": "value_error.any_str.max_length",
                 "ctx": {"limit_value": 2},
-            }
+            },
         ]
     else:
         expected_errors = [
@@ -40,7 +40,7 @@ def test_pydantic_validation_error_raises_400() -> None:
                 "msg": "String should have at most 2 characters",
                 "input": "too long",
                 "ctx": {"max_length": 2},
-            }
+            },
         ]
 
     with create_test_client(route_handlers=handler) as client:

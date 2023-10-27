@@ -46,7 +46,7 @@ class StaticFiles:
         self.send_as_attachment = send_as_attachment
 
     async def get_fs_info(
-        self, directories: Sequence[PathType], file_path: PathType
+        self, directories: Sequence[PathType], file_path: PathType,
     ) -> tuple[Path, FileInfo] | tuple[None, None]:
         """Return the resolved path and a :class:`stat_result <os.stat_result>`.
 
@@ -80,7 +80,7 @@ class StaticFiles:
             None
         """
         if scope["type"] != ScopeType.HTTP or scope["method"] not in {"GET", "HEAD"}:
-            raise MethodNotAllowedException()
+            raise MethodNotAllowedException
 
         split_path = scope["path"].split("/")
         filename = split_path[-1]
@@ -112,7 +112,7 @@ class StaticFiles:
             # for some reason coverage doesn't catch these two lines
             filename = "404.html"  # pragma: no cover
             resolved_path, fs_info = await self.get_fs_info(  # pragma: no cover
-                directories=self.directories, file_path=filename
+                directories=self.directories, file_path=filename,
             )
 
             if fs_info and fs_info["type"] == "file":
@@ -127,6 +127,7 @@ class StaticFiles:
                 )(scope, receive, send)
                 return
 
+        msg = f"no file or directory match the path {resolved_path or joined_path} was found"
         raise NotFoundException(
-            f"no file or directory match the path {resolved_path or joined_path} was found"
+            msg,
         )  # pragma: no cover

@@ -15,8 +15,8 @@ class Resource(BaseModel):
     "/resources",
     response_headers=[
         ResponseHeader(
-            name="Random-Header", description="a random number in the range 1 - 100", documentation_only=True
-        )
+            name="Random-Header", description="a random number in the range 1 - 100", documentation_only=True,
+        ),
     ],
     sync_to_thread=False,
 )

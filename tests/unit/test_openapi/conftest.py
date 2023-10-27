@@ -44,7 +44,7 @@ def create_person_controller() -> Type[Controller]:
             from_date: Optional[Union[int, datetime, date]] = None,
             to_date: Optional[Union[int, datetime, date]] = None,
             gender: Optional[Union[Gender, List[Gender]]] = Parameter(
-                examples=[Example(value="M"), Example(value=["M", "O"])]
+                examples=[Example(value="M"), Example(value=["M", "O"])],
             ),
             # header parameter
             secret_header: str = Parameter(header="secret"),
@@ -55,25 +55,25 @@ def create_person_controller() -> Type[Controller]:
 
         @post(media_type=MediaType.TEXT)
         def create_person(
-            self, data: DataclassPerson, secret_header: str = Parameter(header="secret")
+            self, data: DataclassPerson, secret_header: str = Parameter(header="secret"),
         ) -> DataclassPerson:
             return data
 
         @post(path="/bulk", dto=PartialDataclassPersonDTO)
         def bulk_create_person(
-            self, data: List[DTOData[DataclassPerson]], secret_header: str = Parameter(header="secret")
+            self, data: List[DTOData[DataclassPerson]], secret_header: str = Parameter(header="secret"),
         ) -> List[DataclassPerson]:
             return []
 
         @put(path="/bulk")
         def bulk_update_person(
-            self, data: List[DataclassPerson], secret_header: str = Parameter(header="secret")
+            self, data: List[DataclassPerson], secret_header: str = Parameter(header="secret"),
         ) -> List[DataclassPerson]:
             return []
 
         @patch(path="/bulk", dto=PartialDataclassPersonDTO)
         def bulk_partial_update_person(
-            self, data: List[DTOData[DataclassPerson]], secret_header: str = Parameter(header="secret")
+            self, data: List[DTOData[DataclassPerson]], secret_header: str = Parameter(header="secret"),
         ) -> List[DataclassPerson]:
             return []
 
@@ -102,7 +102,7 @@ def create_person_controller() -> Type[Controller]:
         @get(path="/dataclass")
         def get_person_dataclass(self) -> DataclassPerson:
             return DataclassPerson(
-                first_name="Moishe", last_name="zuchmir", id="1", optional=None, complex={}, pets=None
+                first_name="Moishe", last_name="zuchmir", id="1", optional=None, complex={}, pets=None,
             )
 
     return PersonController
@@ -117,7 +117,7 @@ def create_pet_controller() -> Type[Controller]:
             return []
 
         @get(
-            path="/owner-or-pet", response_headers=[ResponseHeader(name="x-my-tag", value="123")], raises=[PetException]
+            path="/owner-or-pet", response_headers=[ResponseHeader(name="x-my-tag", value="123")], raises=[PetException],
         )
         def get_pets_or_owners(self) -> List[Union[DataclassPerson, DataclassPet]]:
             return []
@@ -125,13 +125,11 @@ def create_pet_controller() -> Type[Controller]:
     return PetController
 
 
-@pytest.fixture
-@pytest.mark.usefixtures("disable_warn_implicit_sync_to_thread")
+@pytest.fixture()
 def person_controller() -> Type[Controller]:
     return create_person_controller()
 
 
-@pytest.fixture
-@pytest.mark.usefixtures("disable_warn_implicit_sync_to_thread")
+@pytest.fixture()
 def pet_controller() -> Type[Controller]:
     return create_pet_controller()

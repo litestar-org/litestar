@@ -80,10 +80,11 @@ class FileSystemAdapter:
                 else run_sync(self.file_system.info, str(path))
             )
             return cast("FileInfo", await awaitable)
-        except FileNotFoundError as e:
-            raise e
+        except FileNotFoundError:
+            raise
         except PermissionError as e:
-            raise NotAuthorizedException(f"failed to read {path} due to missing permissions") from e
+            msg = f"failed to read {path} due to missing permissions"
+            raise NotAuthorizedException(msg) from e
         except OSError as e:  # pragma: no cover
             raise InternalServerException from e
 
@@ -115,7 +116,8 @@ class FileSystemAdapter:
                 )
             return AsyncFile(await run_sync(self.file_system.open, file, mode, buffering))  # type: ignore
         except PermissionError as e:
-            raise NotAuthorizedException(f"failed to open {file} due to missing permissions") from e
+            msg = f"failed to open {file} due to missing permissions"
+            raise NotAuthorizedException(msg) from e
         except OSError as e:
             raise InternalServerException from e
 

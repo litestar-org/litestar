@@ -51,7 +51,7 @@ def test_serializing_multiple_piccolo_tables(scaffold_piccolo: Callable) -> None
 
 
 @pytest.mark.parametrize(
-    "piccolo_type, py_type, meta_data_key",
+    ("piccolo_type", "py_type", "meta_data_key"),
     (
         (column_types.Decimal, Decimal, None),
         (column_types.Numeric, Decimal, None),

@@ -269,42 +269,7 @@ pythonVersion = "3.8"
 strict-imports = false
 
 [tool.ruff]
-select = [
-  "A", # flake8-builtins
-  "B", # flake8-bugbear
-  "BLE", # flake8-blind-except
-  "C4", # flake8-comprehensions
-  "C90", # mccabe
-  "D", # pydocstyle
-  "DJ", # flake8-django
-  "DTZ", # flake8-datetimez
-  "E", # pycodestyle errors
-  "ERA", # eradicate
-  "EXE", # flake8-executable
-  "F", # pyflakes
-  "G", # flake8-logging-format
-  "I", # isort
-  "ICN", # flake8-import-conventions
-  "ISC", # flake8-implicit-str-concat  # Ruff Formatter conflicts with this
-  "N", # pep8-naming
-  "PIE", # flake8-pie
-  "PLC", # pylint - convention
-  "PLE", # pylint - error
-  "PLW", # pylint - warning
-  "PTH", # flake8-use-pathlib
-  "Q", # flake8-quotes
-  "RET", # flake8-return
-  "RUF", # Ruff-specific rules
-  "S", # flake8-bandit
-  "SIM", # flake8-simplify
-  "T10", # flake8-debugger
-  "T20", # flake8-print
-  "TCH", # flake8-type-checking
-  "TID", # flake8-tidy-imports
-  "UP", # pyupgrade
-  "W", # pycodestyle - warning
-  "YTT", # flake8-2020
-]
+select = ["ALL"]
 
 ignore = [
   "A003", # flake8-builtins - class attribute {name} is shadowing a python builtin
@@ -323,6 +288,7 @@ ignore = [
   "E501", # pycodestyle line too long, handled by ruff-fmt
   "PLW2901", # pylint - for loop variable overwritten by assignment target
   "RUF012", # Ruff-specific rule - annotated with classvar
+  "ANN101" # Missing type annotation for self in method
 ]
 line-length = 120
 src = ["litestar", "tests", "docs/examples"]
@@ -364,6 +330,13 @@ indent-style = "space"
 "test_apps/**/*.*" = ["D", "TRY", "EM", "S", "PTH"]
 "tests/**/*.*" = [
   "A",
+  "ANN001",
+  "ANN102",
+  "ANN401",
+  "FIX",
+  "FA100",
+  "SLF",
+  "TD",
   "ARG",
   "B",
   "BLE",

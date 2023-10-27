@@ -109,7 +109,8 @@ class Template(Response[bytes]):
             )
 
         if not request.app.template_engine:
-            raise ImproperlyConfiguredException("Template engine is not configured")
+            msg = "Template engine is not configured"
+            raise ImproperlyConfiguredException(msg)
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
         cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)

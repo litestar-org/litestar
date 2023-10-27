@@ -15,7 +15,7 @@ ORDERS_BY_DATETIME = {
     datetime.fromtimestamp(1667924386, tz=timezone.utc): [
         Order(id=1, customer_id=2),
         Order(id=2, customer_id=2),
-    ]
+    ],
 }
 
 

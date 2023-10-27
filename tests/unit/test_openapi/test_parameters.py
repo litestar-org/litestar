@@ -40,7 +40,7 @@ def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
     )._fields
 
     return create_parameter_for_handler(
-        route_handler, handler_fields, route.path_parameters, SchemaCreator(generate_examples=True)
+        route_handler, handler_fields, route.path_parameters, SchemaCreator(generate_examples=True),
     )
 
 
@@ -314,14 +314,14 @@ def test_layered_parameters() -> None:
 def test_parameter_examples() -> None:
     @get(path="/")
     async def index(
-        text: Annotated[str, Parameter(examples=[Example(value="example value", summary="example summary")])]
+        text: Annotated[str, Parameter(examples=[Example(value="example value", summary="example summary")])],
     ) -> str:
         return text
 
     with create_test_client(
-        route_handlers=[index], openapi_config=OpenAPIConfig(title="Test API", version="1.0.0")
+        route_handlers=[index], openapi_config=OpenAPIConfig(title="Test API", version="1.0.0"),
     ) as client:
         response = client.get("/schema/openapi.json")
         assert response.json()["paths"]["/"]["get"]["parameters"][0]["examples"] == {
-            "text-example-0": {"summary": "example summary", "value": "example value"}
+            "text-example-0": {"summary": "example summary", "value": "example value"},
         }

@@ -38,7 +38,7 @@ def test_prometheus_exporter_metrics_with_http() -> None:
         raise HTTPException("Error Occurred")
 
     with create_test_client(
-        [duration_handler, handler_error, PrometheusController], middleware=[config.middleware]
+        [duration_handler, handler_error, PrometheusController], middleware=[config.middleware],
     ) as client:
         client.get("/error")
         client.get("/duration")

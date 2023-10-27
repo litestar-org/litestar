@@ -112,7 +112,7 @@ def _parse_metadata(value: Any, is_sequence_container: bool, extra: dict[str, An
 
 
 def _traverse_metadata(
-    metadata: Sequence[Any], is_sequence_container: bool, extra: dict[str, Any] | None
+    metadata: Sequence[Any], is_sequence_container: bool, extra: dict[str, Any] | None,
 ) -> dict[str, Any]:
     """Recursively traverse metadata from a value.
 
@@ -129,15 +129,15 @@ def _traverse_metadata(
         if isinstance(value, (list, set, frozenset, deque)):
             constraints.update(
                 _traverse_metadata(
-                    metadata=cast("Sequence[Any]", value), is_sequence_container=is_sequence_container, extra=extra
-                )
+                    metadata=cast("Sequence[Any]", value), is_sequence_container=is_sequence_container, extra=extra,
+                ),
             )
         elif is_annotated_type(value) and (type_args := [v for v in get_args(value) if v is not None]):
             # annotated values can be nested inside other annotated values
             # this behaviour is buggy in python 3.8, hence we need to guard here.
             if len(type_args) > 1:
                 constraints.update(
-                    _traverse_metadata(metadata=type_args[1:], is_sequence_container=is_sequence_container, extra=extra)
+                    _traverse_metadata(metadata=type_args[1:], is_sequence_container=is_sequence_container, extra=extra),
                 )
         elif unpacked_predicate := _unpack_predicate(value):
             constraints.update(unpacked_predicate)
@@ -147,7 +147,7 @@ def _traverse_metadata(
 
 
 def _create_metadata_from_type(
-    metadata: Sequence[Any], model: type[T], annotation: Any, extra: dict[str, Any] | None
+    metadata: Sequence[Any], model: type[T], annotation: Any, extra: dict[str, Any] | None,
 ) -> tuple[T | None, dict[str, Any]]:
     is_sequence_container = is_non_string_sequence(annotation)
     result = _traverse_metadata(metadata=metadata, is_sequence_container=is_sequence_container, extra=extra)
@@ -210,7 +210,7 @@ class FieldDefinition:
     def __deepcopy__(self, memo: dict[str, Any]) -> Self:
         return type(self)(**{attr: deepcopy(getattr(self, attr)) for attr in self.__slots__})
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, FieldDefinition):
             return False
 
@@ -224,7 +224,7 @@ class FieldDefinition:
 
     @classmethod
     def _extract_metadata(
-        cls, annotation: Any, name: str | None, default: Any, metadata: tuple[Any, ...], extra: dict[str, Any] | None
+        cls, annotation: Any, name: str | None, default: Any, metadata: tuple[Any, ...], extra: dict[str, Any] | None,
     ) -> tuple[KwargDefinition | None, dict[str, Any]]:
         from litestar.dto.base_dto import AbstractDTO
 
@@ -572,15 +572,15 @@ class FieldDefinition:
         try:
             annotation = fn_type_hints[parameter.name]
         except KeyError as e:
+            msg = f"'{parameter.name}' does not have a type annotation. If it should receive any value, use 'Any'."
             raise ImproperlyConfiguredException(
-                f"'{parameter.name}' does not have a type annotation. If it should receive any value, use 'Any'."
+                msg,
             ) from e
 
         if parameter.name == "state" and not issubclass(annotation, ImmutableState):
+            msg = f"The type annotation `{annotation}` is an invalid type for the 'state' reserved kwarg. It must be typed to a subclass of `litestar.datastructures.ImmutableState` or `litestar.datastructures.State`."
             raise ImproperlyConfiguredException(
-                f"The type annotation `{annotation}` is an invalid type for the 'state' reserved kwarg. "
-                "It must be typed to a subclass of `litestar.datastructures.ImmutableState` or "
-                "`litestar.datastructures.State`."
+                msg,
             )
 
         return FieldDefinition.from_kwarg(

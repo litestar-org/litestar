@@ -26,7 +26,8 @@ try:
     else:  # pragma: no cover
         from pydantic.fields import Undefined as PydanticUndefined  # type: ignore
 except ImportError as e:
-    raise MissingDependencyException("pydantic") from e
+    msg = "pydantic"
+    raise MissingDependencyException(msg) from e
 
 __all__ = ("PydanticDTO",)
 
@@ -52,7 +53,7 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
 
     @classmethod
     def generate_field_definitions(
-        cls, model_type: type[pydantic.BaseModel]
+        cls, model_type: type[pydantic.BaseModel],
     ) -> Generator[DTOFieldDefinition, None, None]:
         model_field_definitions = cls.get_model_type_hints(model_type)
 

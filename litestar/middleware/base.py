@@ -148,4 +148,5 @@ class AbstractMiddleware:
         Returns:
             None
         """
-        raise NotImplementedError("abstract method must be implemented")
+        msg = "abstract method must be implemented"
+        raise NotImplementedError(msg)

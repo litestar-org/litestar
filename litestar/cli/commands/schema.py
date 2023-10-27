@@ -49,7 +49,8 @@ def generate_openapi_schema(app: Litestar, output: Path) -> None:
     try:
         output.write_text(content)
     except OSError as e:  # pragma: no cover
-        raise LitestarCLIException(f"failed to write schema to path {output}") from e
+        msg = f"failed to write schema to path {output}"
+        raise LitestarCLIException(msg) from e
 
 
 @schema_group.command("typescript")  # type: ignore
@@ -71,4 +72,5 @@ def generate_typescript_specs(app: Litestar, output: Path, namespace: str) -> No
         )
         output.write_text(specs_output)
     except OSError as e:  # pragma: no cover
-        raise LitestarCLIException(f"failed to write schema to path {output}") from e
+        msg = f"failed to write schema to path {output}"
+        raise LitestarCLIException(msg) from e

@@ -183,7 +183,7 @@ def test_request_headers() -> None:
             "accept-encoding": "gzip, deflate, br",
             "accept": "*/*",
             "connection": "keep-alive",
-        }
+        },
     }
 
 
@@ -199,7 +199,7 @@ def test_request_accept_header() -> None:
 
 
 @pytest.mark.parametrize(
-    "scope,expected_client",
+    ("scope", "expected_client"),
     (
         ({"type": "http", "route_handler": _route_handler, "client": ["client", 42]}, Address("client", 42)),
         ({"type": "http", "route_handler": _route_handler, "client": None}, None),
@@ -354,7 +354,7 @@ async def test_request_disconnect() -> None:
 
     with pytest.raises(InternalServerException):
         await app(
-            {"type": "http", "route_handler": _route_handler, "method": "POST", "path": "/"}, receiver, empty_send
+            {"type": "http", "route_handler": _route_handler, "method": "POST", "path": "/"}, receiver, empty_send,
         )  # type: ignore
 
 
@@ -486,7 +486,7 @@ def test_state() -> None:
         return {"state": request.state.main}
 
     with create_test_client(
-        route_handlers=[get_state], middleware=[BeforeRequestMiddleWare], before_request=before_request
+        route_handlers=[get_state], middleware=[BeforeRequestMiddleWare], before_request=before_request,
     ) as client:
         response = client.get("/")
         assert response.json() == {"state": 2}

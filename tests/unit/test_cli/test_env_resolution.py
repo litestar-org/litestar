@@ -11,9 +11,9 @@ from litestar.cli._utils import LitestarEnv, _path_to_dotted_path
 from .conftest import CreateAppFileFixture
 
 
-@pytest.mark.parametrize("env_name,attr_name", [("LITESTAR_DEBUG", "debug"), ("LITESTAR_RELOAD", "reload")])
+@pytest.mark.parametrize(("env_name", "attr_name"), [("LITESTAR_DEBUG", "debug"), ("LITESTAR_RELOAD", "reload")])
 @pytest.mark.parametrize(
-    "env_value,expected_value",
+    ("env_value", "expected_value"),
     [("true", True), ("True", True), ("1", True), ("0", False), (None, False)],
 )
 def test_litestar_env_from_env_booleans(
@@ -63,7 +63,7 @@ def test_litestar_env_from_env_host(monkeypatch: MonkeyPatch, app_file: Path) ->
     ],
 )
 def test_env_from_env_autodiscover_from_files(
-    path: str, app_file_content: str, app_file_app_name: str, create_app_file: CreateAppFileFixture
+    path: str, app_file_content: str, app_file_app_name: str, create_app_file: CreateAppFileFixture,
 ) -> None:
     directory = None
     if "/" in path:
@@ -79,7 +79,7 @@ def test_env_from_env_autodiscover_from_files(
 
 
 @pytest.mark.parametrize(
-    "module_name,app_file",
+    ("module_name", "app_file"),
     [
         ("app", "main.py"),
         ("application", "main.py"),
@@ -108,7 +108,7 @@ def test_env_from_env_autodiscover_from_module(
 
 @pytest.mark.parametrize("path", [".app.py", "_app.py", ".application.py", "_application.py"])
 def test_env_from_env_autodiscover_from_files_ignore_paths(
-    path: str, app_file_content: str, create_app_file: CreateAppFileFixture
+    path: str, app_file_content: str, create_app_file: CreateAppFileFixture,
 ) -> None:
     create_app_file(file=path, directory=None, content=app_file_content)
 
@@ -118,7 +118,7 @@ def test_env_from_env_autodiscover_from_files_ignore_paths(
 
 @pytest.mark.parametrize("use_file_in_app_path", [True, False])
 def test_env_using_app_dir(
-    app_file_content: str, app_file_app_name: str, create_app_file: CreateAppFileFixture, use_file_in_app_path: bool
+    app_file_content: str, app_file_app_name: str, create_app_file: CreateAppFileFixture, use_file_in_app_path: bool,
 ) -> None:
     app_file = "main.py"
     app_file_without_extension = app_file.split(".")[0]

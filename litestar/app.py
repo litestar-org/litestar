@@ -700,7 +700,8 @@ class Litestar(Router):
         """
         handler_index = self.get_handler_index_by_name(name)
         if handler_index is None:
-            raise NoRouteMatchFoundException(f"Route {name} can not be found")
+            msg = f"Route {name} can not be found"
+            raise NoRouteMatchFoundException(msg)
 
         allow_str_instead = {datetime, date, time, timedelta, float, Path}
         routes = sorted(
@@ -725,8 +726,9 @@ class Litestar(Router):
                 if not isinstance(val, component.type) and (
                     component.type not in allow_str_instead or not isinstance(val, str)
                 ):
+                    msg = f"Received type for path parameter {component.name} doesn't match declared type {component.type}"
                     raise NoRouteMatchFoundException(
-                        f"Received type for path parameter {component.name} doesn't match declared type {component.type}"
+                        msg,
                     )
                 output.append(str(val))
             else:
@@ -764,11 +766,13 @@ class Litestar(Router):
 
         handler_index = self.get_handler_index_by_name(name)
         if handler_index is None:
-            raise NoRouteMatchFoundException(f"Static handler {name} can not be found")
+            msg = f"Static handler {name} can not be found"
+            raise NoRouteMatchFoundException(msg)
 
         handler_fn = cast("AnyCallable", handler_index["handler"].fn.value)
         if not isinstance(handler_fn, StaticFiles):
-            raise NoRouteMatchFoundException(f"Handler with name {name} is not a static files handler")
+            msg = f"Handler with name {name} is not a static files handler"
+            raise NoRouteMatchFoundException(msg)
 
         return join_paths([handler_index["paths"][0], file_path])  # type: ignore[unreachable]
 
@@ -825,7 +829,8 @@ class Litestar(Router):
             None
         """
         if not self.openapi_config or not self._openapi_schema or self._openapi_schema.paths is None:
-            raise ImproperlyConfiguredException("Cannot generate OpenAPI schema without initializing an OpenAPIConfig")
+            msg = "Cannot generate OpenAPI schema without initializing an OpenAPIConfig"
+            raise ImproperlyConfiguredException(msg)
 
         operation_ids: list[str] = []
 
@@ -857,9 +862,9 @@ class Litestar(Router):
 
                 for operation_id in created_operation_ids:
                     if operation_id in operation_ids:
+                        msg = f"operation_ids must be unique, please ensure the value of 'operation_id' is either not set or unique for {operation_id}"
                         raise ImproperlyConfiguredException(
-                            f"operation_ids must be unique, "
-                            f"please ensure the value of 'operation_id' is either not set or unique for {operation_id}"
+                            msg,
                         )
                     operation_ids.append(operation_id)
 

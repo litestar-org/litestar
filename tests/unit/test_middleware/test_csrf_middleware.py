@@ -23,34 +23,34 @@ def handler_fn() -> None:
     pass
 
 
-@pytest.fixture
+@pytest.fixture()
 def get_handler() -> HTTPRouteHandler:
     return get()(handler_fn)
 
 
-@pytest.fixture
+@pytest.fixture()
 def post_handler() -> HTTPRouteHandler:
     return post()(handler_fn)
 
 
-@pytest.fixture
+@pytest.fixture()
 def put_handler() -> HTTPRouteHandler:
     return put()(handler_fn)
 
 
-@pytest.fixture
+@pytest.fixture()
 def delete_handler() -> HTTPRouteHandler:
     return delete()(handler_fn)
 
 
-@pytest.fixture
+@pytest.fixture()
 def patch_handler() -> HTTPRouteHandler:
     return patch()(handler_fn)
 
 
 def test_csrf_successful_flow(get_handler: HTTPRouteHandler, post_handler: HTTPRouteHandler) -> None:
     with create_test_client(
-        route_handlers=[get_handler, post_handler], csrf_config=CSRFConfig(secret="secret")
+        route_handlers=[get_handler, post_handler], csrf_config=CSRFConfig(secret="secret"),
     ) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
@@ -99,7 +99,7 @@ def test_unsafe_method_fails_without_csrf_header(
 
 def test_invalid_csrf_token(get_handler: HTTPRouteHandler, post_handler: HTTPRouteHandler) -> None:
     with create_test_client(
-        route_handlers=[get_handler, post_handler], csrf_config=CSRFConfig(secret="secret")
+        route_handlers=[get_handler, post_handler], csrf_config=CSRFConfig(secret="secret"),
     ) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
@@ -114,7 +114,7 @@ def test_invalid_csrf_token(get_handler: HTTPRouteHandler, post_handler: HTTPRou
 
 def test_csrf_token_too_short(get_handler: HTTPRouteHandler, post_handler: HTTPRouteHandler) -> None:
     with create_test_client(
-        route_handlers=[get_handler, post_handler], csrf_config=CSRFConfig(secret="secret")
+        route_handlers=[get_handler, post_handler], csrf_config=CSRFConfig(secret="secret"),
     ) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
@@ -134,7 +134,7 @@ def test_websocket_ignored() -> None:
         await socket.close()
 
     with create_test_client(
-        route_handlers=[websocket_handler], csrf_config=CSRFConfig(secret="secret")
+        route_handlers=[websocket_handler], csrf_config=CSRFConfig(secret="secret"),
     ) as client, client.websocket_connect("/") as ws:
         response = ws.receive_json()
         assert response is not None
@@ -169,7 +169,7 @@ def test_custom_csrf_config(get_handler: HTTPRouteHandler, post_handler: HTTPRou
 
 
 @pytest.mark.parametrize(
-    "engine, template",
+    ("engine", "template"),
     (
         (JinjaTemplateEngine, "{{csrf_input}}"),
         (MakoTemplateEngine, "${csrf_input}"),
@@ -194,7 +194,7 @@ def test_csrf_form_parsing(engine: Any, template: str, tmp_path: Path) -> None:
     ) as client:
         url = f"{client.base_url!s}/"
         Path(tmp_path / "abc.html").write_text(
-            f'<html><body><div><form action="{url}" method="post">{template}</form></div></body></html>'
+            f'<html><body><div><form action="{url}" method="post">{template}</form></div></body></html>',
         )
         _ = client.get("/")
         response = client.get("/")

@@ -18,7 +18,7 @@ class Resource(BaseModel):
             name="Random-Header",
             description="a random number in the range 100 - 1000",
             documentation_only=True,
-        )
+        ),
     ],
     sync_to_thread=False,
 )
@@ -46,7 +46,7 @@ router = Router(
             name="Random-Header",
             description="a random number in the range 1 - 100",
             documentation_only=True,
-        )
+        ),
     ],
 )
 

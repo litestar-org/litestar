@@ -79,7 +79,8 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
         self._sub_task: Task | None = None
 
         if not (channels or arbitrary_channels_allowed):
-            raise ImproperlyConfiguredException("Must define either channels or set arbitrary_channels_allowed=True")
+            msg = "Must define either channels or set arbitrary_channels_allowed=True"
+            raise ImproperlyConfiguredException(msg)
 
         # make the path absolute, so we can simply concatenate it later
         if not ws_handler_base_path.endswith("/"):
@@ -90,7 +91,7 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
         self._handler_root_path = ws_handler_base_path
         self._socket_send_mode: WebSocketMode = ws_send_mode
         self._encode_json = msgspec.json.Encoder(
-            enc_hook=partial(default_serializer, type_encoders=type_encoders)
+            enc_hook=partial(default_serializer, type_encoders=type_encoders),
         ).encode
         self._handler_should_send_history = bool(ws_handler_send_history)
         self._history_limit = None if ws_handler_send_history < 0 else ws_handler_send_history
@@ -120,7 +121,7 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
             else:
                 route_handlers = [
                     WebsocketRouteHandler(self._handler_root_path + channel_name)(
-                        self._create_ws_handler_func(channel_name)
+                        self._create_ws_handler_func(channel_name),
                     )
                     for channel_name in self._channels
                 ]
@@ -143,7 +144,8 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
         try:
             self._pub_queue.put_nowait((data, list(channels)))  # type: ignore[union-attr]
         except AttributeError as e:
-            raise RuntimeError("Plugin not yet initialized. Did you forget to call on_startup?") from e
+            msg = "Plugin not yet initialized. Did you forget to call on_startup?"
+            raise RuntimeError(msg) from e
 
     async def wait_published(self, data: LitestarEncodableType, channels: str | Iterable[str]) -> None:
         """Publish ``data`` to ``channels``"""
@@ -187,9 +189,9 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
         for channel in channels:
             if channel not in self._channels:
                 if not self._arbitrary_channels_allowed:
+                    msg = f"Unknown channel: {channel!r}. Either explicitly defined the channel or set arbitrary_channels_allowed=True"
                     raise ChannelsException(
-                        f"Unknown channel: {channel!r}. Either explicitly defined the channel or set "
-                        "arbitrary_channels_allowed=True"
+                        msg,
                     )
                 self._channels[channel] = set()
             channel_subscribers = self._channels[channel]
@@ -242,7 +244,7 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
 
     @asynccontextmanager
     async def start_subscription(
-        self, channels: str | Iterable[str], history: int | None = None
+        self, channels: str | Iterable[str], history: int | None = None,
     ) -> AsyncGenerator[Subscriber, None]:
         """Create a :class:`Subscriber` and tie its subscriptions to a context manager;
         Upon exiting the context, :meth:`unsubscribe` will be called.
@@ -265,7 +267,7 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
             await self.unsubscribe(subscriber, channels)
 
     async def put_subscriber_history(
-        self, subscriber: Subscriber, channels: str | Iterable[str], limit: int | None = None
+        self, subscriber: Subscriber, channels: str | Iterable[str], limit: int | None = None,
     ) -> None:
         """Fetch the history of ``channels`` from the backend and put them in the
         subscriber's stream
@@ -330,7 +332,7 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
                 for subscribers in self._channels.values()
                 for subscriber in subscribers
                 if subscriber.is_running
-            ]
+            ],
         )
 
         if self._sub_task:

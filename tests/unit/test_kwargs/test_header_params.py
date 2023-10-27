@@ -9,7 +9,7 @@ from litestar.testing import create_test_client
 
 
 @pytest.mark.parametrize(
-    "t_type,param_dict, param, should_raise",
+    ("t_type", "param_dict", "param", "should_raise"),
     [
         (str, {"special-header": "123"}, Parameter(header="special-header", min_length=1, max_length=3), False),
         (str, {"special-header": "123"}, Parameter(header="special-header", min_length=1, max_length=2), True),
@@ -22,7 +22,7 @@ from litestar.testing import create_test_client
     ],
 )
 def test_header_params(
-    t_type: Optional[Union[str, int]], param_dict: Dict[str, str], param: ParameterKwarg, should_raise: bool
+    t_type: Optional[Union[str, int]], param_dict: Dict[str, str], param: ParameterKwarg, should_raise: bool,
 ) -> None:
     test_path = "/test"
 

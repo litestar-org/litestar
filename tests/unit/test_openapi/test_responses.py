@@ -54,7 +54,7 @@ def test_create_responses(person_controller: type[Controller], pet_controller: t
         for route_handler, _ in route.route_handler_map.values():
             if route_handler.resolve_include_in_schema():
                 responses = create_responses(
-                    route_handler, raises_validation_error=True, schema_creator=SchemaCreator(generate_examples=True)
+                    route_handler, raises_validation_error=True, schema_creator=SchemaCreator(generate_examples=True),
                 )
                 assert responses
                 assert str(route_handler.status_code) in responses
@@ -85,7 +85,7 @@ def test_create_error_responses() -> None:
             PermissionDeniedException,
             AlternativePetException,
             ValidationException,
-        ]
+        ],
     )
 
     assert pet_exc_response[0] == str(PetException.status_code)
@@ -207,7 +207,7 @@ def test_create_success_response_with_cookies() -> None:
                 "description": "the second cookie",
                 "example": 'second-cookie="<string>"; Max-Age=500; Path=/; SameSite=lax',
             },
-        ]
+        ],
     }
 
 
@@ -329,7 +329,7 @@ def test_create_additional_responses() -> None:
             401: ResponseSpec(data_container=AuthenticationError, description="Authentication error"),
             500: ResponseSpec(data_container=ServerError, generate_examples=False, media_type=MediaType.TEXT),
             505: ResponseSpec(data_container=UnknownError),
-        }
+        },
     )
     def handler() -> DataclassPerson:
         return DataclassPersonFactory.build()
@@ -381,7 +381,7 @@ def test_additional_responses_overlap_with_other_responses() -> None:
 
     handler = get_registered_route_handler(handler, "test")
     responses = create_responses(
-        handler, raises_validation_error=True, schema_creator=SchemaCreator(generate_examples=False)
+        handler, raises_validation_error=True, schema_creator=SchemaCreator(generate_examples=False),
     )
 
     assert responses is not None
@@ -405,7 +405,7 @@ def test_additional_responses_overlap_with_raises() -> None:
     handler = get_registered_route_handler(handler, "test")
 
     responses = create_responses(
-        handler, raises_validation_error=True, schema_creator=SchemaCreator(generate_examples=False)
+        handler, raises_validation_error=True, schema_creator=SchemaCreator(generate_examples=False),
     )
 
     assert responses is not None
@@ -442,7 +442,7 @@ from litestar import get
 @get(path="/test", name="test")
 def handler() -> int:
     ...
-"""
+""",
     )
     handler = get_registered_route_handler(module.handler, "test")
     response = create_success_response(handler, SchemaCreator(generate_examples=True))
@@ -463,12 +463,12 @@ def test_response_generation_with_dto() -> None:
     schema_creator = SchemaCreator()
     create_success_response(handler, schema_creator)
     mock_dto.create_openapi_schema.assert_called_once_with(
-        field_definition=field_definition, handler_id=handler.handler_id, schema_creator=schema_creator
+        field_definition=field_definition, handler_id=handler.handler_id, schema_creator=schema_creator,
     )
 
 
 @pytest.mark.parametrize(
-    "content_media_type, expected", ((MediaType.TEXT, MediaType.TEXT), (None, "application/octet-stream"))
+    ("content_media_type", "expected"), ((MediaType.TEXT, MediaType.TEXT), (None, "application/octet-stream")),
 )
 def test_file_response_media_type(content_media_type: Any, expected: Any) -> None:
     @get("/", content_media_type=content_media_type)

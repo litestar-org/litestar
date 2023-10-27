@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, NamedTuple, cast
+from typing import TYPE_CHECKING, NamedTuple, cast
 from urllib.parse import SplitResult, urlencode, urlsplit, urlunsplit
 
 from litestar._parsers import parse_query_string
@@ -121,8 +121,8 @@ class URL:
                         path=self.path,
                         fragment=self.fragment,
                         query=self.query,
-                    )
-                )
+                    ),
+                ),
             )
         return self._parsed_url
 
@@ -155,7 +155,7 @@ class URL:
                 path=path,
                 fragment=fragment,
                 query=query,
-            )
+            ),
         )
 
     @classmethod
@@ -247,7 +247,7 @@ class URL:
     def __str__(self) -> str:
         return self._url
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, (str, URL)):
             return str(self) == str(other)
         return NotImplemented  # type: ignore[unreachable]  # pragma: no cover

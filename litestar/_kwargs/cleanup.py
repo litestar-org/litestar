@@ -45,7 +45,8 @@ class DependencyCleanupGroup:
             None
         """
         if self._closed:
-            raise RuntimeError("Cannot call cleanup on a closed DependencyCleanupGroup")
+            msg = "Cannot call cleanup on a closed DependencyCleanupGroup"
+            raise RuntimeError(msg)
         self._generators.append(generator)
 
     @staticmethod
@@ -71,7 +72,8 @@ class DependencyCleanupGroup:
             None
         """
         if self._closed:
-            raise RuntimeError("Cannot call cleanup on a closed DependencyCleanupGroup")
+            msg = "Cannot call cleanup on a closed DependencyCleanupGroup"
+            raise RuntimeError(msg)
 
         self._closed = True
 

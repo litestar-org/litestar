@@ -101,7 +101,8 @@ class OpenAPIController(Controller):
             ImproperlyConfiguredException: If the application ``openapi_config`` attribute is ``None``.
         """
         if not request.app.openapi_config:  # pragma: no cover
-            raise ImproperlyConfiguredException("Litestar has not been instantiated with an OpenAPIConfig")
+            msg = "Litestar has not been instantiated with an OpenAPIConfig"
+            raise ImproperlyConfiguredException(msg)
 
         asgi_root_path = set(filter(None, request.scope.get("root_path", "").split("/")))
         full_request_path = set(filter(None, request.url.path.split("/")))

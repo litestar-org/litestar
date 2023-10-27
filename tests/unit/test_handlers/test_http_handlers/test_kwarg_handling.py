@@ -65,7 +65,7 @@ def test_route_handler_kwarg_handling(
 
 
 @pytest.mark.parametrize(
-    "sub, http_method, expected_status_code",
+    ("sub", "http_method", "expected_status_code"),
     [
         (post, HttpMethod.POST, HTTP_201_CREATED),
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
@@ -75,7 +75,7 @@ def test_route_handler_kwarg_handling(
     ],
 )
 def test_semantic_route_handlers_disallow_http_method_assignment(
-    sub: Any, http_method: Any, expected_status_code: int
+    sub: Any, http_method: Any, expected_status_code: int,
 ) -> None:
     result = sub()(dummy_method)
     assert http_method in result.http_methods

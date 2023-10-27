@@ -64,8 +64,9 @@ default_picologging_handlers: dict[str, dict[str, Any]] = {
 
 def get_logger_placeholder(_: str) -> NoReturn:  # pragma: no cover
     """Raise: An :class:`ImproperlyConfiguredException <.exceptions.ImproperlyConfiguredException>`"""
+    msg = "cannot call '.get_logger' without passing 'logging_config' to the Litestar constructor first"
     raise ImproperlyConfiguredException(
-        "cannot call '.get_logger' without passing 'logging_config' to the Litestar constructor first"
+        msg,
     )
 
 
@@ -81,7 +82,7 @@ def _get_default_handlers() -> dict[str, dict[str, Any]]:
 
 
 def _default_exception_logging_handler_factory(
-    is_struct_logger: bool, traceback_line_limit: int
+    is_struct_logger: bool, traceback_line_limit: int,
 ) -> ExceptionLoggingHandler:
     """Create an exception logging handler function.
 
@@ -108,7 +109,7 @@ def _default_exception_logging_handler_factory(
         else:
             stack_trace = first_line + "".join(tb[-traceback_line_limit:])
             logger.exception(
-                "exception raised on %s connection to route %s\n\n%s", scope["type"], scope["path"], stack_trace
+                "exception raised on %s connection to route %s\n\n%s", scope["type"], scope["path"], stack_trace,
             )
 
     return _default_exception_logging_handler
@@ -133,7 +134,8 @@ class BaseLoggingConfig(ABC):
         Returns:
             A 'logging.getLogger' like function.
         """
-        raise NotImplementedError("abstract method")
+        msg = "abstract method"
+        raise NotImplementedError(msg)
 
 
 @dataclass
@@ -162,8 +164,8 @@ class LoggingConfig(BaseLoggingConfig):
     """If messages must propagate to handlers higher up the logger hierarchy from this logger."""
     formatters: dict[str, dict[str, Any]] = field(
         default_factory=lambda: {
-            "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"}
-        }
+            "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"},
+        },
     )
     handlers: dict[str, dict[str, Any]] = field(default_factory=_get_default_handlers)
     """A dict in which each key is a handler id and each value is a dict describing how to configure the corresponding
@@ -172,7 +174,7 @@ class LoggingConfig(BaseLoggingConfig):
     loggers: dict[str, dict[str, Any]] = field(
         default_factory=lambda: {
             "litestar": {"level": "INFO", "handlers": ["queue_listener"], "propagate": False},
-        }
+        },
     )
     """A dict in which each key is a logger name and each value is a dict describing how to configure the corresponding
     Logger instance.
@@ -181,7 +183,7 @@ class LoggingConfig(BaseLoggingConfig):
         default_factory=lambda: {
             "handlers": ["queue_listener"],
             "level": "INFO",
-        }
+        },
     )
     """This will be the configuration for the root logger.
 
@@ -207,7 +209,7 @@ class LoggingConfig(BaseLoggingConfig):
 
         if self.log_exceptions != "never" and self.exception_logging_handler is None:
             self.exception_logging_handler = _default_exception_logging_handler_factory(
-                is_struct_logger=False, traceback_line_limit=self.traceback_line_limit
+                is_struct_logger=False, traceback_line_limit=self.traceback_line_limit,
             )
 
     def configure(self) -> GetLogger:
@@ -221,7 +223,8 @@ class LoggingConfig(BaseLoggingConfig):
             try:
                 import picologging  # noqa: F401
             except ImportError as e:
-                raise MissingDependencyException("picologging") from e
+                msg = "picologging"
+                raise MissingDependencyException(msg) from e
 
             from picologging import config, getLogger
 
@@ -316,7 +319,7 @@ class StructLoggingConfig(BaseLoggingConfig):
     def __post_init__(self) -> None:
         if self.log_exceptions != "never" and self.exception_logging_handler is None:
             self.exception_logging_handler = _default_exception_logging_handler_factory(
-                is_struct_logger=True, traceback_line_limit=self.traceback_line_limit
+                is_struct_logger=True, traceback_line_limit=self.traceback_line_limit,
             )
 
     def configure(self) -> GetLogger:
@@ -328,7 +331,8 @@ class StructLoggingConfig(BaseLoggingConfig):
         try:
             import structlog  # noqa: F401
         except ImportError as e:
-            raise MissingDependencyException("structlog") from e
+            msg = "structlog"
+            raise MissingDependencyException(msg) from e
 
         from structlog import configure, get_logger
 
@@ -343,6 +347,6 @@ class StructLoggingConfig(BaseLoggingConfig):
                     "traceback_line_limit",
                     "exception_logging_handler",
                 )
-            }
+            },
         )
         return get_logger

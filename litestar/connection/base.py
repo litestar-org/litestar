@@ -35,7 +35,7 @@ async def empty_receive() -> NoReturn:  # pragma: no cover
     Raises:
         RuntimeError
     """
-    raise RuntimeError()
+    raise RuntimeError
 
 
 async def empty_send(_: Message) -> NoReturn:  # pragma: no cover
@@ -49,7 +49,7 @@ async def empty_send(_: Message) -> NoReturn:  # pragma: no cover
     Raises:
         RuntimeError
     """
-    raise RuntimeError()
+    raise RuntimeError
 
 
 class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
@@ -205,7 +205,8 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             A type correlating to the generic variable Auth.
         """
         if "auth" not in self.scope:
-            raise ImproperlyConfiguredException("'auth' is not defined in scope, install an AuthMiddleware to set it")
+            msg = "'auth' is not defined in scope, install an AuthMiddleware to set it"
+            raise ImproperlyConfiguredException(msg)
 
         return cast("AuthT", self.scope["auth"])
 
@@ -220,7 +221,8 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             A type correlating to the generic variable User.
         """
         if "user" not in self.scope:
-            raise ImproperlyConfiguredException("'user' is not defined in scope, install an AuthMiddleware to set it")
+            msg = "'user' is not defined in scope, install an AuthMiddleware to set it"
+            raise ImproperlyConfiguredException(msg)
 
         return cast("UserT", self.scope["user"])
 
@@ -235,8 +237,9 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             ImproperlyConfiguredException: if session is not set in scope.
         """
         if "session" not in self.scope:
+            msg = "'session' is not defined in scope, install a SessionMiddleware to set it"
             raise ImproperlyConfiguredException(
-                "'session' is not defined in scope, install a SessionMiddleware to set it"
+                msg,
             )
 
         return cast("dict[str, Any]", self.scope["session"])

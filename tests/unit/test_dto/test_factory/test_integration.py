@@ -105,7 +105,7 @@ class Fzop:
 
 
 @pytest.mark.parametrize(
-    "rename_strategy, instance, tested_fields, data",
+    ("rename_strategy", "instance", "tested_fields", "data"),
     [
         ("upper", Fzop(bar="hi"), ["BAR"], {"BAR": "hi"}),
         ("lower", Fzop(SPAM="goodbye"), ["spam"], {"spam": "goodbye"}),
@@ -172,7 +172,7 @@ def test_dto_data_injection_with_nested_model(use_experimental_dto_backend: bool
     @post(
         dto=DataclassDTO[
             Annotated[
-                NestingBar, DTOConfig(exclude={"foo.baz"}, experimental_codegen_backend=use_experimental_dto_backend)
+                NestingBar, DTOConfig(exclude={"foo.baz"}, experimental_codegen_backend=use_experimental_dto_backend),
             ]
         ],
         return_dto=None,
@@ -191,7 +191,7 @@ def test_dto_data_create_instance_nested_kwargs(use_experimental_dto_backend: bo
     @post(
         dto=DataclassDTO[
             Annotated[
-                NestingBar, DTOConfig(exclude={"foo.baz"}, experimental_codegen_backend=use_experimental_dto_backend)
+                NestingBar, DTOConfig(exclude={"foo.baz"}, experimental_codegen_backend=use_experimental_dto_backend),
             ]
         ],
         return_dto=None,
@@ -306,7 +306,7 @@ def test_dto_openapi_with_unique_handler_names(use_experimental_dto_backend: boo
     @post(
         dto=DataclassDTO[
             Annotated[
-                UniqueModelName, DTOConfig(exclude={"id"}, experimental_codegen_backend=use_experimental_dto_backend)
+                UniqueModelName, DTOConfig(exclude={"id"}, experimental_codegen_backend=use_experimental_dto_backend),
             ]
         ],
         return_dto=DataclassDTO[UniqueModelName],
@@ -486,9 +486,9 @@ def test_dto_classic_pagination(use_experimental_dto_backend: bool) -> None:
     @get(
         dto=DataclassDTO[
             Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend),
             ]
-        ]
+        ],
     )
     def handler() -> ClassicPagination[PaginatedUser]:
         return ClassicPagination(
@@ -514,9 +514,9 @@ def test_dto_cursor_pagination(use_experimental_dto_backend: bool) -> None:
     @get(
         dto=DataclassDTO[
             Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend),
             ]
-        ]
+        ],
     )
     def handler() -> CursorPagination[UUID, PaginatedUser]:
         return CursorPagination(
@@ -538,9 +538,9 @@ def test_dto_offset_pagination(use_experimental_dto_backend: bool) -> None:
     @get(
         dto=DataclassDTO[
             Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend),
             ]
-        ]
+        ],
     )
     def handler() -> OffsetPagination[PaginatedUser]:
         return OffsetPagination(
@@ -588,9 +588,9 @@ def test_dto_generic_dataclass_wrapped_scalar_response(use_experimental_dto_back
     @get(
         dto=DataclassDTO[
             Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend),
             ]
-        ]
+        ],
     )
     def handler() -> Wrapped[PaginatedUser, int]:
         return Wrapped(
@@ -615,9 +615,9 @@ def test_dto_generic_dataclass_wrapped_scalar_response_with_additional_mapping_d
     @get(
         dto=DataclassDTO[
             Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend),
             ]
-        ]
+        ],
     )
     def handler() -> WrappedWithDict[str, int, PaginatedUser]:
         return WrappedWithDict(
@@ -634,9 +634,9 @@ def test_dto_response_wrapped_scalar_return_type(use_experimental_dto_backend: b
     @get(
         dto=DataclassDTO[
             Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend),
             ]
-        ]
+        ],
     )
     def handler() -> Response[PaginatedUser]:
         return Response(content=PaginatedUser(name="John", age=42))
@@ -650,9 +650,9 @@ def test_dto_response_wrapped_collection_return_type(use_experimental_dto_backen
     @get(
         dto=DataclassDTO[
             Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend),
             ]
-        ]
+        ],
     )
     def handler() -> Response[List[PaginatedUser]]:
         return Response(content=[PaginatedUser(name="John", age=42), PaginatedUser(name="Jane", age=43)])

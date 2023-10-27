@@ -30,7 +30,7 @@ def test_supports_mounting() -> None:
         await response(scope, receive, send)
 
     with create_test_client(
-        route_handlers=[asgi_handler, asgi_handler_mount_path, asgi_handler_not_mounted_path]
+        route_handlers=[asgi_handler, asgi_handler_mount_path, asgi_handler_not_mounted_path],
     ) as client:
         response = client.get("/base/sub/path")
         assert response.status_code == HTTP_200_OK

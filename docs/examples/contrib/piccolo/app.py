@@ -59,7 +59,8 @@ async def create_task(data: Task) -> Task:
 async def update_task(task_id: int, data: DTOData[Task]) -> Task:
     task = await Task.objects().get(Task.id == task_id)
     if not task:
-        raise NotFoundException("Task does not exist")
+        msg = "Task does not exist"
+        raise NotFoundException(msg)
     result = data.update_instance(task)
     await result.save()
     return result
@@ -69,7 +70,8 @@ async def update_task(task_id: int, data: DTOData[Task]) -> Task:
 async def delete_task(task_id: int) -> None:
     task = await Task.objects().get(Task.id == task_id)
     if not task:
-        raise NotFoundException("Task does not exist")
+        msg = "Task does not exist"
+        raise NotFoundException(msg)
     await task.remove()
 
 

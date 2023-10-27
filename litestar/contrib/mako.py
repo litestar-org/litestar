@@ -19,7 +19,8 @@ try:
     from mako.exceptions import TemplateLookupException as MakoTemplateNotFound  # type: ignore[import-untyped]
     from mako.lookup import TemplateLookup  # type: ignore[import-untyped]
 except ImportError as e:
-    raise MissingDependencyException("mako") from e
+    msg = "mako"
+    raise MissingDependencyException(msg) from e
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -75,10 +76,11 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate, Mapping[str, Any]]
         """
         super().__init__(directory, engine_instance)
         if directory and engine_instance:
-            raise ImproperlyConfiguredException("You must provide either a directory or a mako TemplateLookup.")
+            msg = "You must provide either a directory or a mako TemplateLookup."
+            raise ImproperlyConfiguredException(msg)
         if directory:
             self.engine = TemplateLookup(
-                directories=directory if isinstance(directory, (list, tuple)) else [directory], default_filters=["h"]
+                directories=directory if isinstance(directory, (list, tuple)) else [directory], default_filters=["h"],
             )
         elif engine_instance:
             self.engine = engine_instance
@@ -102,13 +104,13 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate, Mapping[str, Any]]
         """
         try:
             return MakoTemplate(
-                template=self.engine.get_template(template_name), template_callables=self._template_callables
+                template=self.engine.get_template(template_name), template_callables=self._template_callables,
             )
         except MakoTemplateNotFound as exc:
             raise TemplateNotFoundException(template_name=template_name) from exc
 
     def register_template_callable(
-        self, key: str, template_callable: TemplateCallableType[Mapping[str, Any], P, T]
+        self, key: str, template_callable: TemplateCallableType[Mapping[str, Any], P, T],
     ) -> None:
         """Register a callable on the template engine.
 

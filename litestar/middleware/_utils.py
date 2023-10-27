@@ -27,8 +27,9 @@ def build_exclude_path_pattern(*, exclude: str | list[str] | None = None) -> Pat
     try:
         return re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
     except re.error as e:  # pragma: no cover
+        msg = "Unable to compile exclude patterns for middleware. Please make sure you passed a valid regular expression."
         raise ImproperlyConfiguredException(
-            "Unable to compile exclude patterns for middleware. Please make sure you passed a valid regular expression."
+            msg,
         ) from e
 
 
@@ -64,6 +65,6 @@ def should_bypass_middleware(
     return bool(
         exclude_path_pattern
         and exclude_path_pattern.findall(
-            scope["raw_path"].decode() if getattr(scope.get("route_handler", {}), "is_mount", False) else scope["path"]
-        )
+            scope["raw_path"].decode() if getattr(scope.get("route_handler", {}), "is_mount", False) else scope["path"],
+        ),
     )

@@ -49,7 +49,7 @@ def test_parse_schema_handle_all_of() -> None:
 
 def test_parse_schema_handle_one_of() -> None:
     result = parse_schema(
-        Schema(one_of=[object_schema_1, object_schema_2, number_schema, string_schema, nullable_integer_schema])
+        Schema(one_of=[object_schema_1, object_schema_2, number_schema, string_schema, nullable_integer_schema]),
     )
     assert (
         result.write() == "null | number | number | string | {\n"
@@ -76,7 +76,7 @@ def test_parse_schema_handle_object() -> None:
 
 
 @pytest.mark.parametrize(
-    "schema_type, enum, expected",
+    ("schema_type", "enum", "expected"),
     (
         (OpenAPIType.STRING, ["a", "b", "c"], '"a" | "b" | "c"'),
         (OpenAPIType.NUMBER, [1, 2, 3], "1 | 2 | 3"),

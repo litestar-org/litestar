@@ -157,8 +157,8 @@ class HXLocation(Response):
                     swap=swap,
                     values=values,
                     hx_headers=hx_headers,
-                )
-            )
+                ),
+            ),
         )
         del self.headers["Location"]
         self.headers.update(spec)
@@ -196,5 +196,5 @@ class HTMXTemplate(Template):
             event = TriggerEventType(name=str(trigger_event), params=params, after=after)
 
         self.headers.update(
-            get_headers(HtmxHeaderType(push_url=push_url, re_swap=re_swap, re_target=re_target, trigger_event=event))
+            get_headers(HtmxHeaderType(push_url=push_url, re_swap=re_swap, re_target=re_target, trigger_event=event)),
         )

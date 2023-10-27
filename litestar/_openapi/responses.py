@@ -69,7 +69,7 @@ def create_cookie_schema(cookie: Cookie) -> Schema:
 
 
 def create_success_response(  # noqa: C901
-    route_handler: HTTPRouteHandler, schema_creator: SchemaCreator
+    route_handler: HTTPRouteHandler, schema_creator: SchemaCreator,
 ) -> OpenAPIResponse:
     """Create the schema for a success response."""
     field_definition = route_handler.parsed_fn_signature.return_type
@@ -86,7 +86,7 @@ def create_success_response(  # noqa: C901
     )
 
     if return_annotation is not Signature.empty and not field_definition.is_subclass_of(
-        (NoneType, File, Redirect, Stream, ASGIResponse)
+        (NoneType, File, Redirect, Stream, ASGIResponse),
     ):
         media_type = route_handler.media_type
 
@@ -100,7 +100,7 @@ def create_success_response(  # noqa: C901
 
         if dto := route_handler.resolve_return_dto():
             result = dto.create_openapi_schema(
-                field_definition=field_definition, handler_id=route_handler.handler_id, schema_creator=schema_creator
+                field_definition=field_definition, handler_id=route_handler.handler_id, schema_creator=schema_creator,
             )
         else:
             result = schema_creator.for_field_definition(FieldDefinition.from_annotation(return_annotation))
@@ -111,7 +111,7 @@ def create_success_response(  # noqa: C901
         schema.content_media_type = route_handler.content_media_type
 
         response = OpenAPIResponse(
-            content={get_enum_string_value(media_type): OpenAPIMediaType(schema=result)}, description=description
+            content={get_enum_string_value(media_type): OpenAPIMediaType(schema=result)}, description=description,
         )
 
     elif field_definition.is_subclass_of(Redirect):
@@ -120,8 +120,8 @@ def create_success_response(  # noqa: C901
             description=description,
             headers={
                 "location": OpenAPIHeader(
-                    schema=Schema(type=OpenAPIType.STRING), description="target path for the redirect"
-                )
+                    schema=Schema(type=OpenAPIType.STRING), description="target path for the redirect",
+                ),
             },
         )
 
@@ -134,12 +134,12 @@ def create_success_response(  # noqa: C901
                         content_encoding=route_handler.content_encoding,
                         content_media_type=route_handler.content_media_type or "application/octet-stream",
                     ),
-                )
+                ),
             },
             description=description,
             headers={
                 "content-length": OpenAPIHeader(
-                    schema=Schema(type=OpenAPIType.STRING), description="File size in bytes"
+                    schema=Schema(type=OpenAPIType.STRING), description="File size in bytes",
                 ),
                 "last-modified": OpenAPIHeader(
                     schema=Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.DATE_TIME),
@@ -164,7 +164,7 @@ def create_success_response(  # noqa: C901
         for attribute_name, attribute_value in ((k, v) for k, v in asdict(response_header).items() if v is not None):
             if attribute_name == "value":
                 header.schema = no_examples_schema_creator.for_field_definition(
-                    FieldDefinition.from_annotation(type(attribute_value))
+                    FieldDefinition.from_annotation(type(attribute_value)),
                 )
             elif attribute_name != "documentation_only":
                 setattr(header, attribute_name, attribute_value)
@@ -174,8 +174,8 @@ def create_success_response(  # noqa: C901
     if cookies := route_handler.resolve_response_cookies():
         response.headers["Set-Cookie"] = OpenAPIHeader(
             schema=Schema(
-                all_of=[create_cookie_schema(cookie=cookie) for cookie in sorted(cookies, key=attrgetter("key"))]
-            )
+                all_of=[create_cookie_schema(cookie=cookie) for cookie in sorted(cookies, key=attrgetter("key"))],
+            ),
         )
 
     return response
@@ -215,7 +215,7 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
                     },
                     description=pascal_case_to_text(get_name(exc)),
                     examples=[{"status_code": status_code, "detail": example_detail, "extra": {}}],
-                )
+                ),
             )
         if len(exceptions_schemas) > 1:  # noqa: SIM108
             schema = Schema(one_of=exceptions_schemas)
@@ -236,7 +236,7 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
 
 
 def create_additional_responses(
-    route_handler: HTTPRouteHandler, schema_creator: SchemaCreator
+    route_handler: HTTPRouteHandler, schema_creator: SchemaCreator,
 ) -> Iterator[tuple[str, OpenAPIResponse]]:
     """Create the schema for additional responses, if any."""
     if not route_handler.responses:
@@ -246,7 +246,7 @@ def create_additional_responses(
     for status_code, additional_response in route_handler.responses.items():
         schema_creator.generate_examples = additional_response.generate_examples
         schema = schema_creator.for_field_definition(
-            FieldDefinition.from_annotation(additional_response.data_container)
+            FieldDefinition.from_annotation(additional_response.data_container),
         )
         yield (
             str(status_code),
@@ -258,7 +258,7 @@ def create_additional_responses(
 
 
 def create_responses(
-    route_handler: HTTPRouteHandler, raises_validation_error: bool, schema_creator: SchemaCreator
+    route_handler: HTTPRouteHandler, raises_validation_error: bool, schema_creator: SchemaCreator,
 ) -> Responses | None:
     """Create a Response model embedded in a `Responses` dictionary for the given RouteHandler or return None."""
     responses: Responses = {

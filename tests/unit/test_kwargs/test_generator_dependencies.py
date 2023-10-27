@@ -8,24 +8,24 @@ from litestar import WebSocket, get, websocket
 from litestar.testing import create_test_client
 
 
-@pytest.fixture
+@pytest.fixture()
 def cleanup_mock() -> MagicMock:
     return MagicMock()
 
 
-@pytest.fixture
+@pytest.fixture()
 def exception_mock() -> MagicMock:
     return MagicMock()
 
 
-@pytest.fixture
+@pytest.fixture()
 def finally_mock() -> MagicMock:
     return MagicMock()
 
 
-@pytest.fixture
+@pytest.fixture()
 def generator_dependency(
-    cleanup_mock: MagicMock, exception_mock: MagicMock, finally_mock: MagicMock
+    cleanup_mock: MagicMock, exception_mock: MagicMock, finally_mock: MagicMock,
 ) -> Callable[[], Generator[str, None, None]]:
     def dependency() -> Generator[str, None, None]:
         try:
@@ -39,9 +39,9 @@ def generator_dependency(
     return dependency
 
 
-@pytest.fixture
+@pytest.fixture()
 def async_generator_dependency(
-    cleanup_mock: MagicMock, exception_mock: MagicMock, finally_mock: MagicMock
+    cleanup_mock: MagicMock, exception_mock: MagicMock, finally_mock: MagicMock,
 ) -> Callable[[], AsyncGenerator[str, None]]:
     async def dependency() -> AsyncGenerator[str, None]:
         try:

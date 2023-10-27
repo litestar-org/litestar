@@ -95,9 +95,9 @@ class BaseTestClient(Generic[T]):
     @property
     def session_backend(self) -> BaseSessionBackend[Any]:
         if not self._session_backend:
+            msg = "Session has not been initialized for this TestClient instance. You cando so by passing a configuration object to TestClient: TestClient(app=app, session_config=...)"
             raise ImproperlyConfiguredException(
-                "Session has not been initialized for this TestClient instance. You can"
-                "do so by passing a configuration object to TestClient: TestClient(app=app, session_config=...)"
+                msg,
             )
         return self._session_backend
 
@@ -112,7 +112,7 @@ class BaseTestClient(Generic[T]):
             yield self.blocking_portal
         else:
             with start_blocking_portal(
-                backend=self.backend, backend_options=dict(self.backend_options or {})
+                backend=self.backend, backend_options=dict(self.backend_options or {}),
             ) as portal:
                 yield portal
 

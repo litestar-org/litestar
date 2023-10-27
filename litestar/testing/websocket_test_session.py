@@ -57,7 +57,7 @@ class WebSocketTestSession:
             self.exit_stack.close()
             raise
 
-    def __exit__(self, *args: Any) -> None:
+    def __exit__(self, *args: object) -> None:
         try:
             self.close()
         finally:
@@ -224,7 +224,7 @@ class WebSocketTestSession:
         return cast("bytes", message.get("bytes", b""))
 
     def receive_json(
-        self, mode: Literal["text", "binary"] = "text", block: bool = True, timeout: float | None = None
+        self, mode: Literal["text", "binary"] = "text", block: bool = True, timeout: float | None = None,
     ) -> Any:
         """Receive data in either ``text`` or ``binary`` mode and decode it as JSON.
 

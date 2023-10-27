@@ -30,7 +30,7 @@ def mock_db() -> MemoryStore:
             "HS256",
             "HS384",
             "HS512",
-        ]
+        ],
     ),
     auth_header=sampled_from(["Authorization", "X-API-Key"]),
     default_token_expiration=timedeltas(min_value=timedelta(seconds=30), max_value=timedelta(weeks=1)),
@@ -134,7 +134,7 @@ async def test_jwt_auth(
             "HS256",
             "HS384",
             "HS512",
-        ]
+        ],
     ),
     auth_header=sampled_from(["Authorization", "X-API-Key"]),
     auth_cookie=sampled_from(["token", "accessToken"]),
@@ -285,7 +285,7 @@ async def test_path_exclusion() -> None:
         return None
 
     with create_test_client(
-        route_handlers=[north_handler, south_handler, west_handler], on_app_init=[jwt_auth.on_app_init]
+        route_handlers=[north_handler, south_handler, west_handler], on_app_init=[jwt_auth.on_app_init],
     ) as client:
         response = client.get("/north/1")
         assert response.status_code == HTTP_200_OK
@@ -307,8 +307,8 @@ def test_jwt_auth_openapi() -> None:
                 "name": "Authorization",
                 "scheme": "Bearer",
                 "bearerFormat": "JWT",
-            }
-        }
+            },
+        },
     }
     assert jwt_auth.security_requirement == {"BearerToken": []}
     app = Litestar(on_app_init=[jwt_auth.on_app_init])
@@ -328,7 +328,7 @@ def test_jwt_auth_openapi() -> None:
                     "name": "Authorization",
                     "scheme": "Bearer",
                     "bearerFormat": "JWT",
-                }
+                },
             },
         },
         "security": [{"BearerToken": []}],
@@ -374,7 +374,7 @@ async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStore") -> No
                 "scheme": "Bearer",
                 "bearerFormat": "JWT",
                 "flows": {"password": {"tokenUrl": "/login"}},
-            }
+            },
         },
     }
 
@@ -397,7 +397,7 @@ async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStore") -> No
                     "scheme": "Bearer",
                     "bearerFormat": "JWT",
                     "flows": {"password": {"tokenUrl": "/login"}},
-                }
+                },
             },
         },
         "security": [{"BearerToken": []}],
@@ -449,7 +449,7 @@ async def retrieve_user_handler(token: Token, connection: "ASGIConnection[Any, A
             exclude=["/"],
         ),
         OAuth2PasswordBearerAuth(
-            token_url="/", exclude=["/"], token_secret="abc123", retrieve_user_handler=retrieve_user_handler
+            token_url="/", exclude=["/"], token_secret="abc123", retrieve_user_handler=retrieve_user_handler,
         ),
     ),
 )
@@ -461,7 +461,8 @@ def test_returns_token_in_response_when_configured(config: JWTAuth) -> None:
     with create_test_client([handler]) as client:
         response = client.get("/")
         assert response.status_code == HTTP_201_CREATED
-        assert isinstance(response.json(), dict) and response.json()
+        assert isinstance(response.json(), dict)
+        assert response.json()
 
 
 @pytest.mark.parametrize(
@@ -478,7 +479,7 @@ def test_returns_token_in_response_when_configured(config: JWTAuth) -> None:
             exclude=["/"],
         ),
         OAuth2PasswordBearerAuth(
-            token_url="/", exclude=["/"], token_secret="abc123", retrieve_user_handler=retrieve_user_handler
+            token_url="/", exclude=["/"], token_secret="abc123", retrieve_user_handler=retrieve_user_handler,
         ),
     ),
 )

@@ -30,13 +30,13 @@ def mock_show_app_info(mocker: MockerFixture) -> MagicMock:
 
 @pytest.mark.parametrize("set_in_env", [True, False])
 @pytest.mark.parametrize(
-    "host, port, uds, fd",
+    ("host", "port", "uds", "fd"),
     [("0.0.0.0", 8081, "/run/uvicorn/litestar_test.sock", 0), (None, None, None, None)],
 )
 @pytest.mark.parametrize("custom_app_file,", [Path("my_app.py"), None])
 @pytest.mark.parametrize("app_dir", ["custom_subfolder", None])
 @pytest.mark.parametrize(
-    "reload, reload_dir, web_concurrency",
+    ("reload", "reload_dir", "web_concurrency"),
     [
         (None, None, None),
         (True, None, None),
@@ -158,14 +158,14 @@ def test_run_command(
     else:
         mock_subprocess_run.assert_not_called()
         mock_uvicorn_run.assert_called_once_with(
-            app=f"{path.stem}:app", host=host, port=port, uds=uds, fd=fd, factory=False
+            app=f"{path.stem}:app", host=host, port=port, uds=uds, fd=fd, factory=False,
         )
 
     mock_show_app_info.assert_called_once()
 
 
 @pytest.mark.parametrize(
-    "file_name,file_content,factory_name",
+    ("file_name", "file_content", "factory_name"),
     [
         ("_create_app.py", CREATE_APP_FILE_CONTENT, "create_app"),
         ("_generic_app_factory.py", GENERIC_APP_FACTORY_FILE_CONTENT, "any_name"),
@@ -190,12 +190,12 @@ def test_run_command_with_autodiscover_app_factory(
     assert result.exit_code == 0
 
     mock_uvicorn_run.assert_called_once_with(
-        app=f"{path.stem}:{factory_name}", host="127.0.0.1", port=8000, factory=True, uds=None, fd=None
+        app=f"{path.stem}:{factory_name}", host="127.0.0.1", port=8000, factory=True, uds=None, fd=None,
     )
 
 
 def test_run_command_with_app_factory(
-    runner: CliRunner, mock_uvicorn_run: MagicMock, create_app_file: CreateAppFileFixture
+    runner: CliRunner, mock_uvicorn_run: MagicMock, create_app_file: CreateAppFileFixture,
 ) -> None:
     path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)
     app_path = f"{path.stem}:create_app"
@@ -205,7 +205,7 @@ def test_run_command_with_app_factory(
     assert result.exit_code == 0
 
     mock_uvicorn_run.assert_called_once_with(
-        app=str(app_path), host="127.0.0.1", port=8000, factory=True, uds=None, fd=None
+        app=str(app_path), host="127.0.0.1", port=8000, factory=True, uds=None, fd=None,
     )
 
 
@@ -221,7 +221,7 @@ def unset_env() -> Generator[None, None, None]:
 
 @pytest.mark.usefixtures("mock_uvicorn_run", "unset_env")
 def test_run_command_debug(
-    app_file: Path, runner: CliRunner, monkeypatch: MonkeyPatch, create_app_file: CreateAppFileFixture
+    app_file: Path, runner: CliRunner, monkeypatch: MonkeyPatch, create_app_file: CreateAppFileFixture,
 ) -> None:
     monkeypatch.delenv("LITESTAR_DEBUG", raising=False)
     path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)

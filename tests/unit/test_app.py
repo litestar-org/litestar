@@ -98,9 +98,9 @@ def test_set_debug_updates_logging_level() -> None:
     assert app.logger.level == logging.INFO  # type: ignore[attr-defined]
 
 
-@pytest.mark.parametrize("env_name,app_attr", [("LITESTAR_DEBUG", "debug"), ("LITESTAR_PDB", "pdb_on_exception")])
+@pytest.mark.parametrize(("env_name", "app_attr"), [("LITESTAR_DEBUG", "debug"), ("LITESTAR_PDB", "pdb_on_exception")])
 @pytest.mark.parametrize(
-    "env_value,app_value,expected_value",
+    ("env_value", "app_value", "expected_value"),
     [
         (None, None, False),
         (None, False, False),

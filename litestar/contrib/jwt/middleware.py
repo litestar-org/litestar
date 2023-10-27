@@ -88,12 +88,13 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         """
         auth_header = connection.headers.get(self.auth_header)
         if not auth_header:
-            raise NotAuthorizedException("No JWT token found in request header")
+            msg = "No JWT token found in request header"
+            raise NotAuthorizedException(msg)
         encoded_token = auth_header.partition(" ")[-1]
         return await self.authenticate_token(encoded_token=encoded_token, connection=connection)
 
     async def authenticate_token(
-        self, encoded_token: str, connection: ASGIConnection[Any, Any, Any, Any]
+        self, encoded_token: str, connection: ASGIConnection[Any, Any, Any, Any],
     ) -> AuthenticationResult:
         """Given an encoded JWT token, parse, validate and look up sub within token.
 
@@ -116,7 +117,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         user = await self.retrieve_user_handler(token, connection)
 
         if not user:
-            raise NotAuthorizedException()
+            raise NotAuthorizedException
 
         return AuthenticationResult(user=user, auth=token)
 
@@ -184,6 +185,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         """
         auth_header = connection.headers.get(self.auth_header) or connection.cookies.get(self.auth_cookie_key)
         if not auth_header:
-            raise NotAuthorizedException("No JWT token found in request header or cookies")
+            msg = "No JWT token found in request header or cookies"
+            raise NotAuthorizedException(msg)
         encoded_token = auth_header.partition(" ")[-1]
         return await self.authenticate_token(encoded_token=encoded_token, connection=connection)

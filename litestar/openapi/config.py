@@ -98,7 +98,7 @@ class OpenAPIConfig:
             "openapi.json",
             "openapi.yaml",
             "openapi.yml",
-        }
+        },
     )
     """A set of the enabled documentation sites and schema download endpoints."""
     operation_id_creator: OperationIDCreator = default_operation_id_creator

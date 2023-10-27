@@ -20,7 +20,7 @@ async def test_health_check() -> None:
         assert response.text == "healthy"
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def test_client() -> AsyncTestClient:
     return AsyncTestClient(app=app)
 

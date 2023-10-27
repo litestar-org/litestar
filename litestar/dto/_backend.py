@@ -82,10 +82,10 @@ class DTOBackend:
         self.wrapper_attribute_name: Final[str | None] = wrapper_attribute_name
 
         self.parsed_field_definitions = self.parse_model(
-            model_type=model_type, exclude=self.dto_factory.config.exclude, include=self.dto_factory.config.include
+            model_type=model_type, exclude=self.dto_factory.config.exclude, include=self.dto_factory.config.include,
         )
         self.transfer_model_type = self.create_transfer_model_type(
-            model_name=model_type.__name__, field_definitions=self.parsed_field_definitions
+            model_name=model_type.__name__, field_definitions=self.parsed_field_definitions,
         )
         self.dto_data_type: type[DTOData] | None = None
 
@@ -99,7 +99,7 @@ class DTOBackend:
         self.annotation = _maybe_wrap_in_generic_annotation(annotation, self.transfer_model_type)
 
     def parse_model(
-        self, model_type: Any, exclude: AbstractSet[str], include: AbstractSet[str], nested_depth: int = 0
+        self, model_type: Any, exclude: AbstractSet[str], include: AbstractSet[str], nested_depth: int = 0,
     ) -> tuple[TransferDTOFieldDefinition, ...]:
         """Reduce :attr:`model_type` to a tuple :class:`TransferDTOFieldDefinition` instances.
 
@@ -112,7 +112,7 @@ class DTOBackend:
             if field_definition.is_type_var:
                 base_arg_field = generic_field_definitons.pop()
                 field_definition = replace(
-                    field_definition, annotation=base_arg_field.annotation, raw=base_arg_field.raw
+                    field_definition, annotation=base_arg_field.annotation, raw=base_arg_field.raw,
                 )
 
             if _should_mark_private(field_definition, self.dto_factory.config.underscore_fields_private):
@@ -134,7 +134,7 @@ class DTOBackend:
                 serialization_name = rename
             elif self.dto_factory.config.rename_strategy:
                 serialization_name = _rename_field(
-                    name=field_definition.name, strategy=self.dto_factory.config.rename_strategy
+                    name=field_definition.name, strategy=self.dto_factory.config.rename_strategy,
                 )
             else:
                 serialization_name = field_definition.name
@@ -167,7 +167,7 @@ class DTOBackend:
         return unique_name_for_scope(long_name, self._seen_model_names)
 
     def create_transfer_model_type(
-        self, model_name: str, field_definitions: tuple[TransferDTOFieldDefinition, ...]
+        self, model_name: str, field_definitions: tuple[TransferDTOFieldDefinition, ...],
     ) -> type[Struct]:
         """Create a model for data transfer.
 
@@ -343,7 +343,7 @@ class DTOBackend:
         )
 
     def _get_handler_for_field_definition(
-        self, field_definition: FieldDefinition
+        self, field_definition: FieldDefinition,
     ) -> Callable[[FieldDefinition, AbstractSet[str], AbstractSet[str], str, int], CompositeType] | None:
         if field_definition.is_union:
             return self._create_union_type
@@ -382,7 +382,7 @@ class DTOBackend:
                 raise RecursionError
 
             nested_field_definitions = self.parse_model(
-                model_type=field_definition.annotation, exclude=exclude, include=include, nested_depth=nested_depth + 1
+                model_type=field_definition.annotation, exclude=exclude, include=include, nested_depth=nested_depth + 1,
             )
 
             transfer_model = NestedFieldInfo(
@@ -410,7 +410,7 @@ class DTOBackend:
             nested_depth=nested_depth,
         )
         return CollectionType(
-            field_definition=field_definition, inner_type=inner_type, has_nested=inner_type.has_nested
+            field_definition=field_definition, inner_type=inner_type, has_nested=inner_type.has_nested,
         )
 
     def _create_mapping_type(
@@ -679,7 +679,8 @@ def _transfer_nested_union_type_data(
 ) -> Any:
     for inner_type in transfer_type.inner_types:
         if isinstance(inner_type, CompositeType):
-            raise RuntimeError("Composite inner types not (yet) supported for nested unions.")
+            msg = "Composite inner types not (yet) supported for nested unions."
+            raise RuntimeError(msg)
 
         if inner_type.nested_field_info and isinstance(
             source_value,
@@ -712,7 +713,7 @@ def _create_msgspec_field(field_definition: TransferDTOFieldDefinition) -> Any:
 
 
 def _create_struct_for_field_definitions(
-    model_name: str, field_definitions: tuple[TransferDTOFieldDefinition, ...]
+    model_name: str, field_definitions: tuple[TransferDTOFieldDefinition, ...],
 ) -> type[Struct]:
     struct_fields: list[tuple[str, type] | tuple[str, type, type]] = []
 
@@ -729,7 +730,7 @@ def _create_struct_for_field_definitions(
                 field_definition.serialization_name or field_definition.name,
                 field_type,
                 _create_msgspec_field(field_definition),
-            )
+            ),
         )
     return defstruct(model_name, struct_fields, frozen=True, kw_only=True)
 
@@ -763,12 +764,12 @@ def _should_mark_private(field_definition: DTOFieldDefinition, underscore_fields
         underscore_fields_private: whether fields prefixed with an underscore should be marked as private.
     """
     return bool(
-        underscore_fields_private and field_definition.dto_field.mark is None and field_definition.name.startswith("_")
+        underscore_fields_private and field_definition.dto_field.mark is None and field_definition.name.startswith("_"),
     )
 
 
 def _should_exclude_field(
-    field_definition: DTOFieldDefinition, exclude: AbstractSet[str], include: AbstractSet[str], is_data_field: bool
+    field_definition: DTOFieldDefinition, exclude: AbstractSet[str], include: AbstractSet[str], is_data_field: bool,
 ) -> bool:
     """Returns ``True`` where a field should be excluded from data transfer.
 
@@ -816,7 +817,8 @@ def _create_transfer_model_type_annotation(transfer_type: TransferType) -> Any:
     if isinstance(transfer_type, UnionType):
         return _create_transfer_model_union_type(transfer_type)
 
-    raise RuntimeError(f"Unexpected transfer type: {type(transfer_type)}")
+    msg = f"Unexpected transfer type: {type(transfer_type)}"
+    raise RuntimeError(msg)
 
 
 def _create_transfer_model_collection_type(transfer_type: CollectionType) -> Any:

@@ -54,7 +54,7 @@ def warn_deprecation(
         (
             f"Deprecated in litestar {version}",
             f"This {kind} will be removed in {removal_in or 'the next major version'}",
-        )
+        ),
     )
     if alternative:
         parts.append(f"Use {alternative!r} instead")

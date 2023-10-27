@@ -20,7 +20,7 @@ class CustomStrEnum(str, Enum):
 
 
 @pytest.mark.parametrize(
-    "annotation, expected_media_type",
+    ("annotation", "expected_media_type"),
     (
         (str, MediaType.TEXT),
         (bytes, MediaType.TEXT),

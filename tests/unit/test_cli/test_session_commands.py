@@ -41,7 +41,7 @@ def test_delete_session_cookie_backend(runner: CliRunner, monkeypatch: MonkeyPat
 
 
 def test_delete_session(
-    runner: CliRunner, monkeypatch: MonkeyPatch, mocker: MockerFixture, mock_confirm_ask: MagicMock
+    runner: CliRunner, monkeypatch: MonkeyPatch, mocker: MockerFixture, mock_confirm_ask: MagicMock,
 ) -> None:
     monkeypatch.setenv("LITESTAR_APP", "docs.examples.middleware.session.file_store:app")
     mock_delete = mocker.patch("litestar.stores.file.FileStore.delete")
@@ -71,7 +71,7 @@ def test_clear_sessions_cookie_backend(runner: CliRunner, monkeypatch: MonkeyPat
 
 
 def test_clear_sessions(
-    runner: CliRunner, monkeypatch: MonkeyPatch, mocker: MockerFixture, mock_confirm_ask: MagicMock
+    runner: CliRunner, monkeypatch: MonkeyPatch, mocker: MockerFixture, mock_confirm_ask: MagicMock,
 ) -> None:
     monkeypatch.setenv("LITESTAR_APP", "docs.examples.middleware.session.file_store:app")
     mock_delete = mocker.patch("litestar.stores.file.FileStore.delete_all")

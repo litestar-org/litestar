@@ -54,7 +54,8 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
         elif isinstance(content, (AsyncIterable, AsyncIterator, AsyncIteratorWrapper)):
             self.content_async_iterator = content
         else:
-            raise ImproperlyConfiguredException(f"Invalid type {type(content)} for ServerSentEvent")
+            msg = f"Invalid type {type(content)} for ServerSentEvent"
+            raise ImproperlyConfiguredException(msg)
 
     def _call_next(self) -> bytes:
         try:

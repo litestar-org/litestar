@@ -111,7 +111,7 @@ def test_unique_operation_ids_for_multiple_http_methods_with_handler_level_opera
 
 
 def test_routes_with_different_paths_should_generate_unique_operation_ids(
-    routes_with_router: Tuple["HTTPRoute", "HTTPRoute"]
+    routes_with_router: Tuple["HTTPRoute", "HTTPRoute"],
 ) -> None:
     route_v1, route_v2 = routes_with_router
     schema_v1, _ = create_path_item(

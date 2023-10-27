@@ -17,7 +17,8 @@ try:
     from jinja2 import Environment, FileSystemLoader, pass_context
     from jinja2 import TemplateNotFound as JinjaTemplateNotFound
 except ImportError as e:
-    raise MissingDependencyException("jinja2") from e
+    msg = "jinja2"
+    raise MissingDependencyException(msg) from e
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -47,7 +48,8 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate", Mapping[str, A
 
         super().__init__(directory, engine_instance)
         if directory and engine_instance:
-            raise ImproperlyConfiguredException("You must provide either a directory or a jinja2 Environment instance.")
+            msg = "You must provide either a directory or a jinja2 Environment instance."
+            raise ImproperlyConfiguredException(msg)
         if directory:
             loader = FileSystemLoader(searchpath=directory)
             self.engine = Environment(loader=loader, autoescape=True)
@@ -75,7 +77,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate", Mapping[str, A
             raise TemplateNotFoundException(template_name=template_name) from exc
 
     def register_template_callable(
-        self, key: str, template_callable: TemplateCallableType[Mapping[str, Any], P, T]
+        self, key: str, template_callable: TemplateCallableType[Mapping[str, Any], P, T],
     ) -> None:
         """Register a callable on the template engine.
 

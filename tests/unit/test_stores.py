@@ -175,7 +175,7 @@ async def test_expires_in(store: Store, frozen_datetime: Coordinates) -> None:
 def test_redis_with_client_default(connection_pool_from_url_mock: Mock, mock_redis: Mock) -> None:
     backend = RedisStore.with_client()
     connection_pool_from_url_mock.assert_called_once_with(
-        url="redis://localhost:6379", db=None, port=None, username=None, password=None, decode_responses=False
+        url="redis://localhost:6379", db=None, port=None, username=None, password=None, decode_responses=False,
     )
     mock_redis.assert_called_once_with(connection_pool=connection_pool_from_url_mock.return_value)
     assert backend._redis is mock_redis.return_value
@@ -191,7 +191,7 @@ def test_redis_with_non_default(connection_pool_from_url_mock: Mock, mock_redis:
     password = "password"
     backend = RedisStore.with_client(url=url, db=db, port=port, username=username, password=password)
     connection_pool_from_url_mock.assert_called_once_with(
-        url=url, db=db, port=port, username=username, password=password, decode_responses=False
+        url=url, db=db, port=port, username=username, password=password, decode_responses=False,
     )
     mock_redis.assert_called_once_with(connection_pool=connection_pool_from_url_mock.return_value)
     assert backend._redis is mock_redis.return_value

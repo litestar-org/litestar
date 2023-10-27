@@ -134,7 +134,7 @@ def test_handling_of_literals() -> None:
 
     schemas: Dict[str, Schema] = {}
     result = SchemaCreator(schemas=schemas).for_field_definition(
-        FieldDefinition.from_kwarg(name="", annotation=DataclassWithLiteral)
+        FieldDefinition.from_kwarg(name="", annotation=DataclassWithLiteral),
     )
     assert isinstance(result, Reference)
 
@@ -180,14 +180,14 @@ def test_title_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         schema_creator.for_field_definition(
             FieldDefinition.from_kwarg(
-                name="DataclassPerson", annotation=DataclassPet, kwarg_definition=BodyKwarg(title="DataclassPerson")
-            )
+                name="DataclassPerson", annotation=DataclassPet, kwarg_definition=BodyKwarg(title="DataclassPerson"),
+            ),
         )
 
 
 @pytest.mark.parametrize("with_future_annotations", [True, False])
 def test_create_schema_for_dataclass_with_annotated_model_attribute(
-    with_future_annotations: bool, create_module: "Callable[[str], ModuleType]"
+    with_future_annotations: bool, create_module: "Callable[[str], ModuleType]",
 ) -> None:
     """Test that a model with an annotated attribute is correctly handled."""
     module = create_module(
@@ -199,17 +199,18 @@ from dataclasses import dataclass
 @dataclass
 class Foo:
     foo: Annotated[int, "Foo description"]
-"""
+""",
     )
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas).for_field_definition(FieldDefinition.from_annotation(module.Foo))
     schema = schemas["Foo"]
-    assert schema.properties and "foo" in schema.properties
+    assert schema.properties
+    assert "foo" in schema.properties
 
 
 @pytest.mark.parametrize("with_future_annotations", [True, False])
 def test_create_schema_for_typedict_with_annotated_required_and_not_required_model_attributes(
-    with_future_annotations: bool, create_module: "Callable[[str], ModuleType]"
+    with_future_annotations: bool, create_module: "Callable[[str], ModuleType]",
 ) -> None:
     """Test that a model with an annotated attribute is correctly handled."""
     module = create_module(
@@ -222,12 +223,13 @@ class Foo(TypedDict):
     foo: Annotated[int, "Foo description"]
     bar: Annotated[Required[int], "Bar description"]
     baz: Annotated[NotRequired[int], "Baz description"]
-"""
+""",
     )
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas).for_field_definition(FieldDefinition.from_annotation(module.Foo))
     schema = schemas["Foo"]
-    assert schema.properties and all(key in schema.properties for key in ("foo", "bar", "baz"))
+    assert schema.properties
+    assert all(key in schema.properties for key in ("foo", "bar", "baz"))
 
 
 def test_create_schema_from_msgspec_annotated_type() -> None:
@@ -262,7 +264,7 @@ def test_annotated_types() -> None:
 
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas).for_field_definition(
-        FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass)
+        FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass),
     )
     schema = schemas["MyDataclass"]
 
@@ -289,7 +291,7 @@ def test_literal_enums() -> None:
 
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas).for_field_definition(
-        FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass)
+        FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass),
     )
     assert schemas["MyDataclass"].properties["bar"].items.const == 1  # type: ignore
 
@@ -364,14 +366,14 @@ def test_schema_generation_with_generic_classes_constrained() -> None:
     assert properties
     assert properties["bound"] == Schema(type=OpenAPIType.INTEGER)
     assert properties["constrained"] == Schema(
-        one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)]
+        one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)],
     )
     assert properties["union"] == Schema(one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.OBJECT)])
     assert properties["union_constrained"] == Schema(
-        one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)]
+        one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)],
     )
     assert properties["union_bound"] == Schema(
-        one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.INTEGER)]
+        one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.INTEGER)],
     )
 
 

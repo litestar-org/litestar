@@ -34,12 +34,13 @@ async def validation_error(some_query_param: str) -> str:
 
 @get("/server-error")
 async def server_error() -> None:
-    raise HTTPException()
+    raise HTTPException
 
 
 @get("/value-error")
 async def value_error() -> None:
-    raise ValueError("this is wrong")
+    msg = "this is wrong"
+    raise ValueError(msg)
 
 
 app = Litestar(

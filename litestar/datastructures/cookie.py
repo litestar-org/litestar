@@ -97,7 +97,7 @@ class Cookie:
     def __hash__(self) -> int:
         return hash((self.key, self.path, self.domain))
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         """Determine whether two cookie instances are equal according to the cookie spec, i.e. hey have a similar path,
         domain and key.
 

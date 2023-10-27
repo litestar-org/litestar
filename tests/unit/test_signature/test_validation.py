@@ -130,7 +130,7 @@ def test_validation_error_exception_key() -> None:
 
     with pytest.raises(ValidationException) as exc_info:
         model.parse_values_from_connection_kwargs(
-            connection=RequestFactory().get(route_handler=handler), data={"child": {}, "other_child": {}}
+            connection=RequestFactory().get(route_handler=handler), data={"child": {}, "other_child": {}},
         )
 
     assert isinstance(exc_info.value.extra, list)

@@ -180,7 +180,7 @@ class Router:
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
         self.security = list(security or [])
         self.signature_namespace = add_types_to_signature_namespace(
-            signature_types or [], dict(signature_namespace or {})
+            signature_types or [], dict(signature_namespace or {}),
         )
         self.tags = list(tags or [])
         self.registered_route_handler_ids: set[int] = set()
@@ -208,20 +208,21 @@ class Router:
         for route_path, handlers_map in self.get_route_handler_map(value=validated_value).items():
             path = join_paths([self.path, route_path])
             if http_handlers := unique(
-                [handler for handler in handlers_map.values() if isinstance(handler, HTTPRouteHandler)]
+                [handler for handler in handlers_map.values() if isinstance(handler, HTTPRouteHandler)],
             ):
                 if existing_handlers := unique(
                     [
                         handler
                         for handler in self.route_handler_method_map.get(path, {}).values()
                         if isinstance(handler, HTTPRouteHandler)
-                    ]
+                    ],
                 ):
                     http_handlers.extend(existing_handlers)
                     existing_route_index = find_index(self.routes, lambda x: x.path == path)  # noqa: B023
 
                     if existing_route_index == -1:  # pragma: no cover
-                        raise ImproperlyConfiguredException("unable to find_index existing route index")
+                        msg = "unable to find_index existing route index"
+                        raise ImproperlyConfiguredException(msg)
 
                     route: WebSocketRoute | ASGIRoute | HTTPRoute = HTTPRoute(
                         path=path,
@@ -310,10 +311,12 @@ class Router:
 
         if isinstance(value, Router):
             if value.owner:
-                raise ImproperlyConfiguredException(f"Router with path {value.path} has already been registered")
+                msg = f"Router with path {value.path} has already been registered"
+                raise ImproperlyConfiguredException(msg)
 
             if value is self:
-                raise ImproperlyConfiguredException("Cannot register a router on itself")
+                msg = "Cannot register a router on itself"
+                raise ImproperlyConfiguredException(msg)
 
             value.owner = self
             return value
@@ -322,8 +325,7 @@ class Router:
             value.owner = self
             return value
 
+        msg = "Unsupported value passed to `Router.register`. If you passed in a function or method, make sure to decorate it first with one of the routing decorators"
         raise ImproperlyConfiguredException(
-            "Unsupported value passed to `Router.register`. "
-            "If you passed in a function or method, "
-            "make sure to decorate it first with one of the routing decorators"
+            msg,
         )

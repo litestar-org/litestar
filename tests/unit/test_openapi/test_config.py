@@ -16,7 +16,7 @@ def test_merged_components_correct() -> None:
     components_two = Components(headers={"two": OpenAPIHeader()})
     components_three = Components(examples={"example-one": Example(summary="an example")})
     config = OpenAPIConfig(
-        title="my title", version="1.0.0", components=[components_one, components_two, components_three]
+        title="my title", version="1.0.0", components=[components_one, components_two, components_three],
     )
     openapi = config.to_openapi_schema()
     assert openapi.components
@@ -68,7 +68,7 @@ def test_allows_customization_of_operation_id_creator() -> None:
                 "operationId": "x",
                 "responses": {"200": {"description": "Request fulfilled, document follows", "headers": {}}},
                 "summary": "Handler1",
-            }
+            },
         },
         "/2": {
             "get": {
@@ -76,7 +76,7 @@ def test_allows_customization_of_operation_id_creator() -> None:
                 "operationId": "y",
                 "responses": {"200": {"description": "Request fulfilled, document follows", "headers": {}}},
                 "summary": "Handler2",
-            }
+            },
         },
     }
 

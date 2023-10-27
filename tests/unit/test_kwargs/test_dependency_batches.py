@@ -18,7 +18,7 @@ DEPENDENCY_ALL_EXCEPT_A = Dependency("D", Provide(dummy), [DEPENDENCY_B, DEPENDE
 
 
 @pytest.mark.parametrize(
-    "dependency_tree,expected_batches",
+    ("dependency_tree", "expected_batches"),
     [
         (set(), []),
         ({DEPENDENCY_A}, [{DEPENDENCY_A}]),

@@ -46,9 +46,9 @@ class LifeSpanHandler(Generic[T]):
             "lifespan.startup.complete",
             "lifespan.startup.failed",
         ):
+            msg = f"Received unexpected ASGI message type. Expected 'lifespan.startup.complete' or 'lifespan.startup.failed'. Got {message['type']!r}"
             raise RuntimeError(
-                "Received unexpected ASGI message type. Expected 'lifespan.startup.complete' or "
-                f"'lifespan.startup.failed'. Got {message['type']!r}",
+                msg,
             )
         if message["type"] == "lifespan.startup.failed":
             await self.receive()
@@ -63,9 +63,9 @@ class LifeSpanHandler(Generic[T]):
                 "lifespan.shutdown.complete",
                 "lifespan.shutdown.failed",
             ):
+                msg = f"Received unexpected ASGI message type. Expected 'lifespan.shutdown.complete' or 'lifespan.shutdown.failed'. Got {message['type']!r}"
                 raise RuntimeError(
-                    "Received unexpected ASGI message type. Expected 'lifespan.shutdown.complete' or "
-                    f"'lifespan.shutdown.failed'. Got {message['type']!r}",
+                    msg,
                 )
             if message["type"] == "lifespan.shutdown.failed":
                 await self.receive()

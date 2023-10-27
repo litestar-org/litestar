@@ -68,9 +68,9 @@ mako_template_lookup.put_string("no_context.html", "<html>This works!</html>")
                             "index.html": "<html>Injected? {{test}}</html>",
                             "nested-dir/nested.html": "<html>Does nested dirs work? {{test}}</html>",
                             "no_context.html": "<html>This works!</html>",
-                        }
-                    )
-                )
+                        },
+                    ),
+                ),
             ),
         ),
         EngineTest(
@@ -80,7 +80,7 @@ mako_template_lookup.put_string("no_context.html", "<html>This works!</html>")
             instantiated=True,
             instance=MakoTemplateEngine.from_template_lookup(mako_template_lookup),
         ),
-    ]
+    ],
 )
 def engine_test(request: Any) -> EngineTest:
     return request.param  # type:ignore[no-any-return]
@@ -139,7 +139,7 @@ def test_raise_for_invalid_template_name(template_config: TemplateConfig) -> Non
         return Template(template_name="invalid.html", context={"test": "yep"})
 
     with create_test_client(
-        route_handlers=[invalid_template_name_handler], template_config=template_config, debug=False
+        route_handlers=[invalid_template_name_handler], template_config=template_config, debug=False,
     ) as client:
         response = client.request("GET", "/")
         assert response.status_code == 500

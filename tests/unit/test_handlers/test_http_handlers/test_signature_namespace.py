@@ -9,7 +9,7 @@ from litestar.testing import create_test_client
 
 
 @pytest.mark.parametrize(
-    ("method", "decorator"), [("GET", get), ("PUT", put), ("POST", post), ("PATCH", patch), ("DELETE", delete)]
+    ("method", "decorator"), [("GET", get), ("PUT", put), ("POST", post), ("PATCH", patch), ("DELETE", delete)],
 )
 def test_websocket_signature_namespace(method: str, decorator: type[get | put | post | patch | delete]) -> None:
     class MyController(Controller):

@@ -33,7 +33,7 @@ async def socket_handler(socket: "WebSocket") -> None:
 
 
 @pytest.mark.parametrize(
-    "decorator, handler",
+    ("decorator", "handler"),
     [
         (get, regular_handler),
         (post, regular_handler),
@@ -51,7 +51,7 @@ def test_opt_settings(decorator: "RouteHandlerType", handler: Callable) -> None:
 
 
 @pytest.mark.parametrize(
-    "app_opt, router_opt, controller_opt, route_opt, expected_opt",
+    ("app_opt", "router_opt", "controller_opt", "route_opt", "expected_opt"),
     [
         [
             {"app": "app"},

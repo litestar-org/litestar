@@ -27,7 +27,7 @@ class DataclassDTO(AbstractDTO[T], Generic[T]):
 
     @classmethod
     def generate_field_definitions(
-        cls, model_type: type[DataclassProtocol]
+        cls, model_type: type[DataclassProtocol],
     ) -> Generator[DTOFieldDefinition, None, None]:
         dc_fields = {f.name: f for f in fields(model_type)}
         for key, field_definition in cls.get_model_type_hints(model_type).items():

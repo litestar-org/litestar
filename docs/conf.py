@@ -202,7 +202,7 @@ ignore_missing_refs = {
     re.compile(r"litestar\.plugins.*"): re.compile(".*ModelT"),
     re.compile(r"litestar\.(contrib|repository)\.*"): re.compile(".*T"),
     re.compile(r"litestar\.contrib\.sqlalchemy\.*"): re.compile(
-        ".*(ConnectionT|EngineT|SessionT|SessionMakerT|SlotsBase)"
+        ".*(ConnectionT|EngineT|SessionT|SessionMakerT|SlotsBase)",
     ),
     re.compile(r"litestar\.dto.*"): re.compile(".*T|.*FieldDefinition|Empty"),
 }
@@ -276,7 +276,7 @@ html_theme_options = {
 
 
 def update_html_context(
-    app: Sphinx, pagename: str, templatename: str, context: dict[str, Any], doctree: document
+    app: Sphinx, pagename: str, templatename: str, context: dict[str, Any], doctree: document,
 ) -> None:
     context["generate_toctree_html"] = partial(context["generate_toctree_html"], startdepth=0)
 

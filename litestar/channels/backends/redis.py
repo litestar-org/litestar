@@ -43,7 +43,7 @@ class RedisChannelsBackend(ChannelsBackend, ABC):
 
 class RedisChannelsPubSubBackend(RedisChannelsBackend):
     def __init__(
-        self, *, redis: Redis, stream_sleep_no_subscriptions: int = 1, key_prefix: str = "LITESTAR_CHANNELS"
+        self, *, redis: Redis, stream_sleep_no_subscriptions: int = 1, key_prefix: str = "LITESTAR_CHANNELS",
     ) -> None:
         """Redis channels backend, `Pub/Sub <https://redis.io/docs/manual/pubsub/>`_.
 
@@ -56,7 +56,7 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
                 :meth:`stream_events` generator, should no subscribers exist
         """
         super().__init__(
-            redis=redis, stream_sleep_no_subscriptions=stream_sleep_no_subscriptions, key_prefix=key_prefix
+            redis=redis, stream_sleep_no_subscriptions=stream_sleep_no_subscriptions, key_prefix=key_prefix,
         )
         self.__pub_sub: PubSub | None = None
         self._publish_script = self._redis.register_script(_PUBSUB_PUBLISH_SCRIPT)
@@ -112,7 +112,7 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
 
     async def get_history(self, channel: str, limit: int | None = None) -> list[bytes]:
         """Not implemented"""
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class RedisChannelsStreamBackend(RedisChannelsBackend):
@@ -140,7 +140,7 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
                 operation using ``PEXPIRE``
         """
         super().__init__(
-            redis=redis, stream_sleep_no_subscriptions=stream_sleep_no_subscriptions, key_prefix=key_prefix
+            redis=redis, stream_sleep_no_subscriptions=stream_sleep_no_subscriptions, key_prefix=key_prefix,
         )
 
         self._history_limit = history
@@ -196,7 +196,7 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
                 continue
 
             data: list[tuple[bytes, list[tuple[bytes, dict[bytes, bytes]]]]] = await self._redis.xread(
-                {key: stream_ids.get(key, 0) for key in stream_keys}, block=1
+                {key: stream_ids.get(key, 0) for key in stream_keys}, block=1,
             )
 
             if not data:

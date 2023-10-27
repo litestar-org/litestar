@@ -119,7 +119,8 @@ class ResponseHeader:
     def __post_init__(self) -> None:
         """Ensure that either value is set or the instance is for documentation_only."""
         if not self.documentation_only and self.value is None:
-            raise ImproperlyConfiguredException("value must be set if documentation_only is false")
+            msg = "value must be set if documentation_only is false"
+            raise ImproperlyConfiguredException(msg)
 
     def __hash__(self) -> int:
         return hash(self.name)

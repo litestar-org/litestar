@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from queue import Empty
-from typing import TYPE_CHECKING, Callable, Dict, NoReturn, Optional, Union, cast
+from typing import TYPE_CHECKING, Callable, NoReturn, Union, cast
 
 from _pytest.fixtures import FixtureRequest
 
@@ -32,21 +34,21 @@ _ExceptionGroup = get_exception_group()
 AnyTestClient = Union[TestClient, AsyncTestClient]
 
 
-async def mock_asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+async def mock_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
     pass
 
 
 @pytest.fixture(params=[AsyncTestClient, TestClient])
-def test_client_cls(request: FixtureRequest) -> Type[AnyTestClient]:
+def test_client_cls(request: FixtureRequest) -> type[AnyTestClient]:
     return cast(Type[AnyTestClient], request.param)
 
 
 @pytest.mark.parametrize("with_domain", [False, True])
 async def test_test_client_set_session_data(
-    with_domain: bool,
-    session_backend_config: "BaseBackendConfig",
-    test_client_backend: "AnyIOBackend",
-    test_client_cls: Type[AnyTestClient],
+        with_domain: bool,
+        session_backend_config: BaseBackendConfig,
+        test_client_backend: AnyIOBackend,
+        test_client_cls: type[AnyTestClient],
 ) -> None:
     session_data = {"foo": "bar"}
 
@@ -54,13 +56,14 @@ async def test_test_client_set_session_data(
         session_backend_config.domain = "testserver.local"
 
     @get(path="/test")
-    def get_session_data(request: Request) -> Dict[str, Any]:
+    def get_session_data(request: Request) -> dict[str, Any]:
         return request.session
 
     app = Litestar(route_handlers=[get_session_data], middleware=[session_backend_config.middleware])
 
     async with maybe_async_cm(
-        test_client_cls(app=app, session_config=session_backend_config, backend=test_client_backend)  # pyright: ignore
+            test_client_cls(app=app, session_config=session_backend_config, backend=test_client_backend),
+            # pyright: ignore
     ) as client:
         await maybe_async(client.set_session_data(session_data))  # type: ignore[attr-defined]
         assert session_data == (await maybe_async(client.get("/test"))).json()  # type: ignore[attr-defined]
@@ -68,11 +71,11 @@ async def test_test_client_set_session_data(
 
 @pytest.mark.parametrize("with_domain", [False, True])
 async def test_test_client_get_session_data(
-    with_domain: bool,
-    session_backend_config: "BaseBackendConfig",
-    test_client_backend: "AnyIOBackend",
-    store: Store,
-    test_client_cls: Type[AnyTestClient],
+        with_domain: bool,
+        session_backend_config: BaseBackendConfig,
+        test_client_backend: AnyIOBackend,
+        store: Store,
+        test_client_cls: type[AnyTestClient],
 ) -> None:
     session_data = {"foo": "bar"}
 
@@ -84,18 +87,19 @@ async def test_test_client_get_session_data(
         request.session.update(session_data)
 
     app = Litestar(
-        route_handlers=[set_session_data], middleware=[session_backend_config.middleware], stores={"session": store}
+        route_handlers=[set_session_data], middleware=[session_backend_config.middleware], stores={"session": store},
     )
 
     async with maybe_async_cm(
-        test_client_cls(app=app, session_config=session_backend_config, backend=test_client_backend)  # pyright: ignore
+            test_client_cls(app=app, session_config=session_backend_config, backend=test_client_backend),
+            # pyright: ignore
     ) as client:
         await maybe_async(client.post("/test"))  # type: ignore[attr-defined]
         assert await maybe_async(client.get_session_data()) == session_data  # type: ignore[attr-defined]
 
 
 async def test_use_testclient_in_endpoint(
-    test_client_backend: "AnyIOBackend", test_client_cls: Type[AnyTestClient]
+        test_client_backend: AnyIOBackend, test_client_cls: type[AnyTestClient],
 ) -> None:
     """this test is taken from starlette."""
 
@@ -123,30 +127,30 @@ def raise_error(app: Litestar) -> NoReturn:
 
 
 async def test_error_handling_on_startup(
-    test_client_backend: "AnyIOBackend", test_client_cls: Type[AnyTestClient]
+        test_client_backend: AnyIOBackend, test_client_cls: type[AnyTestClient],
 ) -> None:
     with pytest.raises(_ExceptionGroup):
         async with maybe_async_cm(
-            test_client_cls(Litestar(on_startup=[raise_error]), backend=test_client_backend)  # pyright: ignore
+                test_client_cls(Litestar(on_startup=[raise_error]), backend=test_client_backend),  # pyright: ignore
         ):
             pass
 
 
 async def test_error_handling_on_shutdown(
-    test_client_backend: "AnyIOBackend", test_client_cls: Type[AnyTestClient]
+        test_client_backend: AnyIOBackend, test_client_cls: type[AnyTestClient],
 ) -> None:
     with pytest.raises(RuntimeError):
         async with maybe_async_cm(
-            test_client_cls(Litestar(on_shutdown=[raise_error]), backend=test_client_backend)  # pyright: ignore
+                test_client_cls(Litestar(on_shutdown=[raise_error]), backend=test_client_backend),  # pyright: ignore
         ):
             pass
 
 
 @pytest.mark.parametrize("method", ["get", "post", "put", "patch", "delete", "head", "options"])
 async def test_client_interface(
-    method: str, test_client_backend: "AnyIOBackend", test_client_cls: Type[AnyTestClient]
+        method: str, test_client_backend: AnyIOBackend, test_client_cls: type[AnyTestClient],
 ) -> None:
-    async def asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
         start_event: HTTPResponseStartEvent = {
             "type": "http.response.start",
             "status": HTTP_200_OK,
@@ -174,14 +178,14 @@ async def test_client_interface(
     assert response.status_code == HTTP_200_OK  # type: ignore[union-attr, misc]
 
 
-def test_warns_problematic_domain(test_client_cls: Type[AnyTestClient]) -> None:
+def test_warns_problematic_domain(test_client_cls: type[AnyTestClient]) -> None:
     with pytest.warns(UserWarning):
         test_client_cls(app=mock_asgi_app, base_url="http://testserver")
 
 
 @pytest.mark.parametrize("method", ["get", "post", "put", "patch", "delete", "head", "options"])
 async def test_client_interface_context_manager(
-    method: str, test_client_backend: "AnyIOBackend", test_client_cls: Type[AnyTestClient]
+        method: str, test_client_backend: AnyIOBackend, test_client_cls: type[AnyTestClient],
 ) -> None:
     class MockController(Controller):
         @get("/")
@@ -233,7 +237,7 @@ async def test_client_interface_context_manager(
             assert response.status_code == HTTP_204_NO_CONTENT
 
 
-@pytest.mark.parametrize("block,timeout", [(False, None), (False, 0.001), (True, 0.001)])
+@pytest.mark.parametrize(("block", "timeout"), [(False, None), (False, 0.001), (True, 0.001)])
 @pytest.mark.parametrize(
     "receive_method",
     [
@@ -244,7 +248,7 @@ async def test_client_interface_context_manager(
     ],
 )
 def test_websocket_test_session_block_timeout(
-    receive_method: Callable[..., Any], block: bool, timeout: Optional[float], anyio_backend: "AnyIOBackend"
+        receive_method: Callable[..., Any], block: bool, timeout: float | None, anyio_backend: AnyIOBackend,
 ) -> None:
     @websocket()
     async def handler(socket: WebSocket) -> None:
@@ -255,12 +259,12 @@ def test_websocket_test_session_block_timeout(
             receive_method(ws, timeout=timeout, block=block)
 
 
-def test_websocket_accept_timeout(anyio_backend: "AnyIOBackend") -> None:
+def test_websocket_accept_timeout(anyio_backend: AnyIOBackend) -> None:
     @websocket()
     async def handler(socket: WebSocket) -> None:
         pass
 
     with create_test_client(handler, backend=anyio_backend, timeout=0.1) as client, pytest.raises(
-        Empty
+            Empty,
     ), client.websocket_connect("/"):
         pass

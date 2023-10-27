@@ -84,7 +84,7 @@ def test_parsing_of_dependency_as_default() -> None:
 
 
 @pytest.mark.parametrize(
-    "dependency, expected",
+    ("dependency", "expected"),
     [
         (Dependency(), None),
         (Dependency(default=None), None),
@@ -158,7 +158,7 @@ def test_dependency_skip_validation() -> None:
         return {"value": value}
 
     with create_test_client(
-        route_handlers=[validated, skipped], dependencies={"value": Provide(lambda: "str", sync_to_thread=False)}
+        route_handlers=[validated, skipped], dependencies={"value": Provide(lambda: "str", sync_to_thread=False)},
     ) as client:
         validated_resp = client.get("/validated")
         assert validated_resp.status_code == HTTP_500_INTERNAL_SERVER_ERROR
@@ -254,7 +254,7 @@ def test_optional_query_parameter_consistency_no_default_queried_with_other_para
 ) -> None:
     assert optional_no_default_client.get("/optional-no-default", params={"param": "a"}).json() == {"key": None}
     assert optional_no_default_client.get("/optional-annotated-no-default", params={"param": "a"}).json() == {
-        "key": None
+        "key": None,
     }
 
 
@@ -266,7 +266,7 @@ def optional_default_client_fixture() -> Generator[TestClient, None, None]:
 
     @get("/optional-annotated-default")
     def handle_default_annotated(
-        param: Annotated[Optional[str], Parameter(query="key")] = None
+        param: Annotated[Optional[str], Parameter(query="key")] = None,
     ) -> Dict[str, Optional[str]]:
         return {"key": param}
 

@@ -12,7 +12,7 @@ def test_injection_of_classes() -> None:
             self.path_param = path_param
 
     class HandlerDependency:
-        def __init__(self, query_param: int, path_param_dependency: TopLevelDependency):
+        def __init__(self, query_param: int, path_param_dependency: TopLevelDependency) -> None:
             self.query_param = query_param
             self.path_param_dependency = path_param_dependency
 

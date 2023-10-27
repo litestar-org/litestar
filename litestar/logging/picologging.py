@@ -13,7 +13,8 @@ __all__ = ("QueueListenerHandler",)
 try:
     import picologging  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("picologging") from e
+    msg = "picologging"
+    raise MissingDependencyException(msg) from e
 
 from picologging import StreamHandler
 from picologging.handlers import QueueHandler, QueueListener

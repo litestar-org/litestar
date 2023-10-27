@@ -5,13 +5,13 @@ from litestar.datastructures import ResponseHeader
 class MyController(Controller):
     path = "/controller-path"
     response_headers = [
-        ResponseHeader(name="controller-level-header", value="controller header", description="controller level header")
+        ResponseHeader(name="controller-level-header", value="controller header", description="controller level header"),
     ]
 
     @get(
         path="/handler-path",
         response_headers=[
-            ResponseHeader(name="my-local-header", value="local header", description="local level header")
+            ResponseHeader(name="my-local-header", value="local header", description="local level header"),
         ],
         media_type=MediaType.TEXT,
         sync_to_thread=False,
@@ -24,7 +24,7 @@ router = Router(
     path="/router-path",
     route_handlers=[MyController],
     response_headers=[
-        ResponseHeader(name="router-level-header", value="router header", description="router level header")
+        ResponseHeader(name="router-level-header", value="router header", description="router level header"),
     ],
 )
 

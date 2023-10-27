@@ -105,7 +105,7 @@ def test_open_telemetry_middleware_with_websocket_route() -> None:
         assert data == {"hello": "world"}
 
         first_span, second_span, third_span, fourth_span, fifth_span = cast(
-            "Tuple[Span, Span, Span, Span, Span]", exporter.get_finished_spans()
+            "Tuple[Span, Span, Span, Span, Span]", exporter.get_finished_spans(),
         )
         assert dict(first_span.attributes) == {"type": "websocket.connect"}  # type: ignore
         assert dict(second_span.attributes) == {"type": "websocket.accept"}  # type: ignore

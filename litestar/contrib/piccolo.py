@@ -15,7 +15,8 @@ from litestar.types import Empty
 try:
     import piccolo  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("piccolo") from e
+    msg = "piccolo"
+    raise MissingDependencyException(msg) from e
 
 from piccolo.columns import Column, column_types
 from piccolo.table import Table

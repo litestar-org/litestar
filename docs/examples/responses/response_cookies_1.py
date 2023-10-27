@@ -9,7 +9,7 @@ class MyController(Controller):
             key="controller-cookie",
             value="controller value",
             description="controller level cookie",
-        )
+        ),
     ]
 
     @get(
@@ -19,7 +19,7 @@ class MyController(Controller):
                 key="local-cookie",
                 value="local value",
                 description="route handler level cookie",
-            )
+            ),
         ],
         media_type=MediaType.TEXT,
         sync_to_thread=False,

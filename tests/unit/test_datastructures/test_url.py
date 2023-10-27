@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 @pytest.mark.parametrize(
-    "base,path",
+    ("base", "path"),
     [
         ("http://example.org", "foo/bar?param=value&param2=value2"),
         ("http://example.org/", "foo/bar?param=value&param2=value2"),
@@ -38,7 +38,7 @@ def test_url() -> None:
 
 
 @pytest.mark.parametrize(
-    "component,value",
+    ("component", "value"),
     [
         ("scheme", "https"),
         ("netloc", "example.org"),
@@ -55,7 +55,7 @@ def test_url_from_components(component: str, value: str) -> None:
 
 
 @pytest.mark.parametrize(
-    "component,replacement,expected",
+    ("component", "replacement", "expected"),
     [
         ("scheme", "http", "http"),
         ("netloc", "example.com", "example.com"),

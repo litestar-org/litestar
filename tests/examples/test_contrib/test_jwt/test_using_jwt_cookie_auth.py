@@ -11,7 +11,7 @@ def test_using_jwt_cookie_auth() -> None:
         response = client.get("/some-path")
         assert response.status_code == HTTP_401_UNAUTHORIZED
         response = client.post(
-            "/login", json={"name": "Moishe Zuchmir", "email": "moishe@zuchmir.com", "id": str(uuid4())}
+            "/login", json={"name": "Moishe Zuchmir", "email": "moishe@zuchmir.com", "id": str(uuid4())},
         )
         assert response.status_code == HTTP_201_CREATED, response.json()
         response = client.get("/some-path")

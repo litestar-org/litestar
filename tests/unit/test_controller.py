@@ -23,7 +23,7 @@ from tests.models import DataclassPerson, DataclassPersonFactory
 
 
 @pytest.mark.parametrize(
-    "decorator, http_method, expected_status_code, return_value, return_annotation",
+    ("decorator", "http_method", "expected_status_code", "return_value", "return_annotation"),
     [
         (
             get,

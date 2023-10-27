@@ -25,7 +25,7 @@ def create_handle_receive(listener: WebsocketListenerRouteHandler) -> Callable[[
         async def handle_receive(socket: WebSocket) -> Any:
             received_data = await socket.receive_data(mode=listener._receive_mode)
             return data_dto(socket).decode_bytes(
-                received_data.encode("utf-8") if isinstance(received_data, str) else received_data
+                received_data.encode("utf-8") if isinstance(received_data, str) else received_data,
             )
 
     elif listener.parsed_data_field and listener.parsed_data_field.annotation is str:
@@ -135,7 +135,7 @@ def create_handler_signature(callback_signature: Signature) -> Signature:
         new_params.append(Parameter(name="socket", kind=Parameter.KEYWORD_ONLY, annotation="WebSocket"))
 
     new_params.append(
-        Parameter(name="connection_lifespan_dependencies", kind=Parameter.KEYWORD_ONLY, annotation="Dict[str, Any]")
+        Parameter(name="connection_lifespan_dependencies", kind=Parameter.KEYWORD_ONLY, annotation="Dict[str, Any]"),
     )
 
     return callback_signature.replace(parameters=new_params)

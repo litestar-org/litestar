@@ -16,7 +16,8 @@ __all__ = ("OpenTelemetryConfig",)
 try:
     import opentelemetry  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("opentelemetry") from e
+    msg = "opentelemetry"
+    raise MissingDependencyException(msg) from e
 
 
 from opentelemetry.trace import Span, TracerProvider  # pyright: ignore
@@ -37,7 +38,7 @@ class OpenTelemetryConfig:
     """
 
     scope_span_details_extractor: Callable[[Scope], tuple[str, dict[str, Any]]] = field(
-        default=get_route_details_from_scope
+        default=get_route_details_from_scope,
     )
     """Callback which should return a string and a tuple, representing the desired default span name and a dictionary
     with any additional span attributes to set.
@@ -80,7 +81,7 @@ class OpenTelemetryConfig:
     scopes: Scopes | None = field(default=None)
     """ASGI scopes processed by the middleware, if None both ``http`` and ``websocket`` will be processed."""
     middleware_class: type[OpenTelemetryInstrumentationMiddleware] = field(
-        default=OpenTelemetryInstrumentationMiddleware
+        default=OpenTelemetryInstrumentationMiddleware,
     )
     """The middleware class to use.
 

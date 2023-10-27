@@ -17,7 +17,7 @@ from litestar.types import Scope
 
 
 @pytest.mark.parametrize(
-    "engine, template",
+    ("engine", "template"),
     (
         (JinjaTemplateEngine, "{{csrf_token()}}"),
         (MakoTemplateEngine, "${csrf_token()}"),
@@ -46,7 +46,7 @@ def test_csrf_token(engine: Any, template: str, tmp_path: Path) -> None:
 
 
 @pytest.mark.parametrize(
-    "engine, template",
+    ("engine", "template"),
     (
         (JinjaTemplateEngine, "{{csrf_input}}"),
         (MakoTemplateEngine, "${csrf_input}"),

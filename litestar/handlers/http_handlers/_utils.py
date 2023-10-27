@@ -184,7 +184,8 @@ def normalize_http_method(http_methods: HttpMethod | Method | Sequence[HttpMetho
     for method in http_methods:
         method_name = method.value.upper() if isinstance(method, HttpMethod) else method.upper()
         if method_name not in HTTP_METHOD_NAMES:
-            raise ValidationException(f"Invalid HTTP method: {method_name}")
+            msg = f"Invalid HTTP method: {method_name}"
+            raise ValidationException(msg)
         output.add(method_name)
 
     return cast("set[Method]", output)

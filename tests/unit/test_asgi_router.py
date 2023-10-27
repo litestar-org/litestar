@@ -66,12 +66,12 @@ def test_life_span_shutdown_error_handling() -> None:
         pass
 
 
-@pytest.fixture
+@pytest.fixture()
 def startup_mock() -> AsyncMock:
     return AsyncMock()
 
 
-@pytest.fixture
+@pytest.fixture()
 def shutdown_mock() -> AsyncMock:
     return AsyncMock()
 
@@ -97,7 +97,7 @@ def lifespan_manager(startup_mock: AsyncMock, shutdown_mock: AsyncMock) -> LifeS
 
 
 def test_lifespan_context_manager(
-    lifespan_manager: LifeSpanManager, startup_mock: AsyncMock, shutdown_mock: AsyncMock
+    lifespan_manager: LifeSpanManager, startup_mock: AsyncMock, shutdown_mock: AsyncMock,
 ) -> None:
     with create_test_client(lifespan=[lifespan_manager]):
         assert startup_mock.call_count == 1
@@ -107,7 +107,7 @@ def test_lifespan_context_manager(
 
 
 def test_lifespan_context_manager_with_hooks(
-    lifespan_manager: LifeSpanManager, startup_mock: AsyncMock, shutdown_mock: AsyncMock
+    lifespan_manager: LifeSpanManager, startup_mock: AsyncMock, shutdown_mock: AsyncMock,
 ) -> None:
     on_startup_hook_mock = AsyncMock()
     on_shutdown_hook_mock = AsyncMock()

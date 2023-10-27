@@ -13,7 +13,7 @@ from litestar.testing import create_test_client
 
 
 @pytest.mark.parametrize(
-    "engine, template, expected",
+    ("engine", "template", "expected"),
     (
         (JinjaTemplateEngine, 'path: {{ request.scope["path"] }}', "path: /"),
         (MakoTemplateEngine, 'path: ${request.scope["path"]}', "path: /"),

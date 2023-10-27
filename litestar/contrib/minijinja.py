@@ -21,7 +21,8 @@ try:
     from minijinja import Environment  # type:ignore[import-untyped]
     from minijinja import TemplateError as MiniJinjaTemplateNotFound
 except ImportError as e:
-    raise MissingDependencyException("minijinja") from e
+    msg = "minijinja"
+    raise MissingDependencyException(msg) from e
 
 if TYPE_CHECKING:
     from typing import Callable
@@ -106,8 +107,9 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         """
         super().__init__(directory, engine_instance)
         if directory and engine_instance:
+            msg = "You must provide either a directory or a minijinja Environment instance."
             raise ImproperlyConfiguredException(
-                "You must provide either a directory or a minijinja Environment instance."
+                msg,
             )
         if directory:
 
@@ -157,7 +159,7 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
             raise TemplateNotFoundException(template_name=template_name) from exc
 
     def register_template_callable(
-        self, key: str, template_callable: TemplateCallableType[StateProtocol, P, T]
+        self, key: str, template_callable: TemplateCallableType[StateProtocol, P, T],
     ) -> None:
         """Register a callable on the template engine.
 
@@ -199,4 +201,5 @@ def __getattr__(name: str) -> Any:
             alternative="Use a callable that receives the minijinja State object as first argument.",
         )
         return _minijinja_from_state
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    msg = f"module {__name__!r} has no attribute {name!r}"
+    raise AttributeError(msg)

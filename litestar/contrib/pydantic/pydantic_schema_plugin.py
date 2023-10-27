@@ -16,7 +16,8 @@ from litestar.utils import is_class_and_subclass, is_pydantic_model_class, is_un
 try:
     import pydantic
 except ImportError as e:
-    raise MissingDependencyException("pydantic") from e
+    msg = "pydantic"
+    raise MissingDependencyException(msg) from e
 
 PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     pydantic.ByteSize: Schema(type=OpenAPIType.INTEGER),
@@ -33,7 +34,7 @@ PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
                 format=OpenAPIFormat.IPV6,
                 description="IPv6 address",
             ),
-        ]
+        ],
     ),
     pydantic.IPvAnyInterface: Schema(
         one_of=[
@@ -47,7 +48,7 @@ PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
                 format=OpenAPIFormat.IPV6,
                 description="IPv6 interface",
             ),
-        ]
+        ],
     ),
     pydantic.IPvAnyNetwork: Schema(
         one_of=[
@@ -61,7 +62,7 @@ PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
                 format=OpenAPIFormat.IPV6,
                 description="IPv6 network",
             ),
-        ]
+        ],
     ),
     pydantic.Json: Schema(type=OpenAPIType.OBJECT, format=OpenAPIFormat.JSON_POINTER),
     pydantic.NameEmail: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL, description="Name and email"),
@@ -101,7 +102,7 @@ if pydantic.VERSION.startswith("1"):  # pragma: no cover
             pydantic.DirectoryPath: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI_REFERENCE),
             pydantic.AnyUrl: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URL),
             pydantic.AnyHttpUrl: Schema(
-                type=OpenAPIType.STRING, format=OpenAPIFormat.URL, description="must be a valid HTTP based URL"
+                type=OpenAPIType.STRING, format=OpenAPIFormat.URL, description="must be a valid HTTP based URL",
             ),
             pydantic.FilePath: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI_REFERENCE),
             pydantic.HttpUrl: Schema(
@@ -126,7 +127,7 @@ if pydantic.VERSION.startswith("1"):  # pragma: no cover
             pydantic.PaymentCardNumber: Schema(type=OpenAPIType.STRING, min_length=12, max_length=19),
             pydantic.PositiveFloat: Schema(type=OpenAPIType.NUMBER, exclusive_minimum=0.0),
             pydantic.PositiveInt: Schema(type=OpenAPIType.INTEGER, exclusive_minimum=0),
-        }
+        },
     )
 
 _supported_types = (pydantic.BaseModel, *list(PYDANTIC_TYPE_MAP.keys()))
@@ -177,7 +178,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
         model_fields: dict[str, pydantic.fields.FieldInfo] = {
             k: getattr(f, "field_info", f)
             for k, f in getattr(
-                unwrapped_annotation, "__fields__", getattr(unwrapped_annotation, "model_fields", {})
+                unwrapped_annotation, "__fields__", getattr(unwrapped_annotation, "model_fields", {}),
             ).items()
         }
 

@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from litestar.testing import TestClient
 
 
-@pytest.fixture
+@pytest.fixture()
 def data() -> list[dict[str, Any]]:
     return [{"title": "test", "done": False}]
 
@@ -26,7 +26,7 @@ def aiosqlite_engine() -> Engine:
 
 
 def test_sqlalchemy_async_plugin_example(
-    data: dict[str, Any], monkeypatch: MonkeyPatch, aiosqlite_engine: AsyncEngine
+    data: dict[str, Any], monkeypatch: MonkeyPatch, aiosqlite_engine: AsyncEngine,
 ) -> None:
     from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_async_plugin_example
 
@@ -46,7 +46,7 @@ def test_sqlalchemy_sync_plugin_example(data: dict[str, Any], monkeypatch: Monke
 
 
 def test_sqlalchemy_async_init_plugin_example(
-    data: dict[str, Any], monkeypatch: MonkeyPatch, aiosqlite_engine: AsyncEngine
+    data: dict[str, Any], monkeypatch: MonkeyPatch, aiosqlite_engine: AsyncEngine,
 ) -> None:
     from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_async_init_plugin_example
 
@@ -57,7 +57,7 @@ def test_sqlalchemy_async_init_plugin_example(
 
 
 def test_sqlalchemy_sync_init_plugin_example(
-    data: dict[str, Any], monkeypatch: MonkeyPatch, sqlite_engine: Engine
+    data: dict[str, Any], monkeypatch: MonkeyPatch, sqlite_engine: Engine,
 ) -> None:
     from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_sync_init_plugin_example
 

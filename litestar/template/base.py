@@ -140,7 +140,7 @@ class TemplateEngineProtocol(Protocol[TemplateType_co, ContextType_co]):
         raise NotImplementedError
 
     def register_template_callable(
-        self, key: str, template_callable: TemplateCallableType[ContextType_co, P, R]
+        self, key: str, template_callable: TemplateCallableType[ContextType_co, P, R],
     ) -> None:
         """Register a callable on the template engine.
 
@@ -170,4 +170,5 @@ def __getattr__(name: str) -> Any:
             alternative="Mapping",
         )
         return _TemplateContext
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    msg = f"module {__name__!r} has no attribute {name!r}"
+    raise AttributeError(msg)

@@ -271,7 +271,8 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
             The item, if it exists.
         """
         if item_or_none is None:
-            raise NotFoundError("No item found when one was expected")
+            msg = "No item found when one was expected"
+            raise NotFoundError(msg)
         return item_or_none
 
     @classmethod

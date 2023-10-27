@@ -132,7 +132,7 @@ async def test_trigger_event_response_success() -> None:
     @get("/")
     def handler() -> TriggerEvent:
         return TriggerEvent(
-            content="Success!", name="alert", after="receive", params={"warning": "Confirm your choice!"}
+            content="Success!", name="alert", after="receive", params={"warning": "Confirm your choice!"},
         )
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
@@ -159,7 +159,7 @@ async def test_trigger_event_response_after_settle() -> None:
     @get("/")
     def handler() -> TriggerEvent:
         return TriggerEvent(
-            content="Success!", name="alert", after="settle", params={"warning": "Confirm your choice!"}
+            content="Success!", name="alert", after="settle", params={"warning": "Confirm your choice!"},
         )
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
@@ -234,7 +234,7 @@ async def test_hx_location_response_with_all_parameters() -> None:
 
 
 @pytest.mark.parametrize(
-    "engine, template, expected",
+    ("engine", "template", "expected"),
     (
         (
             JinjaTemplateEngine,
@@ -280,7 +280,7 @@ def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str
 
 
 @pytest.mark.parametrize(
-    "engine, template, expected",
+    ("engine", "template", "expected"),
     (
         (JinjaTemplateEngine, "path: {{ request.scope['path'] }}", "path: /"),
         (MakoTemplateEngine, "path: ${request.scope['path']}", "path: /"),
@@ -312,7 +312,7 @@ def test_HTMXTemplate_response_no_params(engine: Any, template: str, expected: s
 
 
 @pytest.mark.parametrize(
-    "engine, template, expected",
+    ("engine", "template", "expected"),
     (
         (JinjaTemplateEngine, "path: {{ request.scope['path'] }}", "path: /"),
         (MakoTemplateEngine, "path: ${request.scope['path']}", "path: /"),
@@ -345,7 +345,7 @@ def test_HTMXTemplate_response_push_url_set_to_false(engine: Any, template: str,
 
 
 @pytest.mark.parametrize(
-    "engine, template, expected",
+    ("engine", "template", "expected"),
     (
         (JinjaTemplateEngine, "path: {{ request.scope['path'] }}", "path: /"),
         (MakoTemplateEngine, "path: ${request.scope['path']}", "path: /"),

@@ -22,7 +22,7 @@ CREATE_EXAMPLES_VALUES = (True, False)
 @pytest.mark.parametrize("create_examples", CREATE_EXAMPLES_VALUES)
 @pytest.mark.parametrize("schema_path", ["/schema/openapi.yaml", "/schema/openapi.yml"])
 def test_openapi(
-    person_controller: type[Controller], pet_controller: type[Controller], create_examples: bool, schema_path: str
+    person_controller: type[Controller], pet_controller: type[Controller], create_examples: bool, schema_path: str,
 ) -> None:
     openapi_config = OpenAPIConfig("Example API", "1.0.0", create_examples=create_examples)
     with create_test_client([person_controller, pet_controller], openapi_config=openapi_config) as client:
@@ -40,7 +40,7 @@ def test_openapi(
 
 @pytest.mark.parametrize("create_examples", CREATE_EXAMPLES_VALUES)
 def test_openapi_json(
-    person_controller: type[Controller], pet_controller: type[Controller], create_examples: bool
+    person_controller: type[Controller], pet_controller: type[Controller], create_examples: bool,
 ) -> None:
     openapi_config = OpenAPIConfig("Example API", "1.0.0", create_examples=create_examples)
     with create_test_client([person_controller, pet_controller], openapi_config=openapi_config) as client:
@@ -56,10 +56,10 @@ def test_openapi_json(
 
 
 @pytest.mark.parametrize(
-    "endpoint, schema_path", [("openapi.yaml", "/schema/openapi.yaml"), ("openapi.yml", "/schema/openapi.yml")]
+    ("endpoint", "schema_path"), [("openapi.yaml", "/schema/openapi.yaml"), ("openapi.yml", "/schema/openapi.yml")],
 )
 def test_openapi_yaml_not_allowed(
-    endpoint: str, schema_path: str, person_controller: type[Controller], pet_controller: type[Controller]
+    endpoint: str, schema_path: str, person_controller: type[Controller], pet_controller: type[Controller],
 ) -> None:
     openapi_config = DEFAULT_OPENAPI_CONFIG
     openapi_config.enabled_endpoints.discard(endpoint)
@@ -128,7 +128,7 @@ def test_openapi_custom_path_overrides_custom_controller_path() -> None:
         path = "/custom_docs"
 
     openapi_config = OpenAPIConfig(
-        title="my title", version="1.0.0", openapi_controller=CustomOpenAPIController, path="/override_docs_path"
+        title="my title", version="1.0.0", openapi_controller=CustomOpenAPIController, path="/override_docs_path",
     )
     with create_test_client([], openapi_config=openapi_config) as client:
         response = client.get("/custom_docs")
@@ -241,10 +241,10 @@ def test_with_generic_class() -> None:
                                 "description": "Request fulfilled, document follows",
                                 "headers": {},
                                 "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo[str]"}}},
-                            }
+                            },
                         },
                         "deprecated": False,
-                    }
+                    },
                 },
                 "/foo-int": {
                     "get": {
@@ -255,10 +255,10 @@ def test_with_generic_class() -> None:
                                 "description": "Request fulfilled, document follows",
                                 "headers": {},
                                 "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo[int]"}}},
-                            }
+                            },
                         },
                         "deprecated": False,
-                    }
+                    },
                 },
             },
             "components": {
@@ -275,6 +275,6 @@ def test_with_generic_class() -> None:
                         "required": ["foo"],
                         "title": "Foo[int]",
                     },
-                }
+                },
             },
         }

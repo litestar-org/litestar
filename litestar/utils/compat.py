@@ -21,7 +21,7 @@ except NameError:
         """Backwards compatibility shim for Python<3.10."""
         try:
             return await gen.__anext__()
-        except StopAsyncIteration as exc:
+        except StopAsyncIteration:
             if default is not Empty:
                 return default  # type: ignore[return-value]
-            raise exc
+            raise

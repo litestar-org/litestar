@@ -43,7 +43,7 @@ def test_event_listener(mock: MagicMock, event_listener: EventListener, anyio_ba
         request.app.emit("test_event", "positional", keyword="keyword-value")
 
     with create_test_client(
-        route_handlers=[route_handler], listeners=[event_listener], backend=anyio_backend
+        route_handlers=[route_handler], listeners=[event_listener], backend=anyio_backend,
     ) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
@@ -60,14 +60,14 @@ async def test_shutdown_awaits_pending(async_listener: EventListener, mock: Magi
 
 
 def test_multiple_event_listeners(
-    async_listener: EventListener, sync_listener: EventListener, mock: MagicMock, anyio_backend: AnyIOBackend
+    async_listener: EventListener, sync_listener: EventListener, mock: MagicMock, anyio_backend: AnyIOBackend,
 ) -> None:
     @get("/")
     def route_handler(request: Request[Any, Any, Any]) -> None:
         request.app.emit("test_event")
 
     with create_test_client(
-        route_handlers=[route_handler], listeners=[async_listener, sync_listener], backend=anyio_backend
+        route_handlers=[route_handler], listeners=[async_listener, sync_listener], backend=anyio_backend,
     ) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK

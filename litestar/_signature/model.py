@@ -224,7 +224,7 @@ class SignatureModel(Struct):
         )
 
         dependency_names = _validate_signature_dependencies(
-            dependency_name_set=dependency_name_set, fn_name=fn_name, parsed_signature=parsed_signature
+            dependency_name_set=dependency_name_set, fn_name=fn_name, parsed_signature=parsed_signature,
         )
 
         struct_fields: list[tuple[str, Any, Any]] = []

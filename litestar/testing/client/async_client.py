@@ -102,7 +102,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             self.exit_stack = stack.pop_all()
         return self
 
-    async def __aexit__(self, *args: Any) -> None:
+    async def __aexit__(self, *args: object) -> None:
         await self.exit_stack.aclose()
 
     async def request(

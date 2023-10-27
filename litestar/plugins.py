@@ -106,7 +106,7 @@ class SerializationPluginProtocol(Protocol):
         Returns:
             Whether the type is supported by the plugin.
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]:
         """Given a parsed type, create a DTO class.
@@ -117,7 +117,7 @@ class SerializationPluginProtocol(Protocol):
         Returns:
             A DTO class.
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 @runtime_checkable
@@ -136,7 +136,7 @@ class OpenAPISchemaPluginProtocol(Protocol):
         Returns:
             A typeguard dictating whether the value is supported by the plugin.
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
         """Given a type annotation, transform it into an OpenAPI schema class.
@@ -148,7 +148,7 @@ class OpenAPISchemaPluginProtocol(Protocol):
         Returns:
             An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 PluginProtocol = Union[
@@ -188,7 +188,8 @@ class PluginRegistry:
         try:
             return cast(PluginT, self._plugins_by_type[type_])  # type: ignore[index]
         except KeyError as e:
-            raise KeyError(f"No plugin of type {type_.__name__!r} registered") from e
+            msg = f"No plugin of type {type_.__name__!r} registered"
+            raise KeyError(msg) from e
 
     def __iter__(self) -> Iterator[PluginProtocol]:
         return iter(self._plugins)

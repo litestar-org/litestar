@@ -7,7 +7,7 @@ from litestar.testing import TestClient
 
 
 @pytest.mark.parametrize(
-    "params,status_code,expected",
+    ("params", "status_code", "expected"),
     [
         (
             {

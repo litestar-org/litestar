@@ -50,6 +50,6 @@ class PydanticPlugin(InitPluginProtocol):
             app_config: The :class:`AppConfig <.config.app.AppConfig>` instance.
         """
         app_config.plugins.extend(
-            [PydanticInitPlugin(prefer_alias=self.prefer_alias), PydanticSchemaPlugin(prefer_alias=self.prefer_alias)]
+            [PydanticInitPlugin(prefer_alias=self.prefer_alias), PydanticSchemaPlugin(prefer_alias=self.prefer_alias)],
         )
         return app_config

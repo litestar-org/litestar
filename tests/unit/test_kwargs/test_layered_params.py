@@ -62,7 +62,7 @@ def test_layered_parameters_injected_correctly() -> None:
 
 
 @pytest.mark.parametrize(
-    "parameter,param_type",
+    ("parameter", "param_type"),
     [
         ("controller1", "query"),
         ("controller3", "query"),

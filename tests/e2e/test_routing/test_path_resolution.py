@@ -19,7 +19,7 @@ def root_delete_handler() -> None:
 
 
 @pytest.mark.parametrize(
-    "request_path, router_path, status_code",
+    ("request_path", "router_path", "status_code"),
     [
         (
             "/path/1/2/sub/c892496f-b1fd-4b91-bdb8-b46f92df1716",
@@ -73,7 +73,7 @@ def test_path_parsing_with_ambiguous_paths() -> None:
 
 
 @pytest.mark.parametrize(
-    "decorator, test_path, decorator_path, delete_handler",
+    ("decorator", "test_path", "decorator_path", "delete_handler"),
     [
         (get, "", "/something", None),
         (get, "/", "/something", None),
@@ -90,7 +90,7 @@ def test_path_parsing_with_ambiguous_paths() -> None:
     ],
 )
 def test_root_route_handler(
-    decorator: Type[get], test_path: str, decorator_path: str, delete_handler: Optional[Callable]
+    decorator: Type[get], test_path: str, decorator_path: str, delete_handler: Optional[Callable],
 ) -> None:
     class MyController(Controller):
         path = test_path
@@ -129,7 +129,7 @@ def test_handler_multi_paths() -> None:
 
 
 @pytest.mark.parametrize(
-    "handler_path, request_path, expected_status_code",
+    ("handler_path", "request_path", "expected_status_code"),
     [
         ("/sub-path", "/", HTTP_404_NOT_FOUND),
         ("/sub/path", "/sub-path", HTTP_404_NOT_FOUND),
@@ -179,7 +179,7 @@ def test_path_order() -> None:
 
 
 @pytest.mark.parametrize(
-    "handler_path, request_path, expected_status_code, expected_param",
+    ("handler_path", "request_path", "expected_status_code", "expected_param"),
     [
         ("/name:str/{name:str}", "/name:str/test", HTTP_200_OK, "test"),
         ("/user/*/{name:str}", "/user/foo/bar", HTTP_404_NOT_FOUND, None),
@@ -187,7 +187,7 @@ def test_path_order() -> None:
     ],
 )
 def test_special_chars(
-    handler_path: str, request_path: str, expected_status_code: int, expected_param: Optional[str]
+    handler_path: str, request_path: str, expected_status_code: int, expected_param: Optional[str],
 ) -> None:
     @get(path=handler_path, media_type=MediaType.TEXT)
     def handler_fn(name: str) -> str:

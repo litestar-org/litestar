@@ -104,8 +104,9 @@ def create_connection_value_extractor(
             values.update(connection_mapping)
         except KeyError as e:
             param = alias_to_params[e.args[0]]
+            msg = f"Missing required {param.param_type.value} parameter {param.field_alias!r} for url {connection.url}"
             raise ValidationException(
-                f"Missing required {param.param_type.value} parameter {param.field_alias!r} for url {connection.url}"
+                msg,
             ) from e
 
     return extractor
@@ -113,7 +114,7 @@ def create_connection_value_extractor(
 
 @lru_cache(1024)
 def create_query_default_dict(
-    parsed_query: tuple[tuple[str, str], ...], sequence_query_parameter_names: tuple[str, ...]
+    parsed_query: tuple[tuple[str, str], ...], sequence_query_parameter_names: tuple[str, ...],
 ) -> defaultdict[str, list[str] | str]:
     """Transform a list of tuples into a default dict. Ensures non-list values are not wrapped in a list.
 
@@ -151,7 +152,7 @@ def parse_connection_query_params(connection: ASGIConnection, kwargs_model: Kwar
         else parse_query_string(connection.scope.get("query_string", b""))
     )
     return create_query_default_dict(
-        parsed_query=parsed_query, sequence_query_parameter_names=kwargs_model.sequence_query_parameter_names
+        parsed_query=parsed_query, sequence_query_parameter_names=kwargs_model.sequence_query_parameter_names,
     )
 
 
@@ -311,7 +312,7 @@ async def msgpack_extractor(connection: Request[Any, Any, Any]) -> Any:
 
 
 def create_multipart_extractor(
-    field_definition: FieldDefinition, is_data_optional: bool, data_dto: type[AbstractDTO] | None
+    field_definition: FieldDefinition, is_data_optional: bool, data_dto: type[AbstractDTO] | None,
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create a multipart form-data extractor.
 
@@ -360,7 +361,7 @@ def create_multipart_extractor(
 
 
 def create_url_encoded_data_extractor(
-    is_data_optional: bool, data_dto: type[AbstractDTO] | None
+    is_data_optional: bool, data_dto: type[AbstractDTO] | None,
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create extractor for url encoded form-data.
 
@@ -387,7 +388,7 @@ def create_url_encoded_data_extractor(
         return data_dto(connection).decode_builtins(form_values) if data_dto else form_values
 
     return cast(
-        "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_url_encoded_extractor
+        "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_url_encoded_extractor,
     )
 
 
@@ -417,13 +418,13 @@ def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any]
             )
     elif kwargs_model.expected_msgpack_data:
         data_extractor = cast(
-            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor
+            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor,
         )
     elif kwargs_model.expected_data_dto:
         data_extractor = create_dto_extractor(data_dto=kwargs_model.expected_data_dto)
     else:
         data_extractor = cast(
-            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor
+            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor,
         )
 
     def extractor(

@@ -106,7 +106,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
 
         return self
 
-    def __exit__(self, *args: Any) -> None:
+    def __exit__(self, *args: object) -> None:
         self.exit_stack.close()
 
     def request(
@@ -523,7 +523,8 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
         except ConnectionUpgradeExceptionError as exc:
             return exc.session
 
-        raise RuntimeError("Expected WebSocket upgrade")  # pragma: no cover
+        msg = "Expected WebSocket upgrade"
+        raise RuntimeError(msg)  # pragma: no cover
 
     def set_session_data(self, data: dict[str, Any]) -> None:
         """Set session data.

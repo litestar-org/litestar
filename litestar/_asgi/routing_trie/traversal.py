@@ -51,10 +51,10 @@ def traverse_route_map(
             path_params.append(component)
             continue
 
-        raise NotFoundException()
+        raise NotFoundException
 
     if not current_node.asgi_handlers:
-        raise NotFoundException()
+        raise NotFoundException
 
     return current_node, path_params, path
 
@@ -85,7 +85,7 @@ def parse_node_handlers(
 
 @lru_cache(1024)
 def parse_path_params(
-    parameter_definitions: tuple[PathParameterDefinition, ...], path_param_values: tuple[str, ...]
+    parameter_definitions: tuple[PathParameterDefinition, ...], path_param_values: tuple[str, ...],
 ) -> dict[str, Any]:
     """Parse path parameters into a dictionary of values.
 
@@ -165,6 +165,6 @@ def parse_path_to_route(
             parsed_path_parameters,
         )
     except KeyError as e:
-        raise MethodNotAllowedException() from e
+        raise MethodNotAllowedException from e
     except ValueError as e:
-        raise NotFoundException() from e
+        raise NotFoundException from e

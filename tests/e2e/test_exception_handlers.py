@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 @pytest.mark.parametrize(
-    ["exc_to_raise", "expected_layer"],
+    ("exc_to_raise", "expected_layer"),
     [
         (ValidationException, "router"),
         (InternalServerException, "controller"),

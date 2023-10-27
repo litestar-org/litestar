@@ -20,7 +20,7 @@ from litestar.testing import create_test_client
 
 
 @pytest.mark.parametrize(
-    "params_dict,should_raise",
+    ("params_dict", "should_raise"),
     [
         (
             {
@@ -126,7 +126,7 @@ def test_query_params(params_dict: dict, should_raise: bool) -> None:
 
 
 @pytest.mark.parametrize(
-    "expected_type,provided_value,default,expected_response_code",
+    ("expected_type", "provided_value", "default", "expected_response_code"),
     [
         (Union[int, List[int]], [1, 2, 3], None, HTTP_200_OK),
         (Union[int, List[int]], [1], None, HTTP_200_OK),

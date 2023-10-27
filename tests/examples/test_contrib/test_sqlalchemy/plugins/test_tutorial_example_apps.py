@@ -25,7 +25,7 @@ from litestar.testing import TestClient
         full_app_with_plugin,
         full_app_with_serialization_plugin,
         full_app_with_session_di,
-    ]
+    ],
 )
 async def app(monkeypatch: MonkeyPatch, request: FixtureRequest) -> Litestar:
     from docs.examples.contrib.sqlalchemy.plugins.tutorial.full_app_no_plugins import Base

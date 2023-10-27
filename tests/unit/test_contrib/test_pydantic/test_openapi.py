@@ -262,7 +262,7 @@ def test_create_date_constrained_field_schema_pydantic_v2(annotation: Any) -> No
 
 
 @pytest.mark.parametrize(
-    "annotation", [*constrained_numbers, *constrained_collection, *constrained_string, *constrained_dates]
+    "annotation", [*constrained_numbers, *constrained_collection, *constrained_string, *constrained_dates],
 )
 def test_create_constrained_field_schema(annotation: Any) -> None:
     schema = SchemaCreator().for_constrained_field(FieldDefinition.from_annotation(annotation))
@@ -296,7 +296,7 @@ def test_spec_generation(cls: Any) -> None:
                     "oneOf": [
                         {"type": "null"},
                         {"items": {"$ref": "#/components/schemas/DataclassPet"}, "type": "array"},
-                    ]
+                    ],
                 },
             },
             "type": "object",
@@ -438,7 +438,7 @@ def test_create_schema_for_field() -> None:
             )
         else:
             value: str = Field(  # type: ignore[no-redef]
-                title="title", description="description", max_length=16, json_schema_extra={"example": "example"}
+                title="title", description="description", max_length=16, json_schema_extra={"example": "example"},
             )
 
     schemas: Dict[str, Schema] = {}
@@ -453,7 +453,7 @@ def test_create_schema_for_field() -> None:
 
 @pytest.mark.parametrize("with_future_annotations", [True, False])
 def test_create_schema_for_pydantic_model_with_annotated_model_attribute(
-    with_future_annotations: bool, create_module: "Callable[[str], ModuleType]"
+    with_future_annotations: bool, create_module: "Callable[[str], ModuleType]",
 ) -> None:
     """Test that a model with an annotated attribute is correctly handled."""
     module = create_module(
@@ -464,11 +464,12 @@ from pydantic import BaseModel
 
 class Foo(BaseModel):
     foo: Annotated[int, "Foo description"]
-"""
+""",
     )
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(
-        FieldDefinition.from_annotation(module.Foo)
+        FieldDefinition.from_annotation(module.Foo),
     )
     schema = schemas["Foo"]
-    assert schema.properties and "foo" in schema.properties
+    assert schema.properties
+    assert "foo" in schema.properties

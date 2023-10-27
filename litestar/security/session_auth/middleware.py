@@ -116,12 +116,14 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
         if not connection.session or connection.scope["session"] is Empty:
             # the assignment of 'Empty' forces the session middleware to clear session data.
             connection.scope["session"] = Empty
-            raise NotAuthorizedException("no session data found")
+            msg = "no session data found"
+            raise NotAuthorizedException(msg)
 
         user = await self.retrieve_user_handler(connection.session, connection)
 
         if not user:
             connection.scope["session"] = Empty
-            raise NotAuthorizedException("no user correlating to session found")
+            msg = "no user correlating to session found"
+            raise NotAuthorizedException(msg)
 
         return AuthenticationResult(user=user, auth=connection.session)

@@ -38,7 +38,8 @@ class MemoryChannelsBackend(ChannelsBackend):
             RuntimeError: If ``on_startup`` has not been called yet
         """
         if not self._queue:
-            raise RuntimeError("Backend not yet initialized. Did you forget to call on_startup?")
+            msg = "Backend not yet initialized. Did you forget to call on_startup?"
+            raise RuntimeError(msg)
 
         for channel in channels:
             if channel not in self._channels:

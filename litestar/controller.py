@@ -180,7 +180,7 @@ class Controller:
             self.include_in_schema = Empty
 
         self.signature_namespace = add_types_to_signature_namespace(
-            getattr(self, "signature_types", []), getattr(self, "signature_namespace", {})
+            getattr(self, "signature_types", []), getattr(self, "signature_namespace", {}),
         )
 
         for key in self.__slots__:
@@ -241,9 +241,8 @@ class Controller:
 
             for path in route_handler.paths:
                 if (entry := paths[path]) and (intersection := entry.intersection(methods)):
+                    msg = f"the combination of path and method must be unique in a controller - the following methods {''.join(m.lower() for m in intersection)} for {type(self).__name__} controller path {path} are not unique"
                     raise ImproperlyConfiguredException(
-                        f"the combination of path and method must be unique in a controller - "
-                        f"the following methods {''.join(m.lower() for m in intersection)} for {type(self).__name__} "
-                        f"controller path {path} are not unique"
+                        msg,
                     )
                 paths[path].update(methods)

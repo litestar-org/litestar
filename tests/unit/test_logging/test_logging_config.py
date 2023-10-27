@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 @pytest.mark.parametrize(
-    "dict_config_class, handlers, expected_called",
+    ("dict_config_class", "handlers", "expected_called"),
     [
         ["logging.config.dictConfig", default_handlers, True],
         ["logging.config.dictConfig", default_picologging_handlers, False],
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     ],
 )
 def test_correct_dict_config_called(
-    dict_config_class: str, handlers: Dict[str, Dict[str, Any]], expected_called: bool
+    dict_config_class: str, handlers: Dict[str, Dict[str, Any]], expected_called: bool,
 ) -> None:
     with patch(dict_config_class) as dict_config_mock:
         log_config = LoggingConfig(handlers=handlers)
@@ -50,7 +50,7 @@ def test_correct_default_handlers_set(picologging_exists: bool) -> None:
 
 
 @pytest.mark.parametrize(
-    "dict_config_class, handlers",
+    ("dict_config_class", "handlers"),
     [
         ["logging.config.dictConfig", default_handlers],
         ["picologging.config.dictConfig", default_picologging_handlers],
@@ -105,10 +105,10 @@ def test_get_picologging_logger() -> None:
 
 
 @pytest.mark.parametrize(
-    "handlers, listener",
+    ("handlers", "listener"),
     [
-        [default_handlers, StandardQueueListenerHandler],
-        [default_picologging_handlers, PicologgingQueueListenerHandler],
+        (default_handlers, StandardQueueListenerHandler),
+        (default_picologging_handlers, PicologgingQueueListenerHandler),
     ],
 )
 def test_connection_logger(handlers: Any, listener: Any) -> None:
@@ -129,7 +129,7 @@ def test_validation() -> None:
 
 
 @pytest.mark.parametrize(
-    "handlers, listener",
+    ("handlers", "listener"),
     [
         [default_handlers, StandardQueueListenerHandler],
         [default_picologging_handlers, PicologgingQueueListenerHandler],
@@ -143,13 +143,13 @@ def test_root_logger(handlers: Any, listener: Any) -> None:
 
 
 @pytest.mark.parametrize(
-    "handlers, listener",
+    ("handlers", "listener"),
     [
         pytest.param(
             default_handlers,
             StandardQueueListenerHandler,
             marks=pytest.mark.xfail(
-                condition=sys.version_info >= (3, 12), reason="change to QueueHandler/QueueListener config in 3.12"
+                condition=sys.version_info >= (3, 12), reason="change to QueueHandler/QueueListener config in 3.12",
             ),
         ),
         [default_picologging_handlers, PicologgingQueueListenerHandler],

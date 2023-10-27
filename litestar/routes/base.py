@@ -121,7 +121,8 @@ class BaseRoute(ABC):
         Returns:
             None
         """
-        raise NotImplementedError("Route subclasses must implement handle which serves as the ASGI app entry point")
+        msg = "Route subclasses must implement handle which serves as the ASGI app entry point"
+        raise NotImplementedError(msg)
 
     def create_handler_kwargs_model(self, route_handler: BaseRouteHandler) -> KwargsModel:
         """Create a `KwargsModel` for a given route handler."""
@@ -129,7 +130,8 @@ class BaseRoute(ABC):
         path_parameters = set()
         for param in self.path_parameters:
             if param.name in path_parameters:
-                raise ImproperlyConfiguredException(f"Duplicate parameter '{param.name}' detected in '{self.path}'.")
+                msg = f"Duplicate parameter '{param.name}' detected in '{self.path}'."
+                raise ImproperlyConfiguredException(msg)
             path_parameters.add(param.name)
 
         return KwargsModel.create_for_signature_model(
@@ -148,15 +150,18 @@ class BaseRoute(ABC):
             ImproperlyConfiguredException: If the parameter has an invalid format.
         """
         if len(param.split(":")) != 2:
+            msg = f"Path parameters should be declared with a type using the following pattern: '{{parameter_name:type}}', e.g. '/my-path/{{my_param:int}}' in path: '{path}'"
             raise ImproperlyConfiguredException(
-                f"Path parameters should be declared with a type using the following pattern: '{{parameter_name:type}}', e.g. '/my-path/{{my_param:int}}' in path: '{path}'"
+                msg,
             )
         param_name, param_type = (p.strip() for p in param.split(":"))
         if not param_name:
-            raise ImproperlyConfiguredException("Path parameter names should be of length greater than zero")
+            msg = "Path parameter names should be of length greater than zero"
+            raise ImproperlyConfiguredException(msg)
         if param_type not in param_type_map:
+            msg = f"Path parameters should be declared with an allowed type, i.e. one of {', '.join(param_type_map.keys())} in path: '{path}'"
             raise ImproperlyConfiguredException(
-                f"Path parameters should be declared with an allowed type, i.e. one of {', '.join(param_type_map.keys())} in path: '{path}'"
+                msg,
             )
 
     @classmethod
@@ -183,7 +188,7 @@ class BaseRoute(ABC):
                 type_class = param_type_map[param_type]
                 parser = parsers_map[type_class] if type_class not in {str, Path} else None
                 parsed_components.append(
-                    PathParameterDefinition(name=param_name, type=type_class, full=param, parser=parser)
+                    PathParameterDefinition(name=param_name, type=type_class, full=param, parser=parser),
                 )
                 path_format_components.append("{" + param_name + "}")
             else:

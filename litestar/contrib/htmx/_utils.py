@@ -71,8 +71,9 @@ def get_trigger_event_headers(trigger_event: TriggerEventType) -> dict[str, Any]
     if trigger_header := after_params.get(trigger_event["after"]):
         return {trigger_header: encode_json({trigger_event["name"]: trigger_event["params"] or {}}).decode()}
 
+    msg = "invalid value for 'after' param- allowed values are 'receive', 'settle' or 'swap'."
     raise ImproperlyConfiguredException(
-        "invalid value for 'after' param- allowed values are 'receive', 'settle' or 'swap'."
+        msg,
     )
 
 
@@ -116,13 +117,15 @@ def get_location_headers(location: LocationType) -> dict[str, Any]:
     """Return headers for redirect without page-reload response."""
     if spec := {key: value for key, value in location.items() if value}:
         return {HTMXHeaders.LOCATION.value: encode_json(spec).decode()}
-    raise ValueError("redirect_to is required parameter.")
+    msg = "redirect_to is required parameter."
+    raise ValueError(msg)
 
 
 def get_headers(hx_headers: HtmxHeaderType) -> dict[str, Any]:
     """Return headers for HTMX responses."""
     if not hx_headers:
-        raise ValueError("Value for hx_headers cannot be None.")
+        msg = "Value for hx_headers cannot be None."
+        raise ValueError(msg)
     htmx_headers_dict: dict[str, Callable] = {
         "redirect": get_redirect_header,
         "refresh": get_refresh_header,

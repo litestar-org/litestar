@@ -35,7 +35,7 @@ else:
 
 
 @pytest.mark.parametrize(
-    "annotation, expected",
+    ("annotation", "expected"),
     (
         (List[DataclassPerson], True),
         (Sequence[DataclassPerson], True),
@@ -58,7 +58,7 @@ def test_annotation_is_iterable_of_type(annotation: Any, expected: bool) -> None
 
 
 @pytest.mark.parametrize(
-    ("annotation", "expected"), [(Union[None, str, int], Union[str, int]), (Optional[Union[str, int]], Union[str, int])]
+    ("annotation", "expected"), [(Union[None, str, int], Union[str, int]), (Optional[Union[str, int]], Union[str, int])],
 )
 def test_make_non_optional_union(annotation: Any, expected: Any) -> None:
     assert make_non_optional_union(annotation) == expected

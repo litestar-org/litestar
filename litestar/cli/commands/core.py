@@ -114,7 +114,7 @@ def run_command(
 
     if not UVICORN_INSTALLED:
         console.print(
-            r"uvicorn is not installed. Please install the standard group, litestar\[standard], to use this command."
+            r"uvicorn is not installed. Please install the standard group, litestar\[standard], to use this command.",
         )
         sys.exit(1)
 
@@ -160,7 +160,7 @@ def run_command(
         if sys.gettrace() is not None:
             console.print(
                 "[yellow]Debugger detected. Breakpoints might not work correctly inside route handlers when running"
-                " with the --reload or --workers options[/]"
+                " with the --reload or --workers options[/]",
             )
 
         process_args = {

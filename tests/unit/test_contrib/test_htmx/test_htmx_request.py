@@ -125,7 +125,7 @@ def test_current_url_abs_path_set() -> None:
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get(
-            "/", headers={HTMXHeaders.CURRENT_URL.value: "http://testserver.local/duck/?quack=true#h2"}
+            "/", headers={HTMXHeaders.CURRENT_URL.value: "http://testserver.local/duck/?quack=true#h2"},
         )
         assert response.text == "/duck/?quack=true#h2"
 

@@ -135,7 +135,7 @@ async def provide_blog_post_repo(db_session: AsyncSession) -> BlogPostRepository
 
 session_config = AsyncSessionConfig(expire_on_commit=False)
 sqlalchemy_config = SQLAlchemyAsyncConfig(
-    connection_string="sqlite+aiosqlite:///test.sqlite", session_config=session_config
+    connection_string="sqlite+aiosqlite:///test.sqlite", session_config=session_config,
 )  # Create 'async_session' dependency.
 sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 

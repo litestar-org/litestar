@@ -19,7 +19,7 @@ from litestar.utils.compat import async_next
         pytest.param("redis_pub_sub_backend", id="redis:pubsub", marks=pytest.mark.xdist_group("redis")),
         pytest.param("redis_stream_backend", id="redis:stream", marks=pytest.mark.xdist_group("redis")),
         pytest.param("memory_backend", id="memory"),
-    ]
+    ],
 )
 def channels_backend_instance(request: FixtureRequest) -> ChannelsBackend:
     return cast(ChannelsBackend, request.getfixturevalue(request.param))
@@ -74,9 +74,9 @@ async def test_pub_sub_shutdown_leftover_messages(channels_backend_instance: Cha
     await asyncio.wait_for(channels_backend_instance.on_shutdown(), timeout=0.1)
 
 
-@pytest.mark.parametrize("history_limit,expected_history_length", [(None, 10), (1, 1), (5, 5), (10, 10)])
+@pytest.mark.parametrize(("history_limit", "expected_history_length"), [(None, 10), (1, 1), (5, 5), (10, 10)])
 async def test_get_history(
-    channels_backend: ChannelsBackend, history_limit: int | None, expected_history_length: int
+    channels_backend: ChannelsBackend, history_limit: int | None, expected_history_length: int,
 ) -> None:
     if isinstance(channels_backend, RedisChannelsPubSubBackend):
         pytest.skip("Redis pub/sub backend does not support history")

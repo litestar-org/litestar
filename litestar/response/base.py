@@ -104,14 +104,14 @@ class ASGIResponse:
 
         if not status_allows_body or is_head_response:
             if body and body != b"null":
+                msg = "response content is not supported for HEAD responses and responses with a status code that does not allow content (304, 204, < 200)"
                 raise ImproperlyConfiguredException(
-                    "response content is not supported for HEAD responses and responses with a status code "
-                    "that does not allow content (304, 204, < 200)"
+                    msg,
                 )
             body = b""
         else:
             self.headers.setdefault(
-                "content-type", (f"{media_type}; charset={encoding}" if media_type.startswith("text/") else media_type)
+                "content-type", (f"{media_type}; charset={encoding}" if media_type.startswith("text/") else media_type),
             )
 
             if self._should_set_content_length:
@@ -384,9 +384,11 @@ class Response(Generic[T]):
             if media_type.startswith("application/json"):
                 return encode_json(content, enc_hook)
 
-            raise ImproperlyConfiguredException(f"unsupported media_type {media_type} for content {content!r}")
+            msg = f"unsupported media_type {media_type} for content {content!r}"
+            raise ImproperlyConfiguredException(msg)
         except (AttributeError, ValueError, TypeError) as e:
-            raise ImproperlyConfiguredException("Unable to serialize response content") from e
+            msg = "Unable to serialize response content"
+            raise ImproperlyConfiguredException(msg) from e
 
     def to_asgi_response(
         self,

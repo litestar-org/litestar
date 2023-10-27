@@ -59,18 +59,22 @@ class StaticFilesConfig:
 
     def __post_init__(self) -> None:
         if not self.path:
-            raise ImproperlyConfiguredException("path must be a non-zero length string,")
+            msg = "path must be a non-zero length string,"
+            raise ImproperlyConfiguredException(msg)
 
         if not self.directories or not any(bool(d) for d in self.directories):
-            raise ImproperlyConfiguredException("directories must include at least one path.")
+            msg = "directories must include at least one path."
+            raise ImproperlyConfiguredException(msg)
 
         if "{" in self.path:
-            raise ImproperlyConfiguredException("path parameters are not supported for static files")
+            msg = "path parameters are not supported for static files"
+            raise ImproperlyConfiguredException(msg)
 
         if not (
             callable(getattr(self.file_system, "info", None)) and callable(getattr(self.file_system, "open", None))
         ):
-            raise ImproperlyConfiguredException("file_system must adhere to the FileSystemProtocol type")
+            msg = "file_system must adhere to the FileSystemProtocol type"
+            raise ImproperlyConfiguredException(msg)
 
         self.path = normalize_path(self.path)
 

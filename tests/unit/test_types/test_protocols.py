@@ -8,7 +8,7 @@ from litestar.types.protocols import InstantiableCollection
 
 
 @pytest.mark.parametrize(
-    "collection,expected",
+    ("collection", "expected"),
     [
         (list, True),
         (tuple, True),

@@ -17,4 +17,5 @@ def __getattr__(attr_name: str) -> object:
         value = globals()[attr_name] = getattr(repository, attr_name)
         return value
 
-    raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")
+    msg = f"module {__name__!r} has no attribute {attr_name!r}"
+    raise AttributeError(msg)

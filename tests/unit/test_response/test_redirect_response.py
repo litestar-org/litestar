@@ -85,7 +85,7 @@ def test_redirect_response_media_type_validation() -> None:
 
 
 @pytest.mark.parametrize(
-    "status_code,expected_status_code",
+    ("status_code", "expected_status_code"),
     [
         (301, 301),
         (302, 302),

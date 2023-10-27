@@ -16,7 +16,7 @@ from litestar.testing import create_test_client
 from litestar.types.asgi_types import WebSocketMode
 
 
-@pytest.fixture
+@pytest.fixture()
 def listener_class(mock: MagicMock) -> Type[WebsocketListener]:
     class Listener(WebsocketListener):
         def on_receive(self, data: str) -> str:
@@ -26,7 +26,7 @@ def listener_class(mock: MagicMock) -> Type[WebsocketListener]:
     return Listener
 
 
-@pytest.fixture
+@pytest.fixture()
 def sync_listener_callable(mock: MagicMock) -> websocket_listener:
     def listener(data: str) -> str:
         mock(data)
@@ -35,7 +35,7 @@ def sync_listener_callable(mock: MagicMock) -> websocket_listener:
     return websocket_listener("/")(listener)
 
 
-@pytest.fixture
+@pytest.fixture()
 def async_listener_callable(mock: MagicMock) -> websocket_listener:
     async def listener(data: str) -> str:
         mock(data)
@@ -370,7 +370,7 @@ def test_hook_dependencies() -> None:
         pass
 
     with create_test_client([handler], dependencies={"some": some_dependency}) as client, client.websocket_connect(
-        "/foo"
+        "/foo",
     ) as ws:
         ws.send_text("")
 
@@ -407,7 +407,7 @@ def test_websocket_listener_class_hook_dependencies() -> None:
             pass
 
     with create_test_client([Listener], dependencies={"some": some_dependency}) as client, client.websocket_connect(
-        "/foo"
+        "/foo",
     ) as ws:
         ws.send_text("")
 

@@ -41,7 +41,7 @@ async def test_form_multi_dict_close(mocker: MockerFixture) -> None:
         [
             ("foo", UploadFile(filename="foo", content_type="text/plain")),
             ("bar", UploadFile(filename="foo", content_type="text/plain")),
-        ]
+        ],
     )
 
     await multi.close()

@@ -64,9 +64,9 @@ class ParameterCollection:
         if parameter == pre_existing:
             return
 
+        msg = f"OpenAPI schema generation for handler `{self.route_handler}` detected multiple parameters named '{parameter.name}' with different types."
         raise ImproperlyConfiguredException(
-            f"OpenAPI schema generation for handler `{self.route_handler}` detected multiple parameters named "
-            f"'{parameter.name}' with different types."
+            msg,
         )
 
     def list(self) -> list[Parameter]:
@@ -144,7 +144,7 @@ def get_recursive_handler_parameters(
                 parameter_name=field_name,
                 path_parameters=path_parameters,
                 schema_creator=schema_creator,
-            )
+            ),
         ]
 
     dependency_fields = dependency_providers[field_name].signature_model._fields
@@ -238,7 +238,7 @@ def create_parameter_for_handler(
                 parameter_name=field_name,
                 path_parameters=path_parameters,
                 schema_creator=schema_creator,
-            )
+            ),
         )
 
     for field_name, field_definition in intersection_fields:
@@ -249,7 +249,7 @@ def create_parameter_for_handler(
                 layered_parameters=layered_parameters,
                 path_parameters=path_parameters,
                 schema_creator=schema_creator,
-            )
+            ),
         )
 
     return parameters.list()

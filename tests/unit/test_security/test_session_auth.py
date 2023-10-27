@@ -94,7 +94,7 @@ def test_session_auth_openapi(session_backend_config_memory: "ServerSideSessionC
                     "description": "Session cookie authentication.",
                     "name": session_backend_config_memory.key,
                     "in": "cookie",
-                }
+                },
             },
         },
         "security": [{"sessionCookie": []}],

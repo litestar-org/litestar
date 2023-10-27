@@ -43,7 +43,7 @@ def get_module_global_imports(module_import_path: str, reference_target_source_o
     return {path.asname or path.name for import_node in import_nodes for path in import_node.names}
 
 
-def on_warn_missing_reference(app: Sphinx, domain: str, node: Node) -> bool | None:
+def on_warn_missing_reference(app: Sphinx, domain: str, node: Node) -> bool | None:  # noqa: PLR0911
     ignore_refs: dict[str | re.Pattern, set[str] | re.Pattern] = app.config["ignore_missing_refs"]
     if node.tagname != "pending_xref":  # type: ignore[attr-defined]
         return None

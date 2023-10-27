@@ -128,7 +128,7 @@ class AppConfig:
     include_in_schema: bool | EmptyType = field(default=Empty)
     """A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema"""
     lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] = field(
-        default_factory=list
+        default_factory=list,
     )
     """A list of callables returning async context managers, wrapping the lifespan of the ASGI application"""
     listeners: list[EventListener] = field(default_factory=list)

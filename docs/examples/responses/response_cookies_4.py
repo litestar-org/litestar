@@ -33,7 +33,7 @@ router = Router(
             key="Random-Cookie",
             description="a random number in the range 1 - 100",
             documentation_only=True,
-        )
+        ),
     ],
 )
 

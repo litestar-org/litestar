@@ -44,7 +44,7 @@ def test_route_reverse(decorator: Type[HTTPRouteHandler]) -> None:
     assert reversed_url_path == "/router-path/path-two"
 
     reversed_url_path = app.route_reverse(
-        "multiple-params-handler-name", router_param="router", str_param="abc", int_param=123
+        "multiple-params-handler-name", router_param="router", str_param="abc", int_param=123,
     )
     assert reversed_url_path == "/router-with-param/router/multiple/abc/params/123"
 

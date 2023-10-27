@@ -42,7 +42,7 @@ def test_default_swagger_ui_cdn_urls(person_controller: Type[Controller], pet_co
 
 
 def test_default_stoplight_elements_cdn_urls(
-    person_controller: Type[Controller], pet_controller: Type[Controller]
+    person_controller: Type[Controller], pet_controller: Type[Controller],
 ) -> None:
     with create_test_client([person_controller, pet_controller]) as client:
         response = client.get("/schema/elements")
@@ -62,7 +62,7 @@ def test_default_stoplight_elements_cdn_urls(
 
 
 def test_default_rapidoc_elements_cdn_urls(
-    person_controller: Type[Controller], pet_controller: Type[Controller]
+    person_controller: Type[Controller], pet_controller: Type[Controller],
 ) -> None:
     with create_test_client([person_controller, pet_controller]) as client:
         response = client.get("/schema/rapidoc")
@@ -122,7 +122,7 @@ def test_openapi_swagger_offline(person_controller: Type[Controller], pet_contro
 
 
 def test_openapi_stoplight_elements_offline(
-    person_controller: Type[Controller], pet_controller: Type[Controller]
+    person_controller: Type[Controller], pet_controller: Type[Controller],
 ) -> None:
     class OfflineOpenAPIController(OpenAPIController):
         """test class for usage in a couple "offline" tests and for without Google fonts test."""
@@ -175,7 +175,7 @@ def test_openapi_swagger(root_path: str, person_controller: Type[Controller], pe
 
 @pytest.mark.parametrize("root_path", root_paths)
 def test_openapi_swagger_caching_schema(
-    root_path: str, person_controller: Type[Controller], pet_controller: Type[Controller]
+    root_path: str, person_controller: Type[Controller], pet_controller: Type[Controller],
 ) -> None:
     with create_test_client([person_controller, pet_controller], root_path=root_path) as client:
         # Make sure that the schema is tweaked for swagger as the openapi version is changed.
@@ -190,7 +190,7 @@ def test_openapi_swagger_caching_schema(
 
 @pytest.mark.parametrize("root_path", root_paths)
 def test_openapi_stoplight_elements(
-    root_path: str, person_controller: Type[Controller], pet_controller: Type[Controller]
+    root_path: str, person_controller: Type[Controller], pet_controller: Type[Controller],
 ) -> None:
     with create_test_client([person_controller, pet_controller], root_path=root_path) as client:
         response = client.get("/schema/elements/")
@@ -249,7 +249,7 @@ def test_openapi_swagger_not_allowed(person_controller: Type[Controller], pet_co
 
 
 def test_openapi_stoplight_elements_not_allowed(
-    person_controller: Type[Controller], pet_controller: Type[Controller]
+    person_controller: Type[Controller], pet_controller: Type[Controller],
 ) -> None:
     with create_test_client(
         [person_controller, pet_controller],

@@ -42,7 +42,8 @@ def extract_dataclass_fields(
     exclude = exclude or set()
 
     if common := (include & exclude):
-        raise ValueError(f"Fields {common} are both included and excluded.")
+        msg = f"Fields {common} are both included and excluded."
+        raise ValueError(msg)
 
     dataclass_fields: Iterable[Field[Any]] = fields(dt)
     if exclude_none:

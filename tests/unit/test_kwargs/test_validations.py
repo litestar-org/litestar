@@ -79,7 +79,7 @@ def json_dependency(data: Dict[str, Any] = Body()) -> Dict[str, Any]:
 
 
 @pytest.mark.parametrize(
-    "body, dependency",
+    ("body", "dependency"),
     [
         (Body(), json_dependency),
         (Body(media_type=RequestEncodingType.MULTI_PART), multi_part_dependency),
@@ -95,7 +95,7 @@ def test_dependency_data_kwarg_validation_success_scenarios(body: BodyKwarg, dep
 
 
 @pytest.mark.parametrize(
-    "body, dependency",
+    ("body", "dependency"),
     [
         [Body(), url_encoded_dependency],
         [Body(), multi_part_dependency],

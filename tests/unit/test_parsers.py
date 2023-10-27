@@ -24,7 +24,7 @@ def test_parse_form_data() -> None:
                 ("calories", "122.53"),
                 ("healthy", "true"),
                 ("polluting", "false"),
-            ]
+            ],
         ).encode(),
     )
     assert result == {
@@ -42,14 +42,14 @@ def test_parse_utf8_form_data() -> None:
         encoded_data=urlencode(
             [
                 ("value", "äüß"),
-            ]
+            ],
         ).encode(),
     )
     assert result == {"value": "äüß"}
 
 
 @pytest.mark.parametrize(
-    "cookie_string, expected",
+    ("cookie_string", "expected"),
     (
         ("ABC    = 123;   efg  =   456", {"ABC": "123", "efg": "456"}),
         ("foo= ; bar=", {"foo": "", "bar": ""}),
