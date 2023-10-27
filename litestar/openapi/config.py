@@ -87,10 +87,18 @@ class OpenAPIConfig:
 
     :class:`Reference <litestar.openapi.spec.reference.Reference>` objects.
     """
-    root_schema_site: Literal["redoc", "swagger", "elements"] = "redoc"
+    root_schema_site: Literal["redoc", "swagger", "elements", "rapidoc"] = "redoc"
     """The static schema generator to use for the "root" path of `/schema/`."""
     enabled_endpoints: set[str] = field(
-        default_factory=lambda: {"redoc", "swagger", "elements", "openapi.json", "openapi.yaml", "openapi.yml"}
+        default_factory=lambda: {
+            "redoc",
+            "swagger",
+            "elements",
+            "rapidoc",
+            "openapi.json",
+            "openapi.yaml",
+            "openapi.yml",
+        }
     )
     """A set of the enabled documentation sites and schema download endpoints."""
     operation_id_creator: OperationIDCreator = default_operation_id_creator

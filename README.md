@@ -69,6 +69,7 @@ app = Litestar(route_handlers=[hello_world])
   [msgspec](https://github.com/jcrist/msgspec) and [attrs](https://www.attrs.org/en/stable/)
 - Layered parameter declaration
 - [Automatic API documentation with](#redoc-swagger-ui-and-stoplight-elements-api-documentation):
+  - [RapiDoc](https://github.com/rapi-doc/RapiDoc)
   - [Redoc](https://github.com/Redocly/redoc)
   - [Stoplight Elements](https://github.com/stoplightio/elements)
   - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
@@ -442,6 +443,11 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Lancetnik"><img src="https://avatars.githubusercontent.com/u/44573917?v=4?s=100" width="100px;" alt="Pastukhov Nikita"/><br /><sub><b>Pastukhov Nikita</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=Lancetnik" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://jamesoclaire.com"><img src="https://avatars.githubusercontent.com/u/7601451?v=4?s=100" width="100px;" alt="James O'Claire"/><br /><sub><b>James O'Claire</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=ddxv" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/pbaletkeman"><img src="https://avatars.githubusercontent.com/u/22402240?v=4?s=100" width="100px;" alt="Pete"/><br /><sub><b>Pete</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=pbaletkeman" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://www.hera.cc"><img src="https://avatars.githubusercontent.com/u/534840?v=4?s=100" width="100px;" alt="Alexandre Richonnier"/><br /><sub><b>Alexandre Richonnier</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=heralight" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/betaboon"><img src="https://avatars.githubusercontent.com/u/7346933?v=4?s=100" width="100px;" alt="betaboon"/><br /><sub><b>betaboon</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=betaboon" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/brakhane"><img src="https://avatars.githubusercontent.com/u/541637?v=4?s=100" width="100px;" alt="Dennis Brakhane"/><br /><sub><b>Dennis Brakhane</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=brakhane" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/issues?q=author%3Abrakhane" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>

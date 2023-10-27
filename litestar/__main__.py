@@ -1,10 +1,10 @@
-from litestar.cli.main import litestar_group  # pragma: no cover
+from litestar.cli.main import litestar_group
 
 
-def run_cli() -> None:  # pragma: no cover
+def run_cli() -> None:
     """Application Entrypoint."""
     litestar_group()
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     run_cli()
