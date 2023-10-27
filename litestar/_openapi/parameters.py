@@ -209,8 +209,7 @@ def create_parameter_for_handler(
             model_fields: dict[str, pydantic.fields.FieldInfo] = {k: model_field.field_info for k, model_field in handler_fields["query"].annotation.__fields__.items()}  # type: ignore
         else:
             model_fields = dict(handler_fields["query"].annotation.model_fields)
-        for k in model_fields:
-            t = model_fields[k]
+        for k, t in model_fields.items():
             parameters.add(
                 create_parameter(
                     field_definition=FieldDefinition.from_kwarg(name=k, annotation=t.annotation),
