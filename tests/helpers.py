@@ -58,6 +58,6 @@ def get_exception_group() -> type[BaseException]:
     try:
         return cast("type[BaseException]", ExceptionGroup)  # type:ignore[name-defined]
     except NameError:
-        from exceptiongroup import ExceptionGroup as _ExceptionGroup  # type: ignore[import-not-found]
+        from exceptiongroup import ExceptionGroup as _ExceptionGroup
 
-        return _ExceptionGroup  # type: ignore[no-any-return]
+        return _ExceptionGroup
