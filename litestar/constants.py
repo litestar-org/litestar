@@ -28,15 +28,20 @@ UNDEFINED_SENTINELS: Final = {Signature.empty, Empty, Ellipsis, MISSING, UnsetTy
 WEBSOCKET_CLOSE: Final = "websocket.close"
 WEBSOCKET_DISCONNECT: Final = "websocket.disconnect"
 
+
 try:
-    import pydantic
+    from pydantic.fields import PydanticUndefined as Pydantic2Undefined  # type: ignore[attr-defined]
+    from pydantic.v1.fields import Undefined as Pydantic1Undefined
 
-    if pydantic.VERSION.startswith("2"):
-        from pydantic_core import PydanticUndefined
-    else:  # pragma: no cover
-        from pydantic.fields import Undefined as PydanticUndefined  # type: ignore
-
-    UNDEFINED_SENTINELS.add(PydanticUndefined)
-
+    PYDANTIC_UNDEFINED_SENTINELS = {Pydantic1Undefined, Pydantic2Undefined}
 except ImportError:
-    pass
+    try:
+        from pydantic.v1.fields import Undefined as Pydantic1Undefined
+
+        PYDANTIC_UNDEFINED_SENTINELS = {Pydantic1Undefined}
+
+    except ImportError:  # pyright: ignore
+        PYDANTIC_UNDEFINED_SENTINELS = set()
+
+
+UNDEFINED_SENTINELS.update(PYDANTIC_UNDEFINED_SENTINELS)

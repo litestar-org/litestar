@@ -6,9 +6,6 @@ on:
       python-version:
         required: true
         type: string
-      pydantic-version:
-        required: true
-        type: string
       coverage:
         required: false
         type: boolean
@@ -50,22 +47,6 @@ jobs:
       - name: Install dependencies
         run: pdm install -G:all
 
-      - if: ${{ inputs.pydantic-version == '1' }}
-        name: Prepare for pydantic v1
-        run: pdm add --no-sync --lockfile pdm.pydantic-v1.lock "pydantic>=1.10.11,<2" "piccolo"
-
-      - if: ${{ inputs.pydantic-version == '2' }}
-        name: Prepare for pydantic v2
-        run: pdm add --no-sync "pydantic>=2.3.0" "pydantic-extra-types>=2.0.0"
-
-      - if: ${{ inputs.pydantic-version == '1' }}
-        name: Sync dependencies for pydantic v1
-        run: pdm sync --lockfile pdm.pydantic-v1.lock
-
-      - if: ${{ inputs.pydantic-version == '2' }}
-        name: Sync dependencies for pydantic v2
-        run: pdm sync
-
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
 
@@ -75,7 +56,7 @@ jobs:
 
       - name: Test with coverage
         if: inputs.coverage
-        run: pdm run pytest docs/examples tests --cov=litestar -n auto
+        run: pdm run pytest docs/examples tests --cov -n auto
 
       - name: Rename coverage file
         if: inputs.coverage

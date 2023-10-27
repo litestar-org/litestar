@@ -82,16 +82,14 @@ jobs:
         run: pdm run pyright
 
   test:
-    name: "test (${{ matrix.python-version }}, pydantic@${{ matrix.pydantic-version }})"
+    name: "test (${{ matrix.python-version }})"
     strategy:
       fail-fast: true
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-        pydantic-version: ["1", "2"]
     uses: ./.github/workflows/test.yml
     with:
-      coverage: ${{ (matrix.python-version == '3.12' || matrix.python-version == '3.8') && matrix.pydantic-version == '2' }}
-      pydantic-version: ${{ matrix.pydantic-version }}
+      coverage: ${{ (matrix.python-version == '3.12' || matrix.python-version == '3.8') }}
       python-version: ${{ matrix.python-version }}
 
   test-platform-compat:
@@ -103,7 +101,6 @@ jobs:
     uses: ./.github/workflows/test.yml
     with:
       python-version: "3.12"
-      pydantic-version: "2"
       os: ${{ matrix.os }}
       timeout: 15
 
@@ -128,7 +125,7 @@ jobs:
 
       - name: Combine coverage files
         run: |
-          python -Im pip install coverage
+          python -Im pip install coverage covdefaults
           python -Im coverage combine
           python -Im coverage xml -i
 

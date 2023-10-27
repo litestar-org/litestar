@@ -135,6 +135,7 @@ linting = [
   "types-redis",
 ]
 test = [
+  "covdefaults",
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
@@ -183,17 +184,16 @@ skip = 'pdm.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 concurrency = ["multiprocessing", "thread"]
 omit = ["*/tests/*"]
 parallel = true
+plugins = ["covdefaults"]
+source  = ["litestar"]
 
 [tool.coverage.report]
 exclude_lines = [
-  'pragma: no cover',
-  'if TYPE_CHECKING:',
-  'except ImportError.*',
-  '\.\.\.',
-  'raise NotImplementedError.*',
+  'except ImportError\b',
   'if VERSION.startswith("1"):',
   'if pydantic.VERSION.startswith("1"):',
 ]
+fail_under = 96
 
 [tool.pytest.ini_options]
 addopts = "--strict-markers --strict-config --dist=loadgroup"
@@ -265,7 +265,9 @@ exclude = [
   "tools",
   "docs",
   "tests/examples",
-  "tests/docker_service_fixtures.py"
+  "tests/docker_service_fixtures.py",
+  "litestar/contrib/pydantic/pydantic_dto_factory.py",
+  "litestar/contrib/pydantic/pydantic_init_plugin.py"
 ]
 include = ["litestar", "tests"]
 pythonVersion = "3.8"
