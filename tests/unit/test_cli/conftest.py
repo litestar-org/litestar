@@ -100,8 +100,8 @@ def create_app_file(tmp_project_dir: Path, request: FixtureRequest) -> CreateApp
             request.addfinalizer(lambda: rmtree(directory))
             request.addfinalizer(
                 lambda: _purge_module(
-                    [directory, _path_to_dotted_path(tmp_app_file.relative_to(Path.cwd()))],
-                    tmp_app_file,  # type: ignore[list-item]
+                    [directory, _path_to_dotted_path(tmp_app_file.relative_to(Path.cwd()))],  # type: ignore[list-item]
+                    tmp_app_file,
                 )
             )
         else:

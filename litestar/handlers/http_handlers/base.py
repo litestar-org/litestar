@@ -423,9 +423,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if self._response_handler_mapping["default_handler"] is Empty:
             after_request_handlers: list[AsyncCallable] = [
-                layer.after_request
+                layer.after_request  # type: ignore[misc]
                 for layer in self.ownership_layers
-                if layer.after_request  # type: ignore[misc]
+                if layer.after_request
             ]
             after_request = cast(
                 "AfterRequestHookHandler | None",

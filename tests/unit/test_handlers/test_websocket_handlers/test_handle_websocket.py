@@ -30,9 +30,9 @@ def test_websocket_signature_namespace() -> None:
         async def simple_websocket_handler(
             self,
             socket: WebSocket,
-            a: "a",  # noqa: F821
-            b: "b",  # noqa: F821
-            c: "c",  # noqa: F821
+            a: "a",  # type:ignore[name-defined]  # noqa: F821
+            b: "b",  # type:ignore[name-defined]  # noqa: F821
+            c: "c",  # type:ignore[name-defined]  # noqa: F821
             d: "d",  # type:ignore[name-defined]  # noqa: F821
         ) -> None:
             await socket.accept()

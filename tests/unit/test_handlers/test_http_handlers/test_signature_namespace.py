@@ -19,9 +19,9 @@ def test_websocket_signature_namespace(method: str, decorator: type[get | put | 
         @decorator(path="/", signature_namespace={"d": List[str], "dict": Dict}, status_code=200)  # type:ignore[misc]
         async def simple_handler(
             self,
-            a: a,  # noqa: F821
-            b: b,  # noqa: F821
-            c: c,  # noqa: F821
+            a: a,  # type:ignore[name-defined]  # noqa: F821
+            b: b,  # type:ignore[name-defined]  # noqa: F821
+            c: c,  # type:ignore[name-defined]  # noqa: F821
             d: d,  # type:ignore[name-defined]  # noqa: F821
         ) -> dict[str, Any]:
             return {"a": a, "b": b, "c": c, "d": d}

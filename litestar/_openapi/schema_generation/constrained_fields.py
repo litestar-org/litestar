@@ -80,9 +80,9 @@ def create_string_constrained_field_schema(
         schema.max_length = kwarg_definition.max_length
     if kwarg_definition.pattern:
         schema.pattern = (
-            kwarg_definition.pattern.pattern
-            if isinstance(kwarg_definition.pattern, Pattern)
-            else kwarg_definition.pattern  # type: ignore[attr-defined,unreachable]
+            kwarg_definition.pattern.pattern  # type: ignore[attr-defined]
+            if isinstance(kwarg_definition.pattern, Pattern)  # type: ignore[unreachable]
+            else kwarg_definition.pattern
         )
     if kwarg_definition.lower_case:
         schema.description = "must be in lower case"

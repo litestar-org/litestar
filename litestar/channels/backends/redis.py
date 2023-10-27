@@ -4,7 +4,7 @@ import asyncio
 import sys
 
 if sys.version_info < (3, 9):
-    import importlib_resources
+    import importlib_resources  # type: ignore[import-not-found]
 else:
     import importlib.resources as importlib_resources
 from abc import ABC

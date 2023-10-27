@@ -291,9 +291,9 @@ class RequestFactory:
             if request_media_type == RequestEncodingType.JSON:
                 encoding_headers, stream = httpx_encode_json(data)
             elif request_media_type == RequestEncodingType.MULTI_PART:
-                encoding_headers, stream = encode_multipart_data(
+                encoding_headers, stream = encode_multipart_data(  # type: ignore[assignment]
                     cast("dict[str, Any]", data), files=files or [], boundary=None
-                )  # type: ignore[assignment]
+                )
             else:
                 encoding_headers, stream = encode_urlencoded_data(decode_json(value=encode_json(data)))
             headers.update(encoding_headers)

@@ -190,9 +190,9 @@ def build_route_middleware_stack(
     from litestar.routes import HTTPRoute
 
     # we wrap the route.handle method in the ExceptionHandlerMiddleware
-    asgi_handler = wrap_in_exception_handler(
+    asgi_handler = wrap_in_exception_handler(  # type: ignore[arg-type]
         app=route.handle,
-        exception_handlers=route_handler.resolve_exception_handlers(),  # type: ignore[arg-type]
+        exception_handlers=route_handler.resolve_exception_handlers(),
     )
 
     if app.csrf_config:
