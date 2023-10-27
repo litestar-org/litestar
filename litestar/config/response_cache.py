@@ -72,8 +72,8 @@ class ResponseCacheConfig:
     store: str = "response_cache"
     """Name of the :class:`Store <.stores.base.Store>` to use."""
     do_cache_predicate: Callable[[HTTPScope, int], bool] = field(default=default_do_cache_predicate)
-    """A callable that connection scope and a status code, and returns a boolean indicating whether the response should
-    be cached."""
+    """A callable that receives connection scope and a status code, and returns a boolean indicating whether the
+    response should be cached."""
 
     def get_store_from_app(self, app: Litestar) -> Store:
         """Get the store defined in :attr:`store` from an :class:`Litestar <.app.Litestar>` instance."""

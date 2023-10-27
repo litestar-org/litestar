@@ -272,3 +272,17 @@ def test_default_do_response_cache_predicate(
         client.get("/")
         client.get("/")
         assert mock.call_count == 1 if should_cache else 2
+
+
+def test_custom_do_response_cache_predicate(mock: MagicMock) -> None:
+    @get("/", cache=True)
+    def handler() -> str:
+        mock()
+        return "OK"
+
+    with create_test_client(
+        [handler], response_cache_config=ResponseCacheConfig(do_cache_predicate=lambda *_: False)
+    ) as client:
+        client.get("/")
+        client.get("/")
+        assert mock.call_count == 2
