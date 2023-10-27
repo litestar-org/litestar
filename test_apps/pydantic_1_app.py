@@ -1,7 +1,7 @@
 import unittest
+from typing import List
 
 import pydantic
-from typing import List
 
 from litestar import post
 from litestar.testing import create_test_client
@@ -23,5 +23,3 @@ class TestApp(unittest.TestCase):
             data = {"bar": "baz", "baz": ["a", "b", "c"]}
             res = client.post("/", json=data)
             self.assertEqual(res.json(), data)
-
-
