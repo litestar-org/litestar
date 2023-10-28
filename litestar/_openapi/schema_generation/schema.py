@@ -229,10 +229,7 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
         A schema instance or None.
     """
 
-    if annotation in TYPE_MAP:
-        return copy(TYPE_MAP[annotation])
-
-    return Schema()
+    return copy(TYPE_MAP[annotation]) if annotation in TYPE_MAP else Schema()
 
 
 class SchemaCreator:
