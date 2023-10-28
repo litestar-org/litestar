@@ -105,6 +105,9 @@ class LitestarEnv:
     reload_dirs: tuple[str, ...] | None = None
     web_concurrency: int | None = None
     is_app_factory: bool = False
+    certfile_path: str | None = None
+    keyfile_path: str | None = None
+    create_devcert: bool = False
 
     @classmethod
     def from_env(cls, app_path: str | None, app_dir: Path | None = None) -> LitestarEnv:
@@ -147,6 +150,9 @@ class LitestarEnv:
             web_concurrency=int(web_concurrency) if web_concurrency else None,
             is_app_factory=loaded_app.is_factory,
             cwd=cwd,
+            certfile_path=getenv("LITESTAR_SSL_CERT_PATH"),
+            keyfile_path=getenv("LITESTAR_SSL_KEY_PATH"),
+            create_devcert=_bool_from_env("LITESTAR_CREATE_DEVCERT"),
         )
 
 
