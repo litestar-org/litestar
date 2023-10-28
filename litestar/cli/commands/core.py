@@ -85,6 +85,8 @@ def info_command(app: Litestar) -> None:
 @option("-U", "--uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
 @option("-d", "--debug", help="Run app in debug mode", is_flag=True)
 @option("-P", "--pdb", "--use-pdb", help="Drop into PDB on an exception", is_flag=True)
+@option("--ssl-keyfile", help="Location of the SSL key file")
+@option("--ssl-certfile", help="Location of the SSL cert file")
 def run_command(
     reload: bool,
     port: int,
@@ -95,6 +97,8 @@ def run_command(
     debug: bool,
     reload_dir: tuple[str, ...],
     pdb: bool,
+    ssl_keyfile: str,
+    ssl_certfile: str,
     ctx: Context,
 ) -> None:
     """Run a Litestar app; requires ``uvicorn``.
@@ -153,6 +157,8 @@ def run_command(
             fd=fd,
             uds=uds,
             factory=env.is_app_factory,
+            ssl_keyfile=ssl_keyfile,
+            ssl_certfile=ssl_certfile,
         )
     else:
         # invoke uvicorn in a subprocess to be able to use the --reload flag. see
@@ -169,6 +175,8 @@ def run_command(
             "port": port,
             "workers": workers,
             "factory": env.is_app_factory,
+            "ssl-keyfile": ssl_keyfile,
+            "ssl-certfile": ssl_certfile,
         }
         if fd is not None:
             process_args["fd"] = fd
