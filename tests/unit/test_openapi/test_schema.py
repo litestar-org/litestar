@@ -15,7 +15,6 @@ from litestar._openapi.schema_generation.schema import (
     KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     SchemaCreator,
     _get_type_schema_name,
-    create_schema_for_annotation,
 )
 from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.di import Provide
@@ -112,11 +111,7 @@ def test_get_schema_for_annotation_enum() -> None:
         opt1 = "opt1"
         opt2 = "opt2"
 
-    @dataclass()
-    class M:
-        opt: Opts
-
-    schema = create_schema_for_annotation(annotation=M.__annotations__["opt"])
+    schema = SchemaCreator().for_field_definition(FieldDefinition.from_annotation(Opts))
     assert schema
     assert schema.enum == ["opt1", "opt2"]
 
@@ -144,7 +139,7 @@ def test_handling_of_literals() -> None:
 
     value = schema.properties["value"]
     assert isinstance(value, Schema)
-    assert value.enum == ("a", "b", "c")
+    assert value.enum == ["a", "b", "c"]
 
     const = schema.properties["const"]
     assert isinstance(const, Schema)
@@ -152,7 +147,7 @@ def test_handling_of_literals() -> None:
 
     composite = schema.properties["composite"]
     assert isinstance(composite, Schema)
-    assert composite.enum == ("a", "b", "c", 1)
+    assert composite.enum == ["a", "b", "c", 1]
 
 
 def test_schema_hashing() -> None:
@@ -283,15 +278,8 @@ def test_literal_enums() -> None:
         A = auto()
         B = auto()
 
-    @dataclass
-    class MyDataclass:
-        bar: List[Literal[Foo.A]]
-
-    schemas: Dict[str, Schema] = {}
-    SchemaCreator(schemas=schemas).for_field_definition(
-        FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass)
-    )
-    assert schemas["MyDataclass"].properties["bar"].items.const == 1  # type: ignore
+    schema = SchemaCreator().for_field_definition(FieldDefinition.from_annotation(List[Literal[Foo.A]]))
+    assert schema.items.const == 1
 
 
 @dataclass
@@ -414,3 +402,19 @@ def test_schema_tuple_with_union() -> None:
         Schema(type=OpenAPIType.INTEGER),
         Schema(one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)]),
     ]
+
+
+def test_optional_enum() -> None:
+    class Foo(Enum):
+        A = 1
+        B = 2
+
+    schema = SchemaCreator().for_field_definition(FieldDefinition.from_annotation(Optional[Foo]))
+    assert schema.type == OpenAPIType.INTEGER
+    assert schema.enum == [1, 2, None]
+
+
+def test_optional_literal() -> None:
+    schema = SchemaCreator().for_field_definition(FieldDefinition.from_annotation(Optional[Literal[1]]))
+    assert schema.type == OpenAPIType.INTEGER
+    assert schema.enum == [1, None]
