@@ -43,6 +43,9 @@ from litestar._openapi.schema_generation.constrained_fields import (
     create_string_constrained_field_schema,
 )
 from litestar._openapi.schema_generation.utils import (
+    _do_enum_schema,
+    _do_literal_schema,
+    _type_or_first_not_none_inner_type,
     sort_schemas_and_references,
 )
 from litestar.datastructures.upload_file import UploadFile
@@ -162,40 +165,6 @@ def _get_type_schema_name(field_definition: FieldDefinition) -> str:
     return name
 
 
-def _first_not_none_inner_type(field_definition: FieldDefinition) -> FieldDefinition:
-    """Get the first inner type that is not None.
-
-    Args:
-        field_definition: A field definition instance.
-
-    Returns:
-        A field definition instance.
-    """
-    return next(t for t in field_definition.inner_types if not t.is_none_type)
-
-
-def _do_enum_schema(field_definition: FieldDefinition) -> bool:
-    """Predicate to determine if we should create an enum schema for the field def, or not.
-
-    This returns true if the field definition is an enum, or if the field definition is a union
-    of an enum and ``None``.
-
-    When an annotation is ``SomeEnum | None`` we should create a schema for the enum that includes ``null``
-    in the enum values.
-
-    Args:
-        field_definition: A field definition instance.
-
-    Returns:
-        A boolean
-    """
-    return field_definition.is_subclass_of(Enum) or (
-        field_definition.is_optional
-        and len(field_definition.args) == 2
-        and field_definition.has_inner_subclass_of(Enum)
-    )
-
-
 def create_enum_schema(annotation: EnumMeta, include_null: bool = False) -> Schema:
     """Create a schema instance for an enum.
 
@@ -211,28 +180,6 @@ def create_enum_schema(annotation: EnumMeta, include_null: bool = False) -> Sche
         enum_values.append(None)
     openapi_type = OpenAPIType.STRING if isinstance(enum_values[0], str) else OpenAPIType.INTEGER
     return Schema(type=openapi_type, enum=enum_values)
-
-
-def _do_literal_schema(field_definition: FieldDefinition) -> bool:
-    """Predicate to determine if we should creat a literal schema for the field def, or not.
-
-    This returns ``True`` if the field definition is an literal, or if the field definition is a union
-    of a literal and None.
-
-    When an annotation is `Literal["anything"] | None` we should create a schema for the literal that includes `null`
-    in the enum values.
-
-    Args:
-        field_definition: A field definition instance.
-
-    Returns:
-        A boolean
-    """
-    return (
-        field_definition.is_literal
-        or field_definition.is_optional
-        and all(inner.is_literal for inner in field_definition.inner_types if not inner.is_none_type)
-    )
 
 
 def _iter_flat_literal_args(annotation: Any) -> Iterable[Any]:
@@ -334,18 +281,10 @@ class SchemaCreator:
         result: Schema | Reference
 
         if _do_enum_schema(field_definition):
-            annotation = (
-                _first_not_none_inner_type(field_definition).annotation
-                if field_definition.is_optional
-                else field_definition.annotation
-            )
+            annotation = _type_or_first_not_none_inner_type(field_definition)
             result = create_enum_schema(annotation, include_null=field_definition.is_optional)
         elif _do_literal_schema(field_definition):
-            annotation = (
-                _first_not_none_inner_type(field_definition).annotation
-                if field_definition.is_optional
-                else field_definition.annotation
-            )
+            annotation = _type_or_first_not_none_inner_type(field_definition)
             result = create_literal_schema(annotation, include_null=field_definition.is_optional)
         elif field_definition.is_optional:
             result = self.for_optional_field(field_definition)
