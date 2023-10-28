@@ -306,7 +306,11 @@ class SchemaCreator:
             annotation = _type_or_first_not_none_inner_type(field_definition)
             result = create_enum_schema(annotation, include_null=field_definition.is_optional)
         elif _do_literal_schema(field_definition):
-            annotation = _type_or_first_not_none_inner_type(field_definition)
+            annotation = (
+                make_non_optional_union(field_definition.annotation)
+                if field_definition.is_optional
+                else field_definition.annotation
+            )
             result = create_literal_schema(annotation, include_null=field_definition.is_optional)
         elif field_definition.is_optional:
             result = self.for_optional_field(field_definition)
