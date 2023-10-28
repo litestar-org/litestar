@@ -420,21 +420,40 @@ def show_app_info(app: Litestar) -> None:  # pragma: no cover
 
 
 def _validate_file_path(file_path: str | None) -> Path | None:
+    """Validate whether a path was provided, exists and is not a directory. Return the resolved path."""
     if file_path is None:
         return None
+
     path = Path(file_path).resolve()
-    if not path.exists() or not path.is_file():
+
+    if path.is_dir():
+        raise LitestarCLIException(f"Provided path is a directory: {path}")
+
+    if not path.exists():
         return None
+
     return path
 
 
 def validate_and_create_ssl_files(
     certfile_arg: str | None, keyfile_arg: str | None, create_devcert: bool, common_name: str = "localhost"
 ) -> tuple[str, str] | tuple[None, None]:
+    """Validate the provided certificate and key file paths and generate development cert and key if needed
+
+    Args:
+        certfile_arg: The provided path string to the certificate file
+        keyfile_arg: The provided path to the key file
+        create_devcert: Whether to create a self-signed certificate if both files don't exists
+        common_name: The CN to be used with the self-signed certificate
+
+    Returns:
+        Validated absolute paths to the given or generated certificates. Tuple of Nones if neither argument is provided.
+    """
     certfile_path = _validate_file_path(certfile_arg)
     keyfile_path = _validate_file_path(keyfile_arg)
 
     if not create_devcert:
+        # If neither CLI argument is provided, no SSL context should be usedS
         if certfile_arg is None and keyfile_arg is None:
             return (None, None)
 
@@ -442,7 +461,7 @@ def validate_and_create_ssl_files(
             raise LitestarCLIException(f"Certificate file path is invalid or was not provided: {certfile_arg}")
 
         if keyfile_path is None:
-            raise LitestarCLIException(f"Key file path invalid is or was not provided: {certfile_arg}")
+            raise LitestarCLIException(f"Key file path invalid is or was not provided: {keyfile_arg}")
 
     else:
         # Both CLI arguments must be provided
@@ -467,6 +486,7 @@ def validate_and_create_ssl_files(
 
 
 def _create_ssl_devcert(certfile_path: Path, keyfile_path: Path, common_name: str) -> None:
+    """Create a self-signed certificate using the cryptography modules at given paths"""
     if not CRYPTOGRAPHY_INSTALLED:
         raise LitestarCLIException(
             "Cryptogpraphy must be installed when using --create-devcert\nPlease install the litestar[cryptography] extras"
