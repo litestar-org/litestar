@@ -435,6 +435,15 @@ def _validate_file_path(file_path: str | None) -> Path | None:
     return path
 
 
+def _validate_new_file_path(file_path: str) -> Path:
+    path = Path(file_path).resolve()
+
+    if not (parent_dir := path.parent).exists():
+        raise LitestarCLIException(f"Unable to create file. Directory doesn't exist: {parent_dir}")
+
+    return path
+
+
 def validate_and_create_ssl_files(
     certfile_arg: str | None, keyfile_arg: str | None, create_devcert: bool, common_name: str = "localhost"
 ) -> tuple[str, str] | tuple[None, None]:
@@ -478,8 +487,8 @@ def validate_and_create_ssl_files(
 
         # Both arguments were provided and neither file exists
         if certfile_path is None and keyfile_path is None:
-            certfile_path = Path(certfile_arg).resolve()  # type: ignore
-            keyfile_path = Path(keyfile_arg).resolve()  # type: ignore
+            certfile_path = _validate_new_file_path(certfile_arg)  # type: ignore
+            keyfile_path = _validate_new_file_path(keyfile_arg)  # type: ignore
             _create_ssl_devcert(certfile_path, keyfile_path, common_name)
 
     return (str(certfile_path), str(keyfile_path))
