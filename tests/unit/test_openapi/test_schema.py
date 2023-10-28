@@ -2,7 +2,7 @@ import sys
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum, auto
-from typing import TYPE_CHECKING, Any, Dict, Generic, List, Literal, Optional, TypedDict, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Dict, Generic, List, Literal, Optional, Tuple, TypedDict, TypeVar, Union
 
 import annotated_types
 import msgspec
@@ -397,3 +397,10 @@ def test_schema_generation_with_pagination(annotation: Any) -> None:
     assert properties["foo"] == expected_foo_schema
     assert properties["annotated_foo"] == expected_foo_schema
     assert properties["optional_foo"] == expected_optional_foo_schema
+
+
+def test_schema_generation_with_ellipsis() -> None:
+    schema = SchemaCreator().for_field_definition(FieldDefinition.from_annotation(Tuple[int, ...]))
+    assert isinstance(schema, Schema)
+    assert isinstance(schema.items, Schema)
+    assert schema.items.type == OpenAPIType.INTEGER
