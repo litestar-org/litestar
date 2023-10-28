@@ -111,18 +111,6 @@ def is_pydantic_constrained_field(annotation: Any) -> bool:
     )
 
 
-def is_pydantic_field_info(
-    obj: Any,
-) -> TypeGuard[pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo]:  # pyright: ignore
-    if pydantic_v1 is Empty:  # type: ignore[comparison-overlap] # pragma: no cover
-        return False
-
-    if pydantic_v2 is Empty:  # type: ignore[comparison-overlap] # pragma: no cover
-        return isinstance(obj, pydantic_v1.fields.FieldInfo)
-
-    return isinstance(obj, (pydantic_v1.fields.FieldInfo, pydantic_v2.fields.FieldInfo))
-
-
 def pydantic_unwrap_and_get_origin(annotation: Any) -> Any | None:
     if pydantic_v2 is Empty or is_class_and_subclass(annotation, pydantic_v1.BaseModel):  # type: ignore[comparison-overlap]
         return get_origin_or_inner_type(annotation)
