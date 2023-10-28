@@ -27,7 +27,7 @@ try:
 except ImportError:
     try:
         import pydantic as pydantic_v1  # type: ignore[no-redef]
-        from pydantic.fields import Undefined as Pydantic1Undefined
+        from pydantic.fields import Undefined as Pydantic1Undefined  # type: ignore[attr-defined, no-redef]
 
         pydantic_v2 = Empty  # type: ignore[assignment]
         PYDANTIC_UNDEFINED_SENTINELS = {Pydantic1Undefined}
