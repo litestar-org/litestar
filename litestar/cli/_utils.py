@@ -436,6 +436,7 @@ def _validate_file_path(file_path: str | None) -> Path | None:
 
 
 def _validate_new_file_path(file_path: str) -> Path:
+    """Validate if a path's parent directory exist. Return the resolved path."""
     path = Path(file_path).resolve()
 
     if not (parent_dir := path.parent).exists():
