@@ -60,7 +60,7 @@ def _do_enum_schema(field_definition: FieldDefinition) -> bool:
 
 
 def _do_literal_schema(field_definition: FieldDefinition) -> bool:
-    """Predicate to determine if we should creat a literal schema for the field def, or not.
+    """Predicate to determine if we should create a literal schema for the field def, or not.
 
     This returns ``True`` if the field definition is an literal, or if the field definition is a union
     of a literal and None.
