@@ -74,6 +74,10 @@ async def test_pub_sub_shutdown_leftover_messages(channels_backend_instance: Cha
     await asyncio.wait_for(channels_backend_instance.on_shutdown(), timeout=0.1)
 
 
+async def test_unsubscribe_without_subscription(channels_backend: ChannelsBackend) -> None:
+    await channels_backend.unsubscribe(["foo"])
+
+
 @pytest.mark.parametrize("history_limit,expected_history_length", [(None, 10), (1, 1), (5, 5), (10, 10)])
 async def test_get_history(
     channels_backend: ChannelsBackend, history_limit: int | None, expected_history_length: int
