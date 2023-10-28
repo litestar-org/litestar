@@ -31,7 +31,10 @@ def _type_or_first_not_none_inner_type(field_definition: FieldDefinition) -> Any
     """
     if not field_definition.is_optional:
         return field_definition.annotation
-    return next(t for t in field_definition.inner_types if not t.is_none_type).annotation
+    inner = next((t for t in field_definition.inner_types if not t.is_none_type), None)
+    if inner is None:
+        raise ValueError("Field definition has no inner type that is not None")
+    return inner.annotation
 
 
 def _do_enum_schema(field_definition: FieldDefinition) -> bool:
