@@ -9,7 +9,14 @@ from typing import TYPE_CHECKING, Any
 
 from rich.tree import Tree
 
-from litestar.cli._utils import RICH_CLICK_INSTALLED, UVICORN_INSTALLED, LitestarEnv, console, show_app_info
+from litestar.cli._utils import (
+    RICH_CLICK_INSTALLED,
+    UVICORN_INSTALLED,
+    LitestarEnv,
+    console,
+    show_app_info,
+    validate_and_create_ssl_files,
+)
 from litestar.routes import HTTPRoute, WebSocketRoute
 from litestar.utils.helpers import unwrap_partial
 
@@ -85,8 +92,8 @@ def info_command(app: Litestar) -> None:
 @option("-U", "--uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
 @option("-d", "--debug", help="Run app in debug mode", is_flag=True)
 @option("-P", "--pdb", "--use-pdb", help="Drop into PDB on an exception", is_flag=True)
-@option("--ssl-keyfile", help="Location of the SSL key file")
-@option("--ssl-certfile", help="Location of the SSL cert file")
+@option("--ssl-keyfile", help="Location of the SSL key file", default=None)
+@option("--ssl-certfile", help="Location of the SSL cert file", default=None)
 def run_command(
     reload: bool,
     port: int,
@@ -97,8 +104,8 @@ def run_command(
     debug: bool,
     reload_dir: tuple[str, ...],
     pdb: bool,
-    ssl_keyfile: str,
-    ssl_certfile: str,
+    ssl_keyfile: str | None,
+    ssl_certfile: str | None,
     ctx: Context,
 ) -> None:
     """Run a Litestar app; requires ``uvicorn``.
@@ -141,6 +148,8 @@ def run_command(
     uds = env.uds or uds
     reload = env.reload or reload or bool(reload_dirs)
     workers = env.web_concurrency or wc
+
+    validate_and_create_ssl_files(ssl_certfile, ssl_keyfile)
 
     console.rule("[yellow]Starting server process", align="left")
 

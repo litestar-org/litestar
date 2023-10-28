@@ -410,3 +410,25 @@ def show_app_info(app: Litestar) -> None:  # pragma: no cover
         table.add_row("Middlewares", ", ".join(middlewares))
 
     console.print(table)
+
+
+def _validate_file_path(file_path: str | None) -> Path | None:
+    if file_path is None:
+        return None
+    path = Path(file_path).resolve()
+    if not path.exists() or not path.is_file():
+        return None
+    return path
+
+
+def validate_and_create_ssl_files(certfile_str: str | None, keyfile_str: str | None) -> None:
+    if certfile_str is None and keyfile_str is None:
+        return
+
+    if (certfile_path := _validate_file_path(certfile_str)) is None:
+        raise LitestarCLIException(f"Certificate file path is invalid was or not provided: {certfile_str}")
+    _ = certfile_path
+
+    if (keyfile_path := _validate_file_path(keyfile_str)) is None:
+        raise LitestarCLIException(f"Key file path invalid is or was not provided: {certfile_str}")
+    _ = keyfile_path
