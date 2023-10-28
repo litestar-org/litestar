@@ -7,7 +7,7 @@ from inspect import Parameter, Signature
 from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Sequence, TypeVar, cast
 
 from msgspec import UnsetType
-from typing_extensions import Annotated, NotRequired, Required, Self, get_args, get_origin, get_type_hints, is_typeddict
+from typing_extensions import NotRequired, Required, Self, get_args, get_origin, get_type_hints, is_typeddict
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Example
@@ -318,12 +318,12 @@ class FieldDefinition:
     @property
     def is_annotated(self) -> bool:
         """Check if the field type is Annotated."""
-        return Annotated in self.type_wrappers  # type: ignore[comparison-overlap]
+        return bool(self.metadata)
 
     @property
     def is_literal(self) -> bool:
         """Check if the field type is Literal."""
-        return get_origin(self.annotation) is Literal
+        return self.origin is Literal
 
     @property
     def is_forward_ref(self) -> bool:
@@ -354,6 +354,11 @@ class FieldDefinition:
     def is_optional(self) -> bool:
         """Whether the annotation is Optional or not."""
         return bool(self.is_union and NoneType in self.args)
+
+    @property
+    def is_none_type(self) -> bool:
+        """Whether the annotation is NoneType or not."""
+        return self.annotation is NoneType
 
     @property
     def is_collection(self) -> bool:
