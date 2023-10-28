@@ -92,8 +92,13 @@ def info_command(app: Litestar) -> None:
 @option("-U", "--uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
 @option("-d", "--debug", help="Run app in debug mode", is_flag=True)
 @option("-P", "--pdb", "--use-pdb", help="Drop into PDB on an exception", is_flag=True)
-@option("--ssl-keyfile", help="Location of the SSL key file", default=None)
 @option("--ssl-certfile", help="Location of the SSL cert file", default=None)
+@option("--ssl-keyfile", help="Location of the SSL key file", default=None)
+@option(
+    "--create-devcert",
+    help="If certificate and key are not found at specified locations, create a self-signed certificate and a key",
+    is_flag=True,
+)
 def run_command(
     reload: bool,
     port: int,
@@ -104,8 +109,9 @@ def run_command(
     debug: bool,
     reload_dir: tuple[str, ...],
     pdb: bool,
-    ssl_keyfile: str | None,
     ssl_certfile: str | None,
+    ssl_keyfile: str | None,
+    create_devcert: bool,
     ctx: Context,
 ) -> None:
     """Run a Litestar app; requires ``uvicorn``.
@@ -149,7 +155,7 @@ def run_command(
     reload = env.reload or reload or bool(reload_dirs)
     workers = env.web_concurrency or wc
 
-    validate_and_create_ssl_files(ssl_certfile, ssl_keyfile)
+    certfile_path, keyfile_path = validate_and_create_ssl_files(ssl_certfile, ssl_keyfile, create_devcert)
 
     console.rule("[yellow]Starting server process", align="left")
 
@@ -166,8 +172,8 @@ def run_command(
             fd=fd,
             uds=uds,
             factory=env.is_app_factory,
-            ssl_keyfile=ssl_keyfile,
-            ssl_certfile=ssl_certfile,
+            ssl_certfile=certfile_path,
+            ssl_keyfile=keyfile_path,
         )
     else:
         # invoke uvicorn in a subprocess to be able to use the --reload flag. see
@@ -184,8 +190,8 @@ def run_command(
             "port": port,
             "workers": workers,
             "factory": env.is_app_factory,
-            "ssl-keyfile": ssl_keyfile,
-            "ssl-certfile": ssl_certfile,
+            "ssl-certfile": certfile_path,
+            "ssl-keyfile": keyfile_path,
         }
         if fd is not None:
             process_args["fd"] = fd

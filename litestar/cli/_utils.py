@@ -421,14 +421,22 @@ def _validate_file_path(file_path: str | None) -> Path | None:
     return path
 
 
-def validate_and_create_ssl_files(certfile_str: str | None, keyfile_str: str | None) -> None:
+def validate_and_create_ssl_files(
+    certfile_str: str | None, keyfile_str: str | None, create_devcert: bool
+) -> tuple[str, str] | tuple[None, None]:
     if certfile_str is None and keyfile_str is None:
-        return
+        if create_devcert:
+            raise LitestarCLIException("Certificate and key file paths must be provided when using --create-devcert")
+        return (None, None)
 
     if (certfile_path := _validate_file_path(certfile_str)) is None:
         raise LitestarCLIException(f"Certificate file path is invalid was or not provided: {certfile_str}")
-    _ = certfile_path
 
     if (keyfile_path := _validate_file_path(keyfile_str)) is None:
         raise LitestarCLIException(f"Key file path invalid is or was not provided: {certfile_str}")
-    _ = keyfile_path
+
+    return (str(certfile_path), str(keyfile_path))
+
+
+def _create_ssl_devcert(certfile_path: Path, keyfile_path: Path) -> None:
+    ...
