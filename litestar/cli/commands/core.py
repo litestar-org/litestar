@@ -155,7 +155,9 @@ def run_command(
     reload = env.reload or reload or bool(reload_dirs)
     workers = env.web_concurrency or wc
 
-    certfile_path, keyfile_path = validate_and_create_ssl_files(ssl_certfile, ssl_keyfile, create_devcert)
+    certfile_path, keyfile_path = validate_and_create_ssl_files(
+        ssl_certfile, ssl_keyfile, create_devcert, common_name=host
+    )
 
     console.rule("[yellow]Starting server process", align="left")
 

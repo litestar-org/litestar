@@ -5,6 +5,7 @@ import importlib
 import inspect
 import sys
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from functools import wraps
 from itertools import chain
 from os import getenv
@@ -34,6 +35,12 @@ with contextlib.suppress(ImportError):
     import jsbeautifier  # noqa: F401
 
     JSBEAUTIFIER_INSTALLED = True
+
+CRYPTOGRAPHY_INSTALLED = False
+with contextlib.suppress(ImportError):
+    import cryptography  # noqa: F401
+
+    CRYPTOGRAPHY_INSTALLED = True
 if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     from click import ClickException, Command, Context, Group, pass_context
 else:
@@ -422,21 +429,85 @@ def _validate_file_path(file_path: str | None) -> Path | None:
 
 
 def validate_and_create_ssl_files(
-    certfile_str: str | None, keyfile_str: str | None, create_devcert: bool
+    certfile_arg: str | None, keyfile_arg: str | None, create_devcert: bool, common_name: str = "localhost"
 ) -> tuple[str, str] | tuple[None, None]:
-    if certfile_str is None and keyfile_str is None:
-        if create_devcert:
-            raise LitestarCLIException("Certificate and key file paths must be provided when using --create-devcert")
-        return (None, None)
+    certfile_path = _validate_file_path(certfile_arg)
+    keyfile_path = _validate_file_path(keyfile_arg)
 
-    if (certfile_path := _validate_file_path(certfile_str)) is None:
-        raise LitestarCLIException(f"Certificate file path is invalid was or not provided: {certfile_str}")
+    if not create_devcert:
+        if certfile_arg is None and keyfile_arg is None:
+            return (None, None)
 
-    if (keyfile_path := _validate_file_path(keyfile_str)) is None:
-        raise LitestarCLIException(f"Key file path invalid is or was not provided: {certfile_str}")
+        if certfile_path is None:
+            raise LitestarCLIException(f"Certificate file path is invalid or was not provided: {certfile_arg}")
+
+        if keyfile_path is None:
+            raise LitestarCLIException(f"Key file path invalid is or was not provided: {certfile_arg}")
+
+    else:
+        # Both CLI arguments must be provided
+        if certfile_arg is None and keyfile_arg is None:
+            raise LitestarCLIException(
+                "Both certificate and key file paths must be provided when using --create-devcert"
+            )
+
+        # Either both files must exist or both must not exist
+        if (certfile_path is None) ^ (keyfile_path is None):
+            raise LitestarCLIException(
+                "Both certificate and key file must exists or both must not exists when using --create-devcert"
+            )
+
+        # Both arguments were provided and neither file exists
+        if certfile_path is None and keyfile_path is None:
+            certfile_path = Path(certfile_arg).resolve()  # type: ignore
+            keyfile_path = Path(keyfile_arg).resolve()  # type: ignore
+            _create_ssl_devcert(certfile_path, keyfile_path, common_name)
 
     return (str(certfile_path), str(keyfile_path))
 
 
-def _create_ssl_devcert(certfile_path: Path, keyfile_path: Path) -> None:
-    ...
+def _create_ssl_devcert(certfile_path: Path, keyfile_path: Path, common_name: str) -> None:
+    if not CRYPTOGRAPHY_INSTALLED:
+        raise LitestarCLIException(
+            "Cryptogpraphy must be installed when using --create-devcert\nPlease install the litestar[cryptography] extras"
+        )
+
+    from cryptography import x509
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives import hashes, serialization
+    from cryptography.hazmat.primitives.asymmetric import rsa
+    from cryptography.x509.oid import NameOID
+
+    subject = x509.Name(
+        [
+            x509.NameAttribute(NameOID.COMMON_NAME, common_name),
+            x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Development Certificate"),
+        ]
+    )
+
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
+
+    cert = (
+        x509.CertificateBuilder()
+        .subject_name(subject)
+        .issuer_name(subject)
+        .public_key(key.public_key())
+        .serial_number(x509.random_serial_number())
+        .not_valid_before(datetime.now(tz=timezone.utc))
+        .not_valid_after(datetime.now(tz=timezone.utc) + timedelta(days=365))
+        .add_extension(x509.SubjectAlternativeName([x509.DNSName(common_name)]), critical=False)
+        .add_extension(x509.ExtendedKeyUsage([x509.OID_SERVER_AUTH]), critical=False)
+        .sign(key, hashes.SHA256(), default_backend())
+    )
+
+    with certfile_path.open("wb") as cert_file:
+        cert_file.write(cert.public_bytes(serialization.Encoding.PEM))
+
+    with keyfile_path.open("wb") as key_file:
+        key_file.write(
+            key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.TraditionalOpenSSL,
+                encryption_algorithm=serialization.NoEncryption(),
+            )
+        )
