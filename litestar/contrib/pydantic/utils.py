@@ -20,15 +20,22 @@ from litestar.utils.typing import (
 try:
     from pydantic import v1 as pydantic_v1
     import pydantic as pydantic_v2
+    from pydantic.fields import PydanticUndefined as Pydantic2Undefined  # type: ignore[attr-defined]
+    from pydantic.v1.fields import Undefined as Pydantic1Undefined
+
+    PYDANTIC_UNDEFINED_SENTINELS = {Pydantic1Undefined, Pydantic2Undefined}
 except ImportError:
     try:
         import pydantic as pydantic_v1  # type: ignore[no-redef]
+        from pydantic.fields import Undefined as Pydantic1Undefined
 
         pydantic_v2 = Empty  # type: ignore[assignment]
+        PYDANTIC_UNDEFINED_SENTINELS = {Pydantic1Undefined}
 
     except ImportError:  # pyright: ignore
         pydantic_v1 = Empty  # type: ignore[assignment]
         pydantic_v2 = Empty  # type: ignore[assignment]
+        PYDANTIC_UNDEFINED_SENTINELS = set()
 # isort: on
 
 
@@ -76,7 +83,7 @@ def is_pydantic_model_instance(
     return isinstance(annotation, (pydantic_v1.BaseModel, pydantic_v2.BaseModel))
 
 
-def is_pydantic_constrained_field(annotation: Any) -> Any:
+def is_pydantic_constrained_field(annotation: Any) -> bool:
     """Check if the given annotation is a constrained pydantic type.
 
     Args:
@@ -169,3 +176,7 @@ def is_pydantic_2_model(
     obj: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel],  # pyright: ignore
 ) -> TypeGuard[pydantic_v2.BaseModel]:  # pyright: ignore
     return issubclass(obj, pydantic_v2.BaseModel)  # pyright: ignore
+
+
+def is_pydantic_undefined(value: Any) -> bool:
+    return value in PYDANTIC_UNDEFINED_SENTINELS

@@ -52,6 +52,7 @@ from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.schema import Schema, SchemaDataContainer
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.params import BodyKwarg, ParameterKwarg
+from litestar.plugins import OpenAPISchemaPlugin
 from litestar.serialization import encode_json
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
@@ -70,7 +71,6 @@ if TYPE_CHECKING:
     from msgspec.structs import FieldInfo
 
     from litestar.plugins import OpenAPISchemaPluginProtocol
-
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "content_encoding": "contentEncoding",
@@ -261,6 +261,28 @@ class SchemaCreator:
         new.generate_examples = False
         return new
 
+    def get_plugin_for(self, field_definition: FieldDefinition) -> OpenAPISchemaPluginProtocol | None:
+        return next(
+            (plugin for plugin in self.plugins if plugin.is_plugin_supported_type(field_definition.annotation)), None
+        )
+
+    def is_constrained_field(self, field_definition: FieldDefinition) -> bool:
+        """Return if the field is constrained, taking into account constraints defined by plugins"""
+        return (
+            isinstance(field_definition.kwarg_definition, (ParameterKwarg, BodyKwarg))
+            and field_definition.kwarg_definition.is_constrained
+        ) or any(
+            p.is_constrained_field(field_definition)
+            for p in self.plugins
+            if isinstance(p, OpenAPISchemaPlugin) and p.is_plugin_supported_type(field_definition.annotation)
+        )
+
+    def is_undefined(self, value: Any) -> bool:
+        """Return if the field is undefined, taking into account undefined types defined by plugins"""
+        return is_undefined_sentinel(value) or any(
+            p.is_undefined_sentinel(value) for p in self.plugins if isinstance(p, OpenAPISchemaPlugin)
+        )
+
     def for_field_definition(self, field_definition: FieldDefinition) -> Schema | Reference:
         """Create a Schema for a given FieldDefinition.
 
@@ -270,14 +292,16 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        from litestar.contrib.pydantic.utils import is_pydantic_constrained_field
 
         result: Schema | Reference
 
         # NOTE: The check for whether the field_definition.annotation is a Pagination type
         # has to come before the `is_dataclass_check` since the Pagination classes are dataclasses,
         # but we want to handle them differently from how dataclasses are normally handled.
-        if field_definition.is_optional:
+
+        if plugin_for_annotation := self.get_plugin_for(field_definition):
+            result = self.for_plugin(field_definition, plugin_for_annotation)
+        elif field_definition.is_optional:
             result = self.for_optional_field(field_definition)
         elif field_definition.is_union:
             result = self.for_union_field(field_definition)
@@ -291,14 +315,7 @@ class SchemaCreator:
             result = self.for_dataclass(field_definition)
         elif field_definition.is_typeddict_type:
             result = self.for_typed_dict(field_definition)
-        elif plugins_for_annotation := [
-            plugin for plugin in self.plugins if plugin.is_plugin_supported_type(field_definition.annotation)
-        ]:
-            result = self.for_plugin(field_definition, plugins_for_annotation[0])
-        elif is_pydantic_constrained_field(field_definition.annotation) or (
-            isinstance(field_definition.kwarg_definition, (ParameterKwarg, BodyKwarg))
-            and field_definition.kwarg_definition.is_constrained
-        ):
+        elif self.is_constrained_field(field_definition):
             result = self.for_constrained_field(field_definition)
         elif field_definition.inner_types and not field_definition.is_generic:
             result = self.for_object_type(field_definition)
@@ -348,7 +365,7 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        inner_types = [f for f in (field_definition.inner_types or []) if not is_undefined_sentinel(f.annotation)]
+        inner_types = [f for f in (field_definition.inner_types or []) if not self.is_undefined(f.annotation)]
         values = list(map(self.for_field_definition, inner_types))
         return Schema(one_of=sort_schemas_and_references(values))
 
@@ -615,7 +632,7 @@ class SchemaCreator:
         if field.kwarg_definition:
             for kwarg_definition_key, schema_key in KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
                 if (value := getattr(field.kwarg_definition, kwarg_definition_key, Empty)) and (
-                    not isinstance(value, Hashable) or not is_undefined_sentinel(value)
+                    not isinstance(value, Hashable) or not self.is_undefined(value)
                 ):
                     setattr(schema, schema_key, value)
 
