@@ -372,7 +372,9 @@ class SchemaCreator:
             )
 
         if field_definition.is_non_string_sequence or field_definition.is_non_string_iterable:
-            items = list(map(self.for_field_definition, field_definition.inner_types or ()))
+            # filters out ellipsis from tuple[int, ...] type annotations
+            inner_types = (f for f in field_definition.inner_types if f.annotation is not Ellipsis)
+            items = list(map(self.for_field_definition, inner_types or ()))
             return Schema(
                 type=OpenAPIType.ARRAY,
                 items=Schema(one_of=sort_schemas_and_references(items)) if len(items) > 1 else items[0],
