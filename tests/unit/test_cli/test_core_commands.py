@@ -48,6 +48,7 @@ def mock_show_app_info(mocker: MockerFixture) -> MagicMock:
         (False, None, 2),
     ],
 )
+@pytest.mark.parametrize("ssl_certfile, ssl_keyfile, create_devcert", [(None, None, False)])
 def test_run_command(
     mock_show_app_info: MagicMock,
     runner: CliRunner,
@@ -60,6 +61,9 @@ def test_run_command(
     web_concurrency: Optional[int],
     app_dir: Optional[str],
     reload_dir: Optional[List[str]],
+    ssl_certfile: Optional[str],
+    ssl_keyfile: Optional[str],
+    create_devcert: Optional[bool],
     custom_app_file: Optional[Path],
     create_app_file: CreateAppFileFixture,
     set_in_env: bool,
@@ -116,11 +120,31 @@ def test_run_command(
 
     if web_concurrency is None:
         web_concurrency = 1
-
     elif set_in_env:
         monkeypatch.setenv("WEB_CONCURRENCY", str(web_concurrency))
     else:
         args.extend(["--web-concurrency", str(web_concurrency)])
+
+    if ssl_certfile:
+        if set_in_env:
+            monkeypatch.setenv("LITESTAR_SSL_CERT_PATH", ssl_certfile)
+        else:
+            args.extend(["--ssl-certfile", ssl_certfile])
+
+    if ssl_keyfile:
+        if set_in_env:
+            monkeypatch.setenv("LITESTAR_SSL_KEY_PATH", ssl_keyfile)
+        else:
+            args.extend(["--ssl-keyfile", ssl_keyfile])
+
+    if create_devcert:
+        if set_in_env:
+            monkeypatch.setenv("LITESTAR_CREATE_DEVCERT", "True")
+        else:
+            args.append("--create-devcert")
+    else:
+        create_devcert = False
+
     if reload_dir is not None:
         if set_in_env:
             monkeypatch.setenv("LITESTAR_RELOAD_DIRS", ",".join(reload_dir))
@@ -142,6 +166,8 @@ def test_run_command(
             f"{path.stem}:app",
             f"--host={host}",
             f"--port={port}",
+            f"--ssl-certfile={ssl_certfile}",
+            f"--ssl-keyfile={ssl_keyfile}",
         ]
         if fd is not None:
             expected_args.append(f"--fd={fd}")
@@ -153,12 +179,21 @@ def test_run_command(
             expected_args.append(f"--workers={web_concurrency}")
         if reload_dir:
             expected_args.extend([f"--reload-dir={s}" for s in reload_dir])
+        if create_devcert:
+            expected_args.append("--create-devcert")
         mock_subprocess_run.assert_called_once()
         assert sorted(mock_subprocess_run.call_args_list[0].args[0]) == sorted(expected_args)
     else:
         mock_subprocess_run.assert_not_called()
         mock_uvicorn_run.assert_called_once_with(
-            app=f"{path.stem}:app", host=host, port=port, uds=uds, fd=fd, factory=False
+            app=f"{path.stem}:app",
+            host=host,
+            port=port,
+            uds=uds,
+            fd=fd,
+            factory=False,
+            ssl_certfile=ssl_certfile,
+            ssl_keyfile=ssl_keyfile,
         )
 
     mock_show_app_info.assert_called_once()
@@ -190,7 +225,14 @@ def test_run_command_with_autodiscover_app_factory(
     assert result.exit_code == 0
 
     mock_uvicorn_run.assert_called_once_with(
-        app=f"{path.stem}:{factory_name}", host="127.0.0.1", port=8000, factory=True, uds=None, fd=None
+        app=f"{path.stem}:{factory_name}",
+        host="127.0.0.1",
+        port=8000,
+        factory=True,
+        uds=None,
+        fd=None,
+        ssl_certfile=None,
+        ssl_keyfile=None,
     )
 
 
@@ -205,7 +247,14 @@ def test_run_command_with_app_factory(
     assert result.exit_code == 0
 
     mock_uvicorn_run.assert_called_once_with(
-        app=str(app_path), host="127.0.0.1", port=8000, factory=True, uds=None, fd=None
+        app=str(app_path),
+        host="127.0.0.1",
+        port=8000,
+        factory=True,
+        uds=None,
+        fd=None,
+        ssl_certfile=None,
+        ssl_keyfile=None,
     )
 
 
