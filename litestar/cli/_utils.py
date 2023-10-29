@@ -477,7 +477,7 @@ def validate_and_create_ssl_files(
             raise LitestarCLIException(f"Certificate file path is invalid or was not provided: {certfile_arg}")
 
         if keyfile_path is None:
-            raise LitestarCLIException(f"Key file path invalid is or was not provided: {keyfile_arg}")
+            raise LitestarCLIException(f"Key file path is invalid or was not provided: {keyfile_arg}")
 
     else:
         # Both CLI arguments must be provided
