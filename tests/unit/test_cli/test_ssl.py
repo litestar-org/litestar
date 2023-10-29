@@ -21,7 +21,7 @@ def get_click_exception() -> GetClickExceptionFixture:
         while exc.__context__ is not None:
             if isinstance(exc, ClickException):
                 break
-            exc = exc.__context__
+            exc = exc.__context__  # type: ignore[assignment]
         return cast(ClickException, exc)
 
     return _get_click_exception
@@ -58,8 +58,8 @@ def test_both_files_provided(app_file: Path, runner: CliRunner, create_devcert: 
 def test_path_is_a_directory(
     app_file: Path,
     runner: CliRunner,
-    ssl_certfile: Optional[str],
-    ssl_keyfile: Optional[str],
+    ssl_certfile: str,
+    ssl_keyfile: str,
     create_devcert: bool,
     get_click_exception: GetClickExceptionFixture,
 ) -> None:
@@ -69,7 +69,7 @@ def test_path_is_a_directory(
     (path.parent / "exists.pem").touch()
     (path.parent / "directory").mkdir(exist_ok=True)
 
-    args = ["--app", app_path, "run", "--ssl-certfile", str(ssl_certfile), "--ssl-keyfile", str(ssl_keyfile)]
+    args = ["--app", app_path, "run", "--ssl-certfile", ssl_certfile, "--ssl-keyfile", ssl_keyfile]
 
     if create_devcert:
         args.append("--create-devcert")
@@ -99,7 +99,13 @@ def test_one_file_provided(
 
     (path.parent / "exists.pem").touch()
 
-    args = ["--app", app_path, "run", "--ssl-certfile", str(ssl_certfile), "--ssl-keyfile", str(ssl_keyfile)]
+    args = ["--app", app_path, "run"]
+
+    if ssl_certfile is not None:
+        args.extend(["--ssl-certfile", str(ssl_certfile)])
+
+    if ssl_keyfile is not None:
+        args.extend(["--ssl-keyfile", str(ssl_keyfile)])
 
     result = runner.invoke(cli_command, args)
 
@@ -169,8 +175,8 @@ def test_no_files_provided_when_creating(
 def test_file_parent_doesnt_exists(
     app_file: Path,
     runner: CliRunner,
-    ssl_certfile: Optional[str],
-    ssl_keyfile: Optional[str],
+    ssl_certfile: str,
+    ssl_keyfile: str,
     get_click_exception: GetClickExceptionFixture,
 ) -> None:
     path = app_file
@@ -183,7 +189,7 @@ def test_file_parent_doesnt_exists(
         app_path,
         "run",
         "--ssl-certfile",
-        str(ssl_certfile),
+        ssl_certfile,
         "--ssl-keyfile",
         ssl_keyfile,
         "--create-devcert",
