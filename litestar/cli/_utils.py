@@ -107,7 +107,7 @@ class LitestarEnv:
     is_app_factory: bool = False
     certfile_path: str | None = None
     keyfile_path: str | None = None
-    create_devcert: bool = False
+    create_self_signed_cert: bool = False
 
     @classmethod
     def from_env(cls, app_path: str | None, app_dir: Path | None = None) -> LitestarEnv:
@@ -152,7 +152,7 @@ class LitestarEnv:
             cwd=cwd,
             certfile_path=getenv("LITESTAR_SSL_CERT_PATH"),
             keyfile_path=getenv("LITESTAR_SSL_KEY_PATH"),
-            create_devcert=_bool_from_env("LITESTAR_CREATE_DEVCERT"),
+            create_self_signed_cert=_bool_from_env("LITESTAR_CREATE_SELF_SIGNED_CERT"),
         )
 
 
@@ -452,14 +452,14 @@ def _validate_new_file_path(file_path: str) -> Path:
 
 
 def validate_and_create_ssl_files(
-    certfile_arg: str | None, keyfile_arg: str | None, create_devcert: bool, common_name: str = "localhost"
+    certfile_arg: str | None, keyfile_arg: str | None, create_self_signed_cert: bool, common_name: str = "localhost"
 ) -> tuple[str, str] | tuple[None, None]:
     """Validate the provided certificate and key file paths and generate development cert and key if needed
 
     Args:
         certfile_arg: The provided path string to the certificate file
         keyfile_arg: The provided path to the key file
-        create_devcert: Whether to create a self-signed certificate if both files don't exists
+        create_self_signed_cert: Whether to create a self-signed certificate if both files don't exists
         common_name: The CN to be used with the self-signed certificate
 
     Returns:
@@ -468,7 +468,7 @@ def validate_and_create_ssl_files(
     certfile_path = _validate_file_path(certfile_arg)
     keyfile_path = _validate_file_path(keyfile_arg)
 
-    if not create_devcert:
+    if not create_self_signed_cert:
         # If neither CLI argument is provided, no SSL context should be usedS
         if certfile_arg is None and keyfile_arg is None:
             return (None, None)
@@ -483,29 +483,29 @@ def validate_and_create_ssl_files(
         # Both CLI arguments must be provided
         if certfile_arg is None and keyfile_arg is None:
             raise LitestarCLIException(
-                "Both certificate and key file paths must be provided when using --create-devcert"
+                "Both certificate and key file paths must be provided when using --create-self-signed-cert"
             )
 
         # Either both files must exist or both must not exist
         if (certfile_path is None) ^ (keyfile_path is None):
             raise LitestarCLIException(
-                "Both certificate and key file must exists or both must not exists when using --create-devcert"
+                "Both certificate and key file must exists or both must not exists when using --create-self-signed-cert"
             )
 
         # Both arguments were provided and neither file exists
         if certfile_path is None and keyfile_path is None:
             certfile_path = _validate_new_file_path(certfile_arg)  # type: ignore
             keyfile_path = _validate_new_file_path(keyfile_arg)  # type: ignore
-            _create_ssl_devcert(certfile_path, keyfile_path, common_name)
+            _create_self_signed_cert(certfile_path, keyfile_path, common_name)
 
     return (str(certfile_path), str(keyfile_path))
 
 
-def _create_ssl_devcert(certfile_path: Path, keyfile_path: Path, common_name: str) -> None:
+def _create_self_signed_cert(certfile_path: Path, keyfile_path: Path, common_name: str) -> None:
     """Create a self-signed certificate using the cryptography modules at given paths"""
     if not CRYPTOGRAPHY_INSTALLED:
         raise LitestarCLIException(
-            "Cryptogpraphy must be installed when using --create-devcert\nPlease install the litestar[cryptography] extras"
+            "Cryptogpraphy must be installed when using --create-self-signed-cert\nPlease install the litestar[cryptography] extras"
         )
 
     from cryptography import x509

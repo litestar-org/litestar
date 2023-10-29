@@ -95,7 +95,7 @@ def info_command(app: Litestar) -> None:
 @option("--ssl-certfile", help="Location of the SSL cert file", default=None)
 @option("--ssl-keyfile", help="Location of the SSL key file", default=None)
 @option(
-    "--create-devcert",
+    "--create-self-signed-cert",
     help="If certificate and key are not found at specified locations, create a self-signed certificate and a key",
     is_flag=True,
 )
@@ -111,7 +111,7 @@ def run_command(
     pdb: bool,
     ssl_certfile: str | None,
     ssl_keyfile: str | None,
-    create_devcert: bool,
+    create_self_signed_cert: bool,
     ctx: Context,
 ) -> None:
     """Run a Litestar app; requires ``uvicorn``.
@@ -157,10 +157,10 @@ def run_command(
 
     ssl_certfile = ssl_certfile or env.certfile_path
     ssl_keyfile = ssl_keyfile or env.keyfile_path
-    create_devcert = create_devcert or env.create_devcert
+    create_self_signed_cert = create_self_signed_cert or env.create_self_signed_cert
 
     certfile_path, keyfile_path = validate_and_create_ssl_files(
-        ssl_certfile, ssl_keyfile, create_devcert, common_name=host
+        ssl_certfile, ssl_keyfile, create_self_signed_cert, common_name=host
     )
 
     console.rule("[yellow]Starting server process", align="left")

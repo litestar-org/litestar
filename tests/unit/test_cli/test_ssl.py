@@ -27,9 +27,9 @@ def get_click_exception() -> GetClickExceptionFixture:
     return _get_click_exception
 
 
-@pytest.mark.parametrize("create_devcert", (True, False))
+@pytest.mark.parametrize("create_self_signed_cert", (True, False))
 @pytest.mark.usefixtures("mock_uvicorn_run")
-def test_both_files_provided(app_file: Path, runner: CliRunner, create_devcert: bool) -> None:
+def test_both_files_provided(app_file: Path, runner: CliRunner, create_self_signed_cert: bool) -> None:
     path = app_file
     app_path = f"{path.stem}:app"
 
@@ -41,8 +41,8 @@ def test_both_files_provided(app_file: Path, runner: CliRunner, create_devcert: 
 
     args = ["--app", app_path, "run", "--ssl-certfile", str(cert_path), "--ssl-keyfile", str(key_path)]
 
-    if create_devcert:
-        args.append("--create-devcert")
+    if create_self_signed_cert:
+        args.append("--create-self-signed-cert")
 
     result = runner.invoke(cli_command, args)
 
@@ -50,7 +50,7 @@ def test_both_files_provided(app_file: Path, runner: CliRunner, create_devcert: 
     assert result.exit_code == 0
 
 
-@pytest.mark.parametrize("create_devcert", (True, False))
+@pytest.mark.parametrize("create_self_signed_cert", (True, False))
 @pytest.mark.parametrize(
     "ssl_certfile, ssl_keyfile",
     [("directory", "exists.pem"), ("exists.pem", "directory")],
@@ -60,7 +60,7 @@ def test_path_is_a_directory(
     runner: CliRunner,
     ssl_certfile: str,
     ssl_keyfile: str,
-    create_devcert: bool,
+    create_self_signed_cert: bool,
     get_click_exception: GetClickExceptionFixture,
 ) -> None:
     path = app_file
@@ -71,8 +71,8 @@ def test_path_is_a_directory(
 
     args = ["--app", app_path, "run", "--ssl-certfile", ssl_certfile, "--ssl-keyfile", ssl_keyfile]
 
-    if create_devcert:
-        args.append("--create-devcert")
+    if create_self_signed_cert:
+        args.append("--create-self-signed-cert")
 
     result = runner.invoke(cli_command, args)
 
@@ -140,7 +140,7 @@ def test_one_file_found(
     if ssl_keyfile is not None:
         args.extend(["--ssl-keyfile", ssl_keyfile])
 
-    args.append("--create-devcert")
+    args.append("--create-self-signed-cert")
 
     result = runner.invoke(cli_command, args)
 
@@ -149,7 +149,8 @@ def test_one_file_found(
     assert isinstance(result.exception, SystemExit)
     exc = get_click_exception(result.exception)
     assert (
-        "Both certificate and key file must exists or both must not exists when using --create-devcert" in exc.message
+        "Both certificate and key file must exists or both must not exists when using --create-self-signed-cert"
+        in exc.message
     )
 
 
@@ -159,13 +160,13 @@ def test_no_files_provided_when_creating(
     path = app_file
     app_path = f"{path.stem}:app"
 
-    args = ["--app", app_path, "run", "--create-devcert"]
+    args = ["--app", app_path, "run", "--create-self-signed-cert"]
 
     result = runner.invoke(cli_command, args)
 
     assert isinstance(result.exception, SystemExit)
     exc = get_click_exception(result.exception)
-    assert "Both certificate and key file paths must be provided when using --create-devcert" in exc.message
+    assert "Both certificate and key file paths must be provided when using --create-self-signed-cert" in exc.message
 
 
 @pytest.mark.parametrize(
@@ -192,7 +193,7 @@ def test_file_parent_doesnt_exists(
         ssl_certfile,
         "--ssl-keyfile",
         ssl_keyfile,
-        "--create-devcert",
+        "--create-self-signed-cert",
     ]
 
     result = runner.invoke(cli_command, args)
@@ -223,7 +224,7 @@ def test_without_cryptography_installed(
         "certfile.pem",
         "--ssl-keyfile",
         "keyfile.pem",
-        "--create-devcert",
+        "--create-self-signed-cert",
     ]
 
     result = runner.invoke(cli_command, args)
@@ -232,7 +233,7 @@ def test_without_cryptography_installed(
 
     assert isinstance(result.exception, SystemExit)
     exc = get_click_exception(result.exception)
-    assert "Cryptogpraphy must be installed when using --create-devcert" in exc.message
+    assert "Cryptogpraphy must be installed when using --create-self-signed-cert" in exc.message
 
 
 @pytest.mark.usefixtures("mock_uvicorn_run")
@@ -251,7 +252,7 @@ def test_create_certificates(app_file: Path, runner: CliRunner) -> None:
         str(certfile_path),
         "--ssl-keyfile",
         str(keyfile_path),
-        "--create-devcert",
+        "--create-self-signed-cert",
     ]
 
     result = runner.invoke(cli_command, args)

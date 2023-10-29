@@ -49,7 +49,7 @@ def mock_show_app_info(mocker: MockerFixture) -> MagicMock:
     ],
 )
 @pytest.mark.parametrize(
-    "ssl_certfile, ssl_keyfile, create_devcert", [(None, None, False), ("cert.pem", "key.pem", True)]
+    "ssl_certfile, ssl_keyfile, create_self_signed_cert", [(None, None, False), ("cert.pem", "key.pem", True)]
 )
 def test_run_command(
     mock_show_app_info: MagicMock,
@@ -65,7 +65,7 @@ def test_run_command(
     reload_dir: Optional[List[str]],
     ssl_certfile: Optional[str],
     ssl_keyfile: Optional[str],
-    create_devcert: Optional[bool],
+    create_self_signed_cert: Optional[bool],
     custom_app_file: Optional[Path],
     create_app_file: CreateAppFileFixture,
     set_in_env: bool,
@@ -139,13 +139,13 @@ def test_run_command(
         else:
             args.extend(["--ssl-keyfile", ssl_keyfile])
 
-    if create_devcert:
+    if create_self_signed_cert:
         if set_in_env:
-            monkeypatch.setenv("LITESTAR_CREATE_DEVCERT", "True")
+            monkeypatch.setenv("LITESTAR_CREATE_SELF_SIGNED_CERT", "True")
         else:
-            args.append("--create-devcert")
+            args.append("--create-self-signed-cert")
     else:
-        create_devcert = False
+        create_self_signed_cert = False
 
     if reload_dir is not None:
         if set_in_env:
