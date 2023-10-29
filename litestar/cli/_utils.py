@@ -421,6 +421,15 @@ def show_app_info(app: Litestar) -> None:  # pragma: no cover
 
 
 def validate_ssl_file_paths(certfile_arg: str | None, keyfile_arg: str | None) -> tuple[str, str] | tuple[None, None]:
+    """Validate whether given paths exist, are not directories and were both provided or none was. Return the resolved paths.
+
+    Args:
+        certfile_arg: path argument for the certificate file
+        keyfile_arg: path argument for the key file
+
+    Returns:
+        tuple of resolved paths converted to str or tuple of None's if no argument was provided
+    """
     if certfile_arg is None and keyfile_arg is None:
         return (None, None)
 
@@ -442,6 +451,17 @@ def validate_ssl_file_paths(certfile_arg: str | None, keyfile_arg: str | None) -
 def create_ssl_files(
     certfile_arg: str | None, keyfile_arg: str | None, common_name: str = "localhost"
 ) -> tuple[str, str]:
+    """Validate whether both files were provided, are not directories, their parent dirs exist and either both files exists or none does.
+    If neither file exists, create a self-signed ssl certificate and a passwordless key at the location.
+
+    Args:
+        certfile_arg: path argument for the certificate file
+        keyfile_arg: path argument for the key file
+        common_name: the CN to be used as cert issuer and subject
+
+    Returns:
+        resolved paths of the found or generated files
+    """
     resolved_paths = []
 
     for argname, arg in {"--ssl-certfile": certfile_arg, "--ssl-keyfile": keyfile_arg}.items():
@@ -461,7 +481,8 @@ def create_ssl_files(
             "Both certificate and key file must exists or both must not exists when using --create-self-signed-cert"
         )
 
-    _generate_self_signed_cert(resolved_paths[0], resolved_paths[1], common_name)
+    if (not resolved_paths[0].exists()) and (not resolved_paths[1].exists()):
+        _generate_self_signed_cert(resolved_paths[0], resolved_paths[1], common_name)
 
     return (str(resolved_paths[0]), str(resolved_paths[1]))
 
