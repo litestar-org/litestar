@@ -36,10 +36,12 @@ def test_both_files_provided(app_file: Path, runner: CliRunner, create_self_sign
     app_path = f"{path.stem}:app"
 
     cert_path = path.parent / "cert.pem"
-    cert_path.touch()
+    with cert_path.open("wb") as certfile:
+        certfile.write(b"certfile")
 
     key_path = path.parent / "key.pem"
-    key_path.touch()
+    with key_path.open("wb") as keyfile:
+        keyfile.write(b"keyfile")
 
     args = ["--app", app_path, "run", "--ssl-certfile", str(cert_path), "--ssl-keyfile", str(key_path)]
 
@@ -50,6 +52,13 @@ def test_both_files_provided(app_file: Path, runner: CliRunner, create_self_sign
 
     assert result.exception is None
     assert result.exit_code == 0
+
+    if create_self_signed_cert:
+        with cert_path.open("rb") as certfile:
+            assert certfile.read() == b"certfile"
+
+        with key_path.open("rb") as keyfile:
+            assert keyfile.read() == b"keyfile"
 
 
 @pytest.mark.parametrize("create_self_signed_cert", (True, False))
