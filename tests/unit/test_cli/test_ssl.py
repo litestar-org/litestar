@@ -82,18 +82,21 @@ def test_path_is_a_directory(
 
     assert isinstance(result.exception, SystemExit)
     exc = get_click_exception(result.exception)
-    assert "Provided path is a directory" in exc.message
+    assert "Path provided for" in exc.message
+    assert "is a directory" in exc.message
 
 
+@pytest.mark.parametrize("create_self_signed_cert", (True, False))
 @pytest.mark.parametrize(
     "ssl_certfile, ssl_keyfile",
-    [("exists.pem", None), ("exists.pem", "not_exists.pem"), (None, "exists.pem"), ("not_exists.pem", "exists.pem")],
+    [("exists.pem", None), (None, "exists.pem")],
 )
 def test_one_file_provided(
     app_file: Path,
     runner: CliRunner,
     ssl_certfile: Optional[str],
     ssl_keyfile: Optional[str],
+    create_self_signed_cert: bool,
     get_click_exception: GetClickExceptionFixture,
 ) -> None:
     path = app_file
@@ -109,24 +112,29 @@ def test_one_file_provided(
     if ssl_keyfile is not None:
         args.extend(["--ssl-keyfile", str(ssl_keyfile)])
 
+    if create_self_signed_cert:
+        args.append("--create-self-signed-cert")
+
     result = runner.invoke(cli_command, args)
 
     assert result.exit_code == 1
 
     assert isinstance(result.exception, SystemExit)
     exc = get_click_exception(result.exception)
-    assert "file path is invalid or was not provided" in exc.message
+    assert "No value provided for" in exc.message
 
 
+@pytest.mark.parametrize("create_self_signed_cert", (True, False))
 @pytest.mark.parametrize(
     "ssl_certfile, ssl_keyfile",
-    [(None, "exists.pem"), ("exists.pem", None), ("not_exists.pem", "exists.pem"), ("exists.pem", "not_exists.pem")],
+    [("not_exists.pem", "exists.pem"), ("exists.pem", "not_exists.pem")],
 )
-def test_one_file_found(
+def test_one_file_not_found(
     app_file: Path,
     runner: CliRunner,
-    ssl_certfile: Optional[str],
-    ssl_keyfile: Optional[str],
+    ssl_certfile: str,
+    ssl_keyfile: str,
+    create_self_signed_cert: bool,
     get_click_exception: GetClickExceptionFixture,
 ) -> None:
     path = app_file
@@ -140,9 +148,10 @@ def test_one_file_found(
         args.extend(["--ssl-certfile", str(ssl_certfile)])
 
     if ssl_keyfile is not None:
-        args.extend(["--ssl-keyfile", ssl_keyfile])
+        args.extend(["--ssl-keyfile", str(ssl_keyfile)])
 
-    args.append("--create-self-signed-cert")
+    if create_self_signed_cert:
+        args.append("--create-self-signed-cert")
 
     result = runner.invoke(cli_command, args)
 
@@ -150,32 +159,21 @@ def test_one_file_found(
 
     assert isinstance(result.exception, SystemExit)
     exc = get_click_exception(result.exception)
-    assert (
-        "Both certificate and key file must exists or both must not exists when using --create-self-signed-cert"
-        in exc.message
-    )
-
-
-def test_no_files_provided_when_creating(
-    app_file: Path, runner: CliRunner, get_click_exception: GetClickExceptionFixture
-) -> None:
-    path = app_file
-    app_path = f"{path.stem}:app"
-
-    args = ["--app", app_path, "run", "--create-self-signed-cert"]
-
-    result = runner.invoke(cli_command, args)
-
-    assert isinstance(result.exception, SystemExit)
-    exc = get_click_exception(result.exception)
-    assert "Both certificate and key file paths must be provided when using --create-self-signed-cert" in exc.message
+    if create_self_signed_cert:
+        assert (
+            "Both certificate and key file must exists or both must not exists when using --create-self-signed-cert"
+            in exc.message
+        )
+    else:
+        assert "File provided for" in exc.message
+        assert "was not found" in exc.message
 
 
 @pytest.mark.parametrize(
     "ssl_certfile, ssl_keyfile",
     [("dir_exists/file.pem", "dir_not_exists/file.pem"), ("dir_not_exists/file.pem", "dir_exists/file.pem")],
 )
-def test_file_parent_doesnt_exists(
+def test_file_parent_doesnt_exist(
     app_file: Path,
     runner: CliRunner,
     ssl_certfile: str,
@@ -204,7 +202,8 @@ def test_file_parent_doesnt_exists(
 
     assert isinstance(result.exception, SystemExit)
     exc = get_click_exception(result.exception)
-    assert "Directory doesn't exist" in exc.message
+    assert "Could not create file, parent directory for" in exc.message
+    assert "doesn't exist" in exc.message
 
 
 def test_without_cryptography_installed(

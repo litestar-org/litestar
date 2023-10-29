@@ -452,7 +452,7 @@ def create_ssl_files(
             raise LitestarCLIException(f"Path provided for {argname} is a directory: {path}")
         if not (parent_dir := path.parent).exists():
             raise LitestarCLIException(
-                f"Could not create file, parent directory for {argname} doesn't exists: {parent_dir}"
+                f"Could not create file, parent directory for {argname} doesn't exist: {parent_dir}"
             )
         resolved_paths.append(path)
 
