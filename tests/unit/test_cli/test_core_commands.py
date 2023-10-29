@@ -48,7 +48,9 @@ def mock_show_app_info(mocker: MockerFixture) -> MagicMock:
         (False, None, 2),
     ],
 )
-@pytest.mark.parametrize("ssl_certfile, ssl_keyfile, create_devcert", [(None, None, False)])
+@pytest.mark.parametrize(
+    "ssl_certfile, ssl_keyfile, create_devcert", [(None, None, False), ("cert.pem", "key.pem", True)]
+)
 def test_run_command(
     mock_show_app_info: MagicMock,
     runner: CliRunner,
@@ -166,8 +168,8 @@ def test_run_command(
             f"{path.stem}:app",
             f"--host={host}",
             f"--port={port}",
-            f"--ssl-certfile={ssl_certfile}",
-            f"--ssl-keyfile={ssl_keyfile}",
+            f"--ssl-certfile={None if ssl_certfile is None else str(tmp_project_dir / ssl_certfile)}",
+            f"--ssl-keyfile={None if ssl_keyfile is None else str(tmp_project_dir / ssl_keyfile)}",
         ]
         if fd is not None:
             expected_args.append(f"--fd={fd}")
@@ -179,8 +181,6 @@ def test_run_command(
             expected_args.append(f"--workers={web_concurrency}")
         if reload_dir:
             expected_args.extend([f"--reload-dir={s}" for s in reload_dir])
-        if create_devcert:
-            expected_args.append("--create-devcert")
         mock_subprocess_run.assert_called_once()
         assert sorted(mock_subprocess_run.call_args_list[0].args[0]) == sorted(expected_args)
     else:
@@ -192,8 +192,8 @@ def test_run_command(
             uds=uds,
             fd=fd,
             factory=False,
-            ssl_certfile=ssl_certfile,
-            ssl_keyfile=ssl_keyfile,
+            ssl_certfile=None if ssl_certfile is None else str(tmp_project_dir / ssl_certfile),
+            ssl_keyfile=None if ssl_keyfile is None else str(tmp_project_dir / ssl_keyfile),
         )
 
     mock_show_app_info.assert_called_once()
