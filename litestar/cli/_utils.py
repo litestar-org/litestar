@@ -36,11 +36,6 @@ with contextlib.suppress(ImportError):
 
     JSBEAUTIFIER_INSTALLED = True
 
-CRYPTOGRAPHY_INSTALLED = False
-with contextlib.suppress(ImportError):
-    import cryptography  # noqa: F401
-
-    CRYPTOGRAPHY_INSTALLED = True
 if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     from click import ClickException, Command, Context, Group, pass_context
 else:
@@ -503,16 +498,16 @@ def validate_and_create_ssl_files(
 
 def _create_self_signed_cert(certfile_path: Path, keyfile_path: Path, common_name: str) -> None:
     """Create a self-signed certificate using the cryptography modules at given paths"""
-    if not CRYPTOGRAPHY_INSTALLED:
+    try:
+        from cryptography import x509
+        from cryptography.hazmat.backends import default_backend
+        from cryptography.hazmat.primitives import hashes, serialization
+        from cryptography.hazmat.primitives.asymmetric import rsa
+        from cryptography.x509.oid import NameOID
+    except ImportError as err:
         raise LitestarCLIException(
             "Cryptogpraphy must be installed when using --create-self-signed-cert\nPlease install the litestar[cryptography] extras"
-        )
-
-    from cryptography import x509
-    from cryptography.hazmat.backends import default_backend
-    from cryptography.hazmat.primitives import hashes, serialization
-    from cryptography.hazmat.primitives.asymmetric import rsa
-    from cryptography.x509.oid import NameOID
+        ) from err
 
     subject = x509.Name(
         [

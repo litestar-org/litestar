@@ -213,7 +213,7 @@ def test_without_cryptography_installed(
     get_click_exception: GetClickExceptionFixture,
     mocker: MockerFixture,
 ) -> None:
-    mocker.patch("litestar.cli._utils.CRYPTOGRAPHY_INSTALLED", False)
+    mocker.patch.dict("sys.modules", {"cryptography": None})
 
     path = app_file
     app_path = f"{path.stem}:app"
