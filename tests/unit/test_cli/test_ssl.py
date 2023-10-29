@@ -1,9 +1,3 @@
-#  TODO
-#   Without --create-devcert
-#       Test run with actual certs?
-#   With --create-devcert
-#       Test either file parent dir doesn't exist
-#       Test both filepaths are valid
 from pathlib import Path
 from typing import Optional, Protocol, cast
 
