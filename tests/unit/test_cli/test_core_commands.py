@@ -48,9 +48,6 @@ def mock_show_app_info(mocker: MockerFixture) -> MagicMock:
         (False, None, 2),
     ],
 )
-@pytest.mark.parametrize(
-    "ssl_certfile, ssl_keyfile, create_self_signed_cert", [(None, None, False), ("cert.pem", "key.pem", True)]
-)
 def test_run_command(
     mock_show_app_info: MagicMock,
     runner: CliRunner,
@@ -63,9 +60,6 @@ def test_run_command(
     web_concurrency: Optional[int],
     app_dir: Optional[str],
     reload_dir: Optional[List[str]],
-    ssl_certfile: Optional[str],
-    ssl_keyfile: Optional[str],
-    create_self_signed_cert: Optional[bool],
     custom_app_file: Optional[Path],
     create_app_file: CreateAppFileFixture,
     set_in_env: bool,
@@ -127,26 +121,6 @@ def test_run_command(
     else:
         args.extend(["--web-concurrency", str(web_concurrency)])
 
-    if ssl_certfile:
-        if set_in_env:
-            monkeypatch.setenv("LITESTAR_SSL_CERT_PATH", ssl_certfile)
-        else:
-            args.extend(["--ssl-certfile", ssl_certfile])
-
-    if ssl_keyfile:
-        if set_in_env:
-            monkeypatch.setenv("LITESTAR_SSL_KEY_PATH", ssl_keyfile)
-        else:
-            args.extend(["--ssl-keyfile", ssl_keyfile])
-
-    if create_self_signed_cert:
-        if set_in_env:
-            monkeypatch.setenv("LITESTAR_CREATE_SELF_SIGNED_CERT", "True")
-        else:
-            args.append("--create-self-signed-cert")
-    else:
-        create_self_signed_cert = False
-
     if reload_dir is not None:
         if set_in_env:
             monkeypatch.setenv("LITESTAR_RELOAD_DIRS", ",".join(reload_dir))
@@ -168,8 +142,8 @@ def test_run_command(
             f"{path.stem}:app",
             f"--host={host}",
             f"--port={port}",
-            f"--ssl-certfile={None if ssl_certfile is None else str(tmp_project_dir / ssl_certfile)}",
-            f"--ssl-keyfile={None if ssl_keyfile is None else str(tmp_project_dir / ssl_keyfile)}",
+            "--ssl-certfile=None",
+            "--ssl-keyfile=None",
         ]
         if fd is not None:
             expected_args.append(f"--fd={fd}")
@@ -192,8 +166,8 @@ def test_run_command(
             uds=uds,
             fd=fd,
             factory=False,
-            ssl_certfile=None if ssl_certfile is None else str(tmp_project_dir / ssl_certfile),
-            ssl_keyfile=None if ssl_keyfile is None else str(tmp_project_dir / ssl_keyfile),
+            ssl_certfile=None,
+            ssl_keyfile=None,
         )
 
     mock_show_app_info.assert_called_once()

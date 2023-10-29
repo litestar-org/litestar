@@ -1,5 +1,7 @@
+import sys
 from pathlib import Path
 from typing import Optional, Protocol, cast
+from unittest.mock import MagicMock
 
 import pytest
 from click import ClickException
@@ -262,3 +264,70 @@ def test_create_certificates(app_file: Path, runner: CliRunner) -> None:
 
     assert certfile_path.exists()
     assert keyfile_path.exists()
+
+
+@pytest.mark.parametrize(
+    "ssl_certfile, ssl_keyfile, create_self_signed_cert", [(None, None, False), ("cert.pem", "key.pem", True)]
+)
+@pytest.mark.parametrize("run_as_subprocess", (True, False))
+def test_arguments_passed(
+    app_file: Path,
+    runner: CliRunner,
+    mock_subprocess_run: MagicMock,
+    mock_uvicorn_run: MagicMock,
+    ssl_certfile: Optional[str],
+    ssl_keyfile: Optional[str],
+    create_self_signed_cert: bool,
+    run_as_subprocess: bool,
+) -> None:
+    path = app_file
+    app_path = f"{path.stem}:app"
+
+    project_path = path.parent
+
+    args = ["--app", app_path, "run"]
+
+    if run_as_subprocess:
+        args.extend(["--web-concurrency", "2"])
+
+    if ssl_certfile is not None:
+        args.extend(["--ssl-certfile", str(ssl_certfile)])
+
+    if ssl_keyfile is not None:
+        args.extend(["--ssl-keyfile", str(ssl_keyfile)])
+
+    if create_self_signed_cert:
+        args.append("--create-self-signed-cert")
+
+    result = runner.invoke(cli_command, args)
+
+    assert result.exit_code == 0
+    assert result.exception is None
+
+    if run_as_subprocess:
+        expected_args = [
+            sys.executable,
+            "-m",
+            "uvicorn",
+            f"{path.stem}:app",
+            "--host=127.0.0.1",
+            "--port=8000",
+            "--workers=2",
+            f"--ssl-certfile={None if ssl_certfile is None else str(project_path / ssl_certfile)}",
+            f"--ssl-keyfile={None if ssl_keyfile is None else str(project_path / ssl_keyfile)}",
+        ]
+        mock_subprocess_run.assert_called_once()
+        assert sorted(mock_subprocess_run.call_args_list[0].args[0]) == sorted(expected_args)
+
+    else:
+        mock_subprocess_run.assert_not_called()
+        mock_uvicorn_run.assert_called_once_with(
+            app=f"{path.stem}:app",
+            host="127.0.0.1",
+            port=8000,
+            factory=False,
+            fd=None,
+            uds=None,
+            ssl_certfile=(None if ssl_certfile is None else str(project_path / ssl_certfile)),
+            ssl_keyfile=(None if ssl_keyfile is None else str(project_path / ssl_keyfile)),
+        )
