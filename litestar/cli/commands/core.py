@@ -14,8 +14,9 @@ from litestar.cli._utils import (
     UVICORN_INSTALLED,
     LitestarEnv,
     console,
+    create_ssl_files,
     show_app_info,
-    validate_and_create_ssl_files,
+    validate_ssl_file_paths,
 )
 from litestar.routes import HTTPRoute, WebSocketRoute
 from litestar.utils.helpers import unwrap_partial
@@ -159,8 +160,10 @@ def run_command(
     ssl_keyfile = ssl_keyfile or env.keyfile_path
     create_self_signed_cert = create_self_signed_cert or env.create_self_signed_cert
 
-    certfile_path, keyfile_path = validate_and_create_ssl_files(
-        ssl_certfile, ssl_keyfile, create_self_signed_cert, common_name=host
+    certfile_path, keyfile_path = (
+        create_ssl_files(ssl_certfile, ssl_keyfile, host)
+        if create_self_signed_cert
+        else validate_ssl_file_paths(ssl_certfile, ssl_keyfile)
     )
 
     console.rule("[yellow]Starting server process", align="left")

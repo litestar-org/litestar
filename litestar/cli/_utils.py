@@ -420,83 +420,53 @@ def show_app_info(app: Litestar) -> None:  # pragma: no cover
     console.print(table)
 
 
-def _validate_file_path(file_path: str | None) -> Path | None:
-    """Validate whether a path was provided, exists and is not a directory. Return the resolved path."""
-    if file_path is None:
-        return None
+def validate_ssl_file_paths(certfile_arg: str | None, keyfile_arg: str | None) -> tuple[str, str] | tuple[None, None]:
+    if certfile_arg is None and keyfile_arg is None:
+        return (None, None)
 
-    path = Path(file_path).resolve()
+    resolved_paths = []
 
-    if path.is_dir():
-        raise LitestarCLIException(f"Provided path is a directory: {path}")
+    for argname, arg in {"--ssl-certfile": certfile_arg, "--ssl-keyfile": keyfile_arg}.items():
+        if arg is None:
+            raise LitestarCLIException(f"No value provided for {argname}")
+        path = Path(arg).resolve()
+        if path.is_dir():
+            raise LitestarCLIException(f"Path provided for {argname} is a directory: {path}")
+        if not path.exists():
+            raise LitestarCLIException(f"File provided for {argname} was not found: {path}")
+        resolved_paths.append(str(path))
 
-    if not path.exists():
-        return None
-
-    return path
-
-
-def _validate_new_file_path(file_path: str) -> Path:
-    """Validate if a path's parent directory exist. Return the resolved path."""
-    path = Path(file_path).resolve()
-
-    if not (parent_dir := path.parent).exists():
-        raise LitestarCLIException(f"Unable to create file. Directory doesn't exist: {parent_dir}")
-
-    return path
+    return tuple(resolved_paths)  # type: ignore
 
 
-def validate_and_create_ssl_files(
-    certfile_arg: str | None, keyfile_arg: str | None, create_self_signed_cert: bool, common_name: str = "localhost"
-) -> tuple[str, str] | tuple[None, None]:
-    """Validate the provided certificate and key file paths and generate development cert and key if needed
+def create_ssl_files(
+    certfile_arg: str | None, keyfile_arg: str | None, common_name: str = "localhost"
+) -> tuple[str, str]:
+    resolved_paths = []
 
-    Args:
-        certfile_arg: The provided path string to the certificate file
-        keyfile_arg: The provided path to the key file
-        create_self_signed_cert: Whether to create a self-signed certificate if both files don't exists
-        common_name: The CN to be used with the self-signed certificate
-
-    Returns:
-        Validated absolute paths to the given or generated certificates. Tuple of Nones if neither argument is provided.
-    """
-    certfile_path = _validate_file_path(certfile_arg)
-    keyfile_path = _validate_file_path(keyfile_arg)
-
-    if not create_self_signed_cert:
-        # If neither CLI argument is provided, no SSL context should be usedS
-        if certfile_arg is None and keyfile_arg is None:
-            return (None, None)
-
-        if certfile_path is None:
-            raise LitestarCLIException(f"Certificate file path is invalid or was not provided: {certfile_arg}")
-
-        if keyfile_path is None:
-            raise LitestarCLIException(f"Key file path is invalid or was not provided: {keyfile_arg}")
-
-    else:
-        # Both CLI arguments must be provided
-        if certfile_arg is None and keyfile_arg is None:
+    for argname, arg in {"--ssl-certfile": certfile_arg, "--ssl-keyfile": keyfile_arg}.items():
+        if arg is None:
+            raise LitestarCLIException(f"No value provided for {argname}")
+        path = Path(arg).resolve()
+        if path.is_dir():
+            raise LitestarCLIException(f"Path provided for {argname} is a directory: {path}")
+        if not (parent_dir := path.parent).exists():
             raise LitestarCLIException(
-                "Both certificate and key file paths must be provided when using --create-self-signed-cert"
+                f"Could not create file, parent directory for {argname} doesn't exists: {parent_dir}"
             )
+        resolved_paths.append(path)
 
-        # Either both files must exist or both must not exist
-        if (certfile_path is None) ^ (keyfile_path is None):
-            raise LitestarCLIException(
-                "Both certificate and key file must exists or both must not exists when using --create-self-signed-cert"
-            )
+    if (not resolved_paths[0].exists()) ^ (not resolved_paths[1].exists()):
+        raise LitestarCLIException(
+            "Both certificate and key file must exists or both must not exists when using --create-self-signed-cert"
+        )
 
-        # Both arguments were provided and neither file exists
-        if certfile_path is None and keyfile_path is None:
-            certfile_path = _validate_new_file_path(certfile_arg)  # type: ignore
-            keyfile_path = _validate_new_file_path(keyfile_arg)  # type: ignore
-            _create_self_signed_cert(certfile_path, keyfile_path, common_name)
+    _generate_self_signed_cert(resolved_paths[0], resolved_paths[1], common_name)
 
-    return (str(certfile_path), str(keyfile_path))
+    return (str(resolved_paths[0]), str(resolved_paths[1]))
 
 
-def _create_self_signed_cert(certfile_path: Path, keyfile_path: Path, common_name: str) -> None:
+def _generate_self_signed_cert(certfile_path: Path, keyfile_path: Path, common_name: str) -> None:
     """Create a self-signed certificate using the cryptography modules at given paths"""
     try:
         from cryptography import x509
