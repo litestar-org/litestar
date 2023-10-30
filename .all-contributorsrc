@@ -1355,6 +1355,15 @@
         "code",
         "bug"
       ]
+    },
+    {
+      "login": "AgarwalPragy",
+      "name": "Pragy Agarwal",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7423639?v=4",
+      "profile": "https://mind.wiki",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
