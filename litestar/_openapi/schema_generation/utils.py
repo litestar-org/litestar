@@ -37,7 +37,7 @@ def _type_or_first_not_none_inner_type(field_definition: FieldDefinition) -> Any
     return inner.annotation
 
 
-def _do_enum_schema(field_definition: FieldDefinition) -> bool:
+def _should_create_enum_schema(field_definition: FieldDefinition) -> bool:
     """Predicate to determine if we should create an enum schema for the field def, or not.
 
     This returns true if the field definition is an enum, or if the field definition is a union
