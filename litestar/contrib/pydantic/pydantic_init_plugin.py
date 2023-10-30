@@ -8,8 +8,10 @@ from msgspec import ValidationError
 from typing_extensions import Buffer, TypeGuard
 
 from litestar._signature.types import ExtendedMsgSpecValidationError
+from litestar.contrib.pydantic.utils import is_pydantic_constrained_field
 from litestar.exceptions import MissingDependencyException
 from litestar.plugins import InitPluginProtocol
+from litestar.typing import _KWARG_META_EXTRACTORS
 from litestar.utils import is_class_and_subclass
 
 try:
@@ -88,7 +90,7 @@ _base_encoders: dict[Any, Callable[[Any], Any]] = {
     pydantic_v1.ByteSize: lambda val: val.real,
 }
 
-if pydantic_v2 is not None:
+if pydantic_v2 is not None:  # pragma: no cover
     _base_encoders.update(
         {
             pydantic_v2.EmailStr: str,
@@ -106,6 +108,16 @@ def is_pydantic_v2_model_class(annotation: Any) -> TypeGuard[type[pydantic_v2.Ba
     return is_class_and_subclass(annotation, pydantic_v2.BaseModel)
 
 
+class ConstrainedFieldMetaExtractor:
+    @staticmethod
+    def matches(annotation: Any, name: str | None, default: Any) -> bool:
+        return is_pydantic_constrained_field(annotation)
+
+    @staticmethod
+    def extract(annotation: Any, default: Any) -> Any:
+        return [annotation]
+
+
 class PydanticInitPlugin(InitPluginProtocol):
     __slots__ = ("prefer_alias",)
 
@@ -115,7 +127,7 @@ class PydanticInitPlugin(InitPluginProtocol):
     @classmethod
     def encoders(cls, prefer_alias: bool = False) -> dict[Any, Callable[[Any], Any]]:
         encoders = {**_base_encoders, **cls._create_pydantic_v1_encoders(prefer_alias)}
-        if pydantic_v2 is not None:
+        if pydantic_v2 is not None:  # pragma: no cover
             encoders.update(cls._create_pydantic_v2_encoders(prefer_alias))
         return encoders
 
@@ -125,7 +137,7 @@ class PydanticInitPlugin(InitPluginProtocol):
             (is_pydantic_v1_model_class, _dec_pydantic_v1)
         ]
 
-        if pydantic_v2 is not None:
+        if pydantic_v2 is not None:  # pragma: no cover
             decoders.append((is_pydantic_v2_model_class, _dec_pydantic_v2))
 
         decoders.append((_is_pydantic_v1_uuid, _dec_pydantic_uuid))
@@ -163,4 +175,6 @@ class PydanticInitPlugin(InitPluginProtocol):
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         app_config.type_encoders = {**self.encoders(self.prefer_alias), **(app_config.type_encoders or {})}
         app_config.type_decoders = [*self.decoders(), *(app_config.type_decoders or [])]
+
+        _KWARG_META_EXTRACTORS.add(ConstrainedFieldMetaExtractor)
         return app_config
