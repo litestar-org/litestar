@@ -1,7 +1,10 @@
-from typing import Dict, Generic, Optional, Type, TypeVar, Union
+import datetime
+from decimal import Decimal
+from typing import Any, Dict, Generic, Optional, Type, TypeVar, Union
 
 import pydantic as pydantic_v2
 import pytest
+from pydantic import v1 as pydantic_v1
 from pydantic.v1.generics import GenericModel
 from typing_extensions import Annotated
 
@@ -47,3 +50,26 @@ def test_schema_generation_with_generic_classes(model: Type[Union[PydanticV1Gene
     assert properties["foo"] == expected_foo_schema
     assert properties["annotated_foo"] == expected_foo_schema
     assert properties["optional_foo"] == expected_optional_foo_schema
+
+
+@pytest.mark.parametrize(
+    "constrained",
+    [
+        pydantic_v1.constr(regex="^[a-zA-Z]$"),
+        pydantic_v1.conlist(int, min_items=1),
+        pydantic_v1.conset(int, min_items=1),
+        pydantic_v1.conint(gt=10, lt=100),
+        pydantic_v1.confloat(gt=10, lt=100),
+        pydantic_v1.condecimal(gt=Decimal("10")),
+        pydantic_v1.condate(gt=datetime.date.today()),
+        pydantic_v2.constr(pattern="^[a-zA-Z]$"),
+        pydantic_v2.conlist(int, min_length=1),
+        pydantic_v2.conset(int, min_length=1),
+        pydantic_v2.conint(gt=10, lt=100),
+        pydantic_v2.confloat(ge=10, le=100),
+        pydantic_v2.condecimal(gt=Decimal("10")),
+        pydantic_v2.condate(gt=datetime.date.today()),
+    ],
+)
+def test_is_pydantic_constrained_field(constrained: Any) -> None:
+    PydanticSchemaPlugin.is_constrained_field(FieldDefinition.from_annotation(constrained))
