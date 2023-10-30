@@ -32,6 +32,8 @@ repos:
     hooks:
       - id: codespell
         exclude: "tests/openapi/typescript_converter/test_converter|README.md"
+        additional_dependencies:
+          - tomli
   - repo: https://github.com/psf/black
     rev: 23.10.1
     hooks:
