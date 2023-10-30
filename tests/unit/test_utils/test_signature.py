@@ -156,7 +156,7 @@ def test_parsed_signature() -> None:
     assert parsed_sig.parameters["foo"].annotation is int
     assert parsed_sig.parameters["bar"].args == (List[int], NoneType)
     assert parsed_sig.parameters["bar"].annotation == Union[List[int], NoneType]
-    assert parsed_sig.parameters["bar"].default is Empty
+    assert parsed_sig.parameters["bar"].default is None
     assert parsed_sig.original_signature == inspect.signature(fn)
 
 
