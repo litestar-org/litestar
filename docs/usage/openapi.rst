@@ -248,11 +248,7 @@ For example, lets say we wanted to change the base path of the OpenAPI related e
 OAuth2 in Swagger UI
 ++++++++++++++++++++
 
-The :attr:`swagger_ui_init_oauth <litestar.openapi.controller.OpenAPIController.swagger_ui_init_oauth>` variable allows you to configure OAuth2 settings when using Swagger UI to interact with
-your API. This variable should contain a dictionary of OAuth2-related settings that determine how Swagger UI behaves
-during OAuth2 authorization.
-
-The available options for swagger_ui_init_oauth correspond to the parameters described in the Swagger UI documentation for OAuth2 `here <https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/>`_.
+When using Swagger, OAuth2 settings can be configured via :attr:`swagger_ui_init_oauth <litestar.openapi.controller.OpenAPIController.swagger_ui_init_oauth>`, which can be set to a dictionary containing the parameters described in the Swagger UI documentation for OAuth2 `here <https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/>`_.
 
 We that you can preset your clientId or enable PKCE support.
 
