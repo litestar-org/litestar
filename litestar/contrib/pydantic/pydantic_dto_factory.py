@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Collection, Generic, TypeVar
 
 from typing_extensions import TypeAlias, override
 
-from litestar.constants import PYDANTIC_UNDEFINED_SENTINELS
+from litestar.contrib.pydantic.utils import is_pydantic_undefined
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField
@@ -82,7 +82,7 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
             field_definition = model_field_definitions[field_name]
             dto_field = (field_definition.extra or {}).pop(DTO_FIELD_META_KEY, DTOField())
 
-            if field_info.default not in PYDANTIC_UNDEFINED_SENTINELS:
+            if not is_pydantic_undefined(field_info.default):
                 default = field_info.default
             elif field_definition.is_optional:
                 default = None
@@ -95,7 +95,7 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
                     dto_field=dto_field,
                     model_name=model_type.__name__,
                     default_factory=field_info.default_factory
-                    if field_info.default_factory and field_info.default_factory not in PYDANTIC_UNDEFINED_SENTINELS
+                    if field_info.default_factory and not is_pydantic_undefined(field_info.default_factory)
                     else Empty,
                 ),
                 default=default,

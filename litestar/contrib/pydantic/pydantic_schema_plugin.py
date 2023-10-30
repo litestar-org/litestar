@@ -7,15 +7,17 @@ from typing_extensions import Annotated
 from litestar._openapi.schema_generation.schema import SchemaCreator, _get_type_schema_name
 from litestar.contrib.pydantic.utils import (
     is_pydantic_2_model,
+    is_pydantic_constrained_field,
     is_pydantic_model_class,
+    is_pydantic_undefined,
     pydantic_get_unwrapped_annotation_and_type_hints,
 )
 from litestar.exceptions import MissingDependencyException
 from litestar.openapi.spec import Example, OpenAPIFormat, OpenAPIType, Schema
-from litestar.plugins import OpenAPISchemaPluginProtocol
+from litestar.plugins import OpenAPISchemaPlugin
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils import is_class_and_subclass, is_undefined_sentinel
+from litestar.utils import is_class_and_subclass
 
 try:
     # check if we have pydantic v2 installed, and try to import both versions
@@ -194,7 +196,7 @@ if pydantic_v2 is not None:  # pragma: no cover
     _supported_types = (pydantic_v2.BaseModel, *_supported_types)
 
 
-class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
+class PydanticSchemaPlugin(OpenAPISchemaPlugin):
     __slots__ = ("prefer_alias",)
 
     def __init__(self, prefer_alias: bool = False) -> None:
@@ -203,6 +205,14 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
         return isinstance(value, _supported_types) or is_class_and_subclass(value, _supported_types)  # type: ignore
+
+    @staticmethod
+    def is_undefined_sentinel(value: Any) -> bool:
+        return is_pydantic_undefined(value)
+
+    @staticmethod
+    def is_constrained_field(field_definition: FieldDefinition) -> bool:
+        return is_pydantic_constrained_field(field_definition.annotation)
 
     def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
         """Given a type annotation, transform it into an OpenAPI schema class.
@@ -217,22 +227,16 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
         if schema_creator.prefer_alias != self.prefer_alias:
             schema_creator.prefer_alias = True
         if is_pydantic_model_class(field_definition.annotation):
-            return self.for_pydantic_model(
-                field_definition=field_definition, annotation=field_definition.annotation, schema_creator=schema_creator
-            )
+            return self.for_pydantic_model(field_definition=field_definition, schema_creator=schema_creator)
         return PYDANTIC_TYPE_MAP[field_definition.annotation]  # pragma: no cover
 
     @classmethod
     def for_pydantic_model(
-        cls,
-        field_definition: FieldDefinition,
-        annotation: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel],  # pyright: ignore
-        schema_creator: SchemaCreator,
+        cls, field_definition: FieldDefinition, schema_creator: SchemaCreator
     ) -> Schema:  # pyright: ignore
         """Create a schema object for a given pydantic model class.
 
         Args:
-            annotation: A pydantic model class.
             field_definition: FieldDefinition instance.
             schema_creator: An instance of the schema creator class
 
@@ -250,7 +254,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
             example = model_config.get("example")
             is_v2_model = True
         else:
-            model_config = annotation.__config__  # type: ignore[union-attr, assignment]
+            model_config = annotation.__config__
             model_field_info = unwrapped_annotation.__fields__
             title = getattr(model_config, "title", None)
             example = getattr(model_config, "example", None)
@@ -268,7 +272,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPluginProtocol):
                 if is_v2_model
                 else Annotated[annotation_hints[k], f],  # pyright: ignore
                 name=f.alias if f.alias and schema_creator.prefer_alias else k,
-                default=Empty if is_undefined_sentinel(f.default) else f.default,
+                default=Empty if schema_creator.is_undefined(f.default) else f.default,
             )
             for k, f in model_fields.items()
         }
