@@ -15,6 +15,7 @@ __all__ = (
     "SerializationPluginProtocol",
     "InitPluginProtocol",
     "OpenAPISchemaPluginProtocol",
+    "OpenAPISchemaPlugin",
     "PluginProtocol",
     "CLIPluginProtocol",
     "PluginRegistry",
@@ -122,7 +123,7 @@ class SerializationPluginProtocol(Protocol):
 
 @runtime_checkable
 class OpenAPISchemaPluginProtocol(Protocol):
-    """Plugin to extend the support of OpenAPI schema generation for non-library types."""
+    """Plugin protocol to extend the support of OpenAPI schema generation for non-library types."""
 
     __slots__ = ()
 
@@ -151,10 +152,27 @@ class OpenAPISchemaPluginProtocol(Protocol):
         raise NotImplementedError()
 
 
+class OpenAPISchemaPlugin(OpenAPISchemaPluginProtocol):
+    """Plugin to extend the support of OpenAPI schema generation for non-library types."""
+
+    @staticmethod
+    def is_undefined_sentinel(value: Any) -> bool:
+        """Return ``True`` if ``value`` should be treated as an undefined field"""
+        return False
+
+    @staticmethod
+    def is_constrained_field(field_definition: FieldDefinition) -> bool:
+        """Return ``True`` if the field should be treated as constrained. If returning
+        ``True``, constraints should be defined in the field's extras
+        """
+        return False
+
+
 PluginProtocol = Union[
     SerializationPluginProtocol,
     InitPluginProtocol,
     OpenAPISchemaPluginProtocol,
+    OpenAPISchemaPlugin,
     CLIPluginProtocol,
 ]
 
