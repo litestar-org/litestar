@@ -556,13 +556,13 @@ class FieldDefinition:
         return cls.from_annotation(
             annotation,
             name=name,
+            default=default,
             **{
                 k: v
                 for k, v in {
                     "inner_types": inner_types,
                     "kwarg_definition": kwarg_definition,
                     "extra": extra,
-                    "default": default,
                 }.items()
                 if v is not None
             },
