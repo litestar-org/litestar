@@ -1249,7 +1249,7 @@ document.write(`
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.contrib.pydantic.PydanticSchemaPlugin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.pydantic.</span></span><span class="sig-name descname"><span class="pre">PydanticSchemaPlugin</span></span><a class="headerlink" href="#litestar.contrib.pydantic.PydanticSchemaPlugin" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../plugins.html#litestar.plugins.OpenAPISchemaPluginProtocol" title="litestar.plugins.OpenAPISchemaPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../plugins.html#litestar.plugins.OpenAPISchemaPlugin" title="litestar.plugins.OpenAPISchemaPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPISchemaPlugin</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.contrib.pydantic.PydanticSchemaPlugin.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefer_alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.pydantic.PydanticSchemaPlugin.__init__" title="Permalink to this definition">#</a></dt>
@@ -1267,6 +1267,19 @@ document.write(`
 <dd class="field-even"><p>A typeguard dictating whether the value is supported by the plugin.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.contrib.pydantic.PydanticSchemaPlugin.is_undefined_sentinel">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_undefined_sentinel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.contrib.pydantic.PydanticSchemaPlugin.is_undefined_sentinel" title="Permalink to this definition">#</a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">value</span></code> should be treated as an undefined field</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.contrib.pydantic.PydanticSchemaPlugin.is_constrained_field">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_constrained_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.contrib.pydantic.PydanticSchemaPlugin.is_constrained_field" title="Permalink to this definition">#</a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the field should be treated as constrained. If returning
+<code class="docutils literal notranslate"><span class="pre">True</span></code>, constraints should be defined in the field’s extras</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1395,6 +1408,8 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.pydantic.PydanticSchemaPlugin"><code class="docutils literal notranslate"><span class="pre">PydanticSchemaPlugin</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.pydantic.PydanticSchemaPlugin.__init__"><code class="docutils literal notranslate"><span class="pre">PydanticSchemaPlugin.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.pydantic.PydanticSchemaPlugin.is_plugin_supported_type"><code class="docutils literal notranslate"><span class="pre">PydanticSchemaPlugin.is_plugin_supported_type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.pydantic.PydanticSchemaPlugin.is_undefined_sentinel"><code class="docutils literal notranslate"><span class="pre">PydanticSchemaPlugin.is_undefined_sentinel()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.pydantic.PydanticSchemaPlugin.is_constrained_field"><code class="docutils literal notranslate"><span class="pre">PydanticSchemaPlugin.is_constrained_field()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema"><code class="docutils literal notranslate"><span class="pre">PydanticSchemaPlugin.to_openapi_schema()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.pydantic.PydanticSchemaPlugin.for_pydantic_model"><code class="docutils literal notranslate"><span class="pre">PydanticSchemaPlugin.for_pydantic_model()</span></code></a></li>
 </ul>
