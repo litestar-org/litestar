@@ -1375,6 +1375,36 @@ the controller to use in the <a class="reference internal" href="../reference/op
 <span class="p">)</span>
 </pre></div>
 </div>
+<section id="oauth2-in-swagger-ui">
+<h3>OAuth2 in Swagger UI<a class="headerlink" href="#oauth2-in-swagger-ui" title="Permalink to this heading">#</a></h3>
+<p>When using Swagger, OAuth2 settings can be configured via <code class="xref py py-attr docutils literal notranslate"><span class="pre">swagger_ui_init_oauth</span></code>, which can be set to a dictionary containing the parameters described in the Swagger UI documentation for OAuth2 <a class="reference external" href="https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/">here</a>.</p>
+<p>We that you can preset your clientId or enable PKCE support.</p>
+<p>Example Usage</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.openapi</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.openapi</span> <span class="kn">import</span> <span class="n">OpenAPIController</span>
+
+
+<span class="k">class</span> <span class="nc">MyOpenAPIController</span><span class="p">(</span><span class="n">OpenAPIController</span><span class="p">):</span>
+    <span class="n">swagger_ui_init_oauth</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;clientId&quot;</span><span class="p">:</span> <span class="s2">&quot;your-client-id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;appName&quot;</span><span class="p">:</span> <span class="s2">&quot;your-app-name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;scopeSeparator&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
+        <span class="s2">&quot;scopes&quot;</span><span class="p">:</span> <span class="s2">&quot;openid profile&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;useBasicAuthenticationWithAccessCodeGrant&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;usePkceWithAuthorizationCodeGrant&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+    <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;My API&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span> <span class="n">openapi_controller</span><span class="o">=</span><span class="n">MyOpenAPIController</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="cdn-and-offline-file-support">
 <h2>CDN and offline file support<a class="headerlink" href="#cdn-and-offline-file-support" title="Permalink to this heading">#</a></h2>
@@ -1738,7 +1768,10 @@ when generating the field name in the schema.</p>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-schema-generation-on-a-route-handler">Configuring schema generation on a route handler</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#customizing-schema-endpoints-with-the-openapicontroller">Customizing schema endpoints with the OpenAPIController</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#customizing-schema-endpoints-with-the-openapicontroller">Customizing schema endpoints with the OpenAPIController</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oauth2-in-swagger-ui">OAuth2 in Swagger UI</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cdn-and-offline-file-support">CDN and offline file support</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#accessing-the-openapi-schema-in-code">Accessing the OpenAPI schema in code</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#customizing-pydantic-model-schemas">Customizing Pydantic model schemas</a></li>
