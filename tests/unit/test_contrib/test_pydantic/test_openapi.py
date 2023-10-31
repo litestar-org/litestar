@@ -160,18 +160,17 @@ def test_create_collection_constrained_field_schema_sub_fields(
             annotation = pydantic_fn(Union[str, int], min_length=1, max_length=10)
         field_definition = FieldDefinition.from_annotation(annotation)
         schema = SchemaCreator().for_collection_constrained_field(field_definition)
-        assert schema.type == OpenAPIType.ARRAY
-        expected = {
-            "items": {"oneOf": [{"type": "integer"}, {"type": "string"}]},
-            "maxItems": 10,
-            "minItems": 1,
-            "type": "array",
-        }
+        expected = Schema(
+            items=Schema(one_of=[Schema(type=OpenAPIType.STRING), Schema(type=OpenAPIType.INTEGER)]),
+            max_items=10,
+            min_items=1,
+            type=OpenAPIType.ARRAY,
+        )
         if pydantic_fn is conset:
             # set should have uniqueItems always
-            expected["uniqueItems"] = True
+            expected.unique_items = True
 
-        assert schema.to_schema() == expected
+        assert schema == expected
 
 
 @pytest.mark.parametrize("annotation", constrained_string_v1)

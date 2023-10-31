@@ -42,9 +42,6 @@ from litestar._openapi.schema_generation.constrained_fields import (
     create_numerical_constrained_field_schema,
     create_string_constrained_field_schema,
 )
-from litestar._openapi.schema_generation.utils import (
-    sort_schemas_and_references,
-)
 from litestar.datastructures.upload_file import UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Reference
@@ -365,9 +362,9 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        inner_types = [f for f in (field_definition.inner_types or []) if not self.is_undefined(f.annotation)]
+        inner_types = (f for f in (field_definition.inner_types or []) if not self.is_undefined(f.annotation))
         values = list(map(self.for_field_definition, inner_types))
-        return Schema(one_of=sort_schemas_and_references(values))
+        return Schema(one_of=values)
 
     def for_object_type(self, field_definition: FieldDefinition) -> Schema:
         """Create schema for object types (dict, Mapping, list, Sequence etc.) types.
@@ -394,7 +391,7 @@ class SchemaCreator:
             items = list(map(self.for_field_definition, inner_types or ()))
             return Schema(
                 type=OpenAPIType.ARRAY,
-                items=Schema(one_of=sort_schemas_and_references(items)) if len(items) > 1 else items[0],
+                items=Schema(one_of=items) if len(items) > 1 else items[0],
             )
 
         if field_definition.is_literal:
@@ -614,7 +611,7 @@ class SchemaCreator:
         if field_definition.inner_types:
             items = list(map(item_creator.for_field_definition, field_definition.inner_types))
             if len(items) > 1:
-                schema.items = Schema(one_of=sort_schemas_and_references(items))
+                schema.items = Schema(one_of=items)
             else:
                 schema.items = items[0]
         else:
