@@ -1504,7 +1504,7 @@ can <a class="reference internal" href="routing/handlers.html#reserved-keyword-a
 <p>In the above example we have a <code class="docutils literal notranslate"><span class="pre">User</span></code> model that we are persisting into a db. The model is fetched using the helper
 method <code class="docutils literal notranslate"><span class="pre">retrieve_db_user</span></code> which receives a <code class="docutils literal notranslate"><span class="pre">user_id</span></code> kwarg and retrieves the corresponding <code class="docutils literal notranslate"><span class="pre">User</span></code> instance.
 The <code class="docutils literal notranslate"><span class="pre">UserController</span></code> class maps the <code class="docutils literal notranslate"><span class="pre">retrieve_db_user</span></code> provider to the key <code class="docutils literal notranslate"><span class="pre">user</span></code> in its <code class="docutils literal notranslate"><span class="pre">dependencies</span></code> dictionary. This
-in turn makes it available as a kwarg in the <code class="docutils literal notranslate"><span class="pre">update_user</span></code> method.</p>
+in turn makes it available as a kwarg in the <code class="docutils literal notranslate"><span class="pre">get_user</span></code> method.</p>
 </section>
 <section id="dependency-overrides">
 <h2>Dependency overrides<a class="headerlink" href="#dependency-overrides" title="Permalink to this heading">#</a></h2>
