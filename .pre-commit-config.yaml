@@ -1,5 +1,5 @@
 default_language_version:
-  python: "3.12"
+  python: "3.8"
 repos:
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v2.4.0
@@ -18,7 +18,7 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/provinzkraut/unasyncd
-    rev: "v0.6.1"
+    rev: "v0.7.1"
     hooks:
       - id: unasyncd
         additional_dependencies: ["ruff"]
@@ -32,6 +32,8 @@ repos:
     hooks:
       - id: codespell
         exclude: "tests/openapi/typescript_converter/test_converter|README.md"
+        additional_dependencies:
+          - tomli
   - repo: https://github.com/psf/black
     rev: 23.10.1
     hooks:

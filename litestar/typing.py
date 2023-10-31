@@ -4,7 +4,7 @@ from collections import abc, deque
 from copy import deepcopy
 from dataclasses import dataclass, is_dataclass, replace
 from inspect import Parameter, Signature
-from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Sequence, TypeVar, cast
+from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Protocol, Sequence, TypeVar, cast
 
 from msgspec import UnsetType
 from typing_extensions import Annotated, NotRequired, Required, Self, get_args, get_origin, get_type_hints, is_typeddict
@@ -33,6 +33,19 @@ from litestar.utils.typing import (
 __all__ = ("FieldDefinition",)
 
 T = TypeVar("T", bound=KwargDefinition)
+
+
+class _KwargMetaExtractor(Protocol):
+    @staticmethod
+    def matches(annotation: Any, name: str | None, default: Any) -> bool:
+        ...
+
+    @staticmethod
+    def extract(annotation: Any, default: Any) -> Any:
+        ...
+
+
+_KWARG_META_EXTRACTORS: set[_KwargMetaExtractor] = set()
 
 
 def _unpack_predicate(value: Any) -> dict[str, Any]:
@@ -220,15 +233,20 @@ class FieldDefinition:
     def _extract_metadata(
         cls, annotation: Any, name: str | None, default: Any, metadata: tuple[Any, ...], extra: dict[str, Any] | None
     ) -> tuple[KwargDefinition | None, dict[str, Any]]:
-        from litestar.contrib.pydantic.utils import is_pydantic_constrained_field, is_pydantic_field_info
         from litestar.dto.base_dto import AbstractDTO
 
         model = BodyKwarg if name == "data" else ParameterKwarg
 
-        if is_pydantic_field_info(default):
-            return _create_metadata_from_type(metadata=[default], model=model, annotation=annotation, extra=extra)
+        for extractor in _KWARG_META_EXTRACTORS:
+            if extractor.matches(annotation=annotation, name=name, default=default):
+                return _create_metadata_from_type(
+                    extractor.extract(annotation=annotation, default=default),
+                    model=model,
+                    annotation=annotation,
+                    extra=extra,
+                )
 
-        if is_pydantic_constrained_field(annotation) or isinstance(annotation, AbstractDTO):
+        if isinstance(annotation, AbstractDTO):
             return _create_metadata_from_type(metadata=[annotation], model=model, annotation=annotation, extra=extra)
 
         if any(isinstance(arg, KwargDefinition) for arg in get_args(annotation)):
@@ -538,13 +556,13 @@ class FieldDefinition:
         return cls.from_annotation(
             annotation,
             name=name,
+            default=default,
             **{
                 k: v
                 for k, v in {
                     "inner_types": inner_types,
                     "kwarg_definition": kwarg_definition,
                     "extra": extra,
-                    "default": default,
                 }.items()
                 if v is not None
             },
