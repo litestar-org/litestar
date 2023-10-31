@@ -610,10 +610,7 @@ class SchemaCreator:
         item_creator = self.not_generating_examples
         if field_definition.inner_types:
             items = list(map(item_creator.for_field_definition, field_definition.inner_types))
-            if len(items) > 1:
-                schema.items = Schema(one_of=items)
-            else:
-                schema.items = items[0]
+            schema.items = Schema(one_of=items) if len(items) > 1 else items[0]
         else:
             schema.items = item_creator.for_field_definition(
                 FieldDefinition.from_kwarg(
