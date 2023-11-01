@@ -38,7 +38,7 @@ def default_cache_key_builder(request: Request[Any, Any, Any]) -> str:
     """
     query_params: list[tuple[str, Any]] = list(request.query_params.dict().items())
     query_params.sort(key=lambda x: x[0])
-    return request.url.path + urlencode(query_params, doseq=True)
+    return request.method + request.url.path + urlencode(query_params, doseq=True)
 
 
 def default_do_cache_predicate(_: HTTPScope, status_code: int) -> bool:
