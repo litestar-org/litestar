@@ -111,7 +111,7 @@ def test_piccolo_dto_openapi_spec_generation() -> None:
         == "#/components/schemas/_class__litestar_dto__backend_RetrieveVenuesVenueResponseBody__"
     )
 
-    concert_schema = schema.components.schemas["_class__litestar_dto__backend_CreateConcertConcertRequestBody__"]  # type: ignore
+    concert_schema = schema.components.schemas["_class__litestar_dto__backend_CreateConcertConcertRequestBody__"]
     assert concert_schema
     assert concert_schema.to_schema() == {
         "properties": {
@@ -124,7 +124,9 @@ def test_piccolo_dto_openapi_spec_generation() -> None:
         "type": "object",
     }
 
-    record_studio_schema = schema.components.schemas["_class__litestar_dto__backend_RetrieveStudioRecordingStudioResponseBody__"]  # type: ignore
+    record_studio_schema = schema.components.schemas[
+        "_class__litestar_dto__backend_RetrieveStudioRecordingStudioResponseBody__"
+    ]
     assert record_studio_schema
     assert record_studio_schema.to_schema() == {
         "properties": {
@@ -138,7 +140,7 @@ def test_piccolo_dto_openapi_spec_generation() -> None:
         "type": "object",
     }
 
-    venue_schema = schema.components.schemas["_class__litestar_dto__backend_RetrieveVenuesVenueResponseBody__"]  # type: ignore
+    venue_schema = schema.components.schemas["_class__litestar_dto__backend_RetrieveVenuesVenueResponseBody__"]
     assert venue_schema
     assert venue_schema.to_schema() == {
         "properties": {
