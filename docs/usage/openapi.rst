@@ -245,6 +245,40 @@ For example, lets say we wanted to change the base path of the OpenAPI related e
        ),
    )
 
+OAuth2 in Swagger UI
+++++++++++++++++++++
+
+When using Swagger, OAuth2 settings can be configured via :attr:`swagger_ui_init_oauth <litestar.openapi.controller.OpenAPIController.swagger_ui_init_oauth>`, which can be set to a dictionary containing the parameters described in the Swagger UI documentation for OAuth2 `here <https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/>`_.
+
+We that you can preset your clientId or enable PKCE support.
+
+Example Usage
+
+.. code-block:: python
+
+   from litestar import Litestar
+   from litestar.openapi import OpenAPIConfig
+   from litestar.openapi import OpenAPIController
+
+
+   class MyOpenAPIController(OpenAPIController):
+       swagger_ui_init_oauth = {
+           "clientId": "your-client-id",
+           "appName": "your-app-name",
+           "scopeSeparator": " ",
+           "scopes": "openid profile",
+           "useBasicAuthenticationWithAccessCodeGrant": True,
+           "usePkceWithAuthorizationCodeGrant": True,
+       }
+
+
+   app = Litestar(
+       route_handlers=[...],
+       openapi_config=OpenAPIConfig(
+           title="My API", version="1.0.0", openapi_controller=MyOpenAPIController
+       ),
+   )
+
 
 
 CDN and offline file support

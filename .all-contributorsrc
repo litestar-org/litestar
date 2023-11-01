@@ -1334,7 +1334,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/534840?v=4",
       "profile": "http://www.hera.cc",
       "contributions": [
-        "code"
+        "code",
+        "doc"
       ]
     },
     {
@@ -1354,6 +1355,24 @@
       "contributions": [
         "code",
         "bug"
+      ]
+    },
+    {
+      "login": "AgarwalPragy",
+      "name": "Pragy Agarwal",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7423639?v=4",
+      "profile": "https://mind.wiki",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "dybi",
+      "name": "Piotr Dybowski",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36961162?v=4",
+      "profile": "https://github.com/dybi",
+      "contributions": [
+        "doc"
       ]
     }
   ],

@@ -27,21 +27,3 @@ SKIP_VALIDATION_NAMES: Final = {"request", "socket", "scope", "receive", "send"}
 UNDEFINED_SENTINELS: Final = {Signature.empty, Empty, Ellipsis, MISSING, UnsetType}
 WEBSOCKET_CLOSE: Final = "websocket.close"
 WEBSOCKET_DISCONNECT: Final = "websocket.disconnect"
-
-
-try:
-    from pydantic.fields import PydanticUndefined as Pydantic2Undefined  # type: ignore[attr-defined]
-    from pydantic.v1.fields import Undefined as Pydantic1Undefined
-
-    PYDANTIC_UNDEFINED_SENTINELS = {Pydantic1Undefined, Pydantic2Undefined}
-except ImportError:
-    try:
-        from pydantic.v1.fields import Undefined as Pydantic1Undefined
-
-        PYDANTIC_UNDEFINED_SENTINELS = {Pydantic1Undefined}
-
-    except ImportError:  # pyright: ignore
-        PYDANTIC_UNDEFINED_SENTINELS = set()
-
-
-UNDEFINED_SENTINELS.update(PYDANTIC_UNDEFINED_SENTINELS)
