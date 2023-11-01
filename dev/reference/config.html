@@ -1924,7 +1924,8 @@ response should be cached.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="litestar.config.response_cache.default_cache_key_builder">
 <span class="sig-prename descclassname"><span class="pre">litestar.config.response_cache.</span></span><span class="sig-name descname"><span class="pre">default_cache_key_builder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="connection.html#litestar.connection.Request" title="litestar.connection.Request"><span class="pre">Request</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#litestar.config.response_cache.default_cache_key_builder" title="Permalink to this definition">#</a></dt>
-<dd><p>Given a request object, returns a cache key by combining the path with the sorted query params.</p>
+<dd><p>Given a request object, returns a cache key by combining
+the request method and path with the sorted query params.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>request</strong> – request used to generate cache key.</p>
