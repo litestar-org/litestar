@@ -123,4 +123,4 @@ def test_deprecated_import_missing_attribute() -> None:
     with pytest.raises(AttributeError):
         from litestar import repository
 
-        repository.foo
+        repository.foo  # type: ignore[attr-defined]
