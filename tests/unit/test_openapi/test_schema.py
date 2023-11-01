@@ -2,7 +2,20 @@ import sys
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum, auto
-from typing import TYPE_CHECKING, Any, Dict, Generic, List, Literal, Optional, Tuple, TypedDict, TypeVar, Union
+from typing import (  # type: ignore[attr-defined]
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generic,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    TypedDict,
+    TypeVar,
+    Union,
+    _GenericAlias,  # pyright: ignore
+)
 
 import annotated_types
 import msgspec
@@ -15,8 +28,8 @@ from litestar._openapi.schema_generation.schema import (
     KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     SchemaCreator,
     _get_type_schema_name,
-    create_schema_for_annotation,
 )
+from litestar._openapi.schema_generation.utils import _type_or_first_not_none_inner_type
 from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.di import Provide
 from litestar.enums import ParamType
@@ -27,6 +40,7 @@ from litestar.openapi.spec.schema import Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.params import BodyKwarg, Parameter, ParameterKwarg
 from litestar.testing import create_test_client
+from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
 from tests.models import DataclassPerson, DataclassPet
@@ -112,12 +126,8 @@ def test_get_schema_for_annotation_enum() -> None:
         opt1 = "opt1"
         opt2 = "opt2"
 
-    @dataclass()
-    class M:
-        opt: Opts
-
-    schema = create_schema_for_annotation(annotation=M.__annotations__["opt"])
-    assert schema
+    schema = SchemaCreator().for_field_definition(FieldDefinition.from_annotation(Opts))
+    assert isinstance(schema, Schema)
     assert schema.enum == ["opt1", "opt2"]
 
 
@@ -144,7 +154,7 @@ def test_handling_of_literals() -> None:
 
     value = schema.properties["value"]
     assert isinstance(value, Schema)
-    assert value.enum == ("a", "b", "c")
+    assert value.enum == ["a", "b", "c"]
 
     const = schema.properties["const"]
     assert isinstance(const, Schema)
@@ -152,7 +162,7 @@ def test_handling_of_literals() -> None:
 
     composite = schema.properties["composite"]
     assert isinstance(composite, Schema)
-    assert composite.enum == ("a", "b", "c", 1)
+    assert composite.enum == ["a", "b", "c", 1]
 
 
 def test_schema_hashing() -> None:
@@ -283,15 +293,10 @@ def test_literal_enums() -> None:
         A = auto()
         B = auto()
 
-    @dataclass
-    class MyDataclass:
-        bar: List[Literal[Foo.A]]
-
-    schemas: Dict[str, Schema] = {}
-    SchemaCreator(schemas=schemas).for_field_definition(
-        FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass)
-    )
-    assert schemas["MyDataclass"].properties["bar"].items.const == 1  # type: ignore
+    schema = SchemaCreator().for_field_definition(FieldDefinition.from_annotation(List[Literal[Foo.A]]))
+    assert isinstance(schema, Schema)
+    assert isinstance(schema.items, Schema)
+    assert schema.items.const == 1
 
 
 @dataclass
@@ -414,3 +419,39 @@ def test_schema_tuple_with_union() -> None:
         Schema(type=OpenAPIType.INTEGER),
         Schema(one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)]),
     ]
+
+
+def test_optional_enum() -> None:
+    class Foo(Enum):
+        A = 1
+        B = 2
+
+    schema = SchemaCreator().for_field_definition(FieldDefinition.from_annotation(Optional[Foo]))
+    assert isinstance(schema, Schema)
+    assert schema.type == OpenAPIType.INTEGER
+    assert schema.enum == [1, 2, None]
+
+
+def test_optional_literal() -> None:
+    schema = SchemaCreator().for_field_definition(FieldDefinition.from_annotation(Optional[Literal[1]]))
+    assert isinstance(schema, Schema)
+    assert schema.type == OpenAPIType.INTEGER
+    assert schema.enum == [1, None]
+
+
+@pytest.mark.parametrize(
+    ("in_type", "out_type"),
+    [
+        (FieldDefinition.from_annotation(Optional[int]), int),
+        (FieldDefinition.from_annotation(Union[None, int]), int),
+        (FieldDefinition.from_annotation(int), int),
+        # hack to create a union of NoneType, NoneType to hit a branch for coverage
+        (FieldDefinition.from_annotation(_GenericAlias(Union, (NoneType, NoneType))), ValueError),
+    ],
+)
+def test_type_or_first_not_none_inner_type_utility(in_type: Any, out_type: Any) -> None:
+    if out_type is ValueError:
+        with pytest.raises(out_type):
+            _type_or_first_not_none_inner_type(in_type)
+    else:
+        assert _type_or_first_not_none_inner_type(in_type) == out_type

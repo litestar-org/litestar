@@ -12,8 +12,6 @@ from litestar.utils.typing import (
     get_origin_or_inner_type,
     get_type_hints_with_generics_resolved,
     instantiable_type_mapping,
-    unwrap_annotation,
-    wrapper_type_set,
 )
 
 # isort: off
@@ -116,9 +114,6 @@ def pydantic_unwrap_and_get_origin(annotation: Any) -> Any | None:
         return get_origin_or_inner_type(annotation)
 
     origin = annotation.__pydantic_generic_metadata__["origin"]
-    if origin in wrapper_type_set:
-        inner, _, _ = unwrap_annotation(annotation)
-        origin = get_origin_or_inner_type(inner)
     return instantiable_type_mapping.get(origin, origin)
 
 

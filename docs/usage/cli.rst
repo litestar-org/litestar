@@ -100,28 +100,33 @@ The ``run`` command executes a Litestar application using `uvicorn <https://www.
 Options
 ~~~~~~~
 
-+---------------------------------------+---------------------------------+----------------------------------------------------------------+
-|                 Flag                  |      Environment variable       |                          Description                           |
-+=======================================+=================================+================================================================+
-| ``-r``\ , ``--reload``                | ``LITESTAR_RELOAD``             | Reload the application when files in its directory are changed |
-+---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``-R``\ ,``--reload-dir``             | ``LITESTAR_RELOAD_DIRS``        | Specify directories to watch for reload.                       |
-+---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``-p``\ , ``--port``                  | ``LITESTAR_PORT``               | Bind the server to this port [default: 8000]                   |
-+---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``--wc``\ , ``--web-concurrency``     | ``WEB_CONCURRENCY``             | The number of concurrent web workers to start [default: 1]     |
-+---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``-H``\ ,``--host``                   | ``LITESTAR_HOST``               | Bind the server to this host [default: 127.0.0.1]              |
-+---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``--fd``\ , ``--file-descriptor``     | ``LITESTAR_FILE_DESCRIPTOR``    | Bind to a socket from this file descriptor.                    |
-+---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``--uds``\ , ``--unix-domain-socket`` | ``LITESTAR_UNIX_DOMAIN_SOCKET`` | Bind to a UNIX domain socket.                                  |
-+---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``-d``\ ,``--debug``                  | ``LITESTAR_DEBUG``              | Run the application in debug mode                              |
-+---------------------------------------+---------------------------------+----------------------------------------------------------------+
-| ``--pdb``\ , ``--use_pdb``            | ``LITESTAR_PDB``                | Drop into the Python debugger when an exception occurs         |
-+---------------------------------------+---------------------------------+----------------------------------------------------------------+
-
++-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
+| Flag                                      | Environment variable                         | Description                                                                      |
++===========================================+==============================================+==================================================================================+
+| ``-r``\ , ``--reload``                    | ``LITESTAR_RELOAD``                          | Reload the application when files in its directory are changed                   |
++-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
+| ``-R``\ , ``--reload-dir``                | ``LITESTAR_RELOAD_DIRS``                     | Specify directories to watch for reload.                                         |
++-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
+| ``-p``\ , ``--port``                      | ``LITESTAR_PORT``                            | Bind the server to this port [default: 8000]                                     |
++-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
+| ``--wc``\ , ``--web-concurrency``         | ``WEB_CONCURRENCY``                          | The number of concurrent web workers to start [default: 1]                       |
++-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
+| ``-H``\ , ``--host``                      | ``LITESTAR_HOST``                            | Bind the server to this host [default: 127.0.0.1]                                |
++-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
+| ``--fd``\ , ``--file-descriptor``         | ``LITESTAR_FILE_DESCRIPTOR``                 | Bind to a socket from this file descriptor.                                      |
++-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
+| ``--uds``\ , ``--unix-domain-socket``     | ``LITESTAR_UNIX_DOMAIN_SOCKET``              | Bind to a UNIX domain socket.                                                    |
++-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
+| ``-d``\ , ``--debug``                     | ``LITESTAR_DEBUG``                           | Run the application in debug mode                                                |
++-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
+| ``--pdb``\ , ``--use_pdb``                | ``LITESTAR_PDB``                             | Drop into the Python debugger when an exception occurs                           |
++-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
+| ``--ssl-certfile``                        | ``LITESTAR_SSL_CERT_PATH``                   | Path to a SSL certificate file                                                   |
++-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
+| ``--ssl-keyfile``                         | ``LITESTAR_SSL_KEY_PATH``                    | Path to the private key to the SSL certificate                                   |
++-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
+| ``--create-self-signed-cert``             | ``LITESTAR_CREATE_SELF_SIGNED_CERT``         | If the SSL certificate and key are not found, generate a self-signed certificate |
++-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
 
 --reload-dir
 ++++++++++++
@@ -137,6 +142,25 @@ To set multiple directories via an environment variable, use a comma-separated l
 .. code-block:: shell
 
    LITESTAR_RELOAD_DIRS=.,../other-library/src
+
+SSL
++++
+
+You can pass paths to an SSL certificate and it's private key to run the server using the HTTPS protocol:
+
+.. code-block:: shell
+
+   litestar run --ssl-certfile=certs/cert.pem --ssl-keyfile=certs/key.pem
+
+Both flags must be provided and both files must exist. These are then passed to ``uvicorn``.
+You can also use the  ``--create-self-signed-cert`` flag:
+
+.. code-block:: shell
+
+   litestar run --ssl-certfile=certs/cert.pem --ssl-keyfile=certs/key.pem --create-self-signed-cert
+
+This way, if the given files don't exist, a self-signed certificate and a passwordless key will be generated.
+If the files are found, they will be reused.
 
 info
 ^^^^

@@ -478,9 +478,7 @@ class Litestar(Router):
         return list(self.plugins.serialization)
 
     @staticmethod
-    def _get_default_plugins(plugins: list[PluginProtocol] | None = None) -> list[PluginProtocol]:
-        if plugins is None:
-            plugins = []
+    def _get_default_plugins(plugins: list[PluginProtocol]) -> list[PluginProtocol]:
         with suppress(MissingDependencyException):
             from litestar.contrib.pydantic import PydanticInitPlugin, PydanticPlugin, PydanticSchemaPlugin
 
