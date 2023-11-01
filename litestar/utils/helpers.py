@@ -82,7 +82,9 @@ def unwrap_partial(value: MaybePartial[T]) -> T:
     Returns:
         Callable
     """
-    return cast("T", value.func) if isinstance(value, partial) else value
+    from litestar.utils.sync import async_partial
+
+    return cast("T", value.func if isinstance(value, (partial, async_partial)) else value)
 
 
 def filter_cookies(local_cookies: Iterable[Cookie], layered_cookies: Iterable[Cookie]) -> list[Cookie]:

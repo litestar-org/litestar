@@ -48,9 +48,7 @@ class AsyncCallable(Generic[P, T]):
         self._parsed_signature: ParsedSignature | EmptyType = Empty
         self.is_method = ismethod(fn) or (callable(fn) and ismethod(fn.__call__))  # type: ignore
         self.num_expected_args = len(getfullargspec(fn).args) - (1 if self.is_method else 0)
-        self.ref = Ref[Callable[..., Awaitable[T]]](
-            fn if is_async_callable(fn) else async_partial(fn)  # pyright: ignore
-        )
+        self.ref = Ref[Callable[..., Awaitable[T]]](fn if is_async_callable(fn) else async_partial(fn))  # type: ignore
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
         """Proxy the wrapped function's call method.
@@ -84,25 +82,17 @@ class AsyncCallable(Generic[P, T]):
         self._parsed_signature = ParsedSignature.from_fn(unwrap_partial(self.ref.value), namespace)
 
 
-def async_partial(fn: Callable) -> Callable:
+class async_partial:  # noqa: N801
     """Wrap a given sync function making it async.
-
-    In difference to the :func:`asyncio.run_sync` function, it allows for passing kwargs.
-
-    Args:
-        fn: A sync callable to wrap.
-
-    Returns:
-        A wrapper
+    In difference to the :func:`anyio.run_sync` function, it allows for passing kwargs.
     """
 
-    async def wrapper(*args: Any, **kwargs: Any) -> Any:
-        applied_kwarg = partial(fn, **kwargs)
-        return await run_sync(applied_kwarg, *args)
+    def __init__(self, fn: Callable[P, T]) -> None:
+        self.func = fn
 
-    # this allows us to unwrap the partial later, so it's an important "hack".
-    wrapper.func = fn  # type: ignore
-    return wrapper
+    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
+        applied_kwarg = partial(self.func, **kwargs)
+        return await run_sync(applied_kwarg, *args)
 
 
 class AsyncIteratorWrapper(Generic[T]):

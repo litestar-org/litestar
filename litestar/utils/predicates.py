@@ -4,7 +4,6 @@ from asyncio import iscoroutinefunction
 from collections import defaultdict, deque
 from collections.abc import Iterable as CollectionsIterable
 from dataclasses import is_dataclass
-from functools import partial
 from inspect import isasyncgenfunction, isclass, isgeneratorfunction
 from typing import (
     TYPE_CHECKING,
@@ -39,6 +38,7 @@ from typing_extensions import (
 from litestar.constants import UNDEFINED_SENTINELS
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType, UnionTypes
+from litestar.utils.helpers import unwrap_partial
 from litestar.utils.typing import get_origin_or_inner_type
 
 if TYPE_CHECKING:
@@ -86,8 +86,7 @@ def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[
     Returns:
         Bool determining if type of ``value`` is an awaitable.
     """
-    while isinstance(value, partial):
-        value = value.func  # type: ignore[unreachable]
+    value = unwrap_partial(value)
 
     return iscoroutinefunction(value) or (
         callable(value) and iscoroutinefunction(value.__call__)  # type: ignore[operator]
