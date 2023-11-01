@@ -28,7 +28,8 @@ class CACHE_FOREVER:  # noqa: N801
 
 
 def default_cache_key_builder(request: Request[Any, Any, Any]) -> str:
-    """Given a request object, returns a cache key by combining the path with the sorted query params.
+    """Given a request object, returns a cache key by combining
+    the request method and path with the sorted query params.
 
     Args:
         request: request used to generate cache key.
