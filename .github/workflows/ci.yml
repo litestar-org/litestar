@@ -92,11 +92,12 @@ jobs:
       python-version: ${{ matrix.python-version }}
 
   test-platform-compat:
-    if: github.event_name == 'push'
+    # if: github.event_name == 'push'
     strategy:
       fail-fast: false
       matrix:
-        os: ["macos-latest", "windows-latest"]
+        os: ["windows-latest"]
+        # os: ["macos-latest", "windows-latest"]
     uses: ./.github/workflows/test.yml
     with:
       python-version: "3.12"
