@@ -116,11 +116,11 @@ def test_run_command(
 
     if web_concurrency is None:
         web_concurrency = 1
-
     elif set_in_env:
         monkeypatch.setenv("WEB_CONCURRENCY", str(web_concurrency))
     else:
         args.extend(["--web-concurrency", str(web_concurrency)])
+
     if reload_dir is not None:
         if set_in_env:
             monkeypatch.setenv("LITESTAR_RELOAD_DIRS", ",".join(reload_dir))
@@ -142,6 +142,8 @@ def test_run_command(
             f"{path.stem}:app",
             f"--host={host}",
             f"--port={port}",
+            "--ssl-certfile=None",
+            "--ssl-keyfile=None",
         ]
         if fd is not None:
             expected_args.append(f"--fd={fd}")
@@ -158,7 +160,14 @@ def test_run_command(
     else:
         mock_subprocess_run.assert_not_called()
         mock_uvicorn_run.assert_called_once_with(
-            app=f"{path.stem}:app", host=host, port=port, uds=uds, fd=fd, factory=False
+            app=f"{path.stem}:app",
+            host=host,
+            port=port,
+            uds=uds,
+            fd=fd,
+            factory=False,
+            ssl_certfile=None,
+            ssl_keyfile=None,
         )
 
     mock_show_app_info.assert_called_once()
@@ -190,7 +199,14 @@ def test_run_command_with_autodiscover_app_factory(
     assert result.exit_code == 0
 
     mock_uvicorn_run.assert_called_once_with(
-        app=f"{path.stem}:{factory_name}", host="127.0.0.1", port=8000, factory=True, uds=None, fd=None
+        app=f"{path.stem}:{factory_name}",
+        host="127.0.0.1",
+        port=8000,
+        factory=True,
+        uds=None,
+        fd=None,
+        ssl_certfile=None,
+        ssl_keyfile=None,
     )
 
 
@@ -205,7 +221,14 @@ def test_run_command_with_app_factory(
     assert result.exit_code == 0
 
     mock_uvicorn_run.assert_called_once_with(
-        app=str(app_path), host="127.0.0.1", port=8000, factory=True, uds=None, fd=None
+        app=str(app_path),
+        host="127.0.0.1",
+        port=8000,
+        factory=True,
+        uds=None,
+        fd=None,
+        ssl_certfile=None,
+        ssl_keyfile=None,
     )
 
 
