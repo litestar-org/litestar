@@ -1,11 +1,14 @@
 from typing import Any, Dict, List, Type, Union
 
 import pydantic as pydantic_v2
+import pytest
 from pydantic import v1 as pydantic_v1
+from typing_extensions import Annotated
 
 from litestar import post
 from litestar.contrib.pydantic.pydantic_dto_factory import PydanticDTO
-from litestar.params import Parameter
+from litestar.enums import RequestEncodingType
+from litestar.params import Body, Parameter
 from litestar.status_codes import HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 from tests.unit.test_contrib.test_pydantic.models import PydanticPerson, PydanticV1Person
@@ -13,14 +16,21 @@ from tests.unit.test_contrib.test_pydantic.models import PydanticPerson, Pydanti
 from . import PydanticVersion
 
 
-def test_pydantic_v1_validation_error_raises_400() -> None:
+@pytest.mark.parametrize(("meta",), [(None,), (Body(media_type=RequestEncodingType.URL_ENCODED),)])
+def test_pydantic_v1_validation_error_raises_400(meta: Any) -> None:
     class Model(pydantic_v1.BaseModel):
         foo: str = pydantic_v1.Field(max_length=2)
 
     ModelDTO = PydanticDTO[Model]
 
-    @post(dto=ModelDTO, signature_types=[Model])
-    def handler(data: Model) -> Model:
+    annotation: Any
+    if meta is not None:
+        annotation = Annotated[Model, meta]
+    else:
+        annotation = Model
+
+    @post(dto=ModelDTO, signature_namespace={"annotation": annotation})
+    def handler(data: annotation) -> Any:
         return data
 
     model_json = {"foo": "too long"}
@@ -36,21 +46,29 @@ def test_pydantic_v1_validation_error_raises_400() -> None:
     ]
 
     with create_test_client(route_handlers=handler) as client:
-        response = client.post("/", json=model_json)
+        kws = {"data": model_json} if meta else {"json": model_json}
+        response = client.post("/", **kws)  # type: ignore[arg-type]
         extra = response.json()["extra"]
 
         assert response.status_code == 400
         assert extra == expected_errors
 
 
-def test_pydantic_v2_validation_error_raises_400() -> None:
+@pytest.mark.parametrize(("meta",), [(None,), (Body(media_type=RequestEncodingType.URL_ENCODED),)])
+def test_pydantic_v2_validation_error_raises_400(meta: Any) -> None:
     class Model(pydantic_v2.BaseModel):
         foo: str = pydantic_v2.Field(max_length=2)
 
     ModelDTO = PydanticDTO[Model]
 
-    @post(dto=ModelDTO, signature_types=[Model])
-    def handler(data: Model) -> Model:
+    annotation: Any
+    if meta is not None:
+        annotation = Annotated[Model, meta]
+    else:
+        annotation = Model
+
+    @post(dto=ModelDTO, signature_namespace={"annotation": annotation})
+    def handler(data: annotation) -> Any:
         return data
 
     model_json = {"foo": "too long"}
@@ -67,7 +85,8 @@ def test_pydantic_v2_validation_error_raises_400() -> None:
     ]
 
     with create_test_client(route_handlers=handler) as client:
-        response = client.post("/", json=model_json)
+        kws = {"data": model_json} if meta else {"json": model_json}
+        response = client.post("/", **kws)  # type: ignore[arg-type]
 
         extra = response.json()["extra"]
         extra[0].pop("url")
