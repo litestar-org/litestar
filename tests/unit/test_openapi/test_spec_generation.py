@@ -4,7 +4,7 @@ import pytest
 from msgspec import Struct
 
 from litestar import post
-from litestar._openapi.schema_generation.utils import normalize_type_name
+from litestar._openapi.schema_generation.utils import _get_normalized_schema_key
 from litestar.testing import create_test_client
 from tests.models import DataclassPerson, MsgSpecStructPerson, TypedDictPerson
 
@@ -18,7 +18,7 @@ def test_spec_generation(cls: Any) -> None:
     with create_test_client(handler) as client:
         schema = client.app.openapi_schema
         assert schema
-        schema_key = normalize_type_name(str(cls))
+        schema_key = _get_normalized_schema_key(str(cls))
 
         assert schema.to_schema()["components"]["schemas"][schema_key] == {
             "properties": {
@@ -36,7 +36,10 @@ def test_spec_generation(cls: Any) -> None:
                 "pets": {
                     "oneOf": [
                         {"type": "null"},
-                        {"items": {"$ref": "#/components/schemas/DataclassPet"}, "type": "array"},
+                        {
+                            "items": {"$ref": "#/components/schemas/_class__tests_models_DataclassPet__"},
+                            "type": "array",
+                        },
                     ]
                 },
             },

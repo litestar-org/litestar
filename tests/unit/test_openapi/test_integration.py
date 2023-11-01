@@ -227,7 +227,6 @@ def test_with_generic_class() -> None:
         ),
     ) as client:
         response = client.get("/schema/openapi.json")
-
         assert response.status_code == HTTP_200_OK
         assert response.json() == {
             "info": {"title": "Example API", "version": "1.0.0"},
@@ -242,7 +241,13 @@ def test_with_generic_class() -> None:
                             "200": {
                                 "description": "Request fulfilled, document follows",
                                 "headers": {},
-                                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo[str]"}}},
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/tests_unit_test_openapi_test_integration_Foo_str_"
+                                        }
+                                    }
+                                },
                             }
                         },
                         "deprecated": False,
@@ -256,7 +261,13 @@ def test_with_generic_class() -> None:
                             "200": {
                                 "description": "Request fulfilled, document follows",
                                 "headers": {},
-                                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo[int]"}}},
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/tests_unit_test_openapi_test_integration_Foo_int_"
+                                        }
+                                    }
+                                },
                             }
                         },
                         "deprecated": False,
@@ -265,13 +276,13 @@ def test_with_generic_class() -> None:
             },
             "components": {
                 "schemas": {
-                    "Foo[str]": {
+                    "tests_unit_test_openapi_test_integration_Foo_str_": {
                         "properties": {"foo": {"type": "string"}},
                         "type": "object",
                         "required": ["foo"],
                         "title": "Foo[str]",
                     },
-                    "Foo[int]": {
+                    "tests_unit_test_openapi_test_integration_Foo_int_": {
                         "properties": {"foo": {"type": "integer"}},
                         "type": "object",
                         "required": ["foo"],

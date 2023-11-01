@@ -43,10 +43,10 @@ from litestar._openapi.schema_generation.constrained_fields import (
     create_string_constrained_field_schema,
 )
 from litestar._openapi.schema_generation.utils import (
+    _get_normalized_schema_key,
     _should_create_enum_schema,
     _should_create_literal_schema,
     _type_or_first_not_none_inner_type,
-    normalize_type_name,
 )
 from litestar.datastructures import UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
@@ -646,7 +646,7 @@ class SchemaCreator:
 
             schema.examples = create_examples_for_field(field)
         if schema.title and schema.type in (OpenAPIType.OBJECT, OpenAPIType.ARRAY):
-            class_name = normalize_type_name(str(field.annotation))
+            class_name = _get_normalized_schema_key(str(field.annotation))
 
             if class_name in self.schemas:
                 return Reference(ref=f"#/components/schemas/{class_name}", description=schema.description)

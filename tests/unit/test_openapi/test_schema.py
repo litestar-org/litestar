@@ -27,9 +27,8 @@ from litestar import Controller, MediaType, get
 from litestar._openapi.schema_generation.schema import (
     KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     SchemaCreator,
-    _get_type_schema_name,
 )
-from litestar._openapi.schema_generation.utils import _type_or_first_not_none_inner_type
+from litestar._openapi.schema_generation.utils import _get_normalized_schema_key, _type_or_first_not_none_inner_type
 from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.di import Provide
 from litestar.enums import ParamType
@@ -37,7 +36,7 @@ from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.schema import Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
-from litestar.params import BodyKwarg, Parameter, ParameterKwarg
+from litestar.params import Parameter, ParameterKwarg
 from litestar.testing import create_test_client
 from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
@@ -81,22 +80,45 @@ def test_process_schema_result() -> None:
         assert getattr(schema, schema_key) == getattr(kwarg_definition, signature_key)
 
 
-def test_type_name_normalization() -> None:
+def test_get_normalized_schema_key() -> None:
     class LocalClass(msgspec.Struct):
         id: str
 
     assert (
-        "_class__tests_unit_test_openapi_test_schema_test_type_name_normalization__locals__LocalClass__"
-        == normalize_type_name(str(LocalClass))
+        "_class__tests_unit_test_openapi_test_schema_test_get_normalized_schema_key__locals__LocalClass__"
+        == _get_normalized_schema_key(str(LocalClass))
     )
 
-    assert "_class__tests_PydanticPerson__" == normalize_type_name(str(PydanticPerson))
+    assert "_class__tests_models_DataclassPerson__" == _get_normalized_schema_key(str(DataclassPerson))
 
-    builtin_dict = dict[str, List[int]]
-    assert "dict_str__typing_List_int__" == normalize_type_name(str(builtin_dict))
+    builtin_dict = Dict[str, List[int]]
+    assert "typing_Dict_str__typing_List_int__" == _get_normalized_schema_key(str(builtin_dict))
 
-    builtin_with_custom = dict[str, PydanticPerson]
-    assert "dict_str__tests_PydanticPerson_" == normalize_type_name(str(builtin_with_custom))
+    builtin_with_custom = Dict[str, DataclassPerson]
+    assert "typing_Dict_str__tests_models_DataclassPerson_" == _get_normalized_schema_key(str(builtin_with_custom))
+
+    class LocalGeneric(Generic[T]):
+        pass
+
+    assert (
+        "_class__tests_unit_test_openapi_test_schema_test_get_normalized_schema_key__locals__LocalGeneric__"
+        == _get_normalized_schema_key(str(LocalGeneric))
+    )
+
+    generic_int = LocalGeneric[int]
+    generic_str = LocalGeneric[str]
+
+    assert (
+        "tests_unit_test_openapi_test_schema_test_get_normalized_schema_key__locals__LocalGeneric_int_"
+        == _get_normalized_schema_key(str(generic_int))
+    )
+
+    assert (
+        "tests_unit_test_openapi_test_schema_test_get_normalized_schema_key__locals__LocalGeneric_str_"
+        == _get_normalized_schema_key(str(generic_str))
+    )
+
+    assert _get_normalized_schema_key(str(generic_int)) != _get_normalized_schema_key(str(generic_str))
 
 
 def test_dependency_schema_generation() -> None:
@@ -201,17 +223,10 @@ def test_title_validation() -> None:
     schema_creator = SchemaCreator(schemas=schemas)
 
     schema_creator.for_field_definition(FieldDefinition.from_kwarg(name="Person", annotation=DataclassPerson))
-    assert schemas.get("DataclassPerson")
+    assert schemas.get("_class__tests_models_DataclassPerson__")
 
     schema_creator.for_field_definition(FieldDefinition.from_kwarg(name="Pet", annotation=DataclassPet))
-    assert schemas.get("DataclassPet")
-
-    with pytest.raises(ImproperlyConfiguredException):
-        schema_creator.for_field_definition(
-            FieldDefinition.from_kwarg(
-                name="DataclassPerson", annotation=DataclassPet, kwarg_definition=BodyKwarg(title="DataclassPerson")
-            )
-        )
+    assert schemas.get("_class__tests_models_DataclassPet__")
 
 
 @pytest.mark.parametrize("with_future_annotations", [True, False])
@@ -232,7 +247,7 @@ class Foo:
     )
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas).for_field_definition(FieldDefinition.from_annotation(module.Foo))
-    schema_key = normalize_type_name(str(module.Foo))
+    schema_key = _get_normalized_schema_key(str(module.Foo))
     schema = schemas[schema_key]
     assert schema.properties and "foo" in schema.properties
 
@@ -256,7 +271,7 @@ class Foo(TypedDict):
     )
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas).for_field_definition(FieldDefinition.from_annotation(module.Foo))
-    schema_key = normalize_type_name(str(module.Foo))
+    schema_key = _get_normalized_schema_key(str(module.Foo))
     schema = schemas[schema_key]
     assert schema.properties and all(key in schema.properties for key in ("foo", "bar", "baz"))
 
@@ -355,8 +370,8 @@ def test_schema_generation_with_generic_classes(cls: Any) -> None:
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas).for_field_definition(field_definition)
 
-    name = _get_type_schema_name(field_definition)
-    properties = schemas[name].properties
+    path_name = _get_normalized_schema_key(str(cls))
+    properties = schemas[path_name].properties
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
     expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.NULL), Schema(type=OpenAPIType.INTEGER)])
 
@@ -386,8 +401,7 @@ def test_schema_generation_with_generic_classes_constrained() -> None:
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas).for_field_definition(field_definition)
 
-    name = _get_type_schema_name(field_definition)
-    properties = schemas[name].properties
+    properties = schemas["_class__tests_unit_test_openapi_test_schema_ConstrainedGenericDataclass__"].properties
 
     assert properties
     assert properties["bound"] == Schema(type=OpenAPIType.INTEGER)
@@ -415,8 +429,8 @@ def test_schema_generation_with_pagination(annotation: Any) -> None:
     field_definition = FieldDefinition.from_annotation(annotation)
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas).for_field_definition(field_definition)
-    name = _get_type_schema_name(field_definition.inner_types[-1])
-    properties = schemas[name].properties
+    schema_key = _get_normalized_schema_key(str(field_definition.inner_types[-1].annotation))
+    properties = schemas[str(schema_key)].properties
 
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
     expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.NULL), Schema(type=OpenAPIType.INTEGER)])
