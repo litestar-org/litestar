@@ -28,7 +28,6 @@ from litestar.exceptions import (
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
 from litestar.middleware.cors import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
-from litestar.openapi.spec.components import Components
 from litestar.plugins import (
     CLIPluginProtocol,
     InitPluginProtocol,
@@ -826,14 +825,6 @@ class Litestar(Router):
 
         operation_ids: list[str] = []
 
-        if not self._openapi_schema.components:
-            self._openapi_schema.components = Components()
-            schemas = self._openapi_schema.components.schemas = {}
-        elif not self._openapi_schema.components.schemas:
-            schemas = self._openapi_schema.components.schemas = {}
-        else:
-            schemas = {}
-
         for route in self.routes:
             if (
                 isinstance(route, HTTPRoute)
@@ -848,7 +839,7 @@ class Litestar(Router):
                     plugins=self.plugins.openapi,
                     use_handler_docstrings=self.openapi_config.use_handler_docstrings,
                     operation_id_creator=self.openapi_config.operation_id_creator,
-                    schemas=schemas,
+                    schemas=self._openapi_schema.components.schemas,
                 )
                 self._openapi_schema.paths[route.path_format or "/"] = path_item
 

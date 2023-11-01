@@ -111,7 +111,7 @@ def test_piccolo_dto_openapi_spec_generation() -> None:
         == "#/components/schemas/RetrieveVenuesVenueResponseBody"
     )
 
-    concert_schema = schema.components.schemas["CreateConcertConcertRequestBody"]  # type: ignore
+    concert_schema = schema.components.schemas["CreateConcertConcertRequestBody"]
     assert concert_schema
     assert concert_schema.to_schema() == {
         "properties": {
@@ -124,7 +124,7 @@ def test_piccolo_dto_openapi_spec_generation() -> None:
         "type": "object",
     }
 
-    record_studio_schema = schema.components.schemas["RetrieveStudioRecordingStudioResponseBody"]  # type: ignore
+    record_studio_schema = schema.components.schemas["RetrieveStudioRecordingStudioResponseBody"]
     assert record_studio_schema
     assert record_studio_schema.to_schema() == {
         "properties": {
@@ -138,7 +138,7 @@ def test_piccolo_dto_openapi_spec_generation() -> None:
         "type": "object",
     }
 
-    venue_schema = schema.components.schemas["RetrieveVenuesVenueResponseBody"]  # type: ignore
+    venue_schema = schema.components.schemas["RetrieveVenuesVenueResponseBody"]
     assert venue_schema
     assert venue_schema.to_schema() == {
         "properties": {
