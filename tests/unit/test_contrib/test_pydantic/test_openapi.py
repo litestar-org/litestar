@@ -531,7 +531,7 @@ def test_create_schema_for_pydantic_model_with_annotated_model_attribute(
         f"""
 {'from __future__ import annotations' if with_future_annotations else ''}
 from typing_extensions import Annotated
-{'from pydantic import BaseModel' if pydantic_version == '1' else 'from pydantic.v1 import BaseModel'}
+{'from pydantic import BaseModel' if pydantic_version == 'v1' else 'from pydantic.v1 import BaseModel'}
 
 class Foo(BaseModel):
     foo: Annotated[int, "Foo description"]
