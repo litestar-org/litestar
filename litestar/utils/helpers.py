@@ -5,6 +5,8 @@ from enum import Enum
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 from urllib.parse import quote
 
+from litestar.utils.typing import get_origin_or_inner_type
+
 if TYPE_CHECKING:
     from collections.abc import Container
     from typing import Iterable
@@ -34,8 +36,15 @@ def get_name(value: Any) -> str:
     Returns:
         A name string.
     """
-    if hasattr(value, "__name__"):
-        return cast("str", value.__name__)
+
+    name = getattr(value, "__name__", None)
+    if name is not None:
+        return cast("str", name)
+
+    # On Python 3.8 and 3.9, Foo[int] does not have the __name__ attribute.
+    if origin := get_origin_or_inner_type(value):
+        return cast("str", origin.__name__)
+
     return type(value).__name__
 
 

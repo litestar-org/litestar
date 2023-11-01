@@ -37,7 +37,7 @@ from typing import (
     cast,
 )
 
-from typing_extensions import Annotated, NotRequired, Required, TypeGuard, get_args, get_origin
+from typing_extensions import Annotated, NotRequired, Required, TypeGuard, get_args, get_origin, get_type_hints
 
 from litestar.types.builtin_types import NoneType, UnionTypes
 
@@ -276,3 +276,53 @@ def get_instantiable_origin(origin_type: Any, annotation: Any) -> Any:
     if origin_type is None:
         return instantiable_type_mapping.get(annotation)
     return instantiable_type_mapping.get(origin_type, origin_type)
+
+
+def get_type_hints_with_generics_resolved(
+    annotation: Any,
+    globalns: dict[str, Any] | None = None,
+    localns: dict[str, Any] | None = None,
+    include_extras: bool = False,
+) -> dict[str, Any]:
+    """Get the type hints for the given object after resolving the generic types as much as possible.
+
+    Args:
+        annotation: A type annotation.
+        globalns: The global namespace.
+        localns: The local namespace.
+        include_extras: A flag indicating whether to include the ``Annotated[T, ...]`` or not.
+    """
+    origin = get_origin(annotation)
+
+    if origin is None:
+        # Implies the generic types have not been specified in the annotation
+        type_hints = get_type_hints(annotation, globalns=globalns, localns=localns, include_extras=include_extras)
+        typevar_map = {p: p for p in annotation.__parameters__}
+    else:
+        type_hints = get_type_hints(origin, globalns=globalns, localns=localns, include_extras=include_extras)
+        # the __parameters__ is only available on the origin itself and not the annotation
+        typevar_map = dict(zip(origin.__parameters__, get_args(annotation)))
+
+    return {n: _substitute_typevars(type_, typevar_map) for n, type_ in type_hints.items()}
+
+
+def _substitute_typevars(obj: Any, typevar_map: Mapping[Any, Any]) -> Any:
+    if params := getattr(obj, "__parameters__", None):
+        args = tuple(_substitute_typevars(typevar_map.get(p, p), typevar_map) for p in params)
+        return obj[args]
+
+    if isinstance(obj, TypeVar):
+        # If there's a mapped type for the TypeVar already, then it should be returned instead
+        # of considering __constraints__ or __bound__. For a generic `Foo[T]`, if Foo[int] is given
+        # then int should be returned and if `Foo` is given then the __bounds__ and __constraints__
+        # should be considered.
+        if (type_ := typevar_map.get(obj, None)) is not None and not isinstance(type_, TypeVar):
+            return type_
+
+        if obj.__bound__ is not None:
+            return obj.__bound__
+
+        if obj.__constraints__:
+            return Union[obj.__constraints__]  # pyright: ignore
+
+    return obj

@@ -36,6 +36,8 @@ class OpenAPIController(Controller):
     """SwaggerUI version to download from the CDN."""
     stoplight_elements_version: str = "7.7.18"
     """StopLight Elements version to download from the CDN."""
+    rapidoc_version: str = "9.3.4"
+    """RapiDoc version to download from the CDN."""
     favicon_url: str = ""
     """URL to download a favicon from."""
     redoc_google_fonts: bool = True
@@ -55,6 +57,13 @@ class OpenAPIController(Controller):
         f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui-standalone-preset.js"
     )
     """Download url for the Swagger Standalone Preset JS bundle."""
+    swagger_ui_init_oauth: dict[Any, Any] | bytes = {}
+    """
+    JSON to initialize Swagger UI OAuth2 by calling the `initOAuth` method.
+
+    Refer to the following URL for details:
+    `Swagger-UI <https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/>`_.
+    """
     stoplight_elements_css_url: str = (
         f"https://unpkg.com/@stoplight/elements@{stoplight_elements_version}/styles.min.css"
     )
@@ -63,6 +72,8 @@ class OpenAPIController(Controller):
         f"https://unpkg.com/@stoplight/elements@{stoplight_elements_version}/web-components.min.js"
     )
     """Download url for the Stoplight Elements JS bundle."""
+    rapidoc_js_url: str = f"https://unpkg.com/rapidoc@{rapidoc_version}/dist/rapidoc-min.js"
+    """Download url for the RapiDoc JS bundle."""
 
     # internal
     _dumped_json_schema: str = ""
@@ -121,7 +132,9 @@ class OpenAPIController(Controller):
         return f"<link rel='icon' type='image/x-icon' href='{self.favicon_url}'>" if self.favicon_url else "<meta/>"
 
     @cached_property
-    def render_methods_map(self) -> dict[Literal["redoc", "swagger", "elements"], Callable[[Request], bytes]]:
+    def render_methods_map(
+        self,
+    ) -> dict[Literal["redoc", "swagger", "elements", "rapidoc"], Callable[[Request], bytes]]:
         """Map render method names to render methods.
 
         Returns:
@@ -131,6 +144,7 @@ class OpenAPIController(Controller):
             "redoc": self.render_redoc,
             "swagger": self.render_swagger_ui,
             "elements": self.render_stoplight_elements,
+            "rapidoc": self.render_rapidoc,
         }
 
     @get(
@@ -247,6 +261,120 @@ class OpenAPIController(Controller):
             return ASGIResponse(body=self.render_redoc(request), media_type=MediaType.HTML)
         return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
+    @get(path="/rapidoc", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
+    def rapidoc(self, request: Request[Any, Any, Any]) -> ASGIResponse:
+        if self.should_serve_endpoint(request):
+            return ASGIResponse(body=self.render_rapidoc(request), media_type=MediaType.HTML)
+        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+
+    @get(path="/oauth2-redirect.html", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
+    def swagger_ui_oauth2_redirect(self, request: Request[Any, Any, Any]) -> ASGIResponse:  # pragma: no cover
+        """Route handler responsible for rendering oauth2-redirect.html page for Swagger-UI.
+
+        Args:
+            request:
+                A :class:`Request <.connection.Request>` instance.
+
+        Returns:
+            A response with a rendered oauth2-redirect.html page for Swagger-UI.
+        """
+        if self.should_serve_endpoint(request):
+            return ASGIResponse(body=self.render_swagger_ui_oauth2_redirect(request), media_type=MediaType.HTML)
+        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+
+    def render_swagger_ui_oauth2_redirect(self, request: Request[Any, Any, Any]) -> bytes:
+        """Render an HTML oauth2-redirect.html page for Swagger-UI.
+
+        Notes:
+            - override this method to customize the template.
+
+        Args:
+            request:
+                A :class:`Request <.connection.Request>` instance.
+
+        Returns:
+            A rendered html string.
+        """
+        return rb"""<!doctype html>
+        <html lang="en-US">
+        <head>
+            <title>Swagger UI: OAuth2 Redirect</title>
+        </head>
+        <body>
+        <script>
+            'use strict';
+            function run () {
+                var oauth2 = window.opener.swaggerUIRedirectOauth2;
+                var sentState = oauth2.state;
+                var redirectUrl = oauth2.redirectUrl;
+                var isValid, qp, arr;
+
+                if (/code|token|error/.test(window.location.hash)) {
+                    qp = window.location.hash.substring(1).replace('?', '&');
+                } else {
+                    qp = location.search.substring(1);
+                }
+
+                arr = qp.split("&");
+                arr.forEach(function (v,i,_arr) { _arr[i] = '"' + v.replace('=', '":"') + '"';});
+                qp = qp ? JSON.parse('{' + arr.join() + '}',
+                        function (key, value) {
+                            return key === "" ? value : decodeURIComponent(value);
+                        }
+                ) : {};
+
+                isValid = qp.state === sentState;
+
+                if ((
+                oauth2.auth.schema.get("flow") === "accessCode" ||
+                oauth2.auth.schema.get("flow") === "authorizationCode" ||
+                oauth2.auth.schema.get("flow") === "authorization_code"
+                ) && !oauth2.auth.code) {
+                    if (!isValid) {
+                        oauth2.errCb({
+                            authId: oauth2.auth.name,
+                            source: "auth",
+                            level: "warning",
+                            message: "Authorization may be unsafe, passed state was changed in server. The passed state wasn't returned from auth server."
+                        });
+                    }
+
+                    if (qp.code) {
+                        delete oauth2.state;
+                        oauth2.auth.code = qp.code;
+                        oauth2.callback({auth: oauth2.auth, redirectUrl: redirectUrl});
+                    } else {
+                        let oauthErrorMsg;
+                        if (qp.error) {
+                            oauthErrorMsg = "["+qp.error+"]: " +
+                                (qp.error_description ? qp.error_description+ ". " : "no accessCode received from the server. ") +
+                                (qp.error_uri ? "More info: "+qp.error_uri : "");
+                        }
+
+                        oauth2.errCb({
+                            authId: oauth2.auth.name,
+                            source: "auth",
+                            level: "error",
+                            message: oauthErrorMsg || "[Authorization failed]: no accessCode received from the server."
+                        });
+                    }
+                } else {
+                    oauth2.callback({auth: oauth2.auth, token: qp, isValid: isValid, redirectUrl: redirectUrl});
+                }
+                window.close();
+            }
+
+            if (document.readyState !== 'loading') {
+                run();
+            } else {
+                document.addEventListener('DOMContentLoaded', function () {
+                    run();
+                });
+            }
+        </script>
+        </body>
+        </html>"""
+
     def render_swagger_ui(self, request: Request[Any, Any, Any]) -> bytes:
         """Render an HTML page for Swagger-UI.
 
@@ -290,6 +418,7 @@ class OpenAPIController(Controller):
                     SwaggerUIBundle.SwaggerUIStandalonePreset
                 ],
             }})
+            ui.initOAuth({encode_json(self.swagger_ui_init_oauth).decode('utf-8')})
             </script>
           </body>
         """
@@ -335,6 +464,34 @@ class OpenAPIController(Controller):
                 router="hash"
                 layout="sidebar"
             />
+          </body>
+        """
+
+        return f"""
+        <!DOCTYPE html>
+            <html>
+                {head}
+                {body}
+            </html>
+        """.encode()
+
+    def render_rapidoc(self, request: Request[Any, Any, Any]) -> bytes:  # pragma: no cover
+        schema = self.get_schema_from_request(request)
+
+        head = f"""
+          <head>
+            <title>{schema.info.title}</title>
+            {self.favicon}
+            <meta charset="utf-8"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <script src="{self.rapidoc_js_url}" crossorigin></script>
+            <style>{self.style}</style>
+          </head>
+        """
+
+        body = f"""
+          <body>
+            <rapi-doc spec-url="{self.path}/openapi.json" />
           </body>
         """
 

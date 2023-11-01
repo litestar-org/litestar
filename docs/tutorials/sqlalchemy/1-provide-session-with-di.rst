@@ -1,6 +1,7 @@
 Providing the session with DI
 -----------------------------
 
+
 In our original script, we had to repeat the logic to construct a session instance for every request type. This is not
 very `DRY <https://en.wikipedia.org/wiki/Don%27t_repeat_yourself>`_.
 
@@ -10,7 +11,7 @@ handlers.
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
     :language: python
     :linenos:
-    :emphasize-lines: 46-55,81-82,86-88,93-94,102
+    :emphasize-lines: 49-58,84-86,89-91,96-97,105
 
 In the previous example, the database session is created within each HTTP route handler function. In this script we use
 dependency injection to decouple creation of the session from the route handlers.
@@ -21,14 +22,14 @@ session, begins a transaction, and handles any integrity errors that might raise
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
     :language: python
     :linenos:
-    :lines: 45-56
+    :lines: 49-59
 
 That function is declared as a dependency to the Litestar application, using the name ``transaction``.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
     :language: python
     :linenos:
-    :lines: 99-103
+    :lines: 101-106
     :emphasize-lines: 3
 
 In the route handlers, the database session is injected by declaring the ``transaction`` name as a function argument.
@@ -38,7 +39,7 @@ This is automatically provided by Litestar's dependency injection system at runt
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
     :language: python
     :linenos:
-    :lines: 79-83
+    :lines: 82-85
     :emphasize-lines: 2
 
 One final improvement in this script is exception handling. In the previous version, a
@@ -49,7 +50,7 @@ to occur inside the ``provide_transaction()`` function.
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
     :language: python
     :linenos:
-    :lines: 45-56
+    :lines: 48-58
     :emphasize-lines: 3,6-10
 
 This change broadens the scope of exception handling to any operation that uses the database session, not just the
@@ -68,14 +69,14 @@ session object:
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
             :language: python
             :linenos:
-            :lines: 79-98
+            :lines: 82-106
 
    .. tab-item:: Before
 
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
             :language: python
             :linenos:
-            :lines: 67-98
+            :lines: 70-101
 
 Much better!
 

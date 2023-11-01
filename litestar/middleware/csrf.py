@@ -6,6 +6,7 @@ import secrets
 from secrets import compare_digest
 from typing import TYPE_CHECKING, Any
 
+from litestar.constants import SCOPE_STATE_CSRF_TOKEN_KEY
 from litestar.datastructures import MutableScopeHeaders
 from litestar.datastructures.cookie import Cookie
 from litestar.enums import RequestEncodingType, ScopeType
@@ -15,9 +16,7 @@ from litestar.middleware._utils import (
     should_bypass_middleware,
 )
 from litestar.middleware.base import MiddlewareProtocol
-
-__all__ = ("CSRFMiddleware",)
-
+from litestar.utils import set_litestar_scope_state
 
 if TYPE_CHECKING:
     from litestar.config.csrf import CSRFConfig
@@ -31,6 +30,9 @@ if TYPE_CHECKING:
         Scopes,
         Send,
     )
+
+__all__ = ("CSRFMiddleware",)
+
 
 CSRF_SECRET_BYTES = 32
 CSRF_SECRET_LENGTH = CSRF_SECRET_BYTES * 2
@@ -115,10 +117,11 @@ class CSRFMiddleware(MiddlewareProtocol):
             exclude_opt_key=self.config.exclude_from_csrf_key,
             exclude_path_pattern=self.exclude,
         ):
-            token = scope["_csrf_token"] = csrf_cookie or generate_csrf_token(secret=self.config.secret)  # type: ignore
+            token = csrf_cookie or generate_csrf_token(secret=self.config.secret)
+            set_litestar_scope_state(scope=scope, key=SCOPE_STATE_CSRF_TOKEN_KEY, value=token)
             await self.app(scope, receive, self.create_send_wrapper(send=send, csrf_cookie=csrf_cookie, token=token))
         elif self._csrf_tokens_match(existing_csrf_token, csrf_cookie):
-            scope["_csrf_token"] = existing_csrf_token  # type: ignore
+            set_litestar_scope_state(scope=scope, key=SCOPE_STATE_CSRF_TOKEN_KEY, value=existing_csrf_token)
             await self.app(scope, receive, send)
         else:
             raise PermissionDeniedException("CSRF token verification failed")

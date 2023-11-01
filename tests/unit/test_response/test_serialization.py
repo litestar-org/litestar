@@ -1,28 +1,17 @@
 import enum
-from json import loads
-from pathlib import Path, PurePath
-from typing import Any, Dict, List
+from pathlib import Path, PurePath, PureWindowsPath
+from typing import Any, Callable, cast
 
 import msgspec
 import pytest
-from pydantic import SecretStr
+from pytest import FixtureRequest
 
 from litestar import MediaType, Response
-from litestar.contrib.pydantic import PydanticInitPlugin, _model_dump
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import get_serializer
-from tests import (
-    MsgSpecStructPerson,
-    PydanticDataClassPerson,
-    PydanticPerson,
-    PydanticPersonFactory,
-    VanillaDataClassPerson,
-)
+from tests.models import DataclassPersonFactory, MsgSpecStructPerson
 
-person = PydanticPersonFactory.build()
-secret = SecretStr("secret_text")
-pure_path = PurePath("/path/to/file")
-path = Path("/path/to/file")
+person = DataclassPersonFactory.build()
 
 
 class _TestEnum(enum.Enum):
@@ -30,42 +19,47 @@ class _TestEnum(enum.Enum):
     B = "beta"
 
 
-@pytest.mark.parametrize("media_type", [MediaType.JSON, MediaType.MESSAGEPACK])
-@pytest.mark.parametrize(
-    "content, response_type",
-    [
-        [person, PydanticPerson],
-        [{"key": 123}, Dict[str, int]],
-        [[{"key": 123}], List[Dict[str, int]]],
-        [VanillaDataClassPerson(**_model_dump(person)), VanillaDataClassPerson],
-        [PydanticDataClassPerson(**_model_dump(person)), PydanticDataClassPerson],
-        [MsgSpecStructPerson(**_model_dump(person)), MsgSpecStructPerson],
-        [{"enum": _TestEnum.A}, Dict[str, _TestEnum]],
-        [{"secret": secret}, Dict[str, SecretStr]],
-        [{"pure_path": pure_path}, Dict[str, PurePath]],
-        [{"path": path}, Dict[str, PurePath]],
-    ],
-)
-def test_response_serialization_structured_types(content: Any, response_type: Any, media_type: MediaType) -> None:
-    encoded = Response(None).render(
-        content, media_type=media_type, enc_hook=get_serializer(type_encoders=PydanticInitPlugin.encoders())
-    )
-    if media_type == media_type.JSON:
-        value = loads(encoded)
-    else:
-        value = msgspec.msgpack.decode(encoded)
-    if isinstance(value, dict) and "enum" in value:
-        assert content.__class__(**value)["enum"] == content["enum"].value
-    elif isinstance(value, dict) and "secret" in value:
-        assert content.__class__(**value)["secret"] == str(content["secret"])
-    elif isinstance(value, dict) and "pure_path" in value:
-        assert content.__class__(**value)["pure_path"] == str(content["pure_path"])
-    elif isinstance(value, dict) and "path" in value:
-        assert content.__class__(**value)["path"] == str(content["path"])
-    elif isinstance(value, dict):
-        assert content.__class__(**value) == content
-    else:
-        assert [content[0].__class__(**value[0])] == content
+@pytest.fixture(params=[MediaType.JSON, MediaType.MESSAGEPACK])
+def media_type(request: FixtureRequest) -> MediaType:
+    return cast(MediaType, request.param)
+
+
+DecodeMediaType = Callable[[Any], Any]
+
+
+@pytest.fixture()
+def decode_media_type(media_type: MediaType) -> DecodeMediaType:
+    if media_type == MediaType.JSON:
+        return msgspec.json.decode
+    return msgspec.msgpack.decode
+
+
+def test_dataclass(media_type: MediaType, decode_media_type: DecodeMediaType) -> None:
+    encoded = Response(None).render(person, media_type=media_type)
+    assert decode_media_type(encoded) == msgspec.to_builtins(person)
+
+
+def test_struct(media_type: MediaType, decode_media_type: DecodeMediaType) -> None:
+    encoded = Response(None).render(MsgSpecStructPerson(**msgspec.to_builtins(person)), media_type=media_type)
+    assert decode_media_type(encoded) == msgspec.to_builtins(person)
+
+
+@pytest.mark.parametrize("content", [{"value": 1}, [{"value": 1}]])
+def test_dict(media_type: MediaType, decode_media_type: DecodeMediaType, content: Any) -> None:
+    encoded = Response(None).render(content, media_type=media_type)
+    assert decode_media_type(encoded) == content
+
+
+def test_enum(media_type: MediaType, decode_media_type: DecodeMediaType) -> None:
+    encoded = Response(None).render({"value": _TestEnum.A}, media_type=media_type)
+    assert decode_media_type(encoded) == {"value": _TestEnum.A.value}
+
+
+@pytest.mark.parametrize("path", [PurePath("/path/to/file"), Path("/path/to/file")])
+def test_path(media_type: MediaType, decode_media_type: DecodeMediaType, path: Path) -> None:
+    encoded = Response(None).render({"value": path}, media_type=media_type)
+    expected = r"\path\to\file" if isinstance(path, PureWindowsPath) else "/path/to/file"
+    assert decode_media_type(encoded) == {"value": expected}
 
 
 @pytest.mark.parametrize(

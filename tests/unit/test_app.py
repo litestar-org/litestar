@@ -9,10 +9,9 @@ from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest
 from click import Group
-from pydantic import VERSION
 from pytest import MonkeyPatch
 
-from litestar import Litestar, MediaType, Request, Response, get, post
+from litestar import Litestar, MediaType, Request, Response, get
 from litestar.config.app import AppConfig
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
@@ -29,7 +28,6 @@ from litestar.plugins import CLIPluginProtocol
 from litestar.router import Router
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
-from tests import PydanticPerson
 
 if TYPE_CHECKING:
     from typing import Dict
@@ -242,18 +240,6 @@ def test_before_send() -> None:
         response = client.get("/test")
         assert response.status_code == HTTP_200_OK
         assert response.headers.get("My Header") == "value injected during send"
-
-
-def test_default_handling_of_pydantic_errors() -> None:
-    @post("/{param:int}")
-    def my_route_handler(param: int, data: PydanticPerson) -> None:
-        ...
-
-    with create_test_client(my_route_handler) as client:
-        response = client.post("/123", json={"first_name": "moishe"})
-        extra = response.json().get("extra")
-        assert extra is not None
-        assert 3 if len(extra) == VERSION.startswith("1") else 4
 
 
 def test_using_custom_http_exception_handler() -> None:

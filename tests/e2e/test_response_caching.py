@@ -8,19 +8,18 @@ from uuid import uuid4
 import msgspec
 import pytest
 
-from litestar import Litestar, Request, get
+from litestar import Litestar, Request, Response, get, post
 from litestar.config.compression import CompressionConfig
 from litestar.config.response_cache import CACHE_FOREVER, ResponseCacheConfig
 from litestar.enums import CompressionEncoding
 from litestar.middleware.response_cache import ResponseCacheMiddleware
+from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.stores.base import Store
 from litestar.stores.memory import MemoryStore
 from litestar.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
     from time_machine import Coordinates
-
-    from litestar import Response
 
 
 @pytest.fixture()
@@ -112,9 +111,9 @@ def test_default_expiration_none(
         client.get("/cached")
 
     if expected_expiration is None:
-        assert memory_store._store["/cached"].expires_at is None
+        assert memory_store._store["GET/cached"].expires_at is None
     else:
-        assert memory_store._store["/cached"].expires_at
+        assert memory_store._store["GET/cached"].expires_at
 
 
 def test_cache_forever(memory_store: MemoryStore) -> None:
@@ -127,7 +126,7 @@ def test_cache_forever(memory_store: MemoryStore) -> None:
     with TestClient(app) as client:
         client.get("/cached")
 
-    assert memory_store._store["/cached"].expires_at is None
+    assert memory_store._store["GET/cached"].expires_at is None
 
 
 @pytest.mark.parametrize("sync_to_thread", (True, False))
@@ -165,7 +164,7 @@ async def test_non_default_store_name(mock: MagicMock) -> None:
 
         assert mock.call_count == 1
 
-    assert await app.stores.get("some_store").exists("/")
+    assert await app.stores.get("some_store").exists("GET/")
 
 
 async def test_with_stores(store: Store, mock: MagicMock) -> None:
@@ -244,7 +243,79 @@ async def test_compression_applies_before_cache() -> None:
     with TestClient(app) as client:
         client.get("/", headers={"Accept-Encoding": str(CompressionEncoding.GZIP.value)})
 
-    stored_value = await app.response_cache_config.get_store_from_app(app).get("/")
+    stored_value = await app.response_cache_config.get_store_from_app(app).get("GET/")
     assert stored_value
     stored_messages = msgspec.msgpack.decode(stored_value)
     assert gzip.decompress(stored_messages[1]["body"]).decode() == return_value
+
+
+@pytest.mark.parametrize(
+    ("response", "should_cache"),
+    [
+        (HTTP_200_OK, True),
+        (HTTP_400_BAD_REQUEST, False),
+        (HTTP_500_INTERNAL_SERVER_ERROR, False),
+        (RuntimeError, False),
+    ],
+)
+def test_default_do_response_cache_predicate(
+    mock: MagicMock, response: Union[int, Type[RuntimeError]], should_cache: bool
+) -> None:
+    @get("/", cache=True)
+    def handler() -> Response:
+        mock()
+        if isinstance(response, int):
+            return Response(None, status_code=response)
+        raise RuntimeError
+
+    with create_test_client([handler]) as client:
+        client.get("/")
+        client.get("/")
+        assert mock.call_count == 1 if should_cache else 2
+
+
+def test_custom_do_response_cache_predicate(mock: MagicMock) -> None:
+    @get("/", cache=True)
+    def handler() -> str:
+        mock()
+        return "OK"
+
+    with create_test_client(
+        [handler], response_cache_config=ResponseCacheConfig(cache_response_filter=lambda *_: False)
+    ) as client:
+        client.get("/")
+        client.get("/")
+        assert mock.call_count == 2
+
+
+def test_on_multiple_handlers(mock: MagicMock) -> None:
+    @get("/cached-local", cache=10)
+    async def handler() -> str:
+        mock()
+        return "get_response"
+
+    @post("/cached-local", cache=10)
+    async def handler_post() -> str:
+        mock()
+        return "post_response"
+
+    with create_test_client([handler, handler_post], after_request=after_request_handler) as client:
+        # POST request to have this cached
+        first_post_response = client.post("/cached-local")
+        assert first_post_response.status_code == HTTP_201_CREATED
+        assert first_post_response.text == "post_response"
+        assert mock.call_count == 1
+
+        # GET request to verify it doesn't use the cache created by the previous POST request
+        get_response = client.get("/cached-local")
+        assert get_response.status_code == HTTP_200_OK
+        assert get_response.text == "get_response"
+        assert first_post_response.headers["unique-identifier"] != get_response.headers["unique-identifier"]
+        assert mock.call_count == 2
+
+        # POST request to verify it uses the cache generated during the initial POST request
+        second_post_response = client.post("/cached-local")
+        assert second_post_response.status_code == HTTP_201_CREATED
+        assert second_post_response.text == "post_response"
+        assert first_post_response.headers["unique-identifier"] == second_post_response.headers["unique-identifier"]
+        assert mock.call_count == 2

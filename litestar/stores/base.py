@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 __all__ = ("Store", "NamespacedStore", "StorageObject")
 
 
-class Store(ABC):  # pragma: no cover
+class Store(ABC):
     """Thread and process safe asynchronous key/value store."""
 
     @abstractmethod

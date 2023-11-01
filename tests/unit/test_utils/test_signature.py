@@ -65,6 +65,33 @@ def test_get_fn_type_hints_class_no_init() -> None:
     assert get_fn_type_hints(C) == {}
 
 
+def test_get_fn_type_hints_with_none_default() -> None:
+    def fn(
+        a: Annotated[Optional[str], ...] = None,
+        b: Annotated[Union[str, None], ...] = None,
+        c: Annotated[Union[str, int, None], ...] = None,
+        d: Annotated[Optional[Union[str, int]], ...] = None,
+        e: Optional[str] = None,
+        f: Union[str, None] = None,
+        g: Union[str, int, None] = None,
+        h: Optional[Union[str, int]] = None,
+    ) -> None:
+        ...
+
+    hints = get_fn_type_hints(fn)
+    assert hints == {
+        "a": Annotated[Union[str, NoneType], ...],
+        "b": Annotated[Union[str, NoneType], ...],
+        "c": Annotated[Union[str, int, NoneType], ...],
+        "d": Annotated[Union[str, int, NoneType], ...],
+        "e": Union[str, NoneType],
+        "f": Union[str, NoneType],
+        "g": Union[str, int, NoneType],
+        "h": Union[str, int, NoneType],
+        "return": NoneType,
+    }
+
+
 class _TD(TypedDict):
     req_int: Required[int]
     req_list_int: Required[List[int]]
@@ -129,7 +156,7 @@ def test_parsed_signature() -> None:
     assert parsed_sig.parameters["foo"].annotation is int
     assert parsed_sig.parameters["bar"].args == (List[int], NoneType)
     assert parsed_sig.parameters["bar"].annotation == Union[List[int], NoneType]
-    assert parsed_sig.parameters["bar"].default is Empty
+    assert parsed_sig.parameters["bar"].default is None
     assert parsed_sig.original_signature == inspect.signature(fn)
 
 

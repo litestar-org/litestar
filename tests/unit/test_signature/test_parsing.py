@@ -38,7 +38,7 @@ def test_create_function_signature_model_parameter_parsing() -> None:
     assert fields["d"].default == b"123"
     assert fields["e"].annotation == Optional[dict]
     assert fields["e"].is_optional
-    assert fields["e"].default is Empty
+    assert fields["e"].default is None
 
 
 def test_create_function_signature_model_ignore_return_annotation() -> None:
@@ -61,11 +61,11 @@ def test_signature_model_resolves_forward_ref_annotations(create_module: Callabl
         """
 from __future__ import annotations
 
-from pydantic import BaseModel
+from msgspec import Struct
 from litestar import Litestar, get
 from litestar.di import Provide
 
-class Test(BaseModel):
+class Test(Struct):
     hello: str
 
 async def get_dep() -> Test:

@@ -18,72 +18,72 @@ from litestar.pagination import (
 )
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
-from tests import PydanticPerson, PydanticPersonFactory
+from tests.models import DataclassPerson, DataclassPersonFactory
 
 
-class TestSyncClassicPaginator(AbstractSyncClassicPaginator[PydanticPerson]):
+class TestSyncClassicPaginator(AbstractSyncClassicPaginator[DataclassPerson]):
     __test__ = False
 
-    def __init__(self, data: List[PydanticPerson]):
+    def __init__(self, data: List[DataclassPerson]):
         self.data = data
 
     def get_total(self, page_size: int) -> int:
         return round(len(self.data) / page_size)
 
-    def get_items(self, page_size: int, current_page: int) -> List[PydanticPerson]:
+    def get_items(self, page_size: int, current_page: int) -> List[DataclassPerson]:
         return [self.data[i : i + page_size] for i in range(0, len(self.data), page_size)][current_page - 1]
 
 
-class TestAsyncClassicPaginator(AbstractAsyncClassicPaginator[PydanticPerson]):
+class TestAsyncClassicPaginator(AbstractAsyncClassicPaginator[DataclassPerson]):
     __test__ = False
 
-    def __init__(self, data: List[PydanticPerson]):
+    def __init__(self, data: List[DataclassPerson]):
         self.data = data
 
     async def get_total(self, page_size: int) -> int:
         return round(len(self.data) / page_size)
 
-    async def get_items(self, page_size: int, current_page: int) -> List[PydanticPerson]:
+    async def get_items(self, page_size: int, current_page: int) -> List[DataclassPerson]:
         return [self.data[i : i + page_size] for i in range(0, len(self.data), page_size)][current_page - 1]
 
 
-class TestSyncOffsetPaginator(AbstractSyncOffsetPaginator[PydanticPerson]):
+class TestSyncOffsetPaginator(AbstractSyncOffsetPaginator[DataclassPerson]):
     __test__ = False
 
-    def __init__(self, data: List[PydanticPerson]):
+    def __init__(self, data: List[DataclassPerson]):
         self.data = data
 
     def get_total(self) -> int:
         return len(self.data)
 
-    def get_items(self, limit: int, offset: int) -> List[PydanticPerson]:
+    def get_items(self, limit: int, offset: int) -> List[DataclassPerson]:
         return list(islice(islice(self.data, offset, None), limit))
 
 
-class TestAsyncOffsetPaginator(AbstractAsyncOffsetPaginator[PydanticPerson]):
+class TestAsyncOffsetPaginator(AbstractAsyncOffsetPaginator[DataclassPerson]):
     __test__ = False
 
-    def __init__(self, data: List[PydanticPerson]):
+    def __init__(self, data: List[DataclassPerson]):
         self.data = data
 
     async def get_total(self) -> int:
         return len(self.data)
 
-    async def get_items(self, limit: int, offset: int) -> List[PydanticPerson]:
+    async def get_items(self, limit: int, offset: int) -> List[DataclassPerson]:
         return list(islice(islice(self.data, offset, None), limit))
 
 
-data = PydanticPersonFactory.batch(50)
+data = DataclassPersonFactory.batch(50)
 
 
 @pytest.mark.parametrize("paginator", (TestSyncClassicPaginator(data=data), TestAsyncClassicPaginator(data=data)))
 def test_classic_pagination_data_shape(paginator: Any) -> None:
     @get("/async")
-    async def async_handler(page_size: int, current_page: int) -> ClassicPagination[PydanticPerson]:
+    async def async_handler(page_size: int, current_page: int) -> ClassicPagination[DataclassPerson]:
         return await paginator(page_size=page_size, current_page=current_page)  # type: ignore
 
     @get("/sync")
-    def sync_handler(page_size: int, current_page: int) -> ClassicPagination[PydanticPerson]:
+    def sync_handler(page_size: int, current_page: int) -> ClassicPagination[DataclassPerson]:
         return paginator(page_size=page_size, current_page=current_page)  # type: ignore
 
     with create_test_client([async_handler, sync_handler]) as client:
@@ -103,11 +103,11 @@ def test_classic_pagination_data_shape(paginator: Any) -> None:
 @pytest.mark.parametrize("paginator", (TestSyncClassicPaginator(data=data), TestAsyncClassicPaginator(data=data)))
 def test_classic_pagination_openapi_schema(paginator: Any) -> None:
     @get("/async")
-    async def async_handler(page_size: int, current_page: int) -> ClassicPagination[PydanticPerson]:
+    async def async_handler(page_size: int, current_page: int) -> ClassicPagination[DataclassPerson]:
         return await paginator(page_size=page_size, current_page=current_page)  # type: ignore
 
     @get("/sync")
-    def sync_handler(page_size: int, current_page: int) -> ClassicPagination[PydanticPerson]:
+    def sync_handler(page_size: int, current_page: int) -> ClassicPagination[DataclassPerson]:
         return paginator(page_size=page_size, current_page=current_page)  # type: ignore
 
     with create_test_client([async_handler, sync_handler], openapi_config=DEFAULT_OPENAPI_CONFIG) as client:
@@ -136,11 +136,11 @@ def test_classic_pagination_openapi_schema(paginator: Any) -> None:
 @pytest.mark.parametrize("paginator", (TestSyncOffsetPaginator(data=data), TestAsyncOffsetPaginator(data=data)))
 def test_limit_offset_pagination_data_shape(paginator: Any) -> None:
     @get("/async")
-    async def async_handler(limit: int, offset: int) -> OffsetPagination[PydanticPerson]:
+    async def async_handler(limit: int, offset: int) -> OffsetPagination[DataclassPerson]:
         return await paginator(limit=limit, offset=offset)  # type: ignore
 
     @get("/sync")
-    def sync_handler(limit: int, offset: int) -> OffsetPagination[PydanticPerson]:
+    def sync_handler(limit: int, offset: int) -> OffsetPagination[DataclassPerson]:
         return paginator(limit=limit, offset=offset)  # type: ignore
 
     with create_test_client([async_handler, sync_handler]) as client:
@@ -160,11 +160,11 @@ def test_limit_offset_pagination_data_shape(paginator: Any) -> None:
 @pytest.mark.parametrize("paginator", (TestSyncOffsetPaginator(data=data), TestAsyncOffsetPaginator(data=data)))
 def test_limit_offset_pagination_openapi_schema(paginator: Any) -> None:
     @get("/async")
-    async def async_handler(limit: int, offset: int) -> OffsetPagination[PydanticPerson]:
+    async def async_handler(limit: int, offset: int) -> OffsetPagination[DataclassPerson]:
         return await paginator(limit=limit, offset=offset)  # type: ignore
 
     @get("/sync")
-    def sync_handler(limit: int, offset: int) -> OffsetPagination[PydanticPerson]:
+    def sync_handler(limit: int, offset: int) -> OffsetPagination[DataclassPerson]:
         return paginator(limit=limit, offset=offset)  # type: ignore
 
     with create_test_client([async_handler, sync_handler], openapi_config=DEFAULT_OPENAPI_CONFIG) as client:
@@ -190,26 +190,26 @@ def test_limit_offset_pagination_openapi_schema(paginator: Any) -> None:
         }
 
 
-class TestSyncCursorPagination(AbstractSyncCursorPaginator[str, PydanticPerson]):
+class TestSyncCursorPagination(AbstractSyncCursorPaginator[str, DataclassPerson]):
     __test__ = False
 
-    def __init__(self, data: List[PydanticPerson]):
+    def __init__(self, data: List[DataclassPerson]):
         self.data = data
 
-    def get_items(self, cursor: Optional[str], results_per_page: int) -> "Tuple[List[PydanticPerson], Optional[str]]":
+    def get_items(self, cursor: Optional[str], results_per_page: int) -> "Tuple[List[DataclassPerson], Optional[str]]":
         results = self.data[:results_per_page]
         return results, results[-1].id
 
 
-class TestAsyncCursorPagination(AbstractAsyncCursorPaginator[str, PydanticPerson]):
+class TestAsyncCursorPagination(AbstractAsyncCursorPaginator[str, DataclassPerson]):
     __test__ = False
 
-    def __init__(self, data: List[PydanticPerson]):
+    def __init__(self, data: List[DataclassPerson]):
         self.data = data
 
     async def get_items(
         self, cursor: Optional[str], results_per_page: int
-    ) -> "Tuple[List[PydanticPerson], Optional[str]]":
+    ) -> "Tuple[List[DataclassPerson], Optional[str]]":
         results = self.data[:results_per_page]
         return results, results[-1].id
 
@@ -217,11 +217,11 @@ class TestAsyncCursorPagination(AbstractAsyncCursorPaginator[str, PydanticPerson
 @pytest.mark.parametrize("paginator", (TestSyncCursorPagination(data=data), TestAsyncCursorPagination(data=data)))
 def test_cursor_pagination_data_shape(paginator: Any) -> None:
     @get("/async")
-    async def async_handler(cursor: Optional[str] = None) -> CursorPagination[str, PydanticPerson]:
+    async def async_handler(cursor: Optional[str] = None) -> CursorPagination[str, DataclassPerson]:
         return await paginator(cursor=cursor, results_per_page=5)  # type: ignore
 
     @get("/sync")
-    def sync_handler(cursor: Optional[str] = None) -> CursorPagination[str, PydanticPerson]:
+    def sync_handler(cursor: Optional[str] = None) -> CursorPagination[str, DataclassPerson]:
         return paginator(cursor=cursor, results_per_page=5)  # type: ignore
 
     with create_test_client([async_handler, sync_handler]) as client:
@@ -240,11 +240,11 @@ def test_cursor_pagination_data_shape(paginator: Any) -> None:
 @pytest.mark.parametrize("paginator", (TestSyncCursorPagination(data=data), TestAsyncCursorPagination(data=data)))
 def test_cursor_pagination_openapi_schema(paginator: Any) -> None:
     @get("/async")
-    async def async_handler(cursor: Optional[str] = None) -> CursorPagination[str, PydanticPerson]:
+    async def async_handler(cursor: Optional[str] = None) -> CursorPagination[str, DataclassPerson]:
         return await paginator(cursor=cursor, results_per_page=5)  # type: ignore
 
     @get("/sync")
-    def sync_handler(cursor: Optional[str] = None) -> CursorPagination[str, PydanticPerson]:
+    def sync_handler(cursor: Optional[str] = None) -> CursorPagination[str, DataclassPerson]:
         return paginator(cursor=cursor, results_per_page=5)  # type: ignore
 
     with create_test_client([async_handler, sync_handler], openapi_config=DEFAULT_OPENAPI_CONFIG) as client:
