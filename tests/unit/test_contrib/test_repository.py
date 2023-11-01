@@ -79,8 +79,9 @@ def test_deprecated_filters_imports() -> None:
 
 
 def test_advanced_alchemy_imports() -> None:
-    from litestar.repository import _filters
     from advanced_alchemy import filters
+
+    from litestar.repository import _filters
 
     assert filters.FilterTypes is not _filters.FilterTypes
     assert filters.CollectionFilter is not _filters.CollectionFilter
