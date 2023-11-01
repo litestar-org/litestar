@@ -31,6 +31,8 @@ from tests.unit.test_contrib.test_pydantic.models import (
     PydanticV1Person,
 )
 
+from . import PydanticVersion
+
 AnyBaseModelType = Type[Union[pydantic_v1.BaseModel, pydantic_v2.BaseModel]]
 
 
@@ -141,20 +143,20 @@ def test_create_collection_constrained_field_schema_pydantic_v2(annotation: Any)
 
 
 @pytest.fixture()
-def conset(pydantic_version: str) -> Any:
-    return pydantic_v1.conset if pydantic_version == "1" else pydantic_v2.conset
+def conset(pydantic_version: PydanticVersion) -> Any:
+    return pydantic_v1.conset if pydantic_version == "v1" else pydantic_v2.conset
 
 
 @pytest.fixture()
-def conlist(pydantic_version: str) -> Any:
-    return pydantic_v1.conlist if pydantic_version == "1" else pydantic_v2.conlist
+def conlist(pydantic_version: PydanticVersion) -> Any:
+    return pydantic_v1.conlist if pydantic_version == "v1" else pydantic_v2.conlist
 
 
 def test_create_collection_constrained_field_schema_sub_fields(
-    pydantic_version: str, conset: Any, conlist: Any
+    pydantic_version: PydanticVersion, conset: Any, conlist: Any
 ) -> None:
     for pydantic_fn in [conset, conlist]:
-        if pydantic_version == "1":
+        if pydantic_version == "v1":
             annotation = pydantic_fn(Union[str, int], min_items=1, max_items=10)
         else:
             annotation = pydantic_fn(Union[str, int], min_length=1, max_length=10)
@@ -414,12 +416,12 @@ def test_schema_generation_v2(create_examples: bool) -> None:
         }
 
 
-def test_schema_by_alias(base_model: AnyBaseModelType, pydantic_version: str) -> None:
+def test_schema_by_alias(base_model: AnyBaseModelType, pydantic_version: PydanticVersion) -> None:
     class RequestWithAlias(base_model):  # type: ignore[misc, valid-type]
-        first: str = (pydantic_v1.Field if pydantic_version == "1" else pydantic_v2.Field)(alias="second")  # type: ignore[operator]
+        first: str = (pydantic_v1.Field if pydantic_version == "v1" else pydantic_v2.Field)(alias="second")  # type: ignore[operator]
 
     class ResponseWithAlias(base_model):  # type: ignore[misc, valid-type]
-        first: str = (pydantic_v1.Field if pydantic_version == "1" else pydantic_v2.Field)(alias="second")  # type: ignore[operator]
+        first: str = (pydantic_v1.Field if pydantic_version == "v1" else pydantic_v2.Field)(alias="second")  # type: ignore[operator]
 
     @post("/", signature_types=[RequestWithAlias, ResponseWithAlias])
     def handler(data: RequestWithAlias) -> ResponseWithAlias:
@@ -449,12 +451,12 @@ def test_schema_by_alias(base_model: AnyBaseModelType, pydantic_version: str) ->
         assert response.json() == {response_key: "foo"}
 
 
-def test_schema_by_alias_plugin_override(base_model: AnyBaseModelType, pydantic_version: str) -> None:
+def test_schema_by_alias_plugin_override(base_model: AnyBaseModelType, pydantic_version: PydanticVersion) -> None:
     class RequestWithAlias(base_model):  # type: ignore[misc, valid-type]
-        first: str = (pydantic_v1.Field if pydantic_version == "1" else pydantic_v2.Field)(alias="second")  # type: ignore[operator]
+        first: str = (pydantic_v1.Field if pydantic_version == "v1" else pydantic_v2.Field)(alias="second")  # type: ignore[operator]
 
     class ResponseWithAlias(base_model):  # type: ignore[misc, valid-type]
-        first: str = (pydantic_v1.Field if pydantic_version == "1" else pydantic_v2.Field)(alias="second")  # type: ignore[operator]
+        first: str = (pydantic_v1.Field if pydantic_version == "v1" else pydantic_v2.Field)(alias="second")  # type: ignore[operator]
 
     @post("/", signature_types=[RequestWithAlias, ResponseWithAlias])
     def handler(data: RequestWithAlias) -> ResponseWithAlias:
@@ -522,14 +524,14 @@ def test_create_schema_for_field_v2() -> None:
 
 @pytest.mark.parametrize("with_future_annotations", [True, False])
 def test_create_schema_for_pydantic_model_with_annotated_model_attribute(
-    with_future_annotations: bool, create_module: "Callable[[str], ModuleType]", pydantic_version: str
+    with_future_annotations: bool, create_module: "Callable[[str], ModuleType]", pydantic_version: PydanticVersion
 ) -> None:
     """Test that a model with an annotated attribute is correctly handled."""
     module = create_module(
         f"""
 {'from __future__ import annotations' if with_future_annotations else ''}
 from typing_extensions import Annotated
-{'from pydantic import BaseModel' if pydantic_version == '1' else 'from pydantic.v1 import BaseModel'}
+{'from pydantic import BaseModel' if pydantic_version == 'v1' else 'from pydantic.v1 import BaseModel'}
 
 class Foo(BaseModel):
     foo: Annotated[int, "Foo description"]

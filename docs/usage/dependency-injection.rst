@@ -208,7 +208,7 @@ can :ref:`inject into route handlers <usage/routing/handlers:"reserved" keyword 
 In the above example we have a ``User`` model that we are persisting into a db. The model is fetched using the helper
 method ``retrieve_db_user`` which receives a ``user_id`` kwarg and retrieves the corresponding ``User`` instance.
 The ``UserController`` class maps the ``retrieve_db_user`` provider to the key ``user`` in its ``dependencies`` dictionary. This
-in turn makes it available as a kwarg in the ``update_user`` method.
+in turn makes it available as a kwarg in the ``get_user`` method.
 
 
 
