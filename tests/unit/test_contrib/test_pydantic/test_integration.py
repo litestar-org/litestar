@@ -27,7 +27,7 @@ def test_pydantic_v1_validation_error_raises_400(meta: Any) -> None:
     annotation = Annotated[Model, meta] if meta is not None else Model
 
     @post(dto=ModelDTO, signature_namespace={"annotation": annotation})
-    def handler(data: annotation) -> Any:
+    def handler(data: annotation) -> Any:  # pyright: ignore
         return data
 
     model_json = {"foo": "too long"}
@@ -62,7 +62,7 @@ def test_pydantic_v2_validation_error_raises_400(meta: Any) -> None:
     annotation = Annotated[Model, meta] if meta is not None else Model
 
     @post(dto=ModelDTO, signature_namespace={"annotation": annotation})
-    def handler(data: annotation) -> Any:
+    def handler(data: annotation) -> Any:  # pyright: ignore
         return data
 
     model_json = {"foo": "too long"}
