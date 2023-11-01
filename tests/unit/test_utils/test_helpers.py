@@ -1,8 +1,7 @@
 from functools import partial
-from typing import Any, Generic
+from typing import Any, Generic, TypeVar
 
 import pytest
-from typing_extensions import TypeVar
 
 from litestar.utils.helpers import get_name, unique_name_for_scope, unwrap_partial
 
