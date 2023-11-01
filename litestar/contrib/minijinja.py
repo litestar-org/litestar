@@ -91,7 +91,10 @@ class MiniJinjaTemplate(TemplateProtocol):
         Returns:
             Rendered template as a string
         """
-        return str(self.engine.render_template(self.template_name, *args, **kwargs))
+        try:
+            return str(self.engine.render_template(self.template_name, *args, **kwargs))
+        except MiniJinjaTemplateNotFound as err:
+            raise TemplateNotFoundException(template_name=self.template_name) from err
 
 
 class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateProtocol]):
@@ -134,6 +137,10 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
             self.engine = Environment(loader=_loader)
         elif engine_instance:
             self.engine = engine_instance
+        else:
+            raise ImproperlyConfiguredException(
+                "You must provide either a directory or a minijinja Environment instance."
+            )
 
         self.register_template_callable("url_for", _transform_state(url_for))
         self.register_template_callable("csrf_token", _transform_state(csrf_token))
@@ -151,10 +158,7 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         Raises:
             TemplateNotFoundException: if no template is found.
         """
-        try:
-            return MiniJinjaTemplate(self.engine, template_name)
-        except MiniJinjaTemplateNotFound as exc:
-            raise TemplateNotFoundException(template_name=template_name) from exc
+        return MiniJinjaTemplate(self.engine, template_name)
 
     def register_template_callable(
         self, key: str, template_callable: TemplateCallableType[StateProtocol, P, T]
@@ -184,7 +188,7 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
 
 
 @pass_state
-def _minijinja_from_state(func: Callable, state: StateProtocol, *args: Any, **kwargs: Any) -> str:
+def _minijinja_from_state(func: Callable, state: StateProtocol, *args: Any, **kwargs: Any) -> str:  # pragma: no cover
     template_context = {"request": state.lookup("request"), "csrf_input": state.lookup("csrf_input")}
     return cast(str, func(template_context, *args, **kwargs))
 
