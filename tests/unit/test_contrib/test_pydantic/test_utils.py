@@ -1,8 +1,7 @@
-from typing import Dict, Generic, Tuple
+from typing import Any, Dict, Generic, Tuple, TypeVar
 
 import pytest
 from pydantic import BaseModel
-from typing_extensions import Any, TypeVar
 
 from litestar.contrib.pydantic.utils import pydantic_get_type_hints_with_generics_resolved
 
