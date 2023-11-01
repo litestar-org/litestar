@@ -7,7 +7,8 @@ from click import Group
 
 from litestar import Litestar, MediaType, get
 from litestar.constants import UNDEFINED_SENTINELS
-from litestar.contrib.pydantic import PydanticInitPlugin, PydanticSchemaPlugin
+from litestar.contrib.attrs import AttrsSchemaPlugin
+from litestar.contrib.pydantic import PydanticInitPlugin, PydanticPlugin, PydanticSchemaPlugin
 from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
 from litestar.plugins import CLIPluginProtocol, InitPluginProtocol, OpenAPISchemaPlugin, PluginRegistry
 from litestar.testing import create_test_client
@@ -87,3 +88,18 @@ def test_openapi_schema_plugin_is_constrained_field() -> None:
 def test_openapi_schema_plugin_is_undefined_sentinel() -> None:
     for value in UNDEFINED_SENTINELS:
         assert OpenAPISchemaPlugin.is_undefined_sentinel(value) is False
+
+
+@pytest.mark.parametrize(("init_plugin",), [(PydanticInitPlugin(),), (None,)])
+@pytest.mark.parametrize(("schema_plugin",), [(PydanticSchemaPlugin(),), (None,)])
+@pytest.mark.parametrize(("attrs_plugin",), [(AttrsSchemaPlugin(),), (None,)])
+def test_app_get_default_plugins(
+    init_plugin: PydanticInitPlugin, schema_plugin: PydanticSchemaPlugin, attrs_plugin: AttrsSchemaPlugin
+) -> None:
+    plugins = [p for p in (init_plugin, schema_plugin, attrs_plugin) if p is not None]
+    any_pydantic = bool(init_plugin) or bool(schema_plugin)
+    default_plugins = Litestar._get_default_plugins(plugins)  # type: ignore[arg-type]
+    if not any_pydantic:
+        assert {type(p) for p in default_plugins} == {PydanticPlugin, AttrsSchemaPlugin}
+    else:
+        assert {type(p) for p in default_plugins} == {PydanticInitPlugin, PydanticSchemaPlugin, AttrsSchemaPlugin}
