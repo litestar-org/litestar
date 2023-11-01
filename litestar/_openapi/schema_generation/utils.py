@@ -1,16 +1,12 @@
-
 from __future__ import annotations
 
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
-from litestar.openapi.spec import Reference, Schema
-
 if TYPE_CHECKING:
     from litestar.typing import FieldDefinition
 
 __all__ = (
-    "sort_schemas_and_references",
     "_type_or_first_not_none_inner_type",
     "_should_create_enum_schema",
     "_should_create_literal_schema",
