@@ -18,7 +18,6 @@ from . import PydanticVersion
 
 @pytest.mark.parametrize(("meta",), [(None,), (Body(media_type=RequestEncodingType.URL_ENCODED),)])
 def test_pydantic_v1_validation_error_raises_400(meta: Any) -> None:
-
     class Model(pydantic_v1.BaseModel):
         foo: str = pydantic_v1.Field(max_length=2)
 
@@ -26,6 +25,7 @@ def test_pydantic_v1_validation_error_raises_400(meta: Any) -> None:
 
     annotation: Any
     annotation = Annotated[Model, meta] if meta is not None else Model
+
     @post(dto=ModelDTO, signature_namespace={"annotation": annotation})
     def handler(data: annotation) -> Any:
         return data
@@ -53,7 +53,6 @@ def test_pydantic_v1_validation_error_raises_400(meta: Any) -> None:
 
 @pytest.mark.parametrize(("meta",), [(None,), (Body(media_type=RequestEncodingType.URL_ENCODED),)])
 def test_pydantic_v2_validation_error_raises_400(meta: Any) -> None:
-
     class Model(pydantic_v2.BaseModel):
         foo: str = pydantic_v2.Field(max_length=2)
 
@@ -61,6 +60,7 @@ def test_pydantic_v2_validation_error_raises_400(meta: Any) -> None:
 
     annotation: Any
     annotation = Annotated[Model, meta] if meta is not None else Model
+
     @post(dto=ModelDTO, signature_namespace={"annotation": annotation})
     def handler(data: annotation) -> Any:
         return data
