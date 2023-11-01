@@ -1365,6 +1365,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "dybi",
+      "name": "Piotr Dybowski",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36961162?v=4",
+      "profile": "https://github.com/dybi",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
