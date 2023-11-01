@@ -366,12 +366,12 @@ def test_schema_generation_with_generic_classes_constrained() -> None:
     assert properties["constrained"] == Schema(
         one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)]
     )
-    assert properties["union"] == Schema(one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.OBJECT)])
+    assert properties["union"] == Schema(one_of=[Schema(type=OpenAPIType.OBJECT), Schema(type=OpenAPIType.BOOLEAN)])
     assert properties["union_constrained"] == Schema(
-        one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)]
+        one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING), Schema(type=OpenAPIType.BOOLEAN)]
     )
     assert properties["union_bound"] == Schema(
-        one_of=[Schema(type=OpenAPIType.BOOLEAN), Schema(type=OpenAPIType.INTEGER)]
+        one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.BOOLEAN)]
     )
 
 
@@ -404,3 +404,13 @@ def test_schema_generation_with_ellipsis() -> None:
     assert isinstance(schema, Schema)
     assert isinstance(schema.items, Schema)
     assert schema.items.type == OpenAPIType.INTEGER
+
+
+def test_schema_tuple_with_union() -> None:
+    schema = SchemaCreator().for_field_definition(FieldDefinition.from_annotation(Tuple[int, Union[int, str]]))
+    assert isinstance(schema, Schema)
+    assert isinstance(schema.items, Schema)
+    assert schema.items.one_of == [
+        Schema(type=OpenAPIType.INTEGER),
+        Schema(one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)]),
+    ]
