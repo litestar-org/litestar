@@ -82,9 +82,7 @@ def unwrap_partial(value: MaybePartial[T]) -> T:
     Returns:
         Callable
     """
-    if isinstance(value, partial):
-        return cast("T", value.func)
-    return value
+    return cast("T", value.func) if isinstance(value, partial) else value
 
 
 def filter_cookies(local_cookies: Iterable[Cookie], layered_cookies: Iterable[Cookie]) -> list[Cookie]:
