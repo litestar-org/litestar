@@ -1282,7 +1282,7 @@ PYTHONPATH. Defaults to the current working directory.</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_RELOAD</span></code></p></td>
 <td><p>Reload the application when files in its directory are changed</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-R</span></code>,``–reload-dir``</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-R</span></code>, <code class="docutils literal notranslate"><span class="pre">--reload-dir</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_RELOAD_DIRS</span></code></p></td>
 <td><p>Specify directories to watch for reload.</p></td>
 </tr>
@@ -1294,7 +1294,7 @@ PYTHONPATH. Defaults to the current working directory.</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">WEB_CONCURRENCY</span></code></p></td>
 <td><p>The number of concurrent web workers to start [default: 1]</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-H</span></code>,``–host``</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-H</span></code>, <code class="docutils literal notranslate"><span class="pre">--host</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_HOST</span></code></p></td>
 <td><p>Bind the server to this host [default: 127.0.0.1]</p></td>
 </tr>
@@ -1306,13 +1306,25 @@ PYTHONPATH. Defaults to the current working directory.</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_UNIX_DOMAIN_SOCKET</span></code></p></td>
 <td><p>Bind to a UNIX domain socket.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-d</span></code>,``–debug``</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-d</span></code>, <code class="docutils literal notranslate"><span class="pre">--debug</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_DEBUG</span></code></p></td>
 <td><p>Run the application in debug mode</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--pdb</span></code>, <code class="docutils literal notranslate"><span class="pre">--use_pdb</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_PDB</span></code></p></td>
 <td><p>Drop into the Python debugger when an exception occurs</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--ssl-certfile</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_SSL_CERT_PATH</span></code></p></td>
+<td><p>Path to a SSL certificate file</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--ssl-keyfile</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_SSL_KEY_PATH</span></code></p></td>
+<td><p>Path to the private key to the SSL certificate</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--create-self-signed-cert</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_CREATE_SELF_SIGNED_CERT</span></code></p></td>
+<td><p>If the SSL certificate and key are not found, generate a self-signed certificate</p></td>
 </tr>
 </tbody>
 </table>
@@ -1326,6 +1338,20 @@ PYTHONPATH. Defaults to the current working directory.</p></td>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">LITESTAR_RELOAD_DIRS</span><span class="o">=</span>.,../other-library/src
 </pre></div>
 </div>
+</section>
+<section id="ssl">
+<h5>SSL<a class="headerlink" href="#ssl" title="Permalink to this heading">#</a></h5>
+<p>You can pass paths to an SSL certificate and it’s private key to run the server using the HTTPS protocol:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>litestar<span class="w"> </span>run<span class="w"> </span>--ssl-certfile<span class="o">=</span>certs/cert.pem<span class="w"> </span>--ssl-keyfile<span class="o">=</span>certs/key.pem
+</pre></div>
+</div>
+<p>Both flags must be provided and both files must exist. These are then passed to <code class="docutils literal notranslate"><span class="pre">uvicorn</span></code>.
+You can also use the  <code class="docutils literal notranslate"><span class="pre">--create-self-signed-cert</span></code> flag:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>litestar<span class="w"> </span>run<span class="w"> </span>--ssl-certfile<span class="o">=</span>certs/cert.pem<span class="w"> </span>--ssl-keyfile<span class="o">=</span>certs/key.pem<span class="w"> </span>--create-self-signed-cert
+</pre></div>
+</div>
+<p>This way, if the given files don’t exist, a self-signed certificate and a passwordless key will be generated.
+If the files are found, they will be reused.</p>
 </section>
 </section>
 </section>
@@ -1563,6 +1589,7 @@ You can achieve this by adding the special <code class="docutils literal notrans
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run">run</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#cli-run-options">Options</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#reload-dir">–reload-dir</a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#ssl">SSL</a></li>
 </ul>
 </li>
 </ul>
