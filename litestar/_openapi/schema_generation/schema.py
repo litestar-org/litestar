@@ -42,6 +42,11 @@ from litestar._openapi.schema_generation.constrained_fields import (
     create_numerical_constrained_field_schema,
     create_string_constrained_field_schema,
 )
+from litestar._openapi.schema_generation.utils import (
+    _should_create_enum_schema,
+    _should_create_literal_schema,
+    _type_or_first_not_none_inner_type,
+)
 from litestar.datastructures.upload_file import UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Reference
@@ -159,16 +164,19 @@ def _get_type_schema_name(field_definition: FieldDefinition) -> str:
     return name
 
 
-def create_enum_schema(annotation: EnumMeta) -> Schema:
+def create_enum_schema(annotation: EnumMeta, include_null: bool = False) -> Schema:
     """Create a schema instance for an enum.
 
     Args:
         annotation: An enum.
+        include_null: Whether to include null as a possible value.
 
     Returns:
         A schema instance.
     """
-    enum_values: list[str | int] = [v.value for v in annotation]  # type: ignore
+    enum_values: list[str | int | None] = [v.value for v in annotation]  # type: ignore
+    if include_null:
+        enum_values.append(None)
     openapi_type = OpenAPIType.STRING if isinstance(enum_values[0], str) else OpenAPIType.INTEGER
     return Schema(type=openapi_type, enum=enum_values)
 
@@ -189,16 +197,19 @@ def _iter_flat_literal_args(annotation: Any) -> Iterable[Any]:
             yield arg.value if isinstance(arg, Enum) else arg
 
 
-def create_literal_schema(annotation: Any) -> Schema:
+def create_literal_schema(annotation: Any, include_null: bool = False) -> Schema:
     """Create a schema instance for a Literal.
 
     Args:
         annotation: An Literal annotation.
+        include_null: Whether to include null as a possible value.
 
     Returns:
         A schema instance.
     """
-    args = tuple(_iter_flat_literal_args(annotation))
+    args = list(_iter_flat_literal_args(annotation))
+    if include_null:
+        args.append(None)
     schema = copy(TYPE_MAP[type(args[0])])
     if len(args) > 1:
         schema.enum = args
@@ -217,13 +228,7 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
         A schema instance or None.
     """
 
-    if annotation in TYPE_MAP:
-        return copy(TYPE_MAP[annotation])
-
-    if isinstance(annotation, EnumMeta):
-        return create_enum_schema(annotation)
-
-    return Schema()
+    return copy(TYPE_MAP[annotation]) if annotation in TYPE_MAP else Schema()
 
 
 class SchemaCreator:
@@ -292,17 +297,26 @@ class SchemaCreator:
 
         result: Schema | Reference
 
-        # NOTE: The check for whether the field_definition.annotation is a Pagination type
-        # has to come before the `is_dataclass_check` since the Pagination classes are dataclasses,
-        # but we want to handle them differently from how dataclasses are normally handled.
-
         if plugin_for_annotation := self.get_plugin_for(field_definition):
             result = self.for_plugin(field_definition, plugin_for_annotation)
+        elif _should_create_enum_schema(field_definition):
+            annotation = _type_or_first_not_none_inner_type(field_definition)
+            result = create_enum_schema(annotation, include_null=field_definition.is_optional)
+        elif _should_create_literal_schema(field_definition):
+            annotation = (
+                make_non_optional_union(field_definition.annotation)
+                if field_definition.is_optional
+                else field_definition.annotation
+            )
+            result = create_literal_schema(annotation, include_null=field_definition.is_optional)
         elif field_definition.is_optional:
             result = self.for_optional_field(field_definition)
         elif field_definition.is_union:
             result = self.for_union_field(field_definition)
         elif field_definition.origin in (CursorPagination, OffsetPagination, ClassicPagination):
+            # NOTE: The check for whether the field_definition.annotation is a Pagination type
+            # has to come before the `is_dataclass_check` since the Pagination classes are dataclasses,
+            # but we want to handle them differently from how dataclasses are normally handled.
             result = self.for_builtin_generics(field_definition)
         elif field_definition.is_type_var:
             result = self.for_typevar()
@@ -393,9 +407,6 @@ class SchemaCreator:
                 type=OpenAPIType.ARRAY,
                 items=Schema(one_of=items) if len(items) > 1 else items[0],
             )
-
-        if field_definition.is_literal:
-            return create_literal_schema(field_definition.annotation)
 
         raise ImproperlyConfiguredException(
             f"Parameter '{field_definition.name}' with type '{field_definition.annotation}' could not be mapped to an Open API type. "
