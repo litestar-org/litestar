@@ -1,12 +1,10 @@
 from docs.examples.openapi import customize_pydantic_model_name
 
-from litestar._openapi.schema_generation.utils import normalize_type_name
 from litestar.testing import TestClient
 
 
 def test_schema_generation() -> None:
     with TestClient(app=customize_pydantic_model_name.app) as client:
-        container_key = normalize_type_name(str(customize_pydantic_model_name.IdModel))
         assert client.app.openapi_schema.to_schema() == {
             "info": {"title": "Litestar API", "version": "1.0.0"},
             "openapi": "3.1.0",
@@ -21,7 +19,11 @@ def test_schema_generation() -> None:
                                 "description": "Request fulfilled, document follows",
                                 "headers": {},
                                 "content": {
-                                    "application/json": {"schema": {"$ref": f"#/components/schemas/{container_key}"}}
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/_class__docs_examples_openapi_customize_pydantic_model_name_IdModel__"
+                                        }
+                                    }
                                 },
                             }
                         },
@@ -31,7 +33,7 @@ def test_schema_generation() -> None:
             },
             "components": {
                 "schemas": {
-                    container_key: {
+                    "_class__docs_examples_openapi_customize_pydantic_model_name_IdModel__": {
                         "properties": {"id": {"type": "string", "format": "uuid", "description": "Any UUID string"}},
                         "type": "object",
                         "required": ["id"],

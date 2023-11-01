@@ -52,8 +52,6 @@ if TYPE_CHECKING:
 
 pytest_plugins = ["tests.docker_service_fixtures"]
 
-os.environ["TZ"] = "Europe/London"
-
 
 @pytest.fixture
 def mock() -> MagicMock:

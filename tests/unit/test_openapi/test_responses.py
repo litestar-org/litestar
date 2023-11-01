@@ -16,7 +16,6 @@ from litestar._openapi.responses import (
     create_success_response,
 )
 from litestar._openapi.schema_generation import SchemaCreator
-from litestar._openapi.schema_generation.utils import normalize_type_name
 from litestar.contrib.pydantic import PydanticSchemaPlugin
 from litestar.datastructures import Cookie, ResponseHeader
 from litestar.dto import AbstractDTO
@@ -229,8 +228,7 @@ def test_create_success_response_with_response_class() -> None:
     assert isinstance(reference, Reference)
     key = reference.ref.split("/")[-1]
     assert isinstance(schemas[key], Schema)
-    schema_key = normalize_type_name(str(PydanticPerson))
-    assert key == schema_key
+    assert key == "_class__tests_PydanticPerson__"
 
 
 def test_create_success_response_with_stream() -> None:

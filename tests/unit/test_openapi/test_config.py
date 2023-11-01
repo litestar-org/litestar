@@ -5,7 +5,6 @@ import pytest
 from pydantic import BaseModel, Field
 
 from litestar import Litestar, get, post
-from litestar._openapi.schema_generation.utils import normalize_type_name
 from litestar.contrib.pydantic import PydanticPlugin
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.config import OpenAPIConfig
@@ -63,19 +62,17 @@ def test_by_alias() -> None:
 
     app = Litestar(route_handlers=[handler], openapi_config=OpenAPIConfig(title="my title", version="1.0.0"))
 
-    schema_key = normalize_type_name(str(RequestWithAlias))
     assert app.openapi_schema
     schemas = app.openapi_schema.to_schema()["components"]["schemas"]
     request_key = "second"
-    assert schemas[schema_key] == {
+    assert schemas["_class__tests_unit_test_openapi_test_config_test_by_alias__locals__RequestWithAlias__"] == {
         "properties": {request_key: {"type": "string"}},
         "type": "object",
         "required": [request_key],
         "title": "RequestWithAlias",
     }
     response_key = "first"
-    schema_key = normalize_type_name(str(ResponseWithAlias))
-    assert schemas[schema_key] == {
+    assert schemas["_class__tests_unit_test_openapi_test_config_test_by_alias__locals__ResponseWithAlias__"] == {
         "properties": {response_key: {"type": "string"}},
         "type": "object",
         "required": [response_key],
@@ -103,21 +100,21 @@ def test_pydantic_plugin_override_by_alias() -> None:
         openapi_config=OpenAPIConfig(title="my title", version="1.0.0"),
         plugins=[PydanticPlugin(prefer_alias=True)],
     )
-    schema_key = normalize_type_name(str(RequestWithAlias))
-
     assert app.openapi_schema
     schemas = app.openapi_schema.to_schema()["components"]["schemas"]
     request_key = "second"
-    assert schemas[schema_key] == {
+    assert schemas[
+        "_class__tests_unit_test_openapi_test_config_test_pydantic_plugin_override_by_alias__locals__RequestWithAlias__"
+    ] == {
         "properties": {request_key: {"type": "string"}},
         "type": "object",
         "required": [request_key],
         "title": "RequestWithAlias",
     }
     response_key = "second"
-    schema_key = normalize_type_name(str(ResponseWithAlias))
-
-    assert schemas[schema_key] == {
+    assert schemas[
+        "_class__tests_unit_test_openapi_test_config_test_pydantic_plugin_override_by_alias__locals__ResponseWithAlias__"
+    ] == {
         "properties": {response_key: {"type": "string"}},
         "type": "object",
         "required": [response_key],

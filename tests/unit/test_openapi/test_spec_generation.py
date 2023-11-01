@@ -11,7 +11,6 @@ from tests import (
     MsgSpecStructPerson,
     PydanticDataClassPerson,
     PydanticPerson,
-    PydanticPet,
     TypedDictPerson,
     VanillaDataClassPerson,
 )
@@ -38,7 +37,6 @@ def test_spec_generation(cls: Any) -> None:
         assert schema
         schema_key = normalize_type_name(str(cls))
 
-        pet_schema_key = normalize_type_name(str(PydanticPet))
         assert schema.to_schema()["components"]["schemas"][schema_key] == {
             "properties": {
                 "first_name": {"type": "string"},
@@ -55,7 +53,7 @@ def test_spec_generation(cls: Any) -> None:
                 "pets": {
                     "oneOf": [
                         {"type": "null"},
-                        {"items": {"$ref": f"#/components/schemas/{pet_schema_key}"}, "type": "array"},
+                        {"items": {"$ref": "#/components/schemas/_class__tests_PydanticPet__"}, "type": "array"},
                     ]
                 },
             },
@@ -74,13 +72,13 @@ def test_msgspec_schema() -> None:
     def handler(data: CamelizedStruct) -> CamelizedStruct:
         return data
 
-    schema_key = normalize_type_name(str(CamelizedStruct))
-
     with create_test_client(handler) as client:
         schema = client.app.openapi_schema
         assert schema
 
-        assert schema.to_schema()["components"]["schemas"][schema_key] == {
+        assert schema.to_schema()["components"]["schemas"][
+            "_class__tests_unit_test_openapi_test_spec_generation_test_msgspec_schema__locals__CamelizedStruct__"
+        ] == {
             "properties": {"fieldOne": {"type": "integer"}, "fieldTwo": {"type": "number"}},
             "required": ["fieldOne", "fieldTwo"],
             "title": "CamelizedStruct",

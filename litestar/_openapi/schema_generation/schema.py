@@ -590,8 +590,7 @@ class SchemaCreator:
         if schema.title and schema.type in (OpenAPIType.OBJECT, OpenAPIType.ARRAY):
             class_name = normalize_type_name(str(field.annotation))
 
-            existing = self.schemas.get(class_name)
-            if existing:
+            if class_name in self.schemas:
                 return Reference(ref=f"#/components/schemas/{class_name}", description=schema.description)
 
             self.schemas[class_name] = schema

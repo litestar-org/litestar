@@ -4,7 +4,6 @@ from typing import Any, List, Optional, Tuple
 import pytest
 
 from litestar import get
-from litestar._openapi.schema_generation.utils import normalize_type_name
 from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.pagination import (
     AbstractAsyncClassicPaginator,
@@ -122,7 +121,7 @@ def test_classic_pagination_openapi_schema(paginator: Any) -> None:
             "schema": {
                 "properties": {
                     "items": {
-                        "items": {"$ref": f"#/components/schemas/{normalize_type_name(str(PydanticPerson))}"},
+                        "items": {"$ref": "#/components/schemas/_class__tests_PydanticPerson__"},
                         "type": "array",
                     },
                     "page_size": {"type": "integer", "description": "Number of items per page."},
@@ -179,7 +178,7 @@ def test_limit_offset_pagination_openapi_schema(paginator: Any) -> None:
             "schema": {
                 "properties": {
                     "items": {
-                        "items": {"$ref": f"#/components/schemas/{normalize_type_name(str(PydanticPerson))}"},
+                        "items": {"$ref": "#/components/schemas/_class__tests_PydanticPerson__"},
                         "type": "array",
                     },
                     "limit": {"type": "integer", "description": "Maximal number of items to send."},
@@ -255,11 +254,13 @@ def test_cursor_pagination_openapi_schema(paginator: Any) -> None:
         path = "/sync" if isinstance(paginator, TestSyncCursorPagination) else "/async"
 
         spec = schema.to_schema()["paths"][path]["get"]["responses"]["200"]["content"]["application/json"]
-        person_type_name = normalize_type_name(str(PydanticPerson))
         assert spec == {
             "schema": {
                 "properties": {
-                    "items": {"items": {"$ref": f"#/components/schemas/{person_type_name}"}, "type": "array"},
+                    "items": {
+                        "items": {"$ref": "#/components/schemas/_class__tests_PydanticPerson__"},
+                        "type": "array",
+                    },
                     "cursor": {
                         "type": "string",
                         "description": "Unique ID, designating the last identifier in the given data set. This value can be used to request the 'next' batch of records.",

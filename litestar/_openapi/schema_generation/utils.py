@@ -19,6 +19,9 @@ def sort_schemas_and_references(values: list[Schema | Reference]) -> list[Schema
     return sorted(values, key=lambda value: value.type if isinstance(value, Schema) else value.ref)  # type: ignore
 
 
+TYPE_NAME_NORMALIZATION_REGEX = re.compile(r"[^a-zA-Z0-9_]")
+
+
 def normalize_type_name(type_annotation_str: str) -> str:
     """Normalize a type annotation, replacing all non-alphanumeric with underscores. Existing underscores will be left as-is
 
@@ -29,4 +32,4 @@ def normalize_type_name(type_annotation_str: str) -> str:
         str: A normalized version of the input string
     """
     # Use a regular expression to replace non-alphanumeric characters with underscores
-    return re.sub(r"[^a-zA-Z0-9_]", "_", type_annotation_str)
+    return re.sub(TYPE_NAME_NORMALIZATION_REGEX, "_", type_annotation_str)

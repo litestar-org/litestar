@@ -64,6 +64,24 @@ def test_process_schema_result() -> None:
         assert getattr(schema, schema_key) == getattr(kwarg_definition, signature_key)
 
 
+def test_type_name_normalization() -> None:
+    class LocalClass(msgspec.Struct):
+        id: str
+
+    assert (
+        "_class__tests_unit_test_openapi_test_schema_test_type_name_normalization__locals__LocalClass__"
+        == normalize_type_name(str(LocalClass))
+    )
+
+    assert "_class__tests_PydanticPerson__" == normalize_type_name(str(PydanticPerson))
+
+    builtin_dict = dict[str, List[int]]
+    assert "dict_str__typing_List_int__" == normalize_type_name(str(builtin_dict))
+
+    builtin_with_custom = dict[str, PydanticPerson]
+    assert "dict_str__tests_PydanticPerson_" == normalize_type_name(str(builtin_with_custom))
+
+
 def test_dependency_schema_generation() -> None:
     async def top_dependency(query_param: int) -> int:
         return query_param
@@ -132,9 +150,10 @@ def test_handling_of_literals() -> None:
         FieldDefinition.from_kwarg(name="", annotation=DataclassWithLiteral)
     )
     assert isinstance(result, Reference)
-    schema_key = normalize_type_name(str(DataclassWithLiteral))
 
-    schema = schemas[schema_key]
+    schema = schemas[
+        "_class__tests_unit_test_openapi_test_schema_test_handling_of_literals__locals__DataclassWithLiteral__"
+    ]
     assert isinstance(schema, Schema)
     assert schema.properties
 
@@ -168,14 +187,12 @@ def test_title_validation() -> None:
     schema_creator = SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()])
 
     schema_creator.for_field_definition(FieldDefinition.from_kwarg(name="Person", annotation=PydanticPerson))
-    schema_key = normalize_type_name(str(PydanticPerson))
 
-    assert schemas.get(schema_key)
+    assert schemas.get("_class__tests_PydanticPerson__")
 
     schema_creator.for_field_definition(FieldDefinition.from_kwarg(name="Pet", annotation=PydanticPet))
-    schema_key = normalize_type_name(str(PydanticPet))
 
-    assert schemas.get(schema_key)
+    assert schemas.get("_class__tests_PydanticPet__")
 
 
 @pytest.mark.parametrize("with_future_annotations", [True, False])
@@ -256,8 +273,9 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
 
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas).for_field_definition(FieldDefinition.from_kwarg(name="Lookup", annotation=Lookup))
-    schema_key = normalize_type_name(str(Lookup))
-    schema = schemas[schema_key]
+    schema = schemas[
+        "_class__tests_unit_test_openapi_test_schema_test_create_schema_from_msgspec_annotated_type__locals__Lookup__"
+    ]
 
     assert schema.properties["id"].type == OpenAPIType.STRING  # type: ignore
     assert schema.properties["id"].examples == [Example(value="example")]  # type: ignore
@@ -281,8 +299,9 @@ def test_create_schema_for_pydantic_field() -> None:
     schemas: Dict[str, Schema] = {}
     field_definition = FieldDefinition.from_kwarg(name="Model", annotation=Model)
     SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(field_definition)
-    schema_key = normalize_type_name(str(Model))
-    schema = schemas[schema_key]
+    schema = schemas[
+        "_class__tests_unit_test_openapi_test_schema_test_create_schema_for_pydantic_field__locals__Model__"
+    ]
 
     assert schema.properties["value"].description == "description"  # type: ignore
     assert schema.properties["value"].title == "title"  # type: ignore
@@ -307,8 +326,7 @@ def test_annotated_types() -> None:
     SchemaCreator(schemas=schemas).for_field_definition(
         FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass)
     )
-    schema_key = normalize_type_name(str(MyDataclass))
-    schema = schemas[schema_key]
+    schema = schemas["_class__tests_unit_test_openapi_test_schema_test_annotated_types__locals__MyDataclass__"]
 
     assert schema.properties["constrained_int"].exclusive_minimum == 1  # type: ignore
     assert schema.properties["constrained_int"].exclusive_maximum == 10  # type: ignore
@@ -335,5 +353,4 @@ def test_literal_enums() -> None:
     SchemaCreator(schemas=schemas).for_field_definition(
         FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass)
     )
-    schema_key = normalize_type_name(str(MyDataclass))
-    assert schemas[schema_key].properties["bar"].items.const == 1  # type: ignore
+    assert schemas["_class__tests_unit_test_openapi_test_schema_test_literal_enums__locals__MyDataclass__"].properties["bar"].items.const == 1  # type: ignore
