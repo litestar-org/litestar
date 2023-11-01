@@ -163,17 +163,21 @@ def test_create_collection_constrained_field_schema_sub_fields(
         field_definition = FieldDefinition.from_annotation(annotation)
         schema = SchemaCreator().for_collection_constrained_field(field_definition)
         assert schema.type == OpenAPIType.ARRAY
-        expected = {
-            "items": {"oneOf": [{"type": "integer"}, {"type": "string"}]},
-            "maxItems": 10,
-            "minItems": 1,
-            "type": "array",
-        }
+        assert schema.max_items == 10
+        assert schema.min_items == 1
+        assert isinstance(schema.items, Schema)
+        assert schema.items.one_of is not None
+
+        def _get_schema_type(s: Any) -> OpenAPIType:
+            assert isinstance(s, Schema)
+            assert isinstance(s.type, OpenAPIType)
+            return s.type
+
+        # https://github.com/litestar-org/litestar/pull/2570#issuecomment-1788122570
+        assert {_get_schema_type(s) for s in schema.items.one_of} == {OpenAPIType.STRING, OpenAPIType.INTEGER}
         if pydantic_fn is conset:
             # set should have uniqueItems always
-            expected["uniqueItems"] = True
-
-        assert schema.to_schema() == expected
+            assert schema.unique_items
 
 
 @pytest.mark.parametrize("annotation", constrained_string_v1)

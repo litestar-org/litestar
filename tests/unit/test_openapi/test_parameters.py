@@ -13,7 +13,7 @@ from litestar.di import Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi import OpenAPIConfig
-from litestar.openapi.spec import Example, OpenAPI
+from litestar.openapi.spec import Example, OpenAPI, Schema
 from litestar.openapi.spec.enums import OpenAPIType
 from litestar.params import Dependency, Parameter
 from litestar.testing import create_test_client
@@ -101,26 +101,26 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
     assert gender.param_in == ParamType.QUERY
     assert gender.name == "gender"
     assert is_schema_value(gender.schema)
-    assert gender.schema.to_schema() == {
-        "oneOf": [
-            {"type": "null"},
-            {
-                "items": {
-                    "type": "string",
-                    "enum": ["M", "F", "O", "A"],
-                    "examples": [{"description": "Example  value", "value": "F"}],
-                },
-                "type": "array",
-                "examples": [{"description": "Example  value", "value": ["A"]}],
-            },
-            {
-                "type": "string",
-                "enum": ["M", "F", "O", "A"],
-                "examples": [{"description": "Example  value", "value": "M"}],
-            },
+    assert gender.schema == Schema(
+        one_of=[
+            Schema(type=OpenAPIType.NULL),
+            Schema(
+                type=OpenAPIType.STRING,
+                enum=["M", "F", "O", "A"],
+                examples=[Example(description="Example  value", value="M")],
+            ),
+            Schema(
+                type=OpenAPIType.ARRAY,
+                items=Schema(
+                    type=OpenAPIType.STRING,
+                    enum=["M", "F", "O", "A"],
+                    examples=[Example(description="Example  value", value="F")],
+                ),
+                examples=[Example(description="Example  value", value=["A"])],
+            ),
         ],
-        "examples": [{"value": "M"}, {"value": ["M", "O"]}],
-    }
+        examples=[Example(value="M"), Example(value=["M", "O"])],
+    )
     assert not gender.required
 
     assert secret_header.param_in == ParamType.HEADER
