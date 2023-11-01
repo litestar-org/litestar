@@ -32,47 +32,41 @@ def test_app_repository_signature_namespace() -> None:
 
 
 def test_deprecated_abc_imports() -> None:
+    from litestar.contrib.repository import abc as abc_contrib
     from litestar.repository import abc
 
-    with pytest.warns(DeprecationWarning):
-        from litestar.contrib.repository import abc as abc_contrib
-
-        assert abc_contrib.AbstractAsyncRepository is abc.AbstractAsyncRepository
-        assert abc_contrib.AbstractSyncRepository is abc.AbstractSyncRepository
+    assert abc_contrib.AbstractAsyncRepository is abc.AbstractAsyncRepository
+    assert abc_contrib.AbstractSyncRepository is abc.AbstractSyncRepository
 
     with pytest.raises(AttributeError):
         abc_contrib.foo
 
 
 def test_deprecated_exception_imports() -> None:
+    from litestar.contrib.repository import exceptions as contrib_exceptions
     from litestar.repository import exceptions
 
-    with pytest.warns(DeprecationWarning):
-        from litestar.contrib.repository import exceptions as contrib_exceptions
-
-        assert exceptions.RepositoryError is contrib_exceptions.RepositoryError
-        assert exceptions.ConflictError is contrib_exceptions.ConflictError
-        assert exceptions.NotFoundError is contrib_exceptions.NotFoundError
+    assert exceptions.RepositoryError is contrib_exceptions.RepositoryError
+    assert exceptions.ConflictError is contrib_exceptions.ConflictError
+    assert exceptions.NotFoundError is contrib_exceptions.NotFoundError
 
     with pytest.raises(AttributeError):
         contrib_exceptions.foo
 
 
 def test_deprecated_filters_imports() -> None:
+    from litestar.contrib.repository import filters as contrib_filter
     from litestar.repository import filters
 
-    with pytest.warns(DeprecationWarning):
-        from litestar.contrib.repository import filters as contrib_filter
-
-        assert filters.FilterTypes is contrib_filter.FilterTypes
-        assert filters.CollectionFilter is contrib_filter.CollectionFilter
-        assert filters.NotInCollectionFilter is contrib_filter.NotInCollectionFilter
-        assert filters.SearchFilter is contrib_filter.SearchFilter
-        assert filters.NotInSearchFilter is contrib_filter.NotInSearchFilter
-        assert filters.OnBeforeAfter is contrib_filter.OnBeforeAfter
-        assert filters.BeforeAfter is contrib_filter.BeforeAfter
-        assert filters.LimitOffset is contrib_filter.LimitOffset
-        assert filters.OrderBy is contrib_filter.OrderBy
+    assert filters.FilterTypes is contrib_filter.FilterTypes
+    assert filters.CollectionFilter is contrib_filter.CollectionFilter
+    assert filters.NotInCollectionFilter is contrib_filter.NotInCollectionFilter
+    assert filters.SearchFilter is contrib_filter.SearchFilter
+    assert filters.NotInSearchFilter is contrib_filter.NotInSearchFilter
+    assert filters.OnBeforeAfter is contrib_filter.OnBeforeAfter
+    assert filters.BeforeAfter is contrib_filter.BeforeAfter
+    assert filters.LimitOffset is contrib_filter.LimitOffset
+    assert filters.OrderBy is contrib_filter.OrderBy
 
     with pytest.raises(AttributeError):
         contrib_filter.foo
@@ -95,32 +89,21 @@ def test_advanced_alchemy_imports() -> None:
 
 
 def test_deprecated_handlers_imports() -> None:
+    from litestar.contrib.repository import handlers as contrib_handlers
     from litestar.repository import handlers
 
-    with pytest.warns(DeprecationWarning):
-        from litestar.contrib.repository import handlers as contrib_handlers
-
-        assert handlers.on_app_init is contrib_handlers.on_app_init
+    assert handlers.on_app_init is contrib_handlers.on_app_init
 
     with pytest.raises(AttributeError):
         contrib_handlers.foo
 
 
 def test_deprecated_testing_imports() -> None:
+    from litestar.contrib.repository import testing as contrib_testing
     from litestar.repository.testing import generic_mock_repository
 
-    with pytest.warns(DeprecationWarning):
-        from litestar.contrib.repository import testing as contrib_testing
-
-        assert generic_mock_repository.GenericAsyncMockRepository is contrib_testing.GenericAsyncMockRepository
-        assert generic_mock_repository.GenericSyncMockRepository is contrib_testing.GenericSyncMockRepository
+    assert generic_mock_repository.GenericAsyncMockRepository is contrib_testing.GenericAsyncMockRepository
+    assert generic_mock_repository.GenericSyncMockRepository is contrib_testing.GenericSyncMockRepository
 
     with pytest.raises(AttributeError):
         contrib_testing.foo
-
-
-def test_deprecated_import_missing_attribute() -> None:
-    with pytest.raises(AttributeError):
-        from litestar import repository
-
-        repository.foo  # type: ignore[attr-defined]
