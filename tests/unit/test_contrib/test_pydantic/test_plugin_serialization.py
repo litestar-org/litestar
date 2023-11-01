@@ -25,6 +25,8 @@ from litestar.serialization import (
     get_serializer,
 )
 
+from . import PydanticVersion
+
 
 class CustomStr(str):
     pass
@@ -118,13 +120,13 @@ serializer = partial(default_serializer, type_encoders=PydanticInitPlugin.encode
 
 
 @pytest.fixture()
-def model_type(pydantic_version: str) -> type[ModelV1 | ModelV2]:
-    return ModelV1 if pydantic_version == "1" else ModelV2
+def model_type(pydantic_version: PydanticVersion) -> type[ModelV1 | ModelV2]:
+    return ModelV1 if pydantic_version == "v1" else ModelV2
 
 
 @pytest.fixture()
-def model(pydantic_version: str) -> ModelV1 | ModelV2:
-    if pydantic_version == "1":
+def model(pydantic_version: PydanticVersion) -> ModelV1 | ModelV2:
+    if pydantic_version == "v1":
         return ModelV1(
             path=Path("example"),
             email_str=pydantic_v1.parse_obj_as(pydantic_v1.EmailStr, "info@example.org"),
@@ -195,14 +197,16 @@ def test_serialization_of_model_instance(model: ModelV1 | ModelV2) -> None:
 
 
 @pytest.mark.parametrize("prefer_alias", [False, True])
-def test_pydantic_json_compatibility(model: ModelV1 | ModelV2, prefer_alias: bool, pydantic_version: str) -> None:
+def test_pydantic_json_compatibility(
+    model: ModelV1 | ModelV2, prefer_alias: bool, pydantic_version: PydanticVersion
+) -> None:
     raw = _model_dump_json(model, by_alias=prefer_alias)
     encoded_json = encode_json(model, serializer=get_serializer(PydanticInitPlugin.encoders(prefer_alias=prefer_alias)))
 
     raw_result = json.loads(raw)
     encoded_result = json.loads(encoded_json)
 
-    if pydantic_version == "1":
+    if pydantic_version == "v1":
         # pydantic v1 dumps decimals into floats as json, we therefore regard this as an error
         assert raw_result.get("condecimal") == float(encoded_result.get("condecimal"))
         del raw_result["condecimal"]

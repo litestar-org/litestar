@@ -10,6 +10,8 @@ from litestar.status_codes import HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 from tests.unit.test_contrib.test_pydantic.models import PydanticPerson, PydanticV1Person
 
+from . import PydanticVersion
+
 
 def test_pydantic_v1_validation_error_raises_400() -> None:
     class Model(pydantic_v1.BaseModel):
@@ -99,7 +101,7 @@ def test_default_error_handling_v1() -> None:
 
 
 def test_signature_model_invalid_input(
-    base_model: Type[Union[pydantic_v2.BaseModel, pydantic_v1.BaseModel]], pydantic_version: str
+    base_model: Type[Union[pydantic_v2.BaseModel, pydantic_v1.BaseModel]], pydantic_version: PydanticVersion
 ) -> None:
     class OtherChild(base_model):  # type: ignore[misc, valid-type]
         val: List[int]
@@ -136,7 +138,7 @@ def test_signature_model_invalid_input(
         data = response.json()
 
         assert data
-        if pydantic_version == "1":
+        if pydantic_version == "v1":
             assert data["extra"] == [
                 {"key": "child.val", "message": "value is not a valid integer"},
                 {"key": "child.other_val", "message": "value is not a valid integer"},
