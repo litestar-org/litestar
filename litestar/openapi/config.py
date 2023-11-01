@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass, field, fields
-from typing import TYPE_CHECKING, Literal, cast
+from typing import TYPE_CHECKING, Literal
 
 from litestar._openapi.utils import default_operation_id_creator
 from litestar.openapi.controller import OpenAPIController
@@ -67,7 +68,7 @@ class OpenAPIConfig:
     Should be an instance of
         :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>`.
     """
-    components: Components | list[Components] | None = field(default=None)
+    components: Components | list[Components] = field(default_factory=Components)
     """API Components information.
 
     Should be an instance of :class:`Components <litestar.openapi.spec.components.Components>` or a list thereof.
@@ -133,7 +134,7 @@ class OpenAPIConfig:
         return OpenAPI(
             external_docs=self.external_docs,
             security=self.security,
-            components=cast("Components", self.components),
+            components=deepcopy(self.components),  # deepcopy prevents mutation of the config's components
             servers=self.servers,
             tags=self.tags,
             webhooks=self.webhooks,
