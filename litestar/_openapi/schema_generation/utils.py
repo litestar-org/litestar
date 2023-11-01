@@ -12,8 +12,8 @@ if TYPE_CHECKING:
 __all__ = (
     "sort_schemas_and_references",
     "_type_or_first_not_none_inner_type",
-    "_do_enum_schema",
-    "_do_literal_schema",
+    "_should_create_enum_schema",
+    "_should_create_literal_schema",
 )
 
 

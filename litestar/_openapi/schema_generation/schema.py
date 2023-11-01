@@ -43,8 +43,8 @@ from litestar._openapi.schema_generation.constrained_fields import (
     create_string_constrained_field_schema,
 )
 from litestar._openapi.schema_generation.utils import (
-    _do_enum_schema,
-    _do_literal_schema,
+    _should_create_enum_schema,
+    _should_create_literal_schema,
     _type_or_first_not_none_inner_type,
 )
 from litestar.datastructures.upload_file import UploadFile
@@ -299,10 +299,10 @@ class SchemaCreator:
 
         if plugin_for_annotation := self.get_plugin_for(field_definition):
             result = self.for_plugin(field_definition, plugin_for_annotation)
-        elif _do_enum_schema(field_definition):
+        elif _should_create_enum_schema(field_definition):
             annotation = _type_or_first_not_none_inner_type(field_definition)
             result = create_enum_schema(annotation, include_null=field_definition.is_optional)
-        elif _do_literal_schema(field_definition):
+        elif _should_create_literal_schema(field_definition):
             annotation = (
                 make_non_optional_union(field_definition.annotation)
                 if field_definition.is_optional
