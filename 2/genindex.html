@@ -17,12 +17,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,11 +34,11 @@
     <link rel="stylesheet" type="text/css" href="_static/litestar-sphinx-theme.css?v=db8d6e31" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=a5ad1038"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=77b218ca"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -122,13 +122,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="_static/logo.svg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="_static/logo.svg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="_static/logo.svg" class="logo__image only-light" alt="Litestar Framework - Home"/>
+    <script>document.write(`<img src="_static/logo.svg" class="logo__image only-dark" alt="Litestar Framework - Home"/>`);</script>
   
   
 </a></div>
@@ -1185,6 +1186,13 @@ document.write(`
 </li>
       </ul></li>
       <li>
+    --create-self-signed-cert
+
+      <ul>
+        <li><a href="reference/cli.html#cmdoption-litestar-run-create-self-signed-cert">litestar-run command line option</a>
+</li>
+      </ul></li>
+      <li>
     --debug
 
       <ul>
@@ -1264,14 +1272,28 @@ document.write(`
 </li>
       </ul></li>
       <li>
+    --ssl-certfile
+
+      <ul>
+        <li><a href="reference/cli.html#cmdoption-litestar-run-ssl-certfile">litestar-run command line option</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    --ssl-keyfile
+
+      <ul>
+        <li><a href="reference/cli.html#cmdoption-litestar-run-ssl-keyfile">litestar-run command line option</a>
+</li>
+      </ul></li>
+      <li>
     --uds
 
       <ul>
         <li><a href="reference/cli.html#cmdoption-litestar-run-U">litestar-run command line option</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     --unix-domain-socket
 
@@ -2346,6 +2368,8 @@ document.write(`
 </li>
       <li><a href="reference/logging/config.html#litestar.logging.config.StructLoggingConfig.cache_logger_on_first_use">cache_logger_on_first_use (litestar.logging.config.StructLoggingConfig attribute)</a>
 </li>
+      <li><a href="reference/config.html#litestar.config.response_cache.ResponseCacheConfig.cache_response_filter">cache_response_filter() (litestar.config.response_cache.ResponseCacheConfig method)</a>
+</li>
       <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader">CacheControlHeader (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.CacheKeyBuilder">CacheKeyBuilder (in module litestar.types)</a>
@@ -2538,6 +2562,8 @@ document.write(`
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.count">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.create_all">create_all (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
+</li>
       <li><a href="reference/testing.html#litestar.testing.create_async_test_client">create_async_test_client() (in module litestar.testing)</a>
 </li>
       <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware.create_compression_send_wrapper">create_compression_send_wrapper() (litestar.middleware.compression.CompressionMiddleware method)</a>
@@ -3530,6 +3556,8 @@ document.write(`
         <li><a href="reference/pagination.html#litestar.pagination.AbstractSyncOffsetPaginator.get_total">(litestar.pagination.AbstractSyncOffsetPaginator method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/typing.html#litestar.typing.FieldDefinition.get_type_hints">get_type_hints() (litestar.typing.FieldDefinition method)</a>
+</li>
       <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.getall">getall() (litestar.datastructures.MutableScopeHeaders method)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.FileInfo.gid">gid (litestar.types.FileInfo attribute)</a>
@@ -3898,17 +3926,25 @@ document.write(`
 </li>
       <li><a href="reference/config.html#litestar.config.cors.CORSConfig.is_allow_all_origins">is_allow_all_origins (litestar.config.cors.CORSConfig property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_annotated">is_annotated (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_any">is_any (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_collection">is_collection (litestar.typing.FieldDefinition property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_const">is_const (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/params.html#litestar.params.KwargDefinition.is_constrained">is_constrained (litestar.params.KwargDefinition property)</a>
+</li>
+      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.is_constrained_field">is_constrained_field() (litestar.contrib.pydantic.PydanticSchemaPlugin static method)</a>
+
+      <ul>
+        <li><a href="reference/plugins.html#litestar.plugins.OpenAPISchemaPlugin.is_constrained_field">(litestar.plugins.OpenAPISchemaPlugin static method)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_dataclass_type">is_dataclass_type (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_forward_ref">is_forward_ref (litestar.typing.FieldDefinition property)</a>
 </li>
@@ -3923,6 +3959,8 @@ document.write(`
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_non_string_iterable">is_non_string_iterable (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_non_string_sequence">is_non_string_sequence (litestar.typing.FieldDefinition property)</a>
+</li>
+      <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_none_type">is_none_type (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_optional">is_optional (litestar.typing.FieldDefinition property)</a>
 </li>
@@ -3950,6 +3988,14 @@ document.write(`
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_type_var">is_type_var (litestar.typing.FieldDefinition property)</a>
 </li>
+      <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_typeddict_type">is_typeddict_type (litestar.typing.FieldDefinition property)</a>
+</li>
+      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.is_undefined_sentinel">is_undefined_sentinel() (litestar.contrib.pydantic.PydanticSchemaPlugin static method)</a>
+
+      <ul>
+        <li><a href="reference/plugins.html#litestar.plugins.OpenAPISchemaPlugin.is_undefined_sentinel">(litestar.plugins.OpenAPISchemaPlugin static method)</a>
+</li>
+      </ul></li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_union">is_union (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.FileInfo.islink">islink (litestar.types.FileInfo attribute)</a>
@@ -4129,6 +4175,8 @@ document.write(`
     litestar-run command line option
 
       <ul>
+        <li><a href="reference/cli.html#cmdoption-litestar-run-create-self-signed-cert">--create-self-signed-cert</a>
+</li>
         <li><a href="reference/cli.html#cmdoption-litestar-run-d">--debug</a>
 </li>
         <li><a href="reference/cli.html#cmdoption-litestar-run-F">--fd</a>
@@ -4144,6 +4192,10 @@ document.write(`
         <li><a href="reference/cli.html#cmdoption-litestar-run-r">--reload</a>
 </li>
         <li><a href="reference/cli.html#cmdoption-litestar-run-R">--reload-dir</a>
+</li>
+        <li><a href="reference/cli.html#cmdoption-litestar-run-ssl-certfile">--ssl-certfile</a>
+</li>
+        <li><a href="reference/cli.html#cmdoption-litestar-run-ssl-keyfile">--ssl-keyfile</a>
 </li>
         <li><a href="reference/cli.html#cmdoption-litestar-run-U">--uds</a>
 </li>
@@ -4409,6 +4461,8 @@ document.write(`
         <li><a href="reference/dto/config.html#module-litestar.dto.config">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.data_structures
 
@@ -4416,8 +4470,6 @@ document.write(`
         <li><a href="reference/dto/data_structures.html#module-litestar.dto.data_structures">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.dataclass_dto
 
@@ -4914,6 +4966,8 @@ document.write(`
 </li>
         <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDBase.metadata">(litestar.contrib.sqlalchemy.base.UUIDBase attribute)</a>
 </li>
+        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.metadata">(litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
+</li>
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.metadata">(litestar.typing.FieldDefinition attribute)</a>
 </li>
       </ul></li>
@@ -5370,8 +5424,6 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI.openapi">openapi (litestar.openapi.spec.OpenAPI attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/contrib/jwt.html#litestar.contrib.jwt.BaseJWTAuth.openapi_components">openapi_components (litestar.contrib.jwt.BaseJWTAuth property)</a>
 
       <ul>
@@ -5384,6 +5436,8 @@ document.write(`
         <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth.openapi_components">(litestar.security.session_auth.SessionAuth property)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/config.html#litestar.config.app.AppConfig.openapi_config">openapi_config (litestar.config.app.AppConfig attribute)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.openapi_controller">openapi_controller (litestar.openapi.OpenAPIConfig attribute)</a>
@@ -5415,6 +5469,8 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPIResponse">OpenAPIResponse (class in litestar.openapi.spec)</a>
+</li>
+      <li><a href="reference/plugins.html#litestar.plugins.OpenAPISchemaPlugin">OpenAPISchemaPlugin (class in litestar.plugins)</a>
 </li>
       <li><a href="reference/plugins.html#litestar.plugins.OpenAPISchemaPluginProtocol">OpenAPISchemaPluginProtocol (class in litestar.plugins)</a>
 </li>
@@ -5750,6 +5806,10 @@ document.write(`
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.rapidoc_js_url">rapidoc_js_url (litestar.openapi.OpenAPIController attribute)</a>
+</li>
+      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.rapidoc_version">rapidoc_version (litestar.openapi.OpenAPIController attribute)</a>
+</li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.rate_limit">rate_limit (litestar.middleware.rate_limit.RateLimitConfig attribute)</a>
 </li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.rate_limit_limit_header_key">rate_limit_limit_header_key (litestar.middleware.rate_limit.RateLimitConfig attribute)</a>
@@ -5893,6 +5953,8 @@ document.write(`
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.render_stoplight_elements">render_stoplight_elements() (litestar.openapi.OpenAPIController method)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.render_swagger_ui">render_swagger_ui() (litestar.openapi.OpenAPIController method)</a>
+</li>
+      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.render_swagger_ui_oauth2_redirect">render_swagger_ui_oauth2_redirect() (litestar.openapi.OpenAPIController method)</a>
 </li>
       <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionConfig.renew_on_access">renew_on_access (litestar.middleware.session.server_side.ServerSideSessionConfig attribute)</a>
 </li>
@@ -6323,6 +6385,8 @@ document.write(`
 </li>
       <li><a href="reference/types.html#litestar.types.Serializer">Serializer (in module litestar.types)</a>
 </li>
+      <li><a href="reference/testing.html#litestar.testing.RequestFactory.serializer">serializer (litestar.testing.RequestFactory attribute)</a>
+</li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Server">Server (class in litestar.openapi.spec)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Link.server">server (litestar.openapi.spec.Link attribute)</a>
@@ -6392,10 +6456,10 @@ document.write(`
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_maker_class">session_maker_class (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth">SessionAuth (class in litestar.security.session_auth)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/security/session_auth.html#litestar.security.session_auth.middleware.SessionAuthMiddleware">SessionAuthMiddleware (class in litestar.security.session_auth.middleware)</a>
 </li>
       <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware">SessionMiddleware (class in litestar.middleware.session.base)</a>
@@ -6468,6 +6532,12 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener.signature_namespace">(litestar.handlers.WebsocketListener attribute)</a>
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.signature_namespace">(litestar.openapi.OpenAPIController attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/config.html#litestar.config.app.AppConfig.signature_types">signature_types (litestar.config.app.AppConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/controller.html#litestar.controller.Controller.signature_types">(litestar.controller.Controller attribute)</a>
 </li>
       </ul></li>
       <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.simple_cookie">simple_cookie (litestar.datastructures.Cookie property)</a>
@@ -6639,6 +6709,8 @@ document.write(`
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.swagger_css_url">swagger_css_url (litestar.openapi.OpenAPIController attribute)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.swagger_ui_bundle_js_url">swagger_ui_bundle_js_url (litestar.openapi.OpenAPIController attribute)</a>
+</li>
+      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.swagger_ui_init_oauth">swagger_ui_init_oauth (litestar.openapi.OpenAPIController attribute)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.swagger_ui_standalone_preset_js_url">swagger_ui_standalone_preset_js_url (litestar.openapi.OpenAPIController attribute)</a>
 </li>
@@ -7166,8 +7238,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -7197,7 +7269,7 @@ document.write(`
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

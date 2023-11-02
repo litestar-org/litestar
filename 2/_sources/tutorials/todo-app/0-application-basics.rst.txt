@@ -10,7 +10,7 @@ Before we start building our TODO application, let us start with the basics.
 Install Litestar
 ++++++++++++++++
 
-To install Litestar, run ``pip install litestar[standard]``. This will install Litestar
+To install Litestar, run ``pip install 'litestar[standard]'``. This will install Litestar
 as well as `uvicorn <https://www.uvicorn.org/>`_ -  a web server to serve your application.
 
 .. note::
