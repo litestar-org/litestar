@@ -68,7 +68,7 @@ connection, around.
 Order of execution
 -----------------------------------------------------
 
-When multiple lifespan context managers and ``on_shutdown`` hooks are specified Litestar will invoke the context
+When multiple lifespan context managers and ``on_shutdown`` hooks are specified, Litestar will invoke the context
 managers in inverse order before the shutdown hooks are invoked.
 
 Let's say there are two lifespan context managers ``ctx_a`` and ``ctx_b`` as well as two shutdown hooks ``hook_a`` and
