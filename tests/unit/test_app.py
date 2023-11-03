@@ -9,7 +9,6 @@ from dataclasses import fields
 from typing import TYPE_CHECKING, List, Tuple
 from unittest.mock import MagicMock, Mock, PropertyMock
 
-
 import pytest
 from click import Group
 from pytest import MonkeyPatch
@@ -440,4 +439,3 @@ def test_lifespan_context_and_shutdown_hook_execution_order() -> None:
     assert events[1] == "ctx_1"
     assert events[2] == "hook_a"
     assert events[3] == "hook_b"
-
