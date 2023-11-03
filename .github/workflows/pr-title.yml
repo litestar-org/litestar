@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   main:
+    if: ${{ github.event_name == 'pull_request' }}
     name: Validate PR title
     runs-on: ubuntu-latest
     steps:
