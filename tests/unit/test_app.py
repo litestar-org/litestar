@@ -6,6 +6,8 @@ import logging
 from dataclasses import fields
 from typing import TYPE_CHECKING, List, Tuple
 from unittest.mock import MagicMock, Mock, PropertyMock
+from contextlib import asynccontextmanager
+from collections.abc import AsyncGenerator
 
 import pytest
 from click import Group
@@ -392,3 +394,52 @@ def test_plugin_registry() -> None:
     app = Litestar(plugins=[foo])
 
     assert foo in app.plugins.cli
+
+
+def test_lifespan_context_and_shutdown_hook_execution_order() -> None:
+    events: list[str] = []
+    counter = {"value": 0}
+
+    @asynccontextmanager
+    async def lifespan_context_1(app: Litestar) -> AsyncGenerator[None, None]:
+        try:
+            yield
+        finally:
+            events.append("ctx_1")
+            counter["value"] += 1
+
+    @asynccontextmanager
+    async def lifespan_context_2(app: Litestar) -> AsyncGenerator[None, None]:
+        try:
+            yield
+        finally:
+            events.append("ctx_2")
+            counter["value"] += 1
+
+    async def hook_a(app: Litestar) -> None:
+        events.append("hook_a")
+        counter["value"] += 1
+
+    async def hook_b(app: Litestar) -> None:
+        events.append("hook_b")
+        counter["value"] += 1
+
+    with create_test_client(
+            route_handlers=[],
+            lifespan=[
+                lifespan_context_1,
+                lifespan_context_2,
+            ],
+            on_shutdown=[
+                hook_a,
+                hook_b
+            ]
+        ):
+        assert counter["value"] == 0
+
+    assert counter["value"] == 4
+    assert events[0] == "ctx_2"
+    assert events[1] == "ctx_1"
+    assert events[2] == "hook_a"
+    assert events[3] == "hook_b"
+
