@@ -426,13 +426,13 @@ def test_lifespan_context_and_shutdown_hook_execution_order() -> None:
         counter["value"] += 1
 
     with create_test_client(
-            route_handlers=[],
-            lifespan=[
-                lifespan_context_1,
-                lifespan_context_2,
-            ],
-            on_shutdown=[hook_a, hook_b]
-        ):
+        route_handlers=[],
+        lifespan=[
+            lifespan_context_1,
+            lifespan_context_2,
+        ],
+        on_shutdown=[hook_a, hook_b]
+    ):
         assert counter["value"] == 0
 
     assert counter["value"] == 4
