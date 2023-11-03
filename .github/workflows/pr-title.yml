@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   main:
-    if: github.event_name == 'pull_request'
+    if: github.event_name != 'merge_group'
     name: Validate PR title
     runs-on: ubuntu-latest
     steps:
