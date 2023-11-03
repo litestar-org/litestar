@@ -3,11 +3,12 @@ from __future__ import annotations
 
 import inspect
 import logging
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 from dataclasses import fields
 from typing import TYPE_CHECKING, List, Tuple
 from unittest.mock import MagicMock, Mock, PropertyMock
-from contextlib import asynccontextmanager
-from collections.abc import AsyncGenerator
+
 
 import pytest
 from click import Group
@@ -430,10 +431,7 @@ def test_lifespan_context_and_shutdown_hook_execution_order() -> None:
                 lifespan_context_1,
                 lifespan_context_2,
             ],
-            on_shutdown=[
-                hook_a,
-                hook_b
-            ]
+            on_shutdown=[hook_a, hook_b]
         ):
         assert counter["value"] == 0
 
