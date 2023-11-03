@@ -1383,6 +1383,17 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "orgarten",
+      "name": "Orell Garten",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10799869?v=4",
+      "profile": "https://github.com/orgarten",
+      "contributions": [
+        "code",
+        "doc",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
