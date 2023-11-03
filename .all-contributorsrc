@@ -1391,7 +1391,8 @@
       "profile": "https://github.com/orgarten",
       "contributions": [
         "code",
-        "doc"
+        "doc",
+        "test"
       ]
     }
   ],
