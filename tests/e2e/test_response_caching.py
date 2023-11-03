@@ -17,6 +17,7 @@ from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_RE
 from litestar.stores.base import Store
 from litestar.stores.memory import MemoryStore
 from litestar.testing import TestClient, create_test_client
+from litestar.types import HTTPScope
 
 if TYPE_CHECKING:
     from time_machine import Coordinates
@@ -280,8 +281,11 @@ def test_custom_do_response_cache_predicate(mock: MagicMock) -> None:
         mock()
         return "OK"
 
+    def filter_cache_response(_: HTTPScope, __: int) -> bool:
+        return False
+
     with create_test_client(
-        [handler], response_cache_config=ResponseCacheConfig(cache_response_filter=lambda *_: False)
+        [handler], response_cache_config=ResponseCacheConfig(cache_response_filter=filter_cache_response)
     ) as client:
         client.get("/")
         client.get("/")
