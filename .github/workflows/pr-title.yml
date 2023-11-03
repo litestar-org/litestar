@@ -1,7 +1,6 @@
 name: "Lint PR Title"
 
 on:
-  merge_group:
   pull_request_target:
     types:
       - opened
@@ -13,6 +12,7 @@ permissions:
 
 jobs:
   main:
+    if: ${{ github.event_name == 'pull_request' }}
     name: Validate PR title
     runs-on: ubuntu-latest
     steps:
