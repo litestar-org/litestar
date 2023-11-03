@@ -431,7 +431,7 @@ def test_lifespan_context_and_shutdown_hook_execution_order() -> None:
             lifespan_context_1,
             lifespan_context_2,
         ],
-        on_shutdown=[hook_a, hook_b]
+        on_shutdown=[hook_a, hook_b],
     ):
         assert counter["value"] == 0
 
