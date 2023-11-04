@@ -357,9 +357,9 @@ class BaseRouteHandler:
                     if not getattr(provider, "signature_model", None):
                         provider.signature_model = SignatureModel.create(
                             dependency_name_set=self.dependency_name_set,
-                            fn=provider.dependency.value,
+                            fn=provider.dependency,
                             parsed_signature=ParsedSignature.from_fn(
-                                unwrap_partial(provider.dependency.value), self.resolve_signature_namespace()
+                                unwrap_partial(provider.dependency), self.resolve_signature_namespace()
                             ),
                             data_dto=self.resolve_data_dto(),
                             type_decoders=self.resolve_type_decoders(),
