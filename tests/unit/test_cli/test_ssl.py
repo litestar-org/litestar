@@ -154,10 +154,10 @@ def test_one_file_not_found(
     args = ["--app", app_path, "run"]
 
     if ssl_certfile is not None:
-        args.extend(["--ssl-certfile", str(ssl_certfile)])
+        args.extend(["--ssl-certfile", ssl_certfile])
 
     if ssl_keyfile is not None:
-        args.extend(["--ssl-keyfile", str(ssl_keyfile)])
+        args.extend(["--ssl-keyfile", ssl_keyfile])
 
     if create_self_signed_cert:
         args.append("--create-self-signed-cert")
