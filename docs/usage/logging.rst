@@ -37,7 +37,7 @@ Application and request level loggers can be configured using the :class:`~lites
 Standard Library Logging (Manual Configuration)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-`logging <https://docs.python.org/3/howto/logging.html>`_ is Python's builtin standard logging library and can be integrated with `LoggingConfig` as the `root` logging.
+`logging <https://docs.python.org/3/howto/logging.html>`_ is Python's builtin standard logging library and can be integrated with `LoggingConfig` as the `root` logging. By using `logging_config()()` you can build a `logger` to be used around your project.
 
 .. code-block:: python
 
