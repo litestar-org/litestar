@@ -91,7 +91,7 @@ Each app that Unit runs is defined as an object in the ``/config/applications`` 
 Configuration update
 --------------------
 
-To update the nginx-unit service already running, use ``PUT`` method to send the ``unit.json`` file on the `/config` endpoint
+To update the nginx-unit service already running, use ``PUT`` method to send the ``unit.json`` file on the ``/config`` endpoint
 
 .. code-block:: sh
 
