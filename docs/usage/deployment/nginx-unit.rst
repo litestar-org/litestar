@@ -10,7 +10,7 @@ To install ``nginx-unit``, refer to the `official documentation <https://unit.ng
 
 .. tab-set::
 
-   .. tab-item:: macOS (Brew)
+   .. tab-item:: macOS (`Brew <https://brew.sh/>`_)
 
         .. literalinclude:: /examples/deployment/nginx-unit/install-macos.sh
             :language: sh
