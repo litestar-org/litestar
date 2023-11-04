@@ -86,7 +86,7 @@ def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, A
 
         if _is_two_arg_optional(origin, args):
             unwrapped_inner, _, _ = unwrap_annotation(args[0])
-            if not get_origin(unwrapped_inner) is Union:
+            if get_origin(unwrapped_inner) is not Union:
                 continue
 
             hints[name] = args[0]
