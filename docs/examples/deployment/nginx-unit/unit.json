@@ -1,0 +1,20 @@
+{
+  "listeners": {
+    "*:8080": {
+      "pass": "applications/litestar"
+    }
+  },
+
+  "applications": {
+    "litestar": {
+      "type": "python 3.11",
+      "home": "/Users/user/project/listestar/.venv/",
+      "path": "/Users/user/project/litestar/src/app",
+      "module": "run",
+      "callable": "app",
+      "stderr": "/Users/user/project/litestar/error.log",
+      "user": "user",
+      "processes": 1
+    }
+  }
+}
