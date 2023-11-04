@@ -56,6 +56,4 @@ EncodableStdLibIPType: TypeAlias = (
 )
 EncodableMsgSpecType: TypeAlias = "Ext | Raw | Struct"
 LitestarEncodableType: TypeAlias = "EncodableBuiltinType | EncodableBuiltinCollectionType | EncodableStdLibType | EncodableStdLibIPType | EncodableMsgSpecType | BaseModel | AttrsInstance"  # pyright: ignore
-DataContainerType: TypeAlias = (
-    "Struct | BaseModel | AttrsInstance | TypedDictClass | DataclassProtocol"  # pyright: ignore
-)
+DataContainerType: TypeAlias = "Struct | BaseModel | AttrsInstance | TypedDictClass | DataclassProtocol"  # pyright: ignore

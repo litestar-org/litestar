@@ -330,6 +330,7 @@ ignore = [
   "E501", # pycodestyle line too long, handled by ruff-fmt
   "PLW2901", # pylint - for loop variable overwritten by assignment target
   "RUF012", # Ruff-specific rule - annotated with classvar
+  "ISC001", # flake8-implicit-str-concat - implicit string concatenation - ruff formatter has issue with this
 ]
 line-length = 120
 src = ["litestar", "tests", "docs/examples"]
