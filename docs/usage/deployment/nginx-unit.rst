@@ -48,9 +48,9 @@ Listeners
 
 To accept requests, add a listener object in the config/listeners API section; the object’s name can be:
 
-- A unique IP socket: 127.0.0.1:80, [::1]:8080
-- A wildcard that matches any host IPs on the port: *:80
-- On Linux-based systems, abstract UNIX sockets can be used as well: unix:@abstract_socket.
+- A unique IP socket: ``127.0.0.1:80``, ``[::1]:8080``
+- A wildcard that matches any host IPs on the port: ``*:80``
+- On Linux-based systems, abstract UNIX sockets can be used as well: ``unix:@abstract_socket``.
 
 
 Applications
