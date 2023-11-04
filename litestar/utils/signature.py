@@ -6,7 +6,7 @@ from copy import deepcopy
 from dataclasses import dataclass, replace
 from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain
-from typing import Any, Union
+from typing import TYPE_CHECKING, Any, Union
 
 from typing_extensions import Annotated, Self, get_args, get_origin, get_type_hints
 
@@ -16,12 +16,12 @@ from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.typing import unwrap_annotation
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from typing import Sequence
 
     from litestar.types import AnyCallable
 
-if sys.version_info < (3, 11):
+if sys.version_info < (3, 11):  # pragma: no cover
     from typing import _get_defaults  # type: ignore[attr-defined]
 else:
 
@@ -169,7 +169,7 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
     }
     hints = get_type_hints(fn_to_inspect, globalns=namespace, include_extras=True)
 
-    if sys.version_info < (3, 11):
+    if sys.version_info < (3, 11):  # pragma: no cover
         # see https://github.com/litestar-org/litestar/pull/2516
         defaults = _get_defaults(fn_to_inspect)
         hints = _unwrap_implicit_optional_hints(defaults, hints)
