@@ -154,10 +154,10 @@ def test_one_file_not_found(
     args = ["--app", app_path, "run"]
 
     if ssl_certfile is not None:
-        args.extend(["--ssl-certfile", str(ssl_certfile)])
+        args.extend(["--ssl-certfile", ssl_certfile])
 
     if ssl_keyfile is not None:
-        args.extend(["--ssl-keyfile", str(ssl_keyfile)])
+        args.extend(["--ssl-keyfile", ssl_keyfile])
 
     if create_self_signed_cert:
         args.append("--create-self-signed-cert")
@@ -321,9 +321,12 @@ def test_arguments_passed(
             "--host=127.0.0.1",
             "--port=8000",
             "--workers=2",
-            f"--ssl-certfile={None if ssl_certfile is None else str(project_path / ssl_certfile)}",
-            f"--ssl-keyfile={None if ssl_keyfile is None else str(project_path / ssl_keyfile)}",
         ]
+        if ssl_certfile is not None:
+            expected_args.append(f"--ssl-certfile={project_path / ssl_certfile}")
+        if ssl_keyfile is not None:
+            expected_args.append(f"--ssl-keyfile={project_path / ssl_keyfile}")
+
         mock_subprocess_run.assert_called_once()
         assert sorted(mock_subprocess_run.call_args_list[0].args[0]) == sorted(expected_args)
 
