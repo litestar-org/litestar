@@ -14,13 +14,12 @@ from litestar.types import (
     Empty,
     ExceptionHandlersMap,
     Guard,
-    MaybePartial,
     Middleware,
     TypeDecodersSequence,
     TypeEncodersMap,
 )
 from litestar.typing import FieldDefinition
-from litestar.utils import Ref, ensure_async_callable, get_name, normalize_path
+from litestar.utils import ensure_async_callable, get_name, normalize_path
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace
 
@@ -155,7 +154,7 @@ class BaseRouteHandler:
 
     def __call__(self, fn: AsyncAnyCallable) -> Self:
         """Replace a function with itself."""
-        self._fn = Ref["MaybePartial[AsyncAnyCallable]"](fn)
+        self._fn = fn
         return self
 
     @property
@@ -194,7 +193,7 @@ class BaseRouteHandler:
         if self._signature_model is Empty:
             self._signature_model = SignatureModel.create(
                 dependency_name_set=self.dependency_name_set,
-                fn=cast("AnyCallable", self.fn.value),
+                fn=cast("AnyCallable", self.fn),
                 parsed_signature=self.parsed_fn_signature,
                 data_dto=self.resolve_data_dto(),
                 type_decoders=self.resolve_type_decoders(),
@@ -202,7 +201,7 @@ class BaseRouteHandler:
         return cast("type[SignatureModel]", self._signature_model)
 
     @property
-    def fn(self) -> Ref[MaybePartial[AsyncAnyCallable]]:
+    def fn(self) -> AsyncAnyCallable:
         """Get the handler function.
 
         Raises:
@@ -226,7 +225,7 @@ class BaseRouteHandler:
         """
         if self._parsed_fn_signature is Empty:
             self._parsed_fn_signature = ParsedSignature.from_fn(
-                unwrap_partial(self.fn.value), self.resolve_signature_namespace()
+                unwrap_partial(self.fn), self.resolve_signature_namespace()
             )
 
         return cast("ParsedSignature", self._parsed_fn_signature)
@@ -253,7 +252,7 @@ class BaseRouteHandler:
         Returns:
             Name of the handler function
         """
-        return get_name(unwrap_partial(self.fn.value))
+        return get_name(unwrap_partial(self.fn))
 
     @property
     def dependency_name_set(self) -> set[str]:
@@ -537,7 +536,7 @@ class BaseRouteHandler:
             A string
         """
         target: type[AsyncAnyCallable] | AsyncAnyCallable  # pyright: ignore
-        target = unwrap_partial(self.fn.value)
+        target = unwrap_partial(self.fn)
         if not hasattr(target, "__qualname__"):
             target = type(target)
         return f"{target.__module__}.{target.__qualname__}"

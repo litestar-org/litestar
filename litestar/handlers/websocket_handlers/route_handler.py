@@ -74,7 +74,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
             if param in self.parsed_fn_signature.parameters:
                 raise ImproperlyConfiguredException(f"The {param} kwarg is not supported with websocket handlers")
 
-        if not is_async_callable(self.fn.value):
+        if not is_async_callable(self.fn):
             raise ImproperlyConfiguredException("Functions decorated with 'websocket' must be async functions")
 
 

@@ -763,7 +763,7 @@ class Litestar(Router):
         if handler_index is None:
             raise NoRouteMatchFoundException(f"Static handler {name} can not be found")
 
-        handler_fn = cast("AnyCallable", handler_index["handler"].fn.value)
+        handler_fn = cast("AnyCallable", handler_index["handler"].fn)
         if not isinstance(handler_fn, StaticFiles):
             raise NoRouteMatchFoundException(f"Handler with name {name} is not a static files handler")
 

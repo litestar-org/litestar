@@ -255,7 +255,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         if self._signature_model is Empty:
             self._signature_model = SignatureModel.create(
                 dependency_name_set=self.dependency_name_set,
-                fn=cast("AnyCallable", self.fn.value),
+                fn=cast("AnyCallable", self.fn),
                 parsed_signature=self.parsed_fn_signature,
                 type_decoders=self.resolve_type_decoders(),
             )

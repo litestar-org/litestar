@@ -65,8 +65,8 @@ class Sub(C):
     "args, expected",
     (
         ((Sub, C), True),
-        ((Signature.from_callable(cast("Any", naive_handler.fn.value)).return_annotation, C), False),
-        ((Signature.from_callable(cast("Any", response_handler.fn.value)).return_annotation, Response), True),
+        ((Signature.from_callable(cast("Any", naive_handler.fn)).return_annotation, C), False),
+        ((Signature.from_callable(cast("Any", response_handler.fn)).return_annotation, Response), True),
         ((Dict[str, Any], C), False),
         ((C(), C), False),
     ),
