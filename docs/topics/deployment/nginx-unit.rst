@@ -6,11 +6,11 @@ To run litestar using `nginx-unit <https://unit.nginx.org/>`_
 Install nginx-unit
 ------------------
 
-1. To install nginx-unit, refers to the `official documentation <https://unit.nginx.org/installation/>`_
+To install ``nginx-unit``, refer to the `official documentation <https://unit.nginx.org/installation/>`_
 
 .. tab-set::
 
-   .. tab-item:: macOS (Brew)
+   .. tab-item:: macOS (`Brew <https://brew.sh/>`_)
 
         .. literalinclude:: /examples/deployment/nginx-unit/install-macos.sh
             :language: sh
@@ -48,9 +48,9 @@ Listeners
 
 To accept requests, add a listener object in the config/listeners API section; the object’s name can be:
 
-- A unique IP socket: 127.0.0.1:80, [::1]:8080
-- A wildcard that matches any host IPs on the port: *:80
-- On Linux-based systems, abstract UNIX sockets can be used as well: unix:@abstract_socket.
+- A unique IP socket: ``127.0.0.1:80``, ``[::1]:8080``
+- A wildcard that matches any host IPs on the port: ``*:80``
+- On Linux-based systems, abstract UNIX sockets can be used as well: ``unix:@abstract_socket``.
 
 
 Applications
@@ -91,7 +91,7 @@ Each app that Unit runs is defined as an object in the ``/config/applications`` 
 Configuration update
 --------------------
 
-To update the nginx-unit service already running, use ``PUT`` method to send the ``unit.json`` file on the `/config` endpoint
+To update the nginx-unit service already running, use ``PUT`` method to send the ``unit.json`` file on the ``/config`` endpoint
 
 .. code-block:: sh
 
