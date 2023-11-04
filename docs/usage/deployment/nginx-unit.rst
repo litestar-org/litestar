@@ -6,7 +6,7 @@ To run litestar using `nginx-unit <https://unit.nginx.org/>`_
 Install nginx-unit
 ------------------
 
-1. To install nginx-unit, refers to the `official documentation <https://unit.nginx.org/installation/>`_
+To install ``nginx-unit``, refer to the `official documentation <https://unit.nginx.org/installation/>`_
 
 .. tab-set::
 
