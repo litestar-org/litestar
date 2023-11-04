@@ -18,9 +18,11 @@ Application and request level loggers can be configured using the :class:`~lites
 
 
    logging_config = LoggingConfig(
-        root={"level": logging.getLevelName(logging.INFO), "handlers": ["console"]},
-        formatters={"standard": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}},
-    )
+       root={"level": logging.getLevelName(logging.INFO), "handlers": ["console"]},
+       formatters={
+           "standard": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
+       },
+   )
 
    app = Litestar(route_handlers=[my_router_handler], logging_config=logging_config)
 
