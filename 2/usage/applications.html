@@ -1358,6 +1358,22 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </section>
+<section id="order-of-execution">
+<h2>Order of execution<a class="headerlink" href="#order-of-execution" title="Permalink to this heading">#</a></h2>
+<p>When multiple lifespan context managers and <code class="docutils literal notranslate"><span class="pre">on_shutdown</span></code> hooks are specified, Litestar will invoke the context
+managers in inverse order before the shutdown hooks are invoked.</p>
+<p>Consider the case where there are two lifespan context managers <code class="docutils literal notranslate"><span class="pre">ctx_a</span></code> and <code class="docutils literal notranslate"><span class="pre">ctx_b</span></code> as well as two shutdown hooks
+<code class="docutils literal notranslate"><span class="pre">hook_a</span></code> and <code class="docutils literal notranslate"><span class="pre">hook_b</span></code> as shown in the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="p">[</span><span class="n">ctx_a</span><span class="p">,</span> <span class="n">ctx_b</span><span class="p">],</span> <span class="n">on_shutdown</span><span class="o">=</span><span class="p">[</span><span class="n">hook_a</span><span class="p">,</span> <span class="n">hook_b</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>During shutdown, they are executed in the following order:</p>
+<div class="mermaid">
+            flowchart LR
+    ctx_b --&gt; ctx_a --&gt; hook_a --&gt; hook_b
+        </div><p>As seen, the context managers are invoked in inverse order.
+On the other hand, the shutdown hooks are invoked in their specified order.</p>
+</section>
 <section id="using-application-state">
 <span id="application-state"></span><h2>Using Application State<a class="headerlink" href="#using-application-state" title="Permalink to this heading">#</a></h2>
 <p>As seen in the examples for the <a class="reference external" href="#before-after-startup">on_startup</a> / <a class="reference external" href="#before-after-shutdown">on_shutdown</a> ,
@@ -1783,6 +1799,7 @@ overriding of parameters.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#application-objects">Application objects</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#startup-and-shutdown">Startup and Shutdown</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lifespan-context-managers">Lifespan context managers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#order-of-execution">Order of execution</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-application-state">Using Application State</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initializing-application-state">Initializing Application State</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#injecting-application-state-into-route-handlers-and-dependencies">Injecting Application State into Route Handlers and Dependencies</a></li>
