@@ -22,7 +22,6 @@ __all__ = ("ensure_async_callable", "AsyncIteratorWrapper", "AsyncCallable", "is
 P = ParamSpec("P")
 T = TypeVar("T")
 
-
 def ensure_async_callable(fn: Callable[P, T]) -> Callable[P, Awaitable[T]]:
     """Ensure that ``fn`` is an asynchronous callable.
     If it is an asynchronous, return the original object, else wrap it in an
