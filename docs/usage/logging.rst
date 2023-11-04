@@ -44,16 +44,16 @@ Standard Library Logging (Manual Configuration)
     import logging
 
     from litestar import Litestar, Request, get
-    from litestar.logging.config import LoggingConfig
+    from litestar.logging import LoggingConfig
 
-    log_config = LoggingConfig(
+    logging_config = LoggingConfig(
         root={"level": logging.getLevelName(logging.INFO), "handlers": ["console"]},
         formatters={
             "standard": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
         },
     )
 
-    logger = log_config.configure()()
+    logger = logging_config.configure()()
 
 
     @get("/")
@@ -64,7 +64,7 @@ Standard Library Logging (Manual Configuration)
 
     app = Litestar(
         route_handlers=[my_router_handler],
-        logging_config=log_config,
+        logging_config=logging_config,
     )
 
 The above example is the same as using logging without the litestar LoggingConfig.
