@@ -51,6 +51,42 @@ def _convert_uvicorn_args(args: dict[str, Any]) -> list[str]:
     return process_args
 
 
+def _run_uvicorn_in_subprocess(
+    *,
+    env: LitestarEnv,
+    host: str | None,
+    port: int | None,
+    workers: int | None,
+    reload: bool,
+    reload_dirs: tuple[str, ...] | None,
+    fd: int | None,
+    uds: str | None,
+    certfile_path: str | None,
+    keyfile_path: str | None,
+) -> None:
+    process_args: dict[str, Any] = {
+        "reload": reload,
+        "host": host,
+        "port": port,
+        "workers": workers,
+        "factory": env.is_app_factory,
+    }
+    if fd is not None:
+        process_args["fd"] = fd
+    if uds is not None:
+        process_args["uds"] = uds
+    if reload_dirs:
+        process_args["reload-dir"] = reload_dirs
+    if certfile_path is not None:
+        process_args["ssl-certfile"] = certfile_path
+    if keyfile_path is not None:
+        process_args["ssl-keyfile"] = keyfile_path
+    subprocess.run(
+        [sys.executable, "-m", "uvicorn", env.app_path, *_convert_uvicorn_args(process_args)],  # noqa: S603
+        check=True,
+    )
+
+
 @command(name="version")
 @option("-s", "--short", help="Exclude release level and serial information", is_flag=True, default=False)
 def version_command(short: bool) -> None:
@@ -193,25 +229,17 @@ def run_command(
                 " with the --reload or --workers options[/]"
             )
 
-        process_args = {
-            "reload": reload,
-            "host": host,
-            "port": port,
-            "workers": workers,
-            "factory": env.is_app_factory,
-            "ssl-certfile": certfile_path,
-            "ssl-keyfile": keyfile_path,
-        }
-        if fd is not None:
-            process_args["fd"] = fd
-        if uds is not None:
-            process_args["uds"] = uds
-        if reload_dirs:
-            process_args["reload-dir"] = reload_dirs
-
-        subprocess.run(
-            [sys.executable, "-m", "uvicorn", env.app_path, *_convert_uvicorn_args(process_args)],  # noqa: S603
-            check=True,
+        _run_uvicorn_in_subprocess(
+            env=env,
+            host=host,
+            port=port,
+            workers=workers,
+            reload=reload,
+            reload_dirs=reload_dirs,
+            fd=fd,
+            uds=uds,
+            certfile_path=certfile_path,
+            keyfile_path=keyfile_path,
         )
 
 
