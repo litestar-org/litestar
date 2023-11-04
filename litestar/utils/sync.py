@@ -87,12 +87,12 @@ class async_partial:  # noqa: N801
     In difference to the :func:`anyio.run_sync` function, it allows for passing kwargs.
     """
 
-    def __init__(self, fn: Callable[P, T]) -> None:
+    def __init__(self, fn: Callable[P, T]) -> None:  # pyright: ignore
         self.func = fn
 
-    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
+    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:  # pyright: ignore
         applied_kwarg = partial(self.func, **kwargs)
-        return await run_sync(applied_kwarg, *args)
+        return await run_sync(applied_kwarg, *args)  # pyright: ignore
 
 
 class AsyncIteratorWrapper(Generic[T]):
