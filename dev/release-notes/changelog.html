@@ -1167,6 +1167,22 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.3.1">
+<h2>2.3.1<a class="headerlink" href="#2.3.1" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2023/11/04<section id="2.3.1-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.3.1-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>CLI: Fix not providing SSL certfiles breaks uvicorn command when using reload or multiple workers<a class="headerlink reference internal" href="#2.3.1-cli: fix not providing ssl certfiles breaks uvicorn command when using reload or multiple workers" id="2.3.1-cli: fix not providing ssl certfiles breaks uvicorn command when using reload or multiple workers">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue where not providing the <code class="docutils literal notranslate"><span class="pre">--ssl-certfile</span></code> and <code class="docutils literal notranslate"><span class="pre">--ssl-keyfile</span></code>
+options to the <code class="docutils literal notranslate"><span class="pre">litestar</span> <span class="pre">run</span></code> command would cause a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a>
+in uvicorn, when used together with the <code class="docutils literal notranslate"><span class="pre">--reload</span></code>, <code class="docutils literal notranslate"><span class="pre">--web-concurrency</span></code>
+options.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2613">litestar-org/litestar#2613</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2616">litestar-org/litestar#2616</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.3.0">
 <h2>2.3.0<a class="headerlink" href="#2.3.0" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2023/11/02<section id="2.3.0-feature">
@@ -3992,6 +4008,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.1">2.3.1</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.1-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.0">2.3.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.0-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.0-bugfix">Bugfixes</a></li>
