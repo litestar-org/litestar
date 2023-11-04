@@ -9,7 +9,7 @@ import pytest
 from typing_extensions import Annotated
 
 from litestar.utils.typing import get_origin_or_inner_type, make_non_optional_union
-from tests.models import DataclassPerson
+from tests.models import DataclassPerson, DataclassPet  # noqa: F401
 
 if version_info >= (3, 10):
     from collections import deque  # noqa: F401
