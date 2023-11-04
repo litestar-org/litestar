@@ -3,6 +3,20 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.3.1
+    :date: 2023/11/04
+
+    .. change:: CLI: Fix not providing SSL certfiles breaks uvicorn command when using reload or multiple workers
+        :type: bugfix
+        :pr: 2616
+        :issue: 2613
+
+        Fix an issue where not providing the ``--ssl-certfile`` and ``--ssl-keyfile``
+        options to the ``litestar run`` command would cause a :exc:`FileNotFoundError`
+        in uvicorn, when used together with the ``--reload``, ``--web-concurrency``
+        options.
+
+
 .. changelog:: 2.3.0
     :date: 2023/11/02
 
