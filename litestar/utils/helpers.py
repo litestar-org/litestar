@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from functools import partial
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 from urllib.parse import quote
 
@@ -81,10 +82,9 @@ def unwrap_partial(value: MaybePartial[T]) -> T:
     Returns:
         Callable
     """
-    output: Any = value.func if hasattr(value, "func") else value  # pyright: ignore
-    while hasattr(output, "func"):
-        output = output.func
-    return cast("T", output)
+    from litestar.utils.sync import async_partial
+
+    return cast("T", value.func if isinstance(value, (partial, async_partial)) else value)
 
 
 def filter_cookies(local_cookies: Iterable[Cookie], layered_cookies: Iterable[Cookie]) -> list[Cookie]:
