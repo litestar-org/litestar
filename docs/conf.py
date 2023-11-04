@@ -252,6 +252,8 @@ html_theme_options = {
     "logo": {
         "link": "https://litestar.dev",
     },
+    "pygment_light_style": "xcode",
+    "pygment_dark_style": "lightbulb",
     "navigation_with_keys": True,
     "extra_navbar_items": {
         "Documentation": "index",
