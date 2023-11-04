@@ -9,7 +9,7 @@ from msgspec.json import Encoder as JsonEncoder
 from litestar.di import Provide
 from litestar.serialization import decode_json
 from litestar.types.builtin_types import NoneType
-from litestar.utils import AsyncCallable
+from litestar.utils import ensure_async_callable
 from litestar.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
@@ -88,7 +88,7 @@ class ListenerHandler:
         namespace: dict[str, Any],
     ) -> None:
         self._can_send_data = not parsed_signature.return_type.is_subclass_of(NoneType)
-        self._fn = AsyncCallable(fn)
+        self._fn = ensure_async_callable(fn)
         self._listener = listener
         self._pass_socket = "socket" in parsed_signature.parameters
 

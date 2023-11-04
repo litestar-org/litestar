@@ -27,7 +27,7 @@ from litestar.types import (
     Middleware,
     TypeEncodersMap,
 )
-from litestar.utils import AsyncCallable
+from litestar.utils import ensure_async_callable
 from litestar.utils.signature import ParsedSignature, get_fn_type_hints
 
 from ._utils import (
@@ -182,8 +182,8 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         self._receive_handler: Callable[[WebSocket], Any] | EmptyType = Empty
 
         self.connection_accept_handler = connection_accept_handler
-        self.on_accept = AsyncCallable(on_accept) if on_accept else None
-        self.on_disconnect = AsyncCallable(on_disconnect) if on_disconnect else None
+        self.on_accept = ensure_async_callable(on_accept) if on_accept else None
+        self.on_disconnect = ensure_async_callable(on_disconnect) if on_disconnect else None
         self.type_encoders = type_encoders
 
         listener_dependencies = dict(dependencies or {})
@@ -193,10 +193,10 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         )
 
         if self.on_accept:
-            listener_dependencies["on_accept_dependencies"] = create_stub_dependency(self.on_accept.ref.value)
+            listener_dependencies["on_accept_dependencies"] = create_stub_dependency(self.on_accept)
 
         if self.on_disconnect:
-            listener_dependencies["on_disconnect_dependencies"] = create_stub_dependency(self.on_disconnect.ref.value)
+            listener_dependencies["on_disconnect_dependencies"] = create_stub_dependency(self.on_disconnect)
 
         super().__init__(
             path=path,

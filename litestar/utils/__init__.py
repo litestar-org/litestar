@@ -29,15 +29,15 @@ from .scope import (
     set_litestar_scope_state,
 )
 from .sequence import find_index, unique
-from .sync import AsyncCallable, AsyncIteratorWrapper, async_partial
+from .sync import AsyncCallable, AsyncIteratorWrapper, ensure_async_callable
 from .typing import annotation_is_iterable_of_type, get_origin_or_inner_type, make_non_optional_union
 
 __all__ = (
-    "AsyncCallable",
+    "ensure_async_callable",
     "AsyncIteratorWrapper",
     "Ref",
     "annotation_is_iterable_of_type",
-    "async_partial",
+    "AsyncCallable",
     "delete_litestar_scope_state",
     "deprecated",
     "find_index",
