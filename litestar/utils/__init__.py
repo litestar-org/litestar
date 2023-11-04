@@ -28,13 +28,12 @@ from .scope import (
 )
 from .sequence import find_index, unique
 from .sync import AsyncCallable, AsyncIteratorWrapper, async_partial
-from .typing import annotation_is_iterable_of_type, get_origin_or_inner_type, make_non_optional_union
+from .typing import get_origin_or_inner_type, make_non_optional_union
 
 __all__ = (
     "AsyncCallable",
     "AsyncIteratorWrapper",
     "Ref",
-    "annotation_is_iterable_of_type",
     "async_partial",
     "delete_litestar_scope_state",
     "deprecated",
