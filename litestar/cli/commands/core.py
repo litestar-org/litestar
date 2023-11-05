@@ -257,7 +257,7 @@ def routes_command(app: Litestar) -> None:  # pragma: no cover
                     f"[blue]{handler.name or handler.handler_name}[/blue]",
                 ]
 
-                if inspect.iscoroutinefunction(unwrap_partial(handler.fn.value)):
+                if inspect.iscoroutinefunction(unwrap_partial(handler.fn)):
                     handler_info.append("[magenta]async[/magenta]")
                 else:
                     handler_info.append("[yellow]sync[/yellow]")

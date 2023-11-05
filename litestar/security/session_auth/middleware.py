@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Sequence
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Sequence
 
 from litestar.exceptions import NotAuthorizedException
 from litestar.middleware.authentication import (
@@ -17,7 +17,6 @@ if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.security.session_auth.auth import SessionAuth
     from litestar.types import ASGIApp, Receive, Scope, Send
-    from litestar.utils import AsyncCallable
 
 
 class MiddlewareWrapper:
@@ -79,7 +78,7 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
         exclude: str | list[str] | None,
         exclude_http_methods: Sequence[Method] | None,
         exclude_opt_key: str,
-        retrieve_user_handler: AsyncCallable[[dict[str, Any], ASGIConnection[Any, Any, Any, Any]], Any],
+        retrieve_user_handler: Callable[[dict[str, Any], ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
         scopes: Scopes | None,
     ) -> None:
         """Session based authentication middleware.

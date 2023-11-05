@@ -28,7 +28,7 @@ def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
     route = app.routes[index]
     route_handler = route.route_handler_map["GET"][0]  # type: ignore
 
-    handler = route_handler.fn.value
+    handler = route_handler.fn
     assert callable(handler)
 
     handler_fields = SignatureModel.create(

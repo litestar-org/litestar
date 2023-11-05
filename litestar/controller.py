@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import types
 from collections import defaultdict
 from copy import deepcopy
-from functools import partial
 from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
 
@@ -12,7 +12,7 @@ from litestar.handlers.base import BaseRouteHandler
 from litestar.handlers.http_handlers import HTTPRouteHandler
 from litestar.handlers.websocket_handlers import WebsocketRouteHandler
 from litestar.types.empty import Empty
-from litestar.utils import AsyncCallable, normalize_path
+from litestar.utils import ensure_async_callable, normalize_path
 from litestar.utils.signature import add_types_to_signature_namespace
 
 __all__ = ("Controller",)
@@ -168,7 +168,7 @@ class Controller:
         for key in ("after_request", "after_response", "before_request"):
             cls_value = getattr(type(self), key, None)
             if callable(cls_value):
-                setattr(self, key, AsyncCallable(cls_value))
+                setattr(self, key, ensure_async_callable(cls_value))
 
         if not hasattr(self, "dto"):
             self.dto = Empty
@@ -209,7 +209,9 @@ class Controller:
         self_handlers.sort(key=attrgetter("handler_id"))
         for self_handler in self_handlers:
             route_handler = deepcopy(self_handler)
-            route_handler.fn.value = partial(route_handler.fn.value, self)
+            # at the point we get a reference to the handler function, it's unbound, so
+            # we replace it with a regular bound method here
+            route_handler._fn = types.MethodType(route_handler._fn, self)
             route_handler.owner = self
             route_handlers.append(route_handler)
 

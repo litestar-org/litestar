@@ -1,23 +1,18 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from enum import Enum
 from functools import partial
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 from urllib.parse import quote
 
 from litestar.utils.typing import get_origin_or_inner_type
 
 if TYPE_CHECKING:
     from collections.abc import Container
-    from typing import Iterable
 
-    from litestar.datastructures import Cookie
     from litestar.types import MaybePartial
 
 __all__ = (
-    "Ref",
-    "filter_cookies",
     "get_enum_string_value",
     "get_name",
     "unwrap_partial",
@@ -63,16 +58,6 @@ def get_enum_string_value(value: Enum | str) -> str:
     return value.value if isinstance(value, Enum) else value  # type:ignore
 
 
-@dataclass
-class Ref(Generic[T]):
-    """A helper class that encapsulates a value."""
-
-    __slots__ = ("value",)
-
-    value: T
-    """The value wrapped by the ref."""
-
-
 def unwrap_partial(value: MaybePartial[T]) -> T:
     """Unwraps a partial, returning the underlying callable.
 
@@ -82,22 +67,9 @@ def unwrap_partial(value: MaybePartial[T]) -> T:
     Returns:
         Callable
     """
-    from litestar.utils.sync import async_partial
+    from litestar.utils.sync import AsyncCallable
 
-    return cast("T", value.func if isinstance(value, (partial, async_partial)) else value)
-
-
-def filter_cookies(local_cookies: Iterable[Cookie], layered_cookies: Iterable[Cookie]) -> list[Cookie]:
-    """Given two sets of cookies, return a unique list of cookies, that are not marked as documentation_only.
-
-    Args:
-        local_cookies: Cookies returned from the local scope.
-        layered_cookies: Cookies returned from the layers.
-
-    Returns:
-        A unified list of cookies
-    """
-    return [cookie for cookie in {*local_cookies, *layered_cookies} if not cookie.documentation_only]
+    return cast("T", value.func if isinstance(value, (partial, AsyncCallable)) else value)
 
 
 def url_quote(value: str | bytes) -> str:

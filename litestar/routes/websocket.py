@@ -77,7 +77,7 @@ class WebSocketRoute(BaseRoute):
 
         if cleanup_group:
             async with cleanup_group:
-                await self.route_handler.fn.value(**parsed_kwargs)
+                await self.route_handler.fn(**parsed_kwargs)
             await cleanup_group.cleanup()
         else:
-            await self.route_handler.fn.value(**parsed_kwargs)
+            await self.route_handler.fn(**parsed_kwargs)

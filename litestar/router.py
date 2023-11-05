@@ -14,7 +14,7 @@ from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.types.empty import Empty
 from litestar.utils import find_index, is_class_and_subclass, join_paths, normalize_path, unique
 from litestar.utils.signature import add_types_to_signature_namespace
-from litestar.utils.sync import AsyncCallable
+from litestar.utils.sync import ensure_async_callable
 
 __all__ = ("Router",)
 
@@ -158,9 +158,9 @@ class Router:
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
         """
 
-        self.after_request = AsyncCallable(after_request) if after_request else None  # pyright: ignore
-        self.after_response = AsyncCallable(after_response) if after_response else None
-        self.before_request = AsyncCallable(before_request) if before_request else None
+        self.after_request = ensure_async_callable(after_request) if after_request else None  # pyright: ignore
+        self.after_response = ensure_async_callable(after_response) if after_response else None
+        self.before_request = ensure_async_callable(before_request) if before_request else None
         self.cache_control = cache_control
         self.dto = dto
         self.etag = etag
