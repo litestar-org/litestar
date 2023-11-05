@@ -145,7 +145,7 @@ def test_query_param_arrays(expected_type: Any, provided_value: Any, default: An
 
     test_method = test_method_without_default if default is ... else test_method_with_default
     # Set the type annotation of 'param' in a way mypy can deal with
-    test_method.fn.value.__annotations__["param"] = expected_type
+    test_method.fn.__annotations__["param"] = expected_type
 
     with create_test_client(test_method) as client:
         params = urlencode({"param": provided_value}, doseq=True)

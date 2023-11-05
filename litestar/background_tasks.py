@@ -3,7 +3,7 @@ from typing import Any, Callable, Iterable
 from anyio import create_task_group
 from typing_extensions import ParamSpec
 
-from litestar.utils.sync import AsyncCallable
+from litestar.utils.sync import ensure_async_callable
 
 __all__ = ("BackgroundTask", "BackgroundTasks")
 
@@ -27,7 +27,7 @@ class BackgroundTask:
             *args: Args to pass to the func.
             **kwargs: Kwargs to pass to the func
         """
-        self.fn = AsyncCallable(fn)
+        self.fn = ensure_async_callable(fn)
         self.args = args
         self.kwargs = kwargs
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING, Awaitable, Callable, Sequence
 
 from litestar.contrib.jwt.jwt_token import Token
 from litestar.exceptions import NotAuthorizedException
@@ -17,7 +17,6 @@ if TYPE_CHECKING:
 
     from litestar.connection import ASGIConnection
     from litestar.types import ASGIApp, Method, Scopes
-    from litestar.utils import AsyncCallable
 
 
 class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
@@ -41,7 +40,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         exclude: str | list[str] | None,
         exclude_http_methods: Sequence[Method] | None,
         exclude_opt_key: str,
-        retrieve_user_handler: AsyncCallable[[Token, ASGIConnection[Any, Any, Any, Any]], Any],
+        retrieve_user_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
         scopes: Scopes,
         token_secret: str,
     ) -> None:
@@ -135,7 +134,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         exclude: str | list[str] | None,
         exclude_opt_key: str,
         exclude_http_methods: Sequence[Method] | None,
-        retrieve_user_handler: AsyncCallable[[Token, ASGIConnection[Any, Any, Any, Any]], Any],
+        retrieve_user_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
         scopes: Scopes,
         token_secret: str,
     ) -> None:

@@ -90,7 +90,7 @@ def test_sqlalchemy_async_before_send_handler() -> None:
 
     from litestar.contrib.sqlalchemy.plugins.init.config.asyncio import autocommit_before_send_handler
 
-    assert autocommit_before_send_handler is app.before_send[0].ref.value
+    assert autocommit_before_send_handler is app.before_send[0]
 
 
 def test_sqlalchemy_sync_before_send_handler() -> None:
@@ -98,7 +98,7 @@ def test_sqlalchemy_sync_before_send_handler() -> None:
 
     from litestar.contrib.sqlalchemy.plugins.init.config.sync import autocommit_before_send_handler
 
-    assert autocommit_before_send_handler is app.before_send[0].ref.value.func
+    assert autocommit_before_send_handler is app.before_send[0].func
 
 
 def test_sqlalchemy_async_serialization_plugin(data: dict[str, Any]) -> None:

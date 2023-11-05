@@ -42,7 +42,7 @@ from litestar.static_files.base import StaticFiles
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition
-from litestar.utils import AsyncCallable, deprecated, join_paths, unique
+from litestar.utils import deprecated, ensure_async_callable, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
 from litestar.utils.predicates import is_async_callable
 from litestar.utils.warnings import warn_pdb_on_exception
@@ -388,9 +388,9 @@ class Litestar(Router):
         self.asgi_router = ASGIRouter(app=self)
 
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
-        self.after_exception = [AsyncCallable(h) for h in config.after_exception]
+        self.after_exception = [ensure_async_callable(h) for h in config.after_exception]
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
-        self.before_send = [AsyncCallable(h) for h in config.before_send]
+        self.before_send = [ensure_async_callable(h) for h in config.before_send]
         self.compression_config = config.compression_config
         self.cors_config = config.cors_config
         self.csrf_config = config.csrf_config
@@ -763,7 +763,7 @@ class Litestar(Router):
         if handler_index is None:
             raise NoRouteMatchFoundException(f"Static handler {name} can not be found")
 
-        handler_fn = cast("AnyCallable", handler_index["handler"].fn.value)
+        handler_fn = cast("AnyCallable", handler_index["handler"].fn)
         if not isinstance(handler_fn, StaticFiles):
             raise NoRouteMatchFoundException(f"Handler with name {name} is not a static files handler")
 
