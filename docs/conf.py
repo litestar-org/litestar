@@ -3,11 +3,15 @@ from __future__ import annotations
 import importlib.metadata
 import os
 import re
+import warnings
 from functools import partial
 from typing import Any
 
 from sphinx.addnodes import document
 from sphinx.application import Sphinx
+from sqlalchemy.exc import SAWarning
+
+warnings.filterwarnings("ignore", category=SAWarning)
 
 __all__ = ["setup", "update_html_context"]
 
@@ -38,7 +42,6 @@ extensions = [
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "msgspec": ("https://jcristharif.com/msgspec/", None),
@@ -53,8 +56,8 @@ intersphinx_mapping = {
     "piccolo": ("https://piccolo-orm.readthedocs.io/en/latest", None),
     "opentelemetry": ("https://opentelemetry-python.readthedocs.io/en/latest/", None),
     "advanced-alchemy": ("https://docs.advanced-alchemy.jolt.rs/latest/", None),
+    "jinja2": ("https://jinja.palletsprojects.com/en/latest/", None),
 }
-
 
 napoleon_google_docstring = True
 napoleon_include_special_with_doc = True
@@ -68,7 +71,6 @@ autodoc_class_signature = "separated"
 autodoc_default_options = {"special-members": "__init__", "show-inheritance": True, "members": True}
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
-
 
 nitpicky = True
 nitpick_ignore = [
@@ -109,6 +111,18 @@ nitpick_ignore = [
     (PY_CLASS, "SelectT"),
     (PY_CLASS, "T"),
     (PY_OBJ, "litestar.security.base.AuthType"),
+    # investigate
+    (PY_CLASS, "Environment"),
+    (PY_CLASS, "P"),
+    (PY_CLASS, "pydantic_v1.BaseModel"),
+    (PY_CLASS, "pydantic_v2.BaseModel"),
+    (PY_CLASS, "advanced_alchemy.config.types.Empty"),
+    (PY_OBJ, "litestar.template.base.TemplateType_co"),
+    (PY_OBJ, "litestar.template.base.ContextType_co"),
+    (PY_CLASS, "litestar.template.base.TemplateType_co"),
+    (PY_CLASS, "litestar.template.base.ContextType_co"),
+    (PY_CLASS, "litestar.template.base.R"),
+    (PY_ATTR, "litestar.openapi.controller.OpenAPIController.swagger_ui_init_oauth"),
     # intentionally undocumented
     (PY_CLASS, "BacklogStrategy"),
     (PY_CLASS, "ExceptionT"),
@@ -232,13 +246,15 @@ html_css_files = ["style.css"]
 html_show_sourcelink = False
 html_title = "Litestar Framework"
 
-
 html_theme_options = {
     "use_page_nav": False,
     "github_repo_name": "litestar",
     "logo": {
         "link": "https://litestar.dev",
     },
+    "pygment_light_style": "xcode",
+    "pygment_dark_style": "lightbulb",
+    "navigation_with_keys": True,
     "extra_navbar_items": {
         "Documentation": "index",
         "Community": {
