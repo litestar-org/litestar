@@ -32,6 +32,27 @@ its features!
 Additionally, the [Litestar fullstack repository](https://github.com/litestar-org/litestar-fullstack)
 can give you a good impression how a fully fledged Litestar application may look.
 
+<details>
+<summary>Table of Contents</summary>
+
+- [Installation](#installation)
+  - [Quick Start](#quick-start)
+- [Core Features](#core-features)
+  - [Example Applications](#example-applications)
+- [Features](#features)
+  - [Class-based Controllers](#class-based-controllers)
+  - [Data Parsing, Type Hints, and Msgspec](#data-parsing-type-hints-and-msgspec)
+  - [Plugin System, ORM support, and DTOs](#plugin-system-orm-support-and-dtos)
+  - [OpenAPI](#openapi)
+  - [Dependency Injection](#dependency-injection)
+  - [Middleware](#middleware)
+  - [Route Guards](#route-guards)
+  - [Request Life Cycle Hooks](#request-life-cycle-hooks)
+- [Performance](#performance)
+- [Contributing](#contributing)
+
+</details>
+
 ## Installation
 
 ```shell
@@ -77,20 +98,27 @@ app = Litestar(route_handlers=[hello_world])
 
 ## Example Applications
 
+<details>
+<summary>Pre-built Example Apps</summary>
+
 - [litestar-pg-redis-docker](https://github.com/litestar-org/litestar-pg-redis-docker): In addition to Litestar, this
   demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
   Litestar projects, this application is open to contributions, big and small.
 - [litestar-fullstack](https://github.com/litestar-org/litestar-fullstack): A reference application that contains most of the boilerplate required for a web application.
   It features a Litestar app configured with best practices, SQLAlchemy 2.0 and SAQ, a frontend integrated with Vitejs and Jinja2 templates, Docker, and more.
 - [litestar-hello-world](https://github.com/litestar-org/litestar-hello-world): A bare-minimum application setup. Great
-  for testing and POC work.
+for testing and POC work.
+</details>
 
 ## Features
 
-### Class Based Controllers
+### Class-based Controllers
 
-While supporting function based route handlers, Litestar also supports and promotes python OOP using class based
+While supporting function-based route handlers, Litestar also supports and promotes python OOP using class based
 controllers:
+
+<details>
+<summary>Example for class-based controllers</summary>
 
 ```python title="my_app/controllers/user.py"
 from typing import List, Optional
@@ -141,19 +169,23 @@ class UserController(Controller):
         ...
 ```
 
-### Data Parsing, Type Hints and Pydantic
+</details>
+
+### Data Parsing, Type Hints, and Msgspec
 
 Litestar is rigorously typed, and it enforces typing. For example, if you forget to type a return value for a route
 handler, an exception will be raised. The reason for this is that Litestar uses typing data to generate OpenAPI specs,
-as well as to validate and parse data. Thus typing is absolutely essential to the framework.
+as well as to validate and parse data. Thus, typing is essential to the framework.
 
 Furthermore, Litestar allows extending its support using plugins.
 
-### Plugin System, ORM support and DTOs
+### Plugin System, ORM support, and DTOs
 
-Litestar has a plugin system that allows the user to extend serialization/deserialization, OpenAPI generation and other
-features. It ships with a builtin plugin for SQL Alchemy, which allows the user to use SQLAlchemy declarative classes
-"natively", i.e. as type parameters that will be serialized/deserialized and to return them as values from route
+Litestar has a plugin system that allows the user to extend serialization/deserialization, OpenAPI generation, and other
+features.
+
+It ships with a builtin plugin for SQL Alchemy, which allows the user to use SQLAlchemy declarative classes "natively"
+i.e., as type parameters that will be serialized/deserialized and to return them as values from route
 handlers.
 
 Litestar also supports the programmatic creation of DTOs with a `DTOFactory` class, which also supports the use of
@@ -171,6 +203,7 @@ Litestar serves the documentation from the generated OpenAPI schema with:
 - [ReDoc](https://redoc.ly/)
 - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
 - [Stoplight Elements](https://github.com/stoplightio/elements)
+- [RapiDoc](https://rapidocweb.com/)
 
 All these are available and enabled by default.
 
@@ -178,6 +211,9 @@ All these are available and enabled by default.
 
 Litestar has a simple but powerful DI system inspired by pytest. You can define named dependencies - sync or async - at
 different levels of the application, and then selective use or overwrite them.
+
+<details>
+<summary>Example for DI</summary>
 
 ```python
 from litestar import Litestar, get
@@ -196,6 +232,8 @@ async def index(injected: str) -> str:
 app = Litestar([index], dependencies={"injected": Provide(my_dependency)})
 ```
 
+</details>
+
 ### Middleware
 
 Litestar supports typical ASGI middleware and ships with middlewares to handle things such as
@@ -211,6 +249,9 @@ Litestar supports typical ASGI middleware and ships with middlewares to handle t
 Litestar has an authorization mechanism called `guards`, which allows the user to define guard functions at different
 level of the application (app, router, controller etc.) and validate the request before hitting the route handler
 function.
+
+<details>
+<summary>Example for route guards</summary>
 
 ```python
 from litestar import Litestar, get
@@ -233,6 +274,8 @@ async def index() -> None:
 
 app = Litestar([index])
 ```
+
+</details>
 
 ### Request Life Cycle Hooks
 
