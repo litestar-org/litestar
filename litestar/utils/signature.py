@@ -11,9 +11,7 @@ from typing import Any, Union
 from typing_extensions import Self, get_args, get_origin, get_type_hints
 
 from litestar import connection, datastructures, types
-from litestar.enums import RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import BodyKwarg
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.typing import unwrap_annotation
@@ -35,7 +33,6 @@ __all__ = (
     "add_types_to_signature_namespace",
     "get_fn_type_hints",
     "ParsedSignature",
-    "infer_request_encoding_from_field_definition",
 )
 
 _GLOBAL_NAMES = {
@@ -202,22 +199,6 @@ class ParsedSignature:
             return_type=return_type if "return" in fn_type_hints else replace(return_type, annotation=Empty),
             original_signature=signature,
         )
-
-
-def infer_request_encoding_from_field_definition(field_definition: FieldDefinition) -> RequestEncodingType | str:
-    """Infer the request encoding type from a parsed type.
-
-    Args:
-        field_definition: The parsed parameter to infer the request encoding type from.
-
-    Returns:
-        The inferred request encoding type.
-    """
-    if field_definition.kwarg_definition and isinstance(field_definition.kwarg_definition, BodyKwarg):
-        return field_definition.kwarg_definition.media_type
-    if isinstance(field_definition.default, BodyKwarg):
-        return field_definition.default.media_type
-    return RequestEncodingType.JSON
 
 
 def add_types_to_signature_namespace(

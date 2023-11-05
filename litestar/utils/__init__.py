@@ -16,9 +16,7 @@ from .predicates import (
     is_non_string_iterable,
     is_non_string_sequence,
     is_optional_union,
-    is_struct_class,
     is_sync_or_async_generator,
-    is_typed_dict,
     is_undefined_sentinel,
     is_union,
 )
@@ -30,13 +28,12 @@ from .scope import (
 )
 from .sequence import find_index, unique
 from .sync import AsyncCallable, AsyncIteratorWrapper, async_partial
-from .typing import annotation_is_iterable_of_type, get_origin_or_inner_type, make_non_optional_union
+from .typing import get_origin_or_inner_type, make_non_optional_union
 
 __all__ = (
     "AsyncCallable",
     "AsyncIteratorWrapper",
     "Ref",
-    "annotation_is_iterable_of_type",
     "async_partial",
     "delete_litestar_scope_state",
     "deprecated",
@@ -59,9 +56,7 @@ __all__ = (
     "is_non_string_iterable",
     "is_non_string_sequence",
     "is_optional_union",
-    "is_struct_class",
     "is_sync_or_async_generator",
-    "is_typed_dict",
     "is_undefined_sentinel",
     "is_union",
     "join_paths",
