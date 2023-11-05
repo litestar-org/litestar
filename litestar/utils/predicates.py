@@ -26,13 +26,11 @@ from typing import (
     TypeVar,
 )
 
-from msgspec import Struct
 from typing_extensions import (
     ParamSpec,
     TypeGuard,
     _AnnotatedAlias,
     get_args,
-    is_typeddict,
 )
 
 from litestar.constants import UNDEFINED_SENTINELS
@@ -42,7 +40,6 @@ from litestar.utils.helpers import unwrap_partial
 from litestar.utils.typing import get_origin_or_inner_type
 
 if TYPE_CHECKING:
-    from litestar.types.builtin_types import TypedDictClass
     from litestar.types.callable_types import AnyGenerator
     from litestar.types.protocols import DataclassProtocol
 
@@ -65,9 +62,7 @@ __all__ = (
     "is_non_string_iterable",
     "is_non_string_sequence",
     "is_optional_union",
-    "is_struct_class",
     "is_sync_or_async_generator",
-    "is_typed_dict",
     "is_undefined_sentinel",
     "is_union",
 )
@@ -267,22 +262,6 @@ def is_optional_union(annotation: Any) -> TypeGuard[Any | None]:
     )
 
 
-def is_typed_dict(annotation: Any) -> TypeGuard[TypedDictClass]:
-    """Wrap :func:`typing.is_typeddict` in a :data:`typing.TypeGuard`.
-
-    Args:
-        annotation: tested to determine if instance or type of :class:`typing.TypedDict`.
-
-    Returns:
-        ``True`` if instance or type of ``TypedDict``.
-    """
-
-    origin = get_origin_or_inner_type(annotation)
-    annotation = origin or annotation
-
-    return is_typeddict(annotation)
-
-
 def is_attrs_class(annotation: Any) -> TypeGuard[type[attrs.AttrsInstance]]:  # pyright: ignore
     """Given a type annotation determine if the annotation is a class that includes an attrs attribute.
 
@@ -293,18 +272,6 @@ def is_attrs_class(annotation: Any) -> TypeGuard[type[attrs.AttrsInstance]]:  # 
         A typeguard determining whether the type is an attrs class.
     """
     return attrs.has(annotation) if attrs is not Empty else False  # type: ignore[comparison-overlap]
-
-
-def is_struct_class(annotation: Any) -> TypeGuard[type[Struct]]:
-    """Check if the given annotation is a :class:`Struct <msgspec.Struct>` type.
-
-    Args:
-        annotation: A type annotation
-
-    Returns:
-        A typeguard for :class:`Struct <msgspec.Struct>`.
-    """
-    return is_class_and_subclass(annotation, Struct)
 
 
 def is_class_var(annotation: Any) -> bool:

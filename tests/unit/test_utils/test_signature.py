@@ -9,21 +9,14 @@ from typing import Any, List, Optional, TypeVar, Union
 import pytest
 from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_type_hints
 
-from litestar.enums import RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem
-from litestar.params import Body
 from litestar.static_files import StaticFiles
 from litestar.types.asgi_types import Receive, Scope, Send
 from litestar.types.builtin_types import NoneType
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils.signature import (
-    ParsedSignature,
-    add_types_to_signature_namespace,
-    get_fn_type_hints,
-    infer_request_encoding_from_field_definition,
-)
+from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace, get_fn_type_hints
 
 T = TypeVar("T")
 
@@ -158,26 +151,6 @@ def test_parsed_signature() -> None:
     assert parsed_sig.parameters["bar"].annotation == Union[List[int], NoneType]
     assert parsed_sig.parameters["bar"].default is None
     assert parsed_sig.original_signature == inspect.signature(fn)
-
-
-@pytest.mark.parametrize(
-    ("annotation", "default", "expected"),
-    [
-        (int, None, RequestEncodingType.JSON),
-        (int, Body(media_type=RequestEncodingType.MESSAGEPACK), RequestEncodingType.MESSAGEPACK),
-        (Annotated[int, Body(media_type=RequestEncodingType.MESSAGEPACK)], None, RequestEncodingType.MESSAGEPACK),
-    ],
-)
-def xtest_infer_request_encoding_type_from_parameter(
-    annotation: Any, default: Any, expected: RequestEncodingType
-) -> None:
-    """Test infer_request_encoding_type_from_parameter."""
-    assert (
-        infer_request_encoding_from_field_definition(
-            FieldDefinition.from_kwarg(name="foo", default=default, annotation=annotation)
-        )
-        == expected
-    )
 
 
 def test_add_types_to_signature_namespace() -> None:
