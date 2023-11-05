@@ -28,9 +28,7 @@ def ensure_async_callable(fn: Callable[P, T]) -> Callable[P, Awaitable[T]]:
     If it is an asynchronous, return the original object, else wrap it in an
     ``AsyncCallable``
     """
-    if is_async_callable(fn):
-        return fn
-    return AsyncCallable(fn)  # pyright: ignore
+    return fn if is_async_callable(fn) else AsyncCallable(fn)
 
 
 class AsyncCallable:
