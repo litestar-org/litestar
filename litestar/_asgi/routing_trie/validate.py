@@ -42,4 +42,6 @@ def validate_node(node: RouteTrieNode) -> None:
         raise ImproperlyConfiguredException("Path parameters are not allowed under a static or mount route.")
 
     for child in node.children.values():
+        if child is node:
+            continue
         validate_node(node=child)
