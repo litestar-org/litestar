@@ -27,14 +27,13 @@ from .scope import (
     set_litestar_scope_state,
 )
 from .sequence import find_index, unique
-from .sync import AsyncCallable, AsyncIteratorWrapper, async_partial
+from .sync import AsyncIteratorWrapper, ensure_async_callable
 from .typing import get_origin_or_inner_type, make_non_optional_union
 
 __all__ = (
-    "AsyncCallable",
+    "ensure_async_callable",
     "AsyncIteratorWrapper",
     "Ref",
-    "async_partial",
     "delete_litestar_scope_state",
     "deprecated",
     "find_index",

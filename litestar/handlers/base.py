@@ -20,7 +20,7 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.typing import FieldDefinition
-from litestar.utils import AsyncCallable, Ref, get_name, normalize_path
+from litestar.utils import Ref, ensure_async_callable, get_name, normalize_path
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace
 
@@ -335,7 +335,9 @@ class BaseRouteHandler:
             for layer in self.ownership_layers:
                 self._resolved_guards.extend(layer.guards or [])  # pyright: ignore
 
-            self._resolved_guards = cast("list[Guard]", [AsyncCallable(guard) for guard in self._resolved_guards])
+            self._resolved_guards = cast(
+                "list[Guard]", [ensure_async_callable(guard) for guard in self._resolved_guards]
+            )
 
         return self._resolved_guards  # type:ignore
 

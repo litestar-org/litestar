@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 from functools import partial
-from inspect import getfullargspec, ismethod
 from typing import (
-    TYPE_CHECKING,
-    Any,
     AsyncGenerator,
     Awaitable,
     Callable,
@@ -12,87 +9,41 @@ from typing import (
     Iterable,
     Iterator,
     TypeVar,
-    cast,
 )
 
 from anyio.to_thread import run_sync
 from typing_extensions import ParamSpec
 
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.types import Empty
-from litestar.utils.helpers import Ref, unwrap_partial
 from litestar.utils.predicates import is_async_callable
 
-if TYPE_CHECKING:
-    from litestar.types.empty import EmptyType
-    from litestar.utils.signature import ParsedSignature
-
-__all__ = ("AsyncCallable", "AsyncIteratorWrapper", "async_partial", "is_async_callable")
+__all__ = ("ensure_async_callable", "AsyncIteratorWrapper", "AsyncCallable", "is_async_callable")
 
 
 P = ParamSpec("P")
 T = TypeVar("T")
 
 
-class AsyncCallable(Generic[P, T]):
-    """Wrap a callable into an asynchronous callable."""
-
-    __slots__ = ("args", "kwargs", "ref", "is_method", "num_expected_args", "_parsed_signature")
-
-    def __init__(self, fn: Callable[P, T]) -> None:
-        """Initialize the wrapper from any callable.
-
-        Args:
-            fn: Callable to wrap - can be any sync or async callable.
-        """
-        self._parsed_signature: ParsedSignature | EmptyType = Empty
-        self.is_method = ismethod(fn) or (callable(fn) and ismethod(fn.__call__))  # type: ignore
-        self.num_expected_args = len(getfullargspec(fn).args) - (1 if self.is_method else 0)
-        self.ref = Ref[Callable[..., Awaitable[T]]](fn if is_async_callable(fn) else async_partial(fn))  # type: ignore
-
-    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
-        """Proxy the wrapped function's call method.
-
-        Args:
-            *args: Args of the wrapped function.
-            **kwargs: Kwargs of the wrapper function.
-
-        Returns:
-            The return value of the wrapped function.
-        """
-        return await self.ref.value(*args, **kwargs)
-
-    @property
-    def parsed_signature(self) -> ParsedSignature:
-        if self._parsed_signature is Empty:
-            raise ImproperlyConfiguredException(
-                "Parsed signature is not set. Call `set_parsed_signature()` at an appropriate time during handler"
-                "registration."
-            )
-        return cast("ParsedSignature", self._parsed_signature)
-
-    def set_parsed_signature(self, namespace: dict[str, Any]) -> None:
-        """Set the parsed signature of the wrapped function.
-
-        Args:
-            namespace: Namespace for forward ref resolution.
-        """
-        from litestar.utils.signature import ParsedSignature
-
-        self._parsed_signature = ParsedSignature.from_fn(unwrap_partial(self.ref.value), namespace)
+def ensure_async_callable(fn: Callable[P, T]) -> Callable[P, Awaitable[T]]:
+    """Ensure that ``fn`` is an asynchronous callable.
+    If it is an asynchronous, return the original object, else wrap it in an
+    ``AsyncCallable``
+    """
+    if is_async_callable(fn):  # sourcery skip
+        return fn
+    return AsyncCallable(fn)  # pyright: ignore
 
 
-class async_partial:  # noqa: N801
-    """Wrap a given sync function making it async.
-    In difference to the :func:`anyio.run_sync` function, it allows for passing kwargs.
+class AsyncCallable:
+    """Wrap a given callable to be called in a thread pool using
+    ``anyio.to_thread.run_sync``, keeping a reference to the original callable as
+    :attr:`func`
     """
 
     def __init__(self, fn: Callable[P, T]) -> None:  # pyright: ignore
         self.func = fn
 
-    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:  # pyright: ignore
-        applied_kwarg = partial(self.func, **kwargs)
-        return await run_sync(applied_kwarg, *args)  # pyright: ignore
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Awaitable[T]:  # pyright: ignore
+        return run_sync(partial(self.func, **kwargs), *args)  # pyright: ignore
 
 
 class AsyncIteratorWrapper(Generic[T]):

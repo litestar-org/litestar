@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
-from litestar.utils import Ref, async_partial
+from litestar.utils import Ref, ensure_async_callable
 from litestar.utils.predicates import is_async_callable, is_sync_or_async_generator
 from litestar.utils.warnings import (
     warn_implicit_sync_to_thread,
@@ -64,7 +64,7 @@ class Provide:
             warn_implicit_sync_to_thread(dependency, stacklevel=3)
 
         if sync_to_thread and has_sync_callable:
-            self.dependency = Ref["AnyCallable"](async_partial(dependency))  # pyright: ignore
+            self.dependency = Ref["AnyCallable"](ensure_async_callable(dependency))  # pyright: ignore
             self.has_sync_callable = False
         else:
             self.dependency = Ref["AnyCallable"](dependency)  # pyright: ignore

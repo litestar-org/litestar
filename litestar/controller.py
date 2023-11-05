@@ -12,7 +12,7 @@ from litestar.handlers.base import BaseRouteHandler
 from litestar.handlers.http_handlers import HTTPRouteHandler
 from litestar.handlers.websocket_handlers import WebsocketRouteHandler
 from litestar.types.empty import Empty
-from litestar.utils import AsyncCallable, normalize_path
+from litestar.utils import ensure_async_callable, normalize_path
 from litestar.utils.signature import add_types_to_signature_namespace
 
 __all__ = ("Controller",)
@@ -168,7 +168,7 @@ class Controller:
         for key in ("after_request", "after_response", "before_request"):
             cls_value = getattr(type(self), key, None)
             if callable(cls_value):
-                setattr(self, key, AsyncCallable(cls_value))
+                setattr(self, key, ensure_async_callable(cls_value))
 
         if not hasattr(self, "dto"):
             self.dto = Empty
