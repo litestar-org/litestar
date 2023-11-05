@@ -36,7 +36,7 @@ def get_description_for_handler(route_handler: HTTPRouteHandler, use_handler_doc
     """
     handler_description = route_handler.description
     if handler_description is None and use_handler_docstrings:
-        fn = unwrap_partial(route_handler.fn.value)
+        fn = unwrap_partial(route_handler.fn)
         return cleandoc(fn.__doc__) if fn.__doc__ else None
     return handler_description
 

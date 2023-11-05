@@ -490,10 +490,10 @@ class HTTPRouteHandler(BaseRouteHandler):
         super().on_registration(app)
         self.resolve_after_response()
         self.resolve_include_in_schema()
-        self.has_sync_callable = not is_async_callable(self.fn.value)
+        self.has_sync_callable = not is_async_callable(self.fn)
 
         if self.has_sync_callable and self.sync_to_thread:
-            self.fn.value = ensure_async_callable(self.fn.value)
+            self._fn = ensure_async_callable(self.fn)
             self.has_sync_callable = False
 
     def _validate_handler_function(self) -> None:

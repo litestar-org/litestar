@@ -51,4 +51,4 @@ class ASGIRoute(BaseRoute):
             connection = ASGIConnection["ASGIRouteHandler", Any, Any, Any](scope=scope, receive=receive)
             await self.route_handler.authorize_connection(connection=connection)
 
-        await self.route_handler.fn.value(scope=scope, receive=receive, send=send)
+        await self.route_handler.fn(scope=scope, receive=receive, send=send)

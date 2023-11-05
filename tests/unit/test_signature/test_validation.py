@@ -38,9 +38,9 @@ def test_create_signature_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         SignatureModel.create(
             dependency_name_set=set(),
-            fn=my_fn.fn.value,
+            fn=my_fn.fn,
             data_dto=None,
-            parsed_signature=ParsedSignature.from_fn(my_fn.fn.value, {}),
+            parsed_signature=ParsedSignature.from_fn(my_fn.fn, {}),
             type_decoders=[],
         )
 
@@ -124,7 +124,7 @@ def test_validation_error_exception_key() -> None:
         dependency_name_set=set(),
         fn=handler,
         data_dto=None,
-        parsed_signature=ParsedSignature.from_fn(handler.fn.value, {}),
+        parsed_signature=ParsedSignature.from_fn(handler.fn, {}),
         type_decoders=[],
     )
 

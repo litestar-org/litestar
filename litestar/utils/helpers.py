@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from enum import Enum
 from functools import partial
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 from urllib.parse import quote
 
 from litestar.utils.typing import get_origin_or_inner_type
@@ -14,7 +13,6 @@ if TYPE_CHECKING:
     from litestar.types import MaybePartial
 
 __all__ = (
-    "Ref",
     "get_enum_string_value",
     "get_name",
     "unwrap_partial",
@@ -58,16 +56,6 @@ def get_enum_string_value(value: Enum | str) -> str:
         A string.
     """
     return value.value if isinstance(value, Enum) else value  # type:ignore
-
-
-@dataclass
-class Ref(Generic[T]):
-    """A helper class that encapsulates a value."""
-
-    __slots__ = ("value",)
-
-    value: T
-    """The value wrapped by the ref."""
 
 
 def unwrap_partial(value: MaybePartial[T]) -> T:
