@@ -37,7 +37,7 @@ Once more, lets compare the sets of application handlers before and after our re
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
             :language: python
             :linenos:
-            :lines: 70-102
+            :lines: 70-101
 
 Very nice! But, we can do better.
 
