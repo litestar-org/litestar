@@ -1,4 +1,3 @@
-import sys
 from collections import defaultdict, deque
 from dataclasses import MISSING, dataclass
 from functools import partial
@@ -21,7 +20,6 @@ from typing import (
     Sequence,
     Set,
     Tuple,
-    TypedDict,
     TypeVar,
     Union,
     cast,
@@ -41,7 +39,6 @@ from litestar.utils.predicates import (
     is_mapping,
     is_non_string_iterable,
     is_non_string_sequence,
-    is_typed_dict,
     is_undefined_sentinel,
 )
 
@@ -304,20 +301,3 @@ class NonDataclass:
 )
 def test_is_dataclass_class(cls: Any, expected: bool) -> None:
     assert is_dataclass_class(cls) is expected
-
-
-@pytest.mark.skipif(sys.version_info < (3, 11), reason="generic TypedDict only supported for 3.11+")
-def test_is_typed_dict() -> None:
-    class NonGenericTypedDict(TypedDict):
-        foo: int
-
-    class GenericTypedDict(TypedDict, Generic[T]):
-        foo: T
-
-    class NonTypedDict:
-        ...
-
-    assert is_typed_dict(GenericTypedDict) is True
-    assert is_typed_dict(GenericTypedDict[int]) is True
-    assert is_typed_dict(NonGenericTypedDict) is True
-    assert is_typed_dict(NonTypedDict) is False
