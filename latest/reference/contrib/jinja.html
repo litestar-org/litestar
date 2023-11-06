@@ -32,14 +32,14 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
-    <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=db8d6e31" />
+    <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=77b218ca"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=a5ad1038"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -1105,9 +1105,13 @@ document.write(`
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../topics/sync-vs-async.html">Sync vs. Async</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -1230,11 +1234,11 @@ document.write(`
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.contrib.jinja.JinjaTemplateEngine.from_environment">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_environment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jinja_environment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Environment</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.contrib.jinja.JinjaTemplateEngine" title="litestar.contrib.jinja.JinjaTemplateEngine"><span class="pre">JinjaTemplateEngine</span></a></span></span><a class="headerlink" href="#litestar.contrib.jinja.JinjaTemplateEngine.from_environment" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_environment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jinja_environment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://jinja.palletsprojects.com/en/latest/api/#jinja2.Environment" title="(in Jinja v3.2.x)"><span class="pre">Environment</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.contrib.jinja.JinjaTemplateEngine" title="litestar.contrib.jinja.JinjaTemplateEngine"><span class="pre">JinjaTemplateEngine</span></a></span></span><a class="headerlink" href="#litestar.contrib.jinja.JinjaTemplateEngine.from_environment" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a JinjaTemplateEngine from an existing jinja Environment instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>jinja_environment</strong> (<em>jinja2.environment.Environment</em>) – A jinja Environment instance.</p>
+<dd class="field-odd"><p><strong>jinja_environment</strong> (<a class="reference external" href="https://jinja.palletsprojects.com/en/latest/api/#jinja2.Environment" title="(in Jinja v3.2.x)"><em>jinja2.environment.Environment</em></a>) – A jinja Environment instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>JinjaTemplateEngine instance</p>

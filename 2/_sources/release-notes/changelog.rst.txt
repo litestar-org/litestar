@@ -3,6 +3,51 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.3.2
+    :date: 2023/11706
+
+    .. change:: Fix recursion error when re-using the path of a route handler for static files
+        :type: bugfix
+        :pr: 2630
+        :issue: 2629
+
+        A regression was fixed that would cause a recursion error when the path of a
+        static files host was reused for a route handler with a different HTTP method.
+
+        .. code-block:: python
+
+            from litestar import Litestar
+            from litestar import post
+            from litestar.static_files import StaticFilesConfig
+
+
+            @post("/uploads")
+            async def handler() -> None:
+                pass
+
+
+            app = Litestar(
+                [handler],
+                static_files_config=[
+                    StaticFilesConfig(directories=["uploads"], path="/uploads"),
+                ],
+            )
+
+
+.. changelog:: 2.3.1
+    :date: 2023/11/04
+
+    .. change:: CLI: Fix not providing SSL certfiles breaks uvicorn command when using reload or multiple workers
+        :type: bugfix
+        :pr: 2616
+        :issue: 2613
+
+        Fix an issue where not providing the ``--ssl-certfile`` and ``--ssl-keyfile``
+        options to the ``litestar run`` command would cause a :exc:`FileNotFoundError`
+        in uvicorn, when used together with the ``--reload``, ``--web-concurrency``
+        options.
+
+
 .. changelog:: 2.3.0
     :date: 2023/11/02
 

@@ -32,14 +32,14 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
-    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=db8d6e31" />
+    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=77b218ca"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=a5ad1038"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -1105,9 +1105,13 @@ document.write(`
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -1295,7 +1299,7 @@ These types will be added to the signature namespace using their <code class="do
 
 <dl class="py property">
 <dt class="sig sig-object py" id="litestar.handlers.BaseRouteHandler.fn">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Ref</span><span class="p"><span class="pre">[</span></span><span class="pre">MaybePartial</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="types.html#litestar.types.AsyncAnyCallable" title="litestar.types.AsyncAnyCallable"><span class="pre">AsyncAnyCallable</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.handlers.BaseRouteHandler.fn" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#litestar.types.AsyncAnyCallable" title="litestar.types.AsyncAnyCallable"><span class="pre">AsyncAnyCallable</span></a></em><a class="headerlink" href="#litestar.handlers.BaseRouteHandler.fn" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the handler function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
@@ -1603,7 +1607,7 @@ ValidationException will be added automatically for the schema if any validation
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.handlers.HTTPRouteHandler.resolve_before_request">
-<span class="sig-name descname"><span class="pre">resolve_before_request</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncCallable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.handlers.HTTPRouteHandler.resolve_before_request" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">resolve_before_request</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="types.html#litestar.types.AsyncAnyCallable" title="litestar.types.AsyncAnyCallable"><span class="pre">AsyncAnyCallable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.handlers.HTTPRouteHandler.resolve_before_request" title="Permalink to this definition">#</a></dt>
 <dd><p>Resolve the before_handler handler by starting from the route handler and moving up.</p>
 <p>If a handler is found it is returned, otherwise None is set.
 This method is memoized so the computation occurs only once.</p>
@@ -1616,7 +1620,7 @@ This method is memoized so the computation occurs only once.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.handlers.HTTPRouteHandler.resolve_after_response">
-<span class="sig-name descname"><span class="pre">resolve_after_response</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncCallable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.handlers.HTTPRouteHandler.resolve_after_response" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">resolve_after_response</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="types.html#litestar.types.AsyncAnyCallable" title="litestar.types.AsyncAnyCallable"><span class="pre">AsyncAnyCallable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.handlers.HTTPRouteHandler.resolve_after_response" title="Permalink to this definition">#</a></dt>
 <dd><p>Resolve the after_response handler by starting from the route handler and moving up.</p>
 <p>If a handler is found it is returned, otherwise None is set.
 This method is memoized so the computation occurs only once.</p>

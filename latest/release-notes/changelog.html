@@ -32,14 +32,14 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
-    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=db8d6e31" />
+    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=77b218ca"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=a5ad1038"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -1103,9 +1103,13 @@ document.write(`
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -1167,6 +1171,54 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.3.2">
+<h2>2.3.2<a class="headerlink" href="#2.3.2" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2023/11706<section id="2.3.2-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.3.2-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix recursion error when re-using the path of a route handler for static files<a class="headerlink reference internal" href="#2.3.2-fix recursion error when re-using the path of a route handler for static files" id="2.3.2-fix recursion error when re-using the path of a route handler for static files">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A regression was fixed that would cause a recursion error when the path of a
+static files host was reused for a route handler with a different HTTP method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">post</span>
+<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">StaticFilesConfig</span>
+
+
+<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/uploads&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">handler</span><span class="p">],</span>
+    <span class="n">static_files_config</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">StaticFilesConfig</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;uploads&quot;</span><span class="p">],</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/uploads&quot;</span><span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2629">litestar-org/litestar#2629</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2630">litestar-org/litestar#2630</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
+<section id="2.3.1">
+<h2>2.3.1<a class="headerlink" href="#2.3.1" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2023/11/04<section id="2.3.1-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.3.1-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>CLI: Fix not providing SSL certfiles breaks uvicorn command when using reload or multiple workers<a class="headerlink reference internal" href="#2.3.1-cli: fix not providing ssl certfiles breaks uvicorn command when using reload or multiple workers" id="2.3.1-cli: fix not providing ssl certfiles breaks uvicorn command when using reload or multiple workers">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue where not providing the <code class="docutils literal notranslate"><span class="pre">--ssl-certfile</span></code> and <code class="docutils literal notranslate"><span class="pre">--ssl-keyfile</span></code>
+options to the <code class="docutils literal notranslate"><span class="pre">litestar</span> <span class="pre">run</span></code> command would cause a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a>
+in uvicorn, when used together with the <code class="docutils literal notranslate"><span class="pre">--reload</span></code>, <code class="docutils literal notranslate"><span class="pre">--web-concurrency</span></code>
+options.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2613">litestar-org/litestar#2613</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2616">litestar-org/litestar#2616</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.3.0">
 <h2>2.3.0<a class="headerlink" href="#2.3.0" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2023/11/02<section id="2.3.0-feature">
@@ -1566,8 +1618,8 @@ This was fixed by leaving the default value as <a class="reference external" hre
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2138">litestar-org/litestar#2138</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2189">litestar-org/litestar#2189</a></span></p>
 </div>
 </dd>
-<dt>Add <a class="reference internal" href="../reference/config.html#litestar.config.app.AppConfig.include_in_schema" title="litestar.config.app.AppConfig.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option for all layers<a class="headerlink reference internal" href="#2.1.0-add" id="2.1.0-add">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Adds the <a class="reference internal" href="../reference/config.html#litestar.config.app.AppConfig.include_in_schema" title="litestar.config.app.AppConfig.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option to all layers, allowing to include/exclude
+<dt>Add <a class="reference internal" href="../reference/controller.html#litestar.controller.Controller.include_in_schema" title="litestar.controller.Controller.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option for all layers<a class="headerlink reference internal" href="#2.1.0-add" id="2.1.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds the <a class="reference internal" href="../reference/controller.html#litestar.controller.Controller.include_in_schema" title="litestar.controller.Controller.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option to all layers, allowing to include/exclude
 specific routes from the generated OpenAPI schema.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2267">litestar-org/litestar#2267</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2295">litestar-org/litestar#2295</a></span></p>
 </div>
@@ -1600,11 +1652,11 @@ dedicated class method.</p>
 </div>
 </dd>
 <dt>SQLAlchemy: Exclude implicit fields for SQLAlchemy DTO<a class="headerlink reference internal" href="#2.1.0-sqlalchemy: exclude implicit fields for sqlalchemy dto" id="2.1.0-sqlalchemy: exclude implicit fields for sqlalchemy dto">#</a></dt><dd><div class="changelog-change docutils container">
-<p><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.5.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be
+<p><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.5.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be
 configured using a separate config object. This can be set using both
 class inheritance and <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated">Annotated</a>:</p>
 <div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.5.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">config</span></code> object.</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.5.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">config</span></code> object.</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModelDTO</span><span class="p">(</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">MyModel</span><span class="p">]):</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()</span>
 </pre></div>
@@ -1612,7 +1664,7 @@ class inheritance and <a class="reference external" href="https://docs.python.or
 </div>
 <p>or</p>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.5.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>.</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.5.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>.</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="n">MyModelDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()]]</span>
 </pre></div>
 </div>
@@ -2046,7 +2098,7 @@ has been added.</p>
 <strong>Released: </strong>2023/07/20<section id="2.0.0beta3-feature">
 <h3>Features<a class="headerlink" href="#2.0.0beta3-feature" title="Permalink to this heading">#</a></h3>
 <dl>
-<dt><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.5.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: column/relationship type inference<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
+<dt><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.5.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: column/relationship type inference<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
 <p>If type annotations aren’t available for a given column/relationship, they may
 be inferred from the mapped object.</p>
 <p>For columns, the <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/reflection.html#sqlalchemy.engine.interfaces.ReflectedColumn.type" title="(in SQLAlchemy v2.0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code></a>‘s
@@ -2168,7 +2220,7 @@ of the update.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1894">litestar-org/litestar#1894</a></span></p>
 </div>
 </dd>
-<dt><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.5.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: Fix handling of <code class="docutils literal notranslate"><span class="pre">Sequence</span></code> with defaults<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
+<dt><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.5.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: Fix handling of <code class="docutils literal notranslate"><span class="pre">Sequence</span></code> with defaults<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fixes handling of columns defined with
 <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/defaults.html#defining-sequences">Sequence</a>
 default values.</p>
@@ -2457,8 +2509,8 @@ using a double-underscore syntax, for example
 </div>
 </dd>
 <dt>DTOs: Hybrid properties and association proxies in
-<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.5.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a><a class="headerlink reference internal" href="#2.0.0beta1-dtos: hybrid properties and association proxies in" id="2.0.0beta1-dtos: hybrid properties and association proxies in">#</a></dt><dd><div class="changelog-change docutils container">
-<p>The <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.5.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>
+<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.5.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a><a class="headerlink reference internal" href="#2.0.0beta1-dtos: hybrid properties and association proxies in" id="2.0.0beta1-dtos: hybrid properties and association proxies in">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.5.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>
 now supports <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/hybrid.html">hybrid attribute</a>
 and <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/associationproxy.html">associationproxy</a>.</p>
 <p>The generated field will be marked read-only.</p>
@@ -3992,6 +4044,14 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.2">2.3.2</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.2-bugfix">Bugfixes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.1">2.3.1</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.1-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.0">2.3.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.0-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.0-bugfix">Bugfixes</a></li>

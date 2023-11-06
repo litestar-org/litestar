@@ -32,14 +32,14 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
-    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=db8d6e31" />
+    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=77b218ca"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=a5ad1038"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -1107,9 +1107,13 @@ document.write(`
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -1357,6 +1361,22 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
+</section>
+<section id="order-of-execution">
+<h2>Order of execution<a class="headerlink" href="#order-of-execution" title="Permalink to this heading">#</a></h2>
+<p>When multiple lifespan context managers and <code class="docutils literal notranslate"><span class="pre">on_shutdown</span></code> hooks are specified, Litestar will invoke the context
+managers in inverse order before the shutdown hooks are invoked.</p>
+<p>Consider the case where there are two lifespan context managers <code class="docutils literal notranslate"><span class="pre">ctx_a</span></code> and <code class="docutils literal notranslate"><span class="pre">ctx_b</span></code> as well as two shutdown hooks
+<code class="docutils literal notranslate"><span class="pre">hook_a</span></code> and <code class="docutils literal notranslate"><span class="pre">hook_b</span></code> as shown in the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="p">[</span><span class="n">ctx_a</span><span class="p">,</span> <span class="n">ctx_b</span><span class="p">],</span> <span class="n">on_shutdown</span><span class="o">=</span><span class="p">[</span><span class="n">hook_a</span><span class="p">,</span> <span class="n">hook_b</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>During shutdown, they are executed in the following order:</p>
+<div class="mermaid">
+            flowchart LR
+    ctx_b --&gt; ctx_a --&gt; hook_a --&gt; hook_b
+        </div><p>As seen, the context managers are invoked in inverse order.
+On the other hand, the shutdown hooks are invoked in their specified order.</p>
 </section>
 <section id="using-application-state">
 <span id="application-state"></span><h2>Using Application State<a class="headerlink" href="#using-application-state" title="Permalink to this heading">#</a></h2>
@@ -1783,6 +1803,7 @@ overriding of parameters.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#application-objects">Application objects</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#startup-and-shutdown">Startup and Shutdown</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lifespan-context-managers">Lifespan context managers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#order-of-execution">Order of execution</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-application-state">Using Application State</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initializing-application-state">Initializing Application State</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#injecting-application-state-into-route-handlers-and-dependencies">Injecting Application State into Route Handlers and Dependencies</a></li>
