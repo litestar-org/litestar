@@ -1171,6 +1171,38 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.3.2">
+<h2>2.3.2<a class="headerlink" href="#2.3.2" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2023/11706<section id="2.3.2-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.3.2-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix recursion error when re-using the path of a route handler for static files<a class="headerlink reference internal" href="#2.3.2-fix recursion error when re-using the path of a route handler for static files" id="2.3.2-fix recursion error when re-using the path of a route handler for static files">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A regression was fixed that would cause a recursion error when the path of a
+static files host was reused for a route handler with a different HTTP method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">post</span>
+<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">StaticFilesConfig</span>
+
+
+<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/uploads&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">handler</span><span class="p">],</span>
+    <span class="n">static_files_config</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">StaticFilesConfig</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;uploads&quot;</span><span class="p">],</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/uploads&quot;</span><span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2629">litestar-org/litestar#2629</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2630">litestar-org/litestar#2630</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.3.1">
 <h2>2.3.1<a class="headerlink" href="#2.3.1" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2023/11/04<section id="2.3.1-bugfix">
@@ -4012,6 +4044,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.2">2.3.2</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.2-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.1">2.3.1</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.1-bugfix">Bugfixes</a></li>
 </ul>
